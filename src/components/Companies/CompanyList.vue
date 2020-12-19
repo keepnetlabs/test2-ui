@@ -18,6 +18,7 @@
     </app-modal>
 
     <delete-modal
+      v-if="isShowDeleteModal"
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
       @confirmDelete="deleteConfirmedItem"
@@ -111,7 +112,7 @@ import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
-import { handleIsSafari, setSafariClusterFix } from '@/utils/functions'
+import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 
 export default {
   name: 'CompanyList',
@@ -227,29 +228,34 @@ export default {
       addButton: {
         show: true,
         action: 'addButton',
-        tooltip: 'Add Company'
+        tooltip: 'Add Company',
+        disabled: !checkPermission('companies', 'POST')
       },
       rowActions: [
         {
           name: 'Edit this row',
           icon: 'mdi-pencil',
           action: 'editAction',
-          isNotShow: true
+          isNotShow: true,
+          disabled: !checkPermission('companies/{resourceId}', 'PUT')
         },
         {
           name: 'Add to a company group',
           icon: 'mdi-account-multiple-plus',
-          action: 'AddGroupToModal'
+          action: 'AddGroupToModal',
+          disabled: !checkPermission('company-groups/search', 'GET')
         },
         {
           name: 'Create a new company group with company',
           icon: 'mdi-account-multiple',
-          action: 'createNewGroupWithCompany'
+          action: 'createNewGroupWithCompany',
+          disabled: !checkPermission('companies/search', 'POST')
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
-          action: 'delete'
+          action: 'delete',
+          disabled: !checkPermission('companies/{resourceId}', 'DELETE')
         }
       ]
     },
@@ -289,6 +295,9 @@ export default {
   },
   mounted() {},
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     handleSearchChange(bodyData = {}, columnFilterActive = false) {
       this.payload.filter.FilterGroups[0].FilterItems = [
         ...bodyData.filter.FilterGroups[0].FilterItems
@@ -364,24 +373,11 @@ export default {
       this.changeDeleteModalStatus(true)
     },
     deleteConfirmedItem(selectedItem) {
-      deleteCompany(selectedItem.companyResourceId)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Company has been deleted',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.getTableData()
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Company can not be deleted',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-check-circle-outline'
-          })
-        })
+      deleteCompany(selectedItem.companyResourceId).then((response) => {
+        if (response.data && response.data.message) {
+          this.getTableData()
+        }
+      })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
@@ -399,13 +395,8 @@ export default {
         .then((response) => {
           this.selectedExtend = response.data.data
         })
-        .catch((error) => {
+        .catch(() => {
           this.isShowExtended = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
         })
     },
     handleTableDownload(downloadTypes) {
@@ -446,11 +437,6 @@ export default {
         })
         .catch((error) => {
           this.isShowExtended = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
         })
     },
     cancelCreateOrEditForm() {

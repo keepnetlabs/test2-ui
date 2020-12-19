@@ -6,9 +6,13 @@
         <span class="ml-2" style="cursor: pointer;" @click="handleOpenMenu">Available Widgets</span>
       </div>
       <div class="available-widget__header-right">
-        <v-icon @click="handleEdit" class="available-widget__icon" small>{{
-          editMode ? 'mdi-content-save-edit' : 'mdi-pencil'
-        }}</v-icon>
+        <v-icon
+          :disabled="!checkPermissions('dashboard/widgets', 'PUT')"
+          @click="handleEdit"
+          class="available-widget__icon"
+          small
+          >{{ editMode ? 'mdi-content-save-edit' : 'mdi-pencil' }}</v-icon
+        >
         <v-icon v-if="false" @click="handleMinimize" class="available-widget__icon" small>{{
           isMinimized ? 'mdi-plus' : 'mdi-window-minimize'
         }}</v-icon>
@@ -31,6 +35,8 @@
 </template>
 
 <script>
+import { checkPermission } from '@/utils/functions'
+
 export default {
   name: 'AvailableWidgets',
   props: {
@@ -48,6 +54,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     handleAddWidget(widget) {
       this.$emit('addWidget', widget)
     },

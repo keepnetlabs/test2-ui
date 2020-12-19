@@ -121,6 +121,7 @@
                   rounded
                   medium
                   color="blue"
+                  :disabled="!checkPermissions('community-posts/{resourceId}', 'GET')"
                   >COLLAPSE
                 </v-btn>
                 <v-btn
@@ -134,6 +135,7 @@
                   rounded
                   medium
                   color="blue"
+                  :disabled="!checkPermissions('community-posts/{resourceId}', 'GET')"
                   >DETAILS
                 </v-btn>
               </template>
@@ -158,7 +160,7 @@
                 <v-list-item-group color="primary">
                   <v-list-item
                     :id="'edit-btn' + post.communityPostResourceId"
-                    v-if="canEdit(post)"
+                    v-if="checkPermissions('community-posts/{resourceId}', 'GET') && canEdit(post)"
                     @click="editIncident(post, post.communityPostResourceId, post.communityName)"
                   >
                     <v-list-item-icon>
@@ -170,6 +172,7 @@
                   </v-list-item>
                   <v-list-item
                     :id="'investigate-btn' + post.communityPostResourceId"
+                    v-if="checkPermissions('community-posts/{resourceId}', 'GET')"
                     @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
@@ -181,7 +184,10 @@
                   </v-list-item>
                   <v-list-item
                     style="cursor: not-allowed; opacity: 0.3;"
-                    v-if="post.communityPrivacyStatusId !== 1"
+                    v-if="
+                      checkPermissions('community-posts/{resourceId}/share', 'POST') &&
+                      post.communityPrivacyStatusId !== 1
+                    "
                     :id="'share-btn' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -216,7 +222,9 @@
                   </v-list-item>
                   <v-list-item
                     :id="'delete-btn' + post.communityPostResourceId"
-                    v-if="canDelete(post)"
+                    v-if="
+                      checkPermissions('community-posts/{resourceId}', 'DELETE') && canDelete(post)
+                    "
                     @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>
@@ -1268,11 +1276,7 @@ export default {
           const payload = {
             emailarray: this.shareEmail
           }
-          shareAPost(id, payload).then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Post has been shared successfully'
-            })
+          shareAPost(id, payload).then(() => {
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
@@ -1299,67 +1303,34 @@ export default {
     },
     updateComments(comment) {
       const payload = { comment: comment.commentValue }
-      updateComments(comment.resourceId, payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been updated successfully.'
-          })
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-          this.getComments(this.post.communityPostResourceId)
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when update a comment'
-          })
-        })
+      updateComments(comment.resourceId, payload).then(() => {
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+        this.getComments(this.post.communityPostResourceId)
+      })
     },
     deleteComment(comment) {
       this.deleteCommentId = comment.resourceId
       this.isWantToDeleteComment = true
     },
     deleteCommentConfirm() {
-      deleteComments(this.deleteCommentId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Comment has been deleted successfully'
-          })
-          this.isWantToDeleteComment = false
-          this.getComments(this.post.communityPostResourceId)
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when delete a comment'
-          })
-        })
+      deleteComments(this.deleteCommentId).then(() => {
+        this.isWantToDeleteComment = false
+        this.getComments(this.post.communityPostResourceId)
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+      })
     },
     deleteIncidentConfirm() {
-      deleteCommunityPost(this.deleteIncidentId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Community post has been deleted successfuly'
-          })
-          this.$emit('refreshData')
-          this.isWantToDelete = false
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when delete community post'
-          })
-        })
+      deleteCommunityPost(this.deleteIncidentId).then(() => {
+        this.$emit('refreshData')
+        this.isWantToDelete = false
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+      })
     },
     findCategory(id) {
       switch (id) {
@@ -1426,12 +1397,6 @@ export default {
           }, 500)
         })
       })
-      /*.catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when like a comment'
-          })
-        })*/
     },
     userUnlikePost(postId) {
       likePost(postId).then((response) => {
@@ -1444,13 +1409,6 @@ export default {
           }, 500)
         })
       })
-      /*
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when unlike a comments'
-          })
-        })*/
     },
     getComments(id) {
       getComments(id)
@@ -1473,24 +1431,13 @@ export default {
         const payload = {
           comment: this.addCommentValue
         }
-        createComments(postId, payload)
-          .then((response) => {
-            this.addCommentValue = ''
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Comment added has been successfully'
-            })
-            this.getComments(this.post.communityPostResourceId)
-            setTimeout(() => {
-              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-            }, 500)
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when creating a comment'
-            })
-          })
+        createComments(postId, payload).then(() => {
+          this.addCommentValue = ''
+          this.getComments(this.post.communityPostResourceId)
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
+        })
       }
     },
     editIncident(post, communityName) {

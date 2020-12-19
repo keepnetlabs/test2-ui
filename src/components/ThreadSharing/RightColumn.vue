@@ -199,6 +199,7 @@
       </app-dialog>
       <v-btn
         v-if="$route.path == '/threat-sharing'"
+        :disabled="!checkPermissions('communities', 'POST')"
         class="create-com-btn"
         @click="createNewCommunity"
         block
@@ -213,6 +214,7 @@
         block
         rounded
         id="post-inc-btn"
+        :disabled="!checkPermissions('community-posts', 'POST')"
         >POST INCIDENT
       </v-btn>
       <div class="right-side-content wrapper pt-8 pb-4">
@@ -229,7 +231,12 @@
               </template>
               <div class="notification-wrapper__right-column">
                 <v-list dense flat class="notification-wrapper__v-list">
-                  <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
+                  <v-list-item-group
+                    v-if="
+                      checkPermissions('communities/{resourceId}', 'PUT') && isOwnerOfTheCommunity()
+                    "
+                    color="primary"
+                  >
                     <v-list-item id="right-col-edit-commun" @click="editCommunity()">
                       <v-list-item-icon>
                         <v-icon>mdi-pencil</v-icon>
@@ -256,6 +263,7 @@
                     <v-list-item
                       id="right-col-leave-commun"
                       @click="isWantToToLeaveFromCommunity = true"
+                      v-if="checkPermissions('communities/{resourceId}/leave', 'POST')"
                     >
                       <v-list-item-icon>
                         <v-icon>mdi-exit-to-app</v-icon>
@@ -265,7 +273,13 @@
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
-                  <v-list-item-group v-if="isOwnerOfTheCommunity()" color="primary">
+                  <v-list-item-group
+                    v-if="
+                      checkPermissions('communities/{resourceId}', 'DELETE') &&
+                      isOwnerOfTheCommunity()
+                    "
+                    color="primary"
+                  >
                     <v-list-item id="right-col-delete-commun" @click="isWantToDelete = true">
                       <v-list-item-icon>
                         <v-icon>mdi-delete</v-icon>
@@ -298,8 +312,9 @@
                   {{ communityDetails.memberCount }}
                   <a
                     v-if="
-                      (!!communityDetails && communityDetails.myMembershipStatusId == 1) ||
-                      (!!communityDetails && communityDetails.privacyStatusName === 'Public')
+                      ((!!communityDetails && communityDetails.myMembershipStatusId == 1) ||
+                        (!!communityDetails && communityDetails.privacyStatusName === 'Public')) &&
+                      checkPermissions('communities/{resourceId}/invite', 'POST')
                     "
                     href="#"
                     class="pl-4"
@@ -337,15 +352,20 @@
             </div>
           </div>
         </div>
-        <div class="right-side-title pt-1">Your Posts</div>
+        <div
+          class="right-side-title pt-1"
+          v-if="checkPermissions('community-posts/my-last-posts', 'GET')"
+        >
+          Your Posts
+        </div>
         <PostCardLoading
           :loading="yourPostsLoading"
           id="your-post-skeleton"
-          v-show="yourPostsLoading"
+          v-show="checkPermissions('community-posts/my-last-posts', 'GET') && yourPostsLoading"
         >
           <template v-slot:skeleton-content> </template>
         </PostCardLoading>
-        <div v-show="!yourPostsLoading">
+        <div v-show="checkPermissions('community-posts/my-last-posts', 'GET') && !yourPostsLoading">
           <div class="pb-4" v-if="yourPosts && yourPosts.length > 0">
             <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
               <div class="pt-2">
@@ -378,10 +398,22 @@
           </div>
         </div>
 
-        <div class="right-side-title pt-4">Top Posts from your communities</div>
-        <PostCardLoading :loading="topPostsLoading" id="top-post-skeleton">
+        <div
+          class="right-side-title pt-4"
+          v-if="checkPermissions('community-posts/top-posts', 'GET')"
+        >
+          Top Posts from your communities
+        </div>
+        <PostCardLoading
+          :loading="checkPermissions('community-posts/top-posts', 'GET') && topPostsLoading"
+          id="top-post-skeleton"
+        >
           <template v-slot:skeleton-content>
-            <div v-if="topPosts && topPosts.length">
+            <div
+              v-if="
+                topPosts && topPosts.length && checkPermissions('community-posts/top-posts', 'GET')
+              "
+            >
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
                 <div class="right-side-post-container pt-2">
                   <div class="right-side-sub-title pb-1">
@@ -408,18 +440,27 @@
                 </div>
               </div>
             </div>
-            <div v-else class="empty-posts pt-1">
+            <div
+              v-else-if="!checkPermissions('community-posts/top-posts', 'GET')"
+              class="empty-posts pt-1"
+            ></div>
+            <div v-else>
               No incident has been posted in your communities
             </div>
           </template>
         </PostCardLoading>
-        <div class="right-side-title pb-3 pt-8">Suggested Communities</div>
+        <div
+          class="right-side-title pb-3 pt-8"
+          v-if="checkPermissions('communities/suggested', 'GET')"
+        >
+          Suggested Communities
+        </div>
         <CommunitiesCardLoading
           v-if="postsLoading"
-          :loading="postsLoading"
+          :loading="checkPermissions('communities/suggested', 'GET') && postsLoading"
           id="communities-post-skeleton"
         />
-        <div v-show="!postsLoading">
+        <div v-show="checkPermissions('communities/suggested', 'GET') && !postsLoading">
           <div v-if="suggestedCommunities && suggestedCommunities.length">
             <v-card
               v-for="(commun, ind) of suggestedCommunities"
@@ -491,7 +532,7 @@ import {
 } from '../../api/threadSharing'
 import AppDialog from '../AppDialog'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { isOwner } from '../../utils/functions'
+import { checkPermission, isOwner } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import CommunitiesCardLoading from '../SkeletonLoading/CommunitiesCardLoading'
 import PostCardLoading from '../SkeletonLoading/PostCardLoading'
@@ -607,6 +648,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     setAllNotification(val) {
       this.notifications = {
         isNotifications: val,
@@ -639,12 +683,6 @@ export default {
             isDashboardEnabled: response.data.data.isDashboardEnabled
           }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
         .finally(() => {
           this.notificationLoading = false
         })
@@ -664,11 +702,7 @@ export default {
       return newVal
     },
     deleteCommunityConfirm() {
-      deleteCommunity(this.communityDetails.resourceId).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Community has been deleted'
-        })
+      deleteCommunity(this.communityDetails.resourceId).then(() => {
         this.isWantToDelete = false
         this.$router.push(`/threat-sharing`)
       })
@@ -681,36 +715,17 @@ export default {
         IsEmailEnabled: this.notifications.isEmailEnabled,
         IsDashboardEnabled: this.notifications.isDashboardEnabled
       }
-      updateNotifications(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message || 'Notifications has been saved'
-          })
-          this.openNotificationModal = false
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
+      updateNotifications(payload).then(() => {
+        this.openNotificationModal = false
+      })
     },
     leaveFromCommunityConfirm() {
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: `You left the ${this.communityDetails.name}`
-          })
           this.isWantToToLeaveFromCommunity = false
           this.$router.push(`/threat-sharing`)
         })
         .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when attempting to leave from a community'
-                })*/
           if (
             error.response &&
             error.response.data &&
@@ -754,24 +769,10 @@ export default {
           const payload = {
             emailarray: this.emailarray
           }
-          inviteToCommunity(this.$route.params.id, payload)
-            .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: response.data.message || 'Members are invited to community'
-              })
-              this.emailarray = []
-              this.openInviteModal = false
-            })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response &&
-                !!error.response.data.validationMessages &&
-                !!error.response.data.validationMessages.length
-              ) {
-              }
-            })
+          inviteToCommunity(this.$route.params.id, payload).then(() => {
+            this.emailarray = []
+            this.openInviteModal = false
+          })
         }
       }, 200)
     },
@@ -889,14 +890,10 @@ export default {
       this.closeCommunityInfo()
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
-      joinCommunity(resourceId).then((response) => {
+      joinCommunity(resourceId).then(() => {
         this.getsuggestedCommunities()
         localStorage.setItem('communityName', communityName)
         localStorage.setItem('communityResourceIdForRedirect', resourceId)
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: response.data.message
-        })
         if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
             this.$router.push(`/community/${resourceId}`)

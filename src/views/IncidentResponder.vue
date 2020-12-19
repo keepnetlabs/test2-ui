@@ -65,7 +65,7 @@
         v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
       />
-      <div class="columns-row">
+      <div class="columns-row" v-if="checkPermissions('ir/dashboard/summary', 'GET')">
         <CardLoading
           :loading="incidentLoading"
           class="dashboard-cards__skeleton-loading"
@@ -296,7 +296,7 @@
         </CardLoading>
       </div>
       <div class="double-table">
-        <div class="column">
+        <div class="column" v-if="checkPermissions('ir/dashboard/top-rules', 'GET')">
           <v-card>
             <div class="header">
               <div class="title">
@@ -410,7 +410,7 @@
             </div>
           </v-card>
         </div>
-        <div class="column">
+        <div class="column" v-if="checkPermissions('ir/dashboard/running-investigations', 'GET')">
           <v-card>
             <div class="header">
               <div class="title">
@@ -456,7 +456,7 @@
           </v-card>
         </div>
       </div>
-      <div class="table-row">
+      <div class="table-row" v-if="checkPermissions('notified-emails/search', 'POST')">
         <v-card>
           <div class="header">
             <div class="title">
@@ -1328,6 +1328,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     clusterChanged() {
       this.requestBodyReportedEmails.isClustered = true
       this.callForSearchNotifiedMail()
@@ -1465,11 +1468,6 @@ export default {
         })
           .then(() => {
             this.callForGetRoiSettings()
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'ROI settings has been updated',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
             this.isShowRoi = false
             this.$store.dispatch('investigations/getIrSummary')
           })
@@ -1582,63 +1580,59 @@ export default {
       this.isWantToAddNewInvestigation = false
     },
     callForGetRunningInvestigations() {
-      this.investigationsLoading = true
-      getRunningInvestigations()
-        .then((response) => {
-          const {
-            data: { data, status }
-          } = response
-          this.investigationListData = data
-          this.investigationsData = data || []
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the recent investigations! '
+      if (this.checkPermissions('ir/dashboard/running-investigations', 'GET')) {
+        this.investigationsLoading = true
+        getRunningInvestigations()
+          .then((response) => {
+            const {
+              data: { data, status }
+            } = response
+            this.investigationListData = data
+            this.investigationsData = data || []
           })
-          this.investigationsData = []
-        })
-        .finally(() => {
-          this.investigationsLoading = false
-        })
+          .catch((error) => {
+            this.investigationsData = []
+          })
+          .finally(() => {
+            this.investigationsLoading = false
+          })
+      }
     },
     callForGetTopRules() {
-      checkPermission('ir/dashboard/summary', 'GET')
-      this.topRulesLoading = true
-      getTopRules()
-        .then((response) => {
-          const {
-            data: { data, status }
-          } = response
+      if (this.checkPermissions('ir/dashboard/top-rules', 'GET')) {
+        this.topRulesLoading = true
+        getTopRules()
+          .then((response) => {
+            const {
+              data: { data, status }
+            } = response
 
-          this.topRules.table = data || []
-        })
-        .catch((error) => {
-          /* this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting the top rules!'
+            this.topRules.table = data || []
           })
-          */
-          this.topRules.table = []
-        })
-        .finally(() => (this.topRulesLoading = false))
+          .catch((error) => {
+            this.topRules.table = []
+          })
+          .finally(() => (this.topRulesLoading = false))
+      }
     },
     callForSearchNotifiedMail() {
-      this.reportedEmailsLoading = true
-      searchNotifiedMail(this.requestBodyReportedEmails)
-        .then((response) => {
-          const {
-            data: {
-              data: { results }
-            }
-          } = response
-          const tableData = this.getManipulatedTableData(results || [])
-          this.reportedEmailsData = tableData || []
-        })
-        .catch(() => {
-          this.reportedEmailsData = []
-        })
-        .finally(() => (this.reportedEmailsLoading = false))
+      if (this.checkPermissions('notified-emails/search', 'POST')) {
+        this.reportedEmailsLoading = true
+        searchNotifiedMail(this.requestBodyReportedEmails)
+          .then((response) => {
+            const {
+              data: {
+                data: { results }
+              }
+            } = response
+            const tableData = this.getManipulatedTableData(results || [])
+            this.reportedEmailsData = tableData || []
+          })
+          .catch(() => {
+            this.reportedEmailsData = []
+          })
+          .finally(() => (this.reportedEmailsLoading = false))
+      }
     },
     getManipulatedTableData(data, isChild = false) {
       if (this.requestBodyReportedEmails.isClustered) {
@@ -1666,13 +1660,6 @@ export default {
         .then((response) => {
           const tableData = response.data.data
           this.matchingInvestigationData = tableData.results
-        })
-        .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  errorState: true,
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when getting the notified emails!'
-                })*/
         })
         .finally(() => (this.isMatchingInvestigationLoading = false))
     },
@@ -1714,12 +1701,6 @@ export default {
 
         updateNotifiedEmail(item.resourceId, payload)
           .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
-
             this.callForGetRunningInvestigations()
             this.callForGetTopRules()
             this.callForSearchNotifiedMail()

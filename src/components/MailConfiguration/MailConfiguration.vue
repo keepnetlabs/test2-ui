@@ -262,7 +262,12 @@
             <template v-slot:activator="{ on: menu }">
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on: tooltip }">
-                  <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                  <v-btn
+                    class="btn-add mr-1"
+                    icon
+                    v-on="{ ...tooltip, ...menu }"
+                    :disabled="!checkPermissions('mail-configurations/o365', 'POST')"
+                  >
                     <v-icon>mdi-plus</v-icon>
                   </v-btn>
                 </template>
@@ -324,7 +329,7 @@ import {
 import * as validations from '@/utils/validations'
 import TestConnection from './TestConnection'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { scrollToComponent } from '@/utils/functions'
+import { checkPermission, scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 
@@ -468,12 +473,14 @@ export default {
           name: 'Edit this row',
           icon: 'mdi-pencil',
           action: 'editTargetUsers',
-          isNotShow: true
+          isNotShow: true,
+          disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'PUT')
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
-          action: 'delete'
+          action: 'delete',
+          disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'DELETE')
         }
       ]
     },
@@ -481,6 +488,9 @@ export default {
     validations: validations
   }),
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     testConnectionValues(isSuccess, isSave) {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
@@ -501,10 +511,6 @@ export default {
     },
     handleDeleteDialog() {
       deleteO365(this.deleteDialogId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'O365 mail configuration has been deleted'
-        })
         this.closeDeleteDialog()
         this.getTableData()
       })
@@ -577,28 +583,12 @@ export default {
         if (this.editData) {
           let editData = this.formValues
           updateO365(editData, this.editData.resourceId).then(() => {
-            this.$store
-              .dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'O365 mail configuration has been updated'
-              })
-              .finally(() => {
-                this.saveButtonDisabled = false
-              })
             this.status = false
             this.editData = null
             this.getTableData()
           })
         } else {
           createO365(this.formValues).then(() => {
-            this.$store
-              .dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'O365 mail configuration has been created'
-              })
-              .finally(() => {
-                this.saveButtonDisabled = false
-              })
             this.status = false
             this.editData = null
             this.getTableData()
@@ -714,53 +704,48 @@ export default {
       this.selectedSyncIndex = scope.$index
       this.tableOptions.rowActions = [
         {
+          name: 'Edit this row',
+          icon: 'mdi-pencil',
+          action: 'edit',
+          isNotShow: true
+        },
+        {
+          name: 'Add to a group',
+          icon: 'mdi-account-multiple-plus',
+          action: 'addToGroup'
+        },
+        {
+          name: 'Create a group with user',
+          icon: 'mdi-account-multiple',
+          action: 'createGroupWithUser'
+        },
+        {
+          name: 'Download',
+          icon: 'mdi-download',
+          action: 'download',
+          subElements: ['PDF', 'CSV', 'XLS']
+        },
+        {
           name: 'Sync User',
           icon: 'mdi-sync',
           action: 'syncUser'
+        },
+        {
+          name: 'Delete',
+          icon: 'mdi-delete',
+          action: 'delete'
         }
       ]
-      setTimeout(() => {
-        this.tableOptions.rowActions = [
-          {
-            name: 'Edit this row',
-            icon: 'mdi-pencil',
-            action: 'edit',
-            isNotShow: true
-          },
-          {
-            name: 'Add to a group',
-            icon: 'mdi-account-multiple-plus',
-            action: 'addToGroup'
-          },
-          {
-            name: 'Create a group with user',
-            icon: 'mdi-account-multiple',
-            action: 'createGroupWithUser'
-          },
-          {
-            name: 'Download',
-            icon: 'mdi-download',
-            action: 'download',
-            subElements: ['PDF', 'CSV', 'XLS']
-          },
-          {
-            name: 'Sync User',
-            icon: 'mdi-sync',
-            action: 'syncUser'
-          },
-          {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'delete'
-          }
-        ]
-        this.selectedSyncIndex = null
-      }, 5000)
+      this.selectedSyncIndex = null
     }
   },
   created() {},
   mounted() {
-    this.getTableData()
+    if (!this.checkPermissions('mail-configurations/search', 'POST')) {
+      this.$router.push('/incident-responder')
+    } else {
+      this.getTableData()
+    }
   }
 }
 </script>

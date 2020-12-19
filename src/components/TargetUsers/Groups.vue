@@ -55,6 +55,7 @@
               icon
               v-on="{ ...tooltip }"
               @click.native="showNewUserGroupModal = true"
+              :disabled="!checkPermissions('target-groups', 'POST')"
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
@@ -90,6 +91,7 @@ import {
   PROPERTY_STORE
 } from '@/model/constants/commonConstants'
 import { required } from '@/utils/validations'
+import { checkPermission } from '@/utils/functions'
 
 export default {
   name: 'Groups',
@@ -185,12 +187,14 @@ export default {
             name: 'Edit this row',
             icon: 'mdi-pencil',
             action: 'edit',
-            isNotShow: true
+            isNotShow: true,
+            disabled: !checkPermission('target-groups/{resourceId}', 'PUT')
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'delete'
+            action: 'delete',
+            disabled: !checkPermission('target-groups/{resourceId}', 'DELETE')
           }
         ],
         extendedViewOptions: {
@@ -266,6 +270,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     handleSyncWithLDAP(row) {},
     handleGroupNameClick(row) {
       this.$router.push({
@@ -282,11 +289,6 @@ export default {
       createTargetGroup(group)
         .then(() => {
           this.changeNewUserGroupStatus(false)
-          this.$store.dispatch('common/createSnackBar', {
-            message: `New group named ${group.name} has been created`,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-information'
-          })
           this.callForTargetGroups()
         })
         .catch(() => {
@@ -318,21 +320,9 @@ export default {
         .finally(() => (this.loading = false))
     },
     callForUpdateTargetGroup(payload) {
-      updateTargetGroup(payload)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Target Group has been updated',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          this.callForTargetGroups()
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Target groups can not be updated',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-          })
-        })
+      updateTargetGroup(payload).then(() => {
+        this.callForTargetGroups()
+      })
     },
     handleDelete(selectedRow) {
       this.changeDeleteGroupModalStatus(true)
@@ -368,18 +358,9 @@ export default {
       selection.forEach((item) => this.handleDeleteGroup(item))
     },
     handleDeleteGroup(selectedRow) {
-      deleteTargetGroup(selectedRow.resourceId)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Target group has been deleted',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
-            this.callForTargetGroups()
-          }
-        })
-        .catch(() => {})
+      deleteTargetGroup(selectedRow.resourceId).then(() => {
+        this.callForTargetGroups()
+      })
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true

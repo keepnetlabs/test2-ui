@@ -290,23 +290,11 @@ export default {
         name: localStorage.getItem('companyGroupName'),
         companyResourceIdArray: arr
       }
-      updateCompanyGroup(this.groupId, payload)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Company group has been updated',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.getTableData()
-          }
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Company group can not be updated'
-          })
-        })
+      updateCompanyGroup(this.groupId, payload).then((response) => {
+        if (response.data && response.data.message) {
+          this.getTableData()
+        }
+      })
     },
     changeRemoveModalStatus(status) {
       this.isShowRemoveModal = status
@@ -324,13 +312,8 @@ export default {
           this.selectedExtend = response.data.data
           this.changeCreateOrEditModalStatus(true)
         })
-        .catch((error) => {
+        .catch(() => {
           this.isShowExtended = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
         })
     },
     cancelCreateOrEditForm() {

@@ -297,12 +297,7 @@ export default {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         deleteSmtpSettings(resourceId)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
+          .then(() => {
             this.callForSearchSmtpSettings()
           })
           .finally(() => {

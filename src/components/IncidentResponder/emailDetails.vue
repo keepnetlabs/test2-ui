@@ -126,6 +126,7 @@
                   <div style="margin-top: 40px;">
                     <datatable
                       ref="refRelayTable"
+                      :loading="isLoading"
                       :table="relayTable.data"
                       :refName="'relayTable'"
                       :columns="relayTable.columns"
@@ -138,6 +139,7 @@
                       :selectEvent="selectEvent"
                       :sizeable="true"
                       :isDownloadable="true"
+                      @refreshAction="getPostDetails"
                     />
                   </div>
                 </v-card>
@@ -146,6 +148,7 @@
                   <div class="email-details__datatable-container">
                     <datatable
                       ref="refHeadersTable"
+                      :loading="isLoading"
                       :table="headersTable.data"
                       :refName="'headersTable'"
                       :columns="headersTable.columns"
@@ -159,6 +162,7 @@
                       :selectEvent="selectEvent"
                       :sizeable="true"
                       :isDownloadable="true"
+                      @refreshAction="getPostDetails"
                     />
                   </div>
                 </v-card>
@@ -241,6 +245,7 @@
                 <datatable
                   id="urlAnalysisTable"
                   ref="refUrlAnalysisTable"
+                  :loading="isLoading"
                   :table="tableData"
                   :refName="'urlAnalysisTable'"
                   :columns="columns"
@@ -254,6 +259,7 @@
                   :selectEvent="selectEvent"
                   :sizeable="true"
                   :download-button="{ show: false, disabled: false }"
+                  @refreshAction="getPostDetails"
                 />
               </div>
             </template>
@@ -372,6 +378,7 @@
                     <div class="attachments-table">
                       <datatable
                         ref="refAttachmentsTable"
+                        :loading="isLoading"
                         :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
                         :countRow="5"
@@ -379,6 +386,7 @@
                         :pageSizes="pageSizes"
                         :options="false"
                         :empty="attachmentTableOptions.iEmpty"
+                        @refreshAction="getPostDetails"
                       >
                         <template v-slot:datatable-custom-column="{ scope }">
                           <span @click="showPopupModal = true" style="cursor: pointer;">
@@ -884,25 +892,16 @@ export default {
       }
     },
     handleDownloadAttachment(attachment) {
-      downloadAttachment(attachment.resourceId)
-        .then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = attachment.name
-          link.click()
-        })
-        .catch((error) => {
-          if (error.response && error.response.data && error.response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'File can not downloaded',
-              icon: 'mdi-alert-circle',
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-            })
-          }
-        })
+      downloadAttachment(attachment.resourceId).then((response) => {
+        const { data } = response
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(data)
+        link.download = attachment.name
+        link.click()
+      })
     },
     getPostDetails() {
+      this.isLoading = true
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
@@ -954,19 +953,12 @@ export default {
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Details can not be reached'
-          })
-        })
         .finally(() => (this.isLoading = false))
     },
     getEngineDetails() {
-      getAnalysisEngineTypes()
-        .then((response) => {
-          const engineTypes = response.data.data
-          /*
+      getAnalysisEngineTypes().then((response) => {
+        const engineTypes = response.data.data
+        /*
           engineTypes.map((item) => {
             this.columns.push({
               property: 'analysisEngine',
@@ -981,13 +973,7 @@ export default {
           })
 
            */
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Analysis engine types can not be reached'
-          })
-        })
+      })
     },
     getMd5Text(index) {
       return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1

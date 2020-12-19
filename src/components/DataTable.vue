@@ -538,6 +538,7 @@
                           class="btn-hover"
                           icon
                           v-on="on"
+                          :disabled="rowActions[0].disabled"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -553,6 +554,7 @@
                           class="btn-hover"
                           icon
                           v-on="on"
+                          :disabled="rowActions[0].disabled"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -569,7 +571,12 @@
                     :return-value="isRowActionsMenuOpen[scope.$index]"
                   >
                     <template v-slot:activator="{ on }">
-                      <v-btn class="btn-hover ml-1" icon v-on="on">
+                      <v-btn
+                        class="btn-hover ml-1"
+                        icon
+                        v-on="on"
+                        :disabled="rowActions[1].disabled"
+                      >
                         <v-icon @click.native="selectedMenuIndex = scope.$index"
                           >mdi-dots-vertical
                         </v-icon>
@@ -852,6 +859,9 @@ export default {
     DatatableLoading
   },
   props: {
+    cacheCheckboxFromParent: {
+      type: Boolean
+    },
     columns: {
       type: Array,
       required: true
@@ -1083,6 +1093,7 @@ export default {
   },
   data() {
     return {
+      cacheChecks: false,
       filteredData: [],
       renderedColumns: [],
       filteredDataLength: 0,
@@ -1136,17 +1147,48 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-      this.multipleSelection = []
-      if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
-        this.$refs.elTableRef.clearSelection()
+
+      //This is for refresh button when clicked caching refresh
+      if (
+        (!this.cacheChecks && !this.cacheCheckboxFromParent) ||
+        (this.lazy && this.selectedCluster)
+      ) {
+        this.multipleSelection = []
+        if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
+          this.$refs.elTableRef.clearSelection()
+        }
+      } else {
+        //If there is clustered items selected table has reselect bug. It solves it
+        if (this.groupable && this.clusteredItems.length) {
+          if (this.$refs && this.$refs.elTableRef) {
+            const deletedIds = []
+            for (const child of this.clusteredItems) {
+              this.$refs.elTableRef.toggleRowSelection(child, false)
+              deletedIds.push(child[this.rowKey])
+            }
+            for (const id of deletedIds) {
+              const allItems = this.getAllItems(this.initialData)
+              this.clusteredItems = this.clusteredItems.filter((item) => item[this.rowKey] !== id)
+              const findedNewClusterItem = allItems.find((i) => i[this.rowKey] === id)
+              this.clusteredItems.push(findedNewClusterItem)
+              this.$refs.elTableRef.toggleRowSelection(findedNewClusterItem, true)
+            }
+          }
+        }
       }
+      this.cacheChecks = false
+
+      //totalTable length
       this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
         this.showOverFlowTooltip = false
       }
+      //if there is filtered data and search go to search function
       if (this.showfilteredData && this.search) {
         this.searchChangedEvent(0)
-      } else if (this.sortProps) {
+      }
+      //if there is just sorting go to the sorting
+      else if (this.sortProps) {
         this.sortChangedEvent(this.sortProps)
       } else {
         let maxPage = Math.ceil(table.length / this.rowCount)
@@ -1169,7 +1211,8 @@ export default {
           this.hideChildRowActions()
         }
       }
-      if (this.groupable && this.lazy) {
+
+      if (this.groupable && this.lazy && this.selectedCluster) {
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef) {
           this.tableKey = `table-key${Math.random().toString().substring(0, 8)}`
         }
@@ -1289,11 +1332,11 @@ export default {
     },
     calculateAllSelected() {
       let dataRef = this.showfilteredData ? this.filteredData : this.tableData
-      const renderedTotalLength = this.getTotalLength(this.tableData)
+      const renderedTotalLength = this.getTotalLength(dataRef)
       this.renderedTotalLength = renderedTotalLength
       const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
       if (this.groupable && comparedValueLength >= this.getAllItems(dataRef, []).length) {
-        dataRef = this.getAllItems(this.tableData, [], false, false)
+        dataRef = this.getAllItems(dataRef, [], false, false)
       }
       const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find(
@@ -1411,6 +1454,7 @@ export default {
     },
 
     handleRefresh() {
+      this.cacheChecks = true
       this.$emit('refreshAction')
     },
     /**

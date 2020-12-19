@@ -119,7 +119,8 @@ export const LABEL_STORE = {
   OLDVALUE: 'Old Value',
   NEWVALUE: 'New Value',
   IP: 'IP',
-  BROSWERUSERAGENT: 'Browser User Agent'
+  USERAGENT: 'Browser User Agent',
+  CHANGESET: 'Changed Set'
 }
 
 export const PROPERTY_STORE = {
@@ -198,10 +199,10 @@ export const PROPERTY_STORE = {
   ENTITYID: 'entityResourceId',
   ENTITYNAME: 'entityName',
   OPERATIOM: 'operation',
-  OLDVALUE: 'old Value',
-  NEWVALUE: 'new Value',
+  OLDVALUE: 'oldValue',
+  NEWVALUE: 'newValue',
   IP: 'ip',
-  BROSWERUSERAGENT: 'browserUserAgent',
+  USERAGENT: 'userAgent',
   USERID: 'userId'
 }
 
@@ -287,4 +288,10 @@ export const COMMON_PROPS = {
     searchNexted: true,
     showCount: true
   }
+}
+
+export const COMMON_SNACKBAR = {
+  show: true,
+  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+  icon: 'mdi-check-circle'
 }

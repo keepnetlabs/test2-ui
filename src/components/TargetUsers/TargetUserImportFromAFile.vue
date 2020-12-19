@@ -344,6 +344,7 @@ import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -368,7 +369,8 @@ export default {
         this.mappingStatus.newUserCount +
         this.mappingStatus.existingUserCount +
         this.mappingStatus.invalidUserCount
-      return (users * 100) / this.mappingStatus.totalRowCount
+      let number = (users * 100) / this.mappingStatus.totalRowCount
+      return Math.round(number)
     },
     canNext() {
       return this.activeStep < this.totalStep
@@ -580,7 +582,7 @@ export default {
       },
       bodyData: {
         pageNumber: 1,
-        pageSize: 10,
+        pageSize: (this.mappingStatus && this.mappingStatus['totalRowCount']) || 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -874,40 +876,37 @@ export default {
       this.formData.file = file
       uploadExcelOrCsvForTargetUsers(file, (e) => {
         this.onUploadProgress = e
+      }).then((response) => {
+        this.excelInfo = response.data.data
+        this.isExcelUploaded = true
       })
-        .then((response) => {
-          this.excelInfo = response.data.data
-          this.isExcelUploaded = true
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
     },
     getUploadedExcelData() {
-      getUploadedFileData(this.excelInfo.transactionId)
-        .then((response) => {
-          this.mappingData.tableData = response.data.data.data
-          this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
-            let aItem = {
-              name: item,
-              selectedValue: null
-            }
-            return aItem
-          })
-          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          this.resetDisabledValuesFromColumns()
+      getUploadedFileData(this.excelInfo.transactionId).then((response) => {
+        this.mappingData.tableData = response.data.data.data
+        this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
+          let aItem = {
+            name: item,
+            selectedValue: null,
+            required:
+              this.mappingData.columns.find((mapItem) => {
+                let name = mapItem.dbName || mapItem.name
+                return (
+                  name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                )
+              }) &&
+              this.mappingData.columns.find((mapItem) => {
+                let name = mapItem.dbName || mapItem.name
+                return (
+                  name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                )
+              }).required
+          }
+          return aItem
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        this.resetDisabledValuesFromColumns()
+      })
     },
     resetDisabledValuesFromColumns() {
       setTimeout(() => {
@@ -919,7 +918,10 @@ export default {
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
         let val = {
           excelColumnName: item.name,
-          fieldName: (item.selectedValue && item.selectedValue.dbName) || item.selectedValue.name
+          fieldName:
+            (item.selectedValue && item.selectedValue.dbName) ||
+            (item.selectedValue && item.selectedValue.name) ||
+            item.name
         }
         return val
       })
@@ -929,20 +931,12 @@ export default {
         targetGroupResourceIds: this.formData.groups
       }
 
-      createMapping(payload)
-        .then((response) => {
-          this.showDatatable = false
-          this.mappindgId = response.data.data.resourceId
-          this.getMappingStatus()
-          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+      createMapping(payload).then((response) => {
+        this.showDatatable = false
+        this.mappindgId = response.data.data.resourceId
+        this.getMappingStatus()
+        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+      })
     },
     nextStep() {
       let isFormValid = true
@@ -951,6 +945,9 @@ export default {
       } else if (this.activeStep === 2) {
         isFormValid =
           this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
+        if (!isFormValid) {
+          this.$refs.refMapTable.showErrorSelect()
+        }
       }
       if (isFormValid) {
         if (this.activeStep === 1) {
@@ -994,22 +991,14 @@ export default {
         default:
           return ''
       }
-      importTmpUsers(payload, this.excelInfo.transactionId)
-        .then((response) => {
-          this.closeOverlay()
-          this.$store.dispatch('common/createSnackBar', {
-            message: `${this.getLabelCount(label)} Import process has been started`,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-information'
-          })
+      importTmpUsers(payload, this.excelInfo.transactionId).then(() => {
+        this.closeOverlay()
+        this.$store.dispatch('common/createSnackBar', {
+          message: `${this.getLabelCount(label)} Import process has been started`,
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-information'
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+      })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       let _this = this
@@ -1026,9 +1015,28 @@ export default {
           //this.sortCustomFields(this.customFields)
           this.sortCustomFields(this.unActiveCustomFields)
           this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))*/
-          _this.mappingData.columns = _this.columns.map((item) => {
-            return { name: item.label, disabled: false, selectedValue: null, dbName: item.dbName }
-          })
+          _this.mappingData.columns = _this.columns
+            .map((item) => {
+              if (item.label !== 'Status' && item.label !== 'Date Created') {
+                return {
+                  name: item.label,
+                  disabled: false,
+                  selectedValue: null,
+                  dbName: item.dbName,
+                  required: item.dbName
+                    ? true
+                    : response.data.data.find((responseItem) => {
+                        let name = item.dbName || item.label
+                        return responseItem.name.toLowerCase() === name.toLowerCase()
+                      }) &&
+                      response.data.data.find((responseItem) => {
+                        let name = item.dbName || item.label
+                        return responseItem.name.toLowerCase() === name.toLowerCase()
+                      }).isRequired
+                }
+              }
+            })
+            .filter((filteredItem) => !!filteredItem)
         })
         .finally(() => (this.loading = false))
     },

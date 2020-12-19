@@ -756,6 +756,7 @@
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
+                :cacheCheckboxFromParent="cacheCheckboxFromParent"
                 :clusterItems="clusterItems"
                 :groupable="true"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
@@ -824,6 +825,7 @@
                 :selectable="false"
                 :filterable="true"
                 :options="true"
+                :cacheCheckboxFromParent="cacheCheckboxFromParent"
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
@@ -912,6 +914,7 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    cacheCheckboxFromParent: false,
     labels,
     isColumnFilterActive: false,
     isColumnFilterActiveTargetUsers: false,
@@ -1570,7 +1573,6 @@ export default {
       this.leftMenuLoading = true
       this.topMenuLoading = true
       this.loading = true
-
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
@@ -1592,6 +1594,7 @@ export default {
                   this.leftMenuLoading = false
                   this.topMenuLoading = false
                   this.loading = false
+                  this.cacheCheckboxFromParent = false
                 })
             })
         })
@@ -1854,6 +1857,7 @@ export default {
     this.autoRequest = setInterval(function () {
       if (_this.statsAndMenuData && _this.statsAndMenuData.status == 'Running')
         _this.refreshDatatable()
+      _this.cacheCheckboxFromParent = true
     }, 15000)
   },
   beforeDestroy() {

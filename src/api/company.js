@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function searchCompanies(payload) {
   return testRequest.post('/companies/search', payload)
@@ -12,10 +13,12 @@ export function exportCompanies(payload) {
   })
 }
 export function deleteCompany(id) {
-  return testRequest.delete(`companies/${id}`)
+  return testRequest.delete(`companies/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function deleteCompanyGroup(id) {
-  return testRequest.delete(`/company-groups/${id}`)
+  return testRequest.delete(`/company-groups/${id}`, { snackbar: COMMON_SNACKBAR })
 }
 export function getCompanyByID(id, loading = true) {
   return testRequest.get(`/companies/${id}`, { loading: loading })
@@ -30,7 +33,7 @@ export function getCompanyGroupsById(id) {
   return testRequest.get(`/company-groups/${id}`)
 }
 export function createCompanyGroups(payload) {
-  return testRequest.post('/company-groups', payload)
+  return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
 }
 export function createCompany(payload) {
   const formData = new FormData()
@@ -43,7 +46,7 @@ export function createCompany(payload) {
     }
   }
 
-  return testRequest.post(`/companies`, formData, { loading: true })
+  return testRequest.post(`/companies`, formData, { loading: true, snackbar: COMMON_SNACKBAR })
 }
 export function updateCompany(id, payload) {
   const formData = new FormData()
@@ -56,10 +59,10 @@ export function updateCompany(id, payload) {
     }
   }
 
-  return testRequest.put(`/companies/${id}`, formData)
+  return testRequest.put(`/companies/${id}`, formData, { snackbar: COMMON_SNACKBAR })
 }
 export function updateCompanyGroup(id, payload) {
-  return testRequest.put(`/company-groups/${id}`, payload)
+  return testRequest.put(`/company-groups/${id}`, payload, { snackbar: COMMON_SNACKBAR })
 }
 export function getCompanyList() {
   return testRequest.get('/companies/my')
@@ -73,7 +76,9 @@ export function searchEmailTemplate(payload = {}) {
 }
 
 export function createEmailTemplate(payload = {}) {
-  return testRequest.post('/companies/email-templates', payload)
+  return testRequest.post('/companies/email-templates', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getEmailTemplate(resourceId = '') {
@@ -81,11 +86,15 @@ export function getEmailTemplate(resourceId = '') {
 }
 
 export function updateEmailTemplate(resourceId = '', payload = {}) {
-  return testRequest.put(`/companies/email-templates/${resourceId}`, payload)
+  return testRequest.put(`/companies/email-templates/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function deleteEmailTemplate(resourceId = '') {
-  return testRequest.delete(`/companies/email-templates/${resourceId}`)
+  return testRequest.delete(`/companies/email-templates/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getCategories() {

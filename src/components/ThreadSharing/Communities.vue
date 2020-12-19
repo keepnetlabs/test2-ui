@@ -205,7 +205,10 @@
               >
                 <template v-if="ind === 2">
                   {{ tab }}
-                  <span v-if="invitationsCount" class="invitations-count">
+                  <span
+                    v-if="checkPermissions('communities/my-invitations', 'GET') && invitationsCount"
+                    class="invitations-count"
+                  >
                     {{ invitationsCount }}
                   </span>
                 </template>
@@ -410,7 +413,12 @@
                     <div class="communities__notification-wrapper">
                       <v-list dense flat class="notification-wrapper__v-list">
                         <v-list-item-group color="primary">
-                          <v-list-item @click="editCommunity(item)" v-if="isOwner(item)">
+                          <v-list-item
+                            @click="editCommunity(item)"
+                            v-if="
+                              checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
+                            "
+                          >
                             <v-list-item-icon>
                               <v-icon>mdi-pencil</v-icon>
                             </v-list-item-icon>
@@ -431,7 +439,10 @@
                           </v-list-item>
                           <v-list-item
                             @click="leaveFromCommunity(item)"
-                            v-if="isOwnerOrMember(item)"
+                            v-if="
+                              checkPermissions('communities/{resourceId}/leave', 'POST') &&
+                              isOwnerOrMember(item)
+                            "
                           >
                             <v-list-item-icon>
                               <v-icon>mdi-exit-to-app</v-icon>
@@ -440,7 +451,13 @@
                               <v-list-item-title>Leave</v-list-item-title>
                             </v-list-item-content>
                           </v-list-item>
-                          <v-list-item @click="deleteCommunity(item)" v-if="isOwner(item)">
+                          <v-list-item
+                            @click="deleteCommunity(item)"
+                            v-if="
+                              checkPermissions('communities/{resourceId}', 'DELETE') &&
+                              isOwner(item)
+                            "
+                          >
                             <v-list-item-icon>
                               <v-icon>mdi-delete</v-icon>
                             </v-list-item-icon>
@@ -494,7 +511,11 @@
                 </div>
               </div>
             </div>
-            <div v-if="selectedTab === 'tab-2'">
+            <div
+              v-if="
+                selectedTab === 'tab-2' && checkPermissions('communities/my-invitations', 'GET')
+              "
+            >
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <div class="ts-header">
                   <div class="ts-title" @click="community(item)">
@@ -624,7 +645,7 @@ import {
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import VClamp from 'vue-clamp'
-import { isOwner, isOwnerOrMember } from '../../utils/functions'
+import { checkPermission, isOwner, isOwnerOrMember } from '../../utils/functions'
 import NewCommunity from '../ThreadSharing/NewCommunity'
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -732,6 +753,9 @@ export default {
     this.selectedTab = 'tab-1'
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     setNotificationModal(communityResourceId) {
       this.temporaryResourceId = communityResourceId
       this.getNotifications()
@@ -769,12 +793,6 @@ export default {
             isDashboardEnabled: response.data.data.isDashboardEnabled
           }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
         .finally(() => {
           this.notificationLoading = false
         })
@@ -798,20 +816,9 @@ export default {
         IsEmailEnabled: this.notifications.isEmailEnabled,
         IsDashboardEnabled: this.notifications.isDashboardEnabled
       }
-      updateNotifications(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message || 'Notifications has been saved'
-          })
-          this.openNotificationModal = false
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
+      updateNotifications(payload).then((response) => {
+        this.openNotificationModal = false
+      })
     },
     cancelRequest(item) {
       cancelRequest(item.membershipResourceId).then(() => {
@@ -824,26 +831,15 @@ export default {
       //this.isCancelRequestModal = true
     },
     cancelRequestConfirm() {
-      cancelRequest(this.cancelRequestCommunityId)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Request has been cancelled' // @nejat, @atakan
-          })
-          this.isCancelRequestModal = false
-          this.getAllCommunitiesListData()
-          this.getMyCommunitiesListData()
-          this.getInvitationCount()
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
-        .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when attempting to leave from a community'
-                })*/
-        })
+      cancelRequest(this.cancelRequestCommunityId).then(() => {
+        this.isCancelRequestModal = false
+        this.getAllCommunitiesListData()
+        this.getMyCommunitiesListData()
+        this.getInvitationCount()
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+      })
     },
     deleteCommunity(item) {
       this.deleteCommunityName = item.communityName
@@ -851,11 +847,7 @@ export default {
       this.isWantToDelete = true
     },
     deleteCommunityConfirm() {
-      deleteCommunity(this.deleteCommunityId).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Community has been deleted'
-        })
+      deleteCommunity(this.deleteCommunityId).then(() => {
         this.isWantToDelete = false
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
@@ -869,61 +861,34 @@ export default {
       this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
-      getInvitationCount()
-        .then((response) => {
-          this.invitationsCount = response.data.data.count
-        })
-
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.code === 'RESOURCE_NOT_FOUND'
-          ) {
-            this.invitationsCount = []
-          }
-        })
-      /*
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to get invitation counts'
+      if (this.checkPermissions('communities/my-invitations', 'GET')) {
+        getInvitationCount()
+          .then((response) => {
+            this.invitationsCount = response.data.data.count
           })
-        })*/
+
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
+              this.invitationsCount = []
+            }
+          })
+      }
     },
     refuseRequest(item) {
       refuseInvitation(item.resourceId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Invitation request has been cancelled'
-        })
         this.getInvitions()
         this.getInvitationCount()
       })
-      /*
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to cancel invitation request'
-          })
-        })*/
     },
     acceptRequest(item) {
       acceptInvitation(item.resourceId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: `You joined ${item.name} `
-        })
         this.getInvitions()
         this.getInvitationCount()
       })
-      /*
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to accept an invitation request'
-          })
-        })*/
     },
     leaveFromCommunity(item) {
       this.leaveCommunityId = item.communityResourceId
@@ -933,10 +898,6 @@ export default {
     leaveFromCommunityConfirm() {
       removeFromCommunities(this.leaveCommunityId)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: `You left the ${this.leaveCommunityName}`
-          })
           this.isWantToToLeaveFromCommunity = false
           this.getAllCommunitiesListData()
           this.getMyCommunitiesListData()
@@ -946,10 +907,6 @@ export default {
           }, 500)
         })
         .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to leave from a community'
-          })*/
           if (
             error.response &&
             error.response.data &&
@@ -979,26 +936,28 @@ export default {
       this.getAllCommunitiesListData()
     },
     getInvitions() {
-      this.listData = []
-      this.communityLoading = true
-      getInvitations()
-        .then((response) => {
-          const { data } = response
-          this.listData = data.data
-          this.communityLoading = false
-        })
-        .catch((error) => {
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.code === 'RESOURCE_NOT_FOUND'
-          ) {
-            this.listData = []
-          }
-        })
-        .finally(() => {
-          this.communityLoading = false
-        })
+      if (this.checkPermissions('communities/my-invitations', 'GET')) {
+        this.listData = []
+        this.communityLoading = true
+        getInvitations()
+          .then((response) => {
+            const { data } = response
+            this.listData = data.data
+            this.communityLoading = false
+          })
+          .catch((error) => {
+            if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === 'RESOURCE_NOT_FOUND'
+            ) {
+              this.listData = []
+            }
+          })
+          .finally(() => {
+            this.communityLoading = false
+          })
+      }
     },
     getAllCommunitiesListData() {
       let _this = this
@@ -1178,11 +1137,7 @@ export default {
     requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       joinCommunity(communityId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message
-          })
+        .then(() => {
           if (type === 'join') {
             localStorage.setItem('communityName', communityName)
             localStorage.setItem('communityResourceIdForRedirect', communityId)

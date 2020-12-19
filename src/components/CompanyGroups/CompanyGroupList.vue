@@ -1,6 +1,7 @@
 <template>
   <div class="company-list">
     <delete-modal
+      v-if="isShowDeleteModal"
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
       @changeModalStatus="changeDeleteModalStatus"
@@ -58,6 +59,7 @@ import { deleteCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
+import { checkPermission } from '@/utils/functions'
 
 export default {
   name: 'CompanyGroupList',
@@ -127,24 +129,27 @@ export default {
         addButton: {
           show: true,
           action: 'addButton',
-          tooltip: 'Add Company Group'
+          tooltip: 'Add Company Group',
+          disabled: !this.checkPermissions('company-groups', 'POST')
         },
         rowActions: [
           {
             name: 'Edit this row',
             icon: 'mdi-pencil',
             action: 'editAction',
-            isNotShow: true
+            isNotShow: true,
+            disabled: !this.checkPermissions('company-groups/{resourceId}', 'PUT')
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'delete'
+            action: 'delete',
+            disabled: !this.checkPermissions('company-groups/{resourceId}', 'DELETE')
           }
         ]
       },
       payload: {
-        pageSize: 3000,
+        pageSize: 30000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -164,6 +169,9 @@ export default {
     this.getTableData()
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     getTableData() {
       this.loading = true
       searchCompanyGroups(this.payload)
@@ -180,24 +188,11 @@ export default {
       this.changeDeleteModalStatus(true)
     },
     deleteConfirmedItem(selectedItem) {
-      deleteCompanyGroup(selectedItem.resourceId)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Company group has been deleted',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.getTableData()
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Company group can not be deleted',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+      deleteCompanyGroup(selectedItem.resourceId).then((response) => {
+        if (response.data && response.data.message) {
+          this.getTableData()
+        }
+      })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status

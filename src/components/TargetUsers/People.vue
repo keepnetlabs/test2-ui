@@ -1,12 +1,12 @@
 <template>
   <div class="people">
     <delete-user-modal
+      v-if="isWantToShowDeleteUserModal"
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
       :isMultiple="isMultipleDelete"
       @deleteAction="handleDeleteUser"
       @deleteMultiple="handleDeleteUsers"
-      v-if="isWantToShowDeleteUserModal"
       @changeModalStatus="changeDeleteModalStatus"
     />
     <add-users-manually-modal
@@ -15,12 +15,12 @@
       @changeModalStatus="changeAddUsersManuallyModalStatus"
     />
     <add-user-modal
+      v-if="isWantToShowAddUsersModal"
       :status="isWantToShowAddUsersModal"
       @closeAddUserModal="closeAddUserModal"
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
       :editData="selectedRow"
       :custom-fields="customFields"
-      v-if="isWantToShowAddUsersModal"
     />
     <custom-fields-modal
       :status="isWantToShowCustomFieldsModal"
@@ -61,7 +61,7 @@
       @syncUser="handleSyncUser"
       @deleteAction="handleDelete"
       @editTargetUsers="handleEditTargetUsers"
-      @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+      @onEmptyBtnClicked="handleClickEmptyBtnClicked"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @handleMultipleDelete="handleMultipleDelete"
@@ -73,7 +73,12 @@
           <template v-slot:activator="{ on: menu }">
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on: tooltip }">
-                <v-btn class="btn-add mr-1" icon v-on="{ ...tooltip, ...menu }">
+                <v-btn
+                  :disabled="!checkPermissions('target-users/search', 'POST')"
+                  class="btn-add mr-1"
+                  icon
+                  v-on="{ ...tooltip, ...menu }"
+                >
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </template>
@@ -90,6 +95,23 @@
       <template v-slot:settings-popup-body>
         <div class="edit-fields" @click="handleEditFieldsClick">
           EDIT FIELDS
+        </div>
+      </template>
+      <template v-slot:empty-table-inline>
+        <div class="people__no-data">
+          <p class="people__no-data__header">
+            You do not have any users added, yet
+          </p>
+          <p class="people__no-data__body">Starts now!</p>
+          <div class="people__no-data__buttons">
+            <div class="people__no-data__buttons--button" @click="handleClickEmptyBtnClicked">
+              <v-icon color="#fff" class="mr-2">mdi-account</v-icon> ADD A USER
+            </div>
+            <div class="people__no-data__buttons--button" @click="isWantToImportFile = true">
+              <v-icon color="#fff" class="mr-2">mdi-microsoft-excel</v-icon>
+              IMPORT USERS FROM A FILE
+            </div>
+          </div>
         </div>
       </template>
     </datatable>
@@ -115,6 +137,7 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'People',
   components: {
@@ -283,12 +306,14 @@ export default {
           name: 'Edit this row',
           icon: 'mdi-pencil',
           action: 'editTargetUsers',
-          isNotShow: true
+          isNotShow: true,
+          disabled: !checkPermission('system-users/{resourceId}', 'PUT')
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
-          action: 'deleteAction'
+          action: 'deleteAction',
+          disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
         }
       ]
     },
@@ -296,6 +321,9 @@ export default {
     addUsersItems: ['Add users manually', 'Import from a file']
   }),
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     closeImportModal() {
       this.isWantToImportFile = false
     },
@@ -314,6 +342,10 @@ export default {
         default:
           break
       }
+    },
+    handleClickEmptyBtnClicked() {
+      this.selectedRow = null
+      this.isWantToShowAddUsersModal = true
     },
     closeCustomFieldsModalWithUpdate() {
       this.toggleCustomFieldsModal()
@@ -410,11 +442,6 @@ export default {
     handleDeleteUser(selectedUser) {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Target user has been deleted',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
           this.callForTargetUsers()
         }
       })
@@ -556,6 +583,55 @@ export default {
 
 <style lang="scss">
 .people {
+  &__no-data {
+    &__header {
+      font-size: 24px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29 !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__body {
+      font-size: 14px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+      &--button {
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+        border: solid 1px #2196f3;
+        background-color: #2196f3;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        padding: 6px 16px;
+        cursor: pointer;
+        color: white;
+        font-size: 14px;
+        &:last-child {
+          margin-left: 16px;
+        }
+        img {
+          margin-left: 8px;
+          height: 24px;
+        }
+      }
+    }
+  }
+
   padding-top: 24px;
   .add-users__title {
     font-size: 14px;

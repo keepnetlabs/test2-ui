@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function investigationList(obj) {
   return testRequest.post(`investigations/search`, obj)
@@ -13,19 +14,31 @@ export function saveNewInvestigation(obj) {
   //create new investigation function... obj matches with back end acceptance parameters
   //for more details look at the newInvestigation.vue component.
   //xxx nme
-  return testRequest.post(`investigations`, obj)
+  return testRequest.post(`investigations`, obj, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function cancelInvestigation(id) {
-  return testRequest.put(`investigations/${id}/cancel`, {})
+  return testRequest.put(
+    `investigations/${id}/cancel`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function sendInvestigationWarningMessage(obj, id) {
-  return testRequest.post(`investigations/${id}/actions-warning`, obj)
+  return testRequest.post(`investigations/${id}/actions-warning`, obj, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function deleteInvestigationDetailsItem(obj, id) {
-  return testRequest.post(`investigations/${id}/actions-delete`, obj)
+  return testRequest.post(`investigations/${id}/actions-delete`, obj, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function investigationDetails(id, userId) {

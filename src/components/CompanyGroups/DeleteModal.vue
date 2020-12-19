@@ -1,5 +1,11 @@
 <template>
-  <app-dialog v-if="!!selectedRow" :status="isShow" icon="mdi-delete" title="Warning!">
+  <app-dialog
+    v-if="!!selectedRow"
+    :status="isShow"
+    icon="mdi-delete"
+    title="Warning!"
+    @changeStatus="closeModal"
+  >
     <template v-slot:app-dialog-body>
       {{ selectedRow.name && selectedRow.name }} will be permanently deleted.
     </template>

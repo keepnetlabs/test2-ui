@@ -2,7 +2,7 @@ import request from '../utils/request'
 import authTestRequest from '../utils/authTestRequest'
 import testRequest from '../utils/testRequest'
 import AuthenticationService from '../services/authentication'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
+import { COMMON_CONSTANTS, COMMON_SNACKBAR } from '../model/constants/commonConstants'
 
 export function loginAction(payload) {
   const params = new URLSearchParams()
@@ -47,5 +47,8 @@ export function resetPasswordByToken(payload) {
 }
 
 export function updatePassword(payload) {
-  return testRequest.put('/system-users/change-password', payload, { loading: true })
+  return testRequest.put('/system-users/change-password', payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
 }

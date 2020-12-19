@@ -23,6 +23,8 @@
           :requestParams="bodyData"
           :isServerSide="false"
           @refreshAction="getDatatableList"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
         ></data-table>
       </div>
     </div>
@@ -54,7 +56,7 @@ export default {
         isColumnFilterActive: false,
         columns: [
           {
-            property: PROPERTY_STORE.LOGID,
+            property: PROPERTY_STORE.RESOURCEID,
             align: 'left',
             editable: false,
             label: LABEL_STORE.LOGID,
@@ -65,14 +67,15 @@ export default {
             width: 160
           },
           {
-            property: PROPERTY_STORE.USERID,
+            property: PROPERTY_STORE.USERNAME,
             align: 'left',
             editable: false,
             label: LABEL_STORE.USERNAME,
             sortable: true,
             show: true,
             type: 'text',
-            width: 160
+            width: 160,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.LOGDATE,
@@ -83,7 +86,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 160
+            width: 160,
+            filterableType: 'date'
           },
           {
             property: PROPERTY_STORE.ENTITYID,
@@ -94,7 +98,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185
+            width: 185,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.ENTITYNAME,
@@ -116,13 +121,14 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185
+            width: 185,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.OLDVALUE,
             align: 'left',
             editable: false,
-            label: LABEL_STORE.OLDVALUE,
+            label: LABEL_STORE.CHANGESET,
             fixed: false,
             sortable: true,
             show: true,
@@ -134,6 +140,28 @@ export default {
             align: 'left',
             editable: false,
             label: LABEL_STORE.NEWVALUE,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 185
+          },
+          {
+            property: PROPERTY_STORE.IP,
+            align: 'left',
+            editable: false,
+            label: LABEL_STORE.IP,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 185
+          },
+          {
+            property: PROPERTY_STORE.USERAGENT,
+            align: 'left',
+            editable: false,
+            label: LABEL_STORE.USERAGENT,
             fixed: false,
             sortable: true,
             show: true,
@@ -157,7 +185,17 @@ export default {
         pageNumber: 1,
         pageSize: 75000,
         orderBy: 'LogDate',
-        ascending: false
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
@@ -171,6 +209,53 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
+      requestBody.map((x, i, t) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        const { FieldName, Value } = filter
+        if (FieldName === 'Status' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
+      }
+
+      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.getDatatableList()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x, i, t) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getDatatableList()
+
+      this.tableOptions.isColumnFilterActive =
+        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
   mounted() {

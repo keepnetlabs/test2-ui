@@ -70,22 +70,14 @@ export default {
   },
   methods: {
     handleDownload() {
-      downloadMsgFiles(this.id, this.zipPassword)
-        .then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `mail-${this.id}.zip`
-          link.click()
-          this.$emit('changeDownloadModalStatus', false)
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.response.statusText,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+      downloadMsgFiles(this.id, this.zipPassword).then((response) => {
+        const { data } = response
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(data)
+        link.download = `mail-${this.id}.zip`
+        link.click()
+        this.$emit('changeDownloadModalStatus', false)
+      })
     }
   }
 }

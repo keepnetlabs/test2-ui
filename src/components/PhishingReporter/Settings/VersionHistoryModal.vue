@@ -27,6 +27,7 @@
           :empty="table.iEmpty"
           @handleDetails="handleDetails"
           @handleDownload="handleDownload"
+          @refreshAction="callForTableData"
         />
       </v-card>
     </template>
@@ -64,7 +65,28 @@ export default {
     handleDetails(row) {
       this.$emit('handleHistoryRow', row)
     },
-    handleDownload(row) {}
+    handleDownload(row) {},
+    callForTableData() {
+      this.isLoading = true
+      const searchPayload = {
+        pageNumber: 1,
+        pageSize: 10000000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: []
+        }
+      }
+      searchGeneratedApplicationHistory(searchPayload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.tableData = data.results
+        })
+        .finally(() => (this.isLoading = false))
+    }
   },
   data() {
     return {
@@ -115,31 +137,11 @@ export default {
           message: 'You do not have any versions, yet'
         }
       },
-      isLoading: true
+      isLoading: false
     }
   },
   created() {
-    const searchPayload = {
-      pageNumber: 1,
-      pageSize: 10000000,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: []
-      }
-    }
-    searchGeneratedApplicationHistory(searchPayload)
-      .then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.tableData = data.results
-        this.isLoading = false
-      })
-      .catch(() => {
-        this.isLoading = false
-      })
+    this.callForTableData()
   }
 }
 </script>

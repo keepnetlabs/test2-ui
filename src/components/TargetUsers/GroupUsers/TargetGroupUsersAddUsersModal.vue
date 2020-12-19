@@ -76,18 +76,13 @@ export default {
       this.saveDisable = true
       createTargetGroupUsers(this.resourceId, {
         targetUserResourceIds: this.selectedUsers.map((user) => user.resourceId)
-      }).then(() => {
-        this.$store
-          .dispatch('common/createSnackBar', {
-            message: `${this.selectedUsers.length} target users(s) added to “${this.groupName}”`,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          .finally(() => {
-            this.saveDisable = false
-          })
-        this.$emit('closeOverlayWithUpdate')
       })
+        .then(() => {
+          this.$emit('closeOverlayWithUpdate')
+        })
+        .finally(() => {
+          this.saveDisable = false
+        })
     },
     handleSelectionChange(selectedUsers = []) {
       this.selectedUsers = selectedUsers

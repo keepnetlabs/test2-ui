@@ -655,34 +655,25 @@ export default {
         }
       }
 
-      getAnalysisEngine(payload)
-        .then((response) => {
-          const data = response.data.data.results.map((item) => {
-            return {
-              resourceId: item.resourceId,
-              integrationId: item.resourceId,
-              name: item.name,
-              isCheckUrl: false,
-              isCheckHash: false,
-              isCheckFile: false,
-              selected: false
-            }
-          })
-          this.acceptAllAnalysisEngines = false
-
-          if (this.analysisEngines.length === 0) {
-            this.analysisEngines = data
-            this.updateAnalysisEngines()
+      getAnalysisEngine(payload).then((response) => {
+        const data = response.data.data.results.map((item) => {
+          return {
+            resourceId: item.resourceId,
+            integrationId: item.resourceId,
+            name: item.name,
+            isCheckUrl: false,
+            isCheckHash: false,
+            isCheckFile: false,
+            selected: false
           }
         })
-        .catch((error) => {
-          /*
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting analysis engines data!'
-          })
-          */
-        })
+        this.acceptAllAnalysisEngines = false
+
+        if (this.analysisEngines.length === 0) {
+          this.analysisEngines = data
+          this.updateAnalysisEngines()
+        }
+      })
     },
     setAvailableItems(value, oldValue, index) {
       this.actionsValues[index] = value

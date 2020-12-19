@@ -424,13 +424,6 @@ export default {
             const matchingPlaybookData = response.data.data
             this.matchingPlaybookData = matchingPlaybookData.results || []
           })
-          .catch(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting the matching rules!'
-            })
-          })
           .finally(() => (this.isMatchingTableLoading = false))
       }
     },
@@ -475,29 +468,16 @@ export default {
           values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
         }
         values.map((item) => {
-          deletePlaybookRule(item)
-            .then(() => {
-              _this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Playbook rule deleted successfully!'
+          deletePlaybookRule(item).then(() => {
+            this.isWantToDelete = false
+            this.loading = true
+            _this
+              .getPlaybookList(_this.tableCredientials)
+              .then(() => {
+                this.tableData = _this.playbookList.results
               })
-              this.isWantToDelete = false
-              this.loading = true
-              _this
-                .getPlaybookList(_this.tableCredientials)
-                .then(() => {
-                  this.tableData = _this.playbookList.results
-                })
-                .finally(() => (this.loading = false))
-            })
-            .catch(() => {
-              _this.$store.dispatch('common/createSnackBar', {
-                errorState: true,
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when getting the matching rules!'
-              })
-            })
+              .finally(() => (this.loading = false))
+          })
         })
       }
     },

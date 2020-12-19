@@ -14,8 +14,6 @@
 
 <script>
 import Integrations from '../components/Integrations/Integrations'
-import Clients from '../components/Integrations/Clients'
-
 export default {
   name: 'Integrations',
   components: {
