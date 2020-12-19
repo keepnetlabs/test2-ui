@@ -401,6 +401,7 @@
               </router-link>
             </v-list-item-content>
           </v-list-item>
+
           <v-list-item
             style="padding-left: 0 !important; margin-left: -5px;"
             v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
@@ -409,6 +410,18 @@
               <router-link to="/company-settings" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Company Settings</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['audit-logs|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/audit" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Audit Log</span>
                 </v-list-item-title>
               </router-link>
             </v-list-item-content>
@@ -527,18 +540,6 @@
               <router-link to="/playbook" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Playbook</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['audit-logs|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/audit" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Audit Log</span>
                 </v-list-item-title>
               </router-link>
             </v-list-item-content>
