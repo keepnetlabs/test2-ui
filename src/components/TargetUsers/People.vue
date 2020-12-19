@@ -1,12 +1,12 @@
 <template>
   <div class="people">
     <delete-user-modal
+      v-if="isWantToShowDeleteUserModal"
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
       :isMultiple="isMultipleDelete"
       @deleteAction="handleDeleteUser"
       @deleteMultiple="handleDeleteUsers"
-      v-if="isWantToShowDeleteUserModal"
       @changeModalStatus="changeDeleteModalStatus"
     />
     <add-users-manually-modal
@@ -15,12 +15,12 @@
       @changeModalStatus="changeAddUsersManuallyModalStatus"
     />
     <add-user-modal
+      v-if="isWantToShowAddUsersModal"
       :status="isWantToShowAddUsersModal"
       @closeAddUserModal="closeAddUserModal"
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
       :editData="selectedRow"
       :custom-fields="customFields"
-      v-if="isWantToShowAddUsersModal"
     />
     <custom-fields-modal
       :status="isWantToShowCustomFieldsModal"
@@ -61,7 +61,7 @@
       @syncUser="handleSyncUser"
       @deleteAction="handleDelete"
       @editTargetUsers="handleEditTargetUsers"
-      @onEmptyBtnClicked="isWantToShowAddUsersModal = true"
+      @onEmptyBtnClicked="handleClickEmptyBtnClicked"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @handleMultipleDelete="handleMultipleDelete"
@@ -104,7 +104,7 @@
           </p>
           <p class="people__no-data__body">Starts now!</p>
           <div class="people__no-data__buttons">
-            <div class="people__no-data__buttons--button" @click="isWantToShowAddUsersModal = true">
+            <div class="people__no-data__buttons--button" @click="handleClickEmptyBtnClicked">
               <v-icon color="#fff" class="mr-2">mdi-account</v-icon> ADD A USER
             </div>
             <div class="people__no-data__buttons--button" @click="isWantToImportFile = true">
@@ -342,6 +342,10 @@ export default {
         default:
           break
       }
+    },
+    handleClickEmptyBtnClicked() {
+      this.selectedRow = null
+      this.isWantToShowAddUsersModal = true
     },
     closeCustomFieldsModalWithUpdate() {
       this.toggleCustomFieldsModal()

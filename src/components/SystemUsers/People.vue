@@ -9,9 +9,10 @@
         :selectedRow="selectedRow"
       />
       <delete-system-user-modal
+        v-if="showDeleteSystemUserModal"
         :status="showDeleteSystemUserModal"
         :selected-row="selectedDeleteRow"
-        v-if="showDeleteSystemUserModal"
+        :confirmButtonDisabled="deleteButtonDisabled"
         @handleDelete="callForDeleteUser"
         @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
@@ -66,6 +67,7 @@ export default {
   },
   data() {
     return {
+      deleteButtonDisabled: false,
       loading: true,
       tableData: [],
       tableOptions: {
@@ -313,10 +315,15 @@ export default {
       this.toggleShowDeleteSystemUserModal()
     },
     callForDeleteUser({ resourceId = '' } = {}) {
-      deleteSystemUser(resourceId).then(() => {
-        this.toggleShowDeleteSystemUserModal()
-        this.callForListSystemUsers()
-      })
+      this.deleteButtonDisabled = true
+      deleteSystemUser(resourceId)
+        .then(() => {
+          this.toggleShowDeleteSystemUserModal()
+          this.callForListSystemUsers()
+        })
+        .finally(() => {
+          this.deleteButtonDisabled = false
+        })
     }
   },
   created() {

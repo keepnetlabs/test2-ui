@@ -92,6 +92,7 @@
             hint="Only jpg, png, gif, bmp files. Max. file size 3MB"
             ref="refFileUpload"
             @inputFile="onFileChanged"
+            :readonly="!showForm"
           />
         </v-list-item-content>
       </v-list-item>

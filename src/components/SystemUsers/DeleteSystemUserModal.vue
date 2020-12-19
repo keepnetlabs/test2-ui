@@ -9,7 +9,11 @@
       {{ getSystemUserName }} will be deleted and removed from system users.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" />
+      <app-dialog-footer
+        :confirm-button-disabled="confirmButtonDisabled"
+        @handleClose="closeModal"
+        @handleConfirm="handleDelete"
+      />
     </template>
   </app-dialog>
 </template>
@@ -31,6 +35,10 @@ export default {
     selectedRow: {
       type: Object,
       default: null
+    },
+    confirmButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
