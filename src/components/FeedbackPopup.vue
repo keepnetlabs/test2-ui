@@ -40,7 +40,13 @@
         <v-btn class="feedback-button--cancel" text v-on:click="onCancelClicked">{{
           labels.Cancel
         }}</v-btn>
-        <v-btn class="feedback-button--success" text v-on:click="onFeedbackSend">SEND</v-btn>
+        <v-btn
+          class="feedback-button--success"
+          text
+          :disabled="saveDisable"
+          v-on:click="onFeedbackSend"
+          >SEND</v-btn
+        >
       </div>
     </v-card>
   </div>
@@ -56,6 +62,7 @@ export default {
   data() {
     return {
       labels,
+      saveDisable: false,
       feedbackMessage: null
     }
   },
@@ -67,26 +74,11 @@ export default {
     onFeedbackSend() {
       let payload = { Text: this.feedbackMessage }
       if (this.$refs.feedbackForm.validate()) {
-        sendFeedback(payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message:
-                (response && response.data && response.data.message) || 'Feedback has been sent',
-              color: 'green',
-              icon: 'mdi-check-circle-outline'
-            })
-            this.changeFeedbackPopup(false)
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message:
-                (error.response && error.response.data && error.response.data.message) ||
-                'Feedback can not send',
-              color: 'red',
-              icon: 'mdi-alert-circle'
-            })
-            this.changeFeedbackPopup(false)
-          })
+        this.saveDisable = true
+        sendFeedback(payload).finally(() => {
+          this.saveDisable = false
+          this.changeFeedbackPopup(false)
+        })
       }
     },
     onCancelClicked() {

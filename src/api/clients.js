@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'clients'
 export function getClientList(payload) {
   return testRequest.post(`${API_URL}/search`, payload)
@@ -21,7 +22,7 @@ export function updateClient(id, payload) {
 }
 
 export function deleteClient(id) {
-  return testRequest.delete(`${API_URL}/${id}`)
+  return testRequest.delete(`${API_URL}/${id}`, { snackbar: COMMON_SNACKBAR })
 }
 
 export function getClientDetails(id) {

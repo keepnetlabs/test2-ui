@@ -64,6 +64,7 @@ testService.interceptors.response.use(
       store.dispatch('common/changeSessionExpiredStatus', true)
       //router.push('/login')
     } else if (error.response && error.response.status !== 404) {
+      debugger
       store.dispatch(
         'common/createSnackBar',
         {
@@ -73,7 +74,8 @@ testService.interceptors.response.use(
               error.response.data.validationMessages &&
               error.response.data.validationMessages[0]) ||
             error.response.data.message ||
-            error.response.data.Message
+            error.response.data.Message,
+          icon: 'mdi-alert'
         },
         { root: true }
       )

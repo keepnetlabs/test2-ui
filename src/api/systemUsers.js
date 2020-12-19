@@ -24,7 +24,13 @@ export function deleteSystemUser(resourceId = '') {
 }
 
 export function sendInformationEmail(resourceId = '') {
-  return testRequest.post(`/system-users/${resourceId}/send-information-email`)
+  return testRequest.post(
+    `/system-users/${resourceId}/send-information-email`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function getUserRoles(payload) {

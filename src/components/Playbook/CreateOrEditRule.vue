@@ -634,11 +634,6 @@ export default {
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
         }
       } else {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'Condition set can not be empty',
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-alert-circle'
-        })
         this.isValid = true
       }
     },

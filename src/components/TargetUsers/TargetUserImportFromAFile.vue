@@ -888,26 +888,18 @@ export default {
         })
     },
     getUploadedExcelData() {
-      getUploadedFileData(this.excelInfo.transactionId)
-        .then((response) => {
-          this.mappingData.tableData = response.data.data.data
-          this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
-            let aItem = {
-              name: item,
-              selectedValue: null
-            }
-            return aItem
-          })
-          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          this.resetDisabledValuesFromColumns()
+      getUploadedFileData(this.excelInfo.transactionId).then((response) => {
+        this.mappingData.tableData = response.data.data.data
+        this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
+          let aItem = {
+            name: item,
+            selectedValue: null
+          }
+          return aItem
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        })
+        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+        this.resetDisabledValuesFromColumns()
+      })
     },
     resetDisabledValuesFromColumns() {
       setTimeout(() => {

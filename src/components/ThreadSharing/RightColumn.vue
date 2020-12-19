@@ -683,12 +683,6 @@ export default {
             isDashboardEnabled: response.data.data.isDashboardEnabled
           }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
         .finally(() => {
           this.notificationLoading = false
         })
@@ -708,11 +702,7 @@ export default {
       return newVal
     },
     deleteCommunityConfirm() {
-      deleteCommunity(this.communityDetails.resourceId).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Community has been deleted'
-        })
+      deleteCommunity(this.communityDetails.resourceId).then(() => {
         this.isWantToDelete = false
         this.$router.push(`/threat-sharing`)
       })
@@ -725,36 +715,17 @@ export default {
         IsEmailEnabled: this.notifications.isEmailEnabled,
         IsDashboardEnabled: this.notifications.isDashboardEnabled
       }
-      updateNotifications(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message || 'Notifications has been saved'
-          })
-          this.openNotificationModal = false
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
+      updateNotifications(payload).then(() => {
+        this.openNotificationModal = false
+      })
     },
     leaveFromCommunityConfirm() {
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: `You left the ${this.communityDetails.name}`
-          })
           this.isWantToToLeaveFromCommunity = false
           this.$router.push(`/threat-sharing`)
         })
         .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when attempting to leave from a community'
-                })*/
           if (
             error.response &&
             error.response.data &&
@@ -798,37 +769,10 @@ export default {
           const payload = {
             emailarray: this.emailarray
           }
-          inviteToCommunity(this.$route.params.id, payload)
-            .then((response) => {
-              response.data.data.map((item) => {
-                if (item.result === 'Failed') {
-                  this.$store.dispatch('common/createSnackBar', {
-                    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                    message: `${item['email']} ${item['resultText']}`
-                  })
-                } else {
-                  this.$store.dispatch('common/createSnackBar', {
-                    color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                    message: `${item['resultText']} (${item['email']})`
-                  })
-                }
-              })
-              this.emailarray = []
-              this.openInviteModal = false
-            })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response &&
-                !!error.response.data.validationMessages &&
-                !!error.response.data.validationMessages.length
-              ) {
-                this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: response.data.message || 'Members are invited to community'
-                })
-              }
-            })
+          inviteToCommunity(this.$route.params.id, payload).then(() => {
+            this.emailarray = []
+            this.openInviteModal = false
+          })
         }
       }, 200)
     },
@@ -946,14 +890,10 @@ export default {
       this.closeCommunityInfo()
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
-      joinCommunity(resourceId).then((response) => {
+      joinCommunity(resourceId).then(() => {
         this.getsuggestedCommunities()
         localStorage.setItem('communityName', communityName)
         localStorage.setItem('communityResourceIdForRedirect', resourceId)
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: response.data.message
-        })
         if (privacyStatusName !== 'Private') {
           if (this.$route.name == 'Community') {
             this.$router.push(`/community/${resourceId}`)

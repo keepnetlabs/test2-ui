@@ -892,23 +892,13 @@ export default {
       }
     },
     handleDownloadAttachment(attachment) {
-      downloadAttachment(attachment.resourceId)
-        .then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = attachment.name
-          link.click()
-        })
-        .catch((error) => {
-          if (error.response && error.response.data && error.response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'File can not downloaded',
-              icon: 'mdi-alert-circle',
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-            })
-          }
-        })
+      downloadAttachment(attachment.resourceId).then((response) => {
+        const { data } = response
+        const link = document.createElement('a')
+        link.href = window.URL.createObjectURL(data)
+        link.download = attachment.name
+        link.click()
+      })
     },
     getPostDetails() {
       this.isLoading = true
@@ -963,19 +953,12 @@ export default {
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Details can not be reached'
-          })
-        })
         .finally(() => (this.isLoading = false))
     },
     getEngineDetails() {
-      getAnalysisEngineTypes()
-        .then((response) => {
-          const engineTypes = response.data.data
-          /*
+      getAnalysisEngineTypes().then((response) => {
+        const engineTypes = response.data.data
+        /*
           engineTypes.map((item) => {
             this.columns.push({
               property: 'analysisEngine',
@@ -990,13 +973,7 @@ export default {
           })
 
            */
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Analysis engine types can not be reached'
-          })
-        })
+      })
     },
     getMd5Text(index) {
       return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1

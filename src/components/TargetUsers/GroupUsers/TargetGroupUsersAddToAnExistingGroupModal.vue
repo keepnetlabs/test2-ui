@@ -207,7 +207,7 @@ export default {
       const selectedRowsResourceIds = this.selectedRows.map((row) => row.resourceId)
       const promises = this.selectedTargetGroups.reduce((acc, group) => {
         const payload = { targetUserResourceIds: selectedRowsResourceIds }
-        acc.push(createTargetGroupUsers(group.resourceId, payload))
+        acc.push(createTargetGroupUsers(group.resourceId, payload, false))
         return acc
       }, [])
       Promise.all(promises)

@@ -76,7 +76,7 @@ export function notificationSeen(payload) {
 }
 
 export function sendFeedback(payload) {
-  return request.post('feedback', payload, {
+  return testRequest.post('feedback', payload, {
     snackbar: COMMON_SNACKBAR
   })
 }

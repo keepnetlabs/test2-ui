@@ -62,7 +62,7 @@ export function getTargetUserCustomFieldsByCompanyId() {
 }
 
 export function bulkUpdateOfCustomFields(payload) {
-  return testRequest.post('/custom-fields/bulk-update', payload)
+  return testRequest.post('/custom-fields/bulk-update', payload, { snackbar: COMMON_SNACKBAR })
 }
 
 export function createTargetUserCustomField(payload) {
@@ -107,8 +107,13 @@ export function searchTargetGroupUsers(id = '', payload = {}) {
   return testRequest.post(`/target-groups/${id}/users`, payload)
 }
 
-export function createTargetGroupUsers(id = '', payload = {}) {
-  return testRequest.put(`/target-groups/${id}/users`, payload)
+export function createTargetGroupUsers(id = '', payload = {}, showSnackbar = true) {
+  const config = showSnackbar
+    ? {
+        snackbar: COMMON_SNACKBAR
+      }
+    : {}
+  return testRequest.put(`/target-groups/${id}/users`, payload, config)
 }
 
 export function exportTargetGroupUsers(id = '', payload = {}) {
@@ -129,7 +134,10 @@ export function exportTargetGroups(payload = {}) {
 }
 
 export function deleteTargetGroupUsers(id = '', payload = {}) {
-  return testRequest.delete(`/target-groups/${id}/users`, { data: payload })
+  return testRequest.delete(`/target-groups/${id}/users`, {
+    data: payload,
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getMappingStatus(id) {

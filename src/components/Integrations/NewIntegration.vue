@@ -474,24 +474,17 @@ export default {
   },
   created() {
     if (this.integrationId) this.updateVModel(this.integrationId)
-    getIntegrationTypes()
-      .then((response) => {
-        const {
-          data: { data }
-        } = response
+    getIntegrationTypes().then((response) => {
+      const {
+        data: { data }
+      } = response
 
-        this.integrationTypes = data
-        this.selectedIntegrationType =
-          this.integrationTypes.find(
-            (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
-          ) || {}
-      })
-      .catch(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: 'Error when getting integrations type'
-        })
-      })
+      this.integrationTypes = data
+      this.selectedIntegrationType =
+        this.integrationTypes.find(
+          (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
+        ) || {}
+    })
     this.getFileTypes()
   },
   methods: {
@@ -506,11 +499,6 @@ export default {
             this.showConfirmModal = false
           })
           .catch(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Integration can not be updated'
-            })
             this.saveDisable = false
           })
       } else {
@@ -559,35 +547,28 @@ export default {
       this.showConfirmModal = false
     },
     getFileTypes() {
-      getFileTypes()
-        .then((response) => {
-          const {
-            data: { data, status }
-          } = response
-          this.uploadFileTypes = data.map((item) => {
-            switch (item.name) {
-              case 'Archive':
-                return { text: 'Archive files (.zip, .rar)', value: item.name }
-              case 'Image':
-                return { text: 'Image files (.jpg, .png, .gif, .bmp)', value: item.name }
-              case 'Microsoft Office':
-                return {
-                  text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
-                  value: item.name
-                }
-              case 'Other':
-                return { text: 'Other', value: item.name }
-              default:
-                return { text: item.name, value: item.name }
-            }
-          })
+      getFileTypes().then((response) => {
+        const {
+          data: { data, status }
+        } = response
+        this.uploadFileTypes = data.map((item) => {
+          switch (item.name) {
+            case 'Archive':
+              return { text: 'Archive files (.zip, .rar)', value: item.name }
+            case 'Image':
+              return { text: 'Image files (.jpg, .png, .gif, .bmp)', value: item.name }
+            case 'Microsoft Office':
+              return {
+                text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
+                value: item.name
+              }
+            case 'Other':
+              return { text: 'Other', value: item.name }
+            default:
+              return { text: item.name, value: item.name }
+          }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting file types! '
-          })
-        })
+      })
     },
     addApiKey() {
       this.isTestConnectionDisabled = true
@@ -609,30 +590,16 @@ export default {
       this.showConfirmModal = false
     },
     updateIntegration() {
-      updateIntegration()
-        .then((response) => {})
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when updating the integration!'
-          })
-        })
+      updateIntegration().then((response) => {})
     },
     updateVModel(id) {
-      getIntegrationDetails(id)
-        .then((response) => {
-          response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
-            return { value: item, status: null }
-          })
-          const integrationData = response['data'].data
-          this.formValues = integrationData
+      getIntegrationDetails(id).then((response) => {
+        response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
+          return { value: item, status: null }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting integration details!'
-          })
-        })
+        const integrationData = response['data'].data
+        this.formValues = integrationData
+      })
     },
     resetValues() {
       this.formValues = {

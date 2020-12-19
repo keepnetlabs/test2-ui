@@ -1,6 +1,5 @@
 import testRequest from '../utils/testRequest'
-import webRequest from '../utils/webRequests'
-import request from '../utils/request'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'analysis-engines'
 
 export function deleteIntegration(id) {
@@ -16,15 +15,25 @@ export function getMyCommunityList(payload) {
 }
 
 export function joinCommunity(id) {
-  return testRequest.post(`communities/${id}/join`, {})
+  return testRequest.post(
+    `communities/${id}/join`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function acceptCommunityMembershipRequest(id, payload) {
-  return testRequest.put(`communities/membershiprequest/${id}/accept`, payload)
+  return testRequest.put(`communities/membershiprequest/${id}/accept`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function refuseCommunityMembershipRequest(id, payload) {
-  return testRequest.put(`communities/membershiprequest/${id}/refuse`, payload)
+  return testRequest.put(`communities/membershiprequest/${id}/refuse`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getCommunityDetails(id) {
@@ -40,15 +49,21 @@ export function getCommunityMembers(id, payload) {
 }
 
 export function createCommunity(payload) {
-  return testRequest.post(`communities`, payload)
+  return testRequest.post(`communities`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function updateCommunity(id, payload) {
-  return testRequest.put(`communities/${id}`, payload)
+  return testRequest.put(`communities/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function updateCommunityPost(id, payload) {
-  return testRequest.put(`community-posts/${id}`, payload)
+  return testRequest.put(`community-posts/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function listBusinessCategories() {
@@ -101,7 +116,9 @@ export function getComments(id) {
 }
 
 export function createComments(id, payload) {
-  return testRequest.post(`community-posts/${id}/comments`, payload)
+  return testRequest.post(`community-posts/${id}/comments`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function likePost(id) {
@@ -141,7 +158,7 @@ export function getsuggestedCommunities() {
 }
 
 export function createCommunityPost(payload) {
-  return testRequest.post(`community-posts`, payload)
+  return testRequest.post(`community-posts`, payload, { snackbar: COMMON_SNACKBAR })
 }
 
 export function systemUser(systemUserData) {
@@ -149,39 +166,64 @@ export function systemUser(systemUserData) {
 }
 
 export function deleteCommunityPost(id) {
-  return testRequest.delete(`community-posts/${id}`)
+  return testRequest.delete(`community-posts/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function updateComments(id, payload) {
-  return testRequest.put(`community-posts/comments/${id}`, payload)
+  return testRequest.put(`community-posts/comments/${id}`, payload, { snackbar: COMMON_SNACKBAR })
 }
 export function deleteComments(id) {
-  return testRequest.delete(`community-posts/comments/${id}`)
+  return testRequest.delete(`community-posts/comments/${id}`, { snackbar: COMMON_SNACKBAR })
 }
 
 export function removeFromCommunities(id) {
-  return testRequest.post(`communities/${id}/leave`)
+  return testRequest.post(
+    `communities/${id}/leave`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function removeFromCommunity(id, value) {
   return testRequest.delete(`communities/${id}/remove-member`, {
-    data: { RemovedCompanyResourceId: value }
+    data: { RemovedCompanyResourceId: value },
+    snackbar: COMMON_SNACKBAR
   })
 }
 
 export function inviteToCommunity(id, payload) {
-  return testRequest.post(`communities/${id}/invite`, payload)
+  return testRequest.post(`communities/${id}/invite`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function appointNewOwner(id, payload) {
-  return testRequest.post(`communities/${id}/appoint-owner`, payload)
+  return testRequest.post(`communities/${id}/appoint-owner`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function acceptInvitation(id) {
-  return testRequest.put(`/communities/invitations/${id}/accept`)
+  return testRequest.put(
+    `/communities/invitations/${id}/accept`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function refuseInvitation(id) {
-  return testRequest.put(`/communities/invitations/${id}/decline`)
+  return testRequest.put(
+    `/communities/invitations/${id}/decline`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function getInvitationCount() {
@@ -189,19 +231,31 @@ export function getInvitationCount() {
 }
 
 export function cancelRequest(id) {
-  return testRequest.put(`/communities/membershiprequest/${id}/cancel`)
+  return testRequest.put(
+    `/communities/membershiprequest/${id}/cancel`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function deleteCommunity(id) {
-  return testRequest.delete(`communities/${id}`)
+  return testRequest.delete(`communities/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function shareAPost(id, payload) {
-  return testRequest.post(`community-posts/${id}/share`, payload)
+  return testRequest.post(`community-posts/${id}/share`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 export function getNotifications() {
   return testRequest.get(`/system-users/notification-setting`, {})
 }
 export function updateNotifications(payload) {
-  return testRequest.put(`/system-users/notification-setting`, payload)
+  return testRequest.put(`/system-users/notification-setting`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }

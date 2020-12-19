@@ -293,11 +293,6 @@ export default {
       bulkUpdateOfCustomFields(payload)
         .then(() => {
           this.isMakePost = true
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Custom fields has been updated',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
           this.callForGetTargetUserCustomFieldsByCompanyId()
         })
         .catch(() => (this.loading = false))

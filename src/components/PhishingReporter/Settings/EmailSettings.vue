@@ -36,11 +36,9 @@
           ></v-checkbox>
         </v-list-item-content>
       </v-list-item>
-
       <v-list-item class="px-0 email-settings__list-item">
         <v-list-item-content>
           <label class="email-settings__list-item--header">Recipient Email Address</label>
-
           <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.to"

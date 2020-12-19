@@ -793,12 +793,6 @@ export default {
             isDashboardEnabled: response.data.data.isDashboardEnabled
           }
         })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
         .finally(() => {
           this.notificationLoading = false
         })
@@ -822,20 +816,9 @@ export default {
         IsEmailEnabled: this.notifications.isEmailEnabled,
         IsDashboardEnabled: this.notifications.isDashboardEnabled
       }
-      updateNotifications(payload)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message || 'Notifications has been saved'
-          })
-          this.openNotificationModal = false
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-        })
+      updateNotifications(payload).then((response) => {
+        this.openNotificationModal = false
+      })
     },
     cancelRequest(item) {
       cancelRequest(item.membershipResourceId).then(() => {
@@ -848,26 +831,15 @@ export default {
       //this.isCancelRequestModal = true
     },
     cancelRequestConfirm() {
-      cancelRequest(this.cancelRequestCommunityId)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Request has been cancelled' // @nejat, @atakan
-          })
-          this.isCancelRequestModal = false
-          this.getAllCommunitiesListData()
-          this.getMyCommunitiesListData()
-          this.getInvitationCount()
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
-        .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when attempting to leave from a community'
-                })*/
-        })
+      cancelRequest(this.cancelRequestCommunityId).then(() => {
+        this.isCancelRequestModal = false
+        this.getAllCommunitiesListData()
+        this.getMyCommunitiesListData()
+        this.getInvitationCount()
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+      })
     },
     deleteCommunity(item) {
       this.deleteCommunityName = item.communityName
@@ -875,11 +847,7 @@ export default {
       this.isWantToDelete = true
     },
     deleteCommunityConfirm() {
-      deleteCommunity(this.deleteCommunityId).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Community has been deleted'
-        })
+      deleteCommunity(this.deleteCommunityId).then(() => {
         this.isWantToDelete = false
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
@@ -909,47 +877,18 @@ export default {
             }
           })
       }
-      /*
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to get invitation counts'
-          })
-        })*/
     },
     refuseRequest(item) {
       refuseInvitation(item.resourceId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'Invitation request has been cancelled'
-        })
         this.getInvitions()
         this.getInvitationCount()
       })
-      /*
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to cancel invitation request'
-          })
-        })*/
     },
     acceptRequest(item) {
       acceptInvitation(item.resourceId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: `You joined ${item.name} `
-        })
         this.getInvitions()
         this.getInvitationCount()
       })
-      /*
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to accept an invitation request'
-          })
-        })*/
     },
     leaveFromCommunity(item) {
       this.leaveCommunityId = item.communityResourceId
@@ -959,10 +898,6 @@ export default {
     leaveFromCommunityConfirm() {
       removeFromCommunities(this.leaveCommunityId)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: `You left the ${this.leaveCommunityName}`
-          })
           this.isWantToToLeaveFromCommunity = false
           this.getAllCommunitiesListData()
           this.getMyCommunitiesListData()
@@ -972,10 +907,6 @@ export default {
           }, 500)
         })
         .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when attempting to leave from a community'
-          })*/
           if (
             error.response &&
             error.response.data &&
@@ -1206,11 +1137,7 @@ export default {
     requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       joinCommunity(communityId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message
-          })
+        .then(() => {
           if (type === 'join') {
             localStorage.setItem('communityName', communityName)
             localStorage.setItem('communityResourceIdForRedirect', communityId)

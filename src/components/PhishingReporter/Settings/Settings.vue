@@ -204,12 +204,8 @@ export default {
             this.downloadAddInModalStatus = true
           }
         })
-        .catch((error) => {
+        .catch(() => {
           this.saveDisable = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Phishing Reporter can not be saved',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-          })
           this.$emit('getPhishingReport')
           if (updatedValues.isAddIn) {
             this.activateLoader(-1)

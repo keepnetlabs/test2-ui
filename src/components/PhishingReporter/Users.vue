@@ -281,13 +281,6 @@ export default {
           this.isLoading = false
         })
         .catch(() => {
-          /*
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: "Error when getting the user phishing reporter! "
-            })
-             */
           this.isLoading = false
         })
     },
