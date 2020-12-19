@@ -1149,7 +1149,6 @@ export default {
       this.initialData = [...table]
 
       //This is for refresh button when clicked caching refresh
-      debugger
       if (
         (!this.cacheChecks && !this.cacheCheckboxFromParent) ||
         (this.lazy && this.selectedCluster)
