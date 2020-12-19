@@ -1,5 +1,5 @@
 <template>
-  <div class="k-file-uploads">
+  <div class="k-file-uploads" :class="['k-file-uploads', { 'k-file-uploads--readonly': readonly }]">
     <div class="k-file-uploads__wrapper">
       <file-upload
         ref="upload"
@@ -131,6 +131,9 @@ export default {
       type: String,
       default: null
     },
+    readonly: {
+      type: Boolean
+    },
     onUploadProgress: {
       type: ProgressEvent,
       default: undefined
@@ -202,11 +205,14 @@ export default {
 
 <style lang="scss">
 .k-file-uploads {
+  &--readonly {
+    pointer-events: none;
+  }
+
   &__wrapper {
     min-height: 40px;
     border-radius: 8px;
     border: solid 1px #dcdfe6;
-
     & > .file-uploads {
       padding: 10px;
       font-size: 12px !important ;

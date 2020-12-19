@@ -4,6 +4,7 @@
     icon="mdi-delete"
     title="Delete User?"
     subtitle="The user will deleted permanently"
+    @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
       {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain

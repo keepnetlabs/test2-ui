@@ -32,7 +32,7 @@
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="new-user-group__list-item mt-n2">
+      <v-list-item class="new-user-group__list-item" style="margin-top: -2px;">
         <v-list-item-content>
           <v-list-item-title class="new-user-group__list-item-title">Priority</v-list-item-title>
           <v-list-item-subtitle class="new-user-group__list-item-sub-title"
@@ -43,11 +43,11 @@
       <v-list-item class="new-user-group__list-item mt-n2">
         <v-list-item-content>
           <v-radio-group v-model="priority" row>
-            <v-radio value="VeryLow" label="Very Low" color="primary"></v-radio>
-            <v-radio value="Low" label="Low" color="primary"></v-radio>
-            <v-radio value="Medium" label="Medium" color="primary"></v-radio>
-            <v-radio value="High" label="High" color="primary"></v-radio>
-            <v-radio value="VeryHigh" label="Very High" color="primary"></v-radio>
+            <v-radio value="VeryLow" label="Very Low" color="#2196f3"></v-radio>
+            <v-radio value="Low" label="Low" color="#2196f3"></v-radio>
+            <v-radio value="Medium" label="Medium" color="#2196f3"></v-radio>
+            <v-radio value="High" label="High" color="#2196f3"></v-radio>
+            <v-radio value="VeryHigh" label="Very High" color="#2196f3"></v-radio>
           </v-radio-group>
         </v-list-item-content>
       </v-list-item>
