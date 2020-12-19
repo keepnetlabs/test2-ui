@@ -22,16 +22,18 @@ testService.interceptors.request.use(
     }
     return config
   },
-  (error) => {
+  () => {
     if (!config.loader) store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
 )
 
 testService.interceptors.response.use(
   (response) => {
+    //if there is global loader param
     response.config.loading &&
       store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     const { snackbar } = response.config
+    //if there is snackbar obj
     if (snackbar && snackbar.show) {
       store.dispatch('common/createSnackBar', {
         message: response.data.message,
@@ -39,32 +41,18 @@ testService.interceptors.response.use(
         color: snackbar.color
       })
     }
-    if (response.data.code === 'FAILED') {
-      store.dispatch(
-        'common/createSnackBar',
-        {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: response.data.message || response.data.Message,
-          icon: 'mdi-alert'
-        },
-        { root: true }
-      )
-      return response
-    } else {
-      return response
-    }
+    return response
   },
   (error) => {
+    //if there is global loader param
     error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
-    //store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+
     if (!error.response) {
       return Promise.reject(error)
     } else if (error.response.status === 401 || error.response.status === 306) {
       AuthenticationService.removeToken()
       store.dispatch('common/changeSessionExpiredStatus', true)
-      //router.push('/login')
     } else if (error.response && error.response.status !== 404) {
-      debugger
       store.dispatch(
         'common/createSnackBar',
         {
