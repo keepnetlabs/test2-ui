@@ -97,6 +97,23 @@
           EDIT FIELDS
         </div>
       </template>
+      <template v-slot:empty-table-inline>
+        <div class="people__no-data">
+          <p class="people__no-data__header">
+            You do not have any users added, yet
+          </p>
+          <p class="people__no-data__body">Starts now!</p>
+          <div class="people__no-data__buttons">
+            <div class="people__no-data__buttons--button" @click="isWantToShowAddUsersModal = true">
+              <v-icon color="#fff" class="mr-2">mdi-account</v-icon> ADD A USER
+            </div>
+            <div class="people__no-data__buttons--button" @click="isWantToImportFile = true">
+              <v-icon color="#fff" class="mr-2">mdi-microsoft-excel</v-icon>
+              IMPORT USERS FROM A FILE
+            </div>
+          </div>
+        </div>
+      </template>
     </datatable>
   </div>
 </template>
@@ -562,6 +579,55 @@ export default {
 
 <style lang="scss">
 .people {
+  &__no-data {
+    &__header {
+      font-size: 24px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29 !important;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__body {
+      font-size: 14px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal !important;
+      color: rgba(0, 0, 0, 0.87);
+      text-align: center;
+    }
+    &__buttons {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 24px;
+      &--button {
+        border-radius: 18px;
+        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+        border: solid 1px #2196f3;
+        background-color: #2196f3;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+        padding: 6px 16px;
+        cursor: pointer;
+        color: white;
+        font-size: 14px;
+        &:last-child {
+          margin-left: 16px;
+        }
+        img {
+          margin-left: 8px;
+          height: 24px;
+        }
+      }
+    }
+  }
+
   padding-top: 24px;
   .add-users__title {
     font-size: 14px;

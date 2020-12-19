@@ -92,11 +92,11 @@ export function downloadExampleTargetUserFile(payload) {
 }
 
 export function getUploadedFileData(id) {
-  return testRequest.get(`/target-users/upload/${id}`)
+  return testRequest.get(`/target-users/upload/${id}`, { loading: true })
 }
 
 export function createMapping(payload) {
-  return testRequest.post(`/target-users/create-mapping`, payload)
+  return testRequest.post(`/target-users/create-mapping`, payload, { loading: true })
 }
 
 export function searchTmp(payload, id) {
