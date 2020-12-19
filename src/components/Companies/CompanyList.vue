@@ -18,6 +18,7 @@
     </app-modal>
 
     <delete-modal
+      v-if="isShowDeleteModal"
       :is-show="isShowDeleteModal"
       :selectedRow="selectedRow"
       @confirmDelete="deleteConfirmedItem"
@@ -372,24 +373,11 @@ export default {
       this.changeDeleteModalStatus(true)
     },
     deleteConfirmedItem(selectedItem) {
-      deleteCompany(selectedItem.companyResourceId)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Company has been deleted',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle-outline'
-            })
-            this.getTableData()
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Company can not be deleted',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-check-circle-outline'
-          })
-        })
+      deleteCompany(selectedItem.companyResourceId).then((response) => {
+        if (response.data && response.data.message) {
+          this.getTableData()
+        }
+      })
     },
     changeDeleteModalStatus(status) {
       this.isShowDeleteModal = status
@@ -407,13 +395,8 @@ export default {
         .then((response) => {
           this.selectedExtend = response.data.data
         })
-        .catch((error) => {
+        .catch(() => {
           this.isShowExtended = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
         })
     },
     handleTableDownload(downloadTypes) {
@@ -454,11 +437,6 @@ export default {
         })
         .catch((error) => {
           this.isShowExtended = false
-          this.$store.dispatch('common/createSnackBar', {
-            message: error.data.message,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
         })
     },
     cancelCreateOrEditForm() {

@@ -316,24 +316,9 @@ export default {
         formData.append(key.charAt(0).toLocaleUpperCase('en-US') + key.slice(1), payload[key])
       })
 
-      createPhishingReporter(formData)
-        .then((response) => {
-          if (response && response.data && response.data.status === 'FAILED') {
-          } else {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Phishing reporter has been saved',
-              icon: 'mdi-check-circle',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-            })
-            this.showModal = true
-          }
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Phishing reporter can not be saved',
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-          })
-        })
+      createPhishingReporter(formData).then(() => {
+        this.showModal = true
+      })
     }
   }
 }

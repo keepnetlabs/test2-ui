@@ -1,5 +1,6 @@
 import request from '../utils/request'
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function getPhishingCampaigns(payload) {
   return request.get(`campaign/summary/${payload}`)
@@ -75,7 +76,9 @@ export function notificationSeen(payload) {
 }
 
 export function sendFeedback(payload) {
-  return request.post('feedback', payload)
+  return testRequest.post('feedback', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getNotifications(payload) {

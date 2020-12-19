@@ -288,3 +288,9 @@ export const COMMON_PROPS = {
     showCount: true
   }
 }
+
+export const COMMON_SNACKBAR = {
+  show: true,
+  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+  icon: 'mdi-check-circle'
+}

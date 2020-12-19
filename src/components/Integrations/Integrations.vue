@@ -291,56 +291,23 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
-      deleteIntegration(row.resourceId)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration has been deleted'
-          })
-          this.getDatatableList()
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Integration can not be deleted'
-          })
-        })
+      deleteIntegration(row.resourceId).then(() => {
+        this.getDatatableList()
+      })
     },
     handleEdit(row) {
       this.modalStatus = true
       this.integrationId = row.resourceId
     },
     handleDisable(row) {
-      disableIntegration(row.resourceId)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration has been disabled'
-          })
-          this.getDatatableList()
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Integration can not be disabled'
-          })
-        })
+      disableIntegration(row.resourceId).then(() => {
+        this.getDatatableList()
+      })
     },
     handleEnable(row) {
-      enableIntegration(row.resourceId)
-        .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Integration has been enabled'
-          })
-          this.getDatatableList()
-        })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Integration can not be enabled'
-          })
-        })
+      enableIntegration(row.resourceId).then(() => {
+        this.getDatatableList()
+      })
     },
     handleAdd() {},
     changeModalStatus(status, restart) {

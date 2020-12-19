@@ -2553,38 +2553,24 @@ export default {
       this.checkAllHeaderCheck()
     },
     getListThreatCategories() {
-      listThreatCategories()
-        .then((response) => {
-          this.categories = response.data.data
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting threat categories'
-          })
-        })
+      listThreatCategories().then((response) => {
+        this.categories = response.data.data
+      })
     },
     uploadFile(e) {
       this.msgEmlFile = e
 
       uploadEmlOrMsg(this.msgEmlFile, (e) => {
         this.onUploadProgress = e
+      }).then((response) => {
+        this.selectedEmail = response.data.data.from
+        this.uploadRespond = response.data.data
+        this.uploadRespond.initialBody = response.data.data.initialBody
+        this.uploadRespond.visibleBody = response.data.data.initialBody
+        this.uploadRespond.editableBody = response.data.data.initialBody
+        this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+        this.setShadowRootMalicousLink('incident-preview-1')
       })
-        .then((response) => {
-          this.selectedEmail = response.data.data.from
-          this.uploadRespond = response.data.data
-          this.uploadRespond.initialBody = response.data.data.initialBody
-          this.uploadRespond.visibleBody = response.data.data.initialBody
-          this.uploadRespond.editableBody = response.data.data.initialBody
-          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
-          this.setShadowRootMalicousLink('incident-preview-1')
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'File can not be uploaded'
-          })
-        })
     },
     clearUpload() {
       //this.uploadFile(null)
@@ -2605,62 +2591,48 @@ export default {
     getSelectedEmailPreview(selectedItem) {
       const _this = this
       if (_this.editItem) {
-        getCommunityPost(_this.editItem.communityPostResourceId)
-          .then((response) => {
-            const { data } = response
-            _this.uploadRespond = data.data.communityPostEmail
-            _this.uploadRespond.visibleBodyForPreview =
-              data.data.communityPostEmail.editableBody ||
-              data.data.communityPostEmail.visibleBody ||
-              data.data.communityPostEmail.initialBody
-            if (_this.editItem) {
-              _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
-              _this.uploadRespond.Title = _this.editItem.title
-              _this.uploadRespond.Description = _this.editItem.description
-              _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection
-              _this.uploadRespond.Scope = _this.editItem.scope
-              _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray
-              _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName
-              _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName
-              _this.uploadRespond.PostedTime = _this.editItem.postedTime
-              _this.uploadRespond.LikeCount = _this.editItem.likeCount
-              _this.uploadRespond.CommentCount = _this.editItem.commentCount
-              _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount
-              _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
-              _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
-              _this.uploadRespond.CommunityName = this.editItem.communityName
-              _this.uploadRespond.AffectArea = data.data.affectArea
-            }
-            if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = []
-            if (!_this.uploadRespond.cc) _this.uploadRespond.cc = []
-            if (!_this.uploadRespond.to) _this.uploadRespond.to = []
-            this.setShadowRootMalicousLink('incident-preview-1')
-            //this.listData = data.data.results
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting all community list data'
-            })
-          })
+        getCommunityPost(_this.editItem.communityPostResourceId).then((response) => {
+          const { data } = response
+          _this.uploadRespond = data.data.communityPostEmail
+          _this.uploadRespond.visibleBodyForPreview =
+            data.data.communityPostEmail.editableBody ||
+            data.data.communityPostEmail.visibleBody ||
+            data.data.communityPostEmail.initialBody
+          if (_this.editItem) {
+            _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
+            _this.uploadRespond.Title = _this.editItem.title
+            _this.uploadRespond.Description = _this.editItem.description
+            _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection
+            _this.uploadRespond.Scope = _this.editItem.scope
+            _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray
+            _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName
+            _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName
+            _this.uploadRespond.PostedTime = _this.editItem.postedTime
+            _this.uploadRespond.LikeCount = _this.editItem.likeCount
+            _this.uploadRespond.CommentCount = _this.editItem.commentCount
+            _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount
+            _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
+            _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
+            _this.uploadRespond.CommunityName = this.editItem.communityName
+            _this.uploadRespond.AffectArea = data.data.affectArea
+          }
+          if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = []
+          if (!_this.uploadRespond.cc) _this.uploadRespond.cc = []
+          if (!_this.uploadRespond.to) _this.uploadRespond.to = []
+          this.setShadowRootMalicousLink('incident-preview-1')
+          //this.listData = data.data.results
+        })
       } else {
-        getSelectedEmailPreview(selectedItem.resourceId)
-          .then((response) => {
-            const { data } = response
-            this.uploadRespond = data.data
-            this.uploadRespond.initialBody = data.data.initialBody
-            this.uploadRespond.visibleBody = data.data.initialBody
-            this.uploadRespond.editableBody = response.data.data.initialBody
-            this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
-            // this.setShadowRootMalicousLink('incident-preview-1')
-            // this.listData = data.data.results
-          })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting all community list data'
-            })
-          })
+        getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
+          const { data } = response
+          this.uploadRespond = data.data
+          this.uploadRespond.initialBody = data.data.initialBody
+          this.uploadRespond.visibleBody = data.data.initialBody
+          this.uploadRespond.editableBody = response.data.data.initialBody
+          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+          // this.setShadowRootMalicousLink('incident-preview-1')
+          // this.listData = data.data.results
+        })
       }
     },
     onCancelClicked() {
@@ -2765,22 +2737,14 @@ export default {
         }
         //CommunityResourceId:this.$route.params.id ,
         updateCommunityPost(this.editItem.communityPostResourceId, payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Post has been updated'
-            })
+          .then(() => {
             this.saveDisable = false
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
           })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when updated a community post'
-            })
+          .catch(() => {
             this.saveDisable = false
           })
       } else {
@@ -2822,24 +2786,13 @@ export default {
           IsTermsAndConditionsAccepted: this.acceptCheckbox
         }
         createCommunityPost(payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Post has been created'
-            })
-            this.saveDisable = false
+          .then(() => {
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
           })
-          .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when creating a new community post'
-            })
-            this.saveDisable = false
-          })
+          .finally(() => (this.saveDisable = false))
       }
     },
     updateTags() {

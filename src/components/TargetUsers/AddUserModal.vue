@@ -277,22 +277,8 @@ export default {
       const payload = this.getCustomFieldsPayload()
       this.saveDisable = true
       createTargetUser(payload)
-        .then(({ data }) => {
-          if (data.status === 'FAILED') {
-            this.$store.dispatch('common/createSnackBar', {
-              message: data.message,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR
-            })
-            this.saveDisable = false
-          } else {
-            this.$store.dispatch('common/createSnackBar', {
-              message: '1 user added to Users List ',
-              icon: 'mdi-check-circle',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-            })
-            this.saveDisable = false
-            this.$emit('closeAddUserModalWithUpdate')
-          }
+        .then(() => {
+          this.$emit('closeAddUserModalWithUpdate')
         })
         .finally(() => (this.saveDisable = false))
     },
@@ -339,15 +325,7 @@ export default {
       const payload = this.getCustomFieldsPayload()
       delete payload.status
       updateTargetUser(payload)
-        .then((response) => {
-          if (response.data && response.data.message) {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
-          }
-          this.saveDisable = false
+        .then(() => {
           this.$emit('closeAddUserModalWithUpdate')
         })
         .finally(() => (this.saveDisable = false))

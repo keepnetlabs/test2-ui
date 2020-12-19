@@ -163,7 +163,6 @@ import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeId } from '@/api/common'
 import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
@@ -281,19 +280,9 @@ export default {
     callForCreateSmtpSettings(payload = {}) {
       createSMTPSettings(payload)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'New SMTP settings has been created',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'New SMTP settings can not be created'
-          })
+        .finally(() => {
           this.saveDisable = false
         })
     },
@@ -301,19 +290,9 @@ export default {
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'SMTP settings have been updated',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
-          this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
-        .catch(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'New SMTP settings can not be updated'
-          })
+        .finally(() => {
           this.saveDisable = false
         })
     },

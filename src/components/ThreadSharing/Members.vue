@@ -486,11 +486,7 @@ export default {
       const payload = {
         AppointedCompanyResourceId: this.appointNewOwnerId
       }
-      appointNewOwner(this.$route.params.id, payload).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          message: 'New community owner request has been sent'
-        })
+      appointNewOwner(this.$route.params.id, payload).then(() => {
         this.getMembers()
         this.showAppointANewOwnerModal = false
         setTimeout(() => {
@@ -520,41 +516,19 @@ export default {
     },
     listRequests() {},
     refuseRequest(reqId) {
-      refuseCommunityMembershipRequest(reqId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Membership refuse request has been accepted'
-          })
-          this.getMembers()
-          this.getRequestMembers()
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when refuse membership request'
-          })
-        })
+      refuseCommunityMembershipRequest(reqId).then(() => {
+        this.getMembers()
+        this.getRequestMembers()
+      })
     },
     acceptRequest(reqId) {
-      acceptCommunityMembershipRequest(reqId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Membership accept request has been accepted'
-          })
-          this.getMembers()
-          this.getRequestMembers()
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when accept membership'
-          })
-        })
+      acceptCommunityMembershipRequest(reqId).then(() => {
+        this.getMembers()
+        this.getRequestMembers()
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+      })
     },
     isOwnerOfTheCommunity() {},
     removeFromCommunity(item) {
@@ -563,24 +537,13 @@ export default {
       this.showRemoveFromCommunityModal = true
     },
     removeFromCommunityConfirm() {
-      removeFromCommunity(this.$route.params.id, this.removeCommunityId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: response.data.message // @atakan @nejat mesaj
-          })
-          this.getMembers()
-          this.showRemoveFromCommunityModal = false
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when remove a community member'
-          })
-        })
+      removeFromCommunity(this.$route.params.id, this.removeCommunityId).then(() => {
+        this.getMembers()
+        this.showRemoveFromCommunityModal = false
+        setTimeout(() => {
+          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+        }, 500)
+      })
     },
     onRemoveMember() {},
     getMembers() {

@@ -9,7 +9,11 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-footer>
-      <AppDialogFooter @handleClose="handleClose" @handleConfirm="handleConfirm" />
+      <AppDialogFooter
+        :confirmButtonDisabled="confirmButtonDisabled"
+        @handleClose="handleClose"
+        @handleConfirm="handleConfirm"
+      />
     </template>
   </AppDialog>
 </template>
@@ -18,7 +22,6 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { deleteTargetGroupUsers } from '@/api/targetUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'TargetGroupsUsersRemoveFromGroups',
   components: { AppDialogFooter, AppDialog },
@@ -37,6 +40,11 @@ export default {
     }
   },
   emits: ['closeDialog', 'handleRemoveUsers'],
+  data() {
+    return {
+      confirmButtonDisabled: false
+    }
+  },
   computed: {
     getContent() {
       let text = 'user'
@@ -46,16 +54,14 @@ export default {
   },
   methods: {
     handleConfirm() {
+      this.confirmButtonDisabled = true
       deleteTargetGroupUsers(this.resourceId, {
         targetUserResourceIds: this.selectedRows.map((item) => item.resourceId)
-      }).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: `${this.selectedRows.length} target user(s) removed from “${this.groupName}”`,
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
-        })
-        this.$emit('handleRemoveUsers')
       })
+        .then(() => {
+          this.$emit('handleRemoveUsers')
+        })
+        .finally(() => (this.confirmButtonDisabled = false))
     },
     handleClose() {
       this.$emit('closeDialog')

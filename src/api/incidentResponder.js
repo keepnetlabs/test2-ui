@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'ir/dashboard'
 export function getTopRules() {
   return testRequest.get(`${API_URL}/top-rules`)
@@ -35,7 +36,9 @@ export function searchNotifiedMail(payload) {
 }
 
 export function updateNotifiedEmail(id, payload) {
-  return testRequest.put(`/notified-emails/${id}`, payload)
+  return testRequest.put(`/notified-emails/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getRoiSettings() {
@@ -43,5 +46,7 @@ export function getRoiSettings() {
 }
 
 export function updateRoiSettings(payload) {
-  return testRequest.put('/companies/roi-settings', payload)
+  return testRequest.put('/companies/roi-settings', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }

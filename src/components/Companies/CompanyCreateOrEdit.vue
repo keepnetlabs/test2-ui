@@ -724,45 +724,21 @@ export default {
 
         if (this.edit) {
           updateCompany(this.selectedExtend.resourceId, this.formData)
-            .then((response) => {
-              if (response.data && response.data.message) {
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'Company has been updated',
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  icon: 'mdi-check-circle-outline'
-                })
-              }
+            .then(() => {
               this.saveDisable = false
               this.cancelForm()
             })
-            .catch((error) => {
+            .catch(() => {
               this.saveDisable = false
-              this.$store.dispatch('common/createSnackBar', {
-                message: 'Company can not be updated',
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                icon: 'mdi-alert-circle'
-              })
             })
         } else {
           createCompany(this.formData)
-            .then((response) => {
-              if (response.data && response.data.message) {
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'Company has been created',
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  icon: 'mdi-check-circle-outline'
-                })
-              }
+            .then(() => {
               this.saveDisable = false
               this.cancelForm()
             })
-            .catch((error) => {
+            .catch(() => {
               this.saveDisable = false
-              this.$store.dispatch('common/createSnackBar', {
-                message: 'Company can not be created',
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                icon: 'mdi-alert-circle'
-              })
             })
         }
       }

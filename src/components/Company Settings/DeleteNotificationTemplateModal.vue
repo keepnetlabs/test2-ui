@@ -12,9 +12,14 @@
         <v-btn class="users__button" text color="#f56c6c" @click="handleCloseDialog">{{
           labels.Cancel
         }}</v-btn>
-        <v-btn class="users__button" text color="#2196f3" @click="handleDelete">{{
-          labels.Delete
-        }}</v-btn>
+        <v-btn
+          :disabled="isDeleteButtonDisabled"
+          class="users__button"
+          text
+          color="#2196f3"
+          @click="handleDelete"
+          >{{ labels.Delete }}</v-btn
+        >
       </div>
     </template>
   </app-dialog>
@@ -35,6 +40,10 @@ export default {
     },
     status: {
       type: Boolean
+    },
+    isDeleteButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

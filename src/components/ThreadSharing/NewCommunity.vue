@@ -258,42 +258,21 @@ export default {
         }
         if (!!this.resourceId) {
           updateCommunity(this.resourceId, payload)
-            .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'Community have been updated'
-              })
+            .then(() => {
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
               this.$router.push(`/community/${this.resourceId}`)
             })
-            .catch(() => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Community can not be updated'
-              })
-            })
             .finally(() => (this.saveDisable = false))
         } else {
           createCommunity(payload)
             .then((response) => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                message: 'New community has been created'
-              })
-
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
               this.$router.push(`/community/${response.data.data.resourceId}`)
-            })
-            .catch(() => {
-              this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'New community can not be created'
-              })
             })
             .finally(() => (this.saveDisable = false))
         }
@@ -304,27 +283,20 @@ export default {
       }
     },
     getBusinessCategories() {
-      listBusinessCategories()
-        .then((response) => {
-          this.categories = response.data.data
-          if (!!this.resourceId) {
-            this.name = this.communityItem.communityName
-            this.description = this.communityItem.communityDescription
-            this.privacystatusid = this.communityItem.privacyStatusId.toString()
-            this.selectedCategory = {
-              resourceId: this.communityItem.industryResourceId,
-              name: this.categories.find(
-                (item) => item.resourceId == this.communityItem.industryResourceId
-              ).name
-            }
+      listBusinessCategories().then((response) => {
+        this.categories = response.data.data
+        if (!!this.resourceId) {
+          this.name = this.communityItem.communityName
+          this.description = this.communityItem.communityDescription
+          this.privacystatusid = this.communityItem.privacyStatusId.toString()
+          this.selectedCategory = {
+            resourceId: this.communityItem.industryResourceId,
+            name: this.categories.find(
+              (item) => item.resourceId == this.communityItem.industryResourceId
+            ).name
           }
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Error when getting business category list'
-          })
-        })
+        }
+      })
     }
   },
   mounted() {

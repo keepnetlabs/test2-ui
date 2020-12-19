@@ -1468,11 +1468,6 @@ export default {
         })
           .then(() => {
             this.callForGetRoiSettings()
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'ROI settings has been updated',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
             this.isShowRoi = false
             this.$store.dispatch('investigations/getIrSummary')
           })
@@ -1596,10 +1591,6 @@ export default {
             this.investigationsData = data || []
           })
           .catch((error) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: 'Error when getting the recent investigations! '
-            })
             this.investigationsData = []
           })
           .finally(() => {
@@ -1619,11 +1610,6 @@ export default {
             this.topRules.table = data || []
           })
           .catch((error) => {
-            /* this.$store.dispatch('common/createSnackBar', {
-                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                message: 'Error when getting the top rules!'
-              })
-              */
             this.topRules.table = []
           })
           .finally(() => (this.topRulesLoading = false))
@@ -1675,13 +1661,6 @@ export default {
           const tableData = response.data.data
           this.matchingInvestigationData = tableData.results
         })
-        .catch((error) => {
-          /*this.$store.dispatch('common/createSnackBar', {
-                  errorState: true,
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: 'Error when getting the notified emails!'
-                })*/
-        })
         .finally(() => (this.isMatchingInvestigationLoading = false))
     },
     onEmptyBtnClicked() {
@@ -1722,12 +1701,6 @@ export default {
 
         updateNotifiedEmail(item.resourceId, payload)
           .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: response.data.message,
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
-
             this.callForGetRunningInvestigations()
             this.callForGetTopRules()
             this.callForSearchNotifiedMail()

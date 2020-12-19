@@ -654,13 +654,7 @@ export default {
         },
         { settings: [] }
       )
-      postWidgets(payload).then((response) => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: response.data.message,
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: 'mdi-check-circle'
-        })
-      })
+      postWidgets(payload)
     },
     callForGetWidgets() {
       return getWidgets()

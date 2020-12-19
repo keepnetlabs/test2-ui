@@ -167,20 +167,9 @@ export default {
       this.deletedClientId = row.resourceId
     },
     isWantToDeleteConfirm() {
-      deleteClient(this.deletedClientId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Client has been deleted'
-          })
-          this.getDatatableList()
-        })
-        .catch((error) => {
-          this.$store.dispatch('common/createSnackBar', {
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            message: 'Client can not be deleted'
-          })
-        })
+      deleteClient(this.deletedClientId).then(() => {
+        this.getDatatableList()
+      })
       this.isWantToDelete = false
     },
     handleAdd() {},

@@ -281,13 +281,6 @@ export default {
           this.isLoading = false
         })
         .catch(() => {
-          /*
-            this.$store.dispatch('common/createSnackBar', {
-              errorState: true,
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message: "Error when getting the user phishing reporter! "
-            })
-             */
           this.isLoading = false
         })
     },
@@ -315,12 +308,7 @@ export default {
     },
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
-        .then((response) => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: response.data.message,
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
+        .then(() => {
           this.callForPhishingReporterUser()
           this.$emit('callForPhishingReporterSummary')
         })

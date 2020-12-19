@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'analysis-engines'
 export function getIntegrationList(payload) {
   return testRequest.post(`${API_URL}/search`, payload)
@@ -9,7 +10,10 @@ export function getMailConfigurationList(payload) {
 }
 
 export function deleteO365(url) {
-  return testRequest.delete(`mail-configurations/o365/${url}`, { loading: true })
+  return testRequest.delete(`mail-configurations/o365/${url}`, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function exportMailConfiguration(payload) {
@@ -19,11 +23,17 @@ export function exportMailConfiguration(payload) {
 }
 
 export function createO365(payload) {
-  return testRequest.post('mail-configurations/o365', payload, { loading: true })
+  return testRequest.post('mail-configurations/o365', payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function updateO365(payload, url) {
-  return testRequest.put(`mail-configurations/o365/${url}`, payload, { loading: true })
+  return testRequest.put(`mail-configurations/o365/${url}`, payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function checkApiConnectivity(payload) {

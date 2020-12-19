@@ -7,11 +7,13 @@
     @changeStatus="changeStatus"
     size="maximum"
     maxHeightSize="auto"
+    class-name="add-to-group-modal"
   >
     <template v-slot:app-dialog-body>
       <v-form ref="refFormAddToGroup" lazy-validation>
         <Datatable
-          v-show="showTable"
+          :is-column-filter-active="tableOptions.isColumnFilterActive"
+          :loading="isLoading"
           :download-button="{ show: false, disabled: false }"
           :columns="tableOptions.columns"
           :countRow="5"
@@ -22,16 +24,13 @@
           :rowActions="tableOptions.rowActions"
           :selectEvent="tableOptions.selectEvent"
           :selectable="true"
-          ref="refTableAddToGroup"
+          :table="tableData"
           refName="refNameTableAddToGroup"
+          @columnFilterChanged="columnFilterChanged"
+          @columnFilterCleared="columnFilterCleared"
           @handleSelectionChange="handleSelectionChange"
-        >
-          <template v-slot:datatable-custom-column="{ scope }">
-            <span class="datatable-link" v-if="scope.row.name">
-              {{ scope.row.name }}
-            </span>
-          </template>
-        </Datatable>
+          @refreshAction="getTableData"
+        />
       </v-form>
     </template>
     <template v-slot:app-dialog-footer>
@@ -58,7 +57,7 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { getCompanyGroups, updateCompanyGroup } from '../../api/company'
+import { getCompanyGroups, searchCompanyGroups, updateCompanyGroup } from '../../api/company'
 import Datatable from '../../components/DataTable'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
@@ -79,11 +78,14 @@ export default {
   },
   data() {
     return {
+      isLoading: false,
       saveDisable: false,
       labels,
+      tableData: [],
       selectedArray: [],
       showTable: false,
       tableOptions: {
+        isColumnFilterActive: false,
         columns: [
           {
             property: 'name',
@@ -93,7 +95,8 @@ export default {
             fixed: 'left',
             sortable: true,
             show: true,
-            type: 'slot'
+            type: 'text',
+            filterableType: 'text'
           },
           {
             property: 'companyCount',
@@ -106,14 +109,15 @@ export default {
             width: 130
           },
           {
-            property: 'addedTime',
+            property: 'createTime',
             align: 'left',
             editable: false,
             label: 'Date Created',
             sortable: true,
             show: true,
             type: 'text',
-            width: 160
+            width: 160,
+            filterableType: 'date'
           }
         ],
         pageSizes: [5, 10, 25],
@@ -131,6 +135,21 @@ export default {
         addButton: {
           show: false
         }
+      },
+      payload: {
+        pageSize: 30000,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
@@ -140,7 +159,6 @@ export default {
       return len > 1 ? `Add ${len} companies to company groups` : `Add a company to company groups`
     }
   },
-  created() {},
   mounted() {
     this.getTableData()
   },
@@ -161,48 +179,64 @@ export default {
             name: x.name,
             companyResourceIdArray: companyIdArray
           }
-          updateCompanyGroup(x.resourceId, payload)
-            .then((response) => {
-              if (response.data && response.data.message) {
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'Company group has been updated',
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  icon: 'mdi-check-circle-outline'
-                })
-              }
-              this.saveDisable = false
-            })
-            .catch((error) => {
-              if (response.data && response.data.message) {
-                this.$store.dispatch('common/createSnackBar', {
-                  message: 'Company group can not be updated',
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  icon: 'mdi-check-circle-outline'
-                })
-              }
-              this.saveDisable = false
-            })
+          updateCompanyGroup(x.resourceId, payload).finally(() => (this.saveDisable = false))
         })
         this.changeStatus(false)
       }
     },
     getTableData() {
-      getCompanyGroups()
+      this.isLoading = true
+      searchCompanyGroups(this.payload)
         .then((response) => {
-          this.showTable = true
-          this.$refs.refTableAddToGroup.loadWithDataArray(
-            response.data.data.hasOwnProperty('companyGroups') &&
-              response.data.data.companyGroups.length > 0
-              ? response.data.data.companyGroups
-              : []
-          )
+          this.tableData = response.data.data.results.length > 0 ? response.data.data.results : []
         })
-        .catch((error) => {
-          this.$refs.refTableAddToGroup.loadWithDataArray([])
-        })
+        .finally(() => (this.isLoading = false))
     },
     handleSelectionChange(value) {
       this.selectedArray = value
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.getTableData()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getTableData()
+
+      this.tableOptions.isColumnFilterActive =
+        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     }
   }
 }
@@ -234,6 +268,11 @@ export default {
       line-height: 1.71;
       letter-spacing: normal;
     }
+  }
+}
+.add-to-group-modal {
+  .k-table__wrapper {
+    padding-bottom: 0;
   }
 }
 </style>

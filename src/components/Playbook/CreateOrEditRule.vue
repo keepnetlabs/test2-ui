@@ -527,11 +527,6 @@ export default {
         this.saveDisable = true
         createPlaybook(payload)
           .then(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Playbook has been created',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
             this.$emit('closeFormWithUpdate')
           })
           .finally(() => (this.saveDisable = false))
@@ -603,11 +598,6 @@ export default {
         this.saveDisable = true
         updatePlaybook(payload)
           .then(() => {
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'Playbook has been updated',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
-            })
             this.$emit('closeFormWithUpdate')
           })
           .finally(() => (this.saveDisable = false))
@@ -644,11 +634,6 @@ export default {
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
         }
       } else {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'Condition set can not be empty',
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-alert-circle'
-        })
         this.isValid = true
       }
     },

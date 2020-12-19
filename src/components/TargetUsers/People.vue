@@ -438,11 +438,6 @@ export default {
     handleDeleteUser(selectedUser) {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'Target user has been deleted',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            icon: 'mdi-check-circle'
-          })
           this.callForTargetUsers()
         }
       })

@@ -130,7 +130,10 @@
                 :label="labels.Users"
                 name="first"
                 v-if="checkPermissions('phishing-reporter/search', 'POST')"
-                ><users ref="refUsers" @callForPhishingReporterSummary="getPhishingReportSummary()"
+                ><users
+                  v-if="tab === 'first'"
+                  ref="refUsers"
+                  @callForPhishingReporterSummary="getPhishingReportSummary()"
               /></el-tab-pane>
               <el-tab-pane
                 :label="labels.Settings"

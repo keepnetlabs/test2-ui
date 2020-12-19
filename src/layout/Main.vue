@@ -1256,15 +1256,9 @@ export default {
           NewPassword: this.newPassword,
           ConfirmNewPassword: this.reNewPassword
         }
-        updatePassword(payload)
-          .then((response) => {
-            this.$store.dispatch('common/createSnackBar', {
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              message: 'Password has been changed successfully!'
-            })
-            this.openPasswordChange = false
-          })
-          .catch((error) => {})
+        updatePassword(payload).then(() => {
+          this.openPasswordChange = false
+        })
       }
     },
     getCommunityName() {

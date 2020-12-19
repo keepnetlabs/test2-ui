@@ -61,6 +61,7 @@
             @click="callForSendInformationEmail(selectedRow.resourceId)"
             color="#2196f3"
             rounded
+            :disabled="sendInformationEmailDisabled"
             class="white--text btn-util"
           >
             <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
@@ -118,6 +119,7 @@ export default {
   data() {
     return {
       saveDisable: false,
+      sendInformationEmailDisabled: false,
       formValues: {
         firstName: '',
         lastName: '',
@@ -152,12 +154,9 @@ export default {
   },
   methods: {
     callForSendInformationEmail(resourceId = '') {
-      sendInformationEmail(resourceId).then(() => {
-        this.$store.dispatch('common/createSnackBar', {
-          message: 'Information email has been sent',
-          icon: 'mdi-check-circle',
-          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-        })
+      this.sendInformationEmailDisabled = true
+      sendInformationEmail(resourceId).finally(() => {
+        this.sendInformationEmailDisabled = false
       })
     },
     closeOverlay() {
@@ -213,12 +212,6 @@ export default {
     callForCreateSystemUser(payload) {
       createSystemUser(payload)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'System user has been created',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
-
           this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })
@@ -227,11 +220,6 @@ export default {
     callForUpdateSystemUser(payload) {
       updateSystemUser(payload)
         .then(() => {
-          this.$store.dispatch('common/createSnackBar', {
-            message: 'System user has been updated',
-            icon: 'mdi-check-circle',
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
-          })
           this.saveDisable = false
           this.$emit('closeOverlayWithUpdate')
         })

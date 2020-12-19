@@ -1,11 +1,14 @@
 import testRequest from '../utils/testRequest'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function getPhishingReportSummary({ startDate, endDate }) {
   return testRequest.get(`/phishing-reporter/summary?startDate=${startDate}&endDate=${endDate}`)
 }
 
 export function createPhishingReporter(payload) {
-  return testRequest.post('/phishing-reporter', payload)
+  return testRequest.post('/phishing-reporter', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getPhishingReporter() {
@@ -22,7 +25,9 @@ export function getReporters() {
 }
 
 export function deletePhishingReporterUser(id) {
-  return testRequest.delete(`/phishing-reporter-users/${id}`)
+  return testRequest.delete(`/phishing-reporter-users/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function searchPhishingReporterUser(payload) {
