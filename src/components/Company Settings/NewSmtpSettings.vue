@@ -4,7 +4,7 @@
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="labels.NewSMTPSetting"
+    :title="getTitle"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
     :saveDisable="saveDisable"
@@ -102,7 +102,11 @@
             label="Has SMTP Relay"
           />
         </form-group>
-        <make-available-for ref="refMakeAvailableFor" v-model="formValues.availableForRequests" />
+        <make-available-for
+          ref="refMakeAvailableFor"
+          v-model="formValues.availableForRequests"
+          class="mb-2"
+        />
         <form-group title="Reply to">
           <InputEmail
             placeholder="Enter Reply to"
@@ -216,6 +220,11 @@ export default {
       showPassword: false,
       serviceProviderItems: [],
       validations: validations
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.isEdit && this.resourceId ? labels.EditSMTPSetting : labels.NewSMTPSetting
     }
   },
   methods: {
