@@ -48,7 +48,6 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    debugger
     const refs = this.$refs
     if (refs && refs.refPeople) {
       const refPeople = refs.refPeople
