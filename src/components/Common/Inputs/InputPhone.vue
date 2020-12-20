@@ -71,7 +71,6 @@ export default {
   },
   methods: {
     validPhone(newVal, oldVal) {
-      debugger
       if (
         (newVal.length > 10 && this.phoneObject.possibility === 'too-long') ||
         (newVal.length && /[a-zA-Z]+$/gi.test(newVal))

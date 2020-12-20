@@ -4,18 +4,15 @@
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="labels.NewNotificationTemplate"
+    :title="getModalTitle"
     icon-name="mdi-email"
     class-name="new-smtp-setting"
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
-      <app-modal-body-header
-        title="Create New Notification Template"
-        sub-title="Define notification template settings and create email template"
-      />
+      <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm" lazy-validation>
-        <form-group title="Template Name">
+        <form-group title="Template Name" has-hint>
           <v-text-field
             v-bind="commonRules"
             v-model.trim="formValues.name"
@@ -24,7 +21,7 @@
             dense
           />
         </form-group>
-        <form-group title="Category">
+        <form-group title="Category" has-hint>
           <k-select
             v-bind="commonRules"
             v-model.trim="formValues.emailTemplateCategoryResourceId"
@@ -35,7 +32,7 @@
             placeholder="Select Option"
           />
         </form-group>
-        <form-group title="SMTP">
+        <form-group title="SMTP" has-hint>
           <k-select
             v-bind="commonRules"
             v-model.trim="formValues.smtpSettingResourceId"
@@ -144,6 +141,21 @@ export default {
           ]
         }
       }
+    }
+  },
+  computed: {
+    getModalTitle() {
+      return this.selectedItem ? labels.EditNotificationTemplate : labels.NewNotificationTemplate
+    },
+    getBodyTitle() {
+      return this.selectedItem
+        ? labels.EditNewNotificationTemplate
+        : labels.CreateNewNotificationTemplate
+    },
+    getBodySubtitle() {
+      return this.selectedItem
+        ? labels.EditNotificationTemplateSubtitle
+        : labels.NewNotificationTemplateSubtitle
     }
   },
   created() {

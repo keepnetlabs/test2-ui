@@ -1166,8 +1166,9 @@ export default {
               this.$refs.elTableRef.toggleRowSelection(child, false)
               deletedIds.push(child[this.rowKey])
             }
+
+            const allItems = this.getAllItems(this.initialData, [], false, false)
             for (const id of deletedIds) {
-              const allItems = this.getAllItems(this.initialData)
               this.clusteredItems = this.clusteredItems.filter((item) => item[this.rowKey] !== id)
               const findedNewClusterItem = allItems.find((i) => i[this.rowKey] === id)
               this.clusteredItems.push(findedNewClusterItem)
@@ -1335,7 +1336,10 @@ export default {
       const renderedTotalLength = this.getTotalLength(dataRef)
       this.renderedTotalLength = renderedTotalLength
       const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
-      if (this.groupable && comparedValueLength >= this.getAllItems(dataRef, []).length) {
+      if (
+        this.groupable &&
+        comparedValueLength >= this.getAllItems(dataRef, [], false, false).length
+      ) {
         dataRef = this.getAllItems(dataRef, [], false, false)
       }
       const selectedItems = dataRef.filter((item) => {
@@ -1998,14 +2002,28 @@ export default {
         }
       }
     },
+    toggleToTheClusterIfChild(row = {}) {
+      if (row.isChild) {
+        const index = this.clusteredItems.findIndex(
+          (item) => JSON.stringify(item) === JSON.stringify(row)
+        )
+        if (index > -1) {
+          this.clusteredItems.splice(index, 1)
+        } else {
+          this.clusteredItems.push(row)
+        }
+      }
+    },
     handleSelect(selection, row) {
       if (this.groupable) {
         this.handleToggleOrLazyWhenCheckboxSelected(
           row,
           !!selection.find((item) => JSON.stringify(item) === JSON.stringify(row))
         )
+
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
+            this.toggleToTheClusterIfChild(row)
             for (let child of row.children) {
               if (child.children) {
                 this.selectChildrenByRowCheckbox(child.children, selection)
@@ -2018,6 +2036,7 @@ export default {
               }
             }
           } else {
+            this.toggleToTheClusterIfChild(row)
             for (let child of row.children) {
               if (child.children) {
                 this.unSelectChildrenByRowCheckbox(child.children, selection)
@@ -2038,16 +2057,7 @@ export default {
             }
           }
         } else {
-          if (row.isChild) {
-            const index = this.clusteredItems.findIndex(
-              (item) => JSON.stringify(item) === JSON.stringify(row)
-            )
-            if (index > -1) {
-              this.clusteredItems.splice(index, 1)
-            } else {
-              this.clusteredItems.push(row)
-            }
-          }
+          this.addToTheClusterIfChild(row)
         }
         this.multipleSelection = selection
         if (this.multipleSelection.length === 0) {

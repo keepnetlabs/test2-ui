@@ -15,6 +15,8 @@ export const labels = {
   Back: 'BACK',
   Email: 'Email Address',
   FromName: 'From Name',
+  CreateNewNotificationTemplate: 'Create New Notification Template',
+  EditNewNotificationTemplate: 'Edit Notification Template',
   Name: 'Name',
   Description: 'Description',
   Low: 'Low',
@@ -168,7 +170,12 @@ export const labels = {
   DeleteNotificationTemplateBody:
     'This notification template will be deleted. All data will be lost.',
   NewNotificationTemplate: 'New Notification Template',
+  NewNotificationTemplateSubtitle:
+    'Define notification template settings and create email template',
+  EditNotificationTemplateSubtitle: 'Define notification template settings and edit email template',
+  EditNotificationTemplate: 'Edit Notification Template',
   NewSMTPSetting: 'New SMTP Setting',
+  EditSMTPSetting: 'Edit SMTP Setting',
   CancelUserImport: 'Cancel user import?',
   CancelUserImportSubtitle: 'Operation will be abondened',
   CancelUserImportBody: 'You will lose all progress and users will not be imported'
