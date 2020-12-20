@@ -14,7 +14,7 @@ class isValid {
     this._status = newStatus
   }
 }
-const onur = new isValid(false)
+const validatorObj = new isValid(false)
 
 export default {
   name: 'InputPhone',
@@ -32,6 +32,10 @@ export default {
     placeholder: {
       default: 'Enter a phone number'
     },
+    mode: {
+      default: 'international'
+    },
+
     defaultCountry: {
       default: 'GB'
     },
@@ -49,10 +53,13 @@ export default {
     autocomplete: {
       default: 'off'
     },
+    maxLen: {
+      default: 17
+    },
     rules: {
       default: (e) => [
         () => {
-          return onur.status || 'Invalid phone number'
+          return validatorObj.status || 'Invalid phone number'
         }
       ]
     }
@@ -62,16 +69,23 @@ export default {
       isMounted: false
     }
   },
-  mounted() {},
   methods: {
-    validPhone() {
-      onur.status = this.phoneObject.isValid
+    validPhone(newVal, oldVal) {
+      debugger
+      if (
+        (newVal.length > 10 && this.phoneObject.possibility === 'too-long') ||
+        (newVal.length && /[a-zA-Z]+$/gi.test(newVal))
+      ) {
+        this.$emit('input', oldVal)
+        this.$refs.input.lazyValue = oldVal
+      }
+      validatorObj.status = this.phoneObject.isValid
       this.$forceUpdate()
     }
   },
   watch: {
-    value(val) {
-      this.validPhone()
+    value(newVal, oldVal) {
+      this.validPhone(newVal, oldVal)
     }
   }
 }
