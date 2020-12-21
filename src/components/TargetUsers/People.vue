@@ -21,6 +21,7 @@
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
       :editData="selectedRow"
       :custom-fields="customFields"
+      :company-license="companyLicense"
     />
     <custom-fields-modal
       :status="isWantToShowCustomFieldsModal"
@@ -163,6 +164,11 @@ export default {
     AddUsersManuallyModal,
     AddUserModal,
     TargetUserImportFromAFile
+  },
+  props: {
+    companyLicense: {
+      type: Object
+    }
   },
   data: () => ({
     tableCredientials: {

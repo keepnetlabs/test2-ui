@@ -1,34 +1,19 @@
 <template>
   <div class="target-users" id="target-users">
     <v-layout wrap class="target-users__container">
-      <app-dialog
+      <target-users-check-license-dialog
         v-if="showLicenseExceededDialog"
         :status="showLicenseExceededDialog"
-        icon="mdi-license"
-        title="License Warning"
-        body="License is exceeded"
-        @changeStatus="toggleShowLicenseExceededDialog"
-      >
-        <template #app-dialog-footer>
-          <div class="d-flex justify-end">
-            <v-btn
-              text
-              color="#2196f3"
-              class="k-dialog__button"
-              @click="toggleShowLicenseExceededDialog"
-            >
-              {{ labels.OK }}
-            </v-btn>
-          </div>
-        </template>
-      </app-dialog>
+        :dialogBody="getDialogBody"
+        @close-overlay="toggleShowLicenseExceededDialog"
+      />
       <v-card class="target-users__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane
             label="People"
             name="first"
             v-if="checkPermissions('target-users/search', 'POST')"
-            ><people ref="refPeople" v-if="tab === 'first'"
+            ><people ref="refPeople" v-if="tab === 'first'" :company-license="companyLicense"
           /></el-tab-pane>
           <el-tab-pane
             label="Group"
@@ -47,19 +32,30 @@ import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
 import { checkPermission } from '@/utils/functions'
 import { getCheckCompanyLicense } from '@/api/company'
-import labels from '@/model/constants/labels'
-import AppDialog from '@/components/AppDialog'
+import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 export default {
   components: {
-    AppDialog,
+    TargetUsersCheckLicenseDialog,
     People,
     Groups
   },
+  provide() {
+    return {
+      companyLicense: this.companyLicense
+    }
+  },
   data() {
     return {
+      companyLicense: null,
       showLicenseExceededDialog: false,
-      tab: 'first',
-      labels
+      tab: 'first'
+    }
+  },
+  computed: {
+    getDialogBody() {
+      return this.companyLicense
+        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
+        : ''
     }
   },
   created() {
@@ -105,6 +101,7 @@ export default {
       getCheckCompanyLicense(companyResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
         const { isLicenseExceeded } = data
+        this.companyLicense = data
         if (isLicenseExceeded) {
           this.toggleShowLicenseExceededDialog()
         }
