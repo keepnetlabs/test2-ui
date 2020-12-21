@@ -14,46 +14,62 @@
         sub-title="Add new client to provide integration service"
       />
       <v-form ref="refForm">
-        <form-group title="Client Name" sub-title="This name will represent the client company">
+        <form-group
+          title="Client Name"
+          sub-title="This name will represent the client company"
+          has-hint
+        >
           <v-text-field
             placeholder="Enter name"
             outlined
             dense
             class="auth-key__textfield"
+            hint="*Required"
+            persistent-hint
             v-model.trim="formValues.clientName"
           ></v-text-field>
+          <v-btn
+            @click="submit"
+            class="white--text btn-util"
+            style="margin-bottom: 10px;"
+            color="#2196f3"
+            rounded
+          >
+            {{ labels.GenerateClientCred }}
+          </v-btn>
         </form-group>
-        <form-group
-          title="Generate API Key for Customer ID"
-          sub-title="Enter Customer ID of the client to generate an API Key"
-          class-name="auth-key"
-        >
+        <form-group title="Client ID" sub-title="Generated Client ID" class-name="auth-key">
           <div class="auth-key__container">
             <v-text-field
-              placeholder="Enter Customer ID"
+              placeholder="Generated Client ID"
               outlined
               dense
               class="auth-key__textfield"
+              :disabled="true"
               v-model.trim="formValues.authSecret"
             ></v-text-field>
-            <v-btn
-              @click="submit"
-              class="white--text btn-util btn-save-changes ml-6"
-              color="#2196f3"
-              rounded
-            >
-              GENERATE API KEY
-            </v-btn>
           </div>
         </form-group>
-        <form-group title="API Key" sub-title="Copy generated key and send it to your client">
+        <form-group
+          title="Client Secret"
+          sub-title="Please save API Secret in a safe place. It is only displayed once"
+        >
           <v-text-field
-            placeholder="Generate API Key first"
+            placeholder="Generated Client Secret"
             outlined
             dense
             class="auth-key__textfield"
+            :disabled="true"
             v-model.trim="formValues.apiKey"
           ></v-text-field>
+        </form-group>
+        <form-group title="Status">
+          <v-switch
+            v-model="formValues.status"
+            :label="formValues.status ? 'Active' : 'Inactive'"
+            class="k-switch"
+            color="#2196f3"
+          />
         </form-group>
       </v-form>
     </template>
@@ -102,7 +118,8 @@ export default {
       formValues: {
         clientName: '',
         authSecret: '',
-        apiKey: ''
+        apiKey: '',
+        status: true
       }
     }
   },

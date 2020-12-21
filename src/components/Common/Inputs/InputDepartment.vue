@@ -1,7 +1,7 @@
 <script>
 import { VTextField } from 'vuetify/lib'
 import * as Validations from '@/utils/validations'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'InputDepartment',
   extends: VTextField,
@@ -23,8 +23,8 @@ export default {
     },
     rules: {
       default: () => [
-        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
-        (v) => Validations.maxLength(v, 64, 'Max 64 characters')
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Department))
       ]
     }
   }

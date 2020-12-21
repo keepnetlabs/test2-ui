@@ -1,7 +1,7 @@
 <script>
 import { VTextField } from 'vuetify/lib'
 import * as Validations from '@/utils/validations'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'InputLastName',
   extends: VTextField,
@@ -26,9 +26,10 @@ export default {
     },
     rules: {
       default: () => [
-        (v) => Validations.required(v, 'Required'),
-        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
-        (v) => Validations.maxLength(v, 40, 'Max 40 characters')
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) =>
+          Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.LastNameSecondLower, 40))
       ]
     }
   }

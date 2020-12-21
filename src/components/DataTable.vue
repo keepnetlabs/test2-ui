@@ -704,7 +704,7 @@
             <template v-slot:empty>
               <div class="empty-table">
                 <div class="empty-inline">
-                  <slot name="empty-table-inline">
+                  <slot name="empty-table-inline-sort">
                     <h2>Sorry, that search and filter criteria has no results.</h2>
                     <p>Please try adjusting your search or filter</p>
                   </slot>

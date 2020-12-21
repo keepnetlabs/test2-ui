@@ -31,23 +31,20 @@ export default {
       default: true
     },
     rules: {
-      default: () => COMMON_CONSTANTS.DEFAULT_EMAIL_RULES
+      default: () => [...COMMON_CONSTANTS.DEFAULT_EMAIL_RULES]
     }
   },
   created() {
-    //That means this object pointer has somewhere in the memory
-    if (this.rules === COMMON_CONSTANTS.DEFAULT_EMAIL_RULES) {
-      if (this.required) {
-        this.rules.splice(
-          2,
-          0,
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.minLength(v, 8, labels.getMinLengthMessage(labels.Email, 8))
-        )
-      } else {
-        this.persistentHint = false
-        this.hint = null
-      }
+    if (this.required) {
+      this.rules.splice(
+        2,
+        0,
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.minLength(v, 8, labels.getMinLengthMessage(labels.Email, 8))
+      )
+    } else {
+      this.persistentHint = false
+      this.hint = null
     }
   }
 }

@@ -301,6 +301,11 @@ export default {
     getCustomFieldRules(item = {}) {
       const rules = []
       item.isRequired && rules.push((v) => this.validations.required(v, 'Required'))
+      if (item.fieldDataType !== 'Boolean') {
+        rules.push((v) =>
+          this.validations.maxLength(v, 256, labels.getMaxLengthMessage(item.name, 256))
+        )
+      }
       item.fieldDataType === 'Email' &&
         rules.push((v) => this.validations.mail(v, 'Invalid email address'))
       return rules

@@ -111,6 +111,7 @@
           class="new-integration__footer-btn-save white--text"
           color="#2196f3"
           rounded
+          :disabled="saveDisable"
         >
           {{ labels.Save }}
         </v-btn>
@@ -129,7 +130,6 @@ import {
   createTargetUserCustomField,
   getTargetUserCustomFieldsByCompanyId
 } from '@/api/targetUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import CustomFieldsLoading from '@/components/SkeletonLoading/CustomFieldsLoading'
 import labels from '@/model/constants/labels'
 
@@ -147,11 +147,6 @@ export default {
       type: Boolean
     }
   },
-  computed: {
-    getAppDialogButtonText() {
-      return this.selectedItem && this.selectedItem.isActive ? 'Delete' : 'Active'
-    }
-  },
   data() {
     return {
       labels,
@@ -165,7 +160,8 @@ export default {
       },
       unActiveCustomFields: [],
       copyOfCustomFields: [],
-      isMakePost: false
+      isMakePost: false,
+      saveDisable: false
     }
   },
   methods: {
@@ -290,6 +286,7 @@ export default {
         targetUserCustomFields: updatedFields
       }
       this.loading = true
+      this.saveDisable = true
       bulkUpdateOfCustomFields(payload)
         .then(() => {
           this.isMakePost = true
@@ -297,6 +294,7 @@ export default {
         })
         .catch(() => (this.loading = false))
         .finally(() => {
+          this.saveDisable = false
           this.closeOverlay()
         })
     },
