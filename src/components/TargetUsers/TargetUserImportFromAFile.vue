@@ -839,6 +839,7 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
+      this.step3Loading = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
       requestBody.map((x, i, t) => {

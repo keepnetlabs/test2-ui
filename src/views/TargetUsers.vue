@@ -92,6 +92,14 @@ export default {
         next(false)
       } else if (refPeople.isWantToShowCustomFieldsModal) {
         next(false)
+      } else if (refs && refs.refPeople.$refs.targetUserFromAFile) {
+        const refExcelUpload = refs.refPeople.$refs.targetUserFromAFile
+        if (refExcelUpload.isExcelUploaded) {
+          refExcelUpload.closeTargetUserImport = true
+          next(false)
+        } else if (refExcelUpload.isLeaveAccepted) {
+          next()
+        } else next()
       } else {
         next()
       }
