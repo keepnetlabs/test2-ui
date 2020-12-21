@@ -125,6 +125,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  CLIENTID: 'clientId',
   COMPANYID: 'companyId',
   DIRECTORYID: 'directoryId',
   APPLICATIONID: 'applicationId',
@@ -194,6 +195,7 @@ export const PROPERTY_STORE = {
   USERCOUNT: 'userCount',
   TYPENAME: 'typeName',
   JOBTITLE: 'jobTitle',
+  CLIENTNAME: 'clientName',
   PLATFORM: 'platform',
   LOGID: 'logId',
   LOGDATE: 'logDate',

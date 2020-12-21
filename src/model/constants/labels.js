@@ -5,7 +5,9 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  ApiKey: 'API Key',
   CommunityName: 'Community Name',
+  ClientName: 'Client Name',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   CannotStartWithSpace: 'Cannot start with space',
@@ -183,7 +185,11 @@ export const labels = {
   EditSMTPSetting: 'Edit SMTP Setting',
   CancelUserImport: 'Cancel user import?',
   CancelUserImportSubtitle: 'Operation will be abondened',
-  CancelUserImportBody: 'You will lose all progress and users will not be imported'
+  CancelUserImportBody: 'You will lose all progress and users will not be imported',
+  EmptyCustomApiMessage: 'You do not have any Rest API',
+  SubMesCustomApiMessage: 'Create a new rest API',
+  NewCustomApiBtnMessage: 'Create a New Rest API',
+  NewCustomApiBtnTooltip: 'Add a New Rest Api'
 }
 
 export default labels
