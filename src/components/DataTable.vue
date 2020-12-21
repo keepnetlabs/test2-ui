@@ -2319,6 +2319,7 @@ export default {
           isEditPopupOpen: true
         })
         this.isWantToEditRow = true
+        this.isSettingsOpened = false
       } else {
         // Nothing selected
       }
