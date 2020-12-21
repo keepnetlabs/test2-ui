@@ -167,7 +167,7 @@ export default {
             type: 'text',
             filterableType: 'date',
             isEditable: true,
-            width: 300
+            width: 180
           }
         ],
         pageSizes: [5, 10, 25],

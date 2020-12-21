@@ -5,6 +5,7 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  CommunityName: 'Community Name',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   CannotStartWithSpace: 'Cannot start with space',

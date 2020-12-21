@@ -38,7 +38,7 @@
           </div>
         </div>
         <div v-if="isStandAlone" class="k-file-uploads__item-actions">
-          <v-icon @click="clear">mdi-close-circle</v-icon>
+          <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
         </div>
         <!--
       <div>{{ file.speed | formatSize }}</div>
@@ -109,6 +109,10 @@ export default {
   name: 'KFileUpload',
   components: { FileUpload },
   props: {
+    isLoading: {
+      type: Boolean,
+      default: false
+    },
     isStandAlone: {
       type: Boolean,
       default: false
