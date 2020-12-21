@@ -692,7 +692,6 @@ export default {
   },
   methods: {
     handleSelectionChange(selectedValues) {
-      debugger
       this.selectedTableData = !selectedValues.length
     },
     getLabelCount(label, data) {
