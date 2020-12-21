@@ -1215,7 +1215,8 @@ export default {
 
       if (this.groupable && this.lazy && this.selectedCluster) {
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef) {
-          this.tableKey = `table-key${Math.random().toString().substring(0, 8)}`
+          this.$refs.elTableRef.store.states.expandRows = []
+          this.$refs.elTableRef.store.states.treeData = []
         }
       }
     },
@@ -1311,6 +1312,7 @@ export default {
       this.$emit('handleEdit', val)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
+      this.clusteredItems = []
     },
     handleExpandedRowChange(row, isExpanded) {
       let expandedRow = this.expandedRows.find(
@@ -2057,7 +2059,7 @@ export default {
             }
           }
         } else {
-          this.addToTheClusterIfChild(row)
+          this.toggleToTheClusterIfChild(row)
         }
         this.multipleSelection = selection
         if (this.multipleSelection.length === 0) {
