@@ -146,7 +146,6 @@
 <script>
 import { mail, maxLength, required } from '@/utils/validations'
 import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
@@ -222,7 +221,7 @@ export default {
     getDialogBody() {
       debugger
       return this.companyLicense
-        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}. Do you want to save this user?`
+        ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${this.companyLicense['totalUserCount']}. Do you want to save this user?`
         : ''
     },
     getTitle() {
@@ -266,7 +265,11 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
-          this.toggleShowLicenseExceededDialog()
+          if (this.companyLicense['isLicenseExceeded']) {
+            this.toggleShowLicenseExceededDialog()
+          } else {
+            this.callForCreateTargetUser()
+          }
         }
       }
     },
