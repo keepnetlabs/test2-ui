@@ -361,7 +361,6 @@ export default {
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
               : []
-          console.log('this.tblData', this.tableData)
         })
         .catch(() => {
           this.tableData = []
