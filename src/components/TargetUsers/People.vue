@@ -478,8 +478,12 @@ export default {
         .then((response) => {
           this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
-            for (let { name, value } of customFieldValues) {
-              item[name] = value !== null && value !== undefined ? value : ''
+            for (let { name, value, dataType } of customFieldValues) {
+              if (dataType === 'Boolean' && !value) {
+                item[name] = 'False'
+              } else {
+                item[name] = value !== null && value !== undefined ? value : ''
+              }
             }
             return item
           })

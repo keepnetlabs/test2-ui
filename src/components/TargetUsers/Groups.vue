@@ -110,10 +110,6 @@ export default {
         isColumnFilterActive: false,
         columns: [
           {
-            property: 'resourceId',
-            show: false
-          },
-          {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
