@@ -7,7 +7,7 @@
       </div>
       <div class="available-widget__header-right">
         <v-icon
-          :disabled="!checkPermissions('dashboard/widgets', 'PUT')"
+          :disabled="!checkPermissions('dashboard/widgets', 'GET')"
           @click="handleEdit"
           class="available-widget__icon"
           small
