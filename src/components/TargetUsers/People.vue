@@ -170,6 +170,7 @@ export default {
       type: Object
     }
   },
+  emits: ['call-for-company-licenses'],
   data: () => ({
     tableCredientials: {
       pageNumber: 1,
@@ -373,8 +374,9 @@ export default {
       this.toggleCustomFieldsModal()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
-    closeAddUserModalWithUpdate() {
+    closeAddUserModalWithUpdate(showMainModal = false) {
       this.isWantToShowAddUsersModal = false
+      this.$emit('call-for-company-licenses', showMainModal)
       this.callForTargetUsers()
     },
     handleEditTargetUsers(selectedRow) {
@@ -464,6 +466,7 @@ export default {
     handleDeleteUser(selectedUser) {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
+          this.$emit('call-for-company-licenses')
           this.callForTargetUsers()
         }
       })
@@ -472,14 +475,13 @@ export default {
       this.loading = true
       getTargetUsers(this.tableCredientials)
         .then((response) => {
-          let data = response.data.data.results.map((item, index) => {
+          this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
             for (let { name, value } of customFieldValues) {
               item[name] = value !== null && value !== undefined ? value : ''
             }
             return item
           })
-          this.tableData = data
         })
         .catch(() => {
           this.tableData = []

@@ -219,7 +219,6 @@ export default {
   },
   computed: {
     getDialogBody() {
-      debugger
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${this.companyLicense['totalUserCount']}. Do you want to save this user?`
         : ''
@@ -265,7 +264,8 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
-          if (this.companyLicense['isLicenseExceeded']) {
+          const { activeUserCount, licenseLimit } = this.companyLicense
+          if (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit) {
             this.toggleShowLicenseExceededDialog()
           } else {
             this.callForCreateTargetUser()
@@ -306,7 +306,10 @@ export default {
       return rules
     },
     callForCreateTargetUser() {
-      this.toggleShowLicenseExceededDialog()
+      const { activeUserCount, licenseLimit } = this.companyLicense
+      if (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit) {
+        this.toggleShowLicenseExceededDialog()
+      }
       const payload = this.getCustomFieldsPayload()
       this.saveDisable = true
       createTargetUser(payload)

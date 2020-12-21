@@ -78,12 +78,29 @@
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
+          v-if="scope.column.property === 'companyName'"
           class="datatable-link"
-          v-if="scope.row.companyName"
           @click="handleCompanyNameClick(scope.row)"
         >
           {{ scope.row.companyName }}
         </span>
+        <template v-else-if="scope.column.property === 'numberOfUsers'">
+          <v-tooltip bottom v-if="isNumberOfUsersExceed(scope.row)">
+            <template #activator="{on}">
+              <span
+                v-on="on"
+                :class="{ 'number-of-users-exceed': isNumberOfUsersExceed(scope.row) }"
+                >{{ scope.row['numberOfUsers'] }}</span
+              >
+            </template>
+            <span>{{
+              `License limit is exceeded. Current target user count is ${scope.row['targetUserCount']}.`
+            }}</span>
+          </v-tooltip>
+          <span v-else>
+            {{ scope.row['numberOfUsers'] }}
+          </span>
+        </template>
       </template>
       <template v-slot:extended-custom-view-slot>
         <company-list-extend
@@ -105,7 +122,7 @@
 import Datatable from '../../components/DataTable'
 import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
@@ -186,7 +203,7 @@ export default {
           label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'slot',
           width: 130
         },
         {
@@ -298,6 +315,9 @@ export default {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
+    isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
+      return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
+    },
     handleSearchChange(bodyData = {}, columnFilterActive = false) {
       this.payload.filter.FilterGroups[0].FilterItems = [
         ...bodyData.filter.FilterGroups[0].FilterItems
@@ -341,6 +361,7 @@ export default {
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
               : []
+          console.log('this.tblData', this.tableData)
         })
         .catch(() => {
           this.tableData = []
@@ -589,5 +610,8 @@ export default {
   .v-stepper__items {
     min-height: 75vh;
   }
+}
+.number-of-users-exceed {
+  color: red;
 }
 </style>

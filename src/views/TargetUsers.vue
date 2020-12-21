@@ -13,7 +13,11 @@
             label="People"
             name="first"
             v-if="checkPermissions('target-users/search', 'POST')"
-            ><people ref="refPeople" v-if="tab === 'first'" :company-license="companyLicense"
+            ><people
+              ref="refPeople"
+              v-if="tab === 'first'"
+              :company-license="companyLicense"
+              @call-for-company-licenses="callForLicenseCheck"
           /></el-tab-pane>
           <el-tab-pane
             label="Group"
@@ -68,7 +72,7 @@ export default {
     if (!this.checkPermissions('target-users/search', 'POST')) {
       this.tab = 'second'
     }
-    this.callForLicenseCheck()
+    this.callForLicenseCheck(true)
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
@@ -96,13 +100,13 @@ export default {
     }
   },
   methods: {
-    callForLicenseCheck() {
+    callForLicenseCheck(showMainModal = false) {
       const companyResourceId = localStorage.getItem('companyId')
       getCheckCompanyLicense(companyResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
         const { isLicenseExceeded } = data
         this.companyLicense = data
-        if (isLicenseExceeded) {
+        if (isLicenseExceeded && showMainModal) {
           this.toggleShowLicenseExceededDialog()
         }
       })
