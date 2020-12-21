@@ -31,7 +31,7 @@
           <v-btn
             @click="submit"
             class="white--text btn-util"
-            style="margin-bottom: 10px;"
+            style="margin-bottom: 10px; box-shadow: none !important;"
             color="#2196f3"
             rounded
           >
