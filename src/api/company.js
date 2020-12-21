@@ -100,3 +100,7 @@ export function deleteEmailTemplate(resourceId = '') {
 export function getCategories() {
   return testRequest.get('/lookups/10')
 }
+
+export function getCheckCompanyLicense(resourceId = '') {
+  return testRequest.get(`/companies/${resourceId}/license-check`)
+}

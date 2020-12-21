@@ -11,6 +11,7 @@ export const labels = {
   Save: 'SAVE',
   Delete: 'Delete',
   Next: 'NEXT',
+  OK: 'OK',
   Prev: 'PREV',
   Back: 'BACK',
   Email: 'Email Address',

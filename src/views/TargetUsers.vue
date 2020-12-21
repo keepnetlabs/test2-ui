@@ -1,13 +1,23 @@
 <template>
   <div class="target-users" id="target-users">
     <v-layout wrap class="target-users__container">
+      <target-users-check-license-dialog
+        v-if="showLicenseExceededDialog"
+        :status="showLicenseExceededDialog"
+        :dialogBody="getDialogBody"
+        @close-overlay="toggleShowLicenseExceededDialog"
+      />
       <v-card class="target-users__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane
             label="People"
             name="first"
             v-if="checkPermissions('target-users/search', 'POST')"
-            ><people ref="refPeople" v-if="tab === 'first'"
+            ><people
+              ref="refPeople"
+              v-if="tab === 'first'"
+              :company-license="companyLicense"
+              @call-for-company-licenses="callForLicenseCheck"
           /></el-tab-pane>
           <el-tab-pane
             label="Group"
@@ -24,16 +34,32 @@
 <script>
 import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
-import SmartGroups from '../components/TargetUsers/SmartGroups'
 import { checkPermission } from '@/utils/functions'
+import { getCheckCompanyLicense } from '@/api/company'
+import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 export default {
   components: {
+    TargetUsersCheckLicenseDialog,
     People,
     Groups
   },
+  provide() {
+    return {
+      companyLicense: this.companyLicense
+    }
+  },
   data() {
     return {
+      companyLicense: null,
+      showLicenseExceededDialog: false,
       tab: 'first'
+    }
+  },
+  computed: {
+    getDialogBody() {
+      return this.companyLicense
+        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
+        : ''
     }
   },
   created() {
@@ -46,6 +72,7 @@ export default {
     if (!this.checkPermissions('target-users/search', 'POST')) {
       this.tab = 'second'
     }
+    this.callForLicenseCheck(true)
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
@@ -73,11 +100,25 @@ export default {
     }
   },
   methods: {
+    callForLicenseCheck(showMainModal = false) {
+      const companyResourceId = localStorage.getItem('companyId')
+      getCheckCompanyLicense(companyResourceId).then((response) => {
+        const { data: { data = {} } = {} } = response
+        const { isLicenseExceeded } = data
+        this.companyLicense = data
+        if (isLicenseExceeded && showMainModal) {
+          this.toggleShowLicenseExceededDialog()
+        }
+      })
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
     changeTabStatus(status) {
       this.tab = status
+    },
+    toggleShowLicenseExceededDialog() {
+      this.showLicenseExceededDialog = !this.showLicenseExceededDialog
     }
   }
 }

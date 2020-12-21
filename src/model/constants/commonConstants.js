@@ -4,8 +4,9 @@ import * as Validations from '@/utils/validations'
 export const COMMON_CONSTANTS = {
   DISABLELOADER: -1,
   ENABLELOADER: 1,
-  ERRORSNACKBARCOLOR: 'red',
-  SUCCESSSNACKBARCOLOR: 'green',
+  ERRORSNACKBARCOLOR: '#f56c6c',
+  SUCCESSSNACKBARCOLOR: '#43a047',
+  INFOSNACKBARCOLOR: '#2196f3',
   UPPERCASE: 'uppercase',
   LOWERCASE: 'lowercase',
   OUTLOOK: 'Outlook',
