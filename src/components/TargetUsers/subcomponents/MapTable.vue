@@ -162,9 +162,9 @@ export default {
   }
   td,
   th {
-    flex: 1 1 250px;
-    min-width: 250px;
-    max-width: 250px;
+    flex: 1 1 235px;
+    min-width: 235px;
+    max-width: 235px;
     min-height: 60px;
     border: 0.5px solid rgba(3, 3, 3, 0.2);
   }
