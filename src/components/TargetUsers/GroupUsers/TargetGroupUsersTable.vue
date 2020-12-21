@@ -247,7 +247,7 @@ export default {
     }
   },
   watch: {
-    customFields(ü) {
+    customFields() {
       this.addCustomFieldColumns()
     }
   },
