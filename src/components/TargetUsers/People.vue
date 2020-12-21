@@ -104,13 +104,29 @@
           </p>
           <p class="people__no-data__body">Starts now!</p>
           <div class="people__no-data__buttons">
-            <div class="people__no-data__buttons--button" @click="handleClickEmptyBtnClicked">
-              <v-icon color="#fff" class="mr-2">mdi-account</v-icon> ADD A USER
-            </div>
-            <div class="people__no-data__buttons--button" @click="isWantToImportFile = true">
-              <v-icon color="#fff" class="mr-2">mdi-microsoft-excel</v-icon>
-              IMPORT USERS FROM A FILE
-            </div>
+            <v-menu offset-y transition="scale-transition" nudge-bottom="4">
+              <template v-slot:activator="{ on }">
+                <div class="people__no-data__buttons--button" v-on="on">
+                  <v-icon color="#fff" class="mr-2">mdi-plus</v-icon> ADD USERS
+                </div>
+              </template>
+              <div>
+                <v-list dense flat class="people__no-data__buttons--button__list">
+                  <v-list-item-group color="primary">
+                    <v-list-item @click="handleClickEmptyBtnClicked">
+                      <v-list-item-content>
+                        <v-list-item-title> Add users manually</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item @click="isWantToImportFile = true">
+                      <v-list-item-content>
+                        <v-list-item-title>Import from a file</v-list-item-title>
+                      </v-list-item-content>
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-list>
+              </div>
+            </v-menu>
           </div>
         </div>
       </template>

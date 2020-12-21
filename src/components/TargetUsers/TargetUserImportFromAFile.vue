@@ -59,6 +59,17 @@
                         `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
                       }}
                     </p>
+                    <p class="target-user-import-file__total-excel-score" v-if="step1Loading">
+                      {{ `The xls file is loading` }}
+                      <v-icon
+                        class="ml-1 loading-spin"
+                        color="#2196f3"
+                        style="font-size: 18px;"
+                        left
+                        medium
+                        >mdi-rotate-left
+                      </v-icon>
+                    </p>
                     <div class="d-flex mt-8">
                       <v-btn
                         @click="downloadExampleFile()"
@@ -87,59 +98,65 @@
                   Match field names from your file to the system fields to import users information
                   correctly
                 </div>
-                <v-form ref="refMapForm" lazy-validation>
-                  <v-list-item class="mt-6">
-                    <v-list-item-content class="mb-2 target-user-import-file__list-item">
-                      <label class="bottom-margin">Select Group</label>
-                      <v-select
-                        :items="groups"
-                        v-model="formData.groups"
-                        item-text="name"
-                        item-value="resourceId"
-                        outlined
-                        placeholder="- All Users -"
-                        :rules="[(v) => !!v || 'Required']"
-                        :disabled="stepLock"
-                        multiple
-                        persistent-hint
-                        hide-details
-                      >
-                        <template v-slot:selection="data" v-if="groups.length > 0">
-                          <v-chip
-                            :key="JSON.stringify(data.item)"
-                            v-bind="data.attrs"
-                            :input-value="data.selected"
-                            small
-                          >
-                            {{ data.item.name }}
-                            <v-icon
-                              right
-                              @click="data.parent.selectItem(data.item)"
-                              style="font-size: 18px;"
-                              >mdi-close-circle</v-icon
+                <div v-if="step2Loading">
+                  <ListItemLoading :loading="step2Loading" />
+                  <DatatableLoading :loading="step2Loading" />
+                </div>
+                <div v-else>
+                  <v-form ref="refMapForm" lazy-validation>
+                    <v-list-item class="mt-6">
+                      <v-list-item-content class="mb-2 target-user-import-file__list-item">
+                        <label class="bottom-margin">Select Group</label>
+                        <v-select
+                          :items="groups"
+                          v-model="formData.groups"
+                          item-text="name"
+                          item-value="resourceId"
+                          outlined
+                          placeholder="- All Users -"
+                          :rules="[(v) => !!v || 'Required']"
+                          :disabled="stepLock"
+                          multiple
+                          persistent-hint
+                          hide-details
+                        >
+                          <template v-slot:selection="data" v-if="groups.length > 0">
+                            <v-chip
+                              :key="JSON.stringify(data.item)"
+                              v-bind="data.attrs"
+                              :input-value="data.selected"
+                              small
                             >
-                          </v-chip>
-                        </template>
-                      </v-select>
-                    </v-list-item-content>
-                  </v-list-item>
-                  <v-list-item class="mt-6">
-                    <v-list-item-content class="target-user-import-file__list-item">
-                      <form-group
-                        title="Mapping"
-                        subTitle="Match field names with column header from your sheet to map information"
-                      >
-                      </form-group> </v-list-item-content
-                  ></v-list-item>
-                  <v-list-item class="target-user-import-file__list-item table-box-shadow">
-                    <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
-                      <MapTable
-                        v-if="activeStep === 2"
-                        ref="refMapTable"
-                        :mapTableData="mappingData"
-                        @get-map-table-data="getMapTableData" /></v-list-item-content
-                  ></v-list-item>
-                </v-form>
+                              {{ data.item.name }}
+                              <v-icon
+                                right
+                                @click="data.parent.selectItem(data.item)"
+                                style="font-size: 18px;"
+                                >mdi-close-circle</v-icon
+                              >
+                            </v-chip>
+                          </template>
+                        </v-select>
+                      </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item class="mt-6">
+                      <v-list-item-content class="target-user-import-file__list-item">
+                        <form-group
+                          title="Mapping"
+                          subTitle="Match field names with column header from your sheet to map information"
+                        >
+                        </form-group> </v-list-item-content
+                    ></v-list-item>
+                    <v-list-item class="target-user-import-file__list-item table-box-shadow">
+                      <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
+                        <MapTable
+                          v-if="activeStep === 2"
+                          ref="refMapTable"
+                          :mapTableData="mappingData"
+                          @get-map-table-data="getMapTableData" /></v-list-item-content
+                    ></v-list-item>
+                  </v-form>
+                </div>
               </v-stepper-content>
               <!-- STEP 3 -->
               <v-stepper-content step="3">
@@ -148,73 +165,78 @@
                   Select users to import or import all listed users. Invalid entries will not be
                   imported.
                 </div>
-                <data-table
-                  v-if="mappingStatus && showDatatable"
-                  :loading="loading"
-                  :is-column-filter-active="tableOptions.isColumnFilterActive"
-                  :table="tableData"
-                  id="validate-data-table"
-                  ref="refValidateList"
-                  :empty="tableOptions.empty"
-                  :refName="'validateList'"
-                  :columns="tableOptions.columns"
-                  :countRow="5"
-                  :selectable="true"
-                  :filterable="true"
-                  :options="true"
-                  :sizeable="true"
-                  :pageSizes="tableOptions.pageSizes"
-                  :select-event="tableOptions.selectEvent"
-                  :row-actions="tableOptions.rowActions"
-                  :addButton="tableOptions.addButton"
-                  @downloadEvent="exportIntegrationList"
-                  @sortChangedEvent="sortChangedEvent($event)"
-                  @paginationChangedEvent="paginationChangedEvent($event)"
-                  @searchChangedEvent="searchChangedEvent($event)"
-                  :dataLength="tableData && tableData.totalNumberOfRecords"
-                  :requestParams="bodyData"
-                  :isServerSide="true"
-                  @columnFilterChanged="columnFilterChanged"
-                  @columnFilterCleared="columnFilterCleared"
-                  :server-side-events="{ search: false, sort: false, pagination: false }"
-                  :downloadButton="{
-                    show: false
-                  }"
-                >
-                  <template v-slot:table-notification>
-                    <div class="target-user-import-file__header-detail">
-                      <v-btn
-                        class="target-user-import-file__button target-user-import-file__button--table-notification"
-                        outlined
-                        rounded
-                        @click="filterStatusChange()"
-                      >
-                        {{ setTableOption() }}
-                      </v-btn>
+                <div v-if="step3Loading">
+                  <DatatableLoading :loading="step3Loading" />
+                </div>
+                <div v-else>
+                  <data-table
+                    v-if="mappingStatus && showDatatable"
+                    :loading="loading"
+                    :is-column-filter-active="tableOptions.isColumnFilterActive"
+                    :table="tableData"
+                    id="validate-data-table"
+                    ref="refValidateList"
+                    :empty="tableOptions.empty"
+                    :refName="'validateList'"
+                    :columns="tableOptions.columns"
+                    :countRow="5"
+                    :selectable="true"
+                    :filterable="true"
+                    :options="true"
+                    :sizeable="true"
+                    :pageSizes="tableOptions.pageSizes"
+                    :select-event="tableOptions.selectEvent"
+                    :row-actions="tableOptions.rowActions"
+                    :addButton="tableOptions.addButton"
+                    @downloadEvent="exportIntegrationList"
+                    @sortChangedEvent="sortChangedEvent($event)"
+                    @paginationChangedEvent="paginationChangedEvent($event)"
+                    @searchChangedEvent="searchChangedEvent($event)"
+                    :dataLength="tableData && tableData.totalNumberOfRecords"
+                    :requestParams="bodyData"
+                    :isServerSide="true"
+                    @columnFilterChanged="columnFilterChanged"
+                    @columnFilterCleared="columnFilterCleared"
+                    :server-side-events="{ search: false, sort: false, pagination: false }"
+                    :downloadButton="{
+                      show: false
+                    }"
+                  >
+                    <template v-slot:table-notification>
+                      <div class="target-user-import-file__header-detail">
+                        <v-btn
+                          class="target-user-import-file__button target-user-import-file__button--table-notification"
+                          outlined
+                          rounded
+                          @click="filterStatusChange()"
+                        >
+                          {{ setTableOption() }}
+                        </v-btn>
+                      </div>
+                    </template>
+                  </data-table>
+                  <div
+                    v-else-if="mappingStatus && !showDatatable"
+                    class="target-user-import-file__progression"
+                  >
+                    <div class="target-user-import-file__progression--text">
+                      Please wait while we are processing the file
                     </div>
-                  </template>
-                </data-table>
-                <div
-                  v-else-if="mappingStatus && !showDatatable"
-                  class="target-user-import-file__progression"
-                >
-                  <div class="target-user-import-file__progression--text">
-                    Please wait while we are processing the file
-                  </div>
-                  <div class="target-user-import-file__progression--progress">
-                    <div>{{ setProgressValue }}%</div>
-                    <div>
-                      <v-progress-linear :value="setProgressValue"></v-progress-linear>
-                    </div>
-                    <div>
-                      {{
-                        mappingStatus.newUserCount +
-                        mappingStatus.existingUserCount +
-                        mappingStatus.invalidUserCount +
-                        '/' +
-                        mappingStatus.totalRowCount
-                      }}
-                      users processed
+                    <div class="target-user-import-file__progression--progress">
+                      <div>{{ setProgressValue }}%</div>
+                      <div>
+                        <v-progress-linear :value="setProgressValue"></v-progress-linear>
+                      </div>
+                      <div>
+                        {{
+                          mappingStatus.newUserCount +
+                          mappingStatus.existingUserCount +
+                          mappingStatus.invalidUserCount +
+                          '/' +
+                          mappingStatus.totalRowCount
+                        }}
+                        users processed
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -253,6 +275,7 @@
             rounded
             color="#2196f3"
             @click="nextStep"
+            :disabled="step1Loading || step2Loading"
           >
             {{ labels.Next }}
           </v-btn>
@@ -345,10 +368,22 @@ import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { scrollToComponent } from '@/utils/functions'
+import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 
 export default {
   name: 'TargetUserImportFromAFile',
-  components: { AppDialogFooter, AppModal, KFileUpload, FormGroup, MapTable, DataTable, AppDialog },
+  components: {
+    ListItemLoading,
+    AppDialogFooter,
+    AppModal,
+    KFileUpload,
+    FormGroup,
+    MapTable,
+    DataTable,
+    AppDialog,
+    DatatableLoading
+  },
   props: {
     status: {
       type: Boolean
@@ -381,6 +416,11 @@ export default {
   },
   data() {
     return {
+      isLeaveAccepted: false,
+      saveSuccess: false,
+      step1Loading: false,
+      step2Loading: false,
+      step3Loading: false,
       responsNumbers: false,
       isShowInvalid: false,
       showDatatable: false,
@@ -431,7 +471,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
+            width: 180,
             filterableType: 'text',
             dbName: 'LastName',
             emptyText: 'No Data'
@@ -457,7 +497,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
+            width: 300,
             filterableType: 'text',
             dbName: 'Department',
             emptyText: 'No Data'
@@ -470,7 +510,7 @@ export default {
             sortable: true,
             show: true,
             type: 'priority',
-            width: 150,
+            width: 180,
             fullWidth: true,
             dbName: 'Priority',
             emptyText: 'No Data'
@@ -484,7 +524,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 180,
+            width: 200,
             dbName: 'CreateTime',
             emptyText: 'No Data'
           }
@@ -511,7 +551,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
+            width: 180,
             filterableType: 'text',
             dbName: 'LastName',
             emptyText: 'No Data'
@@ -537,7 +577,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
+            width: 300,
             filterableType: 'text',
             dbName: 'Department',
             emptyText: 'No Data'
@@ -550,7 +590,7 @@ export default {
             sortable: true,
             show: true,
             type: 'priority',
-            width: 150,
+            width: 180,
             fullWidth: true,
             dbName: 'Priority',
             emptyText: 'No Data'
@@ -564,7 +604,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 180,
+            width: 200,
             dbName: 'CreateTime',
             emptyText: 'No Data'
           }
@@ -582,7 +622,7 @@ export default {
       },
       bodyData: {
         pageNumber: 1,
-        pageSize: (this.mappingStatus && this.mappingStatus['totalRowCount']) || 10,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -654,6 +694,7 @@ export default {
       this.bodyData.filter.FilterGroups[1]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
       ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
+      this.step3Loading = true
       this.getDatatableList()
     },
     setTableOption() {
@@ -695,11 +736,13 @@ export default {
       if (this.isExcelUploaded) {
         this.closeTargetUserImport = true
       } else {
+        this.isLeaveAccepted = true
         this.closeOverlay()
       }
     },
     getDatatableList() {
       let _this = this
+      this.bodyData.pageSize = this.mappingStatus.totalRowCount
       searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
           this.responsNumbers = response.data.data
@@ -755,13 +798,20 @@ export default {
           } else {
             _this.tableData = data || []
           }
-
           _this.loading = false
           _this.showDatatable = true
         })
         .catch((error) => {
           this.tableData = []
           this.loading = false
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Something went wrong',
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        })
+        .finally(() => {
+          this.step3Loading = false
         })
     },
     columnFilterChanged(filter) {
@@ -870,43 +920,54 @@ export default {
       return this.$refs.refMapTable.getMapTableData()
     },
     closeOverlay() {
+      this.isLeaveAccepted = true
       this.$emit('closeOverlay')
     },
     onFileChanged(file) {
       this.formData.file = file
+      this.isExcelUploaded = true
+      this.step1Loading = true
       uploadExcelOrCsvForTargetUsers(file, (e) => {
         this.onUploadProgress = e
-      }).then((response) => {
-        this.excelInfo = response.data.data
-        this.isExcelUploaded = true
       })
+        .then((response) => {
+          this.excelInfo = response.data.data
+        })
+        .finally(() => {
+          this.step1Loading = false
+        })
     },
     getUploadedExcelData() {
-      getUploadedFileData(this.excelInfo.transactionId).then((response) => {
-        this.mappingData.tableData = response.data.data.data
-        this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
-          let aItem = {
-            name: item,
-            selectedValue: null,
-            required:
-              this.mappingData.columns.find((mapItem) => {
-                let name = mapItem.dbName || mapItem.name
-                return (
-                  name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
-                )
-              }) &&
-              this.mappingData.columns.find((mapItem) => {
-                let name = mapItem.dbName || mapItem.name
-                return (
-                  name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
-                )
-              }).required
-          }
-          return aItem
+      this.step2Loading = true
+      getUploadedFileData(this.excelInfo.transactionId)
+        .then((response) => {
+          this.mappingData.tableData = response.data.data.data
+          this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
+            let aItem = {
+              name: item,
+              selectedValue: null,
+              required:
+                this.mappingData.columns.find((mapItem) => {
+                  let name = mapItem.dbName || mapItem.name
+                  return (
+                    name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                  )
+                }) &&
+                this.mappingData.columns.find((mapItem) => {
+                  let name = mapItem.dbName || mapItem.name
+                  return (
+                    name.toLowerCase().replace(/ +/g, '') === item.toLowerCase().replace(/ +/g, '')
+                  )
+                }).required
+            }
+            return aItem
+          })
+          //this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+          this.resetDisabledValuesFromColumns()
         })
-        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-        this.resetDisabledValuesFromColumns()
-      })
+        .finally(() => {
+          this.step2Loading = false
+        })
     },
     resetDisabledValuesFromColumns() {
       setTimeout(() => {
@@ -915,6 +976,7 @@ export default {
     },
     submit() {},
     createMapFields() {
+      this.step3Loading = true
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
         let val = {
           excelColumnName: item.name,
@@ -931,12 +993,15 @@ export default {
         targetGroupResourceIds: this.formData.groups
       }
 
-      createMapping(payload).then((response) => {
-        this.showDatatable = false
-        this.mappindgId = response.data.data.resourceId
-        this.getMappingStatus()
-        this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-      })
+      createMapping(payload)
+        .then((response) => {
+          this.showDatatable = false
+          this.mappindgId = response.data.data.resourceId
+          this.getMappingStatus()
+        })
+        .finally(() => {
+          this.step3Loading = false
+        })
     },
     nextStep() {
       let isFormValid = true
@@ -951,8 +1016,12 @@ export default {
       }
       if (isFormValid) {
         if (this.activeStep === 1) {
+          this.step2Loading = true
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
           this.getUploadedExcelData()
         } else if (this.activeStep === 2) {
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
+          this.step3Loading = true
           this.createMapFields()
         } else {
           this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
@@ -992,6 +1061,7 @@ export default {
           return ''
       }
       importTmpUsers(payload, this.excelInfo.transactionId).then(() => {
+        this.saveSuccess = true
         this.closeOverlay()
         this.$store.dispatch('common/createSnackBar', {
           message: `${this.getLabelCount(label)} Import process has been started`,
@@ -1055,6 +1125,13 @@ export default {
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
     this.getTargetUsers()
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.isExcelUploaded) {
+      next(false)
+    } else if (this.isLeaveAccepted) {
+      next()
+    } else next()
   }
 }
 </script>
