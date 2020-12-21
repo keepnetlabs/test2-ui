@@ -159,6 +159,7 @@ import AppDialog from '../AppDialog'
 import { scrollToComponent } from '../../utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
+import * as validations from '@/utils/validations'
 
 export default {
   components: {
@@ -190,22 +191,23 @@ export default {
       acceptCheckbox: false,
       isCheckboxChecked: false,
       nameRules: {
-        required: (v) =>
-          (v && v.length >= 5 && v.length <= 64) || 'Community Name must between 5-64 characters',
+        required: (v) => validations.minLength(v, 5, labels.getMinLengthMessage('Community Name')),
+        maxLength: (v) =>
+          validations.maxLength(v, 64, labels.getMaxLengthMessage('Community Name')),
         regex: (v) =>
           /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space'
       },
+      descriptionRules: {
+        required: (v) => validations.minLength(v, 5, labels.getMinLengthMessage('Description')),
+        maxLength: (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Description')),
+        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      },
       checkboxRule: {
         required: (v) => {
           return v || 'You must accept terms and conditions before creating the community'
         }
-      },
-      descriptionRules: {
-        required: (v) =>
-          (!!v && v.length >= 5 && v.length <= 300) || 'Description cannot exceed 300 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       categoryRules: {
         required: (v) => (!!v && v.length < 1) || 'Category required for creating a community'

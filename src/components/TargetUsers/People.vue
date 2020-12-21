@@ -35,6 +35,7 @@
       @closeOverlay="isWantToImportFile = false"
       v-if="isWantToImportFile"
       :columns="tableOptions.columns"
+      ref="targetUserFromAFile"
     />
     <datatable
       ref="refPeopleTable"
