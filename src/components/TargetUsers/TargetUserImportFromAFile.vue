@@ -53,8 +53,12 @@
                       @inputFile="onFileChanged"
                       hint="Only XLS or CSV files. Max. file size 30MB"
                       :on-upload-progress="onUploadProgress"
+                      :is-loading="step1Loading"
                     />
-                    <p class="target-user-import-file__total-excel-score" v-if="excelInfo">
+                    <p
+                      class="target-user-import-file__total-excel-score"
+                      v-if="!step1Loading && excelInfo"
+                    >
                       {{
                         `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
                       }}
@@ -147,7 +151,7 @@
                         >
                         </form-group> </v-list-item-content
                     ></v-list-item>
-                    <v-list-item class="target-user-import-file__list-item table-box-shadow">
+                    <v-list-item class="target-user-import-file__list-item table-box-shadow mb-10">
                       <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
                         <MapTable
                           v-if="activeStep === 2"
@@ -165,10 +169,10 @@
                   Select users to import or import all listed users. Invalid entries will not be
                   imported.
                 </div>
-                <div v-if="step3Loading">
+                <div class="mb-10" v-if="step3Loading">
                   <DatatableLoading :loading="step3Loading" />
                 </div>
-                <div v-else>
+                <div class="mb-10" v-else>
                   <data-table
                     v-if="mappingStatus && showDatatable"
                     :loading="loading"
@@ -196,11 +200,11 @@
                     :requestParams="bodyData"
                     :isServerSide="true"
                     @columnFilterChanged="columnFilterChanged"
-                    @columnFilterCleared="columnFilterCleared"
                     :server-side-events="{ search: false, sort: false, pagination: false }"
                     :downloadButton="{
                       show: false
                     }"
+                    @handleSelectionChange="handleSelectionChange"
                   >
                     <template v-slot:table-notification>
                       <div class="target-user-import-file__header-detail">
@@ -286,7 +290,7 @@
             rounded
             color="#2196f3"
             @click="save(labels.ImportSelected)"
-            :disabled="!showDatatable || !tableData.length"
+            :disabled="!showDatatable || !tableData.length || selectedTableData"
           >
             {{ labels.ImportSelected }}
           </v-btn>
@@ -296,7 +300,11 @@
             rounded
             color="#2196f3"
             @click="save(labels.ImportAll)"
-            :disabled="!showDatatable || !tableData.length"
+            :disabled="
+              !showDatatable ||
+              !tableData.length ||
+              mappingStatus.invalidUserCount === mappingStatus.totalRowCount
+            "
           >
             {{ labels.ImportAll }}
           </v-btn>
@@ -304,7 +312,11 @@
             v-if="!canNext"
             offset-y
             transition="scale-transition"
-            :disabled="!showDatatable || !tableData.length"
+            :disabled="
+              !showDatatable ||
+              !tableData.length ||
+              mappingStatus.invalidUserCount === mappingStatus.totalRowCount
+            "
           >
             <template v-slot:activator="{ on }">
               <v-btn
@@ -314,7 +326,14 @@
                 class="target-user-import-file__button--menu"
                 :disabled="!showDatatable"
               >
-                <v-icon>mdi-dots-vertical</v-icon>
+                <v-icon
+                  :disabled="
+                    !showDatatable ||
+                    !tableData.length ||
+                    mappingStatus.invalidUserCount === mappingStatus.totalRowCount
+                  "
+                  >mdi-dots-vertical</v-icon
+                >
               </v-btn>
             </template>
             <div>
@@ -416,6 +435,7 @@ export default {
   },
   data() {
     return {
+      selectedTableData: true,
       isLeaveAccepted: false,
       saveSuccess: false,
       step1Loading: false,
@@ -671,6 +691,10 @@ export default {
     }
   },
   methods: {
+    handleSelectionChange(selectedValues) {
+      debugger
+      this.selectedTableData = !selectedValues.length
+    },
     getLabelCount(label, data) {
       switch (label) {
         case labels.ImportSelected:
@@ -788,11 +812,11 @@ export default {
               sortable: true,
               show: true,
               type: 'status',
-              width: 150,
               isEditable: true,
               hasTooltip: true,
               fullWidth: true,
               dbName: 'Status',
+              minWidth: 170,
               emptyText: 'No Data'
             })
           } else {
@@ -1138,6 +1162,11 @@ export default {
 
 <style lang="scss">
 .target-user-import-file {
+  #validate-data-table {
+    .selection-row {
+      top: inherit !important;
+    }
+  }
   &__header-detail {
     font-size: 14px;
     font-weight: 600;

@@ -137,6 +137,7 @@
 import { mapGetters } from 'vuex'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
+import * as validations from '@/utils/validations'
 
 export default {
   components: { KSelect },
@@ -151,20 +152,18 @@ export default {
       selectedCategory: '',
       valid: false,
       nameRules: {
-        required: (v) =>
-          (v && v.length >= 5 && v.length <= 80) || 'Community Name must between 5-80 characters',
+        required: (v) => validations.minLength(v, 5, labels.getMinLengthMessage('Community Name')),
+        maxLength: (v) =>
+          validations.maxLength(v, 64, labels.getMaxLengthMessage('Community Name')),
         regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
+          /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space'
       },
       descriptionRules: {
-        required: (v) =>
-          (!!v && v.length >= 5 && v.length <= 300) || 'Description cannot exceed 300 characters',
-        regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Descriptions cannot start with space'
+        required: (v) => validations.minLength(v, 5, labels.getMinLengthMessage('Description')),
+        maxLength: (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Description')),
+        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       privateToPublic: false,
       mountedPrivacy: null
