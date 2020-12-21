@@ -25,6 +25,7 @@ export const labels = {
   VeryHigh: 'Very High',
   VeryLow: 'Very Low',
   Category: 'Category',
+  GenerateClientCred: 'GENERATE Client Credentials',
   EmailSubject: 'Email Subject',
   Industry: 'Industry',
   Result: 'Result',
