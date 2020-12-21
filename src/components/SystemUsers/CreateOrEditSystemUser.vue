@@ -86,13 +86,14 @@ import {
   updateSystemUser
 } from '@/api/systemUsers'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, setGlobalUserData } from '@/utils/functions'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputPhone from '@/components/Common/Inputs/InputPhone'
 import { getSystemUsersRole } from '@/api/systemUsers'
+import jwt_decode from 'jwt-decode'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -118,6 +119,7 @@ export default {
   },
   data() {
     return {
+      role: null,
       saveDisable: false,
       sendInformationEmailDisabled: false,
       formValues: {
@@ -231,6 +233,9 @@ export default {
     this.$nextTick(() => {
       this.$refs.refForm.resetValidation()
     })
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    this.role = tokenData.role
   },
   created() {
     let payload = {
@@ -277,13 +282,13 @@ export default {
     getSystemUsersRole(payload).then((response) => {
       allRoles = response.data.data
       availableRoles = []
-      if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
+      if (_this.role === 'CompanyAdmin') {
         availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
-      } else if (this.$store.state.auth.userRoleName === 'Reseller') {
+      } else if (this.role === 'Reseller') {
         availableRoles = allRoles.filter(
           (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
         )
-      } else if (this.$store.state.auth.userRoleName === 'Root') {
+      } else if (this.role === 'Root') {
         availableRoles = allRoles
       }
 
@@ -314,14 +319,14 @@ export default {
           allRoles.find((item) => {
             return item.name === roles
           }).resourceId
-        if (_this.$store.state.auth.userRoleName === 'CompanyAdmin') {
+        if (_this.role === 'CompanyAdmin') {
           availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
           if (roles === 'Reseller') {
             availableRoles = allRoles.filter((item) => item.name === 'Reseller')
           } else if (roles === 'Root') {
             availableRoles = allRoles.filter((item) => item.name === 'Root')
           }
-        } else if (this.$store.state.auth.userRoleName === 'Reseller') {
+        } else if (this.role === 'Reseller') {
           availableRoles = allRoles.filter(
             (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
           )

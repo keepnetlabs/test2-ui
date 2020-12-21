@@ -21,6 +21,7 @@
     />
     <div class="notification-templates__container">
       <data-table
+        :is-column-filter-active="tableOptions.isColumnFilterActive"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
         :columns="tableOptions.columns"
@@ -128,6 +129,7 @@ export default {
             type: 'text',
             width: 180,
             filterableType: 'select',
+            filterableCustomFieldName: 'categoryResourceId',
             filterableItems: []
           },
           {

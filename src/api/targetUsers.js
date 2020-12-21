@@ -80,7 +80,6 @@ export function uploadExcelOrCsvForTargetUsers(file, onUploadProgress) {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    loading: true,
     onUploadProgress
   })
 }
@@ -92,11 +91,11 @@ export function downloadExampleTargetUserFile(payload) {
 }
 
 export function getUploadedFileData(id) {
-  return testRequest.get(`/target-users/upload/${id}`, { loading: true })
+  return testRequest.get(`/target-users/upload/${id}`)
 }
 
 export function createMapping(payload) {
-  return testRequest.post(`/target-users/create-mapping`, payload, { loading: true })
+  return testRequest.post(`/target-users/create-mapping`, payload)
 }
 
 export function searchTmp(payload, id) {
@@ -145,5 +144,5 @@ export function getMappingStatus(id) {
 }
 
 export function importTmpUsers(payload, id) {
-  return testRequest.post(`/target-users/${id}/import`, payload, { loading: true })
+  return testRequest.post(`/target-users/${id}/import`, payload)
 }

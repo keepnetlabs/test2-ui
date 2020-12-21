@@ -243,7 +243,7 @@ export default {
           name: 'Add to a company group',
           icon: 'mdi-account-multiple-plus',
           action: 'AddGroupToModal',
-          disabled: !checkPermission('company-groups/search', 'GET')
+          disabled: !checkPermission('company-groups/search', 'POST')
         },
         {
           name: 'Create a new company group with company',

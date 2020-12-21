@@ -737,10 +737,9 @@
                 </div>
               </template>
             </ThreeRowLoading>
-
+            <DatatableLoading :loading="loading" v-if="loading" />
             <div v-show="activeMenu !== 'targetUsers'">
               <datatable
-                :loading="loading"
                 :is-column-filter-active="isColumnFilterActive"
                 id="investigationDetailsList"
                 :refName="'investigationDetailsListTable'"
@@ -758,7 +757,6 @@
                 :chartOptions="chartOptions"
                 :cacheCheckboxFromParent="cacheCheckboxFromParent"
                 :clusterItems="clusterItems"
-                :groupable="true"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                 @sendInvestigationdetailsWarningMessage="
                   sendInvestigationdetailsWarningMessage($event)
@@ -810,7 +808,6 @@
               class="investigationDetails__target-users-table-container"
             >
               <datatable
-                :loading="loading"
                 :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
@@ -830,7 +827,6 @@
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 :clusterItems="clusterItems"
-                :groupable="true"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                 @sendInvestigationdetailsWarningMessage="
                   sendInvestigationdetailsWarningMessage($event)
@@ -901,9 +897,11 @@ import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/Inv
 import ThreeRowLoading from '../components/SkeletonLoading/ThreeRowLoading'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 
 export default {
   components: {
+    DatatableLoading,
     AppDialogFooter,
     Datatable,
     newInvestigation,
@@ -1493,7 +1491,8 @@ export default {
       this.showTargetUsersDetails = false
       this.showEmails = false
       this.loading = true
-      this.investigationDetailsList = null
+      this.investigationDetailsList = []
+
       if (menu != 'targetUsers') {
         let dataBody = this.investigationListBodyData
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
