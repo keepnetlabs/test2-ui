@@ -728,6 +728,7 @@ import Breadcrumb from '@/components/Breadcrumb'
 import { checkPermission, checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
 import tour from '@/store/modules/tour'
+import { getCheckCompanyLicense } from '@/api/company'
 
 export default {
   name: 'Main',
@@ -1199,6 +1200,7 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
+    this.callForLicenseCheck()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
@@ -1224,6 +1226,21 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    callForLicenseCheck() {
+      const companyResourceId = localStorage.getItem('companyId')
+      getCheckCompanyLicense(companyResourceId).then((response) => {
+        debugger
+        const { data: { data = {} } = {} } = response
+        const { isLicenseExceeded, licenseLimit, totalUserCount } = data
+        if (isLicenseExceeded) {
+          this.$store.dispatch('common/createSnackBar', {
+            message: `Your license allows to use the system with ${licenseLimit} target users. Current target user count is ${totalUserCount}`,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        }
+      })
+    },
     checkPermissionMultiple(data, contain) {
       return checkPermissionMultiple(data, contain)
     },
