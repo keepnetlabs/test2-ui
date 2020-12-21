@@ -1,6 +1,27 @@
 <template>
   <div class="target-users" id="target-users">
     <v-layout wrap class="target-users__container">
+      <app-dialog
+        v-if="showLicenseExceededDialog"
+        :status="showLicenseExceededDialog"
+        icon="mdi-license"
+        title="License Warning"
+        body="License is exceeded"
+        @changeStatus="toggleShowLicenseExceededDialog"
+      >
+        <template #app-dialog-footer>
+          <div class="d-flex justify-end">
+            <v-btn
+              text
+              color="#2196f3"
+              class="k-dialog__button"
+              @click="toggleShowLicenseExceededDialog"
+            >
+              {{ labels.OK }}
+            </v-btn>
+          </div>
+        </template>
+      </app-dialog>
       <v-card class="target-users__container-card">
         <el-tabs v-model="tab">
           <el-tab-pane
@@ -24,16 +45,21 @@
 <script>
 import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
-import SmartGroups from '../components/TargetUsers/SmartGroups'
 import { checkPermission } from '@/utils/functions'
+import { getCheckCompanyLicense } from '@/api/company'
+import labels from '@/model/constants/labels'
+import AppDialog from '@/components/AppDialog'
 export default {
   components: {
+    AppDialog,
     People,
     Groups
   },
   data() {
     return {
-      tab: 'first'
+      showLicenseExceededDialog: false,
+      tab: 'first',
+      labels
     }
   },
   created() {
@@ -46,6 +72,7 @@ export default {
     if (!this.checkPermissions('target-users/search', 'POST')) {
       this.tab = 'second'
     }
+    this.callForLicenseCheck()
   },
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
@@ -73,11 +100,24 @@ export default {
     }
   },
   methods: {
+    callForLicenseCheck() {
+      const companyResourceId = localStorage.getItem('companyId')
+      getCheckCompanyLicense(companyResourceId).then((response) => {
+        const { data: { data = {} } = {} } = response
+        const { isLicenseExceeded } = data
+        if (isLicenseExceeded) {
+          this.toggleShowLicenseExceededDialog()
+        }
+      })
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
     changeTabStatus(status) {
       this.tab = status
+    },
+    toggleShowLicenseExceededDialog() {
+      this.showLicenseExceededDialog = !this.showLicenseExceededDialog
     }
   }
 }
