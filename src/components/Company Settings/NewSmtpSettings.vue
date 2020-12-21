@@ -103,6 +103,7 @@
           />
         </form-group>
         <make-available-for
+          v-if="showMakeAvailableFor"
           ref="refMakeAvailableFor"
           v-model="formValues.availableForRequests"
           class="mb-2"
@@ -225,13 +226,21 @@ export default {
   computed: {
     getTitle() {
       return this.isEdit && this.resourceId ? labels.EditSMTPSetting : labels.NewSMTPSetting
+    },
+    showMakeAvailableFor() {
+      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
   methods: {
     submit() {
       const { refForm, refMakeAvailableFor } = this.$refs
-      refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
-      if (refForm.validate() && refMakeAvailableFor.isAvailableForValid) {
+      let isValid = true
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        isValid = refMakeAvailableFor.isAvailableForValid
+      }
+
+      if (refForm.validate() && isValid) {
         this.saveDisable = true
         const {
           name,
@@ -252,13 +261,22 @@ export default {
 
         const payload = {
           name,
-          availableForRequests: availableForRequests.map((item) => {
-            let { resourceId, type, id } = item
-            return {
-              resourceId: resourceId ? resourceId : id,
-              type
-            }
-          }),
+          availableForRequests: this.showMakeAvailableFor
+            ? availableForRequests.map((item) => {
+                let { resourceId, type, id } = item
+                if (type === 'MyCompanyOnly') {
+                  id = null
+                  resourceId = null
+                } else if (type === 'AllCompanies') {
+                  resourceId = null
+                  resourceId = null
+                }
+                return {
+                  resourceId: resourceId ? resourceId : id,
+                  type
+                }
+              })
+            : null,
           serverAddress,
           serverPort,
           userName,
@@ -347,9 +365,11 @@ export default {
             } = {}
           } = {}
         } = response
-        this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-          availableForList
-        )
+        if (this.$refs.refMakeAvailableFor) {
+          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            availableForList
+          )
+        }
         this.formValues.cC = cc
         this.formValues.bCC = bcc
         this.formValues.customHeader = customHeader

@@ -354,7 +354,7 @@ export default {
     getBooleanValue(value) {
       if (value === 'True') {
         value = true
-      } else if (value === false) {
+      } else if (value === 'False') {
         value = false
       } else {
         value = !!value
