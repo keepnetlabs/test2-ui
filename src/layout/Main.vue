@@ -1229,7 +1229,6 @@ export default {
     callForLicenseCheck() {
       const companyResourceId = localStorage.getItem('companyId')
       getCheckCompanyLicense(companyResourceId).then((response) => {
-        debugger
         const { data: { data = {} } = {} } = response
         const { isLicenseExceeded, licenseLimit, totalUserCount } = data
         if (isLicenseExceeded) {
