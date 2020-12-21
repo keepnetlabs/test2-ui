@@ -8,6 +8,19 @@
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
+      <target-users-check-license-dialog
+        v-if="showLicenseExceededDialog"
+        :status="showLicenseExceededDialog"
+        :dialogBody="getDialogBody"
+        @close-overlay="toggleShowLicenseExceededDialog"
+      >
+        <template #footer>
+          <app-dialog-footer
+            @handleClose="toggleShowLicenseExceededDialog"
+            @handleConfirm="callForCreateTargetUser"
+          />
+        </template>
+      </target-users-check-license-dialog>
       <v-form ref="refForm">
         <app-modal-body-header
           :title="editData ? 'Edit  User Manually' : 'Add New User Manually'"
@@ -133,7 +146,6 @@
 <script>
 import { mail, maxLength, required } from '@/utils/validations'
 import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
@@ -145,10 +157,12 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import labels from '@/model/constants/labels'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
-
+import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 export default {
   name: 'AddUserModal',
   components: {
+    AppDialogFooter,
     InputEmail,
     FormGroup,
     AppModalBodyHeader,
@@ -157,7 +171,8 @@ export default {
     KSelect,
     InputFirstName,
     InputLastName,
-    InputDate
+    InputDate,
+    TargetUsersCheckLicenseDialog
   },
   props: {
     status: {
@@ -168,14 +183,9 @@ export default {
     },
     customFields: {
       type: Array
-    }
-  },
-  computed: {
-    getTitle() {
-      return this.editData ? 'Edit User' : 'Add New User'
     },
-    getIcon() {
-      return this.editData ? 'mdi-account-edit' : 'mdi-account-plus'
+    companyLicense: {
+      type: Object
     }
   },
   data() {
@@ -192,6 +202,7 @@ export default {
       },
       isPickersValidated: {},
       customFieldsModels: {},
+      showLicenseExceededDialog: false,
       priorityItems: [
         { text: 'Very Low', value: 'VeryLow' },
         'Low',
@@ -204,6 +215,19 @@ export default {
         mail,
         maxLength
       }
+    }
+  },
+  computed: {
+    getDialogBody() {
+      return this.companyLicense
+        ? `Your license allows to use the system with ${this.companyLicense['licenseLimit']} target users. Current target user count is ${this.companyLicense['totalUserCount']}. Do you want to save this user?`
+        : ''
+    },
+    getTitle() {
+      return this.editData ? 'Edit User' : 'Add New User'
+    },
+    getIcon() {
+      return this.editData ? 'mdi-account-edit' : 'mdi-account-plus'
     }
   },
   methods: {
@@ -240,9 +264,17 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
-          this.callForCreateTargetUser()
+          const { activeUserCount, licenseLimit } = this.companyLicense
+          if (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit) {
+            this.toggleShowLicenseExceededDialog()
+          } else {
+            this.callForCreateTargetUser()
+          }
         }
       }
+    },
+    toggleShowLicenseExceededDialog() {
+      this.showLicenseExceededDialog = !this.showLicenseExceededDialog
     },
     getCustomFieldItemProps(item) {
       const props = {}
@@ -274,6 +306,10 @@ export default {
       return rules
     },
     callForCreateTargetUser() {
+      const { activeUserCount, licenseLimit } = this.companyLicense
+      if (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit) {
+        this.toggleShowLicenseExceededDialog()
+      }
       const payload = this.getCustomFieldsPayload()
       this.saveDisable = true
       createTargetUser(payload)
