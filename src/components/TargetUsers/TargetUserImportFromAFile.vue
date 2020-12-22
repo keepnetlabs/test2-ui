@@ -668,28 +668,7 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'FirstName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'LastName',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'Email',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'Department',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
+              FilterItems: [],
               FilterGroups: []
             },
             {
@@ -1050,7 +1029,7 @@ export default {
       if (this.activeStep === 1) {
         isFormValid = !!this.formData.file
       } else if (this.activeStep === 2) {
-        this.requiredFields = this.mappingData.headers
+        this.requiredFields = this.mappingData.columns
           .filter((item) => item.required && !item.selectedValue)
           .map((item) => item.name || item.dbName)
         isFormValid = !this.requiredFields.length
@@ -1142,7 +1121,7 @@ export default {
                   selectedValue: null,
                   dbName: item.dbName,
                   required: item.dbName
-                    ? true
+                    ? item.dbName === 'Email'
                     : response.data.data.find((responseItem) => {
                         let name = item.dbName || item.label
                         return responseItem.name.toLowerCase() === name.toLowerCase()
