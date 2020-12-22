@@ -195,6 +195,22 @@ export default {
           label
         }
       })
+    },
+    getAvailableForValues(data) {
+      return data.map((item) => {
+        let { resourceId, type, id } = item
+        if (type === 'MyCompanyOnly') {
+          id = null
+          resourceId = null
+        } else if (type === 'AllCompanies') {
+          resourceId = null
+          resourceId = null
+        }
+        return {
+          resourceId: resourceId ? resourceId : id,
+          type
+        }
+      })
     }
   }
 }
