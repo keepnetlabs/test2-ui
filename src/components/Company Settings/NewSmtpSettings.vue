@@ -262,20 +262,7 @@ export default {
         const payload = {
           name,
           availableForRequests: this.showMakeAvailableFor
-            ? availableForRequests.map((item) => {
-                let { resourceId, type, id } = item
-                if (type === 'MyCompanyOnly') {
-                  id = null
-                  resourceId = null
-                } else if (type === 'AllCompanies') {
-                  resourceId = null
-                  resourceId = null
-                }
-                return {
-                  resourceId: resourceId ? resourceId : id,
-                  type
-                }
-              })
+            ? refMakeAvailableFor.getAvailableForValues(availableForRequests)
             : null,
           serverAddress,
           serverPort,

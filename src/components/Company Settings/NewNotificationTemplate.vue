@@ -215,13 +215,9 @@ export default {
         this.saveDisable = true
         const payload = {
           ...this.formValues,
-          availableForRequests: this.formValues.availableForRequests.map((item) => {
-            let { resourceId, type, id } = item
-            return {
-              resourceId: resourceId ? resourceId : id,
-              type
-            }
-          })
+          availableForRequests: refMakeAvailableFor.getAvailableForValues(
+            this.formValues.availableForRequests
+          )
         }
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)

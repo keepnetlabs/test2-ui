@@ -5,13 +5,21 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  ApiKey: 'API Key',
+  CompanyGroupNameSecondLower: 'Company group name',
   CommunityName: 'Community Name',
+  CopyToClipboard: 'Copy to Clipboard',
+  ClientName: 'Client Name',
+  ClientNameSecondLower: 'Client name',
+  CompanyNameSecondLower: 'Company name',
+  URL: 'Url',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',
   Delete: 'Delete',
   Next: 'NEXT',
+  RestApi: 'Rest Api',
   OK: 'OK',
   Prev: 'PREV',
   Back: 'BACK',
@@ -183,7 +191,21 @@ export const labels = {
   EditSMTPSetting: 'Edit SMTP Setting',
   CancelUserImport: 'Cancel user import?',
   CancelUserImportSubtitle: 'Operation will be abondened',
-  CancelUserImportBody: 'You will lose all progress and users will not be imported'
+  CancelUserImportBody: 'You will lose all progress and users will not be imported',
+  EmptyCustomApiMessage: 'You do not have any Rest API',
+  SubMesCustomApiMessage: 'Create a new rest API',
+  NewCustomApiBtnMessage: 'Create a New Rest API',
+  NewCustomApiBtnTooltip: 'Add a New Rest Api',
+  CustomApiSubtitle: 'This name will represent the client company',
+  CustomApiBodyTitle: 'Add New Integration Client',
+  CustomApiBodySubtitle: 'Add new client to provide integration service',
+  ClientId: 'Client ID',
+  GeneratedClientId: 'Generated Client ID',
+  GeneratedClientSecret: 'Generated Client Secret',
+  ClientSecret: 'Client Secret',
+  DeleteRestApiBody: 'This Rest API will be deleted. All data will be lost.',
+  ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once',
+  UserGroupName: 'User group name'
 }
 
 export default labels

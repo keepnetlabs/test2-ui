@@ -24,7 +24,7 @@
 <script>
 import SMTPSettings from '@/components/Company Settings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
-import CustomApi from '@/components/Company Settings/CustomApi'
+import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
 export default {
