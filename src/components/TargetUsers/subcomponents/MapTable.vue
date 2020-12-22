@@ -69,6 +69,7 @@ export default {
     setSelectDisableItems(item) {
       item.disabled = true
       let _this = this
+      item.selectedValue = item.name
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
         let isDisabled = _this.mapTableData.headers.find((x) => {
           return x.selectedValue && x.selectedValue.name === i.name
