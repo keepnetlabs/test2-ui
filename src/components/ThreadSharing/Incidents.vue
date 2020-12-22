@@ -385,6 +385,31 @@ export default {
                 this.incidentList = []
                 this.incidentLoading = false
               }
+              debugger
+              if (
+                error.response &&
+                error.response.data &&
+                error.response.data.message === 'No permission to access resource'
+              ) {
+                this.$router
+                  .push({
+                    name: 'Threat Sharing',
+                    params: {
+                      isCommunity: true,
+                      postId: _this.$route.query.postId,
+                      communityId: _this.$route.params['id'],
+                      communityName: localStorage.getItem('communityName')
+                    }
+                  })
+                  .finally(() => {
+                    this.$store.dispatch('common/createSnackBar', {
+                      color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                      message: `you need to join the ${localStorage.getItem(
+                        'communityName'
+                      )} before viewing the post`
+                    })
+                  })
+              }
             })
         } else {
           getIncidentList(payload)
