@@ -157,6 +157,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
+            filterableType: 'date',
             width: 150
           },
           {
@@ -168,6 +169,12 @@ export default {
             show: true,
             fixed: false,
             type: 'badge',
+            filterableType: 'select',
+            filterableCustomFieldName: 'Status',
+            filterableItems: [
+              { text: 'Running', value: 'Running' },
+              { text: 'Failed', value: 'Failed' }
+            ],
             width: 150
           }
         ],
