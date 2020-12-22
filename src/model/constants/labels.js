@@ -16,6 +16,7 @@ export const labels = {
   Save: 'SAVE',
   Delete: 'Delete',
   Next: 'NEXT',
+  RestApi: 'Rest Api',
   OK: 'OK',
   Prev: 'PREV',
   Back: 'BACK',
@@ -199,6 +200,7 @@ export const labels = {
   GeneratedClientId: 'Generated Client ID',
   GeneratedClientSecret: 'Generated Client Secret',
   ClientSecret: 'Client Secret',
+  DeleteRestApiBody: 'This Rest API will be deleted. All data will be lost.',
   ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once'
 }
 

@@ -8,6 +8,14 @@
         @closeOverlay="toggleNewCustomApiStatus"
         @closeOverlayWithUpdate="closeNewCustomApiWithUpdate"
       />
+      <delete-custom-api
+        v-if="showDeleteCustomApi"
+        :selected-row="selectedRow"
+        :status="showDeleteCustomApi"
+        :save-disable="saveDisableDelete"
+        @closeDialog="toggleShowDeleteCustomApi"
+        @handleDelete="handleDeleteCustomApi"
+      />
       <company-settings-header
         title="Rest API"
         sub-title="Create API Key to your customers for integration"
@@ -45,7 +53,8 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { searchRestApi } from '@/api/restApi'
+import { deleteRestApi, searchRestApi } from '@/api/restApi'
+import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
 export default {
   name: 'CustomApi',
   data() {
@@ -68,7 +77,9 @@ export default {
       },
       loading: false,
       selectedRow: null,
+      saveDisableDelete: false,
       showNewCustomApi: false,
+      showDeleteCustomApi: false,
       tableData: [],
       tableOptions: {
         columns: [
@@ -145,6 +156,7 @@ export default {
     }
   },
   components: {
+    DeleteCustomApi,
     CompanySettingsHeader,
     DataTable,
     NewCustomApi
@@ -172,12 +184,31 @@ export default {
       this.selectedRow = row
       this.toggleNewCustomApiStatus()
     },
-    handleDelete(row = {}) {},
+    handleDelete(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDeleteCustomApi()
+    },
+    handleDeleteCustomApi(resourceId = '') {
+      this.saveDisableDelete = true
+      deleteRestApi(resourceId)
+        .then(() => {
+          this.toggleShowDeleteCustomApi()
+        })
+        .finally(() => {
+          this.saveDisableDelete = false
+        })
+    },
     toggleNewCustomApiStatus() {
       if (this.showNewCustomApi) {
         this.selectedRow = null
       }
       this.showNewCustomApi = !this.showNewCustomApi
+    },
+    toggleShowDeleteCustomApi() {
+      if (this.showDeleteCustomApi) {
+        this.selectedRow = null
+      }
+      this.showDeleteCustomApi = !this.showDeleteCustomApi
     }
   }
 }

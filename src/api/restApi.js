@@ -31,3 +31,9 @@ export function updateRestApi(resourceId = {}, payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function deleteRestApi(resourceId = {}) {
+  return testRequest.delete(`${API_URL}/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
