@@ -277,7 +277,8 @@ export default {
       ]
     },
     payload: {
-      pageSize: 3000,
+      pageNumber: 1,
+      pageSize: 5000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -286,12 +287,7 @@ export default {
           {
             Condition: 'AND',
             FilterItems: [],
-            FilterGroups: [
-              {
-                Condition: 'OR',
-                FilterItems: []
-              }
-            ]
+            FilterGroups: []
           }
         ]
       }
@@ -496,28 +492,23 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)) {
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
           items.push(x)
         }
       })
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
         })
       } else {
         const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Result' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
       }
 
       this.payload.filter.FilterGroups[0].FilterItems = requestBody
@@ -527,17 +518,18 @@ export default {
       let items = []
       let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
           items.push(x)
         }
       })
 
       filterPayload = [...items]
       this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.getTableData()
+
       this.tableOptions.isColumnFilterActive =
         this.payload.filter.FilterGroups[0].FilterItems.length >= 1
-      this.getTableData()
     }
   }
 }

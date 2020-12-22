@@ -203,6 +203,7 @@ export default {
       this.filterValue = ''
       this.filteredDateValue = null
       this.filterChecked = []
+      this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
       this.$emit('handleClearColumnFilter', this.fieldName)
     },
@@ -275,6 +276,9 @@ export default {
         case 'numeric':
           return !this.filterValue
         case 'date':
+          if (this.filteredSelectValueDate === 'between') {
+            return !this.filteredDateRangeValue.length
+          }
           return !this.filteredDateValue
         default:
           return false
