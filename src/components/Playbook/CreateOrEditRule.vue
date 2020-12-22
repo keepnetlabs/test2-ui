@@ -443,7 +443,6 @@ export default {
   },
   methods: {
     findHasKeyword(arr, retArr = []) {
-      debugger
       if (arr.children) {
         this.findHasKeyword(arr)
       }

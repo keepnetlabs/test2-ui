@@ -197,7 +197,7 @@ export default {
     },
     goToDetails(groupName, resourceId) {
       localStorage.setItem('companyGroupName', groupName)
-      localStorage.setItem('companyGroupResouceId', resourceId)
+      localStorage.setItem('companyGroupResourceId', resourceId)
       this.$router.push({
         name: 'Company Group Details',
         params: { groupId: resourceId }
