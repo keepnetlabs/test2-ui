@@ -110,7 +110,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185
+            width: 185,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.OPERATIOM,
@@ -155,7 +156,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185
+            width: 185,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.USERAGENT,
