@@ -746,7 +746,7 @@
       >
         <el-pagination
           :current-page.sync="currentPage"
-          :page-size="countRow || rowCount"
+          :page-size="rowCount"
           :page-sizes="pageSizes || [5, 10, 25]"
           :total="dataLength || initialData.length"
           @current-change="handleCurrentChange"
@@ -770,7 +770,7 @@
       <div class="pagination block" v-if="showfilteredData">
         <el-pagination
           :current-page.sync="currentPage"
-          :page-size="countRow || rowCount"
+          :page-size="rowCount"
           :page-sizes="pageSizes || [5, 10, 25]"
           :total="filteredDataLength"
           @current-change="handleFilteredCurrentChange"
@@ -1106,7 +1106,7 @@ export default {
       selectedCluster: this.activeCluster,
       tableData: [],
       selectedRows: [],
-      rowCount: 10,
+      rowCount: 5,
       extendedViewStyle: null,
       currentPage: 1,
       multipleSelection: [],
@@ -1267,6 +1267,7 @@ export default {
   },
   created() {
     //Init column standardisation
+    if (this.countRow) this.rowCount = this.countRow
     this.columnStandardisation(this.columns)
     this.setRenderedColumns()
     if (this.table && this.table.length) {
@@ -1278,8 +1279,7 @@ export default {
       this.hideChildRowActions()
     }
 
-    this.tableData = this.tableData.slice(0, this.countRow || this.rowCount)
-    if (this.countRow) this.rowCount = this.countRow
+    this.tableData = this.tableData.slice(0, this.rowCount)
   },
   mounted() {
     if (window.outerWidth < 1023) {
@@ -2158,7 +2158,7 @@ export default {
       this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
         pageNumber: this.currentPage,
-        pageSize: this.rowCount || this.countRow,
+        pageSize: this.rowCount,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       })
     },
@@ -2249,8 +2249,6 @@ export default {
       this.$emit('clusterChanged', name)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
-      // emit to parent with name --- this.$emit(name)
-      // On Target Users page 43.line, if a tableData object has 'children: []' prop then cluster work fine.
     },
     handleCopy(selections) {
       let headerKeys = this.columns.reduce((acc, item) => {

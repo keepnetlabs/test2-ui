@@ -42,6 +42,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import { searchAvailableFor } from '@/api/smtpSettings'
 import labels from '@/model/constants/labels'
 import { COMMON_PROPS } from '@/model/constants/commonConstants'
+import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 export default {
   name: 'MakeAvailableFor.vue',
   components: {
@@ -177,40 +178,10 @@ export default {
       this.$emit('validation', this.isAvailableForValid)
     },
     getAvailableForListFromBackend(list = []) {
-      return list.map((item) => {
-        let { resourceId: id, typeName } = item
-        let label
-        let resourceId = id
-        if (typeName === 'MyCompanyOnly') {
-          label = 'My company only'
-          resourceId = null
-        } else if (typeName === 'AllCompanies') {
-          label = 'All companies'
-          resourceId = null
-        }
-        return {
-          id,
-          type: typeName,
-          resourceId,
-          label
-        }
-      })
+      return getAvailableForListFromBackend(list)
     },
     getAvailableForValues(data) {
-      return data.map((item) => {
-        let { resourceId, type, id } = item
-        if (type === 'MyCompanyOnly') {
-          id = null
-          resourceId = null
-        } else if (type === 'AllCompanies') {
-          resourceId = null
-          resourceId = null
-        }
-        return {
-          resourceId: resourceId ? resourceId : id,
-          type
-        }
-      })
+      return getAvailableForValues(data)
     }
   }
 }
