@@ -386,6 +386,9 @@ export default {
       this.isWantToShowAddUsersModal = true
     },
     handleEditFieldsClick() {
+      if (this.$refs && this.$refs.refPeopleTable) {
+        this.$refs.refPeopleTable.toggleIsSettingsOpened()
+      }
       this.toggleCustomFieldsModal()
     },
     setCellClassName(obj) {

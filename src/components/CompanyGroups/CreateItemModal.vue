@@ -19,7 +19,7 @@
           <v-list-item-content class="pt-0">
             <label class="create-company-group__label">Company Group Name</label>
             <v-text-field
-              v-model="groupName"
+              v-model.trim="groupName"
               placeholder="Enter name"
               dense
               outlined
@@ -28,8 +28,13 @@
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v),
-                (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-                (v) => validations.maxLength(v, 50, 'Max 50 characters')
+                (v) => validations.startsWithSpace(v),
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage(labels.CompanyGroupNameSecondLower)
+                  )
               ]"
             ></v-text-field>
           </v-list-item-content>
@@ -43,7 +48,7 @@
               You can select multiple companies
             </v-list-item-title>
             <v-autocomplete
-              v-model="selectedCompanies"
+              v-model.trim="selectedCompanies"
               :items="companies"
               no-data-text="No companies displayed"
               :return-object="true"
@@ -95,7 +100,6 @@ import {
   updateCompanyGroup
 } from '@/api/company'
 import { maxLength, required, startsWithSpace } from '@/utils/validations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 export default {
