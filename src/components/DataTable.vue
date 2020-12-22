@@ -28,7 +28,7 @@
         <div class="settings-popup" v-show="isSettingsOpened" :style="settingsPopupStyle">
           <div class="settings-header">
             <span class="settings-span">Table Settings</span>
-            <v-icon @click="isSettingsOpened = false" class="close-icon">mdi-close</v-icon>
+            <v-icon @click="toggleIsSettingsOpened" class="close-icon">mdi-close</v-icon>
           </div>
           <div class="sub-header">Show / Hide Columns</div>
           <div
@@ -235,7 +235,7 @@
             <v-tooltip v-if="isSettingsPopup" v-once bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="isSettingsOpened = true"
+                  @click="toggleIsSettingsOpened"
                   class="btn-hover mr-1"
                   icon
                   v-on="on"
@@ -1544,6 +1544,7 @@ export default {
           isEditPopupOpen: true
         })
         this.isWantToEditRow = true
+        this.isSettingsOpened = false
       }
     },
     /**
@@ -1955,6 +1956,13 @@ export default {
       })
 
       return (answer && answer.label) || key
+    },
+    toggleIsSettingsOpened() {
+      if (this.isWantToEditRow) {
+        this.isWantToEditRow = false
+      }
+      this.$emit('handleChangeIsSettingsOpen', !this.isSettingsOpened)
+      this.isSettingsOpened = !this.isSettingsOpened
     },
     addButtonFunction(action, row) {
       this.$emit(action, row)

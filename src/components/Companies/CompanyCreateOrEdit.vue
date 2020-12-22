@@ -58,7 +58,15 @@
                       v-model="formData.Description"
                       hint="*Required"
                       persistent-hint
-                      :rules="[(v) => !!v || 'Required']"
+                      :rules="[
+                        (v) => validations.required(v),
+                        (v) =>
+                          validations.maxLength(
+                            v,
+                            300,
+                            labels.getMaxLengthMessage(labels.Description, 300)
+                          )
+                      ]"
                       autocomplete="disabled"
                     />
                   </v-list-item-content>
@@ -74,7 +82,7 @@
                       item-value="resourceId"
                       outlined
                       placeholder="Select industry"
-                      :rules="[(v) => !!v || 'Required']"
+                      :rules="[(v) => validations.required(v)]"
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
@@ -92,7 +100,7 @@
                       item-value="resourceId"
                       outlined
                       placeholder="Select country"
-                      :rules="[(v) => !!v || 'Required']"
+                      :rules="[(v) => validations.required(v)]"
                       hint="*Required"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
@@ -102,13 +110,20 @@
                 <v-list-item>
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">{{ labels.Address }}</label>
-
                     <v-textarea
                       placeholder="Enter company address"
                       outlined
                       dense
                       no-resize
                       v-model="formData.Address"
+                      :rules="[
+                        (v) =>
+                          validations.maxLength(
+                            v,
+                            300,
+                            labels.getMaxLengthMessage(labels.Address, 200)
+                          )
+                      ]"
                       autocomplete="disabled"
                     />
                   </v-list-item-content>
@@ -123,7 +138,13 @@
                       :rules="[
                         (v) => {
                           return v === '' || v === null || validations.url(v)
-                        }
+                        },
+                        (v) =>
+                          validations.maxLength(
+                            v,
+                            2000,
+                            labels.getMaxLengthMessage(labels.WebsiteUrl, 2000)
+                          )
                       ]"
                     />
                   </v-list-item-content>

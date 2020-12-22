@@ -63,7 +63,7 @@ testService.interceptors.response.use(
               error.response.data.validationMessages[0]) ||
             error.response.data.message ||
             error.response.data.Message,
-          icon: 'mdi-warning'
+          icon: 'mdi-alert'
         },
         { root: true }
       )
