@@ -109,6 +109,7 @@ export default {
             this.$refs.tsCommunities.getAllCommunitiesListData()
             this.$refs.tsCommunities.getInvitationCount()
             this.$refs.tsCommunities.setInitialCommunityValues()
+            this.$refs.tsCommunities.isCommunity = false
           }
         }
       }, 50)

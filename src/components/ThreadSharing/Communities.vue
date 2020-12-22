@@ -743,6 +743,7 @@ export default {
           .catch((error) => {
             error.response.data
           })
+        this.isCommunity = false
       } else {
         this.filter = this.$route.params.communityName
         setTimeout(() => {
