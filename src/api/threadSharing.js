@@ -195,9 +195,7 @@ export function removeFromCommunity(id, value) {
 }
 
 export function inviteToCommunity(id, payload) {
-  return testRequest.post(`communities/${id}/invite`, payload, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post(`communities/${id}/invite`, payload)
 }
 
 export function appointNewOwner(id, payload) {

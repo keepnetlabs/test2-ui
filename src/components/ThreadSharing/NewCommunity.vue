@@ -216,7 +216,7 @@ export default {
         minLength: (v) =>
           validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
         maxLength: (v) =>
-          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Description, 64)),
+          validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       checkboxRule: {
