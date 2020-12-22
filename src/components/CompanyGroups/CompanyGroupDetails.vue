@@ -37,6 +37,14 @@
       @companyGroupCreated="handleSubmit"
     />
 
+    <AddCompaniesToCompanyGroup
+      v-if="showAddCompanyModal"
+      :status="showAddCompanyModal"
+      :selected-group="selectedRow"
+      @close-overlay="toggleShowAddCompanyModal"
+      @close-overlay-with-update="closeAddCompanyModalWithUpdate"
+    />
+
     <datatable
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
@@ -74,15 +82,17 @@ import Datatable from '../../components/DataTable'
 import { getCompanyByID, searchGroupCompanies, updateCompanyGroup } from '@/api/company'
 import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import DatatableLoading from '../SkeletonLoading/DatatableLoading'
+
 import AppModal from '@/components/AppModal'
+import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
 export default {
   name: 'CompanyGroupDetails',
   components: {
+    AddCompaniesToCompanyGroup,
     AppModal,
     CreateItemModal,
     AddGroupToModal,
@@ -97,6 +107,7 @@ export default {
     }
   },
   data: () => ({
+    showAddCompanyModal: false,
     loading: true,
     editCreateGroup: false,
     forCompany: true,
@@ -247,14 +258,27 @@ export default {
   watch: {
     isShowCreateOrEditModal() {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
+    },
+    groupId() {
+      this.initMethods()
     }
   },
   created() {
-    this.getIndustries().then(() => {
-      this.getLicenceTypes().then(() => this.getTableData())
-    })
+    this.initMethods()
   },
   methods: {
+    initMethods() {
+      this.getIndustries().then(() => {
+        this.getLicenceTypes().then(() => this.getTableData())
+      })
+    },
+    toggleShowAddCompanyModal() {
+      this.showAddCompanyModal = !this.showAddCompanyModal
+    },
+    closeAddCompanyModalWithUpdate() {
+      this.getTableData()
+      this.toggleShowAddCompanyModal()
+    },
     getTableData() {
       this.loading = true
       searchGroupCompanies(this.groupId, this.payload)
@@ -359,13 +383,12 @@ export default {
         ...{ name: localStorage.getItem('companyGroupName') },
         ...{ resourceId: this.groupId }
       }
-      this.showCreateNewGroupWithCompany = true
+      this.showAddCompanyModal = true
     },
-    handleSubmit() {
-      localStorage.setItem('companyGroupResouceId', this.groupId)
-      setTimeout(() => {
-        window.location.reload()
-      }, 500)
+    handleSubmit(resourceId, groupName) {
+      localStorage.setItem('companyGroupResourceId', resourceId)
+      localStorage.setItem('companyGroupName', groupName)
+      this.$router.push({ name: 'Company Group Details', params: { groupId: resourceId } })
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true

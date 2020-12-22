@@ -173,6 +173,7 @@ import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import labels from '@/model/constants/labels'
+import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 export default {
   name: 'NewSmtpSettings',
   components: {
@@ -219,6 +220,7 @@ export default {
         customHeader: ''
       },
       showPassword: false,
+      nonEditableAvailableForRequests: [],
       serviceProviderItems: [],
       validations: validations
     }
@@ -258,11 +260,13 @@ export default {
           customHeader,
           availableForRequests
         } = this.formValues
-
+        const { companyName, selectedCompanyName } = this.$store.state.auth
         const payload = {
           name,
           availableForRequests: this.showMakeAvailableFor
             ? refMakeAvailableFor.getAvailableForValues(availableForRequests)
+            : companyName === selectedCompanyName
+            ? getAvailableForValues(this.nonEditableAvailableForRequests)
             : null,
           serverAddress,
           serverPort,
@@ -356,6 +360,8 @@ export default {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             availableForList
           )
+        } else {
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
         }
         this.formValues.cC = cc
         this.formValues.bCC = bcc

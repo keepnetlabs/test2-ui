@@ -207,7 +207,7 @@ export default {
         if (!this.isEdit || this.forCompany) {
           createCompanyGroups(payload)
             .then((response) => {
-              this.$emit('companyGroupCreated', response.data.resourceId)
+              this.$emit('companyGroupCreated', response.data.data.resourceId, this.groupName)
               this.changeStatus(false)
             })
             .finally(() => (this.saveDisable = false))

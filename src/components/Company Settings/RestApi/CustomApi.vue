@@ -41,6 +41,8 @@
         @deleteAction="handleDelete"
         @onEmptyBtnClicked="toggleNewCustomApiStatus"
         @handleAddNewCustomApi="toggleNewCustomApiStatus"
+        @columnFilterChanged="columnFilterChanged"
+        @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearch"
       />
     </div>
@@ -92,6 +94,7 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
+            filterableType: 'text',
             width: 140
           },
           {
@@ -103,6 +106,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
+            filterableType: 'text',
             width: 270
           },
           {
@@ -114,6 +118,8 @@ export default {
             show: true,
             fixed: false,
             type: 'badge',
+            filterableType: 'select',
+            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }],
             width: 180
           },
           {
@@ -125,10 +131,12 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
+            filterableType: 'date',
             width: 180
           }
         ],
         pageSizes: [5, 10, 25],
+        isColumnFilterActive: false,
         rowActions: [
           {
             name: labels.Edit,
@@ -179,6 +187,49 @@ export default {
     closeNewCustomApiWithUpdate() {
       this.callForSearch()
       this.toggleNewCustomApiStatus()
+    },
+    columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (x.FieldName !== filter.FieldName) {
+          items.push(x)
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForSearch()
+    },
+    columnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForSearch()
+
+      this.tableOptions.isColumnFilterActive =
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleEdit(row = {}) {
       this.selectedRow = row
