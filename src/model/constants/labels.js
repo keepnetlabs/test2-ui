@@ -8,6 +8,7 @@ export const labels = {
   ApiKey: 'API Key',
   CommunityName: 'Community Name',
   ClientName: 'Client Name',
+  ClientNameSecondLower: 'Client name',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   CannotStartWithSpace: 'Cannot start with space',
@@ -189,7 +190,15 @@ export const labels = {
   EmptyCustomApiMessage: 'You do not have any Rest API',
   SubMesCustomApiMessage: 'Create a new rest API',
   NewCustomApiBtnMessage: 'Create a New Rest API',
-  NewCustomApiBtnTooltip: 'Add a New Rest Api'
+  NewCustomApiBtnTooltip: 'Add a New Rest Api',
+  CustomApiSubtitle: 'This name will represent the client company',
+  CustomApiBodyTitle: 'Add New Integration Client',
+  CustomApiBodySubtitle: 'Add new client to provide integration service',
+  ClientId: 'Client ID',
+  GeneratedClientId: 'Generated Client ID',
+  GenearetedClientSecret: 'Generated Client Secret',
+  ClientSecret: 'Client Secret',
+  ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once'
 }
 
 export default labels

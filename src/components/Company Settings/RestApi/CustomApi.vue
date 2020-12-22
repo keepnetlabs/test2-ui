@@ -5,6 +5,7 @@
         v-if="showNewCustomApi"
         :status="showNewCustomApi"
         @closeOverlay="toggleNewCustomApiStatus"
+        @closeOverlayWithUpdate="closeNewCustomApiWithUpdate"
       />
       <company-settings-header
         title="Rest API"
@@ -40,7 +41,7 @@
 <script>
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import NewCustomApi from '@/components/Company Settings/NewCustomApi'
+import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { searchRestApi } from '@/api/restApi'
@@ -160,6 +161,10 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    closeNewCustomApiWithUpdate() {
+      this.callForSearch()
+      this.toggleNewCustomApiStatus()
     },
     handleEdit(row = {}) {},
     handleDelete(row = {}) {},
