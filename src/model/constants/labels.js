@@ -10,6 +10,8 @@ export const labels = {
   CopyToClipboard: 'Copy to Clipboard',
   ClientName: 'Client Name',
   ClientNameSecondLower: 'Client name',
+  CompanyNameSecondLower: 'Company name',
+  URL: 'Url',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
   CannotStartWithSpace: 'Cannot start with space',
