@@ -385,7 +385,6 @@ export default {
                 this.incidentList = []
                 this.incidentLoading = false
               }
-              debugger
               if (
                 error.response &&
                 error.response.data &&

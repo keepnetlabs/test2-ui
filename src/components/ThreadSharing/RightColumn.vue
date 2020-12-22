@@ -769,7 +769,20 @@ export default {
           const payload = {
             emailarray: this.emailarray
           }
-          inviteToCommunity(this.$route.params.id, payload).then(() => {
+          inviteToCommunity(this.$route.params.id, payload).then((response) => {
+            response.data.data.map((item) => {
+              if (item.result === 'Failed') {
+                this.$store.dispatch('common/createSnackBar', {
+                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                  message: `${item['email']} ${item['resultText']}`
+                })
+              } else {
+                this.$store.dispatch('common/createSnackBar', {
+                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                  message: `${item['resultText']} (${item['email']})`
+                })
+              }
+            })
             this.emailarray = []
             this.openInviteModal = false
           })

@@ -19,6 +19,12 @@
         />
       </template>
     </app-dialog>
+    <target-users-required-area
+      v-if="showRequiredAreaModal"
+      :status="showRequiredAreaModal"
+      :dialogBody="getDialogBody"
+      @close-overlay="showRequiredAreaModal = false"
+    />
     <app-modal
       :status="status"
       @closeOverlay="closeOverlay"
@@ -389,10 +395,12 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { scrollToComponent } from '@/utils/functions'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
+import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
 
 export default {
   name: 'TargetUserImportFromAFile',
   components: {
+    TargetUsersRequiredArea,
     ListItemLoading,
     AppDialogFooter,
     AppModal,
@@ -415,9 +423,17 @@ export default {
     },
     columns: {
       required: true
+    },
+    companyLicense: {
+      required: true
     }
   },
   computed: {
+    getDialogBody() {
+      return this.showRequiredAreaModal
+        ? `Please select the following required fields: ${this.requiredFields.toString()}`
+        : ''
+    },
     setProgressValue() {
       let users =
         this.mappingStatus.newUserCount +
@@ -435,6 +451,8 @@ export default {
   },
   data() {
     return {
+      requiredFields: [],
+      showRequiredAreaModal: false,
       selectedTableData: true,
       isLeaveAccepted: false,
       saveSuccess: false,
@@ -1032,11 +1050,17 @@ export default {
       if (this.activeStep === 1) {
         isFormValid = !!this.formData.file
       } else if (this.activeStep === 2) {
-        isFormValid =
-          this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
+        this.requiredFields = this.mappingData.headers
+          .filter((item) => item.required && !item.selectedValue)
+          .map((item) => item.name || item.dbName)
+        isFormValid = !this.requiredFields.length
         if (!isFormValid) {
-          this.$refs.refMapTable.showErrorSelect()
+          this.showRequiredAreaModal = true
         }
+        //this.$refs.refMapForm.validate() && this.$refs.refMapTable.getMapTableDataValidation()
+        //if (!isFormValid) {
+        //this.$refs.refMapTable.showErrorSelect()
+        //}
       }
       if (isFormValid) {
         if (this.activeStep === 1) {

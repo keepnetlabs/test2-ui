@@ -36,6 +36,7 @@
       v-if="isWantToImportFile"
       :columns="tableOptions.columns"
       ref="targetUserFromAFile"
+      :companyLicense="companyLicense"
     />
     <datatable
       ref="refPeopleTable"
