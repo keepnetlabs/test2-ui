@@ -43,7 +43,11 @@
             placeholder="Select Option"
           />
         </form-group>
-        <make-available-for ref="refMakeAvailableFor" v-model="formValues.availableForRequests" />
+        <make-available-for
+          v-if="showMakeAvailableFor"
+          ref="refMakeAvailableFor"
+          v-model="formValues.availableForRequests"
+        />
         <form-group title="Email Template" class-name="email-template mt-2">
           <email-template
             ref="refEmailTemplate"
@@ -77,6 +81,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
+import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -99,6 +104,7 @@ export default {
   data() {
     return {
       labels,
+      nonEditableAvailableForRequests: [],
       saveDisable: false,
       Validations: Validations,
       commonRules: {
@@ -156,6 +162,9 @@ export default {
       return this.selectedItem
         ? labels.EditNotificationTemplateSubtitle
         : labels.NewNotificationTemplateSubtitle
+    },
+    showMakeAvailableFor() {
+      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
   created() {
@@ -167,10 +176,13 @@ export default {
         } = response
         for (let [key, value] of Object.entries(data)) {
           if (key === 'availableForList') {
-            this.formValues[
-              'availableForRequests'
-            ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
-
+            if (this.showMakeAvailableFor) {
+              this.formValues[
+                'availableForRequests'
+              ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
+            } else {
+              this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
+            }
             continue
           }
           this.formValues[key] = value
@@ -210,14 +222,21 @@ export default {
     },
     submit() {
       const { refForm, refMakeAvailableFor } = this.$refs
-      refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
-      if (refForm.validate() && refMakeAvailableFor.isAvailableForValid) {
+      let isValid = true
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        isValid = refMakeAvailableFor.isAvailableForValid
+      }
+      if (refForm.validate() && isValid) {
+        const { companyName, selectedCompanyName } = this.$store.state.auth
         this.saveDisable = true
         const payload = {
           ...this.formValues,
-          availableForRequests: refMakeAvailableFor.getAvailableForValues(
-            this.formValues.availableForRequests
-          )
+          availableForRequests: this.showMakeAvailableFor
+            ? refMakeAvailableFor.getAvailableForValues(this.formValues.availableForRequests)
+            : companyName === selectedCompanyName
+            ? getAvailableForValues(this.nonEditableAvailableForRequests)
+            : null
         }
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
