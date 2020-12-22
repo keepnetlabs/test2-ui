@@ -58,7 +58,12 @@
               required
               placeholder="Placeholder"
               outlined
-              :rules="[nameRules.regex, nameRules.required, nameRules.empty]"
+              :rules="[
+                nameRules.required,
+                nameRules.empty,
+                nameRules.minLength,
+                nameRules.maxLength
+              ]"
               :class="{ 'error-border': communNameAvailableForUpdate }"
               class="edit-name-textfield"
               @blur="checkCommunName()"
@@ -82,7 +87,12 @@
               v-model="description"
               name="description"
               outlined
-              :rules="[descriptionRules.regex, descriptionRules.required, descriptionRules.empty]"
+              :rules="[
+                descriptionRules.required,
+                descriptionRules.empty,
+                descriptionRules.minLength,
+                descriptionRules.maxLength
+              ]"
               class="edit-description"
               placeholder="Description"
               required
@@ -152,17 +162,22 @@ export default {
       selectedCategory: '',
       valid: false,
       nameRules: {
-        required: (v) => validations.minLength(v, 5, labels.getMinLengthMessage('Community Name')),
+        required: (v) => validations.required(v, labels.Required),
+        minLength: (v) =>
+          validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
         maxLength: (v) =>
-          validations.maxLength(v, 64, labels.getMaxLengthMessage('Community Name')),
+          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
         regex: (v) =>
           /^[a-z\d\-_\s]+$/i.test(v) ||
           'Only use letters, digits, period, comma, underline and hyphen',
         empty: (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space'
       },
       descriptionRules: {
-        required: (v) => validations.minLength(v, 5, labels.getMinLengthMessage('Description')),
-        maxLength: (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Description')),
+        required: (v) => validations.required(v, labels.Required),
+        minLength: (v) =>
+          validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
+        maxLength: (v) =>
+          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Description, 64)),
         empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
       },
       privateToPublic: false,
