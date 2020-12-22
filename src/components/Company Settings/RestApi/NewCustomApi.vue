@@ -50,7 +50,7 @@
         <form-group
           :title="labels.ClientId"
           :sub-title="labels.GeneratedClientId"
-          class-name="copy-to-clipboard"
+          :class-name="formValues.clientId ? 'copy-to-clipboard' : ''"
           has-hint
         >
           <div class="copy-to-clipboard__container">
@@ -65,6 +65,7 @@
               v-model.trim="formValues.clientId"
             ></v-text-field>
             <v-btn
+              v-if="formValues.clientId"
               text
               color="#2196f3"
               class="ml-2"
@@ -80,7 +81,9 @@
               ? labels.ClientSecretSubtitle
               : labels.GeneratedClientSecret
           "
-          :class-name="isShowGenerateCredentialsBtn ? 'copy-to-clipboard' : ''"
+          :class-name="
+            isShowGenerateCredentialsBtn && formValues.clientSecret ? 'copy-to-clipboard' : ''
+          "
           has-hint
         >
           <div class="copy-to-clipboard__container">
@@ -95,7 +98,7 @@
               v-model.trim="formValues.clientSecret"
             ></v-text-field>
             <v-btn
-              v-if="isShowGenerateCredentialsBtn"
+              v-if="isShowGenerateCredentialsBtn && formValues.clientSecret"
               text
               color="#2196f3"
               class="ml-2"

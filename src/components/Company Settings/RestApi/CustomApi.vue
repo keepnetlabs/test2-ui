@@ -103,7 +103,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 240
+            width: 270
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
