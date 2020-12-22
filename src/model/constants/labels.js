@@ -6,6 +6,7 @@ export const labels = {
     return `${val} must have at least ${length} characters`
   },
   ApiKey: 'API Key',
+  CompanyGroupNameSecondLower: 'Company group name',
   CommunityName: 'Community Name',
   CopyToClipboard: 'Copy to Clipboard',
   ClientName: 'Client Name',

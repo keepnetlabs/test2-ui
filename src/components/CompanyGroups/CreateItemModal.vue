@@ -28,8 +28,13 @@
               autocomplete="off"
               :rules="[
                 (v) => validations.required(v),
-                (v) => validations.startsWithSpace(v, 'Cannot start with space'),
-                (v) => validations.maxLength(v, 50, 'Max 50 characters')
+                (v) => validations.startsWithSpace(v),
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage(labels.CompanyGroupNameSecondLower)
+                  )
               ]"
             ></v-text-field>
           </v-list-item-content>
@@ -95,7 +100,6 @@ import {
   updateCompanyGroup
 } from '@/api/company'
 import { maxLength, required, startsWithSpace } from '@/utils/validations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 export default {
