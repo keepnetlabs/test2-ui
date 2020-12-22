@@ -1961,6 +1961,7 @@ export default {
       if (this.isWantToEditRow) {
         this.isWantToEditRow = false
       }
+      this.$emit('handleChangeIsSettingsOpen', !this.isSettingsOpened)
       this.isSettingsOpened = !this.isSettingsOpened
     },
     addButtonFunction(action, row) {

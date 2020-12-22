@@ -75,6 +75,7 @@
       v-bind="bindPropsIsSafari"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
+      @handleChangeIsSettingsOpen="handleChangeIsSettingsOpen"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -314,6 +315,11 @@ export default {
     isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
       return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
     },
+    handleChangeIsSettingsOpen(val) {
+      if (val) {
+        this.isShowExtended = false
+      }
+    },
     handleSearchChange(bodyData = {}, columnFilterActive = false) {
       this.payload.filter.FilterGroups[0].FilterItems = [
         ...bodyData.filter.FilterGroups[0].FilterItems
@@ -405,6 +411,9 @@ export default {
       this.$refs.extend.clickClose()
       this.selectedRow = row
       this.selectedExtend = {}
+      if (this.$refs && this.$refs.refDataList && this.$refs.refDataList.isSettingsOpened) {
+        this.$refs.refDataList.toggleIsSettingsOpened()
+      }
       this.isShowExtended = true
       this.tableHeight = this.$refs.refDataList.$el.clientHeight
       getCompanyByID(row.companyResourceId, false)
