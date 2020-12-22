@@ -201,7 +201,8 @@ export const labels = {
   GeneratedClientSecret: 'Generated Client Secret',
   ClientSecret: 'Client Secret',
   DeleteRestApiBody: 'This Rest API will be deleted. All data will be lost.',
-  ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once'
+  ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once',
+  UserGroupName: 'User group name'
 }
 
 export default labels
