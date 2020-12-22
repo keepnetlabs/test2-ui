@@ -7,6 +7,7 @@ export const labels = {
   },
   ApiKey: 'API Key',
   CommunityName: 'Community Name',
+  CopyToClipboard: 'Copy to Clipboard',
   ClientName: 'Client Name',
   ClientNameSecondLower: 'Client name',
   Cancel: 'CANCEL',
@@ -196,7 +197,7 @@ export const labels = {
   CustomApiBodySubtitle: 'Add new client to provide integration service',
   ClientId: 'Client ID',
   GeneratedClientId: 'Generated Client ID',
-  GenearetedClientSecret: 'Generated Client Secret',
+  GeneratedClientSecret: 'Generated Client Secret',
   ClientSecret: 'Client Secret',
   ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once'
 }

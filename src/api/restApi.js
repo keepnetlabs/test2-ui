@@ -21,3 +21,13 @@ export function createRestApi(payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getRestApi(resourceId = {}) {
+  return testRequest.get(`${API_URL}/${resourceId}`)
+}
+
+export function updateRestApi(resourceId = {}, payload) {
+  return testRequest.put(`${API_URL}/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

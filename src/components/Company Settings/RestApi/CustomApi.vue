@@ -3,6 +3,7 @@
     <div class="custom-apis__container">
       <new-custom-api
         v-if="showNewCustomApi"
+        :selectedRow="selectedRow"
         :status="showNewCustomApi"
         @closeOverlay="toggleNewCustomApiStatus"
         @closeOverlayWithUpdate="closeNewCustomApiWithUpdate"
@@ -66,6 +67,7 @@ export default {
         }
       },
       loading: false,
+      selectedRow: null,
       showNewCustomApi: false,
       tableData: [],
       tableOptions: {
@@ -166,9 +168,15 @@ export default {
       this.callForSearch()
       this.toggleNewCustomApiStatus()
     },
-    handleEdit(row = {}) {},
+    handleEdit(row = {}) {
+      this.selectedRow = row
+      this.toggleNewCustomApiStatus()
+    },
     handleDelete(row = {}) {},
     toggleNewCustomApiStatus() {
+      if (this.showNewCustomApi) {
+        this.selectedRow = null
+      }
       this.showNewCustomApi = !this.showNewCustomApi
     }
   }
