@@ -15,7 +15,7 @@
         sub-title="Fill information and credentials"
       />
       <v-form ref="refForm">
-        <form-group title="SMTP Setting Name" has-hint>
+        <form-group :title="labels.SMTPSettingName" has-hint>
           <v-text-field
             placeholder="Enter SMTP setting name"
             outlined
@@ -23,10 +23,19 @@
             v-model.trim="formValues.name"
             hint="*Required"
             persistent-hint
-            :rules="[(v) => validations.required(v)]"
+            :rules="[
+              (v) => validations.required(v),
+              (v) => validations.startsWithSpace(v),
+              (v) =>
+                validations.maxLength(
+                  v,
+                  64,
+                  labels.getMaxLengthMessage(labels.SMTPSettingNameSecondLower)
+                )
+            ]"
           ></v-text-field>
         </form-group>
-        <form-group title="Service Provider" has-hint>
+        <form-group :title="labels.ServiceProvider" has-hint>
           <k-select
             v-model.trim="formValues.serviceProvider"
             :items="serviceProviderItems"
@@ -43,20 +52,32 @@
             placeholder="Select option"
           ></k-select>
         </form-group>
-        <form-group title="SMTP Server Address" has-hint>
+        <form-group :title="labels.SMTPServerAddress" has-hint>
           <div class="new-smtp-setting__server-address-container">
             <InputUrl
               placeholder="Server URL or IP Address"
               v-model.trim="formValues.serverAddress"
-              :rules="[(v) => validations.required(v), (v) => validations.startsWithSpace(v)]"
+              :rules="[
+                (v) => validations.required(v),
+                (v) => validations.startsWithSpace(v),
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    200,
+                    labels.getMaxLengthMessage(labels.SMTPServerAddressSecondLower, 200)
+                  )
+              ]"
             ></InputUrl>
             <v-text-field
-              placeholder="Port"
+              :placeholder="labels.Port"
               outlined
               ref="refTextField"
               dense
               @input="onPortChange"
-              :rules="[(v) => validations.required(v)]"
+              :rules="[
+                (v) => validations.required(v),
+                (v) => validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Port, 10))
+              ]"
               :value="formValues.serverPort"
             ></v-text-field>
           </div>
@@ -328,11 +349,16 @@ export default {
       this.$emit('closeOverlay')
     },
     onPortChange(val) {
-      const numberVal = Number(val)
-      const newVal = isNaN(numberVal) ? '' : val
-      const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
-      this.formValues.serverPort = renderedValue
-      this.$refs.refTextField.lazyValue = renderedValue
+      if (val.length) {
+        const numberVal = Number(val)
+        const newVal = isNaN(numberVal) ? '' : val
+        const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
+        this.formValues.serverPort = renderedValue
+        this.$refs.refTextField.lazyValue = renderedValue
+      } else {
+        this.formValues.serverPort = ''
+        this.$refs.refTextField.lazyValue = ''
+      }
     },
     callForGetSmtpSettings() {
       return getSmtpSettings(this.resourceId).then((response) => {

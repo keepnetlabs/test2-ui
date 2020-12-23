@@ -2,7 +2,7 @@
   height: 40px;
   border:solid 1px rgba(0, 0, 0, 0.16) ;
   border-radius: 8px ;
-  box-shadow: none !important; ;
+  box-shadow: none !important;
   &:focus-within{
     border-color:#1976d2 ;
   }
@@ -17,5 +17,18 @@
   }
   .vti__flag{
     transform: scale(1.05) ;
+  }
+  .vti__dropdown-list{
+    border-radius: 8px;
+    background:#fff !important;
+    padding-left:0;
+  }
+  .vti__dropdown-item{
+    vertical-align:middle;
+    padding: 12px 24px 12px 24px;
+    strong,span {
+      font-size: 14px;
+      font-weight: 400;
+    }
   }
 }

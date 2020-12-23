@@ -1,7 +1,7 @@
 <script>
 import { VTextField } from 'vuetify/lib'
 import * as Validations from '@/utils/validations'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'InputUrl',
   extends: VTextField,
@@ -16,7 +16,7 @@ export default {
       default: 'Enter a URL'
     },
     hint: {
-      default: '*Required'
+      default: labels.DefaultHint
     },
     persistentHint: {
       default: true
@@ -26,9 +26,10 @@ export default {
     },
     rules: {
       default: () => [
-        (v) => Validations.required(v, 'Required'),
-        (v) => Validations.startsWithSpace(v, 'Cannot start with space'),
-        (v) => Validations.url(v, 'Invalid URL')
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.url(v, labels.InvalidURL),
+        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
       ]
     }
   }

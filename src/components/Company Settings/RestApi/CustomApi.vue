@@ -31,6 +31,7 @@
         :filterable="true"
         :isServerSide="false"
         :options="true"
+        :download-button="{ show: false }"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"

@@ -27,7 +27,7 @@
         <form-group title="Email Address" has-hint>
           <InputEmail v-model.trim="formValues.email" />
         </form-group>
-        <form-group title="Phone Number" class-name="mb-3">
+        <form-group title="Phone Number">
           <InputPhone v-model.trim="formValues.phoneNumber" />
         </form-group>
         <form-group title="Status">

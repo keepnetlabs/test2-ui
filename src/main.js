@@ -4,7 +4,6 @@ import VueTour from 'vue-tour'
 import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
-import VueTelInputVuetify from 'vue-tel-input-vuetify/lib/plugin.js'
 import vuetify from './plugins/vuetify'
 import '@mdi/font/scss/materialdesignicons.scss'
 import './assets/scss/main.scss'
@@ -17,9 +16,6 @@ import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 
 require('vue-tour/dist/vue-tour.css')
 
-Vue.use(VueTelInputVuetify, {
-  vuetify
-})
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 //dynamic kullanımda bindingi gelmiyodu
