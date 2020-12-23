@@ -178,7 +178,6 @@ export default {
             show: true,
             type: 'text',
             fixed: 'left',
-            width: 175,
             filterableType: 'text',
             filterableCustomFieldName: 'Name'
           },
@@ -190,8 +189,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150,
-            minWidth: 100,
             filterableType: 'text',
             filterableCustomFieldName: 'Description'
           },
@@ -205,7 +202,7 @@ export default {
             show: true,
             type: 'popup',
             minWidth: '80',
-            width: 170,
+            width: 160,
             emptyText: 'No Match'
           },
           {

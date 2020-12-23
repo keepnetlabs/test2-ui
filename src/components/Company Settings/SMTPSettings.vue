@@ -146,7 +146,7 @@ export default {
             fixed: false,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 180
           },
           {
             property: PROPERTY_STORE.CREATETIME,

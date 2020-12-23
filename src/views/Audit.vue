@@ -74,12 +74,12 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 160,
+            width: 140,
             filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.LOGDATE,
-            align: 'center',
+            align: 'left',
             editable: false,
             label: LABEL_STORE.LOGDATE,
             fixed: false,
@@ -122,7 +122,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185,
+            width: 140,
             filterableType: 'text'
           },
           {
