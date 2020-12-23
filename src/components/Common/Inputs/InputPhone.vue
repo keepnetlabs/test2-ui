@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="margin-bottom: 21px;">
     <vue-tel-input
       :value="value"
       validCharactersOnly
