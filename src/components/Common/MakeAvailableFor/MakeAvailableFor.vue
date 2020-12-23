@@ -10,6 +10,7 @@
       :value="value"
       @input="handleInputChange"
       :options="treeSelectOptions"
+      :disabled="disabled"
       @close="validateAvailableFor"
     />
     <div
@@ -50,7 +51,8 @@ export default {
     FormGroup
   },
   props: {
-    value: Array
+    value: Array,
+    disabled: Boolean
   },
   data() {
     return {

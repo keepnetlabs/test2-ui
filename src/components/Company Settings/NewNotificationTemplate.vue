@@ -44,9 +44,10 @@
           />
         </form-group>
         <make-available-for
-          v-if="showMakeAvailableFor"
+          v-if="isRenderMakeAvailableFor"
           ref="refMakeAvailableFor"
           v-model="formValues.availableForRequests"
+          :disabled="!showMakeAvailableFor"
         />
         <form-group title="Email Template" class-name="email-template mt-2">
           <email-template
@@ -165,6 +166,12 @@ export default {
     },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+    },
+    isRenderMakeAvailableFor() {
+      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
+        return !!this.selectedItem
+      }
+      return true
     }
   },
   created() {
@@ -176,13 +183,10 @@ export default {
         } = response
         for (let [key, value] of Object.entries(data)) {
           if (key === 'availableForList') {
-            if (this.showMakeAvailableFor) {
-              this.formValues[
-                'availableForRequests'
-              ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
-            } else {
-              this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
-            }
+            this.formValues[
+              'availableForRequests'
+            ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
+            this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
             continue
           }
           this.formValues[key] = value

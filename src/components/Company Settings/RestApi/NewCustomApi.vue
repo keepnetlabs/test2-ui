@@ -4,16 +4,13 @@
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
-    :title="'New Client'"
-    icon-name="mdi-plus"
+    :title="getTitle"
+    :icon-name="getIconName"
     class-name="new-smtp-setting"
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
-      <app-modal-body-header
-        :title="labels.CustomApiBodyTitle"
-        :sub-title="labels.CustomApiBodySubtitle"
-      />
+      <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm">
         <form-group :title="labels.ClientName" :sub-title="labels.CustomApiSubtitle" has-hint>
           <v-text-field
@@ -158,6 +155,22 @@ export default {
     }
   },
   computed: {
+    getBodyTitle() {
+      return this.selectedRow && this.selectedRow.resourceId
+        ? labels.CustomApiEditBodyTitle
+        : labels.CustomApiBodyTitle
+    },
+    getBodySubtitle() {
+      return this.selectedRow && this.selectedRow.resourceId
+        ? labels.CustomApiEditBodySubtitle
+        : labels.CustomApiBodySubtitle
+    },
+    getTitle() {
+      return this.selectedRow && this.selectedRow.resourceId ? labels.EditClient : labels.NewClient
+    },
+    getIconName() {
+      return this.selectedRow && this.selectedRow.resourceId ? 'mdi-pencil' : 'mdi-plus'
+    },
     isShowGenerateCredentialsBtn() {
       return !(this.selectedRow && this.selectedRow.resourceId)
     }
