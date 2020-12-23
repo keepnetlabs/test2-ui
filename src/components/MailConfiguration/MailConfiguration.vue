@@ -395,7 +395,7 @@ export default {
       lastColumns: [],
       columns: [
         {
-          property: 'name',
+          property: PROPERTY_STORE.NAME,
           align: 'left',
           editable: false,
           label: 'Name',
@@ -403,7 +403,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150,
           showHeaderTooltip: true
         },
         {
@@ -423,8 +422,7 @@ export default {
           label: getStoreValue(PROPERTY_STORE.EMAIL),
           sortable: true,
           show: true,
-          type: 'text',
-          width: 150
+          type: 'text'
         },
         {
           property: 'statusName',

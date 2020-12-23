@@ -95,7 +95,7 @@ export default {
             fixed: 'left',
             type: 'text',
             filterableType: 'text',
-            width: 140
+            width: 260
           },
           {
             property: PROPERTY_STORE.CLIENTID,
@@ -107,7 +107,7 @@ export default {
             fixed: false,
             type: 'text',
             filterableType: 'text',
-            width: 270
+            width: 280
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
@@ -120,7 +120,7 @@ export default {
             type: 'badge',
             filterableType: 'select',
             filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }],
-            width: 180
+            width: 150
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -131,8 +131,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            filterableType: 'date',
-            width: 180
+            filterableType: 'date'
           }
         ],
         pageSizes: [5, 10, 25],
