@@ -4,7 +4,11 @@
       {{ selectedRow.companyName && selectedRow.companyName }} will be removed from company group.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="confirmRemove" />
+      <app-dialog-footer
+        :confirm-button-disabled="saveDisable"
+        @handleClose="closeModal"
+        @handleConfirm="confirmRemove"
+      />
     </template>
   </app-dialog>
 </template>
@@ -16,6 +20,9 @@ export default {
   name: 'RemoveModal',
   props: {
     isShow: {
+      type: Boolean
+    },
+    saveDisable: {
       type: Boolean
     },
     selectedRow: {

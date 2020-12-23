@@ -19,6 +19,7 @@
     <remove-modal
       :is-show="isShowRemoveModal"
       :selectedRow="selectedRow"
+      :save-disable="removeModalDisable"
       @confirmRemove="removeConfirmedItem"
       @changeModalStatus="changeRemoveModalStatus"
     />
@@ -79,7 +80,12 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { getCompanyByID, searchGroupCompanies, updateCompanyGroup } from '@/api/company'
+import {
+  getCompanyByID,
+  removeCompanyToCompanyGroup,
+  searchGroupCompanies,
+  updateCompanyGroup
+} from '@/api/company'
 import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
@@ -119,6 +125,7 @@ export default {
     companyIdArray: [],
     showAddGroupToModal: false,
     showCreateNewGroupWithCompany: false,
+    removeModalDisable: false,
     selectedExtend: {},
     selectedRow: {},
     tableOptions: {
@@ -305,20 +312,17 @@ export default {
       this.changeRemoveModalStatus(true)
     },
     removeConfirmedItem(selectedItem) {
-      const arr = []
-      this.tableData.map(
-        (x) =>
-          x.companyResourceId !== selectedItem.companyResourceId && arr.push(x.companyResourceId)
-      )
       const payload = {
-        name: localStorage.getItem('companyGroupName'),
-        companyResourceIdArray: arr
+        companyResourceIdArray: [selectedItem['companyResourceId']]
       }
-      updateCompanyGroup(this.groupId, payload).then((response) => {
-        if (response.data && response.data.message) {
-          this.getTableData()
-        }
-      })
+      this.removeModalDisable = true
+      removeCompanyToCompanyGroup(this.groupId, payload)
+        .then((response) => {
+          if (response.data && response.data.message) {
+            this.getTableData()
+          }
+        })
+        .finally(() => (this.removeModalDisable = false))
     },
     changeRemoveModalStatus(status) {
       this.isShowRemoveModal = status
