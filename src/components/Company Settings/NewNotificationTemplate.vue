@@ -44,6 +44,7 @@
           />
         </form-group>
         <make-available-for
+          v-if="isRenderMakeAvailableFor"
           ref="refMakeAvailableFor"
           v-model="formValues.availableForRequests"
           :disabled="!showMakeAvailableFor"
@@ -165,6 +166,12 @@ export default {
     },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+    },
+    isRenderMakeAvailableFor() {
+      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
+        return !!this.selectedItem
+      }
+      return true
     }
   },
   created() {

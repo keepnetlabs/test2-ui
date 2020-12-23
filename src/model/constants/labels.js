@@ -18,6 +18,7 @@ export const labels = {
   URL: 'Url',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
+  ServiceProvider: 'Service Provider',
   CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',
   Delete: 'Delete',
@@ -210,7 +211,13 @@ export const labels = {
   ClientSecret: 'Client Secret',
   DeleteRestApiBody: 'This Rest API will be deleted. All data will be lost.',
   ClientSecretSubtitle: 'Please save API Secret in a safe place. It is only displayed once',
-  UserGroupName: 'User group name'
+  UserGroupName: 'User group name',
+  DefaultHint: '*Required',
+  SMTPSettingName: 'SMTP Setting Name',
+  SMTPSettingNameSecondLower: 'SMTP setting name',
+  SMTPServerAddress: 'SMTP Server Address',
+  SMTPServerAddressSecondLower: 'SMTP server address',
+  Port: 'Port'
 }
 
 export default labels
