@@ -89,7 +89,6 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 250,
             filterableType: 'text'
           },
           {
@@ -100,7 +99,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 150
+            width: 140
           },
           {
             property: 'createTime',
@@ -110,7 +109,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 190,
             filterableType: 'date'
           }
         ],

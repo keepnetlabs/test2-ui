@@ -57,7 +57,12 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import { getCompanyGroups, searchCompanyGroups, updateCompanyGroup } from '../../api/company'
+import {
+  addCompanyToCompanyGroup,
+  getCompanyGroups,
+  searchCompanyGroups,
+  updateCompanyGroup
+} from '../../api/company'
 import Datatable from '../../components/DataTable'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
@@ -176,10 +181,9 @@ export default {
         const companyIdArray = this.companyIdArray
         this.selectedArray.forEach((x) => {
           const payload = {
-            name: x.name,
             companyResourceIdArray: companyIdArray
           }
-          updateCompanyGroup(x.resourceId, payload).finally(() => (this.saveDisable = false))
+          addCompanyToCompanyGroup(x.resourceId, payload).finally(() => (this.saveDisable = false))
         })
         this.changeStatus(false)
       }

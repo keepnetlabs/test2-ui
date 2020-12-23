@@ -65,8 +65,15 @@ export function updateCompanyGroup(id, payload) {
   return testRequest.put(`/company-groups/${id}`, payload, { snackbar: COMMON_SNACKBAR })
 }
 
-export function addCompanyToCompanyGroup(resourceId = [], payload) {
+export function addCompanyToCompanyGroup(resourceId = '', payload = {}) {
   return testRequest.put(`/company-groups/${resourceId}/participants`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function removeCompanyToCompanyGroup(resourceId = '', payload = {}) {
+  return testRequest.delete(`/company-groups/${resourceId}/participants`, {
+    data: payload,
     snackbar: COMMON_SNACKBAR
   })
 }

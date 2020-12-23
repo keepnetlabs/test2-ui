@@ -140,7 +140,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 250,
             filterableType: 'text'
           },
           {
@@ -151,7 +150,6 @@ export default {
             sortable: true,
             show: false,
             type: 'text',
-            width: 230,
             filterableType: 'text'
           },
           {

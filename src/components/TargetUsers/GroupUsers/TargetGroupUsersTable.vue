@@ -150,7 +150,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150,
           filterableType: 'text',
           dbName: 'lastName'
         },
@@ -174,7 +173,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150,
           filterableType: 'text',
           dbName: 'department'
         }
@@ -188,7 +186,7 @@ export default {
           sortable: true,
           show: true,
           type: 'priority',
-          width: 180,
+          width: 150,
           fullWidth: true,
           filterableType: 'select',
           filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS
@@ -201,7 +199,7 @@ export default {
           sortable: true,
           show: true,
           type: 'status',
-          width: 180,
+          width: 150,
           isEditable: true,
           hasTooltip: true,
           fullWidth: true,
