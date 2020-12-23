@@ -158,7 +158,7 @@ export default {
             show: true,
             type: 'text',
             fixed: 'left',
-            width: 250,
+            width: 240,
             filterableType: 'text',
             filterableCustomFieldName: 'Name'
           },
@@ -170,7 +170,6 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 350,
             filterableType: 'text',
             filterableCustomFieldName: 'Description'
           },
@@ -183,7 +182,7 @@ export default {
             sortable: true,
             show: true,
             type: 'status',
-            width: 160,
+            width: 150,
             hasTooltip: true,
             filterableType: 'select',
             filterableCustomFieldName: 'Status',

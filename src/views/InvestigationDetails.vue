@@ -755,7 +755,6 @@
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
-                :cacheCheckboxFromParent="cacheCheckboxFromParent"
                 :clusterItems="clusterItems"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                 @sendInvestigationdetailsWarningMessage="
@@ -822,7 +821,6 @@
                 :selectable="false"
                 :filterable="true"
                 :options="true"
-                :cacheCheckboxFromParent="cacheCheckboxFromParent"
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
@@ -912,7 +910,6 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
-    cacheCheckboxFromParent: false,
     labels,
     isColumnFilterActive: false,
     isColumnFilterActiveTargetUsers: false,
@@ -991,7 +988,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        minWidth: 208,
+        minWidth: 260,
         filterableType: 'text'
       },
       {
@@ -1003,7 +1000,7 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
-        width: 200,
+        width: 260,
         cellPadding: 8
       },
       {
@@ -1015,7 +1012,6 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        minWidth: 208,
         filterableType: 'text'
       },
       {
@@ -1038,7 +1034,7 @@ export default {
         sortable: true,
         show: true,
         type: 'service',
-        width: 110,
+        width: 120,
         filterableType: 'select',
         filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
       },
@@ -1049,7 +1045,7 @@ export default {
         type: 'textWithBadge',
         show: true,
         label: 'Filtered By',
-        width: 150,
+        width: 160,
         cellPadding: 8,
         hasMapper: true
       },
@@ -1059,7 +1055,7 @@ export default {
         sortable: true,
         label: 'Status',
         show: true,
-        width: 230,
+        width: 150,
         type: 'slot'
       }
     ],
@@ -1074,7 +1070,7 @@ export default {
         show: true,
         type: 'text',
         filterableType: 'text',
-        width: 240
+        width: 260
       },
       {
         property: 'userStatus',
@@ -1086,7 +1082,7 @@ export default {
         show: true,
         type: 'detected',
         filterableType: 'select',
-        width: 170,
+        width: 150,
         filterableItems: ['Online', 'Offline']
       },
 
@@ -1120,7 +1116,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        width: 170,
+        width: 150,
         type: 'status'
       },
       {
@@ -1143,7 +1139,7 @@ export default {
         fixed: false,
         sortable: false,
         show: true,
-        minWidth: 180,
+        minWidth: 120,
         type: 'slot'
       }
     ],
@@ -1593,7 +1589,6 @@ export default {
                   this.leftMenuLoading = false
                   this.topMenuLoading = false
                   this.loading = false
-                  this.cacheCheckboxFromParent = false
                 })
             })
         })
@@ -1853,14 +1848,6 @@ export default {
     //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
     const _this = this
     this.refreshDatatable()
-    this.autoRequest = setInterval(function () {
-      if (_this.statsAndMenuData && _this.statsAndMenuData.status == 'Running')
-        _this.refreshDatatable()
-      _this.cacheCheckboxFromParent = true
-    }, 15000)
-  },
-  beforeDestroy() {
-    clearInterval(this.autoRequest)
   }
 }
 </script>

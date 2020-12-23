@@ -151,7 +151,7 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 250,
+        width: 240,
         isFilterable: true,
         editComponent: 'textfield',
         filterableType: 'text'
@@ -165,7 +165,7 @@ export default {
         sortable: true,
         show: true,
         type: 'slot',
-        width: 250,
+        width: 240,
         filterableType: 'text'
         //minWidth: 80
       },
@@ -179,7 +179,7 @@ export default {
         show: true,
         type: 'status',
         isEditable: true,
-        width: 200,
+        width: 150,
         filterableType: 'select',
         filterableItems: ['Idle', 'Running', 'Cancelled', 'Expired', 'Finished']
       },
@@ -192,7 +192,6 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185,
         filterableType: 'date'
         //minWidth: 80
       },
@@ -205,7 +204,6 @@ export default {
         sortable: true,
         show: true,
         type: 'text',
-        width: 185,
         filterableType: 'date'
         //minWidth: 80
       },

@@ -263,14 +263,21 @@ export function vuetifySkeletonTypes() {
 
 export const columnStandards = [
   { property: 'firstName', width: '140' },
-  { property: 'lastName', width: '180' },
-  { property: 'email', width: '240' },
-  { property: 'department', width: '240' },
-  { property: 'jobTitle', width: '120' },
-  { property: 'companyName', width: '180' },
-  { property: 'subject', width: '240' },
-  { property: 'url', width: '250' },
-  { property: 'language', width: '240' }
+  { property: 'lastName', width: '200' },
+  { property: 'email', width: '260' },
+  { property: 'department', width: '140' },
+  { property: 'jobTitle', width: '140' },
+  { property: 'companyName', width: '200' },
+  { property: 'description', width: '340' },
+  { property: 'subject', width: '200' },
+  { property: 'url', width: '260' },
+  { property: 'language', width: '140' },
+  { property: 'createTime', width: '160' },
+  { property: 'utcTime', width: '160' },
+  { property: 'expireDate', width: '160' },
+  { property: 'lastSeen', width: '160' },
+  { property: 'licenseEndDate', width: '160' },
+  { property: 'name', width: '260' }
 ]
 
 export const GrapesS3Options = {

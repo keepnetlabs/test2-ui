@@ -98,7 +98,7 @@
             </template>
           </div>
 
-          <v-checkbox
+          <k-checkbox
             v-model.trim="customFieldsModels[item.resourceId]"
             :label="item.name"
             color="#2196f3"
@@ -159,9 +159,11 @@ import labels from '@/model/constants/labels'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
 export default {
   name: 'AddUserModal',
   components: {
+    KCheckbox,
     AppDialogFooter,
     InputEmail,
     FormGroup,
@@ -346,6 +348,8 @@ export default {
         value = 'True'
       } else if (value === false) {
         value = 'False'
+      } else if (value === 'indeterminate') {
+        value = 'Indeterminate'
       } else {
         value = !!value
       }
@@ -356,6 +360,8 @@ export default {
         value = true
       } else if (value === 'False') {
         value = false
+      } else if (value === 'Indeterminate') {
+        value = 'indeterminate'
       } else {
         value = !!value
       }

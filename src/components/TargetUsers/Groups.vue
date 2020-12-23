@@ -118,7 +118,7 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 240,
+            width: 260,
             isEditable: true,
             filterableType: 'text',
             editOptions: {
