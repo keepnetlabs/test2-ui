@@ -41,6 +41,12 @@ export function deleteInvestigationDetailsItem(obj, id) {
   })
 }
 
+export function deleteAndMessageInvestigationDetailsItem(obj, id) {
+  return testRequest.post(`investigations/${id}/actions-delete-and-notify`, obj, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function investigationDetails(id, userId) {
   return webRequest.get(`CommunityInner/NotificationSettings?userId=${userId}&communityId=${id}`)
 }
