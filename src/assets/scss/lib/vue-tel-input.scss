@@ -18,4 +18,17 @@
   .vti__flag{
     transform: scale(1.05) ;
   }
+  .vti__dropdown-list{
+    border-radius: 8px;
+    background:#fff !important;
+    padding-left:0;
+  }
+  .vti__dropdown-item{
+    vertical-align:middle;
+    padding: 12px 24px 12px 24px;
+    strong,span {
+      font-size: 14px;
+      font-weight: 400;
+    }
+  }
 }

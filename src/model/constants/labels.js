@@ -27,6 +27,7 @@ export const labels = {
   OK: 'OK',
   Prev: 'PREV',
   Back: 'BACK',
+  InvalidPhoneNumber: 'Invalid phone number',
   Email: 'Email Address',
   FromName: 'From Name',
   CreateNewNotificationTemplate: 'Create New Notification Template',
