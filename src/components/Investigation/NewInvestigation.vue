@@ -255,7 +255,24 @@
                   item-value="actionValue"
                   position="top"
                   placeholder="Delete Email"
+                  @change="actionChanged"
                 ></k-select>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              class="edit-industry-area mt-2 pa-0"
+              v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'NotifyOnly'"
+            >
+              <v-list-item-content class>
+                <label class="edit-labels">Message</label>
+                <v-text-field
+                  v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'NotifyOnly'"
+                  placeholder="Enter a message"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height warning-message"
+                  v-model.trim="warningMessage"
+                  :rules="[messageRules.required, messageRules.empty, messageRules.maxLength]"
+                ></v-text-field>
               </v-list-item-content>
             </v-list-item>
           </v-form>
@@ -350,6 +367,7 @@ export default {
 
   data() {
     return {
+      warningMessage: null,
       saveDisable: false,
       labels,
       timeout: null,
@@ -423,7 +441,7 @@ export default {
       startDate: '',
       endDate: '',
       selectedDuration: 3,
-      selectedAction: 'deleteEmail',
+      selectedAction: 'Delete',
       name: '',
       description: '',
       privacy: false,
@@ -437,13 +455,13 @@ export default {
         { durationLabel: '7 Days', durationValue: 7 }
       ],
       actions: [
-        { actionLabel: 'No action', actionValue: 'noAction' },
-        { actionLabel: 'Delete Email', actionValue: 'deleteEmail' },
+        { actionLabel: 'No action', actionValue: 'NoAction' },
+        { actionLabel: 'Delete Email', actionValue: 'Delete' },
         {
           actionLabel: 'Delete Email and Notify User',
-          actionValue: 'deleteAndNotifyUser'
+          actionValue: 'DeleteAndNotify'
         },
-        { actionLabel: 'Notify user only', actionValue: 'notifyUserOnly' }
+        { actionLabel: 'Notify user only', actionValue: 'NotifyOnly' }
       ],
       filterList: [{ option: '', text: '' }],
       sources: [],
@@ -471,6 +489,12 @@ export default {
         empty: (v) => Validations.startsWithSpace(v),
         maxLength: (v) =>
           Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.InvestigationName, 64))
+      },
+      messageRules: {
+        required: (v) => Validations.required(v),
+        empty: (v) => Validations.startsWithSpace(v),
+        maxLength: (v) =>
+          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Message, 64))
       },
       generalRules: {
         ip: {
@@ -573,6 +597,15 @@ export default {
     'isTs'
   ],
   methods: {
+    actionChanged() {
+      this.warningMessage = ''
+      if (this.selectedAction === 'DeleteAndNotify' || this.selectedAction === 'NotifyOnly') {
+        setTimeout(() => {
+          const el = this.$refs.form.$el.querySelector('.warning-message')
+          scrollToComponent(el)
+        }, 250)
+      }
+    },
     checkCheckboxValidation() {
       let isCheckboxEmpty = this.scanTypes.length === 0
       if (isCheckboxEmpty) {
@@ -944,7 +977,6 @@ export default {
           bodies: bodyData,
           attachments: attachmentsData,
           isScanEnterpriseVault: false,
-          investigationType: 'Manual',
           name: this.investgationName,
           startDate: this.date[0],
           endDate: this.date[1],
@@ -955,11 +987,15 @@ export default {
               ? this.targetUsersValue.map((item) => item.resourceId)
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
-          action: this.selectedAction,
           scanTypes: this.scanTypes.map((item) => {
             const { type, mailConfigurationResourceId } = item
             return { type, mailConfigurationResourceId }
-          })
+          }),
+          autoAction: {
+            type: this.selectedAction,
+            isPermanentDelete: false,
+            warningMessage: this.warningMessage
+          }
         }
         this.saveDisable = true
         // post request with body data
