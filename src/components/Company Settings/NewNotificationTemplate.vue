@@ -98,6 +98,10 @@ import postUserName from '@/components/GrapesJs/Newsletter/mergedTexts/postUserN
 import postCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/postCompanyName'
 import webUrl from '@/components/GrapesJs/Newsletter/mergedTexts/webUrl'
 import postUrl from '@/components/GrapesJs/Newsletter/mergedTexts/postUrl'
+import currentDate from '@/components/GrapesJs/Newsletter/mergedTexts/currentDate'
+import description from '@/components/GrapesJs/Newsletter/mergedTexts/description'
+import shareCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/shareCompanyName'
+import link from '@/components/GrapesJs/Newsletter/mergedTexts/link'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -274,6 +278,14 @@ export default {
           return webUrl
         case '{POSTURL}':
           return postUrl
+        case '{CURRENTDATE}':
+          return currentDate
+        case '{DESCRIPTION}':
+          return description
+        case '{SHARECOMPANYNAME}':
+          return shareCompanyName
+        case '{LINK}':
+          return link
         default:
           break
       }

@@ -1,7 +1,7 @@
 const mergedTextsLink = [
   {
     tagName: 'a',
-    content: '{WEBURL}'
+    content: '{LINK}'
   }
 ]
 export default mergedTextsLink
