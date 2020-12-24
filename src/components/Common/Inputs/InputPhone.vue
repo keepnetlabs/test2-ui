@@ -65,7 +65,10 @@ export default {
   },
   methods: {
     handleTelChange(newVal) {
-      if ((this.regionCode === 'GB' || this.regionCode === 'TR') && newVal.includes('-')) {
+      if (
+        (this.regionCode === 'GB' || this.regionCode === 'TR') &&
+        (newVal.includes('-') || newVal.split('+').length > 2)
+      ) {
         if (!this.value) {
           const splittedVal = newVal.split('-')[0]
           this.$refs.refTelInput.phone = splittedVal
