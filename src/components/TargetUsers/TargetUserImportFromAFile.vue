@@ -25,6 +25,19 @@
       :dialogBody="getDialogBody"
       @close-overlay="showRequiredAreaModal = false"
     />
+    <target-users-check-license-dialog
+      v-if="showLicenseExceededDialog"
+      :status="showLicenseExceededDialog"
+      :dialogBody="getDialogBodyForExceed"
+      @close-overlay="showLicenseExceededDialog = false"
+    >
+      <template #footer>
+        <app-dialog-footer
+          @handleClose="showLicenseExceededDialog = false"
+          @handleConfirm="save(selectedActionName)"
+        />
+      </template>
+    </target-users-check-license-dialog>
     <app-modal
       :status="status"
       @closeOverlay="closeOverlay"
@@ -175,13 +188,10 @@
                   Select users to import or import all listed users. Invalid entries will not be
                   imported.
                 </div>
-                <div class="mb-10" v-if="step3Loading">
-                  <DatatableLoading :loading="step3Loading" />
-                </div>
-                <div class="mb-10" v-else>
+                <div class="mb-10">
                   <data-table
                     v-if="mappingStatus && showDatatable"
-                    :loading="loading"
+                    :loading="step3Loading"
                     :is-column-filter-active="tableOptions.isColumnFilterActive"
                     :table="tableData"
                     id="validate-data-table"
@@ -206,6 +216,7 @@
                     :requestParams="bodyData"
                     :isServerSide="true"
                     @columnFilterChanged="columnFilterChanged"
+                    @columnFilterCleared="columnFilterCleared"
                     :server-side-events="{ search: false, sort: false, pagination: false }"
                     :downloadButton="{
                       show: false
@@ -295,7 +306,7 @@
             class="target-user-import-file__button target-user-import-file__button--import-selected"
             rounded
             color="#2196f3"
-            @click="save(labels.ImportSelected)"
+            @click="showConfirmModal(labels.ImportSelected)"
             :disabled="!showDatatable || !tableData.length || selectedTableData"
           >
             {{ labels.ImportSelected }}
@@ -305,7 +316,7 @@
             class="target-user-import-file__button target-user-import-file__button--import-all"
             rounded
             color="#2196f3"
-            @click="save(labels.ImportAll)"
+            @click="showConfirmModal(labels.ImportAll)"
             :disabled="
               !showDatatable ||
               !tableData.length ||
@@ -345,12 +356,12 @@
             <div>
               <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
-                  <v-list-item @click="save('onlyImportNewUsers')">
+                  <v-list-item @click="showConfirmModal('onlyImportNewUsers')">
                     <v-list-item-content>
                       <v-list-item-title> Only Import New Users</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item @click="save('onlyUpdateExistingUsers')">
+                  <v-list-item @click="showConfirmModal('onlyUpdateExistingUsers')">
                     <v-list-item-content>
                       <v-list-item-title>Only Update Existing Users</v-list-item-title>
                     </v-list-item-content>
@@ -396,6 +407,7 @@ import { scrollToComponent } from '@/utils/functions'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
+import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -409,7 +421,8 @@ export default {
     MapTable,
     DataTable,
     AppDialog,
-    DatatableLoading
+    DatatableLoading,
+    TargetUsersCheckLicenseDialog
   },
   props: {
     status: {
@@ -429,6 +442,11 @@ export default {
     }
   },
   computed: {
+    getDialogBodyForExceed() {
+      return this.companyLicense
+        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
+        : ''
+    },
     getDialogBody() {
       return this.showRequiredAreaModal
         ? `Please select the following required fields: ${this.requiredFields.toString()}`
@@ -451,6 +469,8 @@ export default {
   },
   data() {
     return {
+      selectedActionName: null,
+      showLicenseExceededDialog: false,
       requiredFields: [],
       showRequiredAreaModal: false,
       selectedTableData: true,
@@ -688,6 +708,10 @@ export default {
     }
   },
   methods: {
+    showConfirmModal(actionName) {
+      this.selectedActionName = actionName
+      this.showLicenseExceededDialog = true
+    },
     handleSelectionChange(selectedValues) {
       this.selectedTableData = !selectedValues.length
     },

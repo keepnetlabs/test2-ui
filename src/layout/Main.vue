@@ -105,6 +105,12 @@
         <v-progress-circular :size="50" color="primary" indeterminate />
       </div>
     </v-overlay>
+    <target-users-check-license-dialog
+      v-if="showLicenseExceededDialog"
+      :status="showLicenseExceededDialog"
+      :dialogBody="getDialogBody"
+      @close-overlay="showLicenseExceededDialog = false"
+    />
     <v-row justify="center">
       <v-dialog
         v-model="isSwitchDialogOpen"
@@ -729,6 +735,7 @@ import { checkPermission, checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
 import tour from '@/store/modules/tour'
 import { getCheckCompanyLicense } from '@/api/company'
+import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 
 export default {
   name: 'Main',
@@ -742,10 +749,13 @@ export default {
     AppSnackbar,
     AppDialog,
     PasswordChecker,
-    Breadcrumb
+    Breadcrumb,
+    TargetUsersCheckLicenseDialog
   },
   data() {
     return {
+      companyLicense: null,
+      showLicenseExceededDialog: false,
       labels,
       switchDialogStatus: false,
       showNewPassword: false,
@@ -1040,6 +1050,11 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    getDialogBody() {
+      return this.companyLicense
+        ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
+        : ''
+    },
     isReturnMainAccountVisible() {
       if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
       let recFunction = () => {
@@ -1227,18 +1242,17 @@ export default {
       getCurrentUser: 'auth/getCurrentUser'
     }),
     callForLicenseCheck() {
-      const companyResourceId = localStorage.getItem('companyId')
-      getCheckCompanyLicense(companyResourceId).then((response) => {
-        const { data: { data = {} } = {} } = response
-        const { isLicenseExceeded, licenseLimit, totalUserCount } = data
-        if (isLicenseExceeded) {
-          this.$store.dispatch('common/createSnackBar', {
-            message: `Your license allows to use the system with ${licenseLimit} target users. Current target user count is ${totalUserCount}`,
-            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-            icon: 'mdi-alert-circle'
-          })
-        }
-      })
+      if (this.$route.name !== 'Target Users') {
+        const companyResourceId = localStorage.getItem('companyId')
+        getCheckCompanyLicense(companyResourceId).then((response) => {
+          const { data: { data = {} } = {} } = response
+          const { isLicenseExceeded, licenseLimit, totalUserCount } = data
+          this.companyLicense = data
+          if (isLicenseExceeded) {
+            this.showLicenseExceededDialog = true
+          }
+        })
+      }
     },
     checkPermissionMultiple(data, contain) {
       return checkPermissionMultiple(data, contain)

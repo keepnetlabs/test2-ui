@@ -770,31 +770,48 @@
                 @refreshAction="refreshDatatable"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
-                  <template
-                    v-if="scope.row.emailLastAction && scope.row.emailLastAction.status !== 'Idle'"
-                  >
+                  <template v-if="scope.row.emailLastAction">
                     <span class="d-flex align-center">
-                      <span style="text-overflow: ellipsis; overflow: hidden;">{{
-                        getInboxStatus(scope.row.emailLastAction.status)
-                      }}</span>
                       <span class="ml-2">
                         <v-tooltip
                           bottom
+                          max-width="250"
                           content-class="investigation-details__tooltip"
-                          v-if="getTooltipText(scope.row.emailLastAction)"
+                          v-if="getActionStatusOptions(scope.row.emailLastAction).isTooltip"
                         >
                           <template v-slot:activator="{ on }">
-                            <v-icon
-                              v-on="on"
-                              :color="getIconColor(scope.row.emailLastAction.status)"
-                              >{{ getIconName(scope.row.emailLastAction.status) }}</v-icon
-                            >
+                            <div class="d-flex" v-on="on">
+                              <v-icon
+                                small
+                                class="mr-1"
+                                v-if="getActionStatusOptions(scope.row.emailLastAction).icon"
+                                :color="getActionStatusOptions(scope.row.emailLastAction).color"
+                                >{{
+                                  getActionStatusOptions(scope.row.emailLastAction).icon
+                                }}</v-icon
+                              >
+                              <span style="text-overflow: ellipsis; overflow: hidden;">{{
+                                getActionStatusOptions(scope.row.emailLastAction).text
+                              }}</span>
+                            </div>
                           </template>
-                          <span>{{ getTooltipText(scope.row.emailLastAction) }} </span>
+                          <span
+                            >{{ getActionStatusOptions(scope.row.emailLastAction).tooltipText }}
+                          </span>
                         </v-tooltip>
-                        <v-icon v-else :color="getIconColor(scope.row.emailLastAction.status)">{{
-                          getIconName(scope.row.emailLastAction.status)
-                        }}</v-icon>
+                        <span v-else>
+                          <v-icon
+                            small
+                            class="mr-1"
+                            max-width="250"
+                            v-if="getActionStatusOptions(scope.row.emailLastAction).icon"
+                            :color="getActionStatusOptions(scope.row.emailLastAction).color"
+                            >{{ getActionStatusOptions(scope.row.emailLastAction).icon }}</v-icon
+                          >
+                          <span style="text-overflow: ellipsis; overflow: hidden;">{{
+                            getActionStatusOptions(scope.row.emailLastAction).text
+                          }}</span>
+                        </span>
                       </span>
                     </span>
                   </template>
@@ -896,6 +913,7 @@ import ThreeRowLoading from '../components/SkeletonLoading/ThreeRowLoading'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 
 export default {
   components: {
@@ -1055,7 +1073,7 @@ export default {
         sortable: true,
         label: 'Status',
         show: true,
-        width: 150,
+        width: 280,
         type: 'slot'
       }
     ],
@@ -1223,6 +1241,130 @@ export default {
     }
   }),
   methods: {
+    getActionStatusOptions(
+      actionStatusItem,
+      {
+        actionType,
+        status,
+        isPermanentDelete,
+        warningMessage,
+        actionResultErrorMessage
+      } = actionStatusItem
+    ) {
+      let returnValue = { isTooltip: null, color: null, icon: null, text: null, tooltipText: null }
+      //status = 'CompletedWithError'
+      //actionType = 'Warning'
+      //isPermanentDelete = false
+      switch (status) {
+        case 'Idle':
+          returnValue.isTooltip = false
+          if (actionType === 'Delete') {
+            if (isPermanentDelete) {
+              returnValue.text = 'Deleting...'
+              returnValue.icon = null
+              returnValue.color = '#fff'
+            } else {
+              returnValue.text = 'Moving to trash…'
+              returnValue.icon = null
+              returnValue.color = '#fff'
+            }
+          } else if (actionType === 'DeleteAndNotify') {
+            if (isPermanentDelete) {
+              returnValue.text = 'Deleting and sending message...'
+              returnValue.icon = null
+              returnValue.color = '#fff'
+            } else {
+              returnValue.text = 'Moving to trash and sending message...'
+              returnValue.icon = null
+              returnValue.color = '#fff'
+            }
+          } else if (actionType === 'Warning') {
+            returnValue.text = 'Message sent'
+            returnValue.icon = 'mdi-check-circle'
+            returnValue.color = '#43a047'
+            returnValue.isTooltip = true
+            returnValue.tooltipText = `Message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
+          }
+          break
+        case 'Completed':
+          if (actionType === 'Delete') {
+            if (isPermanentDelete) {
+              returnValue.text = 'Deleted'
+              returnValue.icon = 'mdi-close-circle'
+              returnValue.color = '#6d6d6d'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = 'The email has been deleted permanently'
+            } else {
+              returnValue.text = 'Moved to trash'
+              returnValue.icon = 'mdi-delete'
+              returnValue.color = '#6d6d6d'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = 'The email has been moved to trash folder'
+            }
+          } else if (actionType === 'DeleteAndNotify') {
+            if (isPermanentDelete) {
+              returnValue.text = 'Deleted and message sent'
+              returnValue.icon = 'mdi-close-circle'
+              returnValue.color = '#6d6d6d'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = `Deleted and message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
+            } else {
+              returnValue.text = 'Moved to trash and message sent'
+              returnValue.icon = 'mdi-close-circle'
+              returnValue.color = '#6d6d6d'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = `Deleted and message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
+            }
+          } else if (actionType === 'Warning') {
+            returnValue.text = 'Message delivered'
+            returnValue.icon = 'mdi-check-underline-circle'
+            returnValue.color = '#43a047'
+            returnValue.isTooltip = true
+            returnValue.tooltipText = `Message delivered. \n\n“This malicious email has been found in your mailbox and has been deleted”`
+          }
+          break
+        case 'CompletedWithError':
+          if (actionType === 'Delete') {
+            if (isPermanentDelete) {
+              returnValue.text = 'Could not move to trash '
+              returnValue.icon = 'mdi-alert-circle'
+              returnValue.color = '#f56c6c'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = `Could not move email to trash! Click to try again. \n\n ${actionResultErrorMessage}`
+            } else {
+              returnValue.text = 'Could not delete '
+              returnValue.icon = 'mdi-alert-circle'
+              returnValue.color = '#f56c6c'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
+            }
+          } else if (actionType === 'DeleteAndNotify') {
+            if (isPermanentDelete) {
+              returnValue.text = 'Could not delete '
+              returnValue.icon = 'mdi-alert-circle'
+              returnValue.color = '#f56c6c'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
+            } else {
+              returnValue.text = 'Could not delete '
+              returnValue.icon = 'mdi-alert-circle'
+              returnValue.color = '#f56c6c'
+              returnValue.isTooltip = true
+              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
+            }
+          } else if (actionType === 'Warning') {
+            returnValue.text = 'Could not send message'
+            returnValue.icon = 'mdi-alert-circle'
+            returnValue.color = '#f56c6c'
+            returnValue.isTooltip = true
+            returnValue.tooltipText = `Message sent. \n\n ${actionResultErrorMessage}`
+          }
+          break
+        default:
+          break
+      }
+      return returnValue
+    },
     getProgressText(scope) {
       return Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) === 1 ||
         scope.row.status === 'Completed'
@@ -1665,21 +1807,34 @@ export default {
       isArray
         ? (data = this.deleteValue.map((item) => item.resourceId))
         : data.push(this.deleteValue.resourceId)
-      this.$store
-        .dispatch('investigations/deleteInvestigationDetailsItem', {
-          data: {
-            items: data,
-            isNotify: !!message,
-            IsPermanentDelete: val,
-            warningMessage: message
-          },
-          id: this.$route.params.id
-        })
-        .finally(() => {
+      if (message) {
+        const payload = {
+          items: data,
+          warningMessage: message,
+          isPermanentDelete: val
+        }
+        deleteAndMessageInvestigationDetailsItem(payload, this.$route.params.id).finally(() => {
           this.refreshDatatable()
           this.isWantToDelete = false
           this.isWantToWarnAndDelete = false
         })
+      } else {
+        this.$store
+          .dispatch('investigations/deleteInvestigationDetailsItem', {
+            data: {
+              items: data,
+              isNotify: !!message,
+              IsPermanentDelete: val,
+              warningMessage: message
+            },
+            id: this.$route.params.id
+          })
+          .finally(() => {
+            this.refreshDatatable()
+            this.isWantToDelete = false
+            this.isWantToWarnAndDelete = false
+          })
+      }
     },
     deleteAndNotifyInvestigationDetailsFunction(value) {
       if (value && value.emailLastAction && value.emailLastAction.actionType === 'Delete') {
