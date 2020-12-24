@@ -102,6 +102,10 @@ import currentDate from '@/components/GrapesJs/Newsletter/mergedTexts/currentDat
 import description from '@/components/GrapesJs/Newsletter/mergedTexts/description'
 import shareCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/shareCompanyName'
 import link from '@/components/GrapesJs/Newsletter/mergedTexts/link'
+import communityTitle from '@/components/GrapesJs/Newsletter/mergedTexts/communityTitle'
+import communityUser from '@/components/GrapesJs/Newsletter/mergedTexts/communityUser'
+import category from '@/components/GrapesJs/Newsletter/mergedTexts/category'
+import communityDesc from '@/components/GrapesJs/Newsletter/mergedTexts/communityDesc'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -286,6 +290,14 @@ export default {
           return shareCompanyName
         case '{LINK}':
           return link
+        case '{COMMUNITYTITLE}':
+          return communityTitle
+        case '{COMMUNITYUSER}':
+          return communityUser
+        case '{CATEGORY}':
+          return category
+        case '{COMMUNITYDESC}':
+          return communityDesc
         default:
           break
       }
