@@ -106,6 +106,13 @@ import communityTitle from '@/components/GrapesJs/Newsletter/mergedTexts/communi
 import communityUser from '@/components/GrapesJs/Newsletter/mergedTexts/communityUser'
 import category from '@/components/GrapesJs/Newsletter/mergedTexts/category'
 import communityDesc from '@/components/GrapesJs/Newsletter/mergedTexts/communityDesc'
+import status from '@/components/GrapesJs/Newsletter/mergedTexts/status'
+import activeUsers from '@/components/GrapesJs/Newsletter/mergedTexts/activeUsers'
+import analysedEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysedEmail'
+import foundEmailCount from '@/components/GrapesJs/Newsletter/mergedTexts/foundEmailCount'
+import startedBy from '@/components/GrapesJs/Newsletter/mergedTexts/startedBy'
+import startDate from '@/components/GrapesJs/Newsletter/mergedTexts/startDate'
+import investigationName from '@/components/GrapesJs/Newsletter/mergedTexts/investigationName'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -298,6 +305,20 @@ export default {
           return category
         case '{COMMUNITYDESC}':
           return communityDesc
+        case '{STATUS}':
+          return status
+        case '{ACTIVEUSERS}':
+          return activeUsers
+        case '{ANALYSEDEMAIL}':
+          return analysedEmail
+        case '{FOUNDEMAILCOUNT}':
+          return foundEmailCount
+        case '{STARTEDBY}':
+          return startedBy
+        case '{STARTDATE}':
+          return startDate
+        case '{INVESTIGATIONNAME}':
+          return investigationName
         default:
           break
       }
