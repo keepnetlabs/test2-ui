@@ -508,6 +508,7 @@
                 </template>
 
                 <data-table-filter
+                  v-if="col.filterableType"
                   :column="column"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
