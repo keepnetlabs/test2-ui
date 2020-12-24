@@ -483,8 +483,14 @@ export default {
           this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
             for (let { name, value, dataType } of customFieldValues) {
-              if (dataType === 'Boolean' && !value) {
-                item[name] = 'False'
+              if (dataType === 'Boolean') {
+                if (value === 'True') {
+                  item[name] = 'Yes'
+                } else if (value === 'False') {
+                  item[name] = 'No'
+                } else {
+                  item[name] = 'Not set'
+                }
               } else {
                 item[name] = value !== null && value !== undefined ? value : ''
               }
