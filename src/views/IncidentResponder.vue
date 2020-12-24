@@ -997,7 +997,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: '300',
+          width: '260',
           isEditable: false,
           filterableType: 'text'
         },
