@@ -403,7 +403,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          showHeaderTooltip: true
+          filterableType: 'text'
         },
         {
           property: 'platform',
@@ -483,7 +483,23 @@ export default {
       ]
     },
     addUsersItems: ['O365'],
-    validations: validations
+    validations: validations,
+    requestBody: {
+      pageNumber: 1,
+      pageSize: 5000,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    }
   }),
   methods: {
     checkPermissions(permission, type) {
@@ -545,26 +561,9 @@ export default {
     },
     getTableData() {
       this.loading = true
-      let payload = {
-        pageNumber: 1,
-        pageSize: 100,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      getMailConfigurationList(payload)
+      getMailConfigurationList(this.requestBody)
         .then((response) => {
           this.tableData = response.data.data.results
-          //this.tableData = []
         })
         .finally(() => {
           this.loading = false
@@ -660,8 +659,16 @@ export default {
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
@@ -679,7 +686,7 @@ export default {
       }
 
       this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForListSystemUsers()
+      this.getTableData()
     },
     columnFilterCleared(fieldName) {
       let items = []
@@ -693,7 +700,7 @@ export default {
 
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForListSystemUsers()
+      this.getTableData()
 
       this.tableOptions.isColumnFilterActive =
         this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
