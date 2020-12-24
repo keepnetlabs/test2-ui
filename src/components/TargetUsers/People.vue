@@ -252,6 +252,7 @@ export default {
           show: true,
           type: 'text',
           width: 180,
+          filterableType: 'date',
           dbName: 'CreateTime'
         }
       ],
@@ -553,8 +554,16 @@ export default {
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 

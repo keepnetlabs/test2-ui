@@ -216,9 +216,17 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+      requestBody.map((x) => {
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 

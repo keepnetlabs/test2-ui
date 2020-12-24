@@ -1784,9 +1784,20 @@ export default {
       this.emails.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)) {
-          items.push(x)
+      requestBody.map((x) => {
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (
+            x.FieldName !==
+            filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+          ) {
+            items.push(x)
+          }
         }
       })
 
