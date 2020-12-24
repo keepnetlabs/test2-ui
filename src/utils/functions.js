@@ -51,7 +51,7 @@ export function getBtnStatusColor(type) {
       return '#43a047'
     case 'deactivated':
       return '#757575'
-    case 'not installed':
+    case 'notinstalled':
       return '#757575'
     case 'user unavailable':
       return '#757575'
@@ -168,6 +168,8 @@ export function getDataTableFieldLabel(field = '') {
       return 'Not Running'
     case 'n/a':
       return 'N/A'
+    case 'notinstalled':
+      return 'Not Installed'
     case 'unknown':
       return 'N/A'
     default:

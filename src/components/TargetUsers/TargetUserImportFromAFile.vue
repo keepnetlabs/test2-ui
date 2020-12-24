@@ -710,7 +710,11 @@ export default {
   methods: {
     showConfirmModal(actionName) {
       this.selectedActionName = actionName
-      this.showLicenseExceededDialog = true
+      if (this.companyLicense['isLicenseExceeded']) {
+        this.showLicenseExceededDialog = true
+      } else {
+        this.save(actionName)
+      }
     },
     handleSelectionChange(selectedValues) {
       this.selectedTableData = !selectedValues.length
