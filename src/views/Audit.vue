@@ -157,7 +157,8 @@ export default {
             show: true,
             type: 'text',
             width: 185,
-            filterableType: 'text'
+            filterableType: 'text',
+            filterableCustomFieldName: 'IP'
           },
           {
             property: PROPERTY_STORE.USERAGENT,

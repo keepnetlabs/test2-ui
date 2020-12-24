@@ -6,11 +6,17 @@
       icon-name="mdi-check"
       :title="labels.NotificationTemplate"
       z-index="999999"
+      :show-header="false"
       @submit="saveGrapeJs"
       @closeOverlay="toggleShowGrapesModal"
     >
       <template v-slot:overlay-body>
-        <GrapesWebPageModal ref="grapesJsPostIncident" :htmlData="template"></GrapesWebPageModal>
+        <GrapesNewsletterModal
+          ref="grapesJsPostIncident"
+          :htmlData="template"
+          :key="grapeJsKey"
+          :blockManagerComponents="activeBlockManagerComponents"
+        />
       </template>
     </app-modal>
     <div class="email-template__item">
@@ -169,23 +175,29 @@
 
 <script>
 import AppModal from '@/components/AppModal'
-import GrapesWebPageModal from '@/components/GrapesJs/WebPage/GrapesWebPageModal'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 export default {
   name: 'EmailTemplate',
   components: {
+    GrapesNewsletterModal,
     AppModal,
-    GrapesWebPageModal,
     InputEmail
   },
-  props: ['fromAddress', 'fromName', 'subject', 'template'],
+  props: ['fromAddress', 'fromName', 'subject', 'template', 'activeBlockManagerComponents'],
   data() {
     return {
       labels,
       showGrapesModal: false,
+      grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
       Validations
+    }
+  },
+  watch: {
+    activeBlockManagerComponents() {
+      this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
     }
   },
   methods: {
