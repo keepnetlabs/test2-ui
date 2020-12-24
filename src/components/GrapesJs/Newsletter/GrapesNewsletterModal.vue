@@ -1,32 +1,5 @@
 <template>
   <div style="margin-bottom: 70px !important;">
-    <!--<div class="form">
-      <div class="input-header">Upload Email</div>
-      <div class="input-sub">.eml or .msg files only.</div>
-      <div class="upload-wrapper">
-        <k-file-upload
-          ref="refFileUpload"
-          :extensions="['eml', 'msg']"
-          :is-stand-alone="true"
-          @inputFile="uploadFile"
-        />
-      </div>
-      <div>Clone Url</div>
-      <div>
-        <v-text-field
-          id="post-title-text-field"
-          label="Title"
-          outlined
-          dense
-          class="title-field filter-field pt-4"
-          v-model.trim="cloneUrl"
-          solo
-          validate-on-blur
-          :rules="[url.required, url.format]"
-        ></v-text-field>
-        <v-btn @click="cloneUrlButtonCLick">Clone Url</v-btn>
-      </div>
-    </div>-->
     <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
@@ -71,8 +44,25 @@ export default {
     htmlData: {
       required: false
     },
-    backEndMergedTextType: {
-      required: false
+    blockManagerComponents: {
+      type: Object,
+      default() {
+        return {
+          exampleComponent: exampleComponent,
+          exampleComponent2: exampleComponent2,
+          to: to,
+          toName: toName,
+          subject: subject,
+          macroFrom: macroForm,
+          macroAttachment: macroAttachment,
+          from: mergedFrom,
+          fromName: fromName,
+          customMacroAttachment: customMacroAttachment,
+          trainingUrl: trainingUrl,
+          phishingUrl: phishingUrl,
+          macroUrl: macroUrl
+        }
+      }
     }
   },
   data() {
@@ -113,19 +103,10 @@ export default {
         noticeOnUnload: false
       })
       let blockManager = this.editor.BlockManager
-      blockManager.add('exampleComponent', exampleComponent)
-      blockManager.add('exampleComponent2', exampleComponent2)
-      blockManager.add('to', to)
-      blockManager.add('toName', toName)
-      blockManager.add('subject', subject)
-      blockManager.add('macroFrom', macroForm)
-      blockManager.add('macroAttachment', macroAttachment)
-      blockManager.add('from', mergedFrom)
-      blockManager.add('fromName', fromName)
-      blockManager.add('customMacroAttachment', customMacroAttachment)
-      blockManager.add('trainingUrl', trainingUrl)
-      blockManager.add('phishingUrl', phishingUrl)
-      blockManager.add('macroUrl', macroUrl)
+      debugger
+      for (const [key, value] of Object.entries(this.blockManagerComponents)) {
+        blockManager.add(key, value)
+      }
       let pn = this.editor.Panels
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
