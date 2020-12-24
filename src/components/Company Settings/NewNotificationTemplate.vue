@@ -89,6 +89,15 @@ import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/h
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
+import postDate from '@/components/GrapesJs/Newsletter/mergedTexts/postDate'
+import companyName from '@/components/GrapesJs/Newsletter/mergedTexts/companyName'
+import shareUserName from '@/components/GrapesJs/Newsletter/mergedTexts/shareUserName'
+import postTitle from '@/components/GrapesJs/Newsletter/mergedTexts/postTitle'
+import postDesc from '@/components/GrapesJs/Newsletter/mergedTexts/postDesc'
+import postUserName from '@/components/GrapesJs/Newsletter/mergedTexts/postUserName'
+import postCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/postCompanyName'
+import webUrl from '@/components/GrapesJs/Newsletter/mergedTexts/webUrl'
+import postUrl from '@/components/GrapesJs/Newsletter/mergedTexts/postUrl'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -247,6 +256,24 @@ export default {
           return userName
         case '{PASSWORDURL}':
           return passwordURL
+        case '{POSTDATE}':
+          return postDate
+        case '{SHAREUSERNAME}':
+          return shareUserName
+        case '{COMPANYNAME}':
+          return companyName
+        case '{POSTTITLE}':
+          return postTitle
+        case '{POSTDESC}':
+          return postDesc
+        case '{POSTUSERNAME}':
+          return postUserName
+        case '{POSTCOMPANYNAME}':
+          return postCompanyName
+        case '{WEBURL}':
+          return webUrl
+        case '{POSTURL}':
+          return postUrl
         default:
           break
       }
