@@ -46,7 +46,8 @@ export default {
   data() {
     return {
       isPhoneNumberValid: true,
-      maxLen: 17
+      maxLen: 17,
+      regionCode: 'GB'
     }
   },
   computed: {
@@ -64,9 +65,26 @@ export default {
   },
   methods: {
     handleTelChange(newVal) {
-      if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
-        this.$refs.refTelInput.phone = this.value
-        this.$emit('input', this.value)
+      if ((this.regionCode === 'GB' || this.regionCode === 'TR') && newVal.includes('-')) {
+        if (!this.value) {
+          const splittedVal = newVal.split('-')[0]
+          this.$refs.refTelInput.phone = splittedVal
+          this.$emit('input', splittedVal)
+        } else {
+          this.$refs.refTelInput.phone = this.value
+          this.$emit('input', this.value)
+        }
+      } else if (
+        newVal.length > 12 &&
+        this.$refs.refTelInput.phoneObject.possibility === 'too-long'
+      ) {
+        if (this.regionCode !== this.$refs.refTelInput.phoneObject.regionCode) {
+          this.$refs.refTelInput.phone = newVal
+          this.$emit('input', newVal)
+        } else {
+          this.$refs.refTelInput.phone = this.value
+          this.$emit('input', this.value)
+        }
       } else if (
         //CHINA BUG
         newVal.length === 17 &&
@@ -86,6 +104,7 @@ export default {
     },
     validatePhoneNumber() {
       this.$nextTick(() => {
+        this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
         this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
       })
     }
