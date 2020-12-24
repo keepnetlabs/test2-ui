@@ -197,7 +197,7 @@ export default {
     }
   },
   beforeDestroy() {
-    if (!this.getFilterButtonDisabled) {
+    if (this.isFilterActive) {
       this.clearFilter()
     }
   },
