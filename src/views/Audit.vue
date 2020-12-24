@@ -168,7 +168,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185
+            minWidth: 185
           }
         ],
 
