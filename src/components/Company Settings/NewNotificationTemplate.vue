@@ -29,6 +29,7 @@
             class="new-integration__select"
             dense
             outlined
+            @change="handleCategoryChange"
             placeholder="Select Option"
           />
         </form-group>
@@ -52,6 +53,7 @@
         <form-group title="Email Template" class-name="email-template mt-2">
           <email-template
             ref="refEmailTemplate"
+            :active-block-manager-components="activeBlockManagerComponents"
             :from-address.sync="formValues.fromAddress"
             :from-name.sync="formValues.fromName"
             :subject.sync="formValues.subject"
@@ -75,6 +77,7 @@ import {
   createEmailTemplate,
   getCategories,
   getEmailTemplate,
+  getMergedTags,
   updateEmailTemplate
 } from '@/api/company'
 import { searchSmtpSettings } from '@/api/smtpSettings'
@@ -83,6 +86,9 @@ import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
+import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
+import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -105,6 +111,8 @@ export default {
   data() {
     return {
       labels,
+      activeBlockManagerComponents: {},
+      blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
       saveDisable: false,
       Validations: Validations,
@@ -223,6 +231,38 @@ export default {
     },
     closeOverlay() {
       this.$emit('closeOverlay')
+    },
+    callForMergedTags(resourceId = '') {
+      getMergedTags(resourceId).then((response) => {
+        this.blockManagerComponents[resourceId] = response.data.data['mergeTags']
+        console.log("response.data.data['mergeTags']", response.data.data['mergeTags'])
+        this.setActiveBlockManagerComponents(this.blockManagerComponents[resourceId])
+      })
+    },
+    getTagsComponent(item) {
+      switch (item) {
+        case '{FULLNAME}':
+          return fullName
+        case '{USERNAME}':
+          return userName
+        case '{PASSWORDURL}':
+          return passwordURL
+        default:
+          break
+      }
+    },
+    setActiveBlockManagerComponents(activeComponent = []) {
+      this.activeBlockManagerComponents = activeComponent.reduce((acc, item) => {
+        acc[item] = this.getTagsComponent(item)
+        return acc
+      }, {})
+    },
+    handleCategoryChange(resourceId = '') {
+      if (!this.blockManagerComponents.hasOwnProperty(resourceId)) {
+        this.callForMergedTags(resourceId)
+      } else {
+        this.setActiveBlockManagerComponents(this.blockManagerComponents[resourceId])
+      }
     },
     submit() {
       const { refForm, refMakeAvailableFor } = this.$refs
