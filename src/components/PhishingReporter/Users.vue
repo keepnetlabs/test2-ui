@@ -38,27 +38,65 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForPhishingReporterUser"
-    />
+    >
+      <template #datatable-custom-column="{scope,col}">
+        <v-btn style="display: none;" />
+        <v-tooltip
+          bottom
+          content-class="users__tooltip"
+          v-if="col.property === PROPERTY_STORE.ADDINSTATUSNAME"
+        >
+          <template #activator="{on}">
+            <badge
+              :listeners="on"
+              :color="getBtnStatusColor(scope.row[col.property])"
+              :full-width="col.fullWidth"
+              v-bind="col.props"
+              :col="col"
+              :text="getDataTableFieldLabel(scope.row[col.property])"
+              v-if="scope.row && scope.row[col.property]"
+            />
+          </template>
+          <span>{{ getStatusTooltipMessage(scope.row) }}</span>
+        </v-tooltip>
+        <template v-if="col.property === PROPERTY_STORE.DIAGNOSTICTOOL">
+          <v-tooltip
+            bottom
+            content-class="users__tooltip"
+            v-if="scope.row['diagnosticToolLastSeen']"
+          >
+            <template #activator="{ on }">
+              <span v-on="on">{{ scope.row[col.property] }}</span>
+            </template>
+            <span>{{ getDiagnosticToolTooltipMessage(scope.row) }}</span>
+          </v-tooltip>
+          <span v-else>{{ scope.row[col.property] }}</span>
+        </template>
+      </template>
+    </data-table>
   </div>
 </template>
 
 <script>
 import DataTable from '../DataTable'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList,
   deletePhishingReporterUser
 } from '@/api/phishingReporter'
-
+import labels from '@/model/constants/labels'
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
+import Badge from '@/components/Badge'
 export default {
   name: 'Users',
   components: {
     AppDialogFooter,
     DataTable,
-    AppDialog
+    AppDialog,
+    Badge
   },
   props: {
     resizable: {
@@ -68,6 +106,7 @@ export default {
   },
   data() {
     return {
+      PROPERTY_STORE,
       isLoading: true,
       tableOptions: {
         isColumnFilterActive: false,
@@ -91,7 +130,6 @@ export default {
             width: 150,
             isEditable: true,
             editComponent: 'textfield'
-            //minWidth: 80
           },
           {
             property: PROPERTY_STORE.LASTNAME,
@@ -104,7 +142,6 @@ export default {
             width: 150,
             isEditable: true,
             editComponent: 'textfield'
-            //minWidth: 80
           },
           {
             property: PROPERTY_STORE.EMAIL,
@@ -120,22 +157,18 @@ export default {
             editComponent: 'textfield',
             filterableType: 'text',
             filterableCustomFieldName: 'Email'
-            //minWidth: 80
           },
           {
-            property: PROPERTY_STORE.HOSTNAME,
-            align: 'left',
+            property: PROPERTY_STORE.ADDINSTATUSNAME,
+            align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.HOSTNAME),
+            label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'fiber',
-            isEditable: true,
-            editComponent: 'textfield',
-            width: 200,
-            filterableType: 'text',
-            filterableCustomFieldName: 'HostName'
+            type: 'slot',
+            width: 150,
+            isEditable: false
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -154,6 +187,31 @@ export default {
             //minWidth: 80
           },
           {
+            property: PROPERTY_STORE.DIAGNOSTICTOOL,
+            align: 'left',
+            editable: false,
+            label: 'Diagnostic Tool',
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'slot',
+            isEditable: true,
+            width: 160
+          },
+          {
+            property: PROPERTY_STORE.HOSTNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.HOSTNAME),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'fiber',
+            isEditable: true,
+            editComponent: 'textfield',
+            width: 200
+          },
+          {
             property: PROPERTY_STORE.ADDINVERSION,
             align: 'center',
             editable: false,
@@ -166,21 +224,6 @@ export default {
             editComponent: 'textfield',
             width: 140
             //minWidth: 80
-          },
-          {
-            property: PROPERTY_STORE.STATUS,
-            align: 'center',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'status',
-            width: 160,
-            isEditable: false,
-            hasTooltip: true,
-            //minWidth: 80,
-            fullWidth: true
           }
         ],
         empty: {
@@ -229,6 +272,50 @@ export default {
     }
   },
   methods: {
+    getBtnStatusColor(type) {
+      return getBtnStatusColor(type)
+    },
+    getDataTableFieldLabel(field) {
+      return getDataTableFieldLabel(field)
+    },
+    getDiagnosticToolTooltipMessage(row = {}) {
+      const { diagnosticToolLastSeen } = row
+      return `Last seen: ${diagnosticToolLastSeen}`
+    },
+    getStatusTooltipMessage(row = {}) {
+      const { operatingSystemEdition, addInDisabledReason, addInDisabledLastDisabledTime } = row
+      let text = ''
+      const textOS = `OS version: ${operatingSystemEdition ? operatingSystemEdition : 'Unknown'}`
+
+      switch (row[PROPERTY_STORE.ADDINSTATUSNAME]) {
+        case 'Online':
+          text = 'Add-in is installed and active\n'
+          text += textOS
+          break
+        case 'Offline':
+          text = 'Add-in is installed\n'
+          text += 'User is offline\n'
+          text += textOS
+          break
+        case 'Disabled':
+          text = 'Add-in is installed but disabled\n'
+          text += `Cause: ${addInDisabledReason ? addInDisabledReason : 'Unknown'}\n`
+          text += `Disabled time: ${
+            addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
+          }\n`
+          text += textOS
+          break
+        case 'NotInstalled':
+          text = 'Add-in has not been installed'
+          break
+        case 'N/A':
+          text = 'This user is not an active user in your active directory'
+          break
+        default:
+          break
+      }
+      return text
+    },
     handleDelete(row) {
       this.selectedRow = row
       this.isWantToDelete = true
@@ -248,34 +335,19 @@ export default {
               data: { results }
             }
           } = response
-
           this.tableOptions.table =
             results.map((item) => {
-              const { lastSeen } = item
-              const lastSeenSplittedFormat = lastSeen.split(' ')
-              const lastSeenDateSide = lastSeenSplittedFormat[0].split('-')
-              const lastSeenTimeSide = lastSeenSplittedFormat[1].split(':')
-              const dateOfLastSeen = new Date(
-                lastSeenDateSide[0],
-                lastSeenDateSide[1] - 1,
-                lastSeenDateSide[2],
-                lastSeenTimeSide[0],
-                lastSeenTimeSide[1],
-                lastSeenTimeSide[2]
-              )
-              const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
-              const timezonedDate = new Date(
-                dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
-              )
+              const { lastSeen, diagnosticToolStatus, diagnosticToolLastSeen } = item
 
-              const timezonedLastSeen = `${timezonedDate.getFullYear()}-${this.getDateValue(
-                timezonedDate.getMonth() + 1
-              )}-${this.getDateValue(timezonedDate.getDate())} ${this.getDateValue(
-                timezonedDate.getHours()
-              )}:${this.getDateValue(timezonedDate.getMinutes())}:${this.getDateValue(
-                timezonedDate.getSeconds()
-              )}`
-              const newItem = { ...item, lastSeen: timezonedLastSeen }
+              const newItem = {
+                ...item,
+                lastSeen: this.getUtcToNowDate(lastSeen),
+                diagnosticToolStatus:
+                  diagnosticToolStatus === 'NotInstalled'
+                    ? labels.NotInstalled
+                    : diagnosticToolStatus,
+                diagnosticToolLastSeen: this.getUtcToNowDate(diagnosticToolLastSeen)
+              }
               return newItem
             }) || []
           this.isLoading = false
@@ -283,6 +355,33 @@ export default {
         .catch(() => {
           this.isLoading = false
         })
+    },
+    getUtcToNowDate(strDate) {
+      if (strDate) {
+        const lastSeenSplittedFormat = strDate.split(' ')
+        const lastSeenDateSide = lastSeenSplittedFormat[0].split('-')
+        const lastSeenTimeSide = lastSeenSplittedFormat[1].split(':')
+        const dateOfLastSeen = new Date(
+          lastSeenDateSide[0],
+          lastSeenDateSide[1] - 1,
+          lastSeenDateSide[2],
+          lastSeenTimeSide[0],
+          lastSeenTimeSide[1],
+          lastSeenTimeSide[2]
+        )
+        const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
+        const timezonedDate = new Date(
+          dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
+        )
+
+        return `${timezonedDate.getFullYear()}-${this.getDateValue(
+          timezonedDate.getMonth() + 1
+        )}-${this.getDateValue(timezonedDate.getDate())} ${this.getDateValue(
+          timezonedDate.getHours()
+        )}:${this.getDateValue(timezonedDate.getMinutes())}:${this.getDateValue(
+          timezonedDate.getSeconds()
+        )}`
+      }
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
@@ -397,6 +496,9 @@ export default {
     font-weight: 600;
     line-height: 1.71;
     letter-spacing: normal;
+  }
+  &__tooltip {
+    white-space: pre-wrap;
   }
 }
 </style>

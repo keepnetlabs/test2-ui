@@ -42,7 +42,7 @@ export const LABEL_STORE = {
   RELIABILITYPOINT: 'Reliability Point',
   LASTNAME: 'Last Name',
   EMAIL: 'E-Mail',
-  HOSTNAME: 'Device Name',
+  HOSTNAME: 'Device',
   LASTSEEN: 'Last Seen',
   NAME: 'Name',
   ADDINVERSION: 'Version',
@@ -89,6 +89,7 @@ export const LABEL_STORE = {
   NUMBEROFUSERS: 'User Limit',
   LICENSEENDDATE: 'Renewal Date',
   IPADDRESS: 'Ip Address',
+  DIAGNOSTICTOOL: 'Diagnostic Tool',
   TYPE: 'Type',
   URL: 'URL',
   POSTTITLE: 'Post Title',
@@ -125,6 +126,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  ADDINSTATUSNAME: 'addInStatusName',
   CLIENTID: 'clientId',
   COMPANYID: 'companyId',
   DIRECTORYID: 'directoryId',
@@ -146,6 +148,7 @@ export const PROPERTY_STORE = {
   TITLE: 'title',
   DESCRIPTION: 'description',
   STATUS: 'status',
+  DIAGNOSTICTOOL: 'diagnosticToolStatus',
   REPORTEREMAIL: 'reporterEmail',
   INTEGRATIONNAME: 'integrationName',
   RELIABILITYPOINT: 'reliabilityPoint',
