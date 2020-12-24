@@ -29,7 +29,6 @@
             class="new-integration__select"
             dense
             outlined
-            @change="handleCategoryChange"
             placeholder="Select Option"
           />
         </form-group>
@@ -204,6 +203,11 @@ export default {
         return !!this.selectedItem
       }
       return true
+    }
+  },
+  watch: {
+    'formValues.emailTemplateCategoryResourceId'(resourceId) {
+      this.handleCategoryChange(resourceId)
     }
   },
   created() {

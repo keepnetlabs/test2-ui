@@ -1,6 +1,6 @@
 const mergedTextsPasswordURL = [
   {
-    tagName: 'span',
+    tagName: 'a',
     content: '{PASSWORDURL}'
   }
 ]
