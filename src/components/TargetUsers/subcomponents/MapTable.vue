@@ -1,5 +1,5 @@
 <template>
-  <div class="target-users-map">
+  <div class="target-users-map table-box-shadow">
     <v-form ref="refMapTableForm">
       <table class="table">
         <tr class="target-users-map__header">
@@ -27,7 +27,17 @@
           v-for="(item, index) in mapTableData && mapTableData.tableData"
           :key="`${item + index + 1} `"
         >
-          <td v-for="excel in item" :key="`${excel + index + 2} `">{{ excel }}</td>
+          <td v-for="excel in item" :key="`${excel + index + 2} `">
+            <span>
+              <v-tooltip bottom opacity="1" v-if="excel.length > 23">
+                <template v-slot:activator="{ on }">
+                  <span v-on="on">{{ excel }}</span>
+                </template>
+                <span class="tooltip-span">{{ excel }}</span>
+              </v-tooltip>
+              <span v-else>{{ excel }}</span>
+            </span>
+          </td>
         </tr>
       </table>
     </v-form>
@@ -102,7 +112,6 @@ export default {
 <style lang="scss">
 .target-users-map {
   .table {
-    width: 100%;
     border-spacing: 0px;
   }
 
@@ -130,6 +139,11 @@ export default {
     color: #212121;
     display: flex;
     align-items: center;
+    span {
+      white-space: nowrap;
+      overflow: hidden !important;
+      text-overflow: ellipsis;
+    }
   }
 
   .table tr {
@@ -220,7 +234,9 @@ export default {
       text-align: center;
     }
     &:last-child {
+      border-bottom: none !important;
       td {
+        border-bottom: none;
       }
     }
   }

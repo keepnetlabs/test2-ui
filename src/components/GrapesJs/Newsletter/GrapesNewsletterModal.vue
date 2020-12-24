@@ -70,6 +70,9 @@ export default {
   props: {
     htmlData: {
       required: false
+    },
+    backEndMergedTextType: {
+      required: false
     }
   },
   data() {

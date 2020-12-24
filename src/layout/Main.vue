@@ -177,7 +177,14 @@
           </offline>
           <div class="v-responsive">
             <router-link to="/">
-              <img v-if="mini && !!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
+              <img
+                v-if="!mini && drawer"
+                class="page-nav__logo-wrapper__logo"
+                src="../assets/img/logo-full-color.png"
+              />
+              <div v-else>
+                <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
+              </div>
             </router-link>
           </div>
         </div>
@@ -1210,11 +1217,11 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
-    this.callForLicenseCheck()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
         this.getCurrentUser() //@iceman login
+        this.callForLicenseCheck()
         //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {

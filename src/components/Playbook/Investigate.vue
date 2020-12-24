@@ -225,6 +225,7 @@
               :items="act.investigateActions"
               outlined
               hide-details
+              @change="$forceUpdate()"
             />
           </v-col>
           <v-col v-if="investigateData.actionType === 'Notify'">

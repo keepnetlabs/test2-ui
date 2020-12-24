@@ -9,7 +9,6 @@ const phishingUrl = {
     icon: 'fa fa-text'
   },
   content: {
-    tagName: 'span',
     draggable: true,
     components: mergedTextsPhishingUrl
   }
