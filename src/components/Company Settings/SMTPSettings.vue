@@ -24,6 +24,7 @@
         ref="refSmtpSettingsList"
         :table="tableData"
         :refName="'smtpSettingsList'"
+        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :countRow="5"
         id="company-settings-smtp-settings-data-table"
@@ -109,6 +110,7 @@ export default {
       loading: false,
       selectedDeleteSmtpSettings: null,
       selectedEditSmtpSettings: null,
+
       isEdit: false,
       tableOptions: {
         columns: [
@@ -157,8 +159,7 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            filterableType: 'date',
-            width: 150
+            filterableType: 'date'
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
@@ -178,6 +179,7 @@ export default {
             width: 150
           }
         ],
+        isColumnFilterActive: false,
         pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
@@ -327,11 +329,20 @@ export default {
       }
     },
     columnFilterChanged(filter) {
+      this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
@@ -359,8 +370,11 @@ export default {
           items.push(x)
         }
       })
+
       filterPayload = [...items]
       this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
+      this.tableOptions.isColumnFilterActive =
+        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
       this.callForSearchSmtpSettings()
     },
     handleMultipleDelete(selections) {

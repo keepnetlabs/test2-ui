@@ -349,7 +349,7 @@ export default {
       } else if (value === false) {
         value = 'False'
       } else if (value === 'indeterminate') {
-        value = 'Indeterminate'
+        value = null
       } else {
         value = !!value
       }
@@ -360,7 +360,7 @@ export default {
         value = true
       } else if (value === 'False') {
         value = false
-      } else if (value === 'Indeterminate') {
+      } else if (!value) {
         value = 'indeterminate'
       } else {
         value = !!value

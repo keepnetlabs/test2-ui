@@ -329,9 +329,17 @@ export default {
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
       let items = []
-      this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+      this.bodyData.filter.FilterGroups[0].FilterItems.map((x) => {
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
