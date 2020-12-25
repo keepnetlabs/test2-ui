@@ -103,7 +103,7 @@ export default {
         noticeOnUnload: false
       })
       let blockManager = this.editor.BlockManager
-      debugger
+
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         blockManager.add(key, value)
       }

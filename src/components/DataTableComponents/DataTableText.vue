@@ -13,7 +13,12 @@
       }}</span
     >
     <span
-      v-if="props.scope.row && props.scope.row[props.col.property]"
+      v-if="
+        props.scope.row &&
+        (props.scope.row[props.col.property] !== undefined ||
+          props.scope.row[props.col.property] !== null ||
+          props.scope.row[props.col.property] !== '')
+      "
       :class="{
         'dataTableText-main-error':
           props.scope.row &&
