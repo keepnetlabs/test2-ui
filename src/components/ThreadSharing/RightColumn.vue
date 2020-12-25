@@ -163,6 +163,7 @@
         title="Invite Members"
         subtitle="Bring new members to the community"
         size="big"
+        v-if="openInviteModal"
         @changeStatus="openInviteModal = false"
       >
         <template v-slot:app-dialog-body>
@@ -188,9 +189,16 @@
         </template>
         <template v-slot:app-dialog-footer>
           <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-            <v-btn text color="#f56c6c" class="k-dialog__button" @click="openInviteModal = false">{{
-              labels.Cancel
-            }}</v-btn>
+            <v-btn
+              text
+              color="#f56c6c"
+              class="k-dialog__button"
+              @click="
+                openInviteModal = false
+                emailarray = []
+              "
+              >{{ labels.Cancel }}</v-btn
+            >
             <v-btn text color="#2196f3" class="k-dialog__button" @click="inviteMember"
               >Invite All</v-btn
             >

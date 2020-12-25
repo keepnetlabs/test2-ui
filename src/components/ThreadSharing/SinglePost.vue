@@ -47,6 +47,7 @@
       icon="mdi-send"
       title="Share incident"
       size="big"
+      v-if="openShareModal"
       @changeStatus="openShareModal = false"
     >
       <template v-slot:app-dialog-body>
@@ -82,9 +83,16 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn text color="#f56c6c" class="k-dialog__button" @click="openShareModal = false">{{
-            labels.Cancel
-          }}</v-btn>
+          <v-btn
+            text
+            color="#f56c6c"
+            class="k-dialog__button"
+            @click="
+              openShareModal = false
+              shareEmail = []
+            "
+            >{{ labels.Cancel }}</v-btn
+          >
           <v-btn text color="#2196f3" class="k-dialog__button" @click="shareIncident">Send</v-btn>
         </div>
       </template>
