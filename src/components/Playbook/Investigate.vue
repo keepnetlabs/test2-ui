@@ -221,14 +221,33 @@
         <v-row>
           <v-col>
             <k-select
-              v-model="investigateData.actionType"
+              v-model="investigateData.autoAction.type"
               :items="act.investigateActions"
               outlined
               hide-details
-              @change="$forceUpdate()"
+              @change="
+                $forceUpdate()
+                investigateData.autoAction.type === 'Delete'
+                  ? (investigateData.autoAction.warningMessage = '')
+                  : ''
+              "
             />
           </v-col>
-          <v-col v-if="investigateData.actionType === 'Notify'">
+          <v-col v-if="investigateData.autoAction.type === 'Warning'">
+            <v-text-field
+              placeholder="Message"
+              outlined
+              dense
+              no-resize
+              v-model="investigateData.autoAction.warningMessage"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) =>
+                  validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Message, 300)),
+                (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.Message, 5))
+              ]"
+            /> </v-col
+          ><v-col v-if="false">
             <k-select
               v-model="investigateData.actionNotifyTargetUserType"
               :items="act.investigateActionNotifications"
@@ -236,10 +255,7 @@
               hide-details
             />
           </v-col>
-          <v-col
-            style="padding-right: 0 !important ;"
-            v-if="investigateData.actionType === 'Notify'"
-          >
+          <v-col style="padding-right: 0 !important ;" v-if="false">
             <k-select
               v-model="investigateActionNotificationTemplate"
               :items="act.notifyTemplates"
@@ -258,7 +274,7 @@
 </template>
 
 <script>
-import { required } from '../../utils/validations'
+import { required, minLength, maxLength } from '../../utils/validations'
 import { mapGetters } from 'vuex'
 import {
   getTargetGroups,
@@ -267,6 +283,8 @@ import {
 } from '../../api/targetUsers'
 import { getInvestigationScanTypes } from '@/api/investigations'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+
 export default {
   name: 'Investigate',
   components: { KSelect },
@@ -320,6 +338,12 @@ export default {
     })
   },
   watch: {
+    'investigateData.autoAction.type'(newValue, oldValue) {
+      debugger
+      if (newValue != oldValue) {
+        this.$forceUpdate()
+      }
+    },
     investigationRange(val) {
       let date = new Date()
       switch (val) {
@@ -463,6 +487,7 @@ export default {
   beforeDestroy() {},
   data() {
     return {
+      labels,
       filters: ['URLs', 'Attachments'],
       investigationRange: 3,
       expireDate: '',
@@ -472,13 +497,16 @@ export default {
       investigateAction: 'Delete email',
       investigateActionNotification: 'Reporter',
       investigateActionNotificationTemplate: '18',
+      investigateActionMessage: null,
       targetUsersValue: [],
       defaultUserGroupItems: [],
       timeout: null,
       targetUserType: 'AllUsers',
       sources: [],
       validations: {
-        required
+        required,
+        minLength,
+        maxLength
       },
       scanTypes: [],
       targetUsers: {
