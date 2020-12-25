@@ -139,7 +139,7 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.USERNAME,
+            property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDBY),
