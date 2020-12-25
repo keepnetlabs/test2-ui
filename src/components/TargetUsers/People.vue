@@ -490,7 +490,7 @@ export default {
                 } else if (value === 'False') {
                   item[name] = 'No'
                 } else {
-                  item[name] = 'Not set'
+                  item[name] = 'No'
                 }
               } else {
                 item[name] = value !== null && value !== undefined ? value : ''
