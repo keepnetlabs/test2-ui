@@ -42,11 +42,8 @@
       @refreshAction="getTableData"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
-          <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
-            scope.row.name
-          }}</span>
-          <span v-else>{{ scope.row.name }}</span>
+        <span v-if="scope.row.name" class="datatable-link">
+          <span @click="goToDetails(scope.row)">{{ scope.row.name }}</span>
         </span>
       </template>
     </datatable>
