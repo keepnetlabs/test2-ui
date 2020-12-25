@@ -1059,9 +1059,13 @@ export default {
       if (this.activeStep === 1) {
         isFormValid = !!this.formData.file
       } else if (this.activeStep === 2) {
-        this.requiredFields = this.mappingData.columns
-          .filter((item) => item.required && !item.selectedValue)
-          .map((item) => item.name || item.dbName)
+        let selectedHeaderColumns = this.mappingData.headers.map(
+          (item) => item.selectedValue && (item.selectedValue.dbName || item.selectedValue.name)
+        )
+        let requiredFields = this.mappingData.columns
+          .filter((item) => item.required)
+          .map((item) => item.dbName || item.name)
+        this.requiredFields = requiredFields.filter((d) => !selectedHeaderColumns.includes(d))
         isFormValid = !this.requiredFields.length
         if (!isFormValid) {
           this.showRequiredAreaModal = true
