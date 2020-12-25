@@ -1933,6 +1933,7 @@ export default {
       margin: 8px;
       padding: 16px;
       position: relative;
+      overflow: hidden;
 
       &__skeleton-loading {
         width: 25%;
