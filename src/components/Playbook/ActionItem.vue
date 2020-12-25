@@ -383,6 +383,7 @@ export default {
       investigateAction: 'Delete email',
       investigateActionNotification: 'Reporter',
       investigateActionNotificationTemplate: '18',
+      investigateActionMessage: null,
       playbookActionInvestigations: [],
       act: {
         actionTypes: [
@@ -444,11 +445,19 @@ export default {
           { text: '3 days', value: 3 },
           { text: '7 days', value: 7 }
         ],
-        investigateActions: ['Notify', { text: 'Delete email', value: 'DeleteEmail' }],
+        investigateActions: [
+          { text: 'Notify', value: 'Warning' },
+          { text: 'Delete email', value: 'Delete' }
+        ],
         investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone']
       },
       actions: [],
       actionsValues: [],
+      autoAction: {
+        isPermanentDelete: false,
+        type: 'Warning',
+        warningMessage: ''
+      },
       playbookAction: {
         markType: 'Clean',
         tags: []
@@ -479,7 +488,12 @@ export default {
         actionType: 'Notify',
         actionNotifyTargetUserType: 'Reporter',
         actionNotifyTargetUsers: [],
-        emailTempleditedPlaybookActionAnalyzersteId: 1
+        emailTempleditedPlaybookActionAnalyzersteId: 1,
+        autoAction: {
+          isPermanentDelete: false,
+          type: 'Warning',
+          warningMessage: ''
+        }
       },
 
       playbookActionAnalyzers: []
@@ -725,7 +739,12 @@ export default {
           actionType: 'Notify',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1
+          emailTempleditedPlaybookActionAnalyzersteId: 1,
+          autoAction: {
+            isPermanentDelete: false,
+            type: 'Warning',
+            warningMessage: ''
+          }
         }
       }
       this.$forceUpdate()
@@ -776,7 +795,12 @@ export default {
           actionType: 'Notify',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1
+          emailTempleditedPlaybookActionAnalyzersteId: 1,
+          autoAction: {
+            isPermanentDelete: false,
+            type: 'Warning',
+            warningMessage: ''
+          }
         }
       }
 
@@ -855,7 +879,13 @@ export default {
           actionType: 'Notify',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1
+          emailTempleditedPlaybookActionAnalyzersteId: 1,
+
+          autoAction: {
+            isPermanentDelete: false,
+            type: 'Warning',
+            warningMessage: ''
+          }
         }
         this.analyzeCheckbox = false
         this.analysisEngines = this.analysisEngines.map((item) => ({ ...item, selected: false }))
