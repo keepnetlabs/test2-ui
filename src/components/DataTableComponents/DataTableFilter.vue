@@ -9,6 +9,7 @@
     v-if="filterableType"
     max-height="260px"
     v-model="menu"
+    z-index="99"
   >
     <template v-slot:activator="{ on }">
       <v-icon v-on="on" class="filter__icon" :color="isFilterActive === true ? '#409eff' : ''"
@@ -193,6 +194,11 @@ export default {
           typeof x == 'string' ? { text: x, value: x } : { text: x.text, value: x.value }
         )
       })
+    }
+  },
+  beforeDestroy() {
+    if (this.isFilterActive) {
+      this.clearFilter()
     }
   },
   methods: {

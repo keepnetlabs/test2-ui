@@ -42,11 +42,8 @@
       @refreshAction="getTableData"
     >
       <template v-slot:datatable-custom-column="{ scope }">
-        <span v-if="scope.row.name" :class="{ 'datatable-link': scope.row.companyCount !== 0 }">
-          <span v-if="scope.row.companyCount !== 0" @click="goToDetails(scope.row)">{{
-            scope.row.name
-          }}</span>
-          <span v-else>{{ scope.row.name }}</span>
+        <span v-if="scope.row.name" class="datatable-link">
+          <span @click="goToDetails(scope.row)">{{ scope.row.name }}</span>
         </span>
       </template>
     </datatable>
@@ -226,8 +223,16 @@ export default {
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 

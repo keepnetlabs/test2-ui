@@ -105,6 +105,10 @@ export function updateEmailTemplate(resourceId = '', payload = {}) {
   })
 }
 
+export function getMergedTags(resourceId = '') {
+  return testRequest.get(`/companies/email-templates/merge-tags/${resourceId}`)
+}
+
 export function deleteEmailTemplate(resourceId = '') {
   return testRequest.delete(`/companies/email-templates/${resourceId}`, {
     snackbar: COMMON_SNACKBAR

@@ -182,7 +182,9 @@
                 class="page-nav__logo-wrapper__logo"
                 src="../assets/img/logo-full-color.png"
               />
-              <img v-else src="../assets/img/account-circle.png" class="menu-mini-img" />
+              <div v-else>
+                <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
+              </div>
             </router-link>
           </div>
         </div>
@@ -354,7 +356,8 @@
               routerName === 'Company Settings' ||
               routerName === 'Company Group Details' ||
               routerName === 'Target Group Users' ||
-              routerName === 'System Users',
+              routerName === 'System Users' ||
+              routerName === 'Audit',
             'un-selected-list-item':
               routerName !== 'Company' ||
               routerName === 'Target Users' ||
@@ -362,7 +365,8 @@
               routerName === 'Company Settings' ||
               routerName === 'System Users' ||
               routerName === 'Target Group Users' ||
-              routerName === 'Company Group Details'
+              routerName === 'Company Group Details' ||
+              routerName === 'Audit'
           }"
         >
           <template v-slot:activator>
@@ -422,24 +426,24 @@
           </v-list-item>
           <v-list-item
             style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['audit-logs|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/audit" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Audit Log</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
             v-if="checkPermissionMultiple(['system-users/search|POST'])"
           >
             <v-list-item-content class="menu-item-content">
               <router-link to="/system-users" class="menu-link-default">
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">System Users</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['audit-logs|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/audit" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Audit Log</span>
                 </v-list-item-title>
               </router-link>
             </v-list-item-content>
@@ -455,7 +459,6 @@
               routerName === 'Investigations' ||
               routerName === 'Integrations' ||
               routerName === 'Playbook' ||
-              routerName === 'Audit' ||
               routerName === 'Mail Configurations' ||
               routerName === 'Analysis Details' ||
               routerName === 'Investigation Details',
@@ -464,7 +467,6 @@
               routerName === 'Investigations' ||
               routerName === 'Integrations' ||
               routerName === 'Playbook' ||
-              routerName === 'Audit' ||
               routerName === 'Analysis Details' ||
               routerName === 'Mail Configurations' ||
               routerName === 'Investigation Details'
@@ -1215,11 +1217,11 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
-    this.callForLicenseCheck()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
         this.getCurrentUser() //@iceman login
+        this.callForLicenseCheck()
         //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
@@ -2240,8 +2242,8 @@ export default {
   }
 
   .menu-mini-img {
-    max-width: 64px;
-    max-height: 60px;
+    max-width: 48px;
+    max-height: 48px;
     margin-left: 8px;
   }
 

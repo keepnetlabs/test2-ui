@@ -2,7 +2,7 @@ import request from '../utils/request'
 import authTestRequest from '../utils/authTestRequest'
 import testRequest from '../utils/testRequest'
 import AuthenticationService from '../services/authentication'
-import { COMMON_CONSTANTS, COMMON_SNACKBAR } from '../model/constants/commonConstants'
+import { COMMON_SNACKBAR } from '../model/constants/commonConstants'
 
 export function loginAction(payload) {
   const params = new URLSearchParams()

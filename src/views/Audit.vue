@@ -157,7 +157,8 @@ export default {
             show: true,
             type: 'text',
             width: 185,
-            filterableType: 'text'
+            filterableType: 'text',
+            filterableCustomFieldName: 'IP'
           },
           {
             property: PROPERTY_STORE.USERAGENT,
@@ -168,7 +169,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 185
+            minWidth: 185
           }
         ],
 
@@ -216,9 +217,17 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+      requestBody.map((x) => {
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 

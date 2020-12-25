@@ -61,7 +61,7 @@ export default {
       this.$store.dispatch('common/closeSnackBar', snackbar)
     },
     getSnackBarStyle(message, index) {
-      const messageLength = message.trim().length
+      const messageLength = message ? message.trim().length : 1
       const styleObj = {}
       if (index >= 1) {
         styleObj['bottom'] = `${65 * index + 10}px`

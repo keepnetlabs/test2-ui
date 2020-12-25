@@ -18,6 +18,7 @@ export const labels = {
   URL: 'Url',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
+  NotInstalled: 'Not Installed',
   ServiceProvider: 'Service Provider',
   CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',

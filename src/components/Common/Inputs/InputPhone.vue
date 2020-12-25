@@ -46,7 +46,8 @@ export default {
   data() {
     return {
       isPhoneNumberValid: true,
-      maxLen: 17
+      maxLen: 17,
+      regionCode: 'GB'
     }
   },
   computed: {
@@ -64,18 +65,36 @@ export default {
   },
   methods: {
     handleTelChange(newVal) {
-      if (newVal.length > 12 && this.$refs.refTelInput.phoneObject.possibility === 'too-long') {
-        this.$refs.refTelInput.phone = this.value
-        this.$emit('input', this.value)
+      if (newVal.split('+').length > 2) {
+        this.setOldValueBySplitter('+', newVal)
+      } else if (
+        (this.$refs.refTelInput.phoneObject.regionCode === 'GB' ||
+          this.$refs.refTelInput.phoneObject.regionCode === 'TR') &&
+        newVal.includes('-')
+      ) {
+        this.setOldValueBySplitter('-', newVal)
+      } else if (
+        newVal.length > 12 &&
+        this.$refs.refTelInput.phoneObject.possibility === 'too-long'
+      ) {
+        if (this.regionCode !== this.$refs.refTelInput.phoneObject.regionCode) {
+          this.$refs.refTelInput.phone = newVal
+          this.$emit('input', newVal)
+        } else {
+          this.$refs.refTelInput.phone = this.value
+          this.$emit('input', this.value)
+        }
       } else if (
         //CHINA BUG
         newVal.length === 17 &&
         this.$refs.refTelInput.phoneObject.regionCode === 'CN' &&
         newVal[4] !== '1'
       ) {
-        const val = newVal.substring(0, 16)
-        this.$refs.refTelInput.phone = val
-        this.$emit('input', val)
+        this.setValueSubStr(16, newVal)
+      } else if (newVal.length === 16 && this.$refs.refTelInput.phoneObject.regionCode === 'PL') {
+        this.setValueSubStr(15, newVal)
+      } else if (newVal.length === 17 && this.$refs.refTelInput.phoneObject.regionCode === 'SE') {
+        this.setValueSubStr(16, newVal)
       } else {
         this.$refs.refTelInput.phone = newVal
         this.$emit('input', newVal)
@@ -84,9 +103,29 @@ export default {
     handleTelBlur() {
       this.validatePhoneNumber()
     },
+    setOldValueBySplitter(splitter = '-', newVal) {
+      if (!this.value) {
+        const splittedVal = newVal.split(splitter)[0]
+        this.$refs.refTelInput.phone = splittedVal
+        this.$emit('input', splittedVal)
+      } else {
+        this.$refs.refTelInput.phone = this.value
+        this.$emit('input', this.value)
+      }
+    },
+    setValueSubStr(length, newVal) {
+      const val = newVal.substring(0, length)
+      this.$refs.refTelInput.phone = val
+      this.$emit('input', val)
+    },
     validatePhoneNumber() {
       this.$nextTick(() => {
+        this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
         this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
+        console.log(
+          'this.$refs.refTelInput.phoneObject.isValid',
+          this.$refs.refTelInput.phoneObject.isValid
+        )
       })
     }
   }

@@ -280,7 +280,10 @@ export default {
     },
     getCustomFieldItemProps(item) {
       const props = {}
-      const { isRequired } = item
+      const { isRequired, fieldDataType } = item
+      if (fieldDataType === 'Boolean' && !this.editData) {
+        props['default-value'] = 'indeterminate'
+      }
       if (isRequired) {
         props['persistentHint'] = true
         props['hint'] = '*Required'
@@ -302,11 +305,17 @@ export default {
     },
     getCustomFieldRules(item = {}) {
       const rules = []
-      item.isRequired && rules.push((v) => this.validations.required(v, 'Required'))
       if (item.fieldDataType !== 'Boolean') {
+        item.isRequired && rules.push((v) => this.validations.required(v, 'Required'))
         rules.push((v) =>
           this.validations.maxLength(v, 256, labels.getMaxLengthMessage(item.name, 256))
         )
+      } else {
+        if (item.isRequired) {
+          rules.push(() => {
+            return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
+          })
+        }
       }
       item.fieldDataType === 'Email' &&
         rules.push((v) => this.validations.mail(v, 'Invalid email address'))
@@ -349,7 +358,7 @@ export default {
       } else if (value === false) {
         value = 'False'
       } else if (value === 'indeterminate') {
-        value = 'Indeterminate'
+        value = null
       } else {
         value = !!value
       }
@@ -360,7 +369,7 @@ export default {
         value = true
       } else if (value === 'False') {
         value = false
-      } else if (value === 'Indeterminate') {
+      } else if (!value) {
         value = 'indeterminate'
       } else {
         value = !!value

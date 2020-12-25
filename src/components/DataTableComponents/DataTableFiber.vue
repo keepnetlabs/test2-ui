@@ -27,7 +27,7 @@ export default {
     },
     rowKey: {
       type: String,
-      default: 'addInStatus'
+      default: 'addInStatusName'
     }
   },
   computed: {
@@ -44,7 +44,6 @@ export default {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    margin-left: -8px;
   }
 
   &__item {

@@ -170,14 +170,16 @@
                         >
                         </form-group> </v-list-item-content
                     ></v-list-item>
-                    <v-list-item class="target-user-import-file__list-item table-box-shadow mb-10">
-                      <v-list-item-content class="mb-6 target-user-import-file__list-item__content">
+                    <div class="target-user-import-file__list-item pl-1 pr-1 pt-1 mb-10">
+                      <div class="mb-6 target-user-import-file__list-item__content">
                         <MapTable
                           v-if="activeStep === 2"
                           ref="refMapTable"
                           :mapTableData="mappingData"
-                          @get-map-table-data="getMapTableData" /></v-list-item-content
-                    ></v-list-item>
+                          @get-map-table-data="getMapTableData"
+                        />
+                      </div>
+                    </div>
                   </v-form>
                 </div>
               </v-stepper-content>
@@ -710,7 +712,11 @@ export default {
   methods: {
     showConfirmModal(actionName) {
       this.selectedActionName = actionName
-      this.showLicenseExceededDialog = true
+      if (this.companyLicense['isLicenseExceeded']) {
+        this.showLicenseExceededDialog = true
+      } else {
+        this.save(actionName)
+      }
     },
     handleSelectionChange(selectedValues) {
       this.selectedTableData = !selectedValues.length

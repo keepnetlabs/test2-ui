@@ -6,11 +6,17 @@
       icon-name="mdi-check"
       :title="labels.NotificationTemplate"
       z-index="999999"
+      :show-header="false"
       @submit="saveGrapeJs"
       @closeOverlay="toggleShowGrapesModal"
     >
       <template v-slot:overlay-body>
-        <GrapesWebPageModal ref="grapesJsPostIncident" :htmlData="template"></GrapesWebPageModal>
+        <GrapesNewsletterModal
+          ref="grapesJsPostIncident"
+          :htmlData="template"
+          :key="grapeJsKey"
+          :blockManagerComponents="activeBlockManagerComponents"
+        />
       </template>
     </app-modal>
     <div class="email-template__item">
@@ -157,7 +163,8 @@
           <tr>
             <td>
               <p :style="{ ...getPStyle(), textAlign: 'center', marginBottom: '0' }">
-                This email is sent by {User_Name} from {Company_Name} on {Date_Sent}
+                This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
+                <span>{DATESENT}</span>
               </p>
             </td>
           </tr>
@@ -169,24 +176,43 @@
 
 <script>
 import AppModal from '@/components/AppModal'
-import GrapesWebPageModal from '@/components/GrapesJs/WebPage/GrapesWebPageModal'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 export default {
   name: 'EmailTemplate',
   components: {
+    GrapesNewsletterModal,
     AppModal,
-    GrapesWebPageModal,
     InputEmail
   },
-  props: ['fromAddress', 'fromName', 'subject', 'template'],
+  props: [
+    'fromAddress',
+    'fromName',
+    'subject',
+    'template',
+    'activeBlockManagerComponents',
+    'isEdit'
+  ],
   data() {
     return {
       labels,
       showGrapesModal: false,
+      grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
       Validations
     }
+  },
+  watch: {
+    activeBlockManagerComponents() {
+      if (!this.isEdit) {
+        this.setDefaultTemplate()
+      }
+      this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
+    }
+  },
+  mounted() {
+    this.defaultTemplate = JSON.parse(JSON.stringify(this.$refs.refPreview.outerHTML))
   },
   methods: {
     changeTabStatus(index) {
@@ -228,7 +254,9 @@ export default {
         color: 'rgba(0, 0, 0, 0.87)'
       }
     },
-
+    setDefaultTemplate() {
+      this.$emit('update:template', this.defaultTemplate)
+    },
     toggleShowGrapesModal() {
       this.showGrapesModal = !this.showGrapesModal
     },
