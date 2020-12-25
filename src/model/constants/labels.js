@@ -219,7 +219,8 @@ export const labels = {
   SMTPSettingNameSecondLower: 'SMTP setting name',
   SMTPServerAddress: 'SMTP Server Address',
   SMTPServerAddressSecondLower: 'SMTP server address',
-  Port: 'Port'
+  Port: 'Port',
+  Message: 'Message'
 }
 
 export default labels

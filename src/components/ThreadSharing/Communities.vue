@@ -202,6 +202,7 @@
                 @click="subTabSelected(tab)"
                 :href="`#tab-${ind}`"
                 class="text-decoration-none sub-tab__content"
+                :disabled="communityLoading"
               >
                 <template v-if="ind === 2">
                   {{ tab }}
@@ -228,7 +229,7 @@
                   id="incidents-search-textfield"
                   hide-details
                   prepend-inner-icon="mdi-magnify"
-                  :disabled="selectedTab === 'tab-2'"
+                  :disabled="selectedTab === 'tab-2' || communityLoading"
                 ></v-text-field>
               </div>
               <div>
@@ -245,7 +246,7 @@
                   :placeholder="'Industry'"
                   hide-details
                   multiple
-                  :disabled="selectedTab === 'tab-2'"
+                  :disabled="selectedTab === 'tab-2' || communityLoading"
                   :slots="{ selection: true, item: false }"
                 >
                   <template v-slot:selection="{ item, index }">
@@ -278,7 +279,7 @@
                   item-value="id"
                   @change="updateCommunities()"
                   :menu-props="{ offsetY: true }"
-                  :disabled="selectedTab === 'tab-2'"
+                  :disabled="selectedTab === 'tab-2' || communityLoading"
                   :slots="{ selection: true, item: false }"
                 >
                   <template v-slot:selection="{ item, index }">

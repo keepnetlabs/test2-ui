@@ -37,6 +37,7 @@
                   id="incidents-search-textfield"
                   hide-details
                   prepend-inner-icon="mdi-magnify"
+                  :disabled="incidentLoading"
                 ></v-text-field>
               </div>
               <div>
@@ -52,6 +53,7 @@
                   :menu-props="{ offsetY: true }"
                   item-value="resourceId"
                   @change="getIncidentList()"
+                  :disabled="incidentLoading"
                 />
               </div>
               <div class="d-flex">
@@ -68,6 +70,7 @@
                   item-value="resourceId"
                   @change="getIncidentList()"
                   :slots="{ selection: true }"
+                  :disabled="incidentLoading"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
