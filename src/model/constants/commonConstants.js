@@ -32,8 +32,7 @@ export const COMMON_CONSTANTS = {
       }
       return false
     }
-  ],
-  OPERATION_ITEMS: ['Create', 'Update', 'Delete', 'Create Many', 'Update Many', 'Delete Many']
+  ]
 }
 
 export const LABEL_STORE = {

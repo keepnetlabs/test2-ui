@@ -19,7 +19,7 @@
     <div class="filter__body-container">
       <template v-if="filterableType === 'text'">
         <v-select
-          :items="getTextFilterItems"
+          :items="textFilterItems"
           dense
           height="40"
           outlined
@@ -134,9 +134,6 @@ export default {
     column: {
       type: Object
     },
-    filterProps: {
-      type: Object
-    },
     filterableType: {
       type: String
     },
@@ -156,9 +153,7 @@ export default {
     return {
       menu: null,
       isFilterActive: false,
-      filteredSelectValue: this.filterProps
-        ? this.filterProps.items && this.filterProps.items[0]
-        : 'Contains',
+      filteredSelectValue: 'Contains',
       filteredSelectValueNum: '=',
       filteredSelectValueDate: '<=',
       filteredDateValue: this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
@@ -268,11 +263,6 @@ export default {
     }
   },
   computed: {
-    getTextFilterItems() {
-      return this.filterProps
-        ? this.filterProps.items && this.filterProps.items
-        : this.textFilterItems
-    },
     getWidth() {
       return this.filteredSelectValueDate === 'between' ? '450px' : '260px'
     },

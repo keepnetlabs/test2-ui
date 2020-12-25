@@ -510,7 +510,6 @@
                 <data-table-filter
                   v-if="col.filterableType"
                   :column="column"
-                  :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
                   :filterableCustomFieldName="col.filterableCustomFieldName"

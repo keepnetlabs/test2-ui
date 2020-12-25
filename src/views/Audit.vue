@@ -99,8 +99,7 @@ export default {
             show: true,
             type: 'text',
             width: 185,
-            filterableType: 'text',
-            filterProps: { items: ['Include'] }
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.ENTITYNAME,
@@ -124,8 +123,7 @@ export default {
             show: true,
             type: 'text',
             width: 140,
-            filterableType: 'select',
-            filterableItems: COMMON_CONSTANTS.OPERATION_ITEMS
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.OLDVALUE,
