@@ -1,7 +1,7 @@
 import mergedTextsCommunityDesc from '../blocks/mergedTextsBlocks/communityDesc'
 
-const communityDescription = {
-  label: 'Community Description',
+const communityDesc = {
+  label: 'Community Desc',
   category: 'Merged Texts',
   attributes: {
     title: 'To',
@@ -15,4 +15,4 @@ const communityDescription = {
   }
 }
 
-export default communityDescription
+export default communityDesc

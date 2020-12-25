@@ -28,6 +28,7 @@
             :items="categoryItems"
             class="new-integration__select"
             dense
+            :disabled="!!selectedItem"
             outlined
             placeholder="Select Option"
           />
@@ -57,6 +58,7 @@
             :from-name.sync="formValues.fromName"
             :subject.sync="formValues.subject"
             :template.sync="formValues.template"
+            :is-edit="!!selectedItem"
             @handleEditHtmlTemplate="formValues.template = $event"
           />
         </form-group>
@@ -112,6 +114,13 @@ import foundEmailCount from '@/components/GrapesJs/Newsletter/mergedTexts/foundE
 import startedBy from '@/components/GrapesJs/Newsletter/mergedTexts/startedBy'
 import startDate from '@/components/GrapesJs/Newsletter/mergedTexts/startDate'
 import investigationName from '@/components/GrapesJs/Newsletter/mergedTexts/investigationName'
+import invitedUserName from '@/components/GrapesJs/Newsletter/mergedTexts/invitedUserName'
+import invitedByCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/invitedByCompanyName'
+import communityUrl from '@/components/GrapesJs/Newsletter/mergedTexts/communityUrl'
+import memberCount from '@/components/GrapesJs/Newsletter/mergedTexts/memberCount'
+import communityIndustry from '@/components/GrapesJs/Newsletter/mergedTexts/communityIndustry'
+import communityDescription from '@/components/GrapesJs/Newsletter/blocks/mergedTextsBlocks/communityDescription'
+import analysisEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysisEmail'
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -323,6 +332,21 @@ export default {
           return startDate
         case '{INVESTIGATIONNAME}':
           return investigationName
+        case '{INVITEDUSERNAME}':
+          return invitedUserName
+        case '{INVITEDBYCOMPANYNAME}':
+          return invitedByCompanyName
+        case '{COMMUNITYURL}':
+          return communityUrl
+        case '{MEMBERCOUNT}':
+          return memberCount
+        case '{COMMUNITYINDUSTRY}':
+          return communityIndustry
+        case '{COMMUNITYDESCRIPTION}':
+          return communityDescription
+        case '{ANALYSISEMAIL}':
+          return analysisEmail
+
         default:
           break
       }
