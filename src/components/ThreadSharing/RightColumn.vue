@@ -782,12 +782,12 @@ export default {
               if (item.result === 'Failed') {
                 this.$store.dispatch('common/createSnackBar', {
                   color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: `${item['email']} ${item['resultText']}`
+                  message: `${item['resultText']}: ${item['email']} `
                 })
               } else {
                 this.$store.dispatch('common/createSnackBar', {
                   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  message: `${item['resultText']} (${item['email']})`
+                  message: `${item['resultText']}: (${item['email']})`
                 })
               }
             })
