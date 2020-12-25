@@ -12,11 +12,11 @@
 <script>
 export default {
   name: 'KCheckbox',
-  props: ['value'],
+  props: ['value', 'defaultValue'],
   data() {
     return {
-      isDeterminate: this.value === 'indeterminate',
-      checkboxValue: this.value
+      checkboxValue: this.value || this.defaultValue,
+      isDeterminate: this.value === 'indeterminate' || this.defaultValue === 'indeterminate'
     }
   },
   methods: {
@@ -35,8 +35,10 @@ export default {
         this.isDeterminate = true
         newVal = 'indeterminate'
       }
-
       this.$emit('input', newVal)
+      this.$nextTick(() => {
+        this.$refs.refCheckbox.validate(true, newVal)
+      })
     }
   }
 }
