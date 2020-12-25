@@ -168,6 +168,7 @@ export default {
     line-height: 1.15;
     letter-spacing: normal;
     color: #2196f3 !important;
+    white-space: pre-wrap;
   }
 
   &__sub-title {
