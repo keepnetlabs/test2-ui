@@ -339,7 +339,6 @@ export default {
   },
   watch: {
     'investigateData.autoAction.type'(newValue, oldValue) {
-      debugger
       if (newValue != oldValue) {
         this.$forceUpdate()
       }
