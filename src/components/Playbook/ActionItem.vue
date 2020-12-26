@@ -71,18 +71,14 @@
                 <div class="analyze__main__select-row-inline">
                   <span
                     class="analyze__main__select-row-inline__button"
-                    style="cursor: pointer;"
-                    :class="
-                      engine.isCheckHash ? 'analyze__main__select-row-inline__button-selected' : ''
-                    "
+                    v-bind="getDynamicCheckboxProps(engine, index, 'hash')"
                     @click="hashChange(engine.isCheckHash, index)"
                   >
                     Hash
                   </span>
                   <span
                     class="analyze__main__select-row-inline__button"
-                    style="cursor: default;"
-                    :class="engine.isCheckFile ? '' : ''"
+                    v-bind="getDynamicCheckboxProps(engine, index, 'file')"
                     @click="fileChange(engine.isCheckFile, index)"
                   >
                     File
@@ -90,9 +86,7 @@
                   <span
                     style="cursor: pointer;"
                     class="analyze__main__select-row-inline__button"
-                    :class="
-                      engine.isCheckUrl ? 'analyze__main__select-row-inline__button-selected' : ''
-                    "
+                    v-bind="getDynamicCheckboxProps(engine, index, 'url')"
                     @click="urlChange(engine.isCheckUrl, index)"
                   >
                     Url
@@ -500,6 +494,44 @@ export default {
     }
   },
   methods: {
+    getDynamicCheckboxProps(engine = {}, index = 0, type = '') {
+      const props = {}
+      switch (type) {
+        case 'hash':
+          if (engine.analysisEngineType['isSendFileHash']) {
+            props['style'] = { cursor: 'pointer' }
+            props['class'] = engine.isCheckHash
+              ? 'analyze__main__select-row-inline__button-selected'
+              : ''
+          } else {
+            props['style'] = { cursor: 'default', pointerEvents: 'none' }
+          }
+          break
+        case 'file':
+          if (engine.analysisEngineType['isSendFile']) {
+            props['style'] = { cursor: 'pointer' }
+            props['class'] = engine.isCheckFile
+              ? 'analyze__main__select-row-inline__button-selected'
+              : ''
+          } else {
+            props['style'] = { cursor: 'default', pointerEvents: 'none' }
+          }
+          break
+        case 'url':
+          if (engine.analysisEngineType['isSendUrl']) {
+            props['style'] = { cursor: 'pointer' }
+            props['class'] = engine.isCheckUrl
+              ? 'analyze__main__select-row-inline__button-selected'
+              : ''
+          } else {
+            props['style'] = { cursor: 'default', pointerEvents: 'none' }
+          }
+          break
+        default:
+          break
+      }
+      return props
+    },
     confirmEngineModalFucn() {
       this.openEnginesModal = false
       this.$refs.refForm.validate()
@@ -597,7 +629,6 @@ export default {
       }
     },
     fileChange(val, index) {
-      /*
       if (this.searchEnginesData) {
         let item = this.analysisEngines.find(
           (item) => item.resourceId == this.searchEnginesData[index].resourceId
@@ -608,7 +639,6 @@ export default {
         this.analysisEngines[index].isCheckFile = !val
         this.checkAllDataChecked(index)
       }
-      */
     },
     urlChange(val, index) {
       if (this.searchEnginesData) {
@@ -682,6 +712,7 @@ export default {
       }
 
       getAnalysisEngine(payload).then((response) => {
+        console.log('response.data.data.results', response.data.data.results)
         const data = response.data.data.results.map((item) => {
           return {
             resourceId: item.resourceId,
@@ -690,7 +721,8 @@ export default {
             isCheckUrl: false,
             isCheckHash: false,
             isCheckFile: false,
-            selected: false
+            selected: false,
+            analysisEngineType: item.analysisEngineType
           }
         })
         this.acceptAllAnalysisEngines = false
