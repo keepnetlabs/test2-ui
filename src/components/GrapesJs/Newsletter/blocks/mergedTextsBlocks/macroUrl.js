@@ -1,7 +1,9 @@
 const mergedTextsMacroUrl = [
   {
     tagName: 'a',
-    content: '{MACRO_URL}'
+    type: 'link',
+    content: '{MACRO_URL}',
+    attributes: { href: '{MACRO_URL}' }
   }
 ]
 export default mergedTextsMacroUrl

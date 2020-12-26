@@ -1291,7 +1291,7 @@ export default {
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
-            this.emailarray = []
+            this.shareEmail = []
             this.openShareModal = false
           })
         }

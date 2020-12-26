@@ -37,9 +37,9 @@ export const COMMON_CONSTANTS = {
     'Create',
     'Update',
     'Delete',
-    { text: 'Create Many', value: 'CreateMany' },
-    { text: 'Update Many', value: 'UpdateMany' },
-    { text: 'Delete Many', value: 'DeleteMany' }
+    { text: 'CreateMany', value: 'CreateMany' },
+    { text: 'UpdateMany', value: 'UpdateMany' },
+    { text: 'DeleteMany', value: 'DeleteMany' }
   ]
 }
 

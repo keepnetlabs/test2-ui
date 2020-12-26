@@ -1,7 +1,9 @@
 const mergedTextsLink = [
   {
     tagName: 'a',
-    content: '{LINK}'
+    type: 'link',
+    content: '{LINK}',
+    attributes: { href: '{LINK}' }
   }
 ]
 export default mergedTextsLink

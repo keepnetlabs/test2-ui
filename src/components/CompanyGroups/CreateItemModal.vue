@@ -247,7 +247,7 @@ export default {
               ]
             })
             .catch(() => {})
-        }, 500)
+        }, 1000)
       }
     },
     isShow(status) {

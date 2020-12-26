@@ -224,7 +224,7 @@ export default {
         } else {
           this.debounce(() => {
             this.getIncidentList()
-          }, 500)
+          }, 1000)
         }
       }
     },
