@@ -509,7 +509,6 @@ export default {
           index++
         }
       }
-
       const payload = {
         name: this.name,
         description: this.description,
@@ -593,7 +592,6 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
-
       if (ref.$refs.refForm.validate()) {
         this.saveDisable = true
         updatePlaybook(payload)

@@ -48,7 +48,10 @@
       title="Share incident"
       size="big"
       v-if="openShareModal"
-      @changeStatus="openShareModal = false"
+      @changeStatus="
+        openShareModal = false
+        shareEmail = []
+      "
     >
       <template v-slot:app-dialog-body>
         <v-form ref="shareModal">
@@ -1288,6 +1291,7 @@ export default {
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
+            this.emailarray = []
             this.openShareModal = false
           })
         }
