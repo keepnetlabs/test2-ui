@@ -1247,6 +1247,13 @@ export default {
           this.getDrawer = true
         }
       }
+    },
+    openPasswordChange(newVal, oldVal) {
+      if (!newVal) {
+        this.show1 = false
+        this.show2 = false
+        this.showNewPassword = false
+      }
     }
   },
   mounted() {
