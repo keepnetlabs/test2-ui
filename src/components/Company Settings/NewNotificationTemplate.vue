@@ -19,6 +19,7 @@
             placeholder="Enter template name"
             outlined
             dense
+            :disabled="editItemsDisabled"
           />
         </form-group>
         <form-group title="Category" has-hint>
@@ -28,7 +29,7 @@
             :items="categoryItems"
             class="new-integration__select"
             dense
-            :disabled="!!selectedItem"
+            :disabled="!!selectedItem || editItemsDisabled"
             outlined
             placeholder="Select Option"
           />
@@ -42,6 +43,7 @@
             dense
             outlined
             placeholder="Select Option"
+            :disabled="editItemsDisabled"
           />
         </form-group>
         <make-available-for
@@ -54,6 +56,7 @@
           <email-template
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
+            :edit-items-disabled="editItemsDisabled"
             :from-address.sync="formValues.fromAddress"
             :from-name.sync="formValues.fromName"
             :subject.sync="formValues.subject"
@@ -138,6 +141,10 @@ export default {
     },
     selectedItem: {
       type: Object
+    },
+    editItemsDisabled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -146,7 +153,7 @@ export default {
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
-      saveDisable: false,
+      saveDisable: this.editItemsDisabled,
       Validations: Validations,
       commonRules: {
         hint: '*Required',
@@ -208,6 +215,9 @@ export default {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     },
     isRenderMakeAvailableFor() {
+      if (this.editItemsDisabled) {
+        return false
+      }
       if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
         return !!this.selectedItem
       }
