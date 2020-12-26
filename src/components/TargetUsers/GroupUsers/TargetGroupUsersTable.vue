@@ -272,7 +272,7 @@ export default {
           width: 80 + field.name.length * 7
         }
       })
-      debugger
+
       if (!columnsOfCustomFields.length) {
         this.tableOptions.columns = [...this.defaultColumns, ...this.lastColumns]
       } else {

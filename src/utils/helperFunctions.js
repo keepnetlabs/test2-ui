@@ -1,20 +1,27 @@
 export function getAvailableForListFromBackend(list = []) {
   return list.map((item) => {
-    let { resourceId: id, typeName } = item
-    let label
-    let resourceId = id
+    let { resourceId: id, typeName, targetName, targetResourceId } = item
+    let label, resourceId, isDisabled
     if (typeName === 'MyCompanyOnly') {
       label = 'My company only'
       resourceId = null
+      isDisabled = true
     } else if (typeName === 'AllCompanies') {
       label = 'All companies'
       resourceId = null
+      isDisabled = true
+    } else {
+      label = targetName
+      isDisabled = false
+      resourceId = targetResourceId
+      id = targetResourceId
     }
     return {
       id,
       type: typeName,
       resourceId,
-      label
+      label,
+      isDisabled
     }
   })
 }
