@@ -509,8 +509,6 @@ export default {
           index++
         }
       }
-
-      debugger
       const payload = {
         name: this.name,
         description: this.description,
@@ -594,8 +592,6 @@ export default {
         playbookActionInvestigations,
         condition: this.condition
       }
-
-      debugger
       if (ref.$refs.refForm.validate()) {
         this.saveDisable = true
         updatePlaybook(payload)

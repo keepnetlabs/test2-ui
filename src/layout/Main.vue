@@ -176,16 +176,14 @@
             <div slot="offline"></div>
           </offline>
           <div class="v-responsive">
-            <router-link to="/">
-              <img
-                v-if="!mini && drawer"
-                class="page-nav__logo-wrapper__logo"
-                src="../assets/img/logo-full-color.png"
-              />
-              <div v-else>
-                <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
-              </div>
-            </router-link>
+            <img
+              v-if="!mini && drawer"
+              class="page-nav__logo-wrapper__logo"
+              src="../assets/img/logo-full-color.png"
+            />
+            <div v-else>
+              <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
+            </div>
           </div>
         </div>
       </div>
@@ -711,7 +709,21 @@
       </v-container>
       <app-footer />
     </v-content>
-    <v-tour name="tourDashboard" :steps="tourSteps" :options="{ highlight: true, debug: false }" />
+    <v-tour
+      class="main-v-tour"
+      name="tourDashboard"
+      :steps="tourSteps"
+      :options="{
+        highlight: true,
+        debug: false,
+        labels: {
+          buttonSkip: 'END TOUR',
+          buttonPrevious: 'BACK',
+          buttonNext: 'NEXT',
+          buttonStop: 'END TOUR'
+        }
+      }"
+    />
   </v-app>
 </template>
 <script>
@@ -720,7 +732,6 @@ import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
 import SessionExpired from '../components/SessionExpired'
 import SwitchAccount from '../components/SwitchAccount'
-import TourWidget from '../components/TourWidget'
 import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
@@ -731,11 +742,9 @@ import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import AppDialog from '../components/AppDialog'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 import { updatePassword } from '../api/auth'
-import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 import Breadcrumb from '@/components/Breadcrumb'
 import { checkPermission, checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
-import tour from '@/store/modules/tour'
 import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 
@@ -1004,35 +1013,60 @@ export default {
       ],
       tourSteps: [
         {
-          target: '#onur', // We're using document.querySelector() under the hood
-          header: {
-            title: 'Get Started'
-          },
-          content: `Discover Widgets`
+          target: '#available-widgets', // We're using document.querySelector() under the hood
+          content: `Available Widgets`
         },
         {
-          target: '#IncidentClusters',
-          content: 'Incident clusters widget'
+          target: '#PhishingReporterIrHeader',
+          content:
+            'Number of online Phishing Reporter users by total number of phishing reporter users'
         },
         {
-          target: '#PhishingReporterIrHeader111',
-          content: 'Yet another widget'
-        },
-        {
-          target: '#TopRules',
-          content: 'Yet another widget'
+          target: '#IncidentAnalysisIrHeader',
+          content: 'Number of detected harmful emails by total number of reported email'
         },
         {
           target: '#InvestigationsIrHeader',
-          content: 'Yet another widget'
+          content: 'Number of auto and manually executed investigations'
+        },
+        {
+          target: '#ROISummaryIrHeader',
+          content: 'Return of investment states how much time and money you saved '
+        },
+        {
+          target: '#RecentlyPostedThreats',
+          content: 'Most recent incidents shared in your communities'
+        },
+        {
+          target: '#TopPosts',
+          content: 'Most engaged incidents shared in your communities'
+        },
+
+        {
+          target: '#TopRules',
+          content: 'Most activated playbook rules'
+        },
+
+        {
+          target: '#IncidentClusters',
+          content: "Reported emails clustered by reporters' avarage reliability score over time"
+        },
+        {
+          target: '#ReportedEmailTrends',
+          content: 'Numbers of reported emails by category over time'
+        },
+        {
+          target: '#RecentlyReportedIncidents',
+          content: 'Numbers of reported emails by category over time'
         },
         {
           target: '#Reporters',
-          content: 'Yet another widget'
+          content:
+            "Top reporters sorted by reliability score. Reliability score measures a user's credibility calculatted by accuracy of their reported emails that are detected harmful"
         },
         {
           target: '#RecentInvestigations',
-          content: 'Yet another widget'
+          content: 'Most recent investigations'
         }
       ]
     }
@@ -2640,5 +2674,83 @@ export default {
 .layout-container .active-link .menu-item-wrapper .menu-item-span {
   color: #1565c0 !important;
   font-weight: 600;
+}
+.main-v-tour {
+  .v-step {
+    min-width: 300px;
+    max-width: 300px;
+    padding: 0 !important;
+    background: #fff !important;
+    box-shadow: 0 11px 15px -7px rgba(80, 80, 80, 0.2), 0 24px 38px 0 rgba(80, 80, 80, 0.14),
+      0 9px 46px 8px rgba(80, 80, 80, 0.12) !important;
+    border: solid 1px #2196f3;
+    border-radius: 12px !important;
+    &__content {
+      padding: 24px !important;
+      margin-bottom: 0 !important;
+      border-bottom: 1px solid #e0e0e0;
+      font-size: 13px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: normal !important;
+      letter-spacing: normal !important;
+      color: #383b41 !important;
+      text-align: left;
+    }
+    &__arrow {
+      border-color: #ffffff !important;
+      border-left-color: transparent !important;
+      border-right-color: transparent !important;
+      border-top-color: transparent !important;
+    }
+    &__buttons {
+      padding: 14px 32px !important;
+      display: flex;
+      justify-content: space-between;
+    }
+    &__button-skip {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: 1.71 !important;
+      letter-spacing: normal !important;
+      text-align: center !important;
+      color: #f56c6c !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 24px !important;
+    }
+    &__button-next {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: 1.71 !important;
+      letter-spacing: normal !important;
+      color: #2196f3 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 24px !important;
+    }
+    &__button-previous {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: 1.71 !important;
+      letter-spacing: normal !important;
+      color: #2196f3 !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 24px !important;
+      margin-left: 35px !important;
+    }
+  }
+  .v-step[x-placement^='bottom'] .v-step__arrow {
+    border-width: 0px 0.9rem 0.9rem 0.9rem !important;
+    top: -0.9rem !important;
+  }
 }
 </style>
