@@ -1408,7 +1408,11 @@ export default {
     columnStandardisation(columns) {
       columnStandards.forEach((x) => {
         let index = columns.findIndex((col) => col.property === x.property)
-        columns[index] = { ...columns[index], ...x }
+        if (index > -1) {
+          if (!columns[index].overrideWidth) {
+            columns[index] = { ...columns[index], ...x }
+          }
+        }
       })
     },
     /**
