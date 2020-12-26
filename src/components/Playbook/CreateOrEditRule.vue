@@ -510,7 +510,6 @@ export default {
         }
       }
 
-      debugger
       const payload = {
         name: this.name,
         description: this.description,
@@ -595,7 +594,6 @@ export default {
         condition: this.condition
       }
 
-      debugger
       if (ref.$refs.refForm.validate()) {
         this.saveDisable = true
         updatePlaybook(payload)
