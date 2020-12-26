@@ -122,10 +122,6 @@ export default {
       this.$nextTick(() => {
         this.regionCode = this.$refs.refTelInput.phoneObject.regionCode
         this.isPhoneNumberValid = this.$refs.refTelInput.phoneObject.isValid
-        console.log(
-          'this.$refs.refTelInput.phoneObject.isValid',
-          this.$refs.refTelInput.phoneObject.isValid
-        )
       })
     }
   }

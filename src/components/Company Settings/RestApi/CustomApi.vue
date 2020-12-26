@@ -120,8 +120,6 @@ export default {
             show: true,
             fixed: false,
             type: 'badge',
-            filterableType: 'select',
-            filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }],
             width: 150
           },
           {

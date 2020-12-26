@@ -33,6 +33,11 @@ export const COMMON_CONSTANTS = {
       return false
     }
   ],
+  DEFAULT_URL_RULES: [
+    (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+    (v) => Validations.url(v, labels.InvalidURL),
+    (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+  ],
   OPERATION_ITEMS: [
     'Create',
     'Update',

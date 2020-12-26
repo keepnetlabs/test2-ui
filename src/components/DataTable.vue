@@ -685,6 +685,7 @@
                       <v-btn
                         :disabled="
                           scope.row.status === 'Cancelled' ||
+                          scope.row.status === 'Canceled' ||
                           scope.row.status === 'Expired' ||
                           scope.row.status === 'Finished' ||
                           scope.row.status === 'NoMatch' ||
