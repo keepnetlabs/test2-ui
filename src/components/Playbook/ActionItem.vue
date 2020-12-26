@@ -429,15 +429,15 @@ export default {
           { text: 'Attachment Hash', value: 'AttachmentHash' }
         ],
         investigateRanges: [
-          { text: '1 day before and after', value: 1 },
-          { text: '3 days before and after', value: 3 },
-          { text: '7 days before and after', value: 7 },
-          { text: '2 weeks before and after', value: 14 }
+          { text: '1 day before and after', value: 'OneDay' },
+          { text: '3 days before and after', value: 'ThreeDays' },
+          { text: '7 days before and after', value: 'SevenDays' },
+          { text: '2 weeks before and after', value: 'TwoWeeks' }
         ],
         investigateDurations: [
-          { text: '1 day', value: 1 },
-          { text: '3 days', value: 3 },
-          { text: '7 days', value: 7 }
+          { text: '1 day', value: 'OneDay' },
+          { text: '3 days', value: 'ThreeDays' },
+          { text: '7 days', value: 'SevenDays' }
         ],
         investigateActions: [
           { text: 'Notify', value: 'Warning' },
@@ -452,6 +452,8 @@ export default {
         type: 'Warning',
         warningMessage: ''
       },
+      durationType: 'ThreeDays',
+      emailDateRangeType: 'ThreeDays',
       playbookAction: {
         markType: 'Clean',
         tags: []
@@ -462,21 +464,6 @@ export default {
           { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
         ],
         filters: [],
-        expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
-          .toISOString()
-          .split('T')
-          .join(' ')
-          .split('.')[0],
-        startDate: new Date(new Date().setDate(new Date().getDate() - 1))
-          .toISOString()
-          .split('T')
-          .join(' ')
-          .split('.')[0],
-        endDate: new Date(new Date().setDate(new Date().getDate() + 1))
-          .toISOString()
-          .split('T')
-          .join(' ')
-          .split('.')[0],
         targetUserType: 'AllUsers',
         targetUsers: [],
         actionType: 'Notify',
@@ -487,7 +474,9 @@ export default {
           isPermanentDelete: false,
           type: 'Warning',
           warningMessage: ''
-        }
+        },
+        durationType: 'ThreeDays',
+        emailDateRangeType: 'ThreeDays'
       },
 
       playbookActionAnalyzers: []
@@ -763,21 +752,6 @@ export default {
             { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
           ],
           filters: [],
-          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
           targetUserType: 'AllUsers',
           targetUsers: [],
           actionType: 'Notify',
@@ -788,7 +762,9 @@ export default {
             isPermanentDelete: false,
             type: 'Warning',
             warningMessage: ''
-          }
+          },
+          durationType: 'ThreeDays',
+          emailDateRangeType: 'ThreeDays'
         }
       }
       this.$forceUpdate()
@@ -819,21 +795,6 @@ export default {
             { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
           ],
           filters: [],
-          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
           targetUserType: 'AllUsers',
           targetUsers: [],
           actionType: 'Notify',
@@ -844,7 +805,9 @@ export default {
             isPermanentDelete: false,
             type: 'Warning',
             warningMessage: ''
-          }
+          },
+          durationType: 'ThreeDays',
+          emailDateRangeType: 'ThreeDays'
         }
       }
 
@@ -903,33 +866,19 @@ export default {
             { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
           ],
           filters: [],
-          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
           targetUserType: 'AllUsers',
           targetUsers: [],
           actionType: 'Notify',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTempleditedPlaybookActionAnalyzersteId: 1,
-
           autoAction: {
             isPermanentDelete: false,
             type: 'Warning',
             warningMessage: ''
-          }
+          },
+          durationType: 'ThreeDays',
+          emailDateRangeType: 'ThreeDays'
         }
         this.analyzeCheckbox = false
         this.analysisEngines = this.analysisEngines.map((item) => ({ ...item, selected: false }))
