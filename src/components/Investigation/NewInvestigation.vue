@@ -342,7 +342,7 @@ export default {
             groupName: val
           }
           this.callForGetTargetGroupItems(payload)
-        }, 500)
+        }, 1000)
       } else {
         this.userGroupsItems = this.defaultUserGroupItems
       }
@@ -358,7 +358,7 @@ export default {
             email: val
           }
           this.callForGetTargetUsersItems(payload)
-        }, 500)
+        }, 1000)
       } else {
         this.specificUserItems = this.defaultSpecificUserItems
       }

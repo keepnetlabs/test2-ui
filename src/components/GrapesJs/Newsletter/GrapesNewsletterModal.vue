@@ -102,6 +102,40 @@ export default {
         },
         noticeOnUnload: false
       })
+      /*let dType = this.editor.DomComponents.getType('link')
+      let dModel = dType.model
+      let dView = dType.view
+      this.editor.DomComponents.addType('link', {
+        model: dModel.extend(
+          {
+            defaults: Object.assign({}, dModel.prototype.defaults, {
+              traits: [
+                // strings are automatically converted to text types
+                {
+                  type: 'select',
+                  label: 'Href',
+                  name: 'href',
+                  options: [
+                    { value: 'index.html', name: 'Home' },
+                    { value: 'index2.html', name: 'Home2' },
+                    { value: 'index3.html', name: 'Home3' },
+                    { value: 'index4.html', name: 'Home4' }
+                  ]
+                }
+              ]
+            })
+          },
+          {
+            isComponent: function (el) {
+              if (el.tagName == 'A') {
+                return { type: 'link' }
+              }
+            }
+          }
+        ),
+
+        view: dView
+      })*/
       let blockManager = this.editor.BlockManager
 
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {

@@ -712,7 +712,11 @@ export default {
   methods: {
     showConfirmModal(actionName) {
       this.selectedActionName = actionName
-      if (this.companyLicense['isLicenseExceeded']) {
+      let newMemberCount = this.getLabelCount(actionName)
+      let currentMemberCount = this.companyLicense['totalUserCount']
+      let totalMemberCount = newMemberCount + currentMemberCount
+      let licenseLimit = this.companyLicense['licenseLimit']
+      if (this.companyLicense['isLicenseExceeded'] || licenseLimit < totalMemberCount) {
         this.showLicenseExceededDialog = true
       } else {
         this.save(actionName)

@@ -13,6 +13,7 @@
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
           v-if="showNewsletterPageGrapes"
+          :blockManagerComponents="{}"
         ></GrapesNewsletterModal>
       </template>
       <template v-slot:overlay-footer>
