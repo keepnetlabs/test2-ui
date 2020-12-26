@@ -189,7 +189,7 @@ export default {
         },
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.disabled
+          disabled: !this.PERMISSIONS.EXPORT.hasPermission
         },
         rowActions: [
           {
