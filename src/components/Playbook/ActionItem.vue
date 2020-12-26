@@ -712,7 +712,6 @@ export default {
       }
 
       getAnalysisEngine(payload).then((response) => {
-        console.log('response.data.data.results', response.data.data.results)
         const data = response.data.data.results.map((item) => {
           return {
             resourceId: item.resourceId,
