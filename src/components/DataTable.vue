@@ -1877,7 +1877,7 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-        }, 500)
+        }, 1000)
       } else {
         this.debounce(() => {
           const searchValue = this.search

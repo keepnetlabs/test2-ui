@@ -720,7 +720,7 @@
           buttonSkip: 'END TOUR',
           buttonPrevious: 'BACK',
           buttonNext: 'NEXT',
-          buttonStop: 'END TOUR'
+          buttonStop: 'FINISH'
         }
       }"
     />
@@ -2702,7 +2702,6 @@ export default {
       border-color: #ffffff !important;
       border-left-color: transparent !important;
       border-right-color: transparent !important;
-      border-top-color: transparent !important;
     }
     &__buttons {
       padding: 14px 32px !important;
@@ -2747,10 +2746,33 @@ export default {
       height: 24px !important;
       margin-left: 35px !important;
     }
+    &__button-stop {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: 1.71 !important;
+      letter-spacing: normal !important;
+      text-align: center !important;
+      color: #f56c6c !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      height: 24px !important;
+    }
   }
   .v-step[x-placement^='bottom'] .v-step__arrow {
     border-width: 0px 0.9rem 0.9rem 0.9rem !important;
     top: -0.9rem !important;
+  }
+  .v-step[x-placement^='top'] .v-step__arrow {
+    border-width: 0.9rem 0.9rem 0 0.9rem !important;
+    bottom: -0.9rem !important;
+  }
+  .v-step[x-placement^='bottom'] {
+    margin-top: 1.2rem !important;
+  }
+  .v-step[x-placement^='top'] {
+    margin-bottom: 1.2rem !important;
   }
 }
 </style>
