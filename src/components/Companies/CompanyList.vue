@@ -183,6 +183,7 @@ export default {
           type: 'text',
           filterableType: 'select',
           filterableItems: [],
+          filterableCustomFieldName: 'IndustryResourceId',
           width: 150
         },
         {
@@ -195,6 +196,7 @@ export default {
           type: 'text',
           filterableType: 'select',
           filterableItems: [],
+          filterableCustomFieldName: 'LicenseTypeResourceId',
           width: 150
         },
         {
