@@ -62,6 +62,13 @@ export default {
         : ''
     }
   },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (from.name === 'Target Group Users') {
+        vm.tab = 'second'
+      }
+    })
+  },
   created() {
     const {
       $route: { params }

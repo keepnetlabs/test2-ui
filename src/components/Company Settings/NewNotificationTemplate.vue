@@ -228,9 +228,7 @@ export default {
         } = response
         for (let [key, value] of Object.entries(data)) {
           if (key === 'availableForList') {
-            this.formValues[
-              'availableForRequests'
-            ] = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(value)
+            this.formValues['availableForRequests'] = getAvailableForListFromBackend(value)
             this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
             continue
           }
@@ -272,7 +270,6 @@ export default {
     callForMergedTags(resourceId = '') {
       getMergedTags(resourceId).then((response) => {
         this.blockManagerComponents[resourceId] = response.data.data['mergeTags']
-        console.log("response.data.data['mergeTags']", response.data.data['mergeTags'])
         this.setActiveBlockManagerComponents(this.blockManagerComponents[resourceId])
       })
     },

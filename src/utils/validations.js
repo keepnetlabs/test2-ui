@@ -35,11 +35,11 @@ export function ip(value, message = 'Invalid IP address') {
 export function url(value, message = 'Invalid URL') {
   value = getValue(value)
   //https?:\/\/(www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)
-  return (
-    /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
-      value
-    ) || message
-  )
+  return value
+    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+        value
+      ) || message
+    : true
 }
 
 export function domain(value, message) {

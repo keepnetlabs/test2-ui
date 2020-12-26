@@ -313,10 +313,6 @@ export default {
       } else {
         if (item.isRequired) {
           rules.push(() => {
-            console.log(
-              'this.customFieldsModels[item.resourceId]',
-              this.customFieldsModels[item.resourceId]
-            )
             return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
           })
         }
