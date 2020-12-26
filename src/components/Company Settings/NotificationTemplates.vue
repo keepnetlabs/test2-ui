@@ -6,6 +6,7 @@
     />
     <new-notification-template
       v-if="newNotificationTemplateStatus"
+      :edit-items-disabled="editItemsDisabled"
       :selectedItem="selectedItem"
       :status="newNotificationTemplateStatus"
       @closeOverlay="toggleNewNotificationTemplate"
@@ -113,6 +114,7 @@ export default {
       categories: [],
       loading: false,
       tableData: [],
+      editItemsDisabled: false,
       tableOptions: {
         columns: [
           {
@@ -303,7 +305,7 @@ export default {
       })
     },
     getDisabledStatusOfEdit(row) {
-      return !row.isOwner
+      return false
     },
     getDisabledStatusOfDelete(row) {
       return !row.isOwner
@@ -330,6 +332,7 @@ export default {
     toggleNewNotificationTemplate() {
       if (this.newNotificationTemplateStatus) {
         this.selectedItem = null
+        this.editItemsDisabled = false
       }
       this.newNotificationTemplateStatus = !this.newNotificationTemplateStatus
     },
@@ -364,6 +367,9 @@ export default {
         .finally(() => (this.loading = false))
     },
     handleEdit(row) {
+      if (!row.isOwner) {
+        this.editItemsDisabled = true
+      }
       this.selectedItem = row
       this.toggleNewNotificationTemplate()
     }

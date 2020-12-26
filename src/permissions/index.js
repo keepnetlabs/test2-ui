@@ -70,7 +70,7 @@ export default {
     EXPORT: {
       url: 'companies/smtp-settings/search/export',
       hasPermission: false,
-      method: 'EXPORT'
+      method: 'POST'
     }
   }
 }

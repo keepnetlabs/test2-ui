@@ -28,7 +28,7 @@
           <InputEmail v-model.trim="formValues.email" />
         </form-group>
         <form-group title="Phone Number">
-          <InputPhone v-model.trim="formValues.phoneNumber" />
+          <InputPhone v-model.trim="formValues.phoneNumber" ref="refPhone" />
         </form-group>
         <form-group title="Status">
           <k-select
@@ -132,7 +132,6 @@ export default {
         statusId: 1
       },
       maxLen: 17,
-      isPhoneNumberValid: true,
       showWelcomeEmailModal: false,
       statusItems: [
         { name: 'Active', val: 1 },
@@ -175,7 +174,8 @@ export default {
     },
 
     submit() {
-      if (this.$refs.refForm.validate() && this.isPhoneNumberValid) {
+      this.$refs.refPhone.validatePhoneNumber()
+      if (this.$refs.refForm.validate() && this.$refs.refPhone.isPhoneNumberValid) {
         this.saveDisable = true
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
