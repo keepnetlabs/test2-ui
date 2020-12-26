@@ -190,6 +190,7 @@
                   Select users to import or import all listed users. Invalid entries will not be
                   imported.
                 </div>
+                <DatatableLoading :loading="step3InitialLoading" />
                 <div class="mb-10">
                   <data-table
                     v-if="mappingStatus && showDatatable"
@@ -471,6 +472,7 @@ export default {
   },
   data() {
     return {
+      step3InitialLoading: false,
       selectedActionName: null,
       showLicenseExceededDialog: false,
       requiredFields: [],
@@ -766,7 +768,7 @@ export default {
           _this.mappingStatus = response.data.data
           if (_this.mappingStatus.status === 'FinishedWithError' && _this.isExcelUploaded) {
             this.$store.dispatch('common/createSnackBar', {
-              message: 'Something went wrong',
+              message: 'Something went wrong. Finished With Error',
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })
@@ -1031,7 +1033,7 @@ export default {
     },
     submit() {},
     createMapFields() {
-      this.step3Loading = true
+      this.step3InitialLoading = true
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
         let val = {
           excelColumnName: item.name,
@@ -1055,7 +1057,7 @@ export default {
           this.getMappingStatus()
         })
         .finally(() => {
-          this.step3Loading = false
+          this.step3InitialLoading = false
         })
     },
     nextStep() {
