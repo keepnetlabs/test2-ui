@@ -25,6 +25,8 @@ export function getBtnStatusColor(type) {
       return '#f56c6c'
     case 'cancelled':
       return '#f56c6c'
+    case 'canceled':
+      return '#f56c6c'
     case 'phishing':
       return '#f56c6c'
     case 'idle':

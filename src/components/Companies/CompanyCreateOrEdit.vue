@@ -132,20 +132,10 @@
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.WebsiteUrl }}</label>
                     <InputUrl
+                      :required="false"
                       :persistent-hint="false"
-                      hint=""
+                      :hint="null"
                       v-model="formData.WebsiteUrl"
-                      :rules="[
-                        (v) => {
-                          return v === '' || v === null || validations.url(v)
-                        },
-                        (v) =>
-                          validations.maxLength(
-                            v,
-                            2000,
-                            labels.getMaxLengthMessage(labels.WebsiteUrl, 2000)
-                          )
-                      ]"
                     />
                   </v-list-item-content>
                 </v-list-item>
