@@ -110,7 +110,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           title: 'Recent Investigations',
-          key: 'RecentInvestigations'
+          key: 'RecentInvestigations',
+          role: ''
         },
         PhishingReporterIrHeader: {
           x: 0,
@@ -677,6 +678,8 @@ export default {
             this.layout = response.settings.reduce((acc, item) => {
               const widget = { ...this.allWidgets[item.key], ...item }
               this.removeAvailableWidget(item)
+              debugger
+              //availableWidgets.splice()
               acc.push(widget)
               return acc
             }, [])
