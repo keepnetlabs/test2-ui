@@ -27,6 +27,7 @@
         dense
         hint="*Required"
         persistent-hint
+        :disabled="editItemsDisabled"
         :value="subject"
         :rules="[
           (v) => Validations.required(v, labels.Required),
@@ -44,6 +45,7 @@
         dense
         hint="*Required"
         persistent-hint
+        :disabled="editItemsDisabled"
         :value="fromName"
         :rules="[
           (v) => Validations.required(v, labels.Required),
@@ -55,10 +57,20 @@
     </div>
     <div class="email-template__item">
       <label>From Email</label>
-      <InputEmail :value="fromAddress" @input="$emit('update:fromAddress', $event)" />
+      <InputEmail
+        :disabled="editItemsDisabled"
+        :value="fromAddress"
+        @input="$emit('update:fromAddress', $event)"
+      />
     </div>
     <v-divider class="email-template__divider mb-6" />
-    <v-btn rounded color="#2196f3" class="email-template-preview__button" @click="editHtmlTemplate">
+    <v-btn
+      :disabled="editItemsDisabled"
+      rounded
+      color="#2196f3"
+      class="email-template-preview__button"
+      @click="editHtmlTemplate"
+    >
       <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
     >
     <div class="email-template-preview">
@@ -193,7 +205,8 @@ export default {
     'subject',
     'template',
     'activeBlockManagerComponents',
-    'isEdit'
+    'isEdit',
+    'editItemsDisabled'
   ],
   data() {
     return {
