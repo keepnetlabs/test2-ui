@@ -33,6 +33,13 @@ export default {
       default: () => [...COMMON_CONSTANTS.DEFAULT_URL_RULES]
     }
   },
+  watch: {
+    value(newVal, oldVal) {
+      if (newVal.includes(' ')) {
+        this.$emit('input', oldVal)
+      }
+    }
+  },
   created() {
     if (this.required) {
       this.rules.splice(0, 0, (v) => Validations.required(v, labels.Required))
