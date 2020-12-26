@@ -41,6 +41,7 @@
         :select-event="tableOptions.selectEvent"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
+        @downloadEvent="exportNotificationTemplate"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
         @refreshAction="callForDatas"
@@ -91,8 +92,14 @@ import {
 } from '@/model/constants/commonConstants'
 import DeleteNotificationTemplateModal from '@/components/Company Settings/DeleteNotificationTemplateModal'
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate'
-import { deleteEmailTemplate, getCategories, searchEmailTemplate } from '@/api/company'
+import {
+  deleteEmailTemplate,
+  getCategories,
+  searchEmailTemplate,
+  exportEmailTemplate
+} from '@/api/company'
 import labels from '@/model/constants/labels'
+
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -274,6 +281,26 @@ export default {
 
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    exportNotificationTemplate({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: PROPERTY_STORE.CREATETIME,
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.axiosPayload.filter
+        }
+        exportEmailTemplate(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `notification-emails.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
     },
     getDisabledStatusOfEdit(row) {
       return !row.isOwner

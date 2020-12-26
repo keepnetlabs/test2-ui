@@ -19,6 +19,11 @@ export default {
       isDeterminate: this.value === 'indeterminate' || this.defaultValue === 'indeterminate'
     }
   },
+  created() {
+    if (this.defaultValue) {
+      this.$emit('input', this.defaultValue)
+    }
+  },
   methods: {
     handleInput() {
       const oldVal = !this.checkboxValue

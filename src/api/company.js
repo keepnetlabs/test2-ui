@@ -99,6 +99,12 @@ export function getEmailTemplate(resourceId = '') {
   return testRequest.get(`/companies/email-templates/${resourceId}`)
 }
 
+export function exportEmailTemplate(payload = {}) {
+  return testRequest.post('/companies/email-templates/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export function updateEmailTemplate(resourceId = '', payload = {}) {
   return testRequest.put(`/companies/email-templates/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
