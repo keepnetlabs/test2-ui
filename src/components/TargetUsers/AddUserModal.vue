@@ -282,7 +282,7 @@ export default {
       const props = {}
       const { isRequired, fieldDataType } = item
       if (fieldDataType === 'Boolean' && !this.editData) {
-        props['default-value'] = 'indeterminate'
+        props['defaultValue'] = 'indeterminate'
       }
       if (isRequired) {
         props['persistentHint'] = true
@@ -313,6 +313,10 @@ export default {
       } else {
         if (item.isRequired) {
           rules.push(() => {
+            console.log(
+              'this.customFieldsModels[item.resourceId]',
+              this.customFieldsModels[item.resourceId]
+            )
             return this.customFieldsModels[item.resourceId] !== 'indeterminate' || 'Required'
           })
         }
@@ -358,7 +362,7 @@ export default {
       } else if (value === false) {
         value = 'False'
       } else if (value === 'indeterminate') {
-        value = null
+        value = 'False'
       } else {
         value = !!value
       }
