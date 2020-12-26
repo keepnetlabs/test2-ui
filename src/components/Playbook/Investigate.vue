@@ -152,7 +152,7 @@
       </v-col>
       <v-col md="3">
         <k-select
-          v-model="investigationRange"
+          v-model="investigateData.emailDateRangeType"
           :items="act.investigateRanges"
           outlined
           :menu-props="{ offsetY: true }"
@@ -198,7 +198,7 @@
       </v-col>
       <v-col md="3">
         <k-select
-          v-model="investigationDuration"
+          v-model="investigateData.durationType"
           :items="act.investigateDurations"
           outlined
           :menu-props="{ offsetY: true }"
@@ -307,27 +307,14 @@ export default {
             { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
           ],
           filters: [],
-          expireDate: new Date(new Date().setDate(new Date().getDate() + 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          startDate: new Date(new Date().setDate(new Date().getDate() - 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
-          endDate: new Date(new Date().setDate(new Date().getDate() + 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0],
           targetUserType: 'AllUsers',
           targetUsers: [],
           actionType: 'Notify',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTemplateId: 1
+          emailTemplateId: 1,
+          durationType: 'ThreeDays',
+          emailDateRangeType: 'ThreeDays'
         }
       }
     }
@@ -343,102 +330,8 @@ export default {
         this.$forceUpdate()
       }
     },
-    investigationRange(val) {
-      let date = new Date()
-      switch (val) {
-        case this.act.investigateRanges[0].value:
-          date = new Date()
-          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          date = new Date()
-          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        case this.act.investigateRanges[1].value:
-          date = new Date()
-          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          date = new Date()
-          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        case this.act.investigateRanges[2].value:
-          date = new Date()
-          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 7))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          date = new Date()
-          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 7))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        case this.act.investigateRanges[3].value:
-          date = new Date()
-          this.investigateData.startDate = new Date(date.setDate(date.getDate() - 14))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          date = new Date()
-          this.investigateData.endDate = new Date(date.setDate(date.getDate() + 14))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        default:
-          break
-      }
-    },
     investigationDuration(val) {},
-    investigateData(val) {
-      /*
-      let date = new Date()
-      switch (val) {
-        case this.act.investigateDurations[0].value:
-          date = new Date()
-          this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 1))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        case this.act.investigateDurations[1].value:
-          this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 3))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        case this.act.investigateDurations[2].value:
-          this.investigateData.expireDate = new Date(date.setDate(date.getDate() + 7))
-            .toISOString()
-            .split('T')
-            .join(' ')
-            .split('.')[0]
-          break
-        default:
-          break
-      }
-
-       */
-    },
+    investigateData(val) {},
     'investigateData.targetUsers'(newVal) {
       if (newVal[0] === '') {
         newVal.splice(0, 1)
@@ -489,9 +382,6 @@ export default {
       labels,
       filters: ['URLs', 'Attachments'],
       investigationRange: 3,
-      expireDate: '',
-      startDate: '',
-      endDate: '',
       investigationDuration: 3,
       investigateAction: 'Delete email',
       investigateActionNotification: 'Reporter',

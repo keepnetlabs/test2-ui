@@ -799,6 +799,7 @@ export default {
     getDatatableList() {
       let _this = this
       this.bodyData.pageSize = this.mappingStatus.totalRowCount
+      this.step3Loading = true
       searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
           this.responsNumbers = response.data.data
@@ -914,7 +915,6 @@ export default {
       filterPayload = [...items]
       this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
       this.getDatatableList()
-
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
