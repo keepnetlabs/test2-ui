@@ -990,7 +990,7 @@ export default {
             email: value
           }
           this.callForGetTargetUsersItems(payload)
-        }, 500)
+        }, 1000)
       } else {
         this.specificUserItems = this.defaultSpecificUserItems
       }
@@ -1009,7 +1009,7 @@ export default {
             groupName: value
           }
           this.callForGetTargetGroupItems(payload)
-        }, 500)
+        }, 1000)
       } else {
         this.userGroupsItems = this.defaultUserGroupItems
       }

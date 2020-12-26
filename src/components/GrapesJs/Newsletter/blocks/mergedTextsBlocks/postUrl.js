@@ -1,7 +1,9 @@
 const mergedTextsPostUrl = [
   {
     tagName: 'a',
-    content: '{POSTURL}'
+    type: 'link',
+    content: `{POSTURL}`,
+    attributes: { href: '{POSTURL}' }
   }
 ]
 export default mergedTextsPostUrl

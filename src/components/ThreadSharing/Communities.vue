@@ -726,7 +726,7 @@ export default {
         } else {
           this.debounce(() => {
             this.updateCommunities()
-          }, 500)
+          }, 1000)
         }
       }
     }

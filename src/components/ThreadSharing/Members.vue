@@ -651,7 +651,7 @@ export default {
             } else {
               this.getRequestMembers()
             }
-          }, 500)
+          }, 1000)
         } else {
           if (this.tab === 0) {
             this.getMembers()

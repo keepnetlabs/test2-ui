@@ -1,7 +1,9 @@
 const mergedTextsTrainingUrl = [
   {
     tagName: 'a',
-    content: '{TRAININGURL}'
+    type: 'link',
+    content: `{TRAININGURL}`,
+    attributes: { href: '{TRAININGURL}' }
   }
 ]
 export default mergedTextsTrainingUrl

@@ -932,7 +932,7 @@ export default {
                   : []
             })
             .catch((error) => {})
-        }, 500)
+        }, 1000)
       }
     }
   }

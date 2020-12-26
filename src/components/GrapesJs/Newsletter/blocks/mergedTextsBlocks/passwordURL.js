@@ -1,7 +1,9 @@
 const mergedTextsPasswordURL = [
   {
     tagName: 'a',
-    content: '{PASSWORDURL}'
+    type: 'link',
+    content: '{PASSWORDURL}',
+    attributes: { href: '{PASSWORDURL}' }
   }
 ]
 export default mergedTextsPasswordURL
