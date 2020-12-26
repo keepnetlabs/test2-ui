@@ -153,7 +153,7 @@ const router = new Router({
           component: TargetGroupUsers,
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Target Users'
           },
           props: true,
           params: true
@@ -195,7 +195,7 @@ const router = new Router({
           },
           meta: {
             isAuthenticated: true,
-            parentName: 'Company'
+            parentName: 'Companies'
           },
           props: true,
           params: true

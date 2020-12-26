@@ -645,9 +645,22 @@ export default {
         item.isCheckFile = engine.selected
         this.checkAllDataChecked(index, item)
       } else {
-        this.analysisEngines[index].isCheckUrl = engine.selected
-        this.analysisEngines[index].isCheckHash = engine.selected
-        this.analysisEngines[index].isCheckFile = engine.selected
+        if (engine['analysisEngineType']) {
+          const { analysisEngineType } = engine
+          this.analysisEngines[index].isCheckUrl = engine.selected
+            ? analysisEngineType.isSendUrl
+            : engine.selected
+          this.analysisEngines[index].isCheckHash = engine.selected
+            ? analysisEngineType.isSendFileHash
+            : engine.selected
+          this.analysisEngines[index].isCheckFile = engine.selected
+            ? analysisEngineType.isSendFile
+            : engine.selected
+        } else {
+          this.analysisEngines[index].isCheckUrl = engine.selected
+          this.analysisEngines[index].isCheckHash = engine.selected
+          this.analysisEngines[index].isCheckFile = engine.selected
+        }
       }
     },
     getAnalysisEngine() {

@@ -216,7 +216,9 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 180,
+          maxWidth: 300,
+          minWidth: 160,
+          overrideWidth: true,
           filterableType: 'date',
           dbName: 'createTime'
         }
@@ -270,11 +272,16 @@ export default {
           width: 80 + field.name.length * 7
         }
       })
-      this.tableOptions.columns = [
-        ...this.defaultColumns,
-        ...columnsOfCustomFields,
-        ...this.lastColumns
-      ]
+      debugger
+      if (!columnsOfCustomFields.length) {
+        this.tableOptions.columns = [...this.defaultColumns, ...this.lastColumns]
+      } else {
+        this.tableOptions.columns = [
+          ...this.defaultColumns,
+          ...columnsOfCustomFields,
+          ...this.lastColumns
+        ]
+      }
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       this.loading = true
