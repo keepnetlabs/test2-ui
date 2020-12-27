@@ -96,7 +96,14 @@
             "
             >{{ labels.Cancel }}</v-btn
           >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="shareIncident">Send</v-btn>
+          <v-btn
+            :disabled="shareButtonDisabled"
+            text
+            color="#2196f3"
+            class="k-dialog__button"
+            @click="shareIncident"
+            >Send</v-btn
+          >
         </div>
       </template>
     </app-dialog>
@@ -1109,6 +1116,7 @@ export default {
     }
   },
   data: () => ({
+    shareButtonDisabled: false,
     labels,
     openShareModal: false,
     shareEmail: [],
@@ -1287,13 +1295,16 @@ export default {
           const payload = {
             emailarray: this.shareEmail
           }
-          shareAPost(id, payload).then(() => {
-            setTimeout(() => {
-              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-            }, 500)
-            this.shareEmail = []
-            this.openShareModal = false
-          })
+          this.shareButtonDisabled = true
+          shareAPost(id, payload)
+            .then(() => {
+              setTimeout(() => {
+                this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+              }, 500)
+              this.shareEmail = []
+              this.openShareModal = false
+            })
+            .finally(() => (this.shareButtonDisabled = false))
         }
       }, 200)
     },
