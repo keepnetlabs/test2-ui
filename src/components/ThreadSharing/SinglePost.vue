@@ -96,7 +96,14 @@
             "
             >{{ labels.Cancel }}</v-btn
           >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="shareIncident">Send</v-btn>
+          <v-btn
+            :disabled="shareButtonDisabled"
+            text
+            color="#2196f3"
+            class="k-dialog__button"
+            @click="shareIncident"
+            >Send</v-btn
+          >
         </div>
       </template>
     </app-dialog>
@@ -358,7 +365,8 @@
               <v-icon>mdi-message-reply-text</v-icon>
             </v-btn>
             <span class="ts-action-counter">{{
-              (comments && comments.length) || post.commentCount
+              (comments && comments.length) ||
+              (!getCommentDetails && post.commentCount ? post.commentCount : 0)
             }}</span>
           </div>
           <div :id="'single-post-harmful' + post.communityPostResourceId" class="ts-harmful mt-1">
@@ -561,7 +569,10 @@
                 @click="commentOpened = !commentOpened"
               >
                 <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
-                Comments ({{ (comments && comments.length) || post.commentCount }})
+                Comments ({{
+                  (comments && comments.length) ||
+                  (!getCommentDetails && post.commentCount ? post.commentCount : 0)
+                }})
               </v-btn>
             </div>
             <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
@@ -612,15 +623,17 @@
                           v-if="canDeleteOrEditComment('update')"
                           @click="editRelativeComment(com)"
                           class="pr-4"
+                          :disabled="!com.canEdit"
                         >
-                          <v-icon class="close-icon">mdi-pencil</v-icon>
+                          <v-icon class="close-icon" :disabled="!com.canEdit">mdi-pencil</v-icon>
                         </button>
                         <button
                           v-if="canDeleteOrEditComment('delete')"
                           @click="deleteComment(com)"
+                          :disabled="!com.canDelete"
                           icon
                         >
-                          <v-icon class="close-icon">mdi-delete</v-icon>
+                          <v-icon class="close-icon" :disabled="!com.canDelete">mdi-delete</v-icon>
                         </button>
                       </div>
                     </div>
@@ -638,14 +651,18 @@
                           :rules="[rules.required]"
                           hide-details
                         />
-                        <v-btn @click="updateComments(com)" class="send-btn">
-                          <v-icon>mdi-send</v-icon>
+                        <v-btn
+                          @click="updateComments(com)"
+                          class="send-btn"
+                          :disabled="!com.canEdit"
+                        >
+                          <v-icon :disabled="!com.canEdit">mdi-send</v-icon>
                           Edit
                         </v-btn>
                       </div>
                       <div style="width: 20%; text-align: right;">
-                        <button @click="editRelativeComment(com)">
-                          <v-icon class="close-icon">mdi-close</v-icon>
+                        <button @click="editRelativeComment(com)" :disabled="!com.canDelete">
+                          <v-icon class="close-icon" :disabled="!com.canDelete">mdi-close</v-icon>
                         </button>
                       </div>
                     </div>
@@ -1109,6 +1126,8 @@ export default {
     }
   },
   data: () => ({
+    getCommentDetails: false,
+    shareButtonDisabled: false,
     labels,
     openShareModal: false,
     shareEmail: [],
@@ -1287,13 +1306,16 @@ export default {
           const payload = {
             emailarray: this.shareEmail
           }
-          shareAPost(id, payload).then(() => {
-            setTimeout(() => {
-              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-            }, 500)
-            this.shareEmail = []
-            this.openShareModal = false
-          })
+          this.shareButtonDisabled = true
+          shareAPost(id, payload)
+            .then(() => {
+              setTimeout(() => {
+                this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+              }, 500)
+              this.shareEmail = []
+              this.openShareModal = false
+            })
+            .finally(() => (this.shareButtonDisabled = false))
         }
       }, 200)
     },
@@ -1426,6 +1448,7 @@ export default {
       getComments(id)
         .then((response) => {
           const { data } = response
+          this.getCommentDetails = true
           this.comments = data.data
         })
         .catch((error) => {
