@@ -58,7 +58,7 @@
       @clusterChanged="clusterChanged"
       row-key="companyName"
       :rowActions="tableOptions.rowActions"
-      active-cluster="Company Name"
+      active-cluster=""
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
       @cellClick="handleCellClick"
@@ -149,7 +149,7 @@ export default {
     tableHeight: 0,
     extendTop: 0,
     bindPropsIsSafari: {},
-    isClustered: true,
+    isClustered: false,
     editModal: false,
     isShowDeleteModal: false,
     isShowExtended: false,
