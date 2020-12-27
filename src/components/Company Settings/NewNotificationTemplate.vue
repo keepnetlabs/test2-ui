@@ -122,8 +122,18 @@ import invitedByCompanyName from '@/components/GrapesJs/Newsletter/mergedTexts/i
 import communityUrl from '@/components/GrapesJs/Newsletter/mergedTexts/communityUrl'
 import memberCount from '@/components/GrapesJs/Newsletter/mergedTexts/memberCount'
 import communityIndustry from '@/components/GrapesJs/Newsletter/mergedTexts/communityIndustry'
-import communityDescription from '@/components/GrapesJs/Newsletter/blocks/mergedTextsBlocks/communityDescription'
+import communityDescription from '@/components/GrapesJs/Newsletter/mergedTexts/communityDescription'
 import analysisEmail from '@/components/GrapesJs/Newsletter/mergedTexts/analysisEmail'
+import communityName from '@/components/GrapesJs/Newsletter/mergedTexts/communityName'
+import owner from '@/components/GrapesJs/Newsletter/mergedTexts/owner'
+import date from '@/components/GrapesJs/Newsletter/mergedTexts/date'
+import reportBy from '@/components/GrapesJs/Newsletter/mergedTexts/reportBy'
+import fromText from '@/components/GrapesJs/Newsletter/mergedTexts/from'
+import to from '@/components/GrapesJs/Newsletter/mergedTexts/to'
+import subject from '@/components/GrapesJs/Newsletter/mergedTexts/subject'
+import attachment from '@/components/GrapesJs/Newsletter/mergedTexts/attachment'
+import createDate from '@/components/GrapesJs/Newsletter/mergedTexts/createDate'
+
 export default {
   name: 'NewNotificationTemplate',
   components: {
@@ -280,6 +290,7 @@ export default {
     callForMergedTags(resourceId = '') {
       getMergedTags(resourceId).then((response) => {
         this.blockManagerComponents[resourceId] = response.data.data['mergeTags']
+        console.log("response.data.data['mergeTags']", response.data.data['mergeTags'])
         this.setActiveBlockManagerComponents(this.blockManagerComponents[resourceId])
       })
     },
@@ -297,6 +308,10 @@ export default {
           return shareUserName
         case '{COMPANYNAME}':
           return companyName
+        case '{COMMUNITYNAME}':
+          return communityName
+        case '{COMMUNITYDESCRIPTION}':
+          return communityDescription
         case '{POSTTITLE}':
           return postTitle
         case '{POSTDESC}':
@@ -353,6 +368,22 @@ export default {
           return communityDescription
         case '{ANALYSISEMAIL}':
           return analysisEmail
+        case '{OWNER}':
+          return owner
+        case '{DATE}':
+          return date
+        case '{REPORTBY}':
+          return reportBy
+        case '{FROM}':
+          return fromText
+        case '{TO}':
+          return to
+        case '{SUBJECT}':
+          return subject
+        case '{ATTACHMENT}':
+          return attachment
+        case '{CREATEDATE}':
+          return createDate
 
         default:
           break

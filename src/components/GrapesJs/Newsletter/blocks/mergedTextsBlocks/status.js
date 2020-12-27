@@ -1,7 +1,7 @@
-const mergedTextsStartedBy = [
+const mergedTextsStatus = [
   {
     tagName: 'span',
-    content: '{STARTEDBY}'
+    content: '{STATUS}'
   }
 ]
-export default mergedTextsStartedBy
+export default mergedTextsStatus
