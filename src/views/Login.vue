@@ -464,8 +464,13 @@ export default {
         this.$router.push(
           `/threat-sharing?CommunityRequestId=${this.$route.query.CommunityRequestId}`
         )
+      } else if (this.$route.query && !!this.$route.query.showInvitation) {
+        this.$router.push({
+          path: `/threat-sharing`,
+          query: { showInvitation: this.$route.query.showInvitation }
+        })
       } else if (this.$route.query && !!this.$route.query.CommunityId) {
-        this.$router.push(`/community/${this.$route.query.CommunityId}`)
+        this.$router.push(`/threat-sharing/${this.$route.query.CommunityId}`)
       } else if (this.$route.query) {
         if (this.$route.query.cp) {
           this.pageNumber = 5
@@ -673,6 +678,11 @@ export default {
               _this.$router.push(
                 `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
               )
+            } else if (this.$route.query && !!this.$route.query.showInvitation) {
+              this.$router.push({
+                path: `/threat-sharing`,
+                query: { showInvitation: this.$route.query.showInvitation }
+              })
             } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
               _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
             } else if (_this.$route.query) {

@@ -189,7 +189,7 @@
     <v-card flat color="basil">
       <v-card-text class="pt-2">
         <v-data-iterator
-          :items="listData"
+          :items="selectedTab === 'tab-2' ? invitationData : listData"
           :page.sync="page"
           :items-per-page.sync="itemsPerPage"
           :footer-props="{ itemsPerPageOptions }"
@@ -710,6 +710,7 @@ export default {
     itemsPerPage: 5,
     filter: '',
     listData: [{}],
+    invitationData: [],
     communityLoading: true
   }),
   props: {
@@ -952,12 +953,12 @@ export default {
     },
     getInvitions() {
       if (this.checkPermissions('communities/my-invitations', 'GET')) {
-        this.listData = []
+        this.invitationData = []
         this.communityLoading = true
         getInvitations()
           .then((response) => {
             const { data } = response
-            this.listData = data.data
+            this.invitationData = data.data
             this.communityLoading = false
           })
           .catch((error) => {
@@ -966,7 +967,7 @@ export default {
               error.response.data &&
               error.response.data.code === 'RESOURCE_NOT_FOUND'
             ) {
-              this.listData = []
+              this.invitationData = []
             }
           })
           .finally(() => {
