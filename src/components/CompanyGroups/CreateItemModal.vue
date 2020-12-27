@@ -137,7 +137,7 @@ export default {
         startsWithSpace
       },
       payload: {
-        pageSize: 100,
+        pageSize: 100000,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
