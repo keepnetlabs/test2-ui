@@ -79,6 +79,7 @@
             </div>
           </div>
         </v-list-item>-->
+
         <!--<v-list-item class="pa-0">
           <div class="communities-wrapper__community-notification-row">
             <div class="community-notification__text">
