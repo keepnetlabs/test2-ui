@@ -111,7 +111,7 @@ export default {
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations',
-          role: ''
+          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
         },
         PhishingReporterIrHeader: {
           x: 0,
@@ -126,7 +126,8 @@ export default {
           maxH: 3,
           i: Math.random().toString(),
           key: 'PhishingReporterIrHeader',
-          title: 'Phishing Reporter Ir Header'
+          title: 'Phishing Reporter Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         IncidentAnalysisIrHeader: {
           x: 0,
@@ -141,7 +142,8 @@ export default {
           maxH: 3,
           i: Math.random().toString(),
           key: 'IncidentAnalysisIrHeader',
-          title: 'Incident Analysis Ir Header'
+          title: 'Incident Analysis Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         InvestigationsIrHeader: {
           x: 0,
@@ -156,7 +158,8 @@ export default {
           maxH: 3,
           i: Math.random().toString(),
           key: 'InvestigationsIrHeader',
-          title: 'Investigations Ir Header'
+          title: 'Investigations Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         ROISummaryIrHeader: {
           x: 0,
@@ -171,7 +174,8 @@ export default {
           maxH: 3,
           i: Math.random().toString(),
           key: 'ROISummaryIrHeader',
-          title: 'ROI Summary Ir Header'
+          title: 'ROI Summary Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         RecentlyReportedIncidents: {
           x: 0,
@@ -186,7 +190,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           title: 'Recently Reported Incidents',
-          key: 'RecentlyReportedIncidents'
+          key: 'RecentlyReportedIncidents',
+          isAllowed: checkPermission('notified-emails/search', 'POST')
         },
         RecentlyPostedThreats: {
           x: 0,
@@ -201,7 +206,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats'
+          key: 'RecentlyPostedThreats',
+          isAllowed: checkPermission('community-posts/search', 'POST')
         },
         TopRules: {
           x: 0,
@@ -216,7 +222,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           key: 'TopRules',
-          title: 'Top Rules'
+          title: 'Top Rules',
+          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
         },
         TopPosts: {
           x: 0,
@@ -231,7 +238,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           key: 'TopPosts',
-          title: 'Top Posts'
+          title: 'Top Posts',
+          isAllowed: checkPermission('community-posts/top-posts', 'GET')
         },
         Reporters: {
           x: 0,
@@ -246,7 +254,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           key: 'Reporters',
-          title: 'Reporters'
+          title: 'Reporters',
+          isAllowed: checkPermission('dashboard/reporters', 'GET')
         },
         IncidentClusters: {
           x: 0,
@@ -261,7 +270,8 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           key: 'IncidentClusters',
-          title: 'Incident Clusters'
+          title: 'Incident Clusters',
+          isAllowed: checkPermission('dashboard/widgets', 'GET')
         },
         ReportedEmailTrends: {
           x: 0,
@@ -276,22 +286,71 @@ export default {
           maxH: 6,
           i: Math.random().toString(),
           key: 'ReportedEmailTrends',
-          title: 'Reported Email Trends'
+          title: 'Reported Email Trends',
+          isAllowed: checkPermission('dashboard/reported-email-trends', 'POST')
         }
       },
       availableWidgets: [
-        { name: 'Recent Investigations', key: 'RecentInvestigations' },
-        { name: 'Top Rules', key: 'TopRules' },
-        { name: 'Top Posts', key: 'TopPosts' },
-        { name: 'Reporters', key: 'Reporters' },
-        { name: 'Incident Clusters', key: 'IncidentClusters' },
-        { name: 'Recently Posted Threats', key: 'RecentlyPostedThreats' },
-        { name: 'Recently Reported Incidents', key: 'RecentlyReportedIncidents' },
-        { name: 'Reported Email Trends', key: 'ReportedEmailTrends' },
-        { name: 'Phishing Reporter Ir Header', key: 'PhishingReporterIrHeader' },
-        { name: 'Incident Analysis Ir Header', key: 'IncidentAnalysisIrHeader' },
-        { name: 'Investigations Ir Header', key: 'InvestigationsIrHeader' },
-        { name: 'ROI Summary Ir Header', key: 'ROISummaryIrHeader' }
+        {
+          name: 'Recent Investigations',
+          key: 'RecentInvestigations',
+          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
+        },
+        {
+          name: 'Top Rules',
+          key: 'TopRules',
+          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
+        },
+        {
+          name: 'Top Posts',
+          key: 'TopPosts',
+          isAllowed: checkPermission('community-posts/top-posts', 'GET')
+        },
+        {
+          name: 'Reporters',
+          key: 'Reporters',
+          isAllowed: checkPermission('dashboard/reporters', 'GET')
+        },
+        {
+          name: 'Incident Clusters',
+          key: 'IncidentClusters',
+          isAllowed: checkPermission('dashboard/widgets', 'GET')
+        },
+        {
+          name: 'Recently Posted Threats',
+          key: 'RecentlyPostedThreats',
+          isAllowed: checkPermission('community-posts/search', 'POST')
+        },
+        {
+          name: 'Recently Reported Incidents',
+          key: 'RecentlyReportedIncidents',
+          isAllowed: checkPermission('notified-emails/search', 'POST')
+        },
+        {
+          name: 'Reported Email Trends',
+          key: 'ReportedEmailTrends',
+          isAllowed: checkPermission('dashboard/reported-email-trends', 'POST')
+        },
+        {
+          name: 'Phishing Reporter Ir Header',
+          key: 'PhishingReporterIrHeader',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+        },
+        {
+          name: 'Incident Analysis Ir Header',
+          key: 'IncidentAnalysisIrHeader',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+        },
+        {
+          name: 'Investigations Ir Header',
+          key: 'InvestigationsIrHeader',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+        },
+        {
+          name: 'ROI Summary Ir Header',
+          key: 'ROISummaryIrHeader',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+        }
       ],
       style:
         '.vue-grid-layout.smartwidget {box-shadow:none;' +
@@ -678,9 +737,8 @@ export default {
             this.layout = response.settings.reduce((acc, item) => {
               const widget = { ...this.allWidgets[item.key], ...item }
               this.removeAvailableWidget(item)
-              debugger
               //availableWidgets.splice()
-              acc.push(widget)
+              if (widget.isAllowed) acc.push(widget)
               return acc
             }, [])
 
