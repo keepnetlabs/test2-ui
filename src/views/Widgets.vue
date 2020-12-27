@@ -111,7 +111,7 @@ export default {
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations',
-          isAllowed: checkPermission('running-investigations', 'GET')
+          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
         },
         PhishingReporterIrHeader: {
           x: 0,
@@ -223,7 +223,7 @@ export default {
           i: Math.random().toString(),
           key: 'TopRules',
           title: 'Top Rules',
-          isAllowed: checkPermission('top-rules', 'GET')
+          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
         },
         TopPosts: {
           x: 0,
@@ -294,12 +294,12 @@ export default {
         {
           name: 'Recent Investigations',
           key: 'RecentInvestigations',
-          isAllowed: checkPermission('running-investigations', 'GET')
+          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
         },
         {
           name: 'Top Rules',
           key: 'TopRules',
-          isAllowed: checkPermission('top-rules', 'GET')
+          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
         },
         {
           name: 'Top Posts',
