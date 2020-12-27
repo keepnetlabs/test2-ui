@@ -24,6 +24,7 @@
         @click="handleAddWidget(widget)"
         :key="widget.key"
         v-for="widget in availableWidgets"
+        v-if="widget.isAllowed"
       >
         <v-btn :ripple="false" color="#00bcd4" text>
           <v-icon>mdi-plus</v-icon>
