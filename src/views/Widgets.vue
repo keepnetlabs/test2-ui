@@ -65,7 +65,7 @@ import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/Re
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
-import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
+//import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
@@ -257,7 +257,7 @@ export default {
           title: 'Reporters',
           isAllowed: checkPermission('dashboard/reporters', 'GET')
         },
-        IncidentClusters: {
+        /*IncidentClusters: {
           x: 0,
           y: 0,
           w: 6,
@@ -272,7 +272,7 @@ export default {
           key: 'IncidentClusters',
           title: 'Incident Clusters',
           isAllowed: checkPermission('dashboard/widgets', 'GET')
-        },
+        },*/
         ReportedEmailTrends: {
           x: 0,
           y: 0,
@@ -311,11 +311,14 @@ export default {
           key: 'Reporters',
           isAllowed: checkPermission('dashboard/reporters', 'GET')
         },
+        /*
         {
           name: 'Incident Clusters',
           key: 'IncidentClusters',
           isAllowed: checkPermission('dashboard/widgets', 'GET')
         },
+
+         */
         {
           name: 'Recently Posted Threats',
           key: 'RecentlyPostedThreats',
@@ -408,7 +411,7 @@ export default {
     },
     deleteWidget(item, index) {
       this.layout.splice(index, 1)
-      this.availableWidgets.push({ key: item.key, name: item.title })
+      this.availableWidgets.push({ key: item.key, name: item.title, isAllowed: true })
     },
     handleOpenMenu() {
       this.editMode = true
@@ -473,8 +476,11 @@ export default {
           return TopRules
         case 'TopPosts':
           return TopPosts
+        /*
         case 'IncidentClusters':
           return IncidentClusters
+
+         */
         case 'RecentlyPostedThreats':
           return RecentlyPostedThreats
         case 'RecentlyReportedIncidents':
@@ -516,7 +522,7 @@ export default {
       })
     },
     getDefaultLayoutObject() {
-      const widgets = [
+      let widgets = [
         {
           x: 3,
           y: 0,
@@ -530,7 +536,8 @@ export default {
           maxH: 3,
           i: '0.4439548718965418',
           key: 'IncidentAnalysisIrHeader',
-          title: 'Incident Analysis Ir Header'
+          title: 'Incident Analysis Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         {
           x: 9,
@@ -545,7 +552,8 @@ export default {
           maxH: 3,
           i: '0.8129690089605317',
           key: 'ROISummaryIrHeader',
-          title: 'ROI Summary Ir Header'
+          title: 'ROI Summary Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         {
           x: 0,
@@ -560,7 +568,8 @@ export default {
           maxH: 3,
           i: '0.36222415873736824',
           key: 'PhishingReporterIrHeader',
-          title: 'Phishing Reporter Ir Header'
+          title: 'Phishing Reporter Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
         {
           x: 6,
@@ -575,8 +584,10 @@ export default {
           maxH: 3,
           i: '0.955736738495951',
           key: 'InvestigationsIrHeader',
-          title: 'Investigations Ir Header'
+          title: 'Investigations Ir Header',
+          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
         },
+        /*
         {
           x: 0,
           y: 3,
@@ -592,8 +603,10 @@ export default {
           key: 'IncidentClusters',
           title: 'Incident Clusters'
         },
+
+         */
         {
-          x: 6,
+          x: 0,
           y: 3,
           w: 6,
           minW: 6,
@@ -605,7 +618,8 @@ export default {
           maxH: 6,
           i: '0.5602556581402198',
           key: 'ReportedEmailTrends',
-          title: 'Reported Email Trends'
+          title: 'Reported Email Trends',
+          isAllowed: checkPermission('dashboard/reported-email-trends', 'POST')
         },
         {
           x: 0,
@@ -620,7 +634,8 @@ export default {
           maxH: 6,
           i: '0.30768881243195656',
           title: 'Recent Investigations',
-          key: 'RecentInvestigations'
+          key: 'RecentInvestigations',
+          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
         },
         {
           x: 6,
@@ -635,7 +650,8 @@ export default {
           maxH: 6,
           i: '0.1349604029153395',
           key: 'TopPosts',
-          title: 'Top Posts'
+          title: 'Top Posts',
+          isAllowed: checkPermission('community-posts/top-posts', 'GET')
         },
         {
           x: 0,
@@ -650,7 +666,8 @@ export default {
           maxH: 6,
           i: '0.6104982760663944',
           title: 'Recently Reported Incidents',
-          key: 'RecentlyReportedIncidents'
+          key: 'RecentlyReportedIncidents',
+          isAllowed: checkPermission('notified-emails/search', 'POST')
         },
         {
           x: 6,
@@ -665,7 +682,8 @@ export default {
           maxH: 6,
           i: '0.15876452855409506',
           title: 'Recently Posted Threats',
-          key: 'RecentlyPostedThreats'
+          key: 'RecentlyPostedThreats',
+          isAllowed: checkPermission('community-posts/search', 'POST')
         },
         {
           x: 0,
@@ -680,7 +698,8 @@ export default {
           maxH: 6,
           i: '0.3901775633662319',
           key: 'Reporters',
-          title: 'Reporters'
+          title: 'Reporters',
+          isAllowed: checkPermission('dashboard/reporters', 'GET')
         },
         {
           x: 6,
@@ -695,12 +714,17 @@ export default {
           maxH: 6,
           i: '0.8761474288298772',
           key: 'TopRules',
-          title: 'Top Rules'
+          title: 'Top Rules',
+          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
         }
       ]
-      for (let widget of widgets) {
+      widgets = widgets.reduce((acc, widget) => {
         this.removeAvailableWidget(widget)
-      }
+        if (widget.isAllowed) {
+          acc.push(widget)
+        }
+        return acc
+      }, [])
 
       return widgets
     },
