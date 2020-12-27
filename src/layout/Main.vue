@@ -1098,9 +1098,7 @@ export default {
           !localStorage.getItem('companyResourceId') ||
           !localStorage.getItem('selectedCompanyRequestId')
         ) {
-          setTimeout(() => {
-            recFunction()
-          }, 250)
+          recFunction()
         }
       }
       recFunction()
