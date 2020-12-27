@@ -364,8 +364,6 @@ export default {
           return memberCount
         case '{COMMUNITYINDUSTRY}':
           return communityIndustry
-        case '{COMMUNITYDESCRIPTION}':
-          return communityDescription
         case '{ANALYSISEMAIL}':
           return analysisEmail
         case '{OWNER}':
