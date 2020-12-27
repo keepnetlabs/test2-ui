@@ -120,7 +120,13 @@ export default {
             show: true,
             fixed: false,
             type: 'badge',
-            width: 150
+            width: 150,
+            filterableType: 'select',
+            filterableCustomFieldName: 'StatusId',
+            filterableItems: [
+              { text: labels.Active, value: '1' },
+              { text: labels.InActive, value: '0' }
+            ]
           },
           {
             property: PROPERTY_STORE.CREATETIME,

@@ -200,7 +200,12 @@
               "
               >{{ labels.Cancel }}</v-btn
             >
-            <v-btn text color="#2196f3" class="k-dialog__button" @click="inviteMember"
+            <v-btn
+              :disabled="inviteAllButtonDisabled"
+              text
+              color="#2196f3"
+              class="k-dialog__button"
+              @click="inviteMember"
               >Invite All</v-btn
             >
           </div>
@@ -553,6 +558,7 @@ import { getNotifications } from '../../api/dashboard'
 export default {
   data() {
     return {
+      inviteAllButtonDisabled: false,
       notificationLoading: false,
       labels,
       yourPostsLoading: true,
@@ -778,23 +784,26 @@ export default {
           const payload = {
             emailarray: this.emailarray
           }
-          inviteToCommunity(this.$route.params.id, payload).then((response) => {
-            response.data.data.map((item) => {
-              if (item.result === 'Failed') {
-                this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-                  message: `${item['resultText']}: ${item['email']} `
-                })
-              } else {
-                this.$store.dispatch('common/createSnackBar', {
-                  color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-                  message: `${item['resultText']}: (${item['email']})`
-                })
-              }
+          this.inviteAllButtonDisabled = true
+          inviteToCommunity(this.$route.params.id, payload)
+            .then((response) => {
+              response.data.data.map((item) => {
+                if (item.result === 'Failed') {
+                  this.$store.dispatch('common/createSnackBar', {
+                    color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                    message: `${item['resultText']}: ${item['email']} `
+                  })
+                } else {
+                  this.$store.dispatch('common/createSnackBar', {
+                    color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                    message: `${item['resultText']}: (${item['email']})`
+                  })
+                }
+              })
+              this.emailarray = []
+              this.openInviteModal = false
             })
-            this.emailarray = []
-            this.openInviteModal = false
-          })
+            .finally(() => (this.inviteAllButtonDisabled = false))
         }
       }, 200)
     },
