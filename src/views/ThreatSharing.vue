@@ -85,6 +85,11 @@ export default {
       this.tab = 1
     } else if (this.$route.params.isCommunity) {
       this.tab = 1
+    } else if (this.$route.query.showInvitation) {
+      this.tab = 1
+      setTimeout(() => {
+        this.$refs.tsCommunities.subTabSelected('tab-2')
+      }, 300)
     }
     if (
       !this.checkPermissions('community-posts/search', 'POST') &&

@@ -313,7 +313,6 @@ export default {
 .switch-account-wrapper {
   cursor: pointer;
   padding: 24px;
-
   .switch-right-wrapper {
     max-width: 85%;
   }
