@@ -442,8 +442,6 @@ export default {
   },
   created() {
     //AuthenticationService.removeToken()
-    debugger
-
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
       this.email = localStorage.getItem('username')
@@ -467,7 +465,6 @@ export default {
           `/threat-sharing?CommunityRequestId=${this.$route.query.CommunityRequestId}`
         )
       } else if (this.$route.query && !!this.$route.query.showInvitation) {
-        debugger
         this.$router.push({
           path: `/threat-sharing`,
           query: { showInvitation: this.$route.query.showInvitation }
@@ -652,7 +649,6 @@ export default {
       const mainUrl = this.$router.currentRoute
       const _this = this
       this.isPasswordStep5Complete = false
-      debugger
       if (
         this.$refs.email.validate() &&
         this.$refs.password.validate() &&
@@ -683,7 +679,6 @@ export default {
                 `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
               )
             } else if (this.$route.query && !!this.$route.query.showInvitation) {
-              debugger
               this.$router.push({
                 path: `/threat-sharing`,
                 query: { showInvitation: this.$route.query.showInvitation }
