@@ -528,7 +528,14 @@
                       <v-btn class="refuse-btn" block rounded medium @click="refuseRequest(item)">
                         {{ labels.Cancel }}
                       </v-btn>
-                      <v-btn class="accept-btn" block rounded medium @click="acceptRequest(item)">
+                      <v-btn
+                        class="accept-btn"
+                        :disabled="item['disabled']"
+                        block
+                        rounded
+                        medium
+                        @click="acceptRequest(item)"
+                      >
                         JOIN
                       </v-btn>
                     </div>
@@ -887,10 +894,16 @@ export default {
       })
     },
     acceptRequest(item) {
-      acceptInvitation(item.resourceId).then(() => {
-        this.getInvitions()
-        this.getInvitationCount()
-      })
+      item['disabled'] = true
+      this.$forceUpdate()
+      acceptInvitation(item.resourceId)
+        .then(() => {
+          this.getInvitions()
+          this.getInvitationCount()
+        })
+        .finally(() => {
+          item['disabled'] = false
+        })
     },
     leaveFromCommunity(item) {
       this.leaveCommunityId = item.communityResourceId

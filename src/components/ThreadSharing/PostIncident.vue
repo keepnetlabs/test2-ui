@@ -330,7 +330,13 @@
                   v-model.trim="uploadRespond.Title"
                   solo
                   validate-on-blur
-                  :rules="[titleRule.default, titleRule.regex, titleRule.required, titleRule.empty]"
+                  :rules="[
+                    titleRule.default,
+                    titleRule.regex,
+                    titleRule.required,
+                    titleRule.empty,
+                    titleRule.minLength
+                  ]"
                 ></v-text-field>
               </v-form>
               <!--<span class="required">*Required</span>-->
@@ -349,7 +355,7 @@
                   row-height="15"
                   solo
                   validate-on-blur
-                  :rules="[descRule.required, descRule.empty, descRule.default]"
+                  :rules="[descRule.required, descRule.empty, descRule.default, descRule.minLength]"
                   v-model.trim="uploadRespond.Description"
                 ></v-textarea>
               </v-form>
@@ -2177,7 +2183,8 @@ export default {
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space'
+      empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
+      minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
     },
     descRule: {
       default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
@@ -2188,7 +2195,9 @@ export default {
       empty: (v) => {
         if (!v) return true
         return (v && !v.startsWith(' ')) || 'Cannot start with space'
-      }
+      },
+      minLength: (v) =>
+        Validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5))
     },
 
     checkboxRule: {

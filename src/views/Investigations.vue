@@ -20,6 +20,7 @@
       >
         <template v-slot:app-dialog-footer>
           <app-dialog-footer
+            :confirm-button-disabled="stopInvestigateButtonDisabled"
             @handleClose="isWantToStopInvestigation = false"
             @handleConfirm="stopInvestigation"
           />
@@ -132,6 +133,7 @@ export default {
     }
   },
   data: () => ({
+    stopInvestigateButtonDisabled: false,
     loading: false,
     showPlaybookModal: false,
     selectedPlaybookId: null,
@@ -442,14 +444,16 @@ export default {
     stopInvestigation() {
       const value = this.selectedRow
       let store = this.$store
-      this.isWantToStopInvestigation = false
+      this.stopInvestigateButtonDisabled = true
       this.$store
         .dispatch('investigations/cancelInvestigation', value.row.resourceId)
         .catch(() => {})
         .then(() => {
+          this.isWantToStopInvestigation = false
           store.dispatch('investigations/SET_INVESTIGATIONLISTEMPY', [])
         })
         .finally(() => {
+          this.stopInvestigateButtonDisabled = false
           this.refreshDatatable()
         })
     },

@@ -37,6 +37,7 @@
                 <v-btn
                   class="k-dialog__button"
                   text
+                  :disabled="warnAndDeleteButtonDisabled"
                   color="#00bcd4"
                   @click="isWantToDeleteConfirm(false, null, false)"
                   >Move to trash
@@ -45,6 +46,7 @@
                   class="k-dialog__button"
                   text
                   color="#2196f3"
+                  :disabled="warnAndDeleteButtonDisabled"
                   @click="isWantToDeleteConfirm(true, null, false)"
                   >Delete Permanently
                 </v-btn>
@@ -86,6 +88,7 @@
           </template>
           <template v-slot:app-dialog-footer>
             <app-dialog-footer
+              :confirm-button-disabled="warningButtonDisabled"
               @handleClose="isWantToWarn = false"
               @handleConfirm="isWantToWarnConfirm"
             />
@@ -103,6 +106,7 @@
           <template v-slot:app-dialog-footer>
             <app-dialog-footer
               @handleClose="isWantToStop = false"
+              :confirm-button-disabled="stopButtonDisabled"
               @handleConfirm="isWantToStopConfirm"
               action-button-text="STOP"
             />
@@ -158,12 +162,14 @@
                   class="k-dialog__button"
                   text
                   color="#00bcd4"
+                  :disabled="warnAndDeleteButtonDisabled"
                   @click="isWantToDeleteConfirm(false, notifyMessageWithDelete)"
                   >Move to trash
                 </v-btn>
                 <v-btn
                   class="k-dialog__button"
                   text
+                  :disabled="warnAndDeleteButtonDisabled"
                   color="#2196f3"
                   @click="isWantToDeleteConfirm(true, notifyMessageWithDelete)"
                   >Delete Permanently
@@ -928,6 +934,9 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    warningButtonDisabled: false,
+    warnAndDeleteButtonDisabled: false,
+    stopButtonDisabled: false,
     labels,
     isColumnFilterActive: false,
     isColumnFilterActiveTargetUsers: false,
@@ -1492,11 +1501,13 @@ export default {
     },
     showRemainingDays() {},
     isWantToStopConfirm() {
+      this.stopButtonDisabled = true
       this.$store
         .dispatch('investigations/cancelInvestigation', this.$route.params.id)
         .catch(() => {})
         .finally(() => {
           this.isWantToStop = false
+          this.stopButtonDisabled = false
           this.refreshDatatable()
           this.restartStopInvestigationData()
         })
@@ -1778,6 +1789,7 @@ export default {
         isArray
           ? (data = this.soloWarningMessageValue.map((item) => item.resourceId))
           : data.push(this.soloWarningMessageValue.resourceId)
+        this.warningButtonDisabled = true
         this.$store
           .dispatch('investigations/sendInvestigationWarningMessage', {
             data: {
@@ -1789,6 +1801,7 @@ export default {
           .finally(() => {
             this.refreshDatatable()
             this.isWantToWarn = false
+            this.warningButtonDisabled = false
           })
       }
     },
@@ -1813,12 +1826,15 @@ export default {
           warningMessage: message,
           isPermanentDelete: val
         }
+        this.warnAndDeleteButtonDisabled = true
         deleteAndMessageInvestigationDetailsItem(payload, this.$route.params.id).finally(() => {
           this.refreshDatatable()
           this.isWantToDelete = false
           this.isWantToWarnAndDelete = false
+          this.warnAndDeleteButtonDisabled = false
         })
       } else {
+        this.warnAndDeleteButtonDisabled = true
         this.$store
           .dispatch('investigations/deleteInvestigationDetailsItem', {
             data: {
@@ -1830,6 +1846,7 @@ export default {
             id: this.$route.params.id
           })
           .finally(() => {
+            this.warnAndDeleteButtonDisabled = false
             this.refreshDatatable()
             this.isWantToDelete = false
             this.isWantToWarnAndDelete = false
