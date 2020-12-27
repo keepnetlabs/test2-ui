@@ -350,6 +350,10 @@ const router = new Router({
           path: '/playbook',
           name: 'Playbook',
           component: Playbook,
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
+          },
           beforeEnter: (to, from, next) => {
             //checkPermission()
 
