@@ -493,7 +493,7 @@ export default {
               ? 'analyze__main__select-row-inline__button-selected'
               : ''
           } else {
-            props['style'] = { cursor: 'default', pointerEvents: 'none' }
+            props['style'] = { cursor: 'default', visibility: 'hidden' }
           }
           break
         case 'file':
@@ -503,7 +503,7 @@ export default {
               ? 'analyze__main__select-row-inline__button-selected'
               : ''
           } else {
-            props['style'] = { cursor: 'default', pointerEvents: 'none' }
+            props['style'] = { cursor: 'default', visibility: 'hidden' }
           }
           break
         case 'url':
@@ -513,7 +513,7 @@ export default {
               ? 'analyze__main__select-row-inline__button-selected'
               : ''
           } else {
-            props['style'] = { cursor: 'default', pointerEvents: 'none' }
+            props['style'] = { cursor: 'default', visibility: 'hidden' }
           }
           break
         default:

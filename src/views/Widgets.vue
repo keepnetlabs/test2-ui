@@ -65,7 +65,7 @@ import RecentInvestigations from '@/components/Common/Widget/WidgetComponents/Re
 import Reporters from '@/components/Common/Widget/WidgetComponents/Reporters'
 import TopRules from '@/components/Common/Widget/WidgetComponents/TopRules'
 import PhishingReporterIrHeader from '@/components/Common/Widget/WidgetComponents/PhishingReporterIrHeader'
-import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
+//import IncidentClusters from '@/components/Common/Widget/WidgetComponents/IncidentClusters'
 import TopPosts from '@/components/Common/Widget/WidgetComponents/TopPosts'
 import RecentlyPostedThreats from '@/components/Common/Widget/WidgetComponents/RecentlyPostedThreats'
 import RecentlyReportedIncidents from '@/components/Common/Widget/WidgetComponents/RecentlyReportedIncidents'
@@ -257,7 +257,7 @@ export default {
           title: 'Reporters',
           isAllowed: checkPermission('dashboard/reporters', 'GET')
         },
-        IncidentClusters: {
+        /*IncidentClusters: {
           x: 0,
           y: 0,
           w: 6,
@@ -272,7 +272,7 @@ export default {
           key: 'IncidentClusters',
           title: 'Incident Clusters',
           isAllowed: checkPermission('dashboard/widgets', 'GET')
-        },
+        },*/
         ReportedEmailTrends: {
           x: 0,
           y: 0,
@@ -311,11 +311,14 @@ export default {
           key: 'Reporters',
           isAllowed: checkPermission('dashboard/reporters', 'GET')
         },
+        /*
         {
           name: 'Incident Clusters',
           key: 'IncidentClusters',
           isAllowed: checkPermission('dashboard/widgets', 'GET')
         },
+
+         */
         {
           name: 'Recently Posted Threats',
           key: 'RecentlyPostedThreats',
@@ -473,8 +476,11 @@ export default {
           return TopRules
         case 'TopPosts':
           return TopPosts
+        /*
         case 'IncidentClusters':
           return IncidentClusters
+
+         */
         case 'RecentlyPostedThreats':
           return RecentlyPostedThreats
         case 'RecentlyReportedIncidents':
@@ -577,6 +583,7 @@ export default {
           key: 'InvestigationsIrHeader',
           title: 'Investigations Ir Header'
         },
+        /*
         {
           x: 0,
           y: 3,
@@ -592,6 +599,8 @@ export default {
           key: 'IncidentClusters',
           title: 'Incident Clusters'
         },
+
+         */
         {
           x: 6,
           y: 3,
