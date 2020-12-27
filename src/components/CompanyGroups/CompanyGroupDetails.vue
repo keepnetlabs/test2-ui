@@ -188,7 +188,7 @@ export default {
           show: true,
           type: 'text',
           width: 180,
-          filterableType: 'text'
+          filterableType: 'date'
         },
         {
           property: 'createTime',
