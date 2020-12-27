@@ -468,7 +468,8 @@
                   :rules="[
                     explanationRules.default,
                     explanationRules.required,
-                    explanationRules.empty
+                    explanationRules.empty,
+                    explanationRules.minLength
                   ]"
                   requied
                   solo
@@ -523,7 +524,8 @@
                     scopeRules.default,
                     scopeRules.regex,
                     scopeRules.required,
-                    scopeRules.empty
+                    scopeRules.empty,
+                    scopeRules.minLength
                   ]"
                 ></v-text-field>
               </v-form>
@@ -2209,7 +2211,9 @@ export default {
       default: (v) => Validations.required(v),
       required: (v) =>
         Validations.maxLength(v, 300, labels.getMaxLengthMessage('Discovery and detection', 300)),
-      empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      empty: (v) => (v && !v.startsWith(' ')) || 'Discovery and detection cannot start with space',
+      minLength: (v) =>
+        Validations.minLength(v, 5, labels.getMinLengthMessage('Discovery and detection', 5))
     },
     scopeRules: {
       default: (v) => Validations.required(v),
@@ -2217,7 +2221,8 @@ export default {
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
         'Only use letters, digits, period, comma, underline and hyphen',
-      empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+      empty: (v) => (v && !v.startsWith(' ')) || 'Scope cannot start with space',
+      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Scope', 5))
     },
     affectRules: {
       regex: (v) =>
