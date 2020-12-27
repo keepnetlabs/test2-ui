@@ -261,12 +261,12 @@
             </v-list-item>
             <v-list-item
               class="edit-industry-area mt-2 pa-0"
-              v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'NotifyOnly'"
+              v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
             >
               <v-list-item-content class>
                 <label class="edit-labels">Message</label>
                 <v-text-field
-                  v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'NotifyOnly'"
+                  v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
                   placeholder="Enter a message"
                   outlined
                   class="edit-name-textfield edit-select standard-height warning-message"
@@ -461,7 +461,7 @@ export default {
           actionLabel: 'Delete Email and Notify User',
           actionValue: 'DeleteAndNotify'
         },
-        { actionLabel: 'Notify user only', actionValue: 'NotifyOnly' }
+        { actionLabel: 'Notify user only', actionValue: 'Warning' }
       ],
       filterList: [{ option: '', text: '' }],
       sources: [],
@@ -599,7 +599,7 @@ export default {
   methods: {
     actionChanged() {
       this.warningMessage = ''
-      if (this.selectedAction === 'DeleteAndNotify' || this.selectedAction === 'NotifyOnly') {
+      if (this.selectedAction === 'DeleteAndNotify' || this.selectedAction === 'Warning') {
         setTimeout(() => {
           const el = this.$refs.form.$el.querySelector('.warning-message')
           scrollToComponent(el)

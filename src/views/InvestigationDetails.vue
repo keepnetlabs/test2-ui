@@ -1329,7 +1329,7 @@ export default {
             returnValue.icon = 'mdi-check-underline-circle'
             returnValue.color = '#43a047'
             returnValue.isTooltip = true
-            returnValue.tooltipText = `Message delivered. \n\n“This malicious email has been found in your mailbox and has been deleted”`
+            returnValue.tooltipText = `Message delivered. \n\n“${warningMessage}”`
           }
           break
         case 'CompletedWithError':
