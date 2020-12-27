@@ -950,7 +950,7 @@ export default {
     notifyMessageWithDelete: null,
     diffDays: null,
     activeMenu: 'Inbox',
-    warningMessage: 'Notify user about this email',
+    warningMessage: 'Send a warning message for this email',
     statusIcon: 'mdi-check',
     showEmails: false,
     showTargetUsersDetails: false,
@@ -1778,8 +1778,8 @@ export default {
       this.isWantToWarn = true
       this.warningMessage =
         Array.isArray(value) && value.length && value.length > 1
-          ? 'Notify users about this email'
-          : 'Notify user about this email'
+          ? 'Send a warning message for this email'
+          : 'Send a warning message for this email'
       this.soloWarningMessageValue = value
     },
     isWantToWarnConfirm() {
