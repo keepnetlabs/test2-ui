@@ -11,6 +11,7 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          :confirm-button-disabled="deleteButtonDisabled"
           @handleClose="isWantToDelete = false"
           @handleConfirm="isWantToDeleteRuleConfirm(true)"
         />
@@ -155,6 +156,7 @@ export default {
   },
   data() {
     return {
+      deleteButtonDisabled: false,
       tableData: [],
       labels,
       loading: false,
@@ -465,6 +467,7 @@ export default {
           values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
         }
         values.map((item) => {
+          this.deleteButtonDisabled = true
           deletePlaybookRule(item).then(() => {
             this.isWantToDelete = false
             this.loading = true
@@ -473,7 +476,10 @@ export default {
               .then(() => {
                 this.tableData = _this.playbookList.results
               })
-              .finally(() => (this.loading = false))
+              .finally(() => {
+                this.loading = false
+                this.deleteButtonDisabled = false
+              })
           })
         })
       }
