@@ -15,6 +15,7 @@ export const labels = {
   EditClient: 'Edit Client',
   NewClient: 'New Client',
   CompanyNameSecondLower: 'Company name',
+  Title: 'Title',
   URL: 'Url',
   Cancel: 'CANCEL',
   Confirm: 'CONFIRM',
