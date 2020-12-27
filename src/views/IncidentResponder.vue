@@ -479,7 +479,7 @@
             :countRow="5"
             :extended-view-loading="extendedViewLoading"
             :clusterItems="[{ name: 'Subject' }]"
-            active-cluster="Subject"
+            active-cluster=""
             :changeFooterPosition="true"
             lazy
             @handleClusterLazyLoad="handleClusterLoad"
@@ -1201,7 +1201,7 @@ export default {
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: {
-      isClustered: true,
+      isClustered: false,
       pageNumber: 1,
       pageSize: 500000,
       orderBy: 'createTime',

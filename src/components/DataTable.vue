@@ -1087,7 +1087,9 @@ export default {
       if (this.serverSideEvents.search) {
         return this.tableData.length === 0 && !this.search && 'table-header-disable'
       } else {
-        return this.tableData.length === 0 && 'table-header-disable'
+        return this.tableData.length === 0 && !this.isColumnFilterActive
+          ? 'table-header-disable'
+          : ''
       }
     },
     getSelectionCheckboxDisabledValue() {
