@@ -490,6 +490,16 @@ export default {
           playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
+          const { isSendFile, isSendFileHash, isSendUrl } = item.analysisEngineType
+          if (!isSendFile) {
+            item.isCheckFile = false
+          }
+          if (!isSendFileHash) {
+            item.isCheckHash = false
+          }
+          if (!isSendUrl) {
+            item.isCheckUrl = false
+          }
           return item.selected === true
         })
       }
@@ -561,6 +571,18 @@ export default {
           playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
+          if (item && item.analysisEngineType && item.analysisEngineType) {
+            const { isSendFile, isSendFileHash, isSendUrl } = item.analysisEngineType
+            if (!isSendFile) {
+              item.isCheckFile = false
+            }
+            if (!isSendFileHash) {
+              item.isCheckHash = false
+            }
+            if (!isSendUrl) {
+              item.isCheckUrl = false
+            }
+          }
           return item.selected === true
         })
       }
