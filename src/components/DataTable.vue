@@ -1126,7 +1126,7 @@ export default {
       isSettingsOpened: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
-      firstColFixed: true,
+      firstColFixed: this.columns.length ? this.columns[0].fixed : true,
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed: true,
