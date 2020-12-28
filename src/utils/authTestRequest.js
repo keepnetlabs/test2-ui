@@ -46,14 +46,7 @@ authTestService.interceptors.response.use(
     if (!error.response) {
       return Promise.reject(error)
     } else if (error.response && error.response.status !== 404) {
-      store.dispatch(
-        'common/createSnackBar',
-        {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message: error.response.data.message || error.response.data.Message
-        },
-        { root: true }
-      )
+      // no need to show snackbar here
     }
     if (
       AuthenticationService.getToken() == null ||
