@@ -779,12 +779,12 @@ export default {
       }
     },
     inviteMember() {
+      this.inviteAllButtonDisabled = true
       setTimeout(() => {
         if (this.$refs.inviteModal.validate()) {
           const payload = {
             emailarray: this.emailarray
           }
-          this.inviteAllButtonDisabled = true
           inviteToCommunity(this.$route.params.id, payload)
             .then((response) => {
               response.data.data.map((item) => {
@@ -804,6 +804,8 @@ export default {
               this.openInviteModal = false
             })
             .finally(() => (this.inviteAllButtonDisabled = false))
+        } else {
+          this.inviteAllButtonDisabled = false
         }
       }, 200)
     },
