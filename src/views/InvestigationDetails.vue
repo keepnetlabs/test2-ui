@@ -1373,6 +1373,13 @@ export default {
             returnValue.tooltipText = `Message sent. \n\n ${actionResultErrorMessage}`
           }
           break
+        case 'ItemNotFound':
+          returnValue.text = 'Item Not Found'
+          returnValue.icon = 'mdi-alert-circle'
+          returnValue.color = '#f56c6c'
+          returnValue.isTooltip = true
+          returnValue.tooltipText = `Item not found. Either it's moved or deleted.`
+          break
         default:
           break
       }
