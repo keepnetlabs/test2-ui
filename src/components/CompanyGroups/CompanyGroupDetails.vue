@@ -64,6 +64,7 @@
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       :is-downloadable="false"
+      :download-button="tableOptions.downloadButton"
       @addButton="addButton"
       @onEmptyBtnClicked="addButton"
       @edit="handleTableItemEdit"
@@ -204,6 +205,7 @@ export default {
         }
       ],
       pageSizes: [5, 10, 25],
+      downloadButton: { show: false, disable: false },
       selectEvent: {
         clipboard: true,
         edit: false,

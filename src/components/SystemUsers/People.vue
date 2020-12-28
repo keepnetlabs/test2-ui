@@ -35,6 +35,7 @@
         :select-event="tableOptions.selectEvent"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
+        :download-button="tableOptions.downloadButton"
         :is-downloadable="false"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
@@ -71,6 +72,7 @@ export default {
       loading: true,
       tableData: [],
       tableOptions: {
+        downloadButton: { show: false, disable: false },
         isColumnFilterActive: false,
         columns: [
           {
