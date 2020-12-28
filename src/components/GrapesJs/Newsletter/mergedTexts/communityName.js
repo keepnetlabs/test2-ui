@@ -1,7 +1,7 @@
 import mergedTextsCommunityName from '../blocks/mergedTextsBlocks/communityName'
 
 const communityName = {
-  label: 'Community Industry',
+  label: 'Community Name',
   category: 'Merged Texts',
   attributes: {
     title: 'To',
