@@ -17,6 +17,7 @@
           @refreshDatatable="refreshDatatable"
         />
         <app-dialog
+          v-if="isWantToDelete"
           :status="isWantToDelete"
           icon="mdi-alert"
           size="small"
@@ -55,6 +56,7 @@
           </template>
         </app-dialog>
         <app-dialog
+          v-if="isWantToWarn"
           :status="isWantToWarn"
           size="big"
           @changeStatus="isWantToWarn = false"
@@ -95,6 +97,7 @@
           </template>
         </app-dialog>
         <app-dialog
+          v-if="isWantToStop"
           :status="isWantToStop"
           size="small"
           @changeStatus="isWantToStop = false"
@@ -114,6 +117,7 @@
         </app-dialog>
 
         <app-dialog
+          v-if="isWantToWarnAndDelete"
           :status="isWantToWarnAndDelete"
           @changeStatus="isWantToWarnAndDelete = false"
           size="big"
