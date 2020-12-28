@@ -26,6 +26,7 @@
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-downloadable="false"
+      :download-button="tableOptions.downloadButton"
       id="company-groups-data-table"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
@@ -76,6 +77,7 @@ export default {
       selectedRow: null,
       tableOptions: {
         isColumnFilterActive: false,
+        downloadButton: { show: false, disable: false },
         columns: [
           {
             property: 'name',
