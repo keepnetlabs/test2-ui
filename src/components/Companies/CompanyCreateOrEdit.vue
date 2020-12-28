@@ -120,7 +120,7 @@
                         (v) =>
                           validations.maxLength(
                             v,
-                            300,
+                            200,
                             labels.getMaxLengthMessage(labels.Address, 200)
                           )
                       ]"
