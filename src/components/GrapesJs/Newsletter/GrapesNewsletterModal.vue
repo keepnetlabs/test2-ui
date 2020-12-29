@@ -91,7 +91,7 @@ export default {
         container: '#gjsNewsletterModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', exportGrapes],
+        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage'],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalTitleImport: 'Import Template',
@@ -102,6 +102,15 @@ export default {
         },
         noticeOnUnload: false
       })
+      setTimeout(()=> {
+        if(!document.getElementsByClassName('gjs-btn-prim').length){
+          document.getElementsByClassName("gjs-pn-btn fa fa-code")[0].addEventListener('click', () => {
+            setTimeout(()=>{
+            document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type','button')
+            },100)
+          })
+        }
+      },500)
       /*let dType = this.editor.DomComponents.getType('link')
       let dModel = dType.model
       let dView = dType.view
@@ -174,7 +183,7 @@ export default {
       let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
       return htmlContent
     }
-  }
+  },
 }
 </script>
 
