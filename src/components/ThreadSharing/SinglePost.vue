@@ -592,7 +592,10 @@
                   class="send-btn"
                   type="button"
                   :disabled="
-                    !checkPermissions('community-posts/{communityPostResourceId}/comments', 'POST')
+                    !checkPermissions(
+                      'community-posts/{communityPostResourceId}/comments',
+                      'POST'
+                    ) || isPostButtonDisabled
                   "
                 >
                   <v-icon>mdi-send</v-icon>
@@ -654,7 +657,7 @@
                         <v-btn
                           @click="updateComments(com)"
                           class="send-btn"
-                          :disabled="!com.canEdit"
+                          :disabled="!com.canEdit || isEditCommentButtonDisabled"
                         >
                           <v-icon :disabled="!com.canEdit">mdi-send</v-icon>
                           Edit
@@ -1126,6 +1129,8 @@ export default {
     }
   },
   data: () => ({
+    isEditCommentButtonDisabled: false,
+    isPostButtonDisabled: false,
     getCommentDetails: false,
     shareButtonDisabled: false,
     labels,
@@ -1337,12 +1342,17 @@ export default {
     },
     updateComments(comment) {
       const payload = { comment: comment.commentValue }
-      updateComments(comment.resourceId, payload).then(() => {
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-        this.getComments(this.post.communityPostResourceId)
-      })
+      this.isEditCommentButtonDisabled = true
+      updateComments(comment.resourceId, payload)
+        .then(() => {
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+          }, 500)
+          this.getComments(this.post.communityPostResourceId)
+        })
+        .catch(() => {
+          this.isEditCommentButtonDisabled = false
+        })
     },
     deleteComment(comment) {
       this.deleteCommentId = comment.resourceId
@@ -1445,6 +1455,7 @@ export default {
       })
     },
     getComments(id) {
+      this.isEditCommentButtonDisabled = true
       getComments(id)
         .then((response) => {
           const { data } = response
@@ -1460,19 +1471,27 @@ export default {
             this.comments = []
           }
         })
+        .finally(() => (this.isEditCommentButtonDisabled = false))
     },
     addPostComment(postId, communId) {
+      this.isPostButtonDisabled = true
       if (this.$refs.refCommentForm.validate()) {
         const payload = {
           comment: this.addCommentValue
         }
-        createComments(postId, payload).then(() => {
-          this.addCommentValue = ''
-          this.getComments(this.post.communityPostResourceId)
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-        })
+        createComments(postId, payload)
+          .then(() => {
+            this.addCommentValue = ''
+            this.getComments(this.post.communityPostResourceId)
+            setTimeout(() => {
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
+          })
+          .finally(() => {
+            this.isPostButtonDisabled = false
+          })
+      } else {
+        this.isPostButtonDisabled = false
       }
     },
     editIncident(post, communityName) {
