@@ -17,6 +17,7 @@
         :title="labels.StopOngoingInvestigation"
         :subtitle="labels.DoYouWantToStopInvestigation"
         :body="labels.OnceYouStoppedInvestigation"
+        @changeStatus="isWantToStopInvestigation = false"
       >
         <template v-slot:app-dialog-footer>
           <app-dialog-footer
