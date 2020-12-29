@@ -103,15 +103,13 @@ export default {
         noticeOnUnload: false
       })
       setTimeout(()=> {
-      debugger
-      if(!document.getElementsByClassName('gjs-btn-prim').length){
-        debugger
-        document.getElementsByClassName("gjs-pn-btn fa fa-code")[0].addEventListener('click', () => {
-          setTimeout(()=>{
-          document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type','button')
-          },100)
-        })
-      }
+        if(!document.getElementsByClassName('gjs-btn-prim').length){
+          document.getElementsByClassName("gjs-pn-btn fa fa-code")[0].addEventListener('click', () => {
+            setTimeout(()=>{
+            document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type','button')
+            },100)
+          })
+        }
       },500)
       /*let dType = this.editor.DomComponents.getType('link')
       let dModel = dType.model
