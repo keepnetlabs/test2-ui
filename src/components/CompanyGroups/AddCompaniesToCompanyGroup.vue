@@ -59,6 +59,7 @@ import labels from '@/model/constants/labels'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
+import { getLookupListByTypeIdList } from '@/api/common'
 export default {
   name: 'AddCompaniesToCompanyGroup',
   components: {
@@ -105,6 +106,7 @@ export default {
             type: 'text',
             filterableType: 'select',
             filterableItems: [],
+            filterableCustomFieldName: 'IndustryResourceId',
             width: 150
           },
           {
@@ -117,6 +119,7 @@ export default {
             type: 'text',
             filterableType: 'select',
             filterableItems: [],
+            filterableCustomFieldName: 'LicenseTypeResourceId',
             width: 150
           },
           {
@@ -228,17 +231,41 @@ export default {
   methods: {
     callForSearch() {
       this.loading = true
-      searchCompanies(this.payload)
+      getLookupListByTypeIdList({ typeidlist: [2, 3] })
         .then((response) => {
-          this.tableData =
-            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-              ? response.data.data.results
-              : []
+          const res = response.data.data
+          this.$set(
+            this.tableOptions.columns[1],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 2)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+          this.$set(
+            this.tableOptions.columns[2],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 3)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
         })
         .catch(() => {
-          this.tableData = []
+          this.loading = false
         })
-        .finally(() => (this.loading = false))
+        .finally(() => {
+          searchCompanies(this.payload)
+            .then((response) => {
+              this.tableData =
+                response.data.data.hasOwnProperty('results') &&
+                response.data.data.results.length > 0
+                  ? response.data.data.results
+                  : []
+            })
+            .catch(() => {
+              this.tableData = []
+            })
+            .finally(() => (this.loading = false))
+        })
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
