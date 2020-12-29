@@ -42,8 +42,9 @@
           <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.to"
-            :persistent-hint="formValues.isSendInformationEmail"
-            :hint="formValues.isSendInformationEmail ? '*Required' : ''"
+            :required="showForm ? !!formValues.isSendInformationEmail : false"
+            :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
+            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : '') : ''"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
@@ -81,6 +82,7 @@
             class="k-textfield mt-2"
             v-model.trim="formValues.cc"
             :persistent-hint="false"
+            :required="false"
             :hint="''"
             :rules="
               showForm
@@ -104,6 +106,7 @@
             v-model.trim="formValues.bcc"
             :readonly="!showForm"
             :persistent-hint="false"
+            :required="false"
             :hint="''"
             :rules="
               showForm
@@ -125,8 +128,9 @@
             placeholder="Suspicious Email"
             class="k-textfield mt-2"
             v-model.trim="formValues.subject"
-            :persistent-hint="formValues.isSendInformationEmail"
-            :hint="formValues.isSendInformationEmail ? '*Required' : ''"
+            :required="showForm ? !!formValues.isSendInformationEmail : false"
+            :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
+            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : '') : ''"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
@@ -162,8 +166,9 @@
             dense
             no-resize
             class="mt-2"
-            :persistent-hint="formValues.isSendInformationEmail"
-            :hint="formValues.isSendInformationEmail ? '*Required' : ''"
+            :required="showForm ? !!formValues.isSendInformationEmail : false"
+            :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
+            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : '') : ''"
             v-model.trim="formValues.content"
             :rules="
               showForm
