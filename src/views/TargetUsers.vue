@@ -119,9 +119,9 @@ export default {
       const companyResourceId = localStorage.getItem('companyId')
       getCheckCompanyLicense(companyResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
-        const { isLicenseExceeded } = data
+        const { isLimited,isLicenseExceeded } = data
         this.companyLicense = data
-        if (isLicenseExceeded && showMainModal) {
+        if (isLimited && isLicenseExceeded && showMainModal) {
           this.toggleShowLicenseExceededDialog()
         }
       })

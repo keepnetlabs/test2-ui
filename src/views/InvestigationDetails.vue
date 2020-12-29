@@ -1296,7 +1296,7 @@ export default {
             returnValue.icon = 'mdi-check-circle'
             returnValue.color = '#43a047'
             returnValue.isTooltip = true
-            returnValue.tooltipText = `Message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
+            returnValue.tooltipText = `Message sent. \n\n“${warningMessage}”`
           }
           break
         case 'Completed':
