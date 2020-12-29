@@ -36,11 +36,11 @@
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :download-button="tableOptions.downloadButton"
-        :is-downloadable="false"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
         @deleteAction="handleDelete"
+        @downloadEvent="exportSystemUsers"
         @editAction="handleEdit"
         @handleAddNewSystemUsers="toggleCreateOrEditSystemUser"
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
@@ -53,12 +53,12 @@
 </template>
 
 <script>
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
-import { deleteSystemUser, getSystemUsers } from '@/api/systemUsers'
+import { deleteSystemUser, getSystemUsers, exportSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
-import { checkPermission } from '../../utils/functions'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'People',
   components: {
@@ -72,7 +72,10 @@ export default {
       loading: true,
       tableData: [],
       tableOptions: {
-        downloadButton: { show: false, disable: false },
+        downloadButton: {
+          show: true,
+          disabled: !this.checkPermissions('system-users/search/export', 'POST')
+        },
         isColumnFilterActive: false,
         columns: [
           {
@@ -207,7 +210,7 @@ export default {
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 50000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -228,6 +231,26 @@ export default {
     }
   },
   methods: {
+    exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      exportTypes.map((exportType) => {
+        const payload = {
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.requestBody.filter
+        }
+        exportSystemUsers(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `system-users.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },

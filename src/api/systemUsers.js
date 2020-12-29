@@ -33,6 +33,12 @@ export function sendInformationEmail(resourceId = '') {
   )
 }
 
+export function exportSystemUsers(payload = {}) {
+  return testRequest.post('/system-users/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export function getUserRoles(payload) {
   return testRequest.post(`/roles/search`, payload, { loading: true })
 }

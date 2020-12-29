@@ -9,7 +9,7 @@
     v-if="filterableType"
     max-height="260px"
     v-model="menu"
-    z-index="99"
+    z-index="999"
   >
     <template v-slot:activator="{ on }">
       <v-icon v-on="on" class="filter__icon" :color="isFilterActive === true ? '#409eff' : ''"

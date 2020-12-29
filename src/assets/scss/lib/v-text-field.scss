@@ -24,6 +24,16 @@
       align-self: center;
       margin: initial;
     }
+    @media not all and (min-resolution:.001dpcm) {
+      @supports (-webkit-appearance:none) {
+        &--outlined.v-input--is-focused fieldset{
+          border:1px solid #1976d2 !important;
+        }
+        &--outlined.v-input--has-state fieldset{
+          border:1px solid #ff5252 !important;
+        }
+      }
+    }
     &--outlined.v-input--is-focused fieldset,
     &--outlined.v-input--has-state fieldset {
       border: 1px solid currentColor;
