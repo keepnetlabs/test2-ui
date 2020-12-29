@@ -718,7 +718,8 @@ export default {
       let currentMemberCount = this.companyLicense['totalUserCount']
       let totalMemberCount = newMemberCount + currentMemberCount
       let licenseLimit = this.companyLicense['licenseLimit']
-      if (this.companyLicense['isLicenseExceeded'] || licenseLimit < totalMemberCount) {
+      let isLimited = this.companyLicense['isLimited']
+      if (isLimited && (this.companyLicense['isLicenseExceeded'] || licenseLimit < totalMemberCount)) {
         this.showLicenseExceededDialog = true
       } else {
         this.save(actionName)

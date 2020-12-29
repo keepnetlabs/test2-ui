@@ -266,8 +266,8 @@ export default {
         if (this.editData) {
           this.callForUpdateTargetUser()
         } else {
-          const { activeUserCount, licenseLimit } = this.companyLicense
-          if (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit) {
+          const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
+          if (isLimited && (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit )) {
             this.toggleShowLicenseExceededDialog()
           } else {
             this.callForCreateTargetUser()
@@ -322,8 +322,8 @@ export default {
       return rules
     },
     callForCreateTargetUser() {
-      const { activeUserCount, licenseLimit } = this.companyLicense
-      if (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit) {
+      const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
+      if (isLimited && (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)) {
         this.toggleShowLicenseExceededDialog()
       }
       const payload = this.getCustomFieldsPayload()
