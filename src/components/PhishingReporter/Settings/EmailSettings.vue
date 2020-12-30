@@ -44,7 +44,7 @@
             v-model.trim="formValues.to"
             :required="showForm ? !!formValues.isSendInformationEmail : false"
             :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
-            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : '') : ''"
+            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
@@ -83,7 +83,7 @@
             v-model.trim="formValues.cc"
             :persistent-hint="false"
             :required="false"
-            :hint="''"
+            :hint="null"
             :rules="
               showForm
                 ? [
@@ -107,7 +107,7 @@
             :readonly="!showForm"
             :persistent-hint="false"
             :required="false"
-            :hint="''"
+            :hint="null"
             :rules="
               showForm
                 ? [
@@ -130,7 +130,7 @@
             v-model.trim="formValues.subject"
             :required="showForm ? !!formValues.isSendInformationEmail : false"
             :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
-            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : '') : ''"
+            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
             :rules="
               showForm
                 ? formValues.isSendInformationEmail
@@ -168,7 +168,7 @@
             class="mt-2"
             :required="showForm ? !!formValues.isSendInformationEmail : false"
             :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
-            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : '') : ''"
+            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
             v-model.trim="formValues.content"
             :rules="
               showForm
