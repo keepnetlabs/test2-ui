@@ -642,6 +642,7 @@
               class="mt-2"
               justify="end"
               style='margin: 5px !important;'
+              v-if="selectedTab && selectedTab === 'tab-2' ? invitationData.length : listData.length"
             >
              <el-pagination
                 layout="sizes, prev, pager, next,slot"
