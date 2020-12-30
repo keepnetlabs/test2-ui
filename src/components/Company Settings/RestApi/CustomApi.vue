@@ -257,6 +257,7 @@ export default {
       deleteRestApi(resourceId)
         .then(() => {
           this.toggleShowDeleteCustomApi()
+          this.callForSearch()
         })
         .finally(() => {
           this.saveDisableDelete = false
