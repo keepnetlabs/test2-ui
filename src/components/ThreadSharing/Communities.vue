@@ -40,6 +40,7 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
           @handleClose="isWantToToLeaveFromCommunity = false"
           @handleConfirm="leaveFromCommunityConfirm"
           actionButtonText="LEAVE"
@@ -156,6 +157,7 @@
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          :confirm-button-disabled="isNotificationSettingButtonDisabled"
           @handleClose="openNotificationModal = false"
           @handleConfirm="saveNotificationSetting"
         />
@@ -347,6 +349,7 @@
                       outlined
                       rounded
                       medium
+                      :disabled="isRequestToJoinDisabled"
                       class="join-button"
                       @click="
                         requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
@@ -672,7 +675,10 @@ export default {
     AppDialog
   },
   data: () => ({
+    isNotificationSettingButtonDisabled: false,
+    isRequestToJoinDisabled: false,
     temporaryResourceId: null,
+    isLeaveFromCommunityButtonDisabled: false,
     notificationLoading: false,
     labels,
     industryList: [],
@@ -828,9 +834,12 @@ export default {
         IsEmailEnabled: this.notifications.isEmailEnabled,
         IsDashboardEnabled: this.notifications.isDashboardEnabled
       }
-      updateNotifications(payload).then((response) => {
-        this.openNotificationModal = false
-      })
+      this.isNotificationSettingButtonDisabled = true
+      updateNotifications(payload)
+        .then((response) => {
+          this.openNotificationModal = false
+        })
+        .finally(() => (this.isNotificationSettingButtonDisabled = false))
     },
     cancelRequest(item) {
       cancelRequest(item.membershipResourceId).then(() => {
@@ -914,6 +923,7 @@ export default {
       this.isWantToToLeaveFromCommunity = true
     },
     leaveFromCommunityConfirm() {
+      this.isLeaveFromCommunityButtonDisabled = true
       removeFromCommunities(this.leaveCommunityId)
         .then(() => {
           this.isWantToToLeaveFromCommunity = false
@@ -921,7 +931,9 @@ export default {
           this.getMyCommunitiesListData()
           this.getInvitationCount()
           setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true).finally(() => {
+              this.isLeaveFromCommunityButtonDisabled = false
+            })
           }, 500)
         })
         .catch((error) => {
@@ -933,6 +945,7 @@ export default {
             this.isWantToToLeaveFromCommunity = false
             this.showNeedPermissionModal = true
           }
+          this.isLeaveFromCommunityButtonDisabled = false
         })
     },
     debounce(fn, delay) {
@@ -1154,6 +1167,7 @@ export default {
     },
     requestJoin(communityId, communityName, type) {
       this.communityLoading = true
+      this.isRequestToJoinDisabled = true
       joinCommunity(communityId)
         .then(() => {
           if (type === 'join') {
@@ -1169,8 +1183,13 @@ export default {
           }
 
           setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            this.$store
+              .dispatch('rightColumn/changeReloadRightColumnData', true)
+              .finally(() => (this.isRequestToJoinDisabled = false))
           }, 500)
+        })
+        .catch(() => {
+          this.isRequestToJoinDisabled = false
         })
         .finally(() => {
           this.communityLoading = false

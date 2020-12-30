@@ -137,6 +137,7 @@
           text
           color="#2196f3"
           class="k-dialog__button"
+          :disabled="isSwitchAccountDisabled"
           @click="onClickSelectedAccount(value)"
           >{{ labels.Confirm }}</v-btn
         >
@@ -165,7 +166,8 @@ export default {
       search: '',
       companies: [],
       orderedAccounts: [],
-      companyLoading: false
+      companyLoading: false,
+      isSwitchAccountDisabled: false
     }
   },
   components: {
@@ -173,6 +175,7 @@ export default {
     Treeselect
   },
   created() {
+    this.isSwitchAccountDisabled = false
     this.$store.watch((state) => {
       if (state.dashboard.isSwitchDialogOpen) {
         this.getCompanyData()
@@ -240,6 +243,7 @@ export default {
       localStorage.setItem('selectedCompanyName', account.name)
     },
     onClickSelectedAccount({ label, id }) {
+      this.isSwitchAccountDisabled = true
       this.getSelectedCompanyDetails({ name: label, resourceId: id })
       this.setDialogBar(false)
       this.search = ''

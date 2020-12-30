@@ -36,6 +36,7 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          :confirm-button-disabled="isConfirmButtonDisabled"
           @handleClose="isWantToDeleteComment = false"
           @handleConfirm="deleteCommentConfirm()"
         />
@@ -1129,6 +1130,7 @@ export default {
     }
   },
   data: () => ({
+    isConfirmButtonDisabled: false,
     isEditCommentButtonDisabled: false,
     isPostButtonDisabled: false,
     getCommentDetails: false,
@@ -1359,13 +1361,20 @@ export default {
       this.isWantToDeleteComment = true
     },
     deleteCommentConfirm() {
-      deleteComments(this.deleteCommentId).then(() => {
-        this.isWantToDeleteComment = false
-        this.getComments(this.post.communityPostResourceId)
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
+      this.isConfirmButtonDisabled = true
+      deleteComments(this.deleteCommentId)
+        .then(() => {
+          this.isWantToDeleteComment = false
+          this.getComments(this.post.communityPostResourceId)
+          setTimeout(() => {
+            this.$store
+              .dispatch('rightColumn/changeReloadRightColumnData', true)
+              .finally(() => (this.isConfirmButtonDisabled = false))
+          }, 500)
+        })
+        .catch(() => {
+          this.isConfirmButtonDisabled = false
+        })
     },
     deleteIncidentConfirm() {
       deleteCommunityPost(this.deleteIncidentId).then(() => {
