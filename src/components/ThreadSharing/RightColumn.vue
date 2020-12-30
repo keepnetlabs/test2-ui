@@ -48,6 +48,7 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
           @handleClose="isWantToToLeaveFromCommunity = false"
           @handleConfirm="leaveFromCommunityConfirm"
           actionButtonText="LEAVE"
@@ -504,7 +505,7 @@
                     block
                     rounded
                     v-else
-                    :disabled="commun.isJoined"
+                    :disabled="commun.isJoined || isJoinCommunityButtonDisabled"
                     style="background-color: #2196f3 !important;"
                   >
                     <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
@@ -558,6 +559,8 @@ import { getNotifications } from '../../api/dashboard'
 export default {
   data() {
     return {
+      isLeaveFromCommunityButtonDisabled: false,
+      isJoinCommunityButtonDisabled: false,
       inviteAllButtonDisabled: false,
       notificationLoading: false,
       labels,
@@ -735,6 +738,7 @@ export default {
       })
     },
     leaveFromCommunityConfirm() {
+      this.isLeaveFromCommunityButtonDisabled = true
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
           this.isWantToToLeaveFromCommunity = false
@@ -750,6 +754,7 @@ export default {
             this.showNeedPermissionModal = true
           }
         })
+        .finally(() => (this.isLeaveFromCommunityButtonDisabled = false))
     },
     onAddClose() {
       this.isWantToAddNewCommunity = false
@@ -923,23 +928,26 @@ export default {
       this.closeCommunityInfo()
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
-      joinCommunity(resourceId).then(() => {
-        this.getsuggestedCommunities()
-        localStorage.setItem('communityName', communityName)
-        localStorage.setItem('communityResourceIdForRedirect', resourceId)
-        if (privacyStatusName !== 'Private') {
-          if (this.$route.name == 'Community') {
-            this.$router.push(`/community/${resourceId}`)
-            this.$router.go(`/community/${resourceId}`)
-            this.$emit('joinRequestSuccess')
+      this.isJoinCommunityButtonDisabled = true
+      joinCommunity(resourceId)
+        .then(() => {
+          this.getsuggestedCommunities()
+          localStorage.setItem('communityName', communityName)
+          localStorage.setItem('communityResourceIdForRedirect', resourceId)
+          if (privacyStatusName !== 'Private') {
+            if (this.$route.name == 'Community') {
+              this.$router.push(`/community/${resourceId}`)
+              this.$router.go(`/community/${resourceId}`)
+              this.$emit('joinRequestSuccess')
+            } else {
+              this.$emit('joinRequestSuccess')
+              this.$router.push(`/community/${resourceId}`)
+            }
           } else {
             this.$emit('joinRequestSuccess')
-            this.$router.push(`/community/${resourceId}`)
           }
-        } else {
-          this.$emit('joinRequestSuccess')
-        }
-      })
+        })
+        .finally(() => (this.isJoinCommunityButtonDisabled = false))
     },
     isOwnerOfTheCommunity() {
       if (this.communityDetails) {

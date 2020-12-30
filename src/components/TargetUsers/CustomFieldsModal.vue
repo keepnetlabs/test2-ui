@@ -223,7 +223,7 @@ export default {
           })
           this.sortCustomFields(this.customFields)
           this.sortCustomFields(this.unActiveCustomFields)
-          this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))
+          this.copyOfCustomFields = JSON.parse(JSON.stringify(data.data))
         })
         .finally(() => (this.loading = false))
     },
@@ -276,8 +276,10 @@ export default {
               this.callForUpdateCustomFields(updatedFields)
             })
             .catch(() => (this.loading = false))
-        } else if (updatedFields.length) {
+        } else if (updatedFields.length || this.copyOfCustomFields.length) {
           this.callForUpdateCustomFields(updatedFields)
+        } else if (!updatedFields.length && !this.copyOfCustomFields.length) {
+          this.callForUpdateCustomFields([])
         }
       }
     },

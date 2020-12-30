@@ -23,6 +23,7 @@
               class="pa-0 k-dialog__button"
               text
               color="#2196f3"
+              :disabled="isAssignOwnerButtonDisabled"
               @click="appointANewOwnerConfirm"
               >ACCEPT
             </v-btn>
@@ -54,6 +55,7 @@
               class="pa-0 k-dialog__button"
               text
               color="#2196f3"
+              :disabled="isRemoveFromCommunityButtonDisabled"
               @click="removeFromCommunityConfirm"
               >REMOVE
             </v-btn>
@@ -369,6 +371,8 @@ export default {
   },
   data: () => ({
     labels,
+    isRemoveFromCommunityButtonDisabled: false,
+    isAssignOwnerButtonDisabled: false,
     membersLoading: true,
     appointUserName: null,
     appointNewOwnerId: null,
@@ -486,13 +490,20 @@ export default {
       const payload = {
         AppointedCompanyResourceId: this.appointNewOwnerId
       }
-      appointNewOwner(this.$route.params.id, payload).then(() => {
-        this.getMembers()
-        this.showAppointANewOwnerModal = false
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
+      this.isAssignOwnerButtonDisabled = true
+      appointNewOwner(this.$route.params.id, payload)
+        .then(() => {
+          this.getMembers()
+          this.showAppointANewOwnerModal = false
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true).finally(() => {
+              this.isAssignOwnerButtonDisabled = false
+            })
+          }, 500)
+        })
+        .catch(() => {
+          this.isAssignOwnerButtonDisabled = false
+        })
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -537,13 +548,20 @@ export default {
       this.showRemoveFromCommunityModal = true
     },
     removeFromCommunityConfirm() {
-      removeFromCommunity(this.$route.params.id, this.removeCommunityId).then(() => {
-        this.getMembers()
-        this.showRemoveFromCommunityModal = false
-        setTimeout(() => {
-          this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-        }, 500)
-      })
+      this.isRemoveFromCommunityButtonDisabled = true
+      removeFromCommunity(this.$route.params.id, this.removeCommunityId)
+        .then(() => {
+          this.getMembers()
+          this.showRemoveFromCommunityModal = false
+          setTimeout(() => {
+            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true).finally(() => {
+              this.isRemoveFromCommunityButtonDisabled = false
+            })
+          }, 500)
+        })
+        .catch(() => {
+          this.isRemoveFromCommunityButtonDisabled = false
+        })
     },
     onRemoveMember() {},
     getMembers() {

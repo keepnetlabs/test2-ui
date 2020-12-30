@@ -136,12 +136,14 @@ export default {
   },
   methods: {
     callForGenerateOutlookAddIn() {
+      this.outlookSpinnerStatus = true
       generateOutlookAddIn()
         .then((response) => {
-          this.outlookSpinnerStatus = true
           this.callForDownloadOutlookAddIn(response.data.data.transactionId)
         })
-        .catch(() => {})
+        .catch(() => {
+          this.outlookSpinnerStatus = false
+        })
     },
     callForDownloadOutlookAddIn(transactionId) {
       downloadOutlookAddIn(transactionId)
