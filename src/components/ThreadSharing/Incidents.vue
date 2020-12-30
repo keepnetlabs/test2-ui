@@ -21,9 +21,9 @@
         <v-data-iterator
           :items="incidentList"
           :items-per-page.sync="itemsPerPage"
-          :footer-props="{ itemsPerPageOptions }"
           :page="page"
-          @update:page="onChangePagination"
+          hide-default-footer
+          @change='$forceUpdate()'
         >
           <template v-slot:header>
             <div class="search-wrapper">
@@ -140,6 +140,33 @@
               </div>
             </v-skeleton-loader>
           </template>
+          <template v-slot:footer>
+            <v-row
+              class="mt-2"
+              justify="end"
+              style='margin: 5px !important;'
+              v-if="incidentList && incidentList.length"
+            >
+             <el-pagination
+                layout="sizes, prev, pager, next,slot"
+                @size-change="handleSizeChange"
+                :current-page.sync="page"
+                :page-sizes="itemsPerPageArray"
+                :page-size="itemsPerPage"
+                :total="incidentList && incidentList.length">
+               <template>
+                <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
+                <span class="el-pagination__text el-pagination__text--2">
+                  {{ page }}-{{
+                    numberOfPages
+                  }}
+                  of
+                  {{ incidentList && incidentList.length }}
+                </span>
+              </template>
+              </el-pagination>
+            </v-row>
+          </template>
         </v-data-iterator>
       </v-card-text>
     </v-card>
@@ -167,6 +194,9 @@ export default {
     SinglePost
   },
   computed: {
+    numberOfPages () {
+      return Math.ceil(this.incidentList && this.incidentList.length / this.itemsPerPage)
+    },
     routerName() {
       return this.$route.name
     }
@@ -186,6 +216,9 @@ export default {
     }
   },
   data: () => ({
+    itemsPerPageArray: [5, 10, 20],
+    page: 1,
+    itemsPerPage: 5,
     isSharedPost: true,
     companyItem: [],
     companyValue: null,
@@ -235,6 +268,9 @@ export default {
     }
   },
   methods: {
+    handleSizeChange(val){
+      this.itemsPerPage = val
+    },
     onChangePagination(val) {
       this.page = val
     },
@@ -434,7 +470,16 @@ export default {
             })
         }
       }
-    }
+    },
+    nextPage () {
+      if (this.page + 1 <= this.numberOfPages) this.page += 1
+    },
+    formerPage () {
+      if (this.page - 1 >= 1) this.page -= 1
+    },
+    updateItemsPerPage (number) {
+      this.itemsPerPage = number
+    },
   },
   mounted() {
     getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
@@ -452,6 +497,111 @@ export default {
 <style lang="scss">
 #component-incidents {
   z-index: 8;
+  
+  .el-pager{
+    padding:0 !important;
+  }
+
+  .el-pagination {
+    display:flex;
+    .el-pagination__text--1{
+      order:-1;
+      margin-right:8px;
+    }
+    .el-pagination__text--2{
+      margin-right:42px;
+    }
+    .btn-prev{
+      order:1;
+    }
+    .el-pager{
+      order:2;
+    }
+    .btn-next{
+      order:3;
+    }
+    .btn-next{
+      padding-left: 0 !important;
+    }
+    .btn-next .el-icon, .btn-prev .el-icon{
+      font-size: 18px;
+      font-weight: bolder;
+      color: #757575;
+      &:hover{
+        color:#2196f3 !important;
+      }
+    }
+
+    @media (max-width: 480px){
+      white-space: wrap;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      width:100%;
+    }
+    &__total{
+      margin-right: 32px;
+      @media (max-width: 480px){
+        margin-right: 0 ;
+      }
+    }
+    &__sizes{
+      margin-right: 27px;
+      @media (max-width: 480px){
+        margin-right: 0 ;
+      }
+    }
+  }
+  .el-pager > li {
+    min-width: 13px;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    opacity: .7;
+    color:rgba(0, 0, 0, 0.87) ;
+    &.active{
+      opacity: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color:#2196f3 !important;
+    }
+  }
+
+  .el-pagination .btn-prev {
+    padding-right: 0;
+  }
+
+  .pagination-buttons{
+    box-shadow: none !important;
+    min-width: 45px !important;
+    max-width: 45px !important;
+  }
+
+  .el-pagination__total{
+    font-weight: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87) !important;
+    display: inline-block;
+    font-size: 13px;
+    min-width: 35.5px;
+    height: 28px;
+    line-height: 28px;
+    vertical-align: top;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+  }
+
+  .el-pagination .btn-prev {
+    padding-right: 0;
+  }
+
+  .el-input.el-input--mini{
+    input{
+      background-color: #f2f2f2;
+    }
+  }
+
   .create-post-incident {
     font-size: 14px;
     font-weight: 600;
