@@ -1,5 +1,5 @@
 <template>
-  <v-card flat color="basil">
+  <v-card flat class="members-content" color="basil">
     <app-dialog
       :status="showAppointANewOwnerModal"
       @changeStatus="showAppointANewOwnerModal = false"
@@ -89,6 +89,7 @@
             :items="members"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
+            hide-default-footer
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
             <template v-slot:header>
@@ -233,6 +234,33 @@
                 </div>
               </v-skeleton-loader>
             </template>
+            <template v-slot:footer>
+            <v-row
+              class="mt-2"
+              justify="end"
+              style='margin: 5px !important;'
+              v-if="members && members.length"
+            >
+             <el-pagination
+                layout="sizes, prev, pager, next,slot"
+                :current-page.sync="page"
+                :page-sizes="itemsPerPageOptions"
+                :page-size="itemsPerPage"
+                @size-change="handleSizeChange"
+                :total="members && members.length">
+               <template>
+                <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
+                <span class="el-pagination__text el-pagination__text--2">
+                  {{ page }}-{{
+                    numberOfPages
+                  }}
+                  of
+                  {{ members && members.length }}
+                </span>
+              </template>
+              </el-pagination>
+            </v-row>
+          </template>
           </v-data-iterator>
         </v-tab-item>
         <v-tab-item :transition="false" :reverse-transition="false">
@@ -240,6 +268,7 @@
             :items="requestMembers"
             :items-per-page.sync="itemsPerPage"
             :footer-props="{ itemsPerPageOptions }"
+            hide-default-footer
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
             <template v-slot:header>
@@ -343,6 +372,33 @@
                 </div>
               </v-skeleton-loader>
             </template>
+            <template v-slot:footer>
+            <v-row
+              class="mt-2"
+              justify="end"
+              style='margin: 5px !important;'
+              v-if="requestMembers && requestMembers.length"
+            >
+             <el-pagination
+                layout="sizes, prev, pager, next,slot"
+                :current-page.sync="page"
+                :page-sizes="itemsPerPageOptions"
+                :page-size="itemsPerPage"
+                @size-change="handleSizeChange"
+                :total="requestMembers && requestMembers.length">
+               <template>
+                <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
+                <span class="el-pagination__text el-pagination__text--2">
+                  {{ page }}-{{
+                    numberOfPagesForRequest
+                  }}
+                  of
+                  {{ requestMembers && requestMembers.length }}
+                </span>
+              </template>
+              </el-pagination>
+            </v-row>
+          </template>
           </v-data-iterator>
         </v-tab-item>
       </v-tabs-items>
@@ -457,6 +513,12 @@ export default {
     memberCompId: null
   }),
   computed: {
+     numberOfPages () {
+      return Math.ceil(this.members && this.members.length / this.itemsPerPage)
+    },
+    numberOfPagesForRequest(){
+      return Math.ceil(this.requestMembers && this.requestMembers.length / this.itemsPerPage)
+    },
     communityPrivacy() {
       return (
         this.$store.state.threadSharing.selectedCommunity.privacy ||
@@ -469,6 +531,9 @@ export default {
     }
   },
   methods: {
+    handleSizeChange(val){
+      this.itemsPerPage = val
+    },
     memberImage(member) {
       return member.logoUrl || require('../../assets/img/no-logo.png')
     },
@@ -682,8 +747,82 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.notification-wrapper {
+<style lang="scss">
+.members-content{
+  .el-pager{
+    padding:0 !important;
+  }
+
+  .el-pagination {
+    display:flex;
+    .el-pagination__text--1{
+      order:-1;
+      margin-right:8px;
+    }
+    .el-pagination__text--2{
+      margin-right:42px;
+    }
+    .btn-prev{
+      order:1;
+    }
+    .el-pager{
+      order:2;
+    }
+    .btn-next{
+      order:3;
+    }
+    .btn-next{
+      padding-left: 0 !important;
+    }
+    .btn-next .el-icon, .btn-prev .el-icon{
+      font-size: 18px;
+      font-weight: bolder;
+      color: #757575;
+      &:hover{
+        color:#2196f3 !important;
+      }
+    }
+
+    @media (max-width: 480px){
+      white-space: wrap;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      width:100%;
+    }
+    &__total{
+      margin-right: 32px;
+      @media (max-width: 480px){
+        margin-right: 0 ;
+      }
+    }
+    &__sizes{
+      margin-right: 27px;
+      @media (max-width: 480px){
+        margin-right: 0 ;
+      }
+    }
+  }
+  .el-pager > li {
+    min-width: 13px;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    opacity: .7;
+    color:rgba(0, 0, 0, 0.87) ;
+    &.active{
+      opacity: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color:#2196f3 !important;
+    }
+  }
+
+  .el-pagination .btn-prev {
+    padding-right: 0;
+  }
+  .notification-wrapper {
   padding: 0 !important;
   width: 100%;
   box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
@@ -712,15 +851,12 @@ export default {
   .filter-icon {
     color: rgba(0, 0, 0, 0.34) !important;
     cursor: pointer;
-    margin-top: 15px;
   }
 }
 
 .threat-sharing-content {
   width: 100%;
   border-radius: 20px !important;
-  box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-    0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
   background-color: #ffffff;
   &__logo {
     font-size: 12px;
@@ -1110,5 +1246,6 @@ export default {
   line-height: normal;
   letter-spacing: normal;
   color: rgba(0, 0, 0, 0.72);
+}
 }
 </style>

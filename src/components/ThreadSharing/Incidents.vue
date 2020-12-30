@@ -145,6 +145,7 @@
               class="mt-2"
               justify="end"
               style='margin: 5px !important;'
+              v-if="incidentList && incidentList.length"
             >
              <el-pagination
                 layout="sizes, prev, pager, next,slot"
@@ -502,71 +503,74 @@ export default {
   }
 
   .el-pagination {
-        display:flex;
-        .el-pagination__text--1{
-          order:-1;
-          margin-right:8px;
-        }
-        .el-pagination__text--2{
-          margin-right:42px;
-        }
-        .btn-prev{
-          order:1;
-        }
-        .el-pager{
-          order:2;
-        }
-        .btn-next{
-          order:3;
-        }
-        .btn-next{
-          padding-left: 0 !important;
-        }
-        .btn-next .el-icon, .btn-prev .el-icon{
-          font-size: 18px;
-          font-weight: bolder;
-          color: #757575;
-          &:hover{
-            color:#2196f3 !important;
-          }
-        }
+    display:flex;
+    .el-pagination__text--1{
+      order:-1;
+      margin-right:8px;
+    }
+    .el-pagination__text--2{
+      margin-right:42px;
+    }
+    .btn-prev{
+      order:1;
+    }
+    .el-pager{
+      order:2;
+    }
+    .btn-next{
+      order:3;
+    }
+    .btn-next{
+      padding-left: 0 !important;
+    }
+    .btn-next .el-icon, .btn-prev .el-icon{
+      font-size: 18px;
+      font-weight: bolder;
+      color: #757575;
+      &:hover{
+        color:#2196f3 !important;
+      }
+    }
 
-        @media (max-width: 480px){
-          white-space: wrap;
-          display: flex;
-          justify-content: center;
-          flex-wrap: wrap;
-          width:100%;
-        }
-        &__total{
-          margin-right: 32px;
-          @media (max-width: 480px){
-            margin-right: 0 ;
-          }
-        }
-        &__sizes{
-          margin-right: 27px;
-          @media (max-width: 480px){
-            margin-right: 0 ;
-          }
-        }
+    @media (max-width: 480px){
+      white-space: wrap;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      width:100%;
+    }
+    &__total{
+      margin-right: 32px;
+      @media (max-width: 480px){
+        margin-right: 0 ;
       }
-      .el-pager > li {
-        min-width: 13px;
-        font-size: 12px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        opacity: .7;
-        color:rgba(0, 0, 0, 0.87) ;
-        &.active{
-          opacity: 1;
-          font-size: 14px;
-          font-weight: 600;
-          color:#2196f3 !important;
-        }
+    }
+    &__sizes{
+      margin-right: 27px;
+      @media (max-width: 480px){
+        margin-right: 0 ;
       }
-  
+    }
+  }
+  .el-pager > li {
+    min-width: 13px;
+    font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    opacity: .7;
+    color:rgba(0, 0, 0, 0.87) ;
+    &.active{
+      opacity: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color:#2196f3 !important;
+    }
+  }
+
+  .el-pagination .btn-prev {
+    padding-right: 0;
+  }
 
   .pagination-buttons{
     box-shadow: none !important;
