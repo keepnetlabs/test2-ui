@@ -1308,6 +1308,7 @@ export default {
     },
     shareIncident() {
       let id = this.sharedIncitedId
+      this.shareButtonDisabled = true
       setTimeout(() => {
         if (this.$refs.shareModal.validate()) {
           const payload = {
@@ -1317,12 +1318,16 @@ export default {
           shareAPost(id, payload)
             .then(() => {
               setTimeout(() => {
-                this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+                this.$store
+                  .dispatch('rightColumn/changeReloadRightColumnData', true)
+                  .finally(() => (this.shareButtonDisabled = false))
               }, 500)
               this.shareEmail = []
               this.openShareModal = false
             })
-            .finally(() => (this.shareButtonDisabled = false))
+            .catch(() => (this.shareButtonDisabled = false))
+        } else {
+          this.shareButtonDisabled = false
         }
       }, 200)
     },
