@@ -23,7 +23,7 @@
           :items-per-page.sync="itemsPerPage"
           :page="page"
           hide-default-footer
-          @change='$forceUpdate()'
+          @change="$forceUpdate()"
         >
           <template v-slot:header>
             <div class="search-wrapper">
@@ -41,11 +41,12 @@
                 ></v-text-field>
               </div>
               <div>
-                <k-select
+                <v-select
                   :items="companyItem"
                   :placeholder="'Company'"
                   outlined
                   class="edit-select"
+                  max-width="100"
                   v-model="companyValue"
                   hide-details
                   clearable
@@ -144,26 +145,25 @@
             <v-row
               class="mt-2"
               justify="end"
-              style='margin: 5px !important;'
+              style="margin: 5px !important;"
               v-if="incidentList && incidentList.length"
             >
-             <el-pagination
+              <el-pagination
                 layout="sizes, prev, pager, next,slot"
                 @size-change="handleSizeChange"
                 :current-page.sync="page"
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
-                :total="incidentList && incidentList.length">
-               <template>
-                <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
-                <span class="el-pagination__text el-pagination__text--2">
-                  {{ page }}-{{
-                    numberOfPages
-                  }}
-                  of
-                  {{ incidentList && incidentList.length }}
-                </span>
-              </template>
+                :total="incidentList && incidentList.length"
+              >
+                <template>
+                  <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
+                  <span class="el-pagination__text el-pagination__text--2">
+                    {{ page }}-{{ numberOfPages }}
+                    of
+                    {{ incidentList && incidentList.length }}
+                  </span>
+                </template>
               </el-pagination>
             </v-row>
           </template>
@@ -194,7 +194,7 @@ export default {
     SinglePost
   },
   computed: {
-    numberOfPages () {
+    numberOfPages() {
       return Math.ceil(this.incidentList && this.incidentList.length / this.itemsPerPage)
     },
     routerName() {
@@ -268,7 +268,7 @@ export default {
     }
   },
   methods: {
-    handleSizeChange(val){
+    handleSizeChange(val) {
       this.itemsPerPage = val
     },
     onChangePagination(val) {
@@ -471,15 +471,15 @@ export default {
         }
       }
     },
-    nextPage () {
+    nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1
     },
-    formerPage () {
+    formerPage() {
       if (this.page - 1 >= 1) this.page -= 1
     },
-    updateItemsPerPage (number) {
+    updateItemsPerPage(number) {
       this.itemsPerPage = number
-    },
+    }
   },
   mounted() {
     getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
@@ -497,58 +497,59 @@ export default {
 <style lang="scss">
 #component-incidents {
   z-index: 8;
-  
-  .el-pager{
-    padding:0 !important;
+
+  .el-pager {
+    padding: 0 !important;
   }
 
   .el-pagination {
-    display:flex;
-    .el-pagination__text--1{
-      order:-1;
-      margin-right:8px;
+    display: flex;
+    .el-pagination__text--1 {
+      order: -1;
+      margin-right: 8px;
     }
-    .el-pagination__text--2{
-      margin-right:42px;
+    .el-pagination__text--2 {
+      margin-right: 42px;
     }
-    .btn-prev{
-      order:1;
+    .btn-prev {
+      order: 1;
     }
-    .el-pager{
-      order:2;
+    .el-pager {
+      order: 2;
     }
-    .btn-next{
-      order:3;
+    .btn-next {
+      order: 3;
     }
-    .btn-next{
+    .btn-next {
       padding-left: 0 !important;
     }
-    .btn-next .el-icon, .btn-prev .el-icon{
+    .btn-next .el-icon,
+    .btn-prev .el-icon {
       font-size: 18px;
       font-weight: bolder;
       color: #757575;
-      &:hover{
-        color:#2196f3 !important;
+      &:hover {
+        color: #2196f3 !important;
       }
     }
 
-    @media (max-width: 480px){
+    @media (max-width: 480px) {
       white-space: wrap;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      width:100%;
+      width: 100%;
     }
-    &__total{
+    &__total {
       margin-right: 32px;
-      @media (max-width: 480px){
-        margin-right: 0 ;
+      @media (max-width: 480px) {
+        margin-right: 0;
       }
     }
-    &__sizes{
+    &__sizes {
       margin-right: 27px;
-      @media (max-width: 480px){
-        margin-right: 0 ;
+      @media (max-width: 480px) {
+        margin-right: 0;
       }
     }
   }
@@ -558,13 +559,13 @@ export default {
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    opacity: .7;
-    color:rgba(0, 0, 0, 0.87) ;
-    &.active{
+    opacity: 0.7;
+    color: rgba(0, 0, 0, 0.87);
+    &.active {
       opacity: 1;
       font-size: 14px;
       font-weight: 600;
-      color:#2196f3 !important;
+      color: #2196f3 !important;
     }
   }
 
@@ -572,13 +573,13 @@ export default {
     padding-right: 0;
   }
 
-  .pagination-buttons{
+  .pagination-buttons {
     box-shadow: none !important;
     min-width: 45px !important;
     max-width: 45px !important;
   }
 
-  .el-pagination__total{
+  .el-pagination__total {
     font-weight: normal;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87) !important;
@@ -596,8 +597,8 @@ export default {
     padding-right: 0;
   }
 
-  .el-input.el-input--mini{
-    input{
+  .el-input.el-input--mini {
+    input {
       background-color: #f2f2f2;
     }
   }
@@ -904,5 +905,8 @@ export default {
     margin-top: 38px;
     margin-bottom: 4px;
   }
+}
+.v-autocomplete__content.v-menu__content {
+  border-radius: 8px !important;
 }
 </style>
