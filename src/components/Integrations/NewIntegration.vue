@@ -192,10 +192,21 @@
                     'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                   }"
                   class="new-integration__api-key__text"
+                  :style="[loadingState.length && { cursor: 'default' }]"
                   @click="testConnection(false)"
                 >
-                  <div v-if="loadingState.length" class="test-connection">
-                    <v-icon class="ml-1 loading-spin" color="#00bcd4" left medium
+                  <div
+                    v-if="loadingState.length"
+                    class="test-connection new-integration__api-key__disabled-text"
+                    style="cursor: default !important;"
+                  >
+                    <v-icon
+                      class="ml-1 loading-spin"
+                      color="#00bcd4"
+                      left
+                      medium
+                      disabled
+                      style="cursor: default !important;"
                       >mdi-rotate-left
                     </v-icon>
                     TESTING CONNECTION

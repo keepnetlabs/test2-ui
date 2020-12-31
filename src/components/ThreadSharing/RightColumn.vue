@@ -135,6 +135,7 @@
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          :confirm-button-disabled="isEmailNotificationsDisabled"
           @handleClose="openNotificationModal = false"
           @handleConfirm="saveNotificationSetting"
         />
@@ -559,6 +560,7 @@ import { getNotifications } from '../../api/dashboard'
 export default {
   data() {
     return {
+      isEmailNotificationsDisabled: false,
       isLeaveFromCommunityButtonDisabled: false,
       isJoinCommunityButtonDisabled: false,
       inviteAllButtonDisabled: false,
@@ -726,6 +728,7 @@ export default {
       })
     },
     saveNotificationSetting() {
+      this.isEmailNotificationsDisabled = true
       let payload = {
         EntityResourceId: this.$route.params.id,
         TypeId: 1,
@@ -733,9 +736,13 @@ export default {
         IsEmailEnabled: this.notifications.isEmailEnabled,
         IsDashboardEnabled: this.notifications.isDashboardEnabled
       }
-      updateNotifications(payload).then(() => {
-        this.openNotificationModal = false
-      })
+      updateNotifications(payload)
+        .then(() => {
+          this.openNotificationModal = false
+        })
+        .finally(() => {
+          this.isEmailNotificationsDisabled = false
+        })
     },
     leaveFromCommunityConfirm() {
       this.isLeaveFromCommunityButtonDisabled = true

@@ -368,6 +368,7 @@
                       "
                       outlined
                       rounded
+                      :disabled="isRequestToJoinDisabled"
                       medium
                       class="join-button"
                       @click="requestJoin(item.communityResourceId, item.communityName, 'join')"
