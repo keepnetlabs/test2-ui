@@ -536,8 +536,8 @@
             <div class="investigate-header">
               <p>Attributes</p>
               <span>
-                Select the information you want to share, and hide others. Select at least 1
-                attribute.
+                Select the information you want to hide. Other attributes will be visible and
+                shared.
               </span>
             </div>
             <div class="investigation-content">

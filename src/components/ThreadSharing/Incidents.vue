@@ -273,6 +273,9 @@ export default {
     },
     onChangePagination(val) {
       this.page = val
+      this.incidentList = this.incidentList.map((item) => {
+        return { ...item, isToggle: false }
+      })
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -386,6 +389,7 @@ export default {
       }
       this.incidentLoading = true
       const _this = this
+      this.incidentList = []
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
           .then((response) => {
@@ -394,6 +398,7 @@ export default {
               return { ...item, isToggle: false }
             })
             this.incidentLoading = false
+            this.page = 1
           })
           .catch((error) => {
             if (
@@ -413,6 +418,8 @@ export default {
               _this.incidentList = _this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
+              this.incidentLoading = false
+              this.page = 1
               _this.incidentLoading = false
             })
             .catch((error) => {
@@ -456,6 +463,7 @@ export default {
               this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
+              this.page = 1
               this.incidentLoading = false
             })
             .catch((error) => {
