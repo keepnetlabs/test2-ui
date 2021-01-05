@@ -151,7 +151,7 @@
                               <v-icon>mdi-dots-vertical</v-icon>
                             </v-btn>
                           </template>
-                          <div class="notification-wrapper">
+                          <div class="notification-wrapper notification-wrapper__override">
                             <v-list dense flat class="notification-wrapper__v-list">
                               <v-list-item-group color="primary">
                                 <v-list-item @click="seePostedIncidentsClick(member)">
@@ -235,32 +235,31 @@
               </v-skeleton-loader>
             </template>
             <template v-slot:footer>
-            <v-row
-              class="mt-2"
-              justify="end"
-              style='margin: 5px !important;'
-              v-if="members && members.length"
-            >
-             <el-pagination
-                layout="sizes, prev, pager, next,slot"
-                :current-page.sync="page"
-                :page-sizes="itemsPerPageOptions"
-                :page-size="itemsPerPage"
-                @size-change="handleSizeChange"
-                :total="members && members.length">
-               <template>
-                <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
-                <span class="el-pagination__text el-pagination__text--2">
-                  {{ page }}-{{
-                    numberOfPages
-                  }}
-                  of
-                  {{ members && members.length }}
-                </span>
-              </template>
-              </el-pagination>
-            </v-row>
-          </template>
+              <v-row
+                class="mt-2"
+                justify="end"
+                style="margin: 5px !important;"
+                v-if="members && members.length"
+              >
+                <el-pagination
+                  layout="sizes, prev, pager, next,slot"
+                  :current-page.sync="page"
+                  :page-sizes="itemsPerPageOptions"
+                  :page-size="itemsPerPage"
+                  @size-change="handleSizeChange"
+                  :total="members && members.length"
+                >
+                  <template>
+                    <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
+                    <span class="el-pagination__text el-pagination__text--2">
+                      {{ page }}-{{ numberOfPages }}
+                      of
+                      {{ members && members.length }}
+                    </span>
+                  </template>
+                </el-pagination>
+              </v-row>
+            </template>
           </v-data-iterator>
         </v-tab-item>
         <v-tab-item :transition="false" :reverse-transition="false">
@@ -373,32 +372,31 @@
               </v-skeleton-loader>
             </template>
             <template v-slot:footer>
-            <v-row
-              class="mt-2"
-              justify="end"
-              style='margin: 5px !important;'
-              v-if="requestMembers && requestMembers.length"
-            >
-             <el-pagination
-                layout="sizes, prev, pager, next,slot"
-                :current-page.sync="page"
-                :page-sizes="itemsPerPageOptions"
-                :page-size="itemsPerPage"
-                @size-change="handleSizeChange"
-                :total="requestMembers && requestMembers.length">
-               <template>
-                <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
-                <span class="el-pagination__text el-pagination__text--2">
-                  {{ page }}-{{
-                    numberOfPagesForRequest
-                  }}
-                  of
-                  {{ requestMembers && requestMembers.length }}
-                </span>
-              </template>
-              </el-pagination>
-            </v-row>
-          </template>
+              <v-row
+                class="mt-2"
+                justify="end"
+                style="margin: 5px !important;"
+                v-if="requestMembers && requestMembers.length"
+              >
+                <el-pagination
+                  layout="sizes, prev, pager, next,slot"
+                  :current-page.sync="page"
+                  :page-sizes="itemsPerPageOptions"
+                  :page-size="itemsPerPage"
+                  @size-change="handleSizeChange"
+                  :total="requestMembers && requestMembers.length"
+                >
+                  <template>
+                    <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
+                    <span class="el-pagination__text el-pagination__text--2">
+                      {{ page }}-{{ numberOfPagesForRequest }}
+                      of
+                      {{ requestMembers && requestMembers.length }}
+                    </span>
+                  </template>
+                </el-pagination>
+              </v-row>
+            </template>
           </v-data-iterator>
         </v-tab-item>
       </v-tabs-items>
@@ -513,10 +511,10 @@ export default {
     memberCompId: null
   }),
   computed: {
-     numberOfPages () {
+    numberOfPages() {
       return Math.ceil(this.members && this.members.length / this.itemsPerPage)
     },
-    numberOfPagesForRequest(){
+    numberOfPagesForRequest() {
       return Math.ceil(this.requestMembers && this.requestMembers.length / this.itemsPerPage)
     },
     communityPrivacy() {
@@ -531,7 +529,7 @@ export default {
     }
   },
   methods: {
-    handleSizeChange(val){
+    handleSizeChange(val) {
       this.itemsPerPage = val
     },
     memberImage(member) {
@@ -748,58 +746,59 @@ export default {
 }
 </script>
 <style lang="scss">
-.members-content{
-  .el-pager{
-    padding:0 !important;
+.members-content {
+  .el-pager {
+    padding: 0 !important;
   }
 
   .el-pagination {
-    display:flex;
-    .el-pagination__text--1{
-      order:-1;
-      margin-right:8px;
+    display: flex;
+    .el-pagination__text--1 {
+      order: -1;
+      margin-right: 8px;
     }
-    .el-pagination__text--2{
-      margin-right:42px;
+    .el-pagination__text--2 {
+      margin-right: 42px;
     }
-    .btn-prev{
-      order:1;
+    .btn-prev {
+      order: 1;
     }
-    .el-pager{
-      order:2;
+    .el-pager {
+      order: 2;
     }
-    .btn-next{
-      order:3;
+    .btn-next {
+      order: 3;
     }
-    .btn-next{
+    .btn-next {
       padding-left: 0 !important;
     }
-    .btn-next .el-icon, .btn-prev .el-icon{
+    .btn-next .el-icon,
+    .btn-prev .el-icon {
       font-size: 18px;
       font-weight: bolder;
       color: #757575;
-      &:hover{
-        color:#2196f3 !important;
+      &:hover {
+        color: #2196f3 !important;
       }
     }
 
-    @media (max-width: 480px){
+    @media (max-width: 480px) {
       white-space: wrap;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      width:100%;
+      width: 100%;
     }
-    &__total{
+    &__total {
       margin-right: 32px;
-      @media (max-width: 480px){
-        margin-right: 0 ;
+      @media (max-width: 480px) {
+        margin-right: 0;
       }
     }
-    &__sizes{
+    &__sizes {
       margin-right: 27px;
-      @media (max-width: 480px){
-        margin-right: 0 ;
+      @media (max-width: 480px) {
+        margin-right: 0;
       }
     }
   }
@@ -809,13 +808,13 @@ export default {
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    opacity: .7;
-    color:rgba(0, 0, 0, 0.87) ;
-    &.active{
+    opacity: 0.7;
+    color: rgba(0, 0, 0, 0.87);
+    &.active {
       opacity: 1;
       font-size: 14px;
       font-weight: 600;
-      color:#2196f3 !important;
+      color: #2196f3 !important;
     }
   }
 
@@ -823,429 +822,429 @@ export default {
     padding-right: 0;
   }
   .notification-wrapper {
-  padding: 0 !important;
-  width: 100%;
-  box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
-    0 3px 14px 2px rgba(255, 255, 255, 0.12);
-}
-::v-deep .community-selector {
-  .v-tabs-bar {
-    height: 44px !important;
-  }
-}
-
-.search-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  ::v-deep .v-text-field__details {
-    display: none !important;
-  }
-
-  > div {
-    padding-right: 10px;
-  }
-
-  .filter-icon {
-    color: rgba(0, 0, 0, 0.34) !important;
-    cursor: pointer;
-  }
-}
-
-.threat-sharing-content {
-  width: 100%;
-  border-radius: 20px !important;
-  background-color: #ffffff;
-  &__logo {
-    font-size: 12px;
-    height: 46px;
-    width: 46px;
-  }
-}
-
-.threat-sharing-content.community-rqts {
-  margin-bottom: 16px;
-}
-
-.threat-sharing-content.community-rqts::after {
-  border-top: none !important;
-}
-
-.ts-header {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  padding: 24px;
-
-  @media only screen and (max-width: 750px) {
-    justify-content: center;
-  }
-
-  .v-btn--icon.v-size--default {
-    float: right !important;
-    max-width: 36px !important;
-  }
-}
-
-.ts-title {
-  display: flex;
-  align-items: center;
-  min-width: 300px;
-  max-width: 70%;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-
-  @media only screen and (max-width: 1025px) {
-    min-width: 360px;
-    width: 360px;
-  }
-  @media only screen and (max-width: 750px) {
-    min-width: 100%;
+    padding: 0 !important;
     width: 100%;
-    padding-bottom: 26px;
+    box-shadow: 0 8px 10px -3px rgba(255, 255, 255, 0.14), 0 2px 4px 0 rgba(255, 255, 255, 0.14),
+      0 3px 14px 2px rgba(255, 255, 255, 0.12);
+  }
+  ::v-deep .community-selector {
+    .v-tabs-bar {
+      height: 44px !important;
+    }
   }
 
-  h2 {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.3;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-  }
-
-  img {
-    max-width: 46px;
-    max-height: 46px;
-    margin-right: 16px;
-    border: solid 0.5px #dcdcdc;
-  }
-
-  .community-info-wrapper {
+  .search-wrapper {
+    align-items: center;
     display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    max-width: 85%;
+    flex-direction: row;
+    justify-content: space-between;
 
-    h2 {
-      display: block;
-      max-width: 100%;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
+    ::v-deep .v-text-field__details {
+      display: none !important;
     }
 
-    .community-sub-info {
+    > div {
+      padding-right: 10px;
+    }
+
+    .filter-icon {
+      color: rgba(0, 0, 0, 0.34) !important;
+      cursor: pointer;
+    }
+  }
+
+  .threat-sharing-content {
+    width: 100%;
+    border-radius: 20px !important;
+    background-color: #ffffff;
+    &__logo {
+      font-size: 12px;
+      height: 46px;
+      width: 46px;
+    }
+  }
+
+  .threat-sharing-content.community-rqts {
+    margin-bottom: 16px;
+  }
+
+  .threat-sharing-content.community-rqts::after {
+    border-top: none !important;
+  }
+
+  .ts-header {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    padding: 24px;
+
+    @media only screen and (max-width: 750px) {
+      justify-content: center;
+    }
+
+    .v-btn--icon.v-size--default {
+      float: right !important;
+      max-width: 36px !important;
+    }
+  }
+
+  .ts-title {
+    display: flex;
+    align-items: center;
+    min-width: 300px;
+    max-width: 70%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    @media only screen and (max-width: 1025px) {
+      min-width: 360px;
+      width: 360px;
+    }
+    @media only screen and (max-width: 750px) {
+      min-width: 100%;
+      width: 100%;
+      padding-bottom: 26px;
+    }
+
+    h2 {
+      font-family: 'Open Sans', sans-serif !important;
+      font-size: 20px;
+      font-weight: 600;
+      font-style: normal;
+      font-stretch: normal;
+      line-height: 1.3;
+      letter-spacing: normal;
+      color: rgba(0, 0, 0, 0.87);
+      margin-bottom: 0 !important;
+    }
+
+    img {
+      max-width: 46px;
+      max-height: 46px;
+      margin-right: 16px;
+      border: solid 0.5px #dcdcdc;
+    }
+
+    .community-info-wrapper {
       display: flex;
-      flex-direction: row;
-      @media only screen and (max-width: 750px) {
-        flex-direction: column;
-        padding-left: 13px;
-        .pl-4 {
-          padding-left: 0 !important;
+      flex-direction: column;
+      flex-grow: 1;
+      max-width: 85%;
+
+      h2 {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .community-sub-info {
+        display: flex;
+        flex-direction: row;
+        @media only screen and (max-width: 750px) {
+          flex-direction: column;
+          padding-left: 13px;
+          .pl-4 {
+            padding-left: 0 !important;
+          }
+        }
+        > div {
+          line-height: 10px;
+          width: auto;
+        }
+
+        .company-mini-icon {
+          font-size: 16px !important;
+          margin-right: 8px;
+          top: 2px;
+        }
+
+        .company-mini-info {
+          font-size: 12px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1.58;
+          letter-spacing: normal;
+          color: rgba(0, 0, 0, 0.87);
         }
       }
-      > div {
-        line-height: 10px;
-        width: auto;
+    }
+  }
+
+  .ts-body {
+    margin-top: 8px;
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .ts-user-comp {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 12px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.58;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+
+    a {
+      text-decoration: none;
+    }
+
+    .ts-user-date {
+      font-weight: bold;
+    }
+  }
+
+  .ts-user-comp-detail {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .ts-community-industry {
+    font-family: 'Open Sans', sans-serif !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+  }
+
+  .ts-people-icon {
+    font-size: 16px;
+  }
+
+  .notification-wrapper {
+    background-color: #fff;
+  }
+
+  .v-application--is-ltr .v-list-item__icon:first-child {
+    margin-right: 10px !important;
+  }
+
+  .v-expansion-panel-header {
+    max-width: 120px !important;
+    padding: 0 !important;
+
+    @media only screen and (max-width: 750px) {
+      max-width: 95px !important;
+    }
+  }
+
+  .member-company-body {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .members-posts {
+      float: left;
+      width: 50%;
+
+      @media only screen and (max-width: 750px) {
+        width: 100%;
       }
 
-      .company-mini-icon {
-        font-size: 16px !important;
-        margin-right: 8px;
-        top: 2px;
-      }
-
-      .company-mini-info {
-        font-size: 12px;
+      .members-posts-header {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 16px;
         font-weight: normal;
         font-stretch: normal;
         font-style: normal;
-        line-height: 1.58;
+        line-height: normal;
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
       }
-    }
-  }
-}
 
-.ts-body {
-  margin-top: 8px;
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 14px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.5;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
-}
+      .members-post-list {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 8px;
+        margin-top: 10px;
 
-.ts-user-comp {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  font-stretch: normal;
-  line-height: 1.58;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.87);
+        > a {
+          font-family: 'Open Sans', sans-serif !important;
+          font-size: 14px;
+          font-weight: 400;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
+          letter-spacing: normal;
+          color: #2196f3;
+          margin-bottom: 2px;
+          text-decoration: unset;
+          width: 100%;
+        }
+      }
 
-  a {
-    text-decoration: none;
-  }
-
-  .ts-user-date {
-    font-weight: bold;
-  }
-}
-
-.ts-user-comp-detail {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.ts-community-industry {
-  font-family: 'Open Sans', sans-serif !important;
-  color: rgba(0, 0, 0, 0.87) !important;
-  font-size: 14px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.71;
-}
-
-.ts-people-icon {
-  font-size: 16px;
-}
-
-.notification-wrapper {
-  background-color: #fff;
-}
-
-.v-application--is-ltr .v-list-item__icon:first-child {
-  margin-right: 10px !important;
-}
-
-.v-expansion-panel-header {
-  max-width: 120px !important;
-  padding: 0 !important;
-
-  @media only screen and (max-width: 750px) {
-    max-width: 95px !important;
-  }
-}
-
-.member-company-body {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-
-  .members-posts {
-    float: left;
-    width: 50%;
-
-    @media only screen and (max-width: 750px) {
-      width: 100%;
-    }
-
-    .members-posts-header {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 16px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-    }
-
-    .members-post-list {
-      display: flex;
-      flex-direction: column;
-      margin-bottom: 8px;
-      margin-top: 10px;
-
-      > a {
+      .members-post-see-all > a {
         font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: 400;
         font-stretch: normal;
         font-style: normal;
-        line-height: normal;
+        line-height: 1.71;
         letter-spacing: normal;
-        color: #2196f3;
-        margin-bottom: 2px;
         text-decoration: unset;
-        width: 100%;
+        color: #2196f3;
       }
     }
 
-    .members-post-see-all > a {
+    .members-pie {
+      float: left;
+      width: 50%;
+
+      @media only screen and (max-width: 750px) {
+        width: 100%;
+        padding-bottom: 20px;
+      }
+    }
+  }
+
+  ::v-deep .apexcharts-legend-marker {
+    margin-right: 16px !important;
+  }
+
+  ::v-deep .apexcharts-legend-series {
+    align-items: center;
+    display: flex;
+  }
+
+  .request-btns {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+
+    .refuse-btn {
+      color: #fff !important;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(248, 162, 162, 0.5) !important;
+      background-color: #f56c6c !important;
+      min-width: 78px !important;
+      max-width: 78px !important;
+      height: 36px !important;
+      margin-right: 14px;
+      text-transform: uppercase !important;
+    }
+
+    .accept-btn {
+      color: #fff !important;
+      border-radius: 18px !important;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
+      background-color: #2196f3 !important;
+      min-width: 78px !important;
+      max-width: 78px !important;
+      height: 36px !important;
+      text-transform: uppercase !important;
+    }
+
+    @media only screen and (max-width: 950px) {
+      justify-content: center;
+      padding-top: 20px;
+    }
+  }
+
+  .request-count {
+    align-items: center;
+    background-color: #d32f2f;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    font-size: 12px;
+    line-height: 18px;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    right: -13px;
+    height: 16px;
+    width: 16px;
+  }
+
+  ::v-deep .v-expansion-panel:before {
+    box-shadow: unset !important;
+  }
+
+  @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+    ::v-deep .v-expansion-panel-header > div {
+      margin-top: 5px;
+    }
+  }
+
+  .empty-members {
+    padding-top: 40px !important;
+
+    p {
       font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      font-weight: 400;
+      font-size: 24px;
+      font-weight: normal;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.71;
+      line-height: 1.29;
       letter-spacing: normal;
-      text-decoration: unset;
-      color: #2196f3;
+      color: #000;
+      text-align: center;
     }
   }
 
-  .members-pie {
-    float: left;
-    width: 50%;
-
-    @media only screen and (max-width: 750px) {
-      width: 100%;
-      padding-bottom: 20px;
-    }
-  }
-}
-
-::v-deep .apexcharts-legend-marker {
-  margin-right: 16px !important;
-}
-
-::v-deep .apexcharts-legend-series {
-  align-items: center;
-  display: flex;
-}
-
-.request-btns {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-
-  .refuse-btn {
-    color: #fff !important;
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(248, 162, 162, 0.5) !important;
-    background-color: #f56c6c !important;
-    min-width: 78px !important;
-    max-width: 78px !important;
-    height: 36px !important;
-    margin-right: 14px;
-    text-transform: uppercase !important;
-  }
-
-  .accept-btn {
-    color: #fff !important;
-    border-radius: 18px !important;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5) !important;
-    background-color: #2196f3 !important;
-    min-width: 78px !important;
-    max-width: 78px !important;
-    height: 36px !important;
-    text-transform: uppercase !important;
-  }
-
-  @media only screen and (max-width: 950px) {
-    justify-content: center;
-    padding-top: 20px;
-  }
-}
-
-.request-count {
-  align-items: center;
-  background-color: #d32f2f;
-  border-radius: 50%;
-  color: #fff;
-  display: flex;
-  font-size: 12px;
-  line-height: 18px;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  right: -13px;
-  height: 16px;
-  width: 16px;
-}
-
-::v-deep .v-expansion-panel:before {
-  box-shadow: unset !important;
-}
-
-@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
-  ::v-deep .v-expansion-panel-header > div {
-    margin-top: 5px;
-  }
-}
-
-.empty-members {
-  padding-top: 40px !important;
-
-  p {
+  .v-card-headline {
     font-family: 'Open Sans', sans-serif !important;
-    font-size: 24px;
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.4;
+    letter-spacing: normal;
+    color: #2196f3;
+  }
+
+  .v-card-sub-header {
+    font-family: Helvetica;
+    font-size: 15px;
     font-weight: normal;
     font-stretch: normal;
     font-style: normal;
-    line-height: 1.29;
+    line-height: 1.2;
     letter-spacing: normal;
-    color: #000;
-    text-align: center;
+    color: #000 !important;
   }
-}
 
-.v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 20px;
-  font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
-  letter-spacing: normal;
-  color: #2196f3;
-}
+  .edit-name-textfield,
+  .edit-description,
+  .edit-select {
+    font-size: 13px !important;
+  }
 
-.v-card-sub-header {
-  font-family: Helvetica;
-  font-size: 15px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.2;
-  letter-spacing: normal;
-  color: #000 !important;
-}
+  .v-cart-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    margin-right: 24px;
+    box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
+    border: solid 1px rgba(100, 181, 246, 0.5);
+    background-color: #e3f2fd;
+  }
 
-.edit-name-textfield,
-.edit-description,
-.edit-select {
-  font-size: 13px !important;
-}
-
-.v-cart-icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  margin-right: 24px;
-  box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5);
-  border: solid 1px rgba(100, 181, 246, 0.5);
-  background-color: #e3f2fd;
-}
-
-.delete-info {
-  font-family: 'Open Sans', sans-serif !important;
-  font-size: 13px;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: normal;
-  color: rgba(0, 0, 0, 0.72);
-}
+  .delete-info {
+    font-family: 'Open Sans', sans-serif !important;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.72);
+  }
 }
 </style>
