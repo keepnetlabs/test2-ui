@@ -155,6 +155,7 @@
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
                 :total="incidentList && incidentList.length"
+                @current-change="onChangePagination"
               >
                 <template>
                   <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
@@ -270,9 +271,11 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.itemsPerPage = val
+      this.incidentList = this.incidentList.map((item) => {
+        return { ...item, isToggle: false }
+      })
     },
-    onChangePagination(val) {
-      this.page = val
+    onChangePagination() {
       this.incidentList = this.incidentList.map((item) => {
         return { ...item, isToggle: false }
       })

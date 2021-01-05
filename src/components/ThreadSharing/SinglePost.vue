@@ -499,6 +499,7 @@
         v-if="emailData && post.isToggle"
         eager
         class="expand-body member-company-body pa-0"
+        :id="`post-content${post.communityPostResourceId}`"
       >
         <v-tabs
           v-model="tab"
@@ -974,7 +975,8 @@ import {
   checkPermission,
   incidenPostReviewElementBind,
   isOwner,
-  isPostedByMe
+  isPostedByMe,
+  scrollToComponent
 } from '../../utils/functions'
 import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -1438,6 +1440,8 @@ export default {
                 .getElementById(`sframe${comId}`)
                 .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
               incidenPostReviewElementBind(url, null, `sframe${comId}`, true)
+              const el = document.getElementById(`post-content${postId}`)
+              scrollToComponent(el)
               this.$forceUpdate()
             }
           }, 500)
