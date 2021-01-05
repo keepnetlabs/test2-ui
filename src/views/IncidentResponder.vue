@@ -1415,8 +1415,7 @@ export default {
             '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
           )
           .forEach((item) => {
-            item.style =
-              'width: calc(50% - 16px) !important;max-width: calc(50% - 16px) !important;'
+            item.style = 'width: calc(50%) !important;max-width: calc(50%) !important;'
           })
 
         document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
@@ -1915,14 +1914,14 @@ export default {
       flex-wrap: wrap;
 
       .dashboard-cards__skeleton-loading {
-        width: calc(50% - 16px) !important;
-        max-width: calc(50% - 16px) !important;
+        width: calc(50%) !important;
+        max-width: calc(50%) !important;
       }
     }
     @media only screen and (max-width: 500px) {
       .dashboard-cards__skeleton-loading {
-        width: calc(100% - 16px) !important;
-        max-width: calc(100% - 16px) !important;
+        width: calc(100%) !important;
+        max-width: calc(100%) !important;
       }
     }
 
