@@ -28,21 +28,6 @@
       </template>
     </app-dialog>
     <app-dialog
-      :status="isWantToDeleteComment"
-      @changeStatus="isWantToDeleteComment = false"
-      icon="mdi-delete"
-      title="Delete Comment?"
-      body="This comment will be deleted from the post"
-    >
-      <template v-slot:app-dialog-footer>
-        <app-dialog-footer
-          :confirm-button-disabled="isConfirmButtonDisabled"
-          @handleClose="isWantToDeleteComment = false"
-          @handleConfirm="deleteCommentConfirm()"
-        />
-      </template>
-    </app-dialog>
-    <app-dialog
       :status="openShareModal"
       subtitle="Share this incident via email"
       icon="mdi-send"
@@ -361,7 +346,7 @@
               x-small
               icon
               color="grey"
-              disabled
+              @click="commentOpened = !commentOpened"
             >
               <v-icon>mdi-message-reply-text</v-icon>
             </v-btn>
@@ -376,14 +361,6 @@
             </v-btn>
             <span class="ts-actions">{{ post.harmfulItemCount }} harmful item(s)</span>
           </div>
-          <!-- solution field missing for now
-          <div class="ts-success mt-1">
-            <v-btn text x-small icon color="grey">
-              <v-icon style="font-size: 14px" color="#43a047">mdi-check-circle</v-icon>
-            </v-btn>
-            <span class="ts-actions">Solution</span>
-          </div>
-          -->
           <div class="flex-grow-1"></div>
           <div class="ts-tags">
             <v-btn
@@ -494,459 +471,366 @@
             </div>
           </div>
         </div>
-      </div>
-      <v-expansion-panel-content
-        v-if="emailData && post.isToggle"
-        eager
-        class="expand-body member-company-body pa-0"
-        :id="`post-content${post.communityPostResourceId}`"
-      >
-        <v-tabs
-          v-model="tab"
-          background-color="transparent"
-          color="basil"
-          class="v-tabs-bar__details-tab"
+        <v-expansion-panel-content
+          v-if="emailData && post.isToggle"
+          eager
+          class="expand-body member-company-body pa-0 mt-4"
+          :id="`post-content${post.communityPostResourceId}`"
         >
-          <v-tab id="expansion-preview">Email Preview</v-tab>
-          <v-tab id="expansion-details">Details</v-tab>
-        </v-tabs>
-        <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
-          <v-tab-item>
-            <PreviewHeaderForSinglePost :uploadRespond="emailData" />
+          <v-tabs
+            v-model="tab"
+            background-color="transparent"
+            color="basil"
+            class="v-tabs-bar__details-tab"
+          >
+            <v-tab id="expansion-preview">Email Preview</v-tab>
+            <v-tab id="expansion-details">Details</v-tab>
+          </v-tabs>
+          <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
+            <v-tab-item>
+              <PreviewHeaderForSinglePost :uploadRespond="emailData" />
 
-            <div id="single-post-body" class="preview-body">
-              <k-shadow-frame
-                :id="`sframe${post.communityPostResourceId}`"
-                v-bind:content="emailData.visibleBody"
-              />
-            </div>
-            <div
-              class="preview-footer"
-              v-if="emailData.attachments && emailData.attachments.length"
-            >
-              <h2>Attachments</h2>
-              <div
-                v-for="(att, ind) of emailData.attachments"
-                :key="ind + att.name"
-                class="preview-attch-wrapper"
-              >
-                <div class="attachment-wrapper">
-                  <div
-                    class="attachment red-attach"
-                    :id="'single-post-attachments-' + att.name"
-                    :class="[
-                      att.isFlagged ? 'red-attach malicious-style' : '',
-                      !att.isFlagged ? 'blue-attach' : ''
-                    ]"
-                  >
-                    <AttachmentsPreview :att="att" />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="preview-buttons">
-              <v-btn
-                v-if="postDetails && !postDetails.isLikedByUser"
-                @click="userLikePost(post.communityPostResourceId, post.communityResourceId)"
-                :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
-                :id="'like-btn' + post.communityPostResourceId"
-              >
-                <v-icon :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
-                  >mdi-thumb-up</v-icon
-                >
-                Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
-              </v-btn>
-              <v-btn
-                v-else-if="postDetails && postDetails.isLikedByUser"
-                @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
-                :class="{ 'active-act': postDetails.isLikedByUser }"
-                :id="'unlike-btn' + post.communityPostResourceId"
-              >
-                <v-icon class="active-act">mdi-thumb-up</v-icon>
-                Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
-              </v-btn>
-              <v-btn
-                :id="'comments-btn' + post.communityPostResourceId"
-                :class="{ 'active-act': commentOpened }"
-                @click="commentOpened = !commentOpened"
-              >
-                <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
-                Comments ({{
-                  (comments && comments.length) ||
-                  (!getCommentDetails && post.commentCount ? post.commentCount : 0)
-                }})
-              </v-btn>
-            </div>
-            <div class="preview-comments" :class="{ 'open-comments': commentOpened }">
-              <v-form ref="refCommentForm" class="add-comment-row" onSubmit="return false;">
-                <v-text-field
-                  :id="'single-post-comment-' + post.communityPostResourceId"
-                  class="comment-input"
-                  placeholder="Write your comment here"
-                  outlined
-                  v-model.trim="addCommentValue"
-                  validate-on-blur
-                  :rules="[rules.required, rules.maxLength, rules.minLength]"
+              <div id="single-post-body" class="preview-body">
+                <k-shadow-frame
+                  :id="`sframe${post.communityPostResourceId}`"
+                  v-bind:content="emailData.visibleBody"
                 />
-                <v-btn
-                  :id="'single-post-send-comment' + post.communityPostResourceId"
-                  @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
-                  class="send-btn"
-                  type="button"
-                  :disabled="
-                    !checkPermissions(
-                      'community-posts/{communityPostResourceId}/comments',
-                      'POST'
-                    ) || isPostButtonDisabled
-                  "
-                >
-                  <v-icon>mdi-send</v-icon>
-                  SEND
-                </v-btn>
-              </v-form>
-
-              <div v-if="comments && comments.length" class="hidden-comments">
-                <div
-                  v-for="(com, ind) of seeComments ? comments : comments.slice(0, 1)"
-                  :key="ind + com.resourceId"
-                  class="comment-row"
-                >
-                  <div class="user-wrapper w-100" v-if="!com.isEdit">
-                    <div class="d-flex align-center w-100">
-                      <div style="width: 80%;">
-                        <b class="username">{{ com.commenterFullName }}</b>
-                        from
-                        <b class="company-name">{{ com.commenterCompanyName }}</b>
-                        <p class="company-date mb-0">{{ com.commentTime }}</p>
-                        <p class="the-comment">{{ com.comment }}</p>
-                      </div>
-                      <div
-                        style="width: 20%; text-align: right;"
-                        v-if="canDeleteOrEditComment('update') || canDeleteOrEditComment('delete')"
-                      >
-                        <button
-                          v-if="canDeleteOrEditComment('update')"
-                          @click="editRelativeComment(com)"
-                          class="pr-4"
-                          :disabled="!com.canEdit"
-                        >
-                          <v-icon class="close-icon" :disabled="!com.canEdit">mdi-pencil</v-icon>
-                        </button>
-                        <button
-                          v-if="canDeleteOrEditComment('delete')"
-                          @click="deleteComment(com)"
-                          :disabled="!com.canDelete"
-                          icon
-                        >
-                          <v-icon class="close-icon" :disabled="!com.canDelete">mdi-delete</v-icon>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="add-comment-row w-100" v-else>
-                    <div class="d-flex align-center w-100">
-                      <div style="width: 80%;" class="d-flex">
-                        <v-text-field
-                          :id="'single-post-comment-' + com.resourceId"
-                          class="comment-input"
-                          placeholder="Write your comment here"
-                          outlined
-                          v-model.trim="com.commentValue"
-                          validate-on-blur
-                          :rules="[rules.required]"
-                          hide-details
-                        />
-                        <v-btn
-                          @click="updateComments(com)"
-                          class="send-btn"
-                          :disabled="!com.canEdit || isEditCommentButtonDisabled"
-                        >
-                          <v-icon :disabled="!com.canEdit">mdi-send</v-icon>
-                          Edit
-                        </v-btn>
-                      </div>
-                      <div style="width: 20%; text-align: right;">
-                        <button @click="editRelativeComment(com)" :disabled="!com.canDelete">
-                          <v-icon class="close-icon" :disabled="!com.canDelete">mdi-close</v-icon>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
               <div
-                v-if="!seeComments && comments && comments.length > 1"
-                id="single-post-see-all-comments"
-                class="see-all-comments"
-                @click="seeComments = true"
+                class="preview-footer mt-2"
+                v-if="emailData.attachments && emailData.attachments.length"
               >
-                <span>See all {{ comments.length }} comments</span>
-              </div>
-            </div>
-          </v-tab-item>
-          <v-tab-item>
-            <div class="single-post__details">
-              <h1 class="detected-items" v-if="emailData && emailData.subject">
-                <span> Subject: {{ emailData.subject }} </span>
-              </h1>
-              <div id="last-detail-parts" class="detail-parts">
-                <p
-                  v-if="
-                    (emailData.subject && emailData.isSubjectFlagged) ||
-                    (!!emailData.from && emailData.isFromFlagged) ||
-                    (emailData.to && !!emailData.to.length && emailData.isToFlagged) ||
-                    (emailData.cc && !!emailData.cc.length && emailData.isCcFlagged) ||
-                    (emailData.bcc && !!emailData.bcc.length && emailData.isBccFlagged)
-                  "
-                  class="detail-black disc-header single-post__details__section-header"
-                >
-                  Header
-                </p>
-                {{ /* Subject  */  }}
+                <h2>Attachments</h2>
                 <div
-                  class="detail-part-item"
-                  v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
-                >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        Subject:
-                        <span class="detail-part-item__hide-overflow">
-                          {{ emailData.subject }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(emailData.subject)">
-                        <v-icon>mdi-content-copy</v-icon>Copy Subject
-                      </span>
-                    </div>
-                  </div>
-
-                  <div class="detail-part-item__col--warning">
-                    Subject from this sender may include harmful content
-                  </div>
-                </div>
-                {{ /* From  */  }}
-                <div
-                  class="detail-part-item"
-                  v-if="emailData && emailData.from && emailData.isFromFlagged"
-                >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        From:
-                        <span class="detail-part-item__hide-overflow">
-                          {{ emailData.from }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(emailData.from)">
-                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
-                      </span>
-                    </div>
-                  </div>
-                  <div class="detail-part-item__col--warning">
-                    Emails from this sender may include harmful content
-                  </div>
-                </div>
-                {{ /* To  */  }}
-                <div
-                  class="detail-part-item"
-                  v-if="emailData && emailData.to && emailData.isToFlagged"
-                >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        To:
-                        <span class="detail-part-item__hide-overflow">
-                          {{ emailData.to.toString() }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(emailData.to.toString())">
-                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
-                      </span>
-                    </div>
-                  </div>
-                  <div class="detail-part-item__col--warning">
-                    This email address may be targeted by emails include harmful content
-                  </div>
-                </div>
-                {{ /* Cc  */  }}
-                <div
-                  class="detail-part-item"
-                  v-if="emailData && emailData.cc && !emailData.isCcHidden && emailData.isCcFlagged"
-                >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        CC:
-                        <span class="detail-part-item__hide-overflow">
-                          {{ emailData.cc.toString() }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(emailData.cc.toString())">
-                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
-                      </span>
-                    </div>
-                  </div>
-                  <div class="detail-part-item__col--warning">
-                    This email address may be targeted by emails include harmful content
-                  </div>
-                </div>
-                {{ /* Bcc  */  }}
-                <div
-                  class="detail-part-item"
-                  v-if="
-                    emailData && emailData.bcc && !emailData.isBccHidden && emailData.isBccFlagged
-                  "
-                >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        BCC:
-                        <span class="detail-part-item__hide-overflow">
-                          {{ emailData.bcc.toString() }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(emailData.bcc.toString())">
-                        <v-icon>mdi-content-copy</v-icon>Copy Email Address
-                      </span>
-                    </div>
-                  </div>
-                  <div class="detail-part-item__col--warning">
-                    This email address may be targeted by emails include harmful content
-                  </div>
-                </div>
-              </div>
-              <div
-                v-if="emailData && emailData.urls && emailData.urls.length"
-                class="preview-attch-wrapper detail-parts"
-              >
-                <p
-                  v-if="
-                    emailData &&
-                    emailData.urls &&
-                    emailData.urls.some((a) => !a.isHidden && a.isFlagged)
-                  "
-                  class="detail-black single-post__details__section-header"
-                >
-                  Body
-                </p>
-
-                {{ /* Links  */  }}
-                <div
-                  class="detail-part-item"
-                  v-for="(el, ind) of emailData.urls"
-                  :key="ind + el.url"
-                  v-if="el && !el.isHidden && el.isFlagged"
-                  :id="'detail-links-' + el.name"
-                >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        Link:
-                        <span class="detail-part-item__hide-overflow">
-                          {{ el.name }} {{ el.url }}
-                        </span>
-                      </div>
-                    </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(el.url)">
-                        <v-icon>mdi-content-copy</v-icon>Copy Url
-                      </span>
-                    </div>
-                  </div>
-                  <div class="detail-part-item__col--warning">
-                    This link has been reported as phishing
-                  </div>
-                </div>
-              </div>
-              <div
-                class="preview-attch-wrapper detail-parts"
-                v-if="
-                  emailData.attachments &&
-                  emailData.attachments.length &&
-                  emailData.attachments.some((a) => !a.isHidden && a.isFlagged)
-                "
-              >
-                <p class="detail-black single-post__details__section-header">
-                  Attachments
-                </p>
-                {{ /* Attachments  */  }}
-                <div
-                  class="detail-part-item"
                   v-for="(att, ind) of emailData.attachments"
                   :key="ind + att.name"
-                  v-if="att.isFlagged"
+                  class="preview-attch-wrapper"
                 >
-                  <div class="detail-part-item__col--wrapper">
-                    <div class="detail-part-item__col--major">
-                      <div class="detail-part-item__text">
-                        <span class="detail-part-item__hide-overflow pl-0">
-                          {{ !att.isHidden ? att.name : 'Hidden by Owner' }}
+                  <div class="attachment-wrapper">
+                    <div
+                      class="attachment red-attach"
+                      :id="'single-post-attachments-' + att.name"
+                      :class="[
+                        att.isFlagged ? 'red-attach malicious-style' : '',
+                        !att.isFlagged ? 'blue-attach' : ''
+                      ]"
+                    >
+                      <AttachmentsPreview :att="att" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="preview-buttons">
+                <v-btn
+                  v-if="postDetails && !postDetails.isLikedByUser"
+                  @click="userLikePost(post.communityPostResourceId, post.communityResourceId)"
+                  :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
+                  :id="'like-btn' + post.communityPostResourceId"
+                >
+                  <v-icon :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
+                    >mdi-thumb-up</v-icon
+                  >
+                  Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
+                </v-btn>
+                <v-btn
+                  v-else-if="postDetails && postDetails.isLikedByUser"
+                  @click="userUnlikePost(post.communityPostResourceId, post.communityResourceId)"
+                  :class="{ 'active-act': postDetails.isLikedByUser }"
+                  :id="'unlike-btn' + post.communityPostResourceId"
+                >
+                  <v-icon class="active-act">mdi-thumb-up</v-icon>
+                  Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
+                </v-btn>
+                <v-btn
+                  :id="'comments-btn' + post.communityPostResourceId"
+                  :class="{ 'active-act': commentOpened }"
+                  @click="commentOpened = !commentOpened"
+                >
+                  <v-icon :class="{ 'active-act': commentOpened }">mdi-comment</v-icon>
+                  Comments ({{
+                    (comments && comments.length) ||
+                    (!getCommentDetails && post.commentCount ? post.commentCount : 0)
+                  }})
+                </v-btn>
+              </div>
+            </v-tab-item>
+            <v-tab-item>
+              <div class="single-post__details">
+                <h1 class="detected-items" v-if="emailData && emailData.subject">
+                  <span> Subject: {{ emailData.subject }} </span>
+                </h1>
+                <div id="last-detail-parts" class="detail-parts">
+                  <p
+                    v-if="
+                      (emailData.subject && emailData.isSubjectFlagged) ||
+                      (!!emailData.from && emailData.isFromFlagged) ||
+                      (emailData.to && !!emailData.to.length && emailData.isToFlagged) ||
+                      (emailData.cc && !!emailData.cc.length && emailData.isCcFlagged) ||
+                      (emailData.bcc && !!emailData.bcc.length && emailData.isBccFlagged)
+                    "
+                    class="detail-black disc-header single-post__details__section-header"
+                  >
+                    Header
+                  </p>
+                  {{ /* Subject  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-if="emailData && emailData.subject && emailData.isSubjectFlagged"
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          Subject:
+                          <span class="detail-part-item__hide-overflow">
+                            {{ emailData.subject }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(emailData.subject)">
+                          <v-icon>mdi-content-copy</v-icon>Copy Subject
                         </span>
                       </div>
                     </div>
-                    <div class="detail-part-item__col--slight">
-                      <span class="copy-link" @click="contentCopy(att.sha512)">
-                        <v-icon>mdi-content-copy</v-icon>Copy SHA 512 Hash
-                      </span>
+
+                    <div class="detail-part-item__col--warning">
+                      Subject from this sender may include harmful content
                     </div>
                   </div>
-                  <div class="detail-part-item__col--warning">
-                    This file has been reported as malicious content
+                  {{ /* From  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-if="emailData && emailData.from && emailData.isFromFlagged"
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          From:
+                          <span class="detail-part-item__hide-overflow">
+                            {{ emailData.from }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(emailData.from)">
+                          <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--warning">
+                      Emails from this sender may include harmful content
+                    </div>
+                  </div>
+                  {{ /* To  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-if="emailData && emailData.to && emailData.isToFlagged"
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          To:
+                          <span class="detail-part-item__hide-overflow">
+                            {{ emailData.to.toString() }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(emailData.to.toString())">
+                          <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--warning">
+                      This email address may be targeted by emails include harmful content
+                    </div>
+                  </div>
+                  {{ /* Cc  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-if="
+                      emailData && emailData.cc && !emailData.isCcHidden && emailData.isCcFlagged
+                    "
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          CC:
+                          <span class="detail-part-item__hide-overflow">
+                            {{ emailData.cc.toString() }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(emailData.cc.toString())">
+                          <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--warning">
+                      This email address may be targeted by emails include harmful content
+                    </div>
+                  </div>
+                  {{ /* Bcc  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-if="
+                      emailData && emailData.bcc && !emailData.isBccHidden && emailData.isBccFlagged
+                    "
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          BCC:
+                          <span class="detail-part-item__hide-overflow">
+                            {{ emailData.bcc.toString() }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(emailData.bcc.toString())">
+                          <v-icon>mdi-content-copy</v-icon>Copy Email Address
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--warning">
+                      This email address may be targeted by emails include harmful content
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-if="emailData && emailData.urls && emailData.urls.length"
+                  class="preview-attch-wrapper detail-parts"
+                >
+                  <p
+                    v-if="
+                      emailData &&
+                      emailData.urls &&
+                      emailData.urls.some((a) => !a.isHidden && a.isFlagged)
+                    "
+                    class="detail-black single-post__details__section-header"
+                  >
+                    Body
+                  </p>
+
+                  {{ /* Links  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-for="(el, ind) of emailData.urls"
+                    :key="ind + el.url"
+                    v-if="el && !el.isHidden && el.isFlagged"
+                    :id="'detail-links-' + el.name"
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          Link:
+                          <span class="detail-part-item__hide-overflow">
+                            {{ el.name }} {{ el.url }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(el.url)">
+                          <v-icon>mdi-content-copy</v-icon>Copy Url
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--warning">
+                      This link has been reported as phishing
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="preview-attch-wrapper detail-parts"
+                  v-if="
+                    emailData.attachments &&
+                    emailData.attachments.length &&
+                    emailData.attachments.some((a) => !a.isHidden && a.isFlagged)
+                  "
+                >
+                  <p class="detail-black single-post__details__section-header">
+                    Attachments
+                  </p>
+                  {{ /* Attachments  */  }}
+                  <div
+                    class="detail-part-item"
+                    v-for="(att, ind) of emailData.attachments"
+                    :key="ind + att.name"
+                    v-if="att.isFlagged"
+                  >
+                    <div class="detail-part-item__col--wrapper">
+                      <div class="detail-part-item__col--major">
+                        <div class="detail-part-item__text">
+                          <span class="detail-part-item__hide-overflow pl-0">
+                            {{ !att.isHidden ? att.name : 'Hidden by Owner' }}
+                          </span>
+                        </div>
+                      </div>
+                      <div class="detail-part-item__col--slight">
+                        <span class="copy-link" @click="contentCopy(att.sha512)">
+                          <v-icon>mdi-content-copy</v-icon>Copy SHA 512 Hash
+                        </span>
+                      </div>
+                    </div>
+                    <div class="detail-part-item__col--warning">
+                      This file has been reported as malicious content
+                    </div>
+                  </div>
+                </div>
+                <div class="detail-discovery pb-4">
+                  <div
+                    :id="'detail-discovery-empty'"
+                    v-if="postDetails && postDetails.discoveryAndDetection"
+                    class="disc-header"
+                  >
+                    Discovery and Detection
+                  </div>
+                  <p
+                    :id="'detail-discovery'"
+                    v-if="postDetails && postDetails.discoveryAndDetection"
+                    class="discovery-p"
+                  >
+                    {{ postDetails && postDetails.discoveryAndDetection }}
+                  </p>
+                  <div v-if="postDetails && postDetails.affectArea" class="disc-header mb-1">
+                    Impact Range
+                  </div>
+                  <div
+                    :id="'detail-effect-area'"
+                    v-if="postDetails && postDetails.affectArea"
+                    class="impact-row"
+                  >
+                    <div class="impact-left">Effect area:</div>
+                    <div style="width: max-content; padding-right: 13px;" class="impact-right">
+                      {{ postDetails && postDetails.affectArea.toString() }}
+                    </div>
+                  </div>
+                  <div
+                    :id="'detail-scope' + postDetails"
+                    v-if="postDetails && postDetails.scope"
+                    class="impact-row"
+                  >
+                    <div class="impact-left">Scope:</div>
+                    <div class="impact-right">{{ postDetails && postDetails.scope }}</div>
                   </div>
                 </div>
               </div>
-              <div class="detail-discovery pb-4">
-                <div
-                  :id="'detail-discovery-empty'"
-                  v-if="postDetails && postDetails.discoveryAndDetection"
-                  class="disc-header"
-                >
-                  Discovery and Detection
-                </div>
-                <p
-                  :id="'detail-discovery'"
-                  v-if="postDetails && postDetails.discoveryAndDetection"
-                  class="discovery-p"
-                >
-                  {{ postDetails && postDetails.discoveryAndDetection }}
-                </p>
-                <div v-if="postDetails && postDetails.affectArea" class="disc-header mb-1">
-                  Impact Range
-                </div>
-                <div
-                  :id="'detail-effect-area'"
-                  v-if="postDetails && postDetails.affectArea"
-                  class="impact-row"
-                >
-                  <div class="impact-left">Effect area:</div>
-                  <div style="width: max-content; padding-right: 13px;" class="impact-right">
-                    {{ postDetails && postDetails.affectArea.toString() }}
-                  </div>
-                </div>
-                <div
-                  :id="'detail-scope' + postDetails"
-                  v-if="postDetails && postDetails.scope"
-                  class="impact-row"
-                >
-                  <div class="impact-left">Scope:</div>
-                  <div class="impact-right">{{ postDetails && postDetails.scope }}</div>
-                </div>
-              </div>
-            </div>
-          </v-tab-item>
-        </v-tabs-items>
-      </v-expansion-panel-content>
+            </v-tab-item>
+          </v-tabs-items>
+        </v-expansion-panel-content>
+        <div class="d-flex w-100 p-4" v-if="commentOpened">
+          <SinglePostComments
+            v-if="commentOpened"
+            :commentOpened="commentOpened"
+            :post="post"
+            :comments="comments"
+            :seeComments="seeComments"
+            @changeCommentsValue="changeCommentsValue"
+            class="mt-6"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -960,15 +844,12 @@ import vueCustomElement from 'vue-custom-element'
 import AppDialog from '../AppDialog'
 import labels from '@/model/constants/labels'
 import {
-  createComments,
-  deleteComments,
   deleteCommunityPost,
   getComments,
   getCommunityPost,
   getCommunityPostPreview,
   likePost,
-  shareAPost,
-  updateComments
+  shareAPost
 } from '../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import {
@@ -983,6 +864,7 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
+import SinglePostComments from '@/components/ThreadSharing/SinglePostComments'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1101,6 +983,7 @@ a{position:relative}
 })
 export default {
   components: {
+    SinglePostComments,
     KSelect,
     AppDialogFooter,
     PreviewHeaderForSinglePost,
@@ -1233,6 +1116,10 @@ export default {
     }
   },
   methods: {
+    changeCommentsValue(comments) {
+      this.comments = comments
+      this.$forceUpdate()
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -1344,45 +1231,6 @@ export default {
       this.$emit('refreshData')
       this.isWantToAddNewInvestigation = false
     },
-    editRelativeComment(comment) {
-      comment.isEdit = !comment.isEdit
-      comment.commentValue = comment.comment
-      this.$forceUpdate()
-    },
-    updateComments(comment) {
-      const payload = { comment: comment.commentValue }
-      this.isEditCommentButtonDisabled = true
-      updateComments(comment.resourceId, payload)
-        .then(() => {
-          setTimeout(() => {
-            this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-          }, 500)
-          this.getComments(this.post.communityPostResourceId)
-        })
-        .catch(() => {
-          this.isEditCommentButtonDisabled = false
-        })
-    },
-    deleteComment(comment) {
-      this.deleteCommentId = comment.resourceId
-      this.isWantToDeleteComment = true
-    },
-    deleteCommentConfirm() {
-      this.isConfirmButtonDisabled = true
-      deleteComments(this.deleteCommentId)
-        .then(() => {
-          this.isWantToDeleteComment = false
-          this.getComments(this.post.communityPostResourceId)
-          setTimeout(() => {
-            this.$store
-              .dispatch('rightColumn/changeReloadRightColumnData', true)
-              .finally(() => (this.isConfirmButtonDisabled = false))
-          }, 500)
-        })
-        .catch(() => {
-          this.isConfirmButtonDisabled = false
-        })
-    },
     deleteIncidentConfirm() {
       deleteCommunityPost(this.deleteIncidentId).then(() => {
         this.$emit('refreshData')
@@ -1490,27 +1338,6 @@ export default {
           }
         })
         .finally(() => (this.isEditCommentButtonDisabled = false))
-    },
-    addPostComment(postId, communId) {
-      this.isPostButtonDisabled = true
-      if (this.$refs.refCommentForm.validate()) {
-        const payload = {
-          comment: this.addCommentValue
-        }
-        createComments(postId, payload)
-          .then(() => {
-            this.addCommentValue = ''
-            this.getComments(this.post.communityPostResourceId)
-            setTimeout(() => {
-              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
-            }, 500)
-          })
-          .finally(() => {
-            this.isPostButtonDisabled = false
-          })
-      } else {
-        this.isPostButtonDisabled = false
-      }
     },
     editIncident(post, communityName) {
       this.$emit('openEditPopupItem', post)
