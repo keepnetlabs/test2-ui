@@ -183,7 +183,6 @@ export default {
     }
   },
   data() {
-    debugger
     return {
       blockAnimation: true,
       attachId: Math.random(),
