@@ -1126,7 +1126,7 @@ export default {
       isSettingsOpened: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
-      firstColFixed: this.columns.length ? this.columns[0].fixed : true,
+      firstColFixed: true,
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed: true,
@@ -1245,11 +1245,17 @@ export default {
         if (fixedCol && fixedCol.length) {
           fixedCol[0].fixed = false
           this.firstColFixed = false
+          if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.columns.length) {
+            this.$refs.elTableRef.columns[0].fixed = false
+          }
         }
       } else {
         const disabledCol = this.columns.filter((c) => c.fixed === false)
         disabledCol[0].fixed = 'left'
         this.firstColFixed = true
+        if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.columns.length) {
+          this.$refs.elTableRef.columns[0].fixed = true
+        }
       }
     },
     lastColFixed(val) {
@@ -1531,6 +1537,8 @@ export default {
      */
     handleListBulletedClick() {
       this.selectedCluster = ''
+      this.firstColFixed = true
+      this.lastColFixed = true
       this.$emit('handleListBulleted')
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
@@ -2255,6 +2263,8 @@ export default {
     },
     clusterSelected(name, ind) {
       this.selectedCluster = name
+      this.firstColFixed = false
+      this.lastColFixed = false
       this.$emit('clusterChanged', name)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
