@@ -9,7 +9,11 @@
       'elevation-' + (depth - 1).toString()
     ]"
   >
-    <div v-if="getCustomBadgeRender" class="custom-group-badge">
+    <div
+      v-if="getCustomBadgeRender"
+      class="custom-group-badge"
+      :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
+    >
       {{ $parent.query.logicalOperator }}
     </div>
     <div class="vqb-group-heading card-header">
@@ -108,17 +112,16 @@ export default {
     QueryBuilderRule: QueryBuilderRule
   },
   mounted() {
-    debugger
     this.$nextTick(() => {
       if (this.query && this.query.children.length === 0) {
         this.addRule()
+        this.getCustomBadgeRender = false
       }
     })
   },
   extends: QueryBuilderGroup,
   watch: {
     query() {
-      debugger
       this.$nextTick(() => {
         if (this.depth === 1) {
           const childrenWrap = this.$children[0]
@@ -180,6 +183,7 @@ export default {
     }
   },
   data() {
+    debugger
     return {
       blockAnimation: true,
       attachId: Math.random(),
@@ -465,13 +469,19 @@ export default {
   }
 }
 .custom-group-badge {
+  @media (max-width: 896px) {
+    top: 137px;
+  }
   position: absolute;
   left: -57px;
   bottom: -21px;
   padding: 4px 6px;
   border-radius: 4px;
+  line-height: 1.33;
+  font-weight: 600;
   background-color: #00bcd4;
   font-size: 12px;
+  z-index: 9;
   color: white;
 }
 </style>

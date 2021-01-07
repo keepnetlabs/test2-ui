@@ -1,7 +1,11 @@
 <template>
   <!-- eslint-disable vue/no-v-html -->
   <div class="vqb-rule">
-    <div v-if="getBadgeRender" class="custom-rule-badge">
+    <div
+      v-if="getBadgeRender"
+      class="custom-rule-badge"
+      :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
+    >
       {{ $parent.query.logicalOperator }}
     </div>
     <v-row>
@@ -395,15 +399,21 @@ export default {
   }
 }
 </script>
-<style>
+<style lang="scss">
 .custom-rule-badge {
+  @media (max-width: 896px) {
+    top: 137px;
+  }
   position: absolute;
   left: -57px;
-  top: 63px;
+  top: 64px;
   padding: 4px 6px;
   border-radius: 4px;
+  line-height: 1.33;
+  font-weight: 600;
   background-color: #2196f3;
   font-size: 12px;
   color: white;
+  z-index: 9;
 }
 </style>
