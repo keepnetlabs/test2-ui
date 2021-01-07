@@ -169,6 +169,7 @@ export default {
     letter-spacing: normal;
     color: #2196f3 !important;
     white-space: pre-wrap;
+    word-break: break-word;
   }
 
   &__sub-title {
@@ -176,6 +177,7 @@ export default {
     font-size: 16px;
     letter-spacing: normal;
     white-space: pre-wrap;
+    word-break: break-word;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 

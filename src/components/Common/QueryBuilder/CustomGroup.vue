@@ -9,6 +9,13 @@
       'elevation-' + (depth - 1).toString()
     ]"
   >
+    <div
+      v-if="getCustomBadgeRender"
+      class="custom-group-badge"
+      :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
+    >
+      {{ $parent.query.logicalOperator }}
+    </div>
     <div class="vqb-group-heading card-header">
       <div class="match-type-container d-flex">
         <div
@@ -108,10 +115,23 @@ export default {
     this.$nextTick(() => {
       if (this.query && this.query.children.length === 0) {
         this.addRule()
+        this.getCustomBadgeRender = false
       }
     })
   },
   extends: QueryBuilderGroup,
+  watch: {
+    query() {
+      this.$nextTick(() => {
+        if (this.depth === 1) {
+          const childrenWrap = this.$children[0]
+          childrenWrap.$children.forEach((item, index) => {
+            item.getCustomBadgeRender = !(index === childrenWrap.$children.length - 1)
+          })
+        }
+      })
+    }
+  },
   methods: {
     addNewGroup() {
       this.addGroup()
@@ -164,7 +184,9 @@ export default {
   },
   data() {
     return {
-      blockAnimation: true
+      blockAnimation: true,
+      attachId: Math.random(),
+      getCustomBadgeRender: this.depth !== 1
     }
   }
 }
@@ -444,5 +466,21 @@ export default {
       opacity: 0.3;
     }
   }
+}
+.custom-group-badge {
+  @media (max-width: 896px) {
+    top: 137px;
+  }
+  position: absolute;
+  left: -57px;
+  bottom: -21px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  line-height: 1.33;
+  font-weight: 600;
+  background-color: #00bcd4;
+  font-size: 12px;
+  z-index: 9;
+  color: white;
 }
 </style>

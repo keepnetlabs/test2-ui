@@ -1,6 +1,13 @@
 <template>
   <!-- eslint-disable vue/no-v-html -->
   <div class="vqb-rule">
+    <div
+      v-if="getBadgeRender"
+      class="custom-rule-badge"
+      :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
+    >
+      {{ $parent.query.logicalOperator }}
+    </div>
     <v-row>
       <!-- <label class="mr-5">{{ rule.label }}</label> -->
       <v-col md="2">
@@ -231,7 +238,8 @@ export default {
   data() {
     return {
       validations: validations,
-      attachId: null
+      attachId: null,
+      getBadgeRender: false
     }
   },
   watch: {
@@ -254,6 +262,11 @@ export default {
           this.query.operator = 'Equal'
         }
       }
+    },
+    '$parent.query.children'(children) {
+      const { $children } = this.$parent
+      this.getBadgeRender =
+        $children && $children.length && $children[$children.length - 1].attachId !== this.attachId
     }
   },
   computed: {
@@ -386,3 +399,21 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.custom-rule-badge {
+  @media (max-width: 896px) {
+    top: 137px;
+  }
+  position: absolute;
+  left: -57px;
+  top: 64px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  line-height: 1.33;
+  font-weight: 600;
+  background-color: #2196f3;
+  font-size: 12px;
+  color: white;
+  z-index: 9;
+}
+</style>
