@@ -968,7 +968,7 @@ export default {
           property: PROPERTY_STORE.SUBJECT,
           align: 'left',
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: false,
+          fixed: 'left',
           sortable: true,
           show: true,
           type: 'text',
