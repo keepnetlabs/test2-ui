@@ -762,9 +762,7 @@ export default {
     tabOptions: ['Your Communities', 'All', 'Invitations'],
     communities: ['keepnet'],
     search: '',
-    page: 1,
     itemsPerPageOptions: [5, 10, 20],
-    itemsPerPage: 5,
     filter: '',
     listData: [{}],
     invitationData: [],
@@ -922,9 +920,20 @@ export default {
     deleteCommunityConfirm() {
       deleteCommunity(this.deleteCommunityId).then(() => {
         this.isWantToDelete = false
-        this.getAllCommunitiesListData()
-        this.getMyCommunitiesListData()
-        this.getInvitationCount()
+        switch (this.selectedTab) {
+          case 'tab-0':
+            this.getMyCommunitiesListData()
+            break
+          case 'tab-1':
+            if (!this.isCommunity) this.getAllCommunitiesListData()
+            break
+          case 'tab-2':
+            this.getInvitions()
+            this.getInvitationCount()
+            break
+          default:
+            return false
+        }
         setTimeout(() => {
           this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
         }, 500)
