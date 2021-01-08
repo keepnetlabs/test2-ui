@@ -139,14 +139,14 @@ export default {
       this.outlookSpinnerStatus = true
       generateOutlookAddIn()
         .then((response) => {
-          this.callForDownloadOutlookAddIn(response.data.data.transactionId)
+          this.callForDownloadOutlookAddIn(response.data.data.resourceId)
         })
         .catch(() => {
           this.outlookSpinnerStatus = false
         })
     },
-    callForDownloadOutlookAddIn(transactionId) {
-      downloadOutlookAddIn(transactionId)
+    callForDownloadOutlookAddIn(resourceId) {
+      downloadOutlookAddIn(resourceId)
         .then((response) => {
           this.outlookSpinnerStatus = false
           this.clearOutlookAddInTimeout()
@@ -160,7 +160,7 @@ export default {
           if (error.response.status === 404 && error.response.statusText === 'Not Found') {
             this.outlookSpinnerStatus = true
             this.downloadOutlookAddInTimeout = setTimeout(() => {
-              this.callForDownloadOutlookAddIn(transactionId)
+              this.callForDownloadOutlookAddIn(resourceId)
             }, 7500)
           } else {
             this.outlookSpinnerStatus = false
@@ -171,7 +171,7 @@ export default {
     callForGenerateDiagnosticTool() {
       generateDiagnosticTool().then((response) => {
         this.diagnosticToolSpinnerStatus = true
-        response.data.data && this.callForDownloadDiagnosticTool(response.data.data.transactionId)
+        response.data.data && this.callForDownloadDiagnosticTool(response.data.data.resourceId)
       })
     },
     callForDownloadDiagnosticTool(id) {

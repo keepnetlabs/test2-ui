@@ -290,7 +290,6 @@ export default {
     callForMergedTags(resourceId = '') {
       getMergedTags(resourceId).then((response) => {
         this.blockManagerComponents[resourceId] = response.data.data['mergeTags']
-        console.log("response.data.data['mergeTags']", response.data.data['mergeTags'])
         this.setActiveBlockManagerComponents(this.blockManagerComponents[resourceId])
       })
     },
