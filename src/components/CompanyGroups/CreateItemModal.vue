@@ -55,6 +55,7 @@
               :search-input.sync="search"
               auto-select-first
               deletable-chips
+              class="company-groups-select-company"
               autocomplete="off"
               chips
               item-text="companyName"
@@ -285,6 +286,16 @@ export default {
       font-weight: 600;
       line-height: 1.71;
       letter-spacing: normal;
+    }
+  }
+}
+.company-groups-select-company {
+  .v-chip {
+    padding: 6px 12px;
+    height: auto;
+    &__content {
+      word-break: break-word;
+      white-space: normal;
     }
   }
 }
