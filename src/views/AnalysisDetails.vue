@@ -377,7 +377,7 @@ export default {
         margin-right: 20px;
       }
       ::v-deep .v-tabs-slider-wrapper {
-        bottom: 0 !important;
+        bottom: -2px !important;
         color: #0486fe !important;
       }
 
