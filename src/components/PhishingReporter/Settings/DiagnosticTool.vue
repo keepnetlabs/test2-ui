@@ -112,7 +112,7 @@ export default {
     },
     callForGenerateDiagnosticTool() {
       generateDiagnosticTool().then((response) => {
-        this.callForDownloadDiagnosticTool(response.data.data.transactionId)
+        this.callForDownloadDiagnosticTool(response.data.data.resourceId)
       })
     },
     callForDownloadDiagnosticTool(id) {
