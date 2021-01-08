@@ -88,8 +88,10 @@
           <v-data-iterator
             :items="members"
             :items-per-page.sync="itemsPerPage"
+            :page.sync="page"
             :footer-props="{ itemsPerPageOptions }"
             hide-default-footer
+            @change="$forceUpdate()"
             :no-results-text="'Sorry, we couldn\'t find any results matching your criteria'"
           >
             <template v-slot:header>
@@ -424,6 +426,7 @@ export default {
     Pie
   },
   data: () => ({
+    page: 1,
     labels,
     isRemoveFromCommunityButtonDisabled: false,
     isAssignOwnerButtonDisabled: false,
