@@ -301,7 +301,7 @@ export default {
           if (error.response.status === 403) {
             this.$router.push({
               name: 'Companies',
-              params: { tab: 'second' }
+              params: { tab: 'second', force: true }
             })
           }
           this.tableData = []

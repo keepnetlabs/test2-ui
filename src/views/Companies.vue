@@ -48,10 +48,9 @@ export default {
     }
   },
   updated() {
-    if (this.$route.params && this.$route.params.tab) {
+    if (this.$route.params && this.$route.params.tab && !this.$route.params.force) {
       this.tab = this.$route.params.tab
     }
-
     if (!this.checkPermissions('companies/search', 'POST')) {
       this.tab = 'second'
     }
