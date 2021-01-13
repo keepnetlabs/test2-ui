@@ -629,12 +629,12 @@ import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { required, startsWith } from '../utils/validations'
+import { required, startsWith, maxLength } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-
+import * as Validations from '@/utils/validations'
 export default {
   components: {
     AppDialogFooter,
@@ -677,7 +677,8 @@ export default {
     baseManHourCost: null,
     validations: {
       required,
-      startsWith
+      startsWith,
+      maxLength
     },
     extendedViewValue: [],
     topRules: {
@@ -946,7 +947,7 @@ export default {
           },
           {
             property: 'note',
-            label: 'Notes',
+            label: labels.Notes,
             isEditable: true,
             type: 'text',
             editOptions: {
@@ -955,7 +956,11 @@ export default {
                 return false
               },
               props: {
-                placeholder: 'Enter Notes'
+                placeholder: 'Enter Notes',
+                rules: [
+                  (v) =>
+                    Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Notes, 256))
+                ]
               }
             },
             show: true,
