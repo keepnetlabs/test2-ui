@@ -90,9 +90,9 @@ import {
   LABEL_STORE,
   PROPERTY_STORE
 } from '@/model/constants/commonConstants'
-import { required } from '@/utils/validations'
+import { required, maxLength } from '@/utils/validations'
 import { checkPermission } from '@/utils/functions'
-
+import labels from '@/model/constants/labels'
 export default {
   name: 'Groups',
   components: {
@@ -217,7 +217,10 @@ export default {
                   return row.length > 1
                 },
                 props: {
-                  rules: [(v) => required(v, 'Required')]
+                  rules: [
+                    (v) => required(v, 'Required'),
+                    (v) => maxLength(v, 64, labels.getMaxLengthMessage('Group name'))
+                  ]
                 }
               }
             },
