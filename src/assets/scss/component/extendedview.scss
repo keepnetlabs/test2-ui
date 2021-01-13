@@ -43,7 +43,7 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        padding-bottom: 7px;
+        padding-bottom: 10px;
 
         > div {
           display: flex;
@@ -56,9 +56,20 @@
           }
         }
 
+        .v-text-field__details{
+          position: absolute;
+          bottom: -13px;
+          margin-bottom:0 !important;
+        }
+        .v-input--checkbox{
+          .v-messages{
+            display: none;
+          }
+
+        }
 
         .v-text-field__details,.v-messages{
-          display: none;
+          //display: none;
         }
 
 
