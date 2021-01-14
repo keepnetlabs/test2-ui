@@ -150,24 +150,35 @@ export default {
     },
     index: {
       type: Number
+    },
+    value: {
+      default() {
+        return {
+          textValue: '',
+          selectValue: ''
+        }
+      }
     }
   },
   data() {
+    debugger
     return {
       menu: null,
-      isFilterActive: false,
+      isFilterActive:
+        this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue,
       filteredSelectValue: this.filterProps
         ? this.filterProps.items && this.filterProps.items[0]
-        : 'Contains',
+        : this.value.selectValue || 'Contains',
       filteredSelectValueNum: '=',
       filteredSelectValueDate: '<=',
-      filteredDateValue: this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+      filteredDateValue:
+        this.value.textValue || this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
       filteredDateRangeValue: [
         this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
         this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
       ],
-      filterValue: '',
-      filterChecked: [],
+      filterValue: this.value.textValue || '',
+      filterChecked: this.filterableType === 'select' ? this.value.selectValue.split(',') : [],
       textFilterItems: [
         { text: 'Contains', value: 'Contains' },
         { text: 'Equal', value: '=' },
@@ -203,12 +214,12 @@ export default {
   },
   beforeDestroy() {
     if (this.isFilterActive) {
-      this.clearFilter()
+      this.clearFilter(false)
     }
   },
   methods: {
     changeDateSelect() {},
-    clearFilter() {
+    clearFilter(isEmit = true) {
       this.menu = false
       this.isFilterActive = false
       this.filterValue = ''
@@ -217,6 +228,12 @@ export default {
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
       this.$emit('handleClearColumnFilter', this.fieldName)
+      if (isEmit) {
+        this.emitValue()
+      }
+    },
+    emitValue(textValue = '', selectValue = '') {
+      this.$emit('input', { textValue, selectValue })
     },
     handleFilter() {
       this.menu = false
@@ -228,6 +245,7 @@ export default {
           FieldName: this.fieldName,
           Operator: this.filteredSelectValue
         })
+        this.emitValue(this.filterValue, this.filteredSelectValue)
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
@@ -235,6 +253,7 @@ export default {
           FieldName: this.fieldName,
           Operator: this.filteredSelectValueNum
         })
+        this.emitValue(this.filterValue, this.filteredSelectValueNum)
       }
       if (this.filterableType === 'date') {
         if (this.filteredSelectValueDate === 'between') {
@@ -256,14 +275,18 @@ export default {
             FieldName: this.fieldName,
             Operator: this.filteredSelectValueDate
           })
+          this.emitValue(this.filteredDateValue, this.filteredSelectValueDate)
         }
       }
       if (this.filterableType === 'select') {
+        const Value = this.filterChecked.toString()
+        const Operator = 'Include'
         this.$emit('handleFilterColumn', {
-          Value: this.filterChecked.toString(),
+          Value,
           FieldName: this.fieldName,
-          Operator: 'Include'
+          Operator
         })
+        this.emitValue(this.filterValue, Value)
       }
     }
   },

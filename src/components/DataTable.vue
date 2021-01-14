@@ -509,6 +509,7 @@
 
                 <data-table-filter
                   v-if="col.filterableType"
+                  v-model="filterValues[col.property]"
                   :column="column"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
@@ -1047,6 +1048,20 @@ export default {
       type: Boolean,
       default: true
     },
+    persistentState: {
+      type: Object,
+      default() {
+        return {
+          search: '',
+          showfilteredData: false,
+          tableData: [],
+          initialData: [],
+          filteredData: [],
+          filterValues: {},
+          sortProps: null
+        }
+      }
+    },
     downloadButton: {
       type: Object,
       default: () => ({
@@ -1097,21 +1112,30 @@ export default {
     }
   },
   data() {
+    const {
+      showfilteredData,
+      filteredData,
+      search,
+      tableData,
+      initialData,
+      sortProps,
+      filterValues
+    } = this.persistentState
     return {
       cacheChecks: false,
-      filteredData: [],
+      filteredData,
       renderedColumns: [],
       filteredDataLength: 0,
-      showfilteredData: false,
+      showfilteredData,
       selectCheckboxesLazy: false,
-      sortProps: null,
-      initialData: [],
+      sortProps,
+      initialData,
       dataLength: 0,
       isSelectedAll: false,
       selectedCluster: this.activeCluster,
-      tableData: [],
+      tableData,
       selectedRows: [],
-      rowCount: 5,
+      rowCount: 10,
       extendedViewStyle: null,
       currentPage: 1,
       multipleSelection: [],
@@ -1120,7 +1144,7 @@ export default {
       selectionCheckbox: false,
       selectionAll: false,
       dynamicStyleRef: null,
-      search: '',
+      search,
       expandedRows: [],
       downloadModalTitle: '',
       isSettingsOpened: false,
@@ -1132,6 +1156,7 @@ export default {
       lastColFixed: true,
       clusteredItems: [],
       isRowActionsMenuOpen: [],
+      filterValues,
       download: {
         xls: false,
         csv: false,
@@ -1293,6 +1318,10 @@ export default {
     this.tableData = this.tableData.slice(0, this.rowCount)
   },
   mounted() {
+    if (this.persistentState && this.persistentState.sortProps) {
+      const { prop, order } = this.persistentState.sortProps
+      this.$refs.elTableRef.sort(prop, order)
+    }
     if (window.outerWidth < 1023) {
       this.actionFixed = false
       const leftFixed = this.columns.filter((col) => col.fixed === 'left')
@@ -1316,6 +1345,17 @@ export default {
     }
   },
   methods: {
+    getState() {
+      return {
+        search: this.search,
+        showfilteredData: this.showfilteredData,
+        tableData: this.tableData,
+        initialData: this.initialData,
+        sortProps: this.sortProps,
+        filteredData: this.filteredData,
+        filterValues: this.filterValues
+      }
+    },
     getSelectedMultipleValues() {
       return this.multipleSelection
     },
@@ -2381,7 +2421,6 @@ export default {
         []
     },
     handleFilterColumn(filterObj) {
-      const { column, filterValue, filteredSelectValue } = filterObj
       this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {
