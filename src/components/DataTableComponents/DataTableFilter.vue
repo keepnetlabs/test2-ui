@@ -172,11 +172,17 @@ export default {
       filteredSelectValueDate:
         this.filterableType === 'date' ? this.value.selectValue || '<=' : '<=',
       filteredDateValue:
-        this.value.textValue || this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
-      filteredDateRangeValue: [
-        this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
-        this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
-      ],
+        (this.filterableType === 'date' &&
+          this.value.selectValue !== 'between' &&
+          this.value.textValue) ||
+        this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+      filteredDateRangeValue:
+        this.value.selectValue === 'between'
+          ? [this.value.textValue[0], this.value.textValue[1]]
+          : [
+              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
+              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+            ],
       filterValue: this.value.textValue || '',
       filterChecked: this.filterableType === 'select' ? this.value.selectValue.split(',') : [],
       textFilterItems: [
@@ -269,6 +275,11 @@ export default {
               Operator: '<='
             }
           ])
+          this.emitValue(
+            [this.filteredDateRangeValue[0], this.filteredDateRangeValue[1]],
+            this.filteredSelectValueDate,
+            this.fieldName
+          )
         } else {
           this.$emit('handleFilterColumn', {
             Value: this.filteredDateValue,
