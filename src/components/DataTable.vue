@@ -1053,6 +1053,7 @@ export default {
       default() {
         return {
           currentPage: 1,
+          expandedRows: [],
           filteredDataLength: 0,
           search: '',
           showfilteredData: false,
@@ -1061,9 +1062,14 @@ export default {
           filteredData: [],
           filterValues: {},
           rowCount: 10,
+          isSelectedAll: false,
           selectedCluster: '',
           sortProps: null,
-          totalLength: 0
+          unRenderedFilterData: [],
+          totalLength: 0,
+          renderedColumns: [],
+          selectionRowCheckboxDeterminate: false,
+          multipleSelection: []
         }
       }
     },
@@ -1129,33 +1135,37 @@ export default {
       filterValues,
       selectedCluster = this.activeCluster,
       totalLength,
-      rowCount
+      rowCount,
+      isSelectedAll,
+      unRenderedFilterData,
+      renderedColumns,
+      multipleSelection,
+      expandedRows,
+      selectionRowCheckboxDeterminate
     } = this.persistentState
     return {
       cacheChecks: false,
       filteredData,
-      renderedColumns: [],
+      renderedColumns,
       filteredDataLength,
       showfilteredData,
       selectCheckboxesLazy: false,
       sortProps,
       initialData,
       dataLength: 0,
-      isSelectedAll: false,
+      isSelectedAll,
       selectedCluster,
       tableData,
-      selectedRows: [],
       rowCount,
       extendedViewStyle: null,
       currentPage,
-      multipleSelection: [],
-      unRenderedFilterData: [],
+      multipleSelection,
+      unRenderedFilterData,
       timeout: null,
       selectionCheckbox: false,
-      selectionAll: false,
       dynamicStyleRef: null,
       search,
-      expandedRows: [],
+      expandedRows,
       downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToEditRow: false,
@@ -1178,7 +1188,7 @@ export default {
       allHidden: false,
       clusterChevron: false,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
-      selectionRowCheckboxDeterminate: false,
+      selectionRowCheckboxDeterminate,
       renderedTotalLength: 0,
       totalLength
     }
@@ -1314,11 +1324,11 @@ export default {
   created() {
     //Init column standardisation
     if (this.countRow) this.rowCount = this.countRow
-    if (this.persistentState && this.persistentState.rowCount) {
-      this.rowCount = this.persistentState.rowCount
-    }
+    if (this.persistentState && this.persistentState.rowCount) this.setPersistentStateToDataValues()
+    else this.setRenderedColumns()
+
     this.columnStandardisation(this.columns)
-    this.setRenderedColumns()
+
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
@@ -1360,6 +1370,7 @@ export default {
   methods: {
     getState() {
       return {
+        expandedRows: this.expandedRows,
         search: this.search,
         currentPage: this.currentPage,
         filteredDataLength: this.filteredDataLength,
@@ -1371,7 +1382,22 @@ export default {
         filterValues: this.filterValues,
         selectedCluster: this.selectedCluster,
         rowCount: this.rowCount,
-        totalLength: this.totalLength
+        isSelectedAll: this.isSelectedAll,
+        unRenderedFilterData: this.unRenderedFilterData,
+        totalLength: this.totalLength,
+        renderedColumns: this.renderedColumns,
+        multipleSelection: this.multipleSelection,
+        selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate
+      }
+    },
+    setPersistentStateToDataValues() {
+      if (this.persistentState.rowCount) this.rowCount = this.persistentState.rowCount
+      if (this.persistentState.multipleSelection.length) {
+        for (const row of this.persistentState.multipleSelection) {
+          this.$nextTick(() => {
+            this.$refs.elTableRef.toggleRowSelection(row, true)
+          })
+        }
       }
     },
     getSelectedMultipleValues() {
@@ -1493,20 +1519,7 @@ export default {
         this.clusteredItems = []
         this.$refs.elTableRef.clearSelection()
       } else {
-        //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
-        /*
-        if (dataRef === this.unRenderedFilterData) {
-          this.multipleSelection = [...this.multipleSelection, ...dataRef]
-        } else {
-          this.multipleSelection = [...dataRef]
-        }
-        */
-
-        this.multipleSelection = this.getAllItems(this.initialData, [])
-
-        for (let item of this.multipleSelection) {
-          this.$refs.elTableRef.toggleRowSelection(item, true)
-        }
+        this.selectAllItems()
         this.isSelectedAll = true
       }
     },
@@ -1532,6 +1545,12 @@ export default {
       return retArr
     },
 
+    selectAllItems() {
+      this.multipleSelection = this.getAllItems(this.initialData, [])
+      for (let item of this.multipleSelection) {
+        this.$refs.elTableRef.toggleRowSelection(item, true)
+      }
+    },
     handleRefresh() {
       this.cacheChecks = true
       this.$emit('refreshAction')
@@ -2156,7 +2175,7 @@ export default {
       if (hasChildren && !children.length) {
         this.$refs.elTableRef.store.loadOrToggle(row)
         this.selectCheckboxesLazy = true
-      } else if (children.length) {
+      } else if (children && children.length) {
         this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
     },

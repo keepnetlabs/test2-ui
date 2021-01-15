@@ -232,8 +232,8 @@ export default {
         this.emitValue()
       }
     },
-    emitValue(textValue = '', selectValue = '') {
-      this.$emit('input', { textValue, selectValue })
+    emitValue(textValue = '', selectValue = '', fieldName = '') {
+      this.$emit('input', { textValue, selectValue, fieldName })
     },
     handleFilter() {
       this.menu = false
@@ -245,7 +245,7 @@ export default {
           FieldName: this.fieldName,
           Operator: this.filteredSelectValue
         })
-        this.emitValue(this.filterValue, this.filteredSelectValue)
+        this.emitValue(this.filterValue, this.filteredSelectValue, this.fieldName)
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
@@ -253,7 +253,7 @@ export default {
           FieldName: this.fieldName,
           Operator: this.filteredSelectValueNum
         })
-        this.emitValue(this.filterValue, this.filteredSelectValueNum)
+        this.emitValue(this.filterValue, this.filteredSelectValueNum, this.fieldName)
       }
       if (this.filterableType === 'date') {
         if (this.filteredSelectValueDate === 'between') {
@@ -275,7 +275,7 @@ export default {
             FieldName: this.fieldName,
             Operator: this.filteredSelectValueDate
           })
-          this.emitValue(this.filteredDateValue, this.filteredSelectValueDate)
+          this.emitValue(this.filteredDateValue, this.filteredSelectValueDate, this.fieldName)
         }
       }
       if (this.filterableType === 'select') {
@@ -286,7 +286,7 @@ export default {
           FieldName: this.fieldName,
           Operator
         })
-        this.emitValue(this.filterValue, Value)
+        this.emitValue(this.filterValue, Value, this.fieldName)
       }
     }
   },
