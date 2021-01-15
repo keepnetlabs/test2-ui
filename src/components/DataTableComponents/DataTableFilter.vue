@@ -161,7 +161,6 @@ export default {
     }
   },
   data() {
-    debugger
     return {
       menu: null,
       isFilterActive:
@@ -170,7 +169,8 @@ export default {
         ? this.filterProps.items && this.filterProps.items[0]
         : this.value.selectValue || 'Contains',
       filteredSelectValueNum: '=',
-      filteredSelectValueDate: '<=',
+      filteredSelectValueDate:
+        this.filterableType === 'date' ? this.value.selectValue || '<=' : '<=',
       filteredDateValue:
         this.value.textValue || this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
       filteredDateRangeValue: [

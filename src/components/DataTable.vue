@@ -1052,13 +1052,18 @@ export default {
       type: Object,
       default() {
         return {
+          currentPage: 1,
+          filteredDataLength: 0,
           search: '',
           showfilteredData: false,
           tableData: [],
           initialData: [],
           filteredData: [],
           filterValues: {},
-          sortProps: null
+          rowCount: 10,
+          selectedCluster: '',
+          sortProps: null,
+          totalLength: 0
         }
       }
     },
@@ -1113,31 +1118,36 @@ export default {
   },
   data() {
     const {
+      currentPage,
+      filteredDataLength,
       showfilteredData,
       filteredData,
       search,
       tableData,
       initialData,
       sortProps,
-      filterValues
+      filterValues,
+      selectedCluster = this.activeCluster,
+      totalLength,
+      rowCount
     } = this.persistentState
     return {
       cacheChecks: false,
       filteredData,
       renderedColumns: [],
-      filteredDataLength: 0,
+      filteredDataLength,
       showfilteredData,
       selectCheckboxesLazy: false,
       sortProps,
       initialData,
       dataLength: 0,
       isSelectedAll: false,
-      selectedCluster: this.activeCluster,
+      selectedCluster,
       tableData,
       selectedRows: [],
-      rowCount: 10,
+      rowCount,
       extendedViewStyle: null,
-      currentPage: 1,
+      currentPage,
       multipleSelection: [],
       unRenderedFilterData: [],
       timeout: null,
@@ -1170,7 +1180,7 @@ export default {
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate: false,
       renderedTotalLength: 0,
-      totalLength: 0
+      totalLength
     }
   },
   watch: {
@@ -1304,6 +1314,9 @@ export default {
   created() {
     //Init column standardisation
     if (this.countRow) this.rowCount = this.countRow
+    if (this.persistentState && this.persistentState.rowCount) {
+      this.rowCount = this.persistentState.rowCount
+    }
     this.columnStandardisation(this.columns)
     this.setRenderedColumns()
     if (this.table && this.table.length) {
@@ -1348,12 +1361,17 @@ export default {
     getState() {
       return {
         search: this.search,
+        currentPage: this.currentPage,
+        filteredDataLength: this.filteredDataLength,
         showfilteredData: this.showfilteredData,
         tableData: this.tableData,
         initialData: this.initialData,
         sortProps: this.sortProps,
         filteredData: this.filteredData,
-        filterValues: this.filterValues
+        filterValues: this.filterValues,
+        selectedCluster: this.selectedCluster,
+        rowCount: this.rowCount,
+        totalLength: this.totalLength
       }
     },
     getSelectedMultipleValues() {
