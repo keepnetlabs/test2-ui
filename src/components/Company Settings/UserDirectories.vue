@@ -15,7 +15,6 @@
         ref="refUserDirectoriesList"
         :refName="'userDirectoriesList'"
         :columns="tableOptions.columns"
-        :countRow="5"
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"

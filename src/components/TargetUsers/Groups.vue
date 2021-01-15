@@ -16,6 +16,7 @@
     />
 
     <datatable
+      v-bind="tableState"
       ref="refGroupsTable"
       :refName="'groupsTable'"
       id="target-users-group-data-table"
@@ -24,7 +25,6 @@
       :table="tableData"
       titleKey="name"
       :columns="tableOptions.columns"
-      :countRow="5"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
@@ -100,10 +100,15 @@ export default {
     CreateNewUserGroupModal,
     datatable: DataTable
   },
+  props: {
+    isLoadState: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       isCreateButtonDisabled: false,
-      loading: true,
+      loading: false,
       tableData: [],
       extendedViewLoading: true,
       tableOptions: {
@@ -262,7 +267,8 @@ export default {
             }
           ]
         }
-      }
+      },
+      tableState: null
     }
   },
   methods: {
@@ -411,7 +417,19 @@ export default {
     }
   },
   created() {
-    this.callForTargetGroups()
+    if (this.isLoadState) {
+      const tableState = this.$store.state['datatable'].tables['Groups'].tableState
+      this.tableState = { persistentState: tableState }
+    } else {
+      this.callForTargetGroups()
+    }
+  },
+  beforeDestroy() {
+    const tableState = this.$refs.refGroupsTable.getState()
+    this.$store.dispatch('datatable/setTable', {
+      key: 'Groups',
+      tableState
+    })
   }
 }
 </script>

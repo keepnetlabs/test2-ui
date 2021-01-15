@@ -10,7 +10,6 @@
           ref="refAuditList"
           :refName="'auditList'"
           :columns="tableOptions.columns"
-          :countRow="5"
           :selectable="true"
           :filterable="true"
           :options="true"

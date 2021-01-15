@@ -18,7 +18,6 @@
         ref="refDataList"
         :addButton="tableOptions.addButton"
         :columns="tableOptions.columns"
-        :countRow="5"
         :download-button="{ show: false }"
         :empty="tableOptions.iEmpty"
         :filterable="true"

@@ -157,7 +157,6 @@
             :columns="emails.columns"
             :table="emails.table"
             :title="{}"
-            :countRow="5"
             :pageSizes="[]"
             :defaultSort="'subject'"
             :selectable="true"

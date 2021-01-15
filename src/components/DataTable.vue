@@ -1061,7 +1061,7 @@ export default {
           initialData: [],
           filteredData: [],
           filterValues: {},
-          rowCount: 10,
+          rowCount: this.countRow || 10,
           isSelectedAll: false,
           selectedCluster: '',
           sortProps: null,
@@ -1323,7 +1323,6 @@ export default {
   },
   created() {
     //Init column standardisation
-    if (this.countRow) this.rowCount = this.countRow
     if (this.persistentState && this.persistentState.rowCount) this.setPersistentStateToDataValues()
     else this.setRenderedColumns()
 

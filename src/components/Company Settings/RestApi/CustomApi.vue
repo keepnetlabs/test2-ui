@@ -27,7 +27,6 @@
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
-        :countRow="5"
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"

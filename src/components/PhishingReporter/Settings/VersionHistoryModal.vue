@@ -16,7 +16,6 @@
           :refName="'versionHistory'"
           :table="tableData"
           :columns="table.columns"
-          :countRow="5"
           :showHeader="true"
           :selectable="false"
           :pageSizes="[5, 10, 25]"

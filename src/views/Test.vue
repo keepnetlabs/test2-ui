@@ -5,7 +5,6 @@
       :columns="columns"
       :table="tableData"
       :title="title"
-      :countRow="6"
       :pageSizes="pageSizes"
       :defaultSort="'date'"
       :selectable="true"

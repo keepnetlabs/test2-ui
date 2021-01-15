@@ -11,7 +11,6 @@
         ref="refSmtpSettingsList"
         :refName="'smtpSettingsList'"
         :columns="tableOptions.columns"
-        :countRow="5"
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
