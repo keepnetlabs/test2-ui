@@ -82,6 +82,7 @@
           ref="refPicker2"
           type="datetimerange"
           style="margin-bottom: 14px;"
+          @change="handleChangeBetweenDatepicker"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -225,6 +226,11 @@ export default {
   },
   methods: {
     changeDateSelect() {},
+    handleChangeBetweenDatepicker(val) {
+      if (!val) {
+        this.filteredDateRangeValue = []
+      }
+    },
     clearFilter(isEmit = true) {
       this.menu = false
       this.isFilterActive = false

@@ -71,6 +71,11 @@ export default {
       }
     })
   },
+  watch: {
+    tab(val) {
+      if (val === 'first') this.isLoadState = false
+    }
+  },
   created() {
     const {
       $route: { params }

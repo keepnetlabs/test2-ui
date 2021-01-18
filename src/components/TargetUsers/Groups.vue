@@ -416,10 +416,39 @@ export default {
         this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
+
   created() {
     if (this.isLoadState) {
-      const tableState = this.$store.state['datatable'].tables['Groups'].tableState
-      this.tableState = { persistentState: tableState }
+      const tableState =
+        this.$store.state['datatable'].tables['Groups'] &&
+        this.$store.state['datatable'].tables['Groups'].tableState
+      if (tableState) {
+        const { filterValues = {} } = tableState
+        if (Object.keys(filterValues).length) {
+          this.tableOptions.isColumnFilterActive = true
+          for (const [key, value] of Object.entries(filterValues)) {
+            if (value.selectValue === 'between') {
+              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[0],
+                FieldName: key,
+                Operator: '>='
+              })
+              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[1],
+                FieldName: key,
+                Operator: '<='
+              })
+            } else {
+              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue,
+                FieldName: key,
+                Operator: value.selectValue
+              })
+            }
+          }
+        }
+        this.tableState = { persistentState: tableState }
+      }
     } else {
       this.callForTargetGroups()
     }

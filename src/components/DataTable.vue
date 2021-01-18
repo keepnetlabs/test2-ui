@@ -38,7 +38,11 @@
             v-if="ind !== 0 && !col.hideOnSettingsPopup"
           >
             {{ col.label }}
-            <v-switch v-model="col.show" color="#2196f3" @change="$forceUpdate()" />
+            <v-switch
+              v-model="col.show"
+              color="#2196f3"
+              @change="handleChangeVisibilityOfColumn(ind)"
+            />
           </div>
           <slot name="settings-popup-body"></slot>
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
@@ -1054,6 +1058,7 @@ export default {
         return {
           currentPage: 1,
           expandedRows: [],
+          firstColFixed: true,
           filteredDataLength: 0,
           search: '',
           showfilteredData: false,
@@ -1061,6 +1066,7 @@ export default {
           initialData: [],
           filteredData: [],
           filterValues: {},
+          lastColFixed: true,
           rowCount: this.countRow || 10,
           isSelectedAll: false,
           selectedCluster: '',
@@ -1127,11 +1133,13 @@ export default {
       currentPage,
       filteredDataLength,
       showfilteredData,
+      firstColFixed,
       filteredData,
       search,
       tableData,
       initialData,
       sortProps,
+      lastColFixed,
       filterValues,
       selectedCluster = this.activeCluster,
       totalLength,
@@ -1170,10 +1178,10 @@ export default {
       isSettingsOpened: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
-      firstColFixed: true,
+      firstColFixed,
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
-      lastColFixed: true,
+      lastColFixed,
       clusteredItems: [],
       isRowActionsMenuOpen: [],
       filterValues,
@@ -1323,8 +1331,7 @@ export default {
   },
   created() {
     //Init column standardisation
-    if (this.persistentState && this.persistentState.rowCount) this.setPersistentStateToDataValues()
-    else this.setRenderedColumns()
+    if (this.persistentState) this.setPersistentStateToDataValues()
 
     this.columnStandardisation(this.columns)
 
@@ -1340,6 +1347,7 @@ export default {
     this.tableData = this.tableData.slice(0, this.rowCount)
   },
   mounted() {
+    //persistent state sorting
     if (this.persistentState && this.persistentState.sortProps) {
       const { prop, order } = this.persistentState.sortProps
       this.$refs.elTableRef.sort(prop, order)
@@ -1369,6 +1377,8 @@ export default {
   methods: {
     getState() {
       return {
+        firstColFixed: this.firstColFixed,
+        lastColFixed: this.lastColFixed,
         expandedRows: this.expandedRows,
         search: this.search,
         currentPage: this.currentPage,
@@ -1390,9 +1400,29 @@ export default {
       }
     },
     setPersistentStateToDataValues() {
-      if (this.persistentState.rowCount) this.rowCount = this.persistentState.rowCount
-      if (this.persistentState.multipleSelection.length) {
-        for (const row of this.persistentState.multipleSelection) {
+      const {
+        renderedColumns = [],
+        multipleSelection = [],
+        firstColFixed,
+        lastColFixed
+      } = this.persistentState
+
+      //setting fixed values
+      if (!firstColFixed) this.columns[0].fixed = false
+      if (!lastColFixed) this.actionFixed = false
+
+      //setting rendered columns
+      if (!renderedColumns.length) {
+        this.setRenderedColumns()
+      } else {
+        this.columns.forEach((col) => {
+          if (!renderedColumns.find((property) => property === col.property)) col.show = false
+        })
+      }
+
+      // setting selections
+      if (multipleSelection.length) {
+        for (const row of multipleSelection) {
           this.$nextTick(() => {
             this.$refs.elTableRef.toggleRowSelection(row, true)
           })
@@ -1543,7 +1573,9 @@ export default {
       }
       return retArr
     },
-
+    /**
+     * This function selects all items on the table.
+     */
     selectAllItems() {
       this.multipleSelection = this.getAllItems(this.initialData, [])
       for (let item of this.multipleSelection) {
@@ -1592,6 +1624,10 @@ export default {
           }
         }
       }
+    },
+    handleChangeVisibilityOfColumn() {
+      this.setRenderedColumns()
+      this.$forceUpdate()
     },
     /**
      * This function sets rendered columns on table
