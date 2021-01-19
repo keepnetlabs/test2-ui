@@ -24,7 +24,7 @@
             name="second"
             v-if="checkPermissions('target-groups/search', 'POST')"
           >
-            <groups v-if="tab === 'second'"
+            <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'second'"
           /></el-tab-pane>
         </el-tabs>
       </v-card>
@@ -51,6 +51,7 @@ export default {
   data() {
     return {
       companyLicense: null,
+      isLoadState: false,
       showLicenseExceededDialog: false,
       tab: 'first'
     }
@@ -66,8 +67,14 @@ export default {
     next((vm) => {
       if (from.name === 'Target Group Users') {
         vm.tab = 'second'
+        vm.isLoadState = true
       }
     })
+  },
+  watch: {
+    tab(val) {
+      if (val === 'first') this.isLoadState = false
+    }
   },
   created() {
     const {
@@ -119,7 +126,7 @@ export default {
       const companyResourceId = localStorage.getItem('companyId')
       getCheckCompanyLicense(companyResourceId).then((response) => {
         const { data: { data = {} } = {} } = response
-        const { isLimited,isLicenseExceeded } = data
+        const { isLimited, isLicenseExceeded } = data
         this.companyLicense = data
         if (isLimited && isLicenseExceeded && showMainModal) {
           this.toggleShowLicenseExceededDialog()

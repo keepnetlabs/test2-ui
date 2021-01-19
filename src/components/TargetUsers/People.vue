@@ -46,7 +46,6 @@
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :countRow="5"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"

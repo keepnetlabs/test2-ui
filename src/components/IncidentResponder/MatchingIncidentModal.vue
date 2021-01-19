@@ -19,7 +19,6 @@
               :refName="'matchingInvestigation'"
               :table="tableData"
               :columns="columns"
-              :countRow="5"
               :loading="isMatchingModalLoading"
               :pageSizes="[5, 10, 25]"
               :showHeader="true"

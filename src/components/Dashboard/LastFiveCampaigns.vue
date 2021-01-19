@@ -6,7 +6,6 @@
       :columns="columns"
       :table="singleTableList"
       :title="title"
-      :countRow="5"
       :pageSizes="[]"
       :defaultSort="'date'"
       :selectable="false"

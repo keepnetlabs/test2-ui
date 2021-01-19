@@ -45,7 +45,6 @@
       ref="refDataList"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :countRow="5"
       :groupable="true"
       :empty="tableOptions.iEmpty"
       :filterable="true"

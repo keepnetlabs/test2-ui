@@ -756,7 +756,6 @@
                 ref="refInvestigationListData"
                 :columns="columns"
                 :table="investigationDetailsList"
-                :countRow="5"
                 :pageSizes="pageSizes"
                 :selectable="true"
                 :filterable="true"
@@ -842,7 +841,6 @@
                   investigationDetailsTargetUsersListData &&
                   investigationDetailsTargetUsersListData.results
                 "
-                :countRow="5"
                 :pageSizes="pageSizes"
                 :defaultSort="'date'"
                 :selectable="false"

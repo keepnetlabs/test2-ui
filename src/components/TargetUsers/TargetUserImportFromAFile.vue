@@ -202,7 +202,6 @@
                     :empty="tableOptions.empty"
                     :refName="'validateList'"
                     :columns="tableOptions.columns"
-                    :countRow="5"
                     :selectable="true"
                     :filterable="true"
                     :options="true"
@@ -719,7 +718,10 @@ export default {
       let totalMemberCount = newMemberCount + currentMemberCount
       let licenseLimit = this.companyLicense['licenseLimit']
       let isLimited = this.companyLicense['isLimited']
-      if (isLimited && (this.companyLicense['isLicenseExceeded'] || licenseLimit < totalMemberCount)) {
+      if (
+        isLimited &&
+        (this.companyLicense['isLicenseExceeded'] || licenseLimit < totalMemberCount)
+      ) {
         this.showLicenseExceededDialog = true
       } else {
         this.save(actionName)

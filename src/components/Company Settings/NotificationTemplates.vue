@@ -26,7 +26,6 @@
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
         :columns="tableOptions.columns"
-        :countRow="5"
         :table="tableData"
         :empty="tableOptions.empty"
         :loading="loading"

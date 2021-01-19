@@ -30,7 +30,6 @@
       ref="refIntegrationsList"
       :refName="'integrationsList'"
       :columns="tableOptions.columns"
-      :countRow="5"
       :selectable="true"
       :filterable="true"
       :options="true"

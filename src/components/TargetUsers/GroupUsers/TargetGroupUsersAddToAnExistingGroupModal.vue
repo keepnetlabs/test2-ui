@@ -18,7 +18,6 @@
         filterable
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
-        :count-row="5"
         :is-settings-popup="false"
         :empty="tableOptions.iEmpty"
         options

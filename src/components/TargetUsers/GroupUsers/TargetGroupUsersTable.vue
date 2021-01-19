@@ -7,7 +7,6 @@
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
-    :count-row="5"
     :empty="tableOptions.iEmpty"
     :filterable="true"
     :options="true"

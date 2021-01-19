@@ -16,6 +16,7 @@
     />
 
     <datatable
+      v-bind="tableState"
       ref="refGroupsTable"
       :refName="'groupsTable'"
       id="target-users-group-data-table"
@@ -24,7 +25,6 @@
       :table="tableData"
       titleKey="name"
       :columns="tableOptions.columns"
-      :countRow="5"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
@@ -100,10 +100,15 @@ export default {
     CreateNewUserGroupModal,
     datatable: DataTable
   },
+  props: {
+    isLoadState: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       isCreateButtonDisabled: false,
-      loading: true,
+      loading: false,
       tableData: [],
       extendedViewLoading: true,
       tableOptions: {
@@ -265,7 +270,8 @@ export default {
             }
           ]
         }
-      }
+      },
+      tableState: null
     }
   },
   methods: {
@@ -413,8 +419,49 @@ export default {
         this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
+
   created() {
-    this.callForTargetGroups()
+    if (this.isLoadState) {
+      const tableState =
+        this.$store.state['datatable'].tables['Groups'] &&
+        this.$store.state['datatable'].tables['Groups'].tableState
+      if (tableState) {
+        const { filterValues = {} } = tableState
+        if (Object.keys(filterValues).length) {
+          this.tableOptions.isColumnFilterActive = true
+          for (const [key, value] of Object.entries(filterValues)) {
+            if (value.selectValue === 'between') {
+              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[0],
+                FieldName: key,
+                Operator: '>='
+              })
+              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[1],
+                FieldName: key,
+                Operator: '<='
+              })
+            } else {
+              this.tableCredientials.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue,
+                FieldName: key,
+                Operator: value.selectValue
+              })
+            }
+          }
+        }
+        this.tableState = { persistentState: tableState }
+      }
+    } else {
+      this.callForTargetGroups()
+    }
+  },
+  beforeDestroy() {
+    const tableState = this.$refs.refGroupsTable.getState()
+    this.$store.dispatch('datatable/setTable', {
+      key: 'Groups',
+      tableState
+    })
   }
 }
 </script>

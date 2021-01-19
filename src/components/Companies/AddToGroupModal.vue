@@ -16,7 +16,6 @@
           :loading="isLoading"
           :download-button="{ show: false, disabled: false }"
           :columns="tableOptions.columns"
-          :countRow="5"
           :empty="tableOptions.iEmpty"
           :filterable="true"
           :options="true"
