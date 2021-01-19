@@ -10,7 +10,6 @@
         ref="refSmtpSettingsList"
         :refName="'smtpSettingsList'"
         :columns="tableOptions.columns"
-        :countRow="5"
         :empty="tableOptions.empty"
         id="company-settings-rest-api-data-table"
         :filterable="true"

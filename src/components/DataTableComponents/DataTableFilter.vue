@@ -82,6 +82,7 @@
           ref="refPicker2"
           type="datetimerange"
           style="margin-bottom: 14px;"
+          @change="handleChangeBetweenDatepicker"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -150,24 +151,41 @@ export default {
     },
     index: {
       type: Number
+    },
+    value: {
+      default() {
+        return {
+          textValue: '',
+          selectValue: ''
+        }
+      }
     }
   },
   data() {
     return {
       menu: null,
-      isFilterActive: false,
+      isFilterActive:
+        this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue,
       filteredSelectValue: this.filterProps
         ? this.filterProps.items && this.filterProps.items[0]
-        : 'Contains',
+        : this.value.selectValue || 'Contains',
       filteredSelectValueNum: '=',
-      filteredSelectValueDate: '<=',
-      filteredDateValue: this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
-      filteredDateRangeValue: [
-        this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
-        this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
-      ],
-      filterValue: '',
-      filterChecked: [],
+      filteredSelectValueDate:
+        this.filterableType === 'date' ? this.value.selectValue || '<=' : '<=',
+      filteredDateValue:
+        (this.filterableType === 'date' &&
+          this.value.selectValue !== 'between' &&
+          this.value.textValue) ||
+        this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+      filteredDateRangeValue:
+        this.value.selectValue === 'between'
+          ? [this.value.textValue[0], this.value.textValue[1]]
+          : [
+              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
+              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+            ],
+      filterValue: this.value.textValue || '',
+      filterChecked: this.filterableType === 'select' ? this.value.selectValue.split(',') : [],
       textFilterItems: [
         { text: 'Contains', value: 'Contains' },
         { text: 'Equal', value: '=' },
@@ -203,12 +221,17 @@ export default {
   },
   beforeDestroy() {
     if (this.isFilterActive) {
-      this.clearFilter()
+      this.clearFilter(false)
     }
   },
   methods: {
     changeDateSelect() {},
-    clearFilter() {
+    handleChangeBetweenDatepicker(val) {
+      if (!val) {
+        this.filteredDateRangeValue = []
+      }
+    },
+    clearFilter(isEmit = true) {
       this.menu = false
       this.isFilterActive = false
       this.filterValue = ''
@@ -217,6 +240,12 @@ export default {
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
       this.$emit('handleClearColumnFilter', this.fieldName)
+      if (isEmit) {
+        this.emitValue()
+      }
+    },
+    emitValue(textValue = '', selectValue = '', fieldName = '') {
+      this.$emit('input', { textValue, selectValue, fieldName })
     },
     handleFilter() {
       this.menu = false
@@ -228,6 +257,7 @@ export default {
           FieldName: this.fieldName,
           Operator: this.filteredSelectValue
         })
+        this.emitValue(this.filterValue, this.filteredSelectValue, this.fieldName)
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
@@ -235,6 +265,7 @@ export default {
           FieldName: this.fieldName,
           Operator: this.filteredSelectValueNum
         })
+        this.emitValue(this.filterValue, this.filteredSelectValueNum, this.fieldName)
       }
       if (this.filterableType === 'date') {
         if (this.filteredSelectValueDate === 'between') {
@@ -250,20 +281,29 @@ export default {
               Operator: '<='
             }
           ])
+          this.emitValue(
+            [this.filteredDateRangeValue[0], this.filteredDateRangeValue[1]],
+            this.filteredSelectValueDate,
+            this.fieldName
+          )
         } else {
           this.$emit('handleFilterColumn', {
             Value: this.filteredDateValue,
             FieldName: this.fieldName,
             Operator: this.filteredSelectValueDate
           })
+          this.emitValue(this.filteredDateValue, this.filteredSelectValueDate, this.fieldName)
         }
       }
       if (this.filterableType === 'select') {
+        const Value = this.filterChecked.toString()
+        const Operator = 'Include'
         this.$emit('handleFilterColumn', {
-          Value: this.filterChecked.toString(),
+          Value,
           FieldName: this.fieldName,
-          Operator: 'Include'
+          Operator
         })
+        this.emitValue(this.filterValue, Value, this.fieldName)
       }
     }
   },

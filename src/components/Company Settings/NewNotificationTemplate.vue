@@ -22,7 +22,7 @@
             :disabled="editItemsDisabled"
           />
         </form-group>
-        <form-group title="Category" has-hint>
+        <form-group title="Template Type" has-hint>
           <k-select
             v-bind="commonRules"
             v-model.trim="formValues.emailTemplateCategoryResourceId"

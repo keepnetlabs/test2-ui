@@ -38,7 +38,11 @@
             v-if="ind !== 0 && !col.hideOnSettingsPopup"
           >
             {{ col.label }}
-            <v-switch v-model="col.show" color="#2196f3" @change="$forceUpdate()" />
+            <v-switch
+              v-model="col.show"
+              color="#2196f3"
+              @change="handleChangeVisibilityOfColumn(ind)"
+            />
           </div>
           <slot name="settings-popup-body"></slot>
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
@@ -363,6 +367,7 @@
           v-if="(tableData && tableData.length) || isColumnFilterActive"
         >
           <el-table
+            v-row-color-handler
             v-if="!allHidden"
             :key="tableKey"
             :border="border"
@@ -509,6 +514,7 @@
 
                 <data-table-filter
                   v-if="col.filterableType"
+                  v-model="filterValues[col.property]"
                   :column="column"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
@@ -825,7 +831,7 @@ import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
 import DataTableFilter from './DataTableComponents/DataTableFilter'
-
+import RowColorHandler from '@/directives/datatable-row-color-handler'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -860,6 +866,9 @@ export default {
     DataTableSmallBadge,
     DatatableTextWithBadge,
     DatatableLoading
+  },
+  directives: {
+    'row-color-handler': RowColorHandler
   },
   props: {
     cacheCheckboxFromParent: {
@@ -1047,6 +1056,33 @@ export default {
       type: Boolean,
       default: true
     },
+    persistentState: {
+      type: Object,
+      default() {
+        return {
+          currentPage: 1,
+          expandedRows: [],
+          firstColFixed: true,
+          filteredDataLength: 0,
+          search: '',
+          showfilteredData: false,
+          tableData: [],
+          initialData: [],
+          filteredData: [],
+          filterValues: {},
+          lastColFixed: true,
+          rowCount: this.countRow || 10,
+          isSelectedAll: false,
+          selectedCluster: '',
+          sortProps: null,
+          unRenderedFilterData: [],
+          totalLength: 0,
+          renderedColumns: [],
+          selectionRowCheckboxDeterminate: false,
+          multipleSelection: []
+        }
+      }
+    },
     downloadButton: {
       type: Object,
       default: () => ({
@@ -1097,41 +1133,62 @@ export default {
     }
   },
   data() {
+    const {
+      currentPage,
+      filteredDataLength,
+      showfilteredData,
+      firstColFixed,
+      filteredData,
+      search,
+      tableData,
+      initialData,
+      sortProps,
+      lastColFixed,
+      filterValues,
+      selectedCluster = this.activeCluster,
+      totalLength,
+      rowCount,
+      isSelectedAll,
+      unRenderedFilterData,
+      renderedColumns,
+      multipleSelection,
+      expandedRows,
+      selectionRowCheckboxDeterminate
+    } = this.persistentState
     return {
       cacheChecks: false,
-      filteredData: [],
-      renderedColumns: [],
-      filteredDataLength: 0,
-      showfilteredData: false,
+      filteredData,
+      renderedColumns,
+      filteredDataLength,
+      showfilteredData,
       selectCheckboxesLazy: false,
-      sortProps: null,
-      initialData: [],
+      sortProps,
+      initialData,
       dataLength: 0,
-      isSelectedAll: false,
-      selectedCluster: this.activeCluster,
-      tableData: [],
-      selectedRows: [],
-      rowCount: 5,
+      isSelectedAll,
+      selectedCluster,
+      tableData,
+      rowCount,
       extendedViewStyle: null,
-      currentPage: 1,
-      multipleSelection: [],
-      unRenderedFilterData: [],
+      currentPage,
+      multipleSelection,
+      unRenderedFilterData,
       timeout: null,
       selectionCheckbox: false,
-      selectionAll: false,
       dynamicStyleRef: null,
-      search: '',
-      expandedRows: [],
+      search,
+      expandedRows,
       downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
-      firstColFixed: true,
+      firstColFixed,
       overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
-      lastColFixed: true,
+      lastColFixed,
       clusteredItems: [],
       isRowActionsMenuOpen: [],
+      filterValues,
       download: {
         xls: false,
         csv: false,
@@ -1143,9 +1200,9 @@ export default {
       allHidden: false,
       clusterChevron: false,
       downloadButtonOptions: ['Download Current Page', 'Download All'],
-      selectionRowCheckboxDeterminate: false,
+      selectionRowCheckboxDeterminate,
       renderedTotalLength: 0,
-      totalLength: 0
+      totalLength
     }
   },
   watch: {
@@ -1278,9 +1335,10 @@ export default {
   },
   created() {
     //Init column standardisation
-    if (this.countRow) this.rowCount = this.countRow
+    if (this.persistentState) this.setPersistentStateToDataValues()
+
     this.columnStandardisation(this.columns)
-    this.setRenderedColumns()
+
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
@@ -1293,6 +1351,11 @@ export default {
     this.tableData = this.tableData.slice(0, this.rowCount)
   },
   mounted() {
+    //persistent state sorting
+    if (this.persistentState && this.persistentState.sortProps) {
+      const { prop, order } = this.persistentState.sortProps
+      this.$refs.elTableRef.sort(prop, order)
+    }
     if (window.outerWidth < 1023) {
       this.actionFixed = false
       const leftFixed = this.columns.filter((col) => col.fixed === 'left')
@@ -1316,6 +1379,60 @@ export default {
     }
   },
   methods: {
+    getState() {
+      return {
+        firstColFixed: this.firstColFixed,
+        lastColFixed: this.lastColFixed,
+        expandedRows: this.expandedRows,
+        search: this.search,
+        currentPage: this.currentPage,
+        filteredDataLength: this.filteredDataLength,
+        showfilteredData: this.showfilteredData,
+        tableData: this.tableData,
+        initialData: this.initialData,
+        sortProps: this.sortProps,
+        filteredData: this.filteredData,
+        filterValues: this.filterValues,
+        selectedCluster: this.selectedCluster,
+        rowCount: this.rowCount,
+        isSelectedAll: this.isSelectedAll,
+        unRenderedFilterData: this.unRenderedFilterData,
+        totalLength: this.totalLength,
+        renderedColumns: this.renderedColumns,
+        multipleSelection: this.multipleSelection,
+        selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate
+      }
+    },
+    setPersistentStateToDataValues() {
+      const {
+        renderedColumns = [],
+        multipleSelection = [],
+        firstColFixed,
+        lastColFixed
+      } = this.persistentState
+
+      //setting fixed values
+      if (!firstColFixed) this.columns[0].fixed = false
+      if (!lastColFixed) this.actionFixed = false
+
+      //setting rendered columns
+      if (!renderedColumns.length) {
+        this.setRenderedColumns()
+      } else {
+        this.columns.forEach((col) => {
+          if (!renderedColumns.find((property) => property === col.property)) col.show = false
+        })
+      }
+
+      // setting selections
+      if (multipleSelection.length) {
+        for (const row of multipleSelection) {
+          this.$nextTick(() => {
+            this.$refs.elTableRef.toggleRowSelection(row, true)
+          })
+        }
+      }
+    },
     getSelectedMultipleValues() {
       return this.multipleSelection
     },
@@ -1435,20 +1552,7 @@ export default {
         this.clusteredItems = []
         this.$refs.elTableRef.clearSelection()
       } else {
-        //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
-        /*
-        if (dataRef === this.unRenderedFilterData) {
-          this.multipleSelection = [...this.multipleSelection, ...dataRef]
-        } else {
-          this.multipleSelection = [...dataRef]
-        }
-        */
-
-        this.multipleSelection = this.getAllItems(this.initialData, [])
-
-        for (let item of this.multipleSelection) {
-          this.$refs.elTableRef.toggleRowSelection(item, true)
-        }
+        this.selectAllItems()
         this.isSelectedAll = true
       }
     },
@@ -1473,7 +1577,15 @@ export default {
       }
       return retArr
     },
-
+    /**
+     * This function selects all items on the table.
+     */
+    selectAllItems() {
+      this.multipleSelection = this.getAllItems(this.initialData, [])
+      for (let item of this.multipleSelection) {
+        this.$refs.elTableRef.toggleRowSelection(item, true)
+      }
+    },
     handleRefresh() {
       this.cacheChecks = true
       this.$emit('refreshAction')
@@ -1516,6 +1628,10 @@ export default {
           }
         }
       }
+    },
+    handleChangeVisibilityOfColumn() {
+      this.setRenderedColumns()
+      this.$forceUpdate()
     },
     /**
      * This function sets rendered columns on table
@@ -2098,7 +2214,7 @@ export default {
       if (hasChildren && !children.length) {
         this.$refs.elTableRef.store.loadOrToggle(row)
         this.selectCheckboxesLazy = true
-      } else if (children.length) {
+      } else if (children && children.length) {
         this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
     },
@@ -2381,7 +2497,6 @@ export default {
         []
     },
     handleFilterColumn(filterObj) {
-      const { column, filterValue, filteredSelectValue } = filterObj
       this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {

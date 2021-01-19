@@ -36,7 +36,6 @@
           :refName="'investigationTable'"
           :columns="columns"
           :table="tableData.data"
-          :countRow="5"
           :pageSizes="pageSizes"
           :defaultSort="'date'"
           :selectable="true"

@@ -19,7 +19,6 @@
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :countRow="5"
       :empty="tableOptions.empty"
       :filterable="true"
       :options="true"

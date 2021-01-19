@@ -37,7 +37,6 @@
               <data-table
                 :addButton="tableOptions.addButton"
                 :columns="tableOptions.columns"
-                :countRow="5"
                 :empty="tableOptions.empty"
                 :filterable="true"
                 :options="true"

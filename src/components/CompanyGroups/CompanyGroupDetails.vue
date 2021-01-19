@@ -53,7 +53,6 @@
       ref="refDataList"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :countRow="5"
       :empty="tableOptions.iEmpty"
       id="company-groups-details-data-table"
       :filterable="true"

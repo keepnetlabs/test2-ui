@@ -37,7 +37,6 @@
       ref="refClientList"
       :refName="'clientList'"
       :columns="tableOptions.columns"
-      :countRow="5"
       :selectable="true"
       :filterable="true"
       :options="true"

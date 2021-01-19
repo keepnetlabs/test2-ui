@@ -22,7 +22,6 @@
       ref="refGroupDataList"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :countRow="5"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-downloadable="false"

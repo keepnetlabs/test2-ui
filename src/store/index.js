@@ -9,7 +9,7 @@ import tour from './modules/tour'
 import investigations from './modules/investigations'
 import playbook from './modules/playbook'
 import rightColumn from './modules/rightColumn'
-
+import datatable from '@/store/modules/datatable'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -21,7 +21,8 @@ let store = new Vuex.Store({
     tour,
     investigations,
     playbook,
-    rightColumn
+    rightColumn,
+    datatable
   }
 })
 

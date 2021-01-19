@@ -20,7 +20,6 @@
         :refName="'userRolesList'"
         :columns="tableOptions.columns"
         :select-event="tableOptions.selectEvent"
-        :countRow="5"
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
