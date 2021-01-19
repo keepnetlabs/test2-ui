@@ -367,6 +367,7 @@
           v-if="(tableData && tableData.length) || isColumnFilterActive"
         >
           <el-table
+            v-row-color-handler
             v-if="!allHidden"
             :key="tableKey"
             :border="border"
@@ -830,7 +831,7 @@ import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
 import DataTableFilter from './DataTableComponents/DataTableFilter'
-
+import RowColorHandler from '@/directives/datatable-row-color-handler'
 window.Vue = Vue
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -865,6 +866,9 @@ export default {
     DataTableSmallBadge,
     DatatableTextWithBadge,
     DatatableLoading
+  },
+  directives: {
+    'row-color-handler': RowColorHandler
   },
   props: {
     cacheCheckboxFromParent: {
