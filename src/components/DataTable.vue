@@ -84,7 +84,7 @@
               placeholder="Search"
               outlined
               prepend-inner-icon="mdi-magnify"
-              v-model="search"
+              v-model.trim="search"
               ref="searchInput"
               @keyup="searchChangedEvent"
             />
@@ -2019,17 +2019,14 @@ export default {
     searchChangedEvent(debounceTime = 500) {
       if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
-          const filterItems = this.columns
-            .filter((column) => column.filterableType)
-            .reduce((acc, filterItem) => {
-              acc.push({
-                FieldName:
-                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-                Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
-                Value: this.search
-              })
-              return acc
-            }, [])
+          const filterItems = this.columns.reduce((acc, filterItem) => {
+            acc.push({
+              FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
+              Operator: 'Contains',
+              Value: this.search
+            })
+            return acc
+          }, [])
           const bodyDataFilter = {
             filter: {
               Condition: 'AND',
@@ -2042,7 +2039,7 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-        }, 1000)
+        }, 500)
       } else {
         this.debounce(() => {
           const searchValue = this.search

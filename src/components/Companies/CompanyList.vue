@@ -51,7 +51,7 @@
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
-      :server-side-events="{ pagination: true }"
+      :server-side-events="{ pagination: true, search: true }"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
@@ -295,6 +295,11 @@ export default {
             Condition: 'AND',
             FilterItems: [],
             FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
           }
         ]
       }
@@ -355,15 +360,18 @@ export default {
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
-      this.payload.pageNumber = 1
       this.serverSideProps.pageSize = pageSize
-      this.serverSideProps.pageNumber = 1
+      this.resetPageNumber()
       this.setRouterQuery('size', pageSize)
       this.setRouterQuery('page', 1)
       this.getTableData()
     },
+    resetPageNumber() {
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
     setRouterQuery(key, value) {
-      this.$router.replace({ query: { ...this.$route.query, [key]: value } })
+      this.$router.replace({ query: { ...this.$route.query, [key]: value } }).catch((e) => {})
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -376,12 +384,12 @@ export default {
         this.isShowExtended = false
       }
     },
-    handleSearchChange(bodyData = {}, columnFilterActive = false) {
-      this.payload.filter.FilterGroups[0].FilterItems = [
-        ...bodyData.filter.FilterGroups[0].FilterItems
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      this.payload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
       this.getTableData()
     },
     handleCellClick({ column, event }) {
@@ -563,6 +571,7 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
