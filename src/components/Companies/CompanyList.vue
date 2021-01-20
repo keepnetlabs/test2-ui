@@ -43,12 +43,15 @@
       :table="tableData"
       id="companies-data-table"
       ref="refDataList"
+      is-server-side
+      :server-side-props="serverSideProps"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :groupable="true"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :server-side-events="{ pagination: true }"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
@@ -62,7 +65,6 @@
       @delete="handleTableItemDelete"
       @cellClick="handleCellClick"
       @downloadEvent="handleTableDownload"
-      :is-server-side="false"
       @addButton="addButton"
       @handleListBulleted="handleListBulletedClick"
       @onEmptyBtnClicked="addButton"
@@ -75,6 +77,8 @@
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @handleChangeIsSettingsOpen="handleChangeIsSettingsOpen"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -130,6 +134,7 @@ import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
   name: 'CompanyList',
@@ -280,7 +285,7 @@ export default {
     },
     payload: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -293,7 +298,8 @@ export default {
           }
         ]
       }
-    }
+    },
+    serverSideProps: new ServerSideProps()
   }),
   watch: {
     isShowCreateOrEditModal() {
@@ -301,6 +307,8 @@ export default {
     }
   },
   created() {
+    this.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getLookUpDatas()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
@@ -310,6 +318,53 @@ export default {
   },
   mounted() {},
   methods: {
+    controlRouteQuery() {
+      if (this.isRouteQuery()) {
+        return
+      }
+      this.setRouterQuery('page', 1)
+      this.setRouterQuery('size', 10)
+    },
+    isRouteQuery() {
+      if (!this.$route.query && !this.$route.query.page && !this.$route.query.size) {
+        return
+      }
+      const { size, page } = this.$route.query
+
+      if (!['5', '10', '25'].some((defaultNum) => defaultNum === size)) {
+        this.setRouterQuery('size', 10)
+      }
+
+      if (isNaN(parseInt(page))) {
+        this.setRouterQuery('page', 1)
+      }
+      return true
+    },
+    setQueryValuesToPayload({ page, size }) {
+      const parsedPage = parseInt(page)
+      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.payload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.payload.pageNumber = pageNumber
+      this.setRouterQuery('page', pageNumber)
+      this.getTableData()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.payload.pageSize = pageSize
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageSize = pageSize
+      this.serverSideProps.pageNumber = 1
+      this.setRouterQuery('size', pageSize)
+      this.setRouterQuery('page', 1)
+      this.getTableData()
+    },
+    setRouterQuery(key, value) {
+      this.$router.replace({ query: { ...this.$route.query, [key]: value } })
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -360,6 +415,12 @@ export default {
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          console.log('esponse.data.data.results', response.data.data.results)
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
