@@ -639,6 +639,9 @@ export default {
     background-color: rgba(0, 0, 0, 0) !important;
     height: 100%;
   }
+  .overlay__container {
+    max-height: 384px !important;
+  }
   &__title {
     font-size: 20px;
     font-weight: 600;
