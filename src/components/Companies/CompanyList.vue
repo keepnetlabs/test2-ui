@@ -51,7 +51,7 @@
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
-      :server-side-events="{ pagination: true, search: true }"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
@@ -77,6 +77,7 @@
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @handleChangeIsSettingsOpen="handleChangeIsSettingsOpen"
+      @sortChangedEvent="sortChanged"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
     >
@@ -339,8 +340,8 @@ export default {
       if (!['5', '10', '25'].some((defaultNum) => defaultNum === size)) {
         this.setRouterQuery('size', 10)
       }
-
-      if (isNaN(parseInt(page))) {
+      const parsedPage = parseInt(page)
+      if (isNaN(parsedPage) || parsedPage <= 0) {
         this.setRouterQuery('page', 1)
       }
       return true
@@ -356,6 +357,11 @@ export default {
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
       this.setRouterQuery('page', pageNumber)
+      this.getTableData()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
@@ -428,7 +434,8 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          console.log('esponse.data.data.results', response.data.data.results)
+          this.setRouterQuery('page', pageNumber)
+
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
@@ -452,10 +459,16 @@ export default {
     },
     clusterChanged() {
       this.isClustered = true
+      this.resetPageNumber()
+      this.payload.filter.FilterGroups[0].FilterItems = []
+      this.$refs.refDataList.filterValues = {}
       this.getTableData()
     },
     handleListBulletedClick() {
       this.isClustered = false
+      this.payload.filter.FilterGroups[0].FilterItems = []
+      this.$refs.refDataList.filterValues = {}
+      this.resetPageNumber()
       this.getTableData()
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {},

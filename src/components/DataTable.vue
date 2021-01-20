@@ -1243,7 +1243,6 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-
       //This is for refresh button when clicked caching refresh
       if (
         (!this.cacheChecks && !this.cacheCheckboxFromParent) ||
@@ -1285,7 +1284,7 @@ export default {
         this.searchChangedEvent(0)
       }
       //if there is just sorting go to the sorting
-      else if (this.sortProps) {
+      else if (this.sortProps && !this.isServerSide) {
         this.sortChangedEvent(this.sortProps)
       } else {
         let maxPage = Math.ceil(table.length / this.rowCount)
@@ -1911,6 +1910,7 @@ export default {
       }
     },
     sortFunction(data, sortProps) {
+      if (this.isServerSide) return
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
           acc.push(
