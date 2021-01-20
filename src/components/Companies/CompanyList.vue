@@ -136,7 +136,7 @@ import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'CompanyList',
   components: {
@@ -313,6 +313,7 @@ export default {
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
     this.getLookUpDatas()
@@ -325,26 +326,11 @@ export default {
   mounted() {},
   methods: {
     controlRouteQuery() {
-      if (this.isRouteQuery()) {
-        return
-      }
-      this.setRouterQuery('page', 1)
-      this.setRouterQuery('size', 10)
-    },
-    isRouteQuery() {
-      if (!this.$route.query && !this.$route.query.page && !this.$route.query.size) {
-        return
-      }
-      const { size, page } = this.$route.query
-
-      if (!['5', '10', '25'].some((defaultNum) => defaultNum === size)) {
-        this.setRouterQuery('size', 10)
-      }
-      const parsedPage = parseInt(page)
-      if (isNaN(parsedPage) || parsedPage <= 0) {
-        this.setRouterQuery('page', 1)
-      }
-      return true
+      this.queryHelper.isRouteQuery((val) => {
+        if (val) return
+        this.queryHelper.setRouterQuery('page', 1)
+        this.queryHelper.setRouterQuery('size', 10)
+      })
     },
     setQueryValuesToPayload({ page, size }) {
       const parsedPage = parseInt(page)
@@ -356,7 +342,7 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
-      this.setRouterQuery('page', pageNumber)
+      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -368,16 +354,13 @@ export default {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.setRouterQuery('size', pageSize)
-      this.setRouterQuery('page', 1)
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
       this.getTableData()
     },
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    setRouterQuery(key, value) {
-      this.$router.replace({ query: { ...this.$route.query, [key]: value } }).catch((e) => {})
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -425,6 +408,7 @@ export default {
         .finally(() => this.getTableData())
     },
     getTableData(payload) {
+      debugger
       const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
       this.loading = true
       searchCompanies(_payload)
@@ -434,7 +418,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.setRouterQuery('page', pageNumber)
+          this.queryHelper.setRouterQuery('page', pageNumber)
 
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
