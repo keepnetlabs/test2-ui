@@ -314,7 +314,7 @@ export default {
   },
   created() {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.controlRouteQuery()
+    this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
     this.getLookUpDatas()
     if (handleIsSafari()) {
@@ -323,15 +323,7 @@ export default {
       }
     }
   },
-  mounted() {},
   methods: {
-    controlRouteQuery() {
-      this.queryHelper.isRouteQuery((val) => {
-        if (val) return
-        this.queryHelper.setRouterQuery('page', 1)
-        this.queryHelper.setRouterQuery('size', 10)
-      })
-    },
     setQueryValuesToPayload({ page, size }) {
       const parsedPage = parseInt(page)
       this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
@@ -408,7 +400,6 @@ export default {
         .finally(() => this.getTableData())
     },
     getTableData(payload) {
-      debugger
       const _payload = { ...this.payload, ...payload, isClustered: this.isClustered }
       this.loading = true
       searchCompanies(_payload)
@@ -418,7 +409,7 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.queryHelper.setRouterQuery('page', pageNumber)
+          //this.queryHelper.setRouterQuery('page', pageNumber)
 
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0

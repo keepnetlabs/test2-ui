@@ -464,9 +464,11 @@
             </div>
           </div>
           <datatable
-            :loading="reportedEmailsLoading"
-            :is-column-filter-active="emails.isColumnFilterActive"
             v-bind="bindPropsIsSafari"
+            :loading="reportedEmailsLoading"
+            :server-side-events="{ pagination: true, search: true, sort: true }"
+            is-server-side
+            :is-column-filter-active="emails.isColumnFilterActive"
             :extendedViewDisableChanger="extendedViewDisableChanger"
             :table="reportedEmailsData"
             :refName="'reportedEmails'"
@@ -492,6 +494,7 @@
             :groupable="true"
             :selectEvent="emails.selectEvent"
             :disableExtendedViewTransition="true"
+            :server-side-props="serverSideProps"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
@@ -503,6 +506,10 @@
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
             @refreshAction="callForSearchNotifiedMail"
+            @server-side-page-number-changed="serverSidePageNumberChanged"
+            @server-side-size-changed="serverSideSizeChanged"
+            @searchChangedEvent="handleSearchChange"
+            @sortChangedEvent="sortChanged"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'source'">
@@ -631,6 +638,8 @@ import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   components: {
     AppDialogFooter,
@@ -1189,6 +1198,7 @@ export default {
         }
       }
     },
+    serverSideProps: new ServerSideProps(),
     isWantToAddNewInvestigation: false,
     extendedView: {
       isNotify: true,
@@ -1204,7 +1214,7 @@ export default {
     requestBodyReportedEmails: {
       isClustered: false,
       pageNumber: 1,
-      pageSize: 500000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -1212,6 +1222,11 @@ export default {
         FilterGroups: [
           {
             Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
             FilterItems: [],
             FilterGroups: []
           }
@@ -1314,6 +1329,8 @@ export default {
     this.addQuery()
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
     this.initMethods()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
@@ -1329,6 +1346,24 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    serverSideSizeChanged(pageSize = 10) {
+      this.requestBodyReportedEmails.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForSearchNotifiedMail()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.requestBodyReportedEmails.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForSearchNotifiedMail()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.requestBodyReportedEmails.ascending = order === 'ascending'
+      this.requestBodyReportedEmails.orderBy = prop
+      this.callForSearchNotifiedMail()
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -1385,13 +1420,18 @@ export default {
     extendedViewDisableChanger() {
       return JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView)
     },
-    handleSearchChange(bodyData = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.emails.isColumnFilterActive = columnFilterActive
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = [
-        ...bodyData.filter.FilterGroups[0].FilterItems
+      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      this.resetPageNumber()
       this.emails.isColumnFilterActive = columnFilterActive
       this.callForSearchNotifiedMail()
+    },
+    resetPageNumber() {
+      this.requestBodyReportedEmails.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     closeMatchingModal() {
       this.showMatchingModal = false
@@ -1621,10 +1661,15 @@ export default {
         searchNotifiedMail(this.requestBodyReportedEmails)
           .then((response) => {
             const {
-              data: {
-                data: { results }
-              }
-            } = response
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+              results
+            } = response.data.data
+            console.log('this.requestBodyReportedEmails', this.requestBodyReportedEmails)
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
             const tableData = this.getManipulatedTableData(results || [])
             this.reportedEmailsData = tableData || []
           })
