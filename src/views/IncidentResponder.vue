@@ -1,13 +1,34 @@
 <template>
   <div class="incident-responder-parent">
     <div class="incident-responder">
+      <the-clustered-modal
+        v-if="isShowingClusteredModal"
+        ref="refClusteredModal"
+        :hasMultipleNoteValue="hasMultipleNoteValue"
+        :row="clusteredRow"
+        :selected-cluster="selectedCluster"
+        :status="isShowingClusteredModal"
+        :extended-view-loading="extendedViewLoading"
+        :extended-view="extendedView"
+        :default-extended-view-values="defaultExtendedViewValues"
+        :extended-view-value="extendedViewValue"
+        :selectedRowsOfReportedEmailsLength="selectedRowsOfReportedEmailsLength"
+        @downloadEvent="exportReportedListEmails"
+        @closeDialog="toggleIsShowingClusteredModal"
+        @onEditClick="onEditClick"
+        @handleIsNotify="handleIsNotify"
+        @handleEdit="handleEdit"
+        @irPreview="irPreviewOnClick"
+        @handleDetails="irDetailsOnClick"
+        @handleInvestigate="handleReportedEmailInvestigate"
+      />
       <app-dialog
         size="big"
         :status="isShowRoi"
         icon="mdi-cog"
         :title="'ROI Summary Settings'"
         @changeStatus="isShowRoi = false"
-        subtitle="To calculate saving in time and money for automating the email analysis"
+        subtitle="To calculate saving in time and money for autom ating the email analysis"
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
@@ -474,10 +495,9 @@
             id="incident-responder-reported-emails-data-table"
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
-            :clusterItems="[{ name: 'Subject' }]"
+            :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
             active-cluster=""
             :changeFooterPosition="true"
-            lazy
             @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
@@ -505,6 +525,13 @@
             @refreshAction="callForSearchNotifiedMail"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
+              <template v-if="scope.column.property === 'subject'">
+                <span v-if="!selectedCluster"> {{ scope.row[col.property] }}</span>
+                <div class="reported-email-subject__container" v-else>
+                  <span class="reported-email-subject"> {{ scope.row[col.property] }}</span>
+                  <the-records-button :row="scope.row" @on-click="handleRecordButtonClick" />
+                </div>
+              </template>
               <template v-if="scope.column.property === 'source'">
                 <span
                   v-if="
@@ -631,8 +658,12 @@ import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
+import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
+import TheClusteredModal from '@/components/IncidentResponder/TheClusteredModal'
 export default {
   components: {
+    TheClusteredModal,
+    TheRecordsButton,
     AppDialogFooter,
     Datatable,
     NewInvestigation,
@@ -644,7 +675,9 @@ export default {
   },
 
   data: () => ({
+    selectedCluster: '',
     labels,
+    clusteredRow: '',
     isConfirmButtonDisabled: false,
     topRulesLoading: true,
     investigationsLoading: true,
@@ -664,6 +697,7 @@ export default {
     openInvestigationOverlay: false,
     investigationListData: [],
     matchingInvestigationData: [],
+    isShowingClusteredModal: false,
     isMatchingInvestigationLoading: true,
     showMatchingModal: false,
     selectedRowsOfReportedEmailsLength: 0,
@@ -972,7 +1006,7 @@ export default {
           fixed: 'left',
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'slot',
           width: '300',
           isEditable: false,
           filterableType: 'text'
@@ -1332,8 +1366,9 @@ export default {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
-    clusterChanged() {
+    clusterChanged(selectedCluster = '') {
       this.requestBodyReportedEmails.isClustered = true
+      this.selectedCluster = selectedCluster
       this.callForSearchNotifiedMail()
     },
     getManipulatedChildData(data, isChild = false) {
@@ -1346,6 +1381,13 @@ export default {
         }
       })
       return data
+    },
+    handleRecordButtonClick(row) {
+      this.clusteredRow = row
+      this.toggleIsShowingClusteredModal()
+    },
+    toggleIsShowingClusteredModal() {
+      this.isShowingClusteredModal = !this.isShowingClusteredModal
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {
       const copyOfRequestBody = JSON.parse(JSON.stringify(this.lazyLoadRequestBody))
@@ -1380,6 +1422,7 @@ export default {
 
     handleListBulletedClick() {
       this.requestBodyReportedEmails.isClustered = false
+      this.selectedCluster = ''
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
@@ -1684,6 +1727,7 @@ export default {
       }
     },
     handleEdit(selectedRow) {
+      debugger
       selectedRow.map((item) => {
         const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
         const payload = {
@@ -1698,15 +1742,17 @@ export default {
             ? item.customMessage
             : ''
         }
-
         updateNotifiedEmail(item.resourceId, payload)
           .then((response) => {
             this.callForGetRunningInvestigations()
             this.callForGetTopRules()
             this.callForSearchNotifiedMail()
+            this.$refs.refClusteredModal.callForTableData(true)
             this.$store.dispatch('investigations/getIrSummary')
           })
-          .catch((error) => {})
+          .catch((error) => {
+            console.log('error', error)
+          })
       })
     },
     irDetailsOnClick(row) {
@@ -1758,7 +1804,10 @@ export default {
     emptyInvestigationButtonClick() {
       this.$router.push('/investigations')
     },
-    exportReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportReportedListEmails(
+      { exportTypes, reportAllPages, pageNumber, pageSize },
+      filter = this.requestBodyReportedEmails.filter
+    ) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: reportAllPages ? 1 : pageNumber,
@@ -1767,7 +1816,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBodyReportedEmails.filter
+          filter
         }
         exportNotifiedEmails(payload)
           .then((response) => {
@@ -2458,5 +2507,17 @@ export default {
 }
 .el-table .el-table__row--level-1 .data-table__custom-column {
   margin: 0 -8px;
+}
+.reported-email-subject {
+  max-width: 75%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-right: 16px;
+
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 }
 </style>

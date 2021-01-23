@@ -390,7 +390,7 @@
             id="data-table-container"
             :load="handleLoad"
             :indent="32"
-            lazy
+            :lazy="lazy"
             ref="elTableRef"
             :row-key="rowKey"
             style="width: 100%;"
@@ -879,7 +879,8 @@ export default {
       required: true
     },
     lazy: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     hideParentRowActions: {
       type: Boolean,
@@ -1653,8 +1654,11 @@ export default {
      */
     handleListBulletedClick() {
       this.selectedCluster = ''
+      /*
       this.firstColFixed = true
       this.lastColFixed = true
+
+       */
       this.$emit('handleListBulleted')
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
@@ -2377,10 +2381,12 @@ export default {
     printMethod() {
       printJS('table-container', 'html')
     },
-    clusterSelected(name, ind) {
+    clusterSelected(name) {
       this.selectedCluster = name
+      /*
       this.firstColFixed = false
       this.lastColFixed = false
+       */
       this.$emit('clusterChanged', name)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
