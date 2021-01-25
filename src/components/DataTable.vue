@@ -79,6 +79,7 @@
         <slot name="extended-custom-view-slot"></slot>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
+            <slot name="table-search-left-side"> </slot>
             <v-text-field
               class="filter-field"
               placeholder="Search"

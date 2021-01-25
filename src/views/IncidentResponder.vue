@@ -2,19 +2,19 @@
   <div class="incident-responder-parent">
     <div class="incident-responder">
       <the-clustered-modal
-        v-if="isShowingClusteredModal"
+        v-if="false"
         ref="refClusteredModal"
         :hasMultipleNoteValue="hasMultipleNoteValue"
         :row="clusteredRow"
         :selected-cluster="selectedCluster"
-        :status="isShowingClusteredModal"
+        :status="isShowingClusteredTable"
         :extended-view-loading="extendedViewLoading"
         :extended-view="extendedView"
         :default-extended-view-values="defaultExtendedViewValues"
         :extended-view-value="extendedViewValue"
         :selectedRowsOfReportedEmailsLength="selectedRowsOfReportedEmailsLength"
         @downloadEvent="exportReportedListEmails"
-        @closeDialog="toggleIsShowingClusteredModal"
+        @closeDialog="toggleIsShowingClusteredTable"
         @onEditClick="onEditClick"
         @handleIsNotify="handleIsNotify"
         @handleEdit="handleEdit"
@@ -479,13 +479,132 @@
         <v-card>
           <div class="header">
             <div class="title">
-              <h2>{{ labels.ReportedEmails }}</h2>
+              <h2>
+                {{ isShowingClusteredTable ? clusteredRow.subject : labels.ReportedEmails }}
+              </h2>
               <p class="mb-10">
-                {{ labels.SummaryOfReportedEmails }}
+                {{
+                  isShowingClusteredTable
+                    ? `Reported emails clustered by ${this.selectedCluster}`
+                    : labels.SummaryOfReportedEmails
+                }}
               </p>
             </div>
           </div>
           <datatable
+            v-if="isShowingClusteredTable"
+            changeFooterPosition
+            disable-extended-view-transition
+            selectable
+            filterable
+            options
+            id="incident-responder-reported-emails-clustered-table"
+            refName="clustered-ref-name"
+            ref="refReportedEmailsClustered"
+            :table="clusteredTableData"
+            :extended-view-loading="extendedViewLoading"
+            :is-column-filter-active="clusteredTable.isColumnFilterActive"
+            :extended-view-options="clusteredTable.extendedViewOptions"
+            :columns="clusteredTable.columns"
+            :empty="clusteredTable.iEmpty"
+            :loading="isReportedEmailsClusteredLoading"
+            :row-actions="clusteredTable.rowActions"
+            :extendedViewValue="extendedViewValue"
+            :select-event="clusteredTable.selectEvent"
+            :extendedViewDisableChanger="extendedViewDisableChanger"
+            @downloadEvent="exportClusteredReportedListEmails"
+            @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
+            @handleInvestigate="handleReportedEmailInvestigate"
+            @handleDetails="irDetailsOnClick"
+            @onEditClick="onEditClick"
+            @handleEdit="handleEdit"
+            @irPreview="irPreviewOnClick"
+            @refreshAction="callForClusteredTable"
+            @columnFilterChanged="clusteredColumnFilterChanged"
+            @columnFilterCleared="clusteredColumnFilterCleared"
+          >
+            <template #table-search-left-side>
+              <v-btn text color="#2196f3" class="clustered-table-back-btn" @click="handleBackClick">
+                <v-icon left>mdi-arrow-left</v-icon> BACK</v-btn
+              >
+            </template>
+            <template v-slot:datatable-custom-column="{ scope, col }">
+              <template v-if="scope.column.property === 'source'">
+                <span
+                  v-if="
+                    scope.row &&
+                    scope.row.matchingPlaybooks &&
+                    scope.row.matchingPlaybooks.length === 0
+                  "
+                >
+                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                </span>
+                <span
+                  v-else
+                  v-for="item in scope.row.matchingPlaybooks"
+                  :key="item.resourceId"
+                  class="incident-responder-parent__link"
+                  @click="togglePlaybookModalWithSelected(item.resourceId)"
+                  >{{ item.name }}</span
+                >
+              </template>
+              <template v-if="scope.column.property === 'status'">
+                <template v-if="scope.row.status === 'BeingAnalyzed'">
+                  <span class="analysis-link">
+                    <div>{{ labels.InAnalysis }}...</div>
+                    <div>
+                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                    </div>
+                  </span>
+                </template>
+                <template v-else>
+                  <data-table-colorful-text
+                    :col="col"
+                    :scope="scope"
+                    :text="getDataTableFieldLabel(scope.row.status)"
+                  />
+                </template>
+              </template>
+            </template>
+            <template v-slot:extended-view-slot>
+              <div class="row-edit-div">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Notify reporting user about this update"
+                  v-model="extendedView.isNotify"
+                  @change="handleIsNotify"
+                  :disabled="selectedRowsOfReportedEmailsLength > 1"
+                ></v-checkbox>
+              </div>
+              <div class="row-edit-div">
+                <v-checkbox
+                  color="#2196f3"
+                  label="Add Custom Message"
+                  v-model="extendedView.isMessage"
+                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                ></v-checkbox>
+              </div>
+              <div
+                class="row-edit-div"
+                v-if="
+                  extendedView.isMessage &&
+                  extendedView.isNotify &&
+                  selectedRowsOfReportedEmailsLength <= 1
+                "
+              >
+                <v-textarea
+                  outlined
+                  dense
+                  v-model="extendedView.customMessage"
+                  rows="3"
+                  placeholder="Write custom messages for recipients"
+                  row-height="30"
+                ></v-textarea>
+              </div>
+            </template>
+          </datatable>
+          <datatable
+            v-show="!isShowingClusteredTable"
             :loading="reportedEmailsLoading"
             :is-column-filter-active="emails.isColumnFilterActive"
             v-bind="bindPropsIsSafari"
@@ -530,7 +649,7 @@
               <template v-if="scope.column.property === 'subject'">
                 <span v-if="!selectedCluster"> {{ scope.row[col.property] }}</span>
                 <div class="reported-email-subject__container" v-else>
-                  <div class="reported-email-subject" @mouseover="handleMouseOver">
+                  <div class="reported-email-subject">
                     <span> {{ scope.row[col.property] }}</span>
                   </div>
                   <the-records-button :row="scope.row" @on-click="handleRecordButtonClick" />
@@ -682,7 +801,7 @@ export default {
     isCustomOverflowedColumn: false,
     selectedCluster: '',
     labels,
-    clusteredRow: '',
+    clusteredRow: null,
     isConfirmButtonDisabled: false,
     topRulesLoading: true,
     investigationsLoading: true,
@@ -702,7 +821,7 @@ export default {
     openInvestigationOverlay: false,
     investigationListData: [],
     matchingInvestigationData: [],
-    isShowingClusteredModal: false,
+    isShowingClusteredTable: false,
     isMatchingInvestigationLoading: true,
     showMatchingModal: false,
     selectedRowsOfReportedEmailsLength: 0,
@@ -1275,6 +1394,309 @@ export default {
           }
         ]
       }
+    },
+    isReportedEmailsClusteredLoading: false,
+    clusteredTable: {
+      columns: [
+        {
+          property: PROPERTY_STORE.SUBJECT,
+          align: 'left',
+          label: getStoreValue(PROPERTY_STORE.SUBJECT),
+          fixed: 'left',
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: '300',
+          isEditable: false,
+          filterableType: 'text'
+        },
+        {
+          property: PROPERTY_STORE.ATTACHMENTCOUNT,
+          align: 'center',
+          label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
+          hideLabel: true,
+          fixed: false,
+          sortable: true,
+          show: true,
+          isEditable: false,
+          type: 'attachment',
+          width: 120
+        },
+        {
+          property: PROPERTY_STORE.REPORTEDBY,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: '260',
+          isEditable: false,
+          filterableType: 'text'
+        },
+        {
+          property: PROPERTY_STORE.RESOURCEID,
+          show: false,
+          label: 'Case Id',
+          type: 'text',
+          isEditable: false,
+          hideOnSettingsPopup: true
+        },
+        {
+          property: PROPERTY_STORE.ANALYSISSOURCE,
+          isEditable: false,
+          align: 'center',
+          label: 'Analysis Source',
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'analysisSource',
+          width: '200',
+          fullWidth: true
+        },
+        {
+          property: PROPERTY_STORE.RESULT,
+          align: 'center',
+          label: getStoreValue(PROPERTY_STORE.RESULT),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'badge',
+          isEditable: true,
+          filterableType: 'select',
+          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
+          props: {
+            style: {
+              maxWidth: '110px'
+            }
+          },
+          width: '150'
+        },
+        {
+          property: PROPERTY_STORE.STATUS,
+          isEditable: true,
+          align: 'center',
+          label: getStoreValue(PROPERTY_STORE.STATUS),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'slot',
+          width: '150',
+          showColorfulText: true,
+          fullWidth: true,
+          filterableType: 'select',
+          filterableItems: [
+            { text: labels.InAnalysis, value: 'BeingAnalyzed' },
+            labels.Open,
+            labels.Closed,
+            { text: labels.InProgress, value: 'InProgress' },
+            { text: labels.FalsePositive, value: 'FalsePositive' }
+          ],
+          props: {
+            style: { maxWidth: '110px' }
+          }
+        },
+        {
+          property: PROPERTY_STORE.CREATETIME,
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.CREATETIME),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'text',
+          width: '230',
+          filterableType: 'date'
+        },
+        {
+          property: 'tags',
+          align: 'left',
+          editable: false,
+          label: getStoreValue(PROPERTY_STORE.RESULTTAG),
+          fixed: false,
+          sortable: false,
+          show: true,
+          type: 'smallBadge',
+          isEditable: true,
+          width: '150'
+        }
+      ],
+      iEmpty: {
+        message: labels.EmptyReportedEmailText,
+        subMes: labels.EmptyReportedEmailSubText,
+        btn: labels.PhishingReporterSettings,
+        icon: 'mdi-arrow-right'
+      },
+      isColumnFilterActive: false,
+      extendedViewOptions: {
+        titleKey: 'subject',
+        footer: [
+          {
+            label: 'Date Created',
+            key: 'createTime'
+          },
+          {
+            label: 'Last update',
+            key: 'lastUpdateDate'
+          }
+        ],
+        col: [
+          {
+            property: PROPERTY_STORE.SUBJECT,
+            label: getStoreValue(PROPERTY_STORE.SUBJECT),
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.REPORTEDBY,
+            label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.RESOURCEID,
+            label: 'Case Id',
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.ANALYSISSOURCE,
+            label: 'Analysis Source',
+            isEditable: false,
+            type: 'analysisSource',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.RESULT,
+            label: getStoreValue(PROPERTY_STORE.RESULT),
+            isEditable: true,
+            type: 'badge',
+            editOptions: {
+              component: 'select',
+              getDisabledValue(row) {
+                if (row.status === 'BeingAnalyzed') {
+                  return true
+                } else {
+                  return false
+                }
+              },
+              props: {
+                items: ['Phishing', 'Malicious', { text: 'Clean', value: 'NonMalicious' }]
+              }
+            },
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.STATUS,
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            isEditable: true,
+            type: 'colorfulText',
+            editOptions: {
+              component: 'select',
+              getDisabledValue(row) {
+                if (row.status === 'BeingAnalyzed') {
+                  return true
+                } else {
+                  return false
+                }
+              },
+              props: {
+                items: [
+                  'Open',
+                  'Closed',
+                  { text: labels.InProgress, value: 'InProgress' },
+                  { text: labels.FalsePositive, value: 'FalsePositive' }
+                ]
+              }
+            },
+            show: true
+          },
+          {
+            property: 'tags',
+            label: 'Tags',
+            isEditable: true,
+            type: 'smallBadge',
+            editOptions: {
+              component: 'combobox',
+              props: {
+                placeholder: 'Enter Tags'
+              }
+            },
+            show: true
+          },
+          {
+            property: 'note',
+            label: labels.Notes,
+            isEditable: true,
+            type: 'text',
+            editOptions: {
+              component: 'textarea',
+              getDisabledValue() {
+                return false
+              },
+              props: {
+                placeholder: 'Enter Notes',
+                rules: [
+                  (v) =>
+                    Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Notes, 256))
+                ]
+              }
+            },
+            show: true,
+            showOnlyPreview: true
+          }
+        ]
+      },
+      selectEvent: {
+        clipboard: true,
+        edit: true,
+        download: false
+      },
+      rowActions: [
+        {
+          name: labels.Edit,
+          icon: 'mdi-pencil',
+          action: 'edit',
+          isNotShow: true
+        },
+        {
+          name: labels.PreviewEmail,
+          icon: 'mdi-eye',
+          action: 'irPreview'
+        },
+        {
+          name: labels.Details,
+          icon: 'mdi-text-box-multiple',
+          action: 'handleDetails'
+        },
+        {
+          name: labels.Investigate,
+          icon: 'mdi-magnify',
+          action: 'handleInvestigate'
+        }
+      ]
+    },
+    clusteredTableData: [],
+    clusteredTableAxios: {
+      isClustered: false,
+      pageNumber: 1,
+      pageSize: 500000,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
     }
   }),
   computed: {
@@ -1288,60 +1710,6 @@ export default {
     getIconName() {
       return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
     },
-
-    getRoiSummaryValue() {
-      /*
-      if (this.irSummary && this.irSummary.roiSummary && this.irSummary.roiSummary.revenue) {
-        let revenue = Number(this.irSummary.roiSummary.revenue)
-        if (revenue < 1000) {
-          return `$${revenue}`
-        } else if (revenue >= 1000 && revenue < 1000000) {
-          const newRevenue = revenue / 1000
-          const stringRevenue = String(newRevenue)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
-            const beforeDecimal = stringRevenue.split('.')[0]
-            return `$${beforeDecimal}.${stringRevenue.charAt(indexOfNewRevenue + 1)}k`
-          } else {
-            return `$${newRevenue}k`
-          }
-        } else if (revenue >= 1000000 && revenue < 1000000000) {
-          const newRevenu = revenue / 1000000
-          const stringRevenue = String(newRevenu)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1 && stringRevenue.charAt(indexOfNewRevenue + 1) !== '0') {
-            const beforeDecimal = stringRevenue.split('.')[0]
-            const nextDecimalValue = stringRevenue.charAt(indexOfNewRevenue + 2)
-            if (nextDecimalValue) {
-              return `$${beforeDecimal}.${stringRevenue.charAt(
-                indexOfNewRevenue + 1
-              )}${nextDecimalValue}M`
-            } else {
-              return `$${newRevenu}m`
-            }
-          } else {
-            if (stringRevenue.length === 7) {
-              return `$${stringRevenue.substring(0, stringRevenue.length - 1)}m`
-            }
-            return `$${newRevenu}m`
-          }
-        } else if (revenue >= 1000000000) {
-          const newRevenue = revenue / 1000000000
-          const stringRevenue = String(newRevenue)
-          const indexOfNewRevenue = stringRevenue.indexOf('.')
-          if (indexOfNewRevenue !== -1) {
-            return `$${newRevenue.toFixed(3)}b`
-          } else {
-            return `$${newRevenue}b`
-          }
-        }
-      } else {
-        return `$0`
-      }
-      return `$0`
-      */
-      return '$0'
-    },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
     }
@@ -1351,7 +1719,8 @@ export default {
     this.$store.dispatch('investigations/getIrSummary').finally(() => {
       this.showDatatable = true
       this.incidentLoading = false
-    }) //module name than method name
+    })
+
     this.addQuery()
   },
   created() {
@@ -1370,6 +1739,10 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleBackClick() {
+      this.isShowingClusteredTable = false
+      this.clusteredRow = null
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -1393,10 +1766,40 @@ export default {
     },
     handleRecordButtonClick(row) {
       this.clusteredRow = row
-      this.toggleIsShowingClusteredModal()
+      this.callForClusteredTable()
+      this.toggleIsShowingClusteredTable()
     },
-    toggleIsShowingClusteredModal() {
-      this.isShowingClusteredModal = !this.isShowingClusteredModal
+    callForClusteredTable() {
+      if (this.checkPermissions('notified-emails/search', 'POST')) {
+        this.isReportedEmailsClusteredLoading = true
+        this.setClusteredFilter()
+        searchNotifiedMail(this.clusteredTableAxios)
+          .then((response) => {
+            const {
+              data: {
+                data: { results = [] }
+              }
+            } = response
+            this.removeClusteredFilter()
+            this.clusteredTableData = results
+          })
+          .finally(() => (this.isReportedEmailsClusteredLoading = false))
+      }
+    },
+    setClusteredFilter() {
+      let fieldName = this.selectedCluster.replace(/\s/, '')
+      fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1, fieldName.length)
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.unshift({
+        FieldName: fieldName,
+        Operator: '=',
+        Value: this.clusteredRow[fieldName]
+      })
+    },
+    removeClusteredFilter() {
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(0, 1)
+    },
+    toggleIsShowingClusteredTable() {
+      this.isShowingClusteredTable = !this.isShowingClusteredTable
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {
       const copyOfRequestBody = JSON.parse(JSON.stringify(this.lazyLoadRequestBody))
@@ -1460,9 +1863,6 @@ export default {
     closePlaybookWithUpdate() {
       this.togglePlaybookModal()
       this.initMethods()
-    },
-    handleMouseOver(e) {
-      console.log('e', e)
     },
     addQuery() {
       const navigatorWidth = document.querySelector('nav.page-nav').style.width
@@ -1756,17 +2156,17 @@ export default {
             ? item.customMessage
             : ''
         }
-        updateNotifiedEmail(item.resourceId, payload)
-          .then((response) => {
-            this.callForGetRunningInvestigations()
-            this.callForGetTopRules()
-            this.callForSearchNotifiedMail()
-            this.$refs.refClusteredModal.callForTableData(true)
-            this.$store.dispatch('investigations/getIrSummary')
-          })
-          .catch((error) => {
-            console.log('error', error)
-          })
+        updateNotifiedEmail(item.resourceId, payload).then(() => {
+          debugger
+          this.callForGetRunningInvestigations()
+          this.callForGetTopRules()
+          this.callForSearchNotifiedMail()
+          if (this.clusteredRow) {
+            this.callForClusteredTable()
+          }
+          //this.$refs.refClusteredModal.callForTableData(true)
+          this.$store.dispatch('investigations/getIrSummary')
+        })
       })
     },
     irDetailsOnClick(row) {
@@ -1843,6 +2243,92 @@ export default {
           .catch((error) => {})
       })
     },
+    exportClusteredReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      this.setClusteredFilter()
+      exportTypes.map((exportType, index) => {
+        const payload = {
+          pageNumber: reportAllPages ? 1 : pageNumber,
+          pageSize: reportAllPages ? 50000 : pageSize,
+          orderBy: 'CreateTime',
+          ascending: false,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.clusteredTableAxios.filter
+        }
+        exportNotifiedEmails(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `users.${exportType.toLocaleLowerCase()}`
+            link.click()
+          })
+          .finally(() => {
+            if (index === exportTypes.length - 1) {
+              this.removeClusteredFilter()
+            }
+          })
+      })
+    },
+    clusteredColumnFilterChanged(filter = {}) {
+      this.clusteredTable.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems
+      requestBody.map((x) => {
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (
+            x.FieldName !==
+            filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+          ) {
+            items.push(x)
+          }
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i, t) => {
+          const elem = filter[i]
+          elem.FieldName =
+            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
+        const { FieldName, Value } = filter
+        if (FieldName === 'Result' && Value === '') {
+        } else {
+          requestBody.push(elem)
+        }
+      }
+
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForClusteredTable()
+    },
+    clusteredColumnFilterCleared(fieldName) {
+      let items = []
+      let filterPayload = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForSearchNotifiedMail()
+
+      this.clusteredTable.isColumnFilterActive =
+        this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.length >= 1
+    },
     columnFilterChanged(filter) {
       this.emails.isColumnFilterActive = true
       let items = []
@@ -1883,7 +2369,7 @@ export default {
       }
 
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForSearchNotifiedMail()
+      this.callForClusteredTable()
     },
     columnFilterCleared(fieldName) {
       let items = []
@@ -2532,6 +3018,15 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+}
+.clustered-table-back-btn {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 8px;
+  margin-right: 32px;
+  + div {
+    min-width: 328px;
   }
 }
 </style>
