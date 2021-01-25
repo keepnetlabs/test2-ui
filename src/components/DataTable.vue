@@ -405,7 +405,7 @@
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
-              :key="col.property + ind"
+              :key="col.property + ind + columnKey"
               :align="col.align"
               :fixed="col.fixed"
               :label="col.label"
@@ -1190,6 +1190,7 @@ export default {
       selectionRowCheckboxDeterminate
     } = this.persistentState
     return {
+      columnKey: 'column-key',
       cacheChecks: false,
       filteredData,
       renderedColumns,

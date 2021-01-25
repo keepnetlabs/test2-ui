@@ -161,12 +161,6 @@ export default {
       }
     }
   },
-  watch: {
-    value() {
-      this.isFilterActive =
-        this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue
-    }
-  },
   data() {
     return {
       menu: null,

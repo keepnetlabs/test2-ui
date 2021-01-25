@@ -448,6 +448,7 @@ export default {
       this.payload.filter.FilterGroups[0].FilterItems = []
       this.$refs.refDataList.filterValues = {}
       this.queryHelper.setRouterQuery('page', 1)
+      this.$refs.refDataList.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
