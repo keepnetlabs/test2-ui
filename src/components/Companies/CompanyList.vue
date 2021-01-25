@@ -447,6 +447,7 @@ export default {
     resetTableFilters() {
       this.payload.filter.FilterGroups[0].FilterItems = []
       this.$refs.refDataList.filterValues = {}
+      this.queryHelper.setRouterQuery('page', 1)
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
