@@ -12,6 +12,7 @@
     <template #app-dialog-body>
       <DataTable
         id="target-users-group-users-modal-data-table"
+        :count-row="5"
         :refName="'refGroupsTable'"
         :loading="loading"
         :columns="tableOptions.columns"
@@ -119,7 +120,8 @@ export default {
             show: true,
             type: 'text',
             isEditable: true,
-            width: 300
+            width: 300,
+            overrideWidth: true
           }
         ],
         downloadButton: { show: false },

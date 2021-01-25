@@ -383,6 +383,7 @@
                             <datatable
                               :refName="'matchingInvestigation'"
                               ref="refMatchingInvestigation"
+                              :count-row="5"
                               :table="matchingInvestigationData"
                               :loading="isMatchingInvestigationLoading"
                               :columns="matchingInvestigation.columns"
@@ -498,6 +499,7 @@
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
             active-cluster=""
             :changeFooterPosition="true"
+            :is-custom-overflowed-column="isCustomOverflowedColumn"
             @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
@@ -528,7 +530,9 @@
               <template v-if="scope.column.property === 'subject'">
                 <span v-if="!selectedCluster"> {{ scope.row[col.property] }}</span>
                 <div class="reported-email-subject__container" v-else>
-                  <span class="reported-email-subject"> {{ scope.row[col.property] }}</span>
+                  <div class="reported-email-subject" @mouseover="handleMouseOver">
+                    <span> {{ scope.row[col.property] }}</span>
+                  </div>
                   <the-records-button :row="scope.row" @on-click="handleRecordButtonClick" />
                 </div>
               </template>
@@ -675,6 +679,7 @@ export default {
   },
 
   data: () => ({
+    isCustomOverflowedColumn: false,
     selectedCluster: '',
     labels,
     clusteredRow: '',
@@ -1007,9 +1012,11 @@ export default {
           sortable: true,
           show: true,
           type: 'slot',
-          width: '300',
+          width: 200,
           isEditable: false,
-          filterableType: 'text'
+          filterableType: 'text',
+          parentRect: 'reported-email-subject',
+          overrideWidth: true
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
@@ -1367,7 +1374,9 @@ export default {
       return checkPermission(permission, type)
     },
     clusterChanged(selectedCluster = '') {
+      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
       this.requestBodyReportedEmails.isClustered = true
+      this.isCustomOverflowedColumn = true
       this.selectedCluster = selectedCluster
       this.callForSearchNotifiedMail()
     },
@@ -1421,7 +1430,9 @@ export default {
     },
 
     handleListBulletedClick() {
+      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 200
       this.requestBodyReportedEmails.isClustered = false
+      this.isCustomOverflowedColumn = false
       this.selectedCluster = ''
       this.callForSearchNotifiedMail()
     },
@@ -1449,6 +1460,9 @@ export default {
     closePlaybookWithUpdate() {
       this.togglePlaybookModal()
       this.initMethods()
+    },
+    handleMouseOver(e) {
+      console.log('e', e)
     },
     addQuery() {
       const navigatorWidth = document.querySelector('nav.page-nav').style.width

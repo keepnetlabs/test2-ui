@@ -565,20 +565,20 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
-    callForTableData(isSubjectFilter = false) {
-      if (isSubjectFilter) this.setSubjectFilter()
+    callForTableData(isClusteredFilter = false) {
+      if (isClusteredFilter) this.setClusteredFilter()
       if (this.checkPermissions('notified-emails/search', 'POST')) {
         this.isLoading = true
         searchNotifiedMail(this.axiosPayload)
           .then((response) => {
             this.setTableData(response)
-            if (isSubjectFilter) this.removeSubjectFilter()
+            if (isClusteredFilter) this.removeSubjectFilter()
           })
           .finally(() => (this.isLoading = false))
       }
     },
     exportReportedListEmails(obj = {}) {
-      this.setSubjectFilter()
+      this.setClusteredFilter()
       this.$emit('downloadEvent', obj, this.axiosPayload)
       this.removeSubjectFilter()
     },
@@ -606,11 +606,14 @@ export default {
     handleReportedEmailInvestigate(row = {}) {
       this.$emit('handleInvestigate', row)
     },
-    setSubjectFilter() {
+    setClusteredFilter() {
+      let fieldName = this.selectedCluster.replace(/\s/, '')
+      fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1, fieldName.length)
+
       this.axiosPayload.filter.FilterGroups[0].FilterItems.unshift({
-        FieldName: 'Subject',
+        FieldName: fieldName,
         Operator: '=',
-        Value: this.row.subject
+        Value: this.row[fieldName]
       })
     },
     setTableData(response = {}) {

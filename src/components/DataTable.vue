@@ -989,6 +989,10 @@ export default {
       type: String,
       required: false
     },
+    isCustomOverflowedColumn: {
+      type: Boolean,
+      default: false
+    },
     selectable: {
       type: Boolean,
       required: false
@@ -1808,7 +1812,11 @@ export default {
      * @param cell
      */
     hasOverflowTooltip(row, column, cell) {
-      const parentRect = cell.getBoundingClientRect()
+      const parentRect =
+        this.isCustomOverflowedColumn && column.property === 'subject'
+          ? cell.querySelector(`.${this.columns[0].parentRect}`).getBoundingClientRect()
+          : cell.getBoundingClientRect()
+
       const widthOfParent = parentRect.width
       let span =
         cell.querySelector('span:last-child') ||
@@ -1818,7 +1826,7 @@ export default {
       if ([...span.classList].some((item) => item === 'cell')) {
         span = span.querySelector('div')
       }
-      let aggregation = 20
+      let aggregation = this.isCustomOverflowedColumn ? 0 : 20
       if (window.safari || navigator.vendor.match(/apple/i)) {
         if ([...cell.parentNode.classList].some((item) => item === 'el-table__row--level-1')) {
           aggregation = 0
@@ -1847,7 +1855,7 @@ export default {
         }
         this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
-          top: `${parentRect.top + 60}px`,
+          top: `${parentRect.top + (this.isCustomOverflowedColumn ? 50 : 60)}px`,
           left: `${parentRect.left + this.cellPadding + Number(padding)}px`
         }
       }
