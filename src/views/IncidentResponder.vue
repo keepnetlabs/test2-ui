@@ -1666,7 +1666,6 @@ export default {
               pageNumber,
               results
             } = response.data.data
-            console.log('this.requestBodyReportedEmails', this.requestBodyReportedEmails)
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber

@@ -435,16 +435,18 @@ export default {
     clusterChanged() {
       this.isClustered = true
       this.resetPageNumber()
-      this.payload.filter.FilterGroups[0].FilterItems = []
-      this.$refs.refDataList.filterValues = {}
+      this.resetTableFilters()
       this.getTableData()
     },
     handleListBulletedClick() {
       this.isClustered = false
+      this.resetPageNumber()
+      this.resetTableFilters()
+      this.getTableData()
+    },
+    resetTableFilters() {
       this.payload.filter.FilterGroups[0].FilterItems = []
       this.$refs.refDataList.filterValues = {}
-      this.resetPageNumber()
-      this.getTableData()
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
