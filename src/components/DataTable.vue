@@ -2017,15 +2017,18 @@ export default {
       }, delay)
     },
 
-    searchChangedEvent(debounceTime = 500) {
+    searchChangedEvent(debounceTime = 750) {
       if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
           const filterItems = this.columns.reduce((acc, filterItem) => {
-            acc.push({
-              FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-              Operator: 'Contains',
-              Value: this.search
-            })
+            if (this.renderedColumns.find((property) => property === filterItem.property)) {
+              acc.push({
+                FieldName:
+                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
+                Operator: 'Contains',
+                Value: this.search
+              })
+            }
             return acc
           }, [])
           const bodyDataFilter = {

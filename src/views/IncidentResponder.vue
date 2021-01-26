@@ -1212,7 +1212,7 @@ export default {
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: {
-      isClustered: false,
+      clusteredBy: '',
       pageNumber: 1,
       pageSize: 10,
       orderBy: 'createTime',
@@ -1422,9 +1422,14 @@ export default {
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.emails.isColumnFilterActive = columnFilterActive
-      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.emails.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      debugger
+      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.emails.isColumnFilterActive = columnFilterActive
       this.callForSearchNotifiedMail()
