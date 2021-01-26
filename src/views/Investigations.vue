@@ -29,6 +29,7 @@
       </app-dialog>
       <v-card class="investigations__container-card" light>
         <datatable
+          v-bind="tableState"
           :loading="loading"
           :is-column-filter-active="isColumnFilterActive"
           id="investigations-data-table"
@@ -130,9 +131,13 @@ export default {
     },
     isSelectedEmail: {
       type: Boolean
+    },
+    isLoadState: {
+      type: Boolean
     }
   },
   data: () => ({
+    tableState: false,
     stopInvestigateButtonDisabled: false,
     loading: false,
     showPlaybookModal: false,
@@ -477,7 +482,14 @@ export default {
       return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
     }
   },
-  mounted() {
+  beforeRouteEnter(to, from, next) {
+    if (from.name === 'Investigation Details' && !to.params.isLoadState) {
+      next({ ...to, params: { isLoadState: true } })
+    } else {
+      next()
+    }
+  },
+  created() {
     // triggered to relevant action at investigations.js
     if (!this.checkPermissions('investigations/search', 'POST')) {
       this.$router.push('/incident-responder')
@@ -493,12 +505,51 @@ export default {
         }
       }
     })
-
-    this.getInvestigationList()
+    if (this.isLoadState) {
+      const tableState =
+        this.$store.state['datatable'].tables['Investigations'] &&
+        this.$store.state['datatable'].tables['Investigations'].tableState
+      if (tableState) {
+        const { filterValues = {} } = tableState
+        if (Object.keys(filterValues).length) {
+          this.tableOptions.isColumnFilterActive = true
+          for (const [key, value] of Object.entries(filterValues)) {
+            if (value.selectValue === 'between') {
+              this.payload.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[0],
+                FieldName: key,
+                Operator: '>='
+              })
+              this.payload.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[1],
+                FieldName: key,
+                Operator: '<='
+              })
+            } else {
+              this.payload.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue,
+                FieldName: key,
+                Operator: value.selectValue
+              })
+            }
+          }
+        }
+        this.tableState = { persistentState: tableState }
+      }
+    } else {
+      this.getInvestigationList()
+    }
 
     if (this.$route.query.openPopup) {
       this.isWantToAddNewCommunity = true
     }
+  },
+  beforeDestroy() {
+    const tableState = this.$refs.investigationTable.getState()
+    this.$store.dispatch('datatable/setTable', {
+      key: 'Investigations',
+      tableState
+    })
   }
 }
 </script>

@@ -1982,7 +1982,8 @@ export default {
       }, delay)
     },
 
-    searchChangedEvent(debounceTime = 500) {
+    searchChangedEvent() {
+      const debounceTime = 750
       if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
           const filterItems = this.columns
@@ -2008,7 +2009,7 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-        }, 1000)
+        }, debounceTime)
       } else {
         this.debounce(() => {
           const searchValue = this.search

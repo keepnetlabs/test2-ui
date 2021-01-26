@@ -16,6 +16,7 @@
     />
 
     <datatable
+      v-bind="tableState"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
@@ -24,8 +25,8 @@
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
       :filterable="true"
-      :is-downloadable="false"
-      :download-button="tableOptions.downloadButton"
+      :is-downloadable="true"
+      @downloadEvent="handleTableDownload"
       id="company-groups-data-table"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
@@ -52,7 +53,7 @@
 
 <script>
 import Datatable from '../../components/DataTable'
-import { deleteCompanyGroup, searchCompanyGroups } from '../../api/company'
+import { deleteCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
@@ -65,15 +66,21 @@ export default {
     Datatable,
     DeleteModal
   },
+  props: {
+    isLoadState: {
+      type: Boolean
+    }
+  },
   data() {
     return {
-      loading: true,
+      loading: false,
       tableData: [],
       isShowDeleteModal: false,
       isShowAddModal: false,
       editAddModal: false,
       selectedExtend: {},
       selectedRow: null,
+      isCompanyGroupListLoaded: false,
       tableOptions: {
         isColumnFilterActive: false,
         downloadButton: { show: false, disable: false },
@@ -158,13 +165,69 @@ export default {
             }
           ]
         }
-      }
+      },
+      tableState: null
     }
   },
-  mounted() {
-    this.getTableData()
+  created() {
+    if (this.isLoadState) {
+      const tableState =
+        this.$store.state['datatable'].tables['CompanyGroups'] &&
+        this.$store.state['datatable'].tables['CompanyGroups'].tableState
+      if (tableState) {
+        const { filterValues = {} } = tableState
+        if (Object.keys(filterValues).length) {
+          this.tableOptions.isColumnFilterActive = true
+          for (const [key, value] of Object.entries(filterValues)) {
+            if (value.selectValue === 'between') {
+              this.payload.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[0],
+                FieldName: key,
+                Operator: '>='
+              })
+              this.payload.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue[1],
+                FieldName: key,
+                Operator: '<='
+              })
+            } else {
+              this.payload.filter.FilterGroups[0].FilterItems.push({
+                Value: value.textValue,
+                FieldName: key,
+                Operator: value.selectValue
+              })
+            }
+          }
+        }
+        this.tableState = { persistentState: tableState }
+      }
+    } else {
+      this.getTableData()
+    }
   },
   methods: {
+    handleTableDownload(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.payload.orderBy,
+          ascending: this.payload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.payload.filter
+        }
+        exportCompanyGroup(payload)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Companies.${item.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch(() => {})
+      })
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -270,6 +333,13 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     }
+  },
+  beforeDestroy() {
+    const tableState = this.$refs.refGroupDataList.getState()
+    this.$store.dispatch('datatable/setTable', {
+      key: 'CompanyGroups',
+      tableState
+    })
   }
 }
 </script>

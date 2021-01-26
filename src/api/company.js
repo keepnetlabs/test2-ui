@@ -12,6 +12,16 @@ export function exportCompanies(payload) {
     responseType: 'blob'
   })
 }
+export function exportCompanyGroup(payload) {
+  return testRequest.post('/company-groups/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+export function exportCompanyGroupDetails(payload, id) {
+  return testRequest.post(`/company-groups/${id}/companies/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
 export function deleteCompany(id) {
   return testRequest.delete(`companies/${id}`, {
     snackbar: COMMON_SNACKBAR

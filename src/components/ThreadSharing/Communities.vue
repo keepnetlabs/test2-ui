@@ -653,19 +653,22 @@
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
                 @size-change="handleSizeChange"
+                @current-change="onChangePagination"
                 :total="
-                  selectedTab && selectedTab === 'tab-2' ? invitationData.length : listData.length
+                  selectedTab && selectedTab === 'tab-2'
+                    ? invitationData.length
+                    : totalNumberOfRecords
                 "
               >
                 <template>
                   <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
                   <span class="el-pagination__text el-pagination__text--2">
-                    {{ page }}-{{ numberOfPages }}
+                    {{ page }}
                     of
                     {{
                       selectedTab && selectedTab === 'tab-2'
                         ? invitationData.length
-                        : listData.length
+                        : totalNumberOfPages
                     }}
                   </span>
                 </template>
@@ -721,6 +724,8 @@ export default {
     }
   },
   data: () => ({
+    totalNumberOfRecords: null,
+    totalNumberOfPages: null,
     itemsPerPageArray: [5, 10, 20],
     page: 1,
     itemsPerPage: 5,
@@ -820,6 +825,26 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.itemsPerPage = val
+      switch (this.selectedTab) {
+        case 'tab-0':
+          this.getMyCommunitiesListData()
+          break
+        case 'tab-1':
+          if (!this.isCommunity) this.getAllCommunitiesListData()
+          break
+        default:
+          return false
+      }
+    },
+    onChangePagination() {
+      switch (this.selectedTab) {
+        case 'tab-0':
+          this.getMyCommunitiesListData()
+          break
+        case 'tab-1':
+          if (!this.isCommunity) this.getAllCommunitiesListData()
+          break
+      }
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -1036,6 +1061,8 @@ export default {
             const { data } = response
             this.invitationData = data.data
             this.communityLoading = false
+            this.totalNumberOfRecords = data.data.totalNumberOfRecords
+            this.totalNumberOfPages = data.data.totalNumberOfPages
           })
           .catch((error) => {
             if (
@@ -1056,8 +1083,8 @@ export default {
       this.listData = []
       this.communityLoading = true
       const payload = {
-        pageNumber: 1,
-        pageSize: 50000,
+        pageNumber: this.page,
+        pageSize: this.itemsPerPage,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -1111,8 +1138,12 @@ export default {
             _this.listData = data.data.results.filter(
               (item) => item.communityResourceId === _this.$route.params.communityId
             )
+            this.totalNumberOfRecords = data.data.totalNumberOfRecords
+            this.totalNumberOfPages = data.data.totalNumberOfPages
           } else {
             _this.listData = data.data.results
+            this.totalNumberOfRecords = data.data.totalNumberOfRecords
+            this.totalNumberOfPages = data.data.totalNumberOfPages
           }
         })
 
@@ -1133,8 +1164,8 @@ export default {
       this.listData = []
       this.communityLoading = true
       const payload = {
-        pageNumber: 1,
-        pageSize: 50000,
+        pageNumber: this.page,
+        pageSize: this.itemsPerPage,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -1185,6 +1216,8 @@ export default {
         .then((response) => {
           const { data } = response
           this.listData = data.data.results
+          this.totalNumberOfRecords = data.data.totalNumberOfRecords
+          this.totalNumberOfPages = data.data.totalNumberOfPages
         })
         .catch((error) => {
           if (
@@ -1261,6 +1294,8 @@ export default {
     },
     subTabSelected(name) {
       this.isCommunity = false
+      this.page = 1
+      this.itemsPerPage = 5
       if (name == 'Your Communities') {
         this.selectedTab = 'tab-0'
         this.getMyCommunitiesListData()

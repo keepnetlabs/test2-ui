@@ -154,15 +154,15 @@
                 :current-page.sync="page"
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
-                :total="incidentList && incidentList.length"
+                :total="incidentList && totalNumberOfRecords"
                 @current-change="onChangePagination"
               >
                 <template>
                   <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
                   <span class="el-pagination__text el-pagination__text--2">
-                    {{ page }}-{{ numberOfPages }}
+                    {{ page }}
                     of
-                    {{ incidentList && incidentList.length }}
+                    {{ incidentList && totalNumberOfPages }}
                   </span>
                 </template>
               </el-pagination>
@@ -217,6 +217,9 @@ export default {
     }
   },
   data: () => ({
+    search: null,
+    totalNumberOfRecords: null,
+    totalNumberOfPages: null,
     itemsPerPageArray: [5, 10, 20],
     page: 1,
     itemsPerPage: 5,
@@ -231,11 +234,7 @@ export default {
     status: 'SUCCESS',
     code: 'RESOURCE_RETRIEVED',
     message: 'Resource retrieved',
-    validationMessages: [],
-    search: '',
     itemsPerPageOptions: [5, 10, 20],
-    itemsPerPage: 5,
-    page: 1,
     items2: ['Incidents', 'Communities', 'Members'],
     toggle: false,
     tab: null,
@@ -271,14 +270,10 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.itemsPerPage = val
-      this.incidentList = this.incidentList.map((item) => {
-        return { ...item, isToggle: false }
-      })
+      this.getIncidentList()
     },
     onChangePagination() {
-      this.incidentList = this.incidentList.map((item) => {
-        return { ...item, isToggle: false }
-      })
+      this.getIncidentList()
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -343,8 +338,8 @@ export default {
       let companyResourceId = this.companyValue
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,
-        pageNumber: 1,
-        pageSize: 50000,
+        pageNumber: this.page,
+        pageSize: this.itemsPerPage,
         orderBy: 'PostedTime',
         ascending: false,
         filter: {
@@ -401,7 +396,8 @@ export default {
               return { ...item, isToggle: false }
             })
             this.incidentLoading = false
-            this.page = 1
+            this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+            this.totalNumberOfPages = response.data.data.totalNumberOfPages
           })
           .catch((error) => {
             if (
@@ -422,7 +418,8 @@ export default {
                 return { ...item, isToggle: false }
               })
               this.incidentLoading = false
-              this.page = 1
+              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+              this.totalNumberOfPages = response.data.data.totalNumberOfPages
               _this.incidentLoading = false
             })
             .catch((error) => {
@@ -466,7 +463,8 @@ export default {
               this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
               })
-              this.page = 1
+              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+              this.totalNumberOfPages = response.data.data.totalNumberOfPages
               this.incidentLoading = false
             })
             .catch((error) => {
