@@ -928,6 +928,9 @@ export default {
           })
           let colObj = []
           urlTableColumns.forEach((item) => {
+            if (this.columns.find((col) => col.property === item)) {
+              return
+            }
             colObj.push({
               property: item,
               align: 'left',

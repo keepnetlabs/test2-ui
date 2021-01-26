@@ -85,7 +85,7 @@
               placeholder="Search"
               outlined
               prepend-inner-icon="mdi-magnify"
-              v-model="search"
+              v-model.trim="search"
               ref="searchInput"
               @keyup="searchChangedEvent"
             />
@@ -406,7 +406,7 @@
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
-              :key="col.property + ind"
+              :key="col.property + ind + columnKey"
               :align="col.align"
               :fixed="col.fixed"
               :label="col.label"
@@ -750,9 +750,38 @@
           </div>
         </div>
       </div>
+      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0 && isServerSide">
+        <el-pagination
+          :current-page="serverSideProps.pageNumber"
+          :page-size="serverSideProps.pageSize"
+          :page-sizes="pageSizes || [5, 10, 25]"
+          :total="serverSideProps.totalNumberOfRecords"
+          @current-change="handleServerSideCurrentChange"
+          @size-change="handleServerSideSizeChange"
+          layout="sizes, prev, pager, next,slot"
+        >
+          <template>
+            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--2">
+              {{
+                serverSideProps.pageNumber === 1
+                  ? 1
+                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+              }}-{{
+                serverSideProps.pageNumber * serverSideProps.pageSize >
+                serverSideProps.totalNumberOfRecords
+                  ? serverSideProps.totalNumberOfRecords
+                  : serverSideProps.pageNumber * serverSideProps.pageSize
+              }}
+              of
+              {{ serverSideProps.totalNumberOfRecords }}
+            </span>
+          </template>
+        </el-pagination>
+      </div>
       <div
         class="pagination block"
-        v-if="pageSizes.length && tableData.length > 0 && !showfilteredData"
+        v-if="pageSizes.length && tableData.length > 0 && !showfilteredData && !isServerSide"
       >
         <el-pagination
           :current-page.sync="currentPage"
@@ -777,7 +806,7 @@
           </template>
         </el-pagination>
       </div>
-      <div class="pagination block" v-if="showfilteredData">
+      <div class="pagination block" v-if="showfilteredData && !isServerSide">
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="rowCount"
@@ -846,6 +875,7 @@ import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   components: {
     DataTableFilter,
@@ -920,6 +950,10 @@ export default {
     isSettingsPopup: {
       type: Boolean,
       default: true
+    },
+    serverSideProps: {
+      type: ServerSideProps,
+      default: () => new ServerSideProps()
     },
     disableExtendedViewTransition: {
       type: Boolean,
@@ -1162,6 +1196,7 @@ export default {
       selectionRowCheckboxDeterminate
     } = this.persistentState
     return {
+      columnKey: 'column-key',
       cacheChecks: false,
       filteredData,
       renderedColumns,
@@ -1215,7 +1250,6 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-
       //This is for refresh button when clicked caching refresh
       if (
         (!this.cacheChecks && !this.cacheCheckboxFromParent) ||
@@ -1257,7 +1291,7 @@ export default {
         this.searchChangedEvent(0)
       }
       //if there is just sorting go to the sorting
-      else if (this.sortProps) {
+      else if (this.sortProps && !this.isServerSide) {
         this.sortChangedEvent(this.sortProps)
       } else {
         let maxPage = Math.ceil(table.length / this.rowCount)
@@ -1890,6 +1924,7 @@ export default {
       }
     },
     sortFunction(data, sortProps) {
+      if (this.isServerSide) return
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
           acc.push(
@@ -1995,20 +2030,20 @@ export default {
       }, delay)
     },
 
-    searchChangedEvent(debounceTime = 500) {
+    searchChangedEvent(debounceTime = 750) {
       if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
-          const filterItems = this.columns
-            .filter((column) => column.filterableType)
-            .reduce((acc, filterItem) => {
+          const filterItems = this.columns.reduce((acc, filterItem) => {
+            if (this.renderedColumns.find((property) => property === filterItem.property)) {
               acc.push({
                 FieldName:
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-                Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
+                Operator: 'Contains',
                 Value: this.search
               })
-              return acc
-            }, [])
+            }
+            return acc
+          }, [])
           const bodyDataFilter = {
             filter: {
               Condition: 'AND',
@@ -2021,7 +2056,7 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-        }, 1000)
+        }, 500)
       } else {
         this.debounce(() => {
           const searchValue = this.search
@@ -2239,20 +2274,6 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      if (this.isServerSide && this.serverSideEvents.pagination) {
-        this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
-      } else {
-        if (this.currentPage === 1) {
-          this.tableData = this.initialData.slice(0, rows)
-        } else {
-          const temp =
-            this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
-          this.tableData = temp.length === 0 ? [{}] : temp
-        }
-        this.calculateAllSelected()
-      }
-    },
-    handleClientSideSizeChange(rows) {
       if (this.currentPage === 1) {
         this.tableData = this.initialData.slice(0, rows)
       } else {
@@ -2260,19 +2281,23 @@ export default {
           this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
         this.tableData = temp.length === 0 ? [{}] : temp
       }
+      this.calculateAllSelected()
+    },
+    handleServerSideCurrentChange(pageNumber = 1) {
+      this.$emit('server-side-page-number-changed', pageNumber)
+    },
+    handleServerSideSizeChange(pageSize = 10) {
+      this.$emit('server-side-size-changed', pageSize)
     },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
-      if (this.isServerSide && this.serverSideEvents.pagination) {
-        this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
-      } else {
-        this.tableData = this.initialData.slice(
-          (pageNum - 1) * this.rowCount,
-          pageNum * this.rowCount
-        )
-        this.calculateAllSelected()
-      }
+      this.tableData = this.initialData.slice(
+        (pageNum - 1) * this.rowCount,
+        pageNum * this.rowCount
+      )
+      this.calculateAllSelected()
     },
+
     handleFilteredCurrentChange(pageNum) {
       this.currentPage = pageNum
       if (pageNum === 1) {

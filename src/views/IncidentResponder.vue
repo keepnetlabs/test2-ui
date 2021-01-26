@@ -35,7 +35,9 @@
           <v-form ref="form" lazy-validation>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">{{ labels.RoiSummarySavedTimeLabel }}</label>
+                <label class="roi-modal__label">{{
+                  labels.RoiSummarySavedTimeLabel
+                }}</label>
                 <v-text-field
                   placeholder="Enter saved time"
                   outlined
@@ -44,14 +46,16 @@
                   v-mask="'###'"
                   :rules="[
                     (v) => validations.required(v, labels.Required),
-                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+                    (v) => validations.startsWith(v, 'Cannot start with 0', 0),
                   ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="roi-modal__list-item">
               <v-list-item-content>
-                <label class="roi-modal__label">{{ labels.RoiSummaryHourlyLabel }}</label>
+                <label class="roi-modal__label">{{
+                  labels.RoiSummaryHourlyLabel
+                }}</label>
                 <v-text-field
                   placeholder="Enter hourly rate"
                   outlined
@@ -60,7 +64,7 @@
                   v-mask="'###'"
                   :rules="[
                     (v) => validations.required(v, labels.Required),
-                    (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+                    (v) => validations.startsWith(v, 'Cannot start with 0', 0),
                   ]"
                 ></v-text-field>
               </v-list-item-content>
@@ -86,7 +90,10 @@
         v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
       />
-      <div class="columns-row" v-if="checkPermissions('ir/dashboard/summary', 'GET')">
+      <div
+        class="columns-row"
+        v-if="checkPermissions('ir/dashboard/summary', 'GET')"
+      >
         <CardLoading
           :loading="incidentLoading"
           class="dashboard-cards__skeleton-loading"
@@ -96,7 +103,7 @@
             <div
               class="dashboard-cards phishing-reporter mr-2"
               :class="{
-                'no-data__opacity-blue': isPhishingEmpty(irSummary)
+                'no-data__opacity-blue': isPhishingEmpty(irSummary),
               }"
             >
               <div class="card-header">
@@ -111,7 +118,8 @@
                     {{
                       (irSummary &&
                         irSummary.phishingReporterUserStatusCount &&
-                        irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
+                        irSummary.phishingReporterUserStatusCount
+                          .onlineUsersCount) ||
                       0
                     }}
                   </div>
@@ -121,8 +129,10 @@
                   {{
                     (irSummary &&
                       irSummary.phishingReporterUserStatusCount &&
-                      irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-                        irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
+                      irSummary.phishingReporterUserStatusCount
+                        .onlineUsersCount +
+                        irSummary.phishingReporterUserStatusCount
+                          .offlineUsersCount) ||
                     0
                   }}
                   user(s) are
@@ -130,14 +140,12 @@
                 <div class="card-status">{{ labels.CurrentlyOnline }}</div>
               </div>
               <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">
-                  No add-ins installed
-                </div>
+                <div class="card-footer no-data-text">No add-ins installed</div>
                 <v-btn
                   class="btn-action btn-playbook btn-playbook__no-data"
                   rounded
                   color="white"
-                  style="box-shadow: none !important; margin-top: 16px;"
+                  style="box-shadow: none !important; margin-top: 16px"
                   @click="emptyPhishingButtonClick"
                 >
                   {{ labels.InstallNow }}
@@ -145,7 +153,7 @@
               </div>
               <div
                 class="bg-image"
-                style="bottom: 10px; right: 0;"
+                style="bottom: 10px; right: 0"
                 :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
               >
                 <img src="../assets/img/shape.svg" />
@@ -162,13 +170,16 @@
             <div
               class="dashboard-cards incident-analysis mr-2"
               :class="{
-                'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+                'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
               }"
             >
               <div class="card-header">
                 <span class="head">{{ labels.IncidentAnalysis }}</span>
               </div>
-              <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
+              <div
+                class="columns-row__body"
+                v-if="!isNotifiedEmailEmpty(irSummary)"
+              >
                 <div class="card-body">
                   <div class="biggest">
                     {{
@@ -192,13 +203,18 @@
                 <div class="card-status">{{ labels.FoundHarmful }}</div>
               </div>
               <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">{{ labels.NoEmailAnalysed }}</div>
+                <div class="card-footer no-data-text">
+                  {{ labels.NoEmailAnalysed }}
+                </div>
                 <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
                   @click="emptyNotifiedEmailButtonClick">
             Start Now
           </button>-->
               </div>
-              <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
+              <div
+                class="bg-image"
+                :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]"
+              >
                 <img src="../assets/img/ic-warning.svg" />
               </div>
             </div>
@@ -213,7 +229,7 @@
             <div
               class="dashboard-cards investigations mr-2"
               :class="{
-                'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
+                'no-data__opacity-green': !isInvestigationsEmpty(irSummary),
               }"
             >
               <div class="card-header">
@@ -224,7 +240,7 @@
               </div>
               <div
                 class="columns-row__body"
-                style="margin-top: 13px;"
+                style="margin-top: 13px"
                 v-if="isInvestigationsEmpty(irSummary)"
               >
                 <div class="card-body d-flex">
@@ -233,35 +249,45 @@
                       {{
                         (irSummary &&
                           irSummary.investigationTypeCount &&
-                          irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                          irSummary.investigationTypeCount
+                            .automaticInvestigationCount) ||
                         0
                       }}
                     </span>
 
-                    <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
+                    <span class="body-row__text">{{
+                      labels.Auto.toLowerCase()
+                    }}</span>
                   </div>
-                  <div class="body-row" style="margin-left: 81px;">
+                  <div class="body-row" style="margin-left: 81px">
                     <span class="body-row__number"
                       >{{
                         (irSummary &&
                           irSummary.investigationTypeCount &&
-                          irSummary.investigationTypeCount.manualInvestigationCount) ||
+                          irSummary.investigationTypeCount
+                            .manualInvestigationCount) ||
                         0
                       }}
                     </span>
 
-                    <span class="body-row__text">{{ labels.Manual.toLowerCase() }}</span>
+                    <span class="body-row__text">{{
+                      labels.Manual.toLowerCase()
+                    }}</span>
                   </div>
                 </div>
-                <div class="card-status mt-7">{{ labels.IncidentsResolved }}</div>
+                <div class="card-status mt-7">
+                  {{ labels.IncidentsResolved }}
+                </div>
               </div>
               <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">{{ labels.NoInvestigationStarted }}</div>
+                <div class="card-footer no-data-text">
+                  {{ labels.NoInvestigationStarted }}
+                </div>
                 <v-btn
                   class="btn-action btn-playbook btn-playbook__no-data"
                   rounded
                   color="white"
-                  style="box-shadow: none !important; margin-top: 16px;"
+                  style="box-shadow: none !important; margin-top: 16px"
                   @click="emptyInvestigationButtonClick"
                 >
                   {{ labels.StartNow }}
@@ -285,7 +311,7 @@
             <div
               class="dashboard-cards roi-summary"
               :class="{
-                'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
+                'no-data__opacity-purple': isRoiSummaryEmpty(irSummary),
               }"
             >
               <div class="card-header">
@@ -294,18 +320,33 @@
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
-                  <span class="body-row__number" style="white-space: nowrap;">
-                    {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || '0' }}
+                  <span class="body-row__number" style="white-space: nowrap">
+                    {{
+                      `${
+                        irSummary &&
+                        irSummary.roiSummary &&
+                        irSummary.roiSummary.time
+                      }` || "0"
+                    }}
                   </span>
 
-                  <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
+                  <span class="body-row__text" style="margin-left: 2px"
+                    >Hour(s)</span
+                  >
                 </div>
                 <div class="body-row">
                   <span class="body-row__number">
-                    ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
+                    ${{
+                      (irSummary &&
+                        irSummary.roiSummary &&
+                        irSummary.roiSummary.revenue) ||
+                      0
+                    }}
                   </span>
 
-                  <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
+                  <span class="body-row__text" style="margin-left: 2px">{{
+                    labels.Money
+                  }}</span>
                 </div>
               </div>
               <div class="card-status">{{ labels.Saved }}</div>
@@ -317,7 +358,10 @@
         </CardLoading>
       </div>
       <div class="double-table">
-        <div class="column" v-if="checkPermissions('ir/dashboard/top-rules', 'GET')">
+        <div
+          class="column"
+          v-if="checkPermissions('ir/dashboard/top-rules', 'GET')"
+        >
           <v-card>
             <div class="header">
               <div class="title">
@@ -361,8 +405,16 @@
                   <span v-if="scope.row[col.property] === 0">
                     {{ labels.NoMatchEmptyText }}
                   </span>
-                  <span v-else @click="matchingPopupClick(scope.row)" class="popup-link">
-                    {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }}
+                  <span
+                    v-else
+                    @click="matchingPopupClick(scope.row)"
+                    class="popup-link"
+                  >
+                    {{
+                      scope.row[col.property] === 0
+                        ? "No"
+                        : scope.row[col.property]
+                    }}
                     {{ labels.Matches }}
                   </span>
                   <app-dialog
@@ -404,7 +456,7 @@
                       </v-card>
                     </template>
                     <template v-slot:app-dialog-footer>
-                      <div class="d-flex" style="justify-content: flex-end;">
+                      <div class="d-flex" style="justify-content: flex-end">
                         <v-btn
                           class="pa-0 k-dialog__button"
                           text
@@ -430,7 +482,10 @@
             </div>
           </v-card>
         </div>
-        <div class="column" v-if="checkPermissions('ir/dashboard/running-investigations', 'GET')">
+        <div
+          class="column"
+          v-if="checkPermissions('ir/dashboard/running-investigations', 'GET')"
+        >
           <v-card>
             <div class="header">
               <div class="title">
@@ -440,7 +495,7 @@
               <div class="action">
                 <v-btn
                   class="btn-action btn-investigations"
-                  style="padding: 0 13px !important;"
+                  style="padding: 0 13px !important"
                   block
                   rounded
                   @click.native="$router.push('/investigations')"
@@ -475,12 +530,19 @@
           </v-card>
         </div>
       </div>
-      <div class="table-row" v-if="checkPermissions('notified-emails/search', 'POST')">
+      <div
+        class="table-row"
+        v-if="checkPermissions('notified-emails/search', 'POST')"
+      >
         <v-card>
           <div class="header">
             <div class="title">
               <h2>
-                {{ isShowingClusteredTable ? clusteredRow.subject : labels.ReportedEmails }}
+                {{
+                  isShowingClusteredTable
+                    ? clusteredRow.subject
+                    : labels.ReportedEmails
+                }}
               </h2>
               <p class="mb-10">
                 {{
@@ -524,7 +586,12 @@
             @columnFilterCleared="clusteredColumnFilterCleared"
           >
             <template #table-search-left-side>
-              <v-btn text color="#2196f3" class="clustered-table-back-btn" @click="handleBackClick">
+              <v-btn
+                text
+                color="#2196f3"
+                class="clustered-table-back-btn"
+                @click="handleBackClick"
+              >
                 <v-icon left>mdi-arrow-left</v-icon> BACK</v-btn
               >
             </template>
@@ -537,7 +604,11 @@
                     scope.row.matchingPlaybooks.length === 0
                   "
                 >
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                  {{
+                    scope.row.source === "Auto"
+                      ? "Auto Analysis"
+                      : scope.row.source
+                  }}
                 </span>
                 <span
                   v-else
@@ -553,7 +624,10 @@
                   <span class="analysis-link">
                     <div>{{ labels.InAnalysis }}...</div>
                     <div>
-                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                      <img
+                        src="../assets/img/spinner.png"
+                        class="add-in-settings__spinner"
+                      />
                     </div>
                   </span>
                 </template>
@@ -581,7 +655,10 @@
                   color="#2196f3"
                   label="Add Custom Message"
                   v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                  :disabled="
+                    !extendedView.isNotify ||
+                    selectedRowsOfReportedEmailsLength > 1
+                  "
                 ></v-checkbox>
               </div>
               <div
@@ -606,8 +683,9 @@
           <datatable
             v-show="!isShowingClusteredTable"
             :loading="reportedEmailsLoading"
+            :server-side-events="{ pagination: true, search: true, sort: true }"
+            is-server-side
             :is-column-filter-active="emails.isColumnFilterActive"
-            v-bind="bindPropsIsSafari"
             :extendedViewDisableChanger="extendedViewDisableChanger"
             :table="reportedEmailsData"
             :refName="'reportedEmails'"
@@ -633,6 +711,7 @@
             :groupable="true"
             :selectEvent="emails.selectEvent"
             :disableExtendedViewTransition="true"
+            :server-side-props="serverSideProps"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
@@ -644,15 +723,24 @@
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
             @refreshAction="callForSearchNotifiedMail"
+            @server-side-page-number-changed="serverSidePageNumberChanged"
+            @server-side-size-changed="serverSideSizeChanged"
+            @searchChangedEvent="handleSearchChange"
+            @sortChangedEvent="sortChanged"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template v-if="scope.column.property === 'subject'">
-                <span v-if="!selectedCluster"> {{ scope.row[col.property] }}</span>
+                <span v-if="!selectedCluster">
+                  {{ scope.row[col.property] }}</span
+                >
                 <div class="reported-email-subject__container" v-else>
                   <div class="reported-email-subject">
                     <span> {{ scope.row[col.property] }}</span>
                   </div>
-                  <the-records-button :row="scope.row" @on-click="handleRecordButtonClick" />
+                  <the-records-button
+                    :row="scope.row"
+                    @on-click="handleRecordButtonClick"
+                  />
                 </div>
               </template>
               <template v-if="scope.column.property === 'source'">
@@ -663,7 +751,11 @@
                     scope.row.matchingPlaybooks.length === 0
                   "
                 >
-                  {{ scope.row.source === 'Auto' ? 'Auto Analysis' : scope.row.source }}
+                  {{
+                    scope.row.source === "Auto"
+                      ? "Auto Analysis"
+                      : scope.row.source
+                  }}
                 </span>
                 <span
                   v-else
@@ -679,7 +771,10 @@
                   <span class="analysis-link">
                     <div>{{ labels.InAnalysis }}...</div>
                     <div>
-                      <img src="../assets/img/spinner.png" class="add-in-settings__spinner" />
+                      <img
+                        src="../assets/img/spinner.png"
+                        class="add-in-settings__spinner"
+                      />
                     </div>
                   </span>
                 </template>
@@ -707,7 +802,10 @@
                   color="#2196f3"
                   label="Add Custom Message"
                   v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                  :disabled="
+                    !extendedView.isNotify ||
+                    selectedRowsOfReportedEmailsLength > 1
+                  "
                 ></v-checkbox>
               </div>
               <div
@@ -759,30 +857,36 @@ import {
   getTopRules,
   searchNotifiedMail,
   updateNotifiedEmail,
-  updateRoiSettings
-} from '../api/incidentResponder'
+  updateRoiSettings,
+} from "../api/incidentResponder";
 import {
   checkPermission,
   getDataTableFieldLabel,
   handleIsSafari,
-  setSafariClusterFix
-} from '../utils/functions'
-import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
-import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
-import Datatable from '../components/DataTable'
-import NewInvestigation from '../components/Investigation/NewInvestigation'
-import AppModal from '@/components/AppModal'
-import { mapActions, mapGetters } from 'vuex'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
-import AppDialog from '../components/AppDialog'
-import { required, startsWith, maxLength } from '../utils/validations'
-import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
-import CardLoading from '../components/SkeletonLoading/CardLoading'
-import labels from '@/model/constants/labels'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import * as Validations from '@/utils/validations'
-import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
-import TheClusteredModal from '@/components/IncidentResponder/TheClusteredModal'
+  setSafariClusterFix,
+} from "../utils/functions";
+import DataTableColorfulText from "../components/DataTableComponents/DataTableColorfulText";
+import { exportNotifiedEmails, getNotifiedEmail } from "../api/notifiedEmail";
+import Datatable from "../components/DataTable";
+import NewInvestigation from "../components/Investigation/NewInvestigation";
+import AppModal from "@/components/AppModal";
+import { mapActions, mapGetters } from "vuex";
+import {
+  COMMON_CONSTANTS,
+  getStoreValue,
+  PROPERTY_STORE,
+} from "../model/constants/commonConstants";
+import AppDialog from "../components/AppDialog";
+import { required, startsWith, maxLength } from "../utils/validations";
+import CreateOrEditRule from "../components/Playbook/CreateOrEditRule";
+import CardLoading from "../components/SkeletonLoading/CardLoading";
+import labels from "@/model/constants/labels";
+import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
+import * as Validations from "@/utils/validations";
+import TheRecordsButton from "@/components/IncidentResponder/TheRecordsButton";
+import TheClusteredModal from "@/components/IncidentResponder/TheClusteredModal";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import QueryHelperForTable from "@/helper-classes/query-helper";
 export default {
   components: {
     TheClusteredModal,
@@ -794,12 +898,12 @@ export default {
     DataTableColorfulText,
     CreateOrEditRule,
     CardLoading,
-    AppModal
+    AppModal,
   },
 
   data: () => ({
     isCustomOverflowedColumn: false,
-    selectedCluster: '',
+    selectedCluster: "",
     labels,
     clusteredRow: null,
     isConfirmButtonDisabled: false,
@@ -812,9 +916,9 @@ export default {
     incidentLoading: true,
     showPlaybookModal: false,
     selectedPlaybookId: null,
-    roiRate: '',
+    roiRate: "",
     selectedEmail: null,
-    roiTask: '',
+    roiTask: "",
     selectedMatch: null,
     isShowRoi: false,
     extendedViewLoading: true,
@@ -832,1263 +936,1358 @@ export default {
     validations: {
       required,
       startsWith,
-      maxLength
+      maxLength,
     },
     extendedViewValue: [],
     topRules: {
       table: [],
       columns: [
         {
-          property: 'ruleName',
-          align: 'left',
+          property: "ruleName",
+          align: "left",
           editable: false,
-          label: 'Rule Name',
+          label: "Rule Name",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'slot',
-          minWidth: '40'
+          type: "slot",
+          minWidth: "40",
         },
         {
-          property: 'matchCount',
-          align: 'left',
+          property: "matchCount",
+          align: "left",
           editable: false,
-          label: 'Matching Incidents',
+          label: "Matching Incidents",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'popup',
-          minWidth: '30',
-          emptyText: 'No Match'
+          type: "popup",
+          minWidth: "30",
+          emptyText: "No Match",
         },
         {
-          property: 'status',
-          align: 'center',
+          property: "status",
+          align: "center",
           editable: false,
-          label: 'Status',
+          label: "Status",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'status',
-          minWidth: '30',
-          hasTooltip: true
-        }
+          type: "status",
+          minWidth: "30",
+          hasTooltip: true,
+        },
       ],
       iEmpty: {
         message: labels.NoRulesConfigured,
         btn: labels.CreateNewRule,
-        icon: 'mdi-plus'
+        icon: "mdi-plus",
       },
       addUsers: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       addMenu: {
         show: false,
-        popUp: false
+        popUp: false,
       },
-      selectEvent: {}
+      selectEvent: {},
     },
     recentInv: {
       table: [],
       columns: [
         {
-          property: 'name',
-          align: 'left',
+          property: "name",
+          align: "left",
           editable: false,
           label: labels.InvestigationName,
           fixed: false,
           sortable: false,
           show: true,
-          type: 'link',
-          href: '/investigation-details',
-          hrefKey: 'resourceId',
-          minWidth: '40'
+          type: "link",
+          href: "/investigation-details",
+          hrefKey: "resourceId",
+          minWidth: "40",
         },
         {
-          property: 'progress',
-          align: 'center',
+          property: "progress",
+          align: "center",
           editable: false,
-          label: getStoreValue('progress'),
+          label: getStoreValue("progress"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'progress',
-          minWidth: '30'
+          type: "progress",
+          minWidth: "30",
         },
         {
-          property: 'status',
-          align: 'center',
+          property: "status",
+          align: "center",
           editable: false,
-          label: getStoreValue('status'),
+          label: getStoreValue("status"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'status',
-          minWidth: '30'
-        }
+          type: "status",
+          minWidth: "30",
+        },
       ],
       addUsers: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       addMenu: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       iEmpty: {
         message: labels.NoInvestigation,
         btn: labels.StartNewInvestigation,
-        icon: 'mdi-plus'
+        icon: "mdi-plus",
       },
       selectEvent: {},
-      chartOptions: {}
+      chartOptions: {},
     },
     matchingInvestigation: {
       table: [],
       columns: [
         {
-          property: 'subject',
-          align: 'left',
+          property: "subject",
+          align: "left",
           editable: false,
-          label: 'Subject',
+          label: "Subject",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '33'
+          type: "text",
+          minWidth: "33",
         },
         {
-          property: 'createDate',
-          align: 'left',
+          property: "createDate",
+          align: "left",
           editable: false,
-          label: getStoreValue('createDate'),
+          label: getStoreValue("createDate"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '33'
+          type: "text",
+          minWidth: "33",
         },
         {
-          property: 'reportedBy',
-          align: 'left',
+          property: "reportedBy",
+          align: "left",
           editable: false,
-          label: getStoreValue('reportedBy'),
+          label: getStoreValue("reportedBy"),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'text',
-          minWidth: '34'
-        }
+          type: "text",
+          minWidth: "34",
+        },
       ],
       addUsers: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       addMenu: {
         show: false,
-        popUp: false
+        popUp: false,
       },
       iEmpty: {
         message: labels.EmptyMatchingIncidents,
-        btn: '',
-        icon: 'mdi-plus'
+        btn: "",
+        icon: "mdi-plus",
       },
       selectEvent: {},
-      chartOptions: {}
+      chartOptions: {},
     },
     emails: {
       isColumnFilterActive: false,
       table: [],
       extendedViewOptions: {
-        titleKey: 'subject',
+        titleKey: "subject",
         footer: [
           {
-            label: 'Date Created',
-            key: 'createTime'
+            label: "Date Created",
+            key: "createTime",
           },
           {
-            label: 'Last update',
-            key: 'lastUpdateDate'
-          }
+            label: "Last update",
+            key: "lastUpdateDate",
+          },
         ],
         col: [
           {
             property: PROPERTY_STORE.SUBJECT,
             label: getStoreValue(PROPERTY_STORE.SUBJECT),
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.REPORTEDBY,
             label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.RESOURCEID,
-            label: 'Case Id',
+            label: "Case Id",
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.ANALYSISSOURCE,
-            label: 'Analysis Source',
+            label: "Analysis Source",
             isEditable: false,
-            type: 'analysisSource',
-            show: true
+            type: "analysisSource",
+            show: true,
           },
           {
             property: PROPERTY_STORE.RESULT,
             label: getStoreValue(PROPERTY_STORE.RESULT),
             isEditable: true,
-            type: 'badge',
+            type: "badge",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
+                if (row.status === "BeingAnalyzed") {
+                  return true;
                 } else {
-                  return false
+                  return false;
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', { text: 'Clean', value: 'NonMalicious' }]
-              }
+                items: [
+                  "Phishing",
+                  "Malicious",
+                  { text: "Clean", value: "NonMalicious" },
+                ],
+              },
             },
-            show: true
+            show: true,
           },
           {
             property: PROPERTY_STORE.STATUS,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             isEditable: true,
-            type: 'colorfulText',
+            type: "colorfulText",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
+                if (row.status === "BeingAnalyzed") {
+                  return true;
                 } else {
-                  return false
+                  return false;
                 }
               },
               props: {
                 items: [
-                  'Open',
-                  'Closed',
-                  { text: labels.InProgress, value: 'InProgress' },
-                  { text: labels.FalsePositive, value: 'FalsePositive' }
-                ]
-              }
-            },
-            show: true
-          },
-          {
-            property: 'tags',
-            label: 'Tags',
-            isEditable: true,
-            type: 'smallBadge',
-            editOptions: {
-              component: 'combobox',
-              props: {
-                placeholder: 'Enter Tags'
-              }
-            },
-            show: true
-          },
-          {
-            property: 'note',
-            label: labels.Notes,
-            isEditable: true,
-            type: 'text',
-            editOptions: {
-              component: 'textarea',
-              getDisabledValue() {
-                return false
+                  "Open",
+                  "Closed",
+                  { text: labels.InProgress, value: "InProgress" },
+                  { text: labels.FalsePositive, value: "FalsePositive" },
+                ],
               },
-              props: {
-                placeholder: 'Enter Notes',
-                rules: [
-                  (v) =>
-                    Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Notes, 256))
-                ]
-              }
             },
             show: true,
-            showOnlyPreview: true
-          }
-        ]
+          },
+          {
+            property: "tags",
+            label: "Tags",
+            isEditable: true,
+            type: "smallBadge",
+            editOptions: {
+              component: "combobox",
+              props: {
+                placeholder: "Enter Tags",
+              },
+            },
+            show: true,
+          },
+          {
+            property: "note",
+            label: labels.Notes,
+            isEditable: true,
+            type: "text",
+            editOptions: {
+              component: "textarea",
+              getDisabledValue() {
+                return false;
+              },
+              props: {
+                placeholder: "Enter Notes",
+                rules: [
+                  (v) =>
+                    Validations.maxLength(
+                      v,
+                      256,
+                      labels.getMaxLengthMessage(labels.Notes, 256)
+                    ),
+                ],
+              },
+            },
+            show: true,
+            showOnlyPreview: true,
+          },
+        ],
       },
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: 'left',
+          fixed: "left",
           sortable: true,
           show: true,
-          type: 'slot',
+          type: "slot",
           width: 200,
           isEditable: false,
-          filterableType: 'text',
-          parentRect: 'reported-email-subject',
-          overrideWidth: true
+          filterableType: "text",
+          parentRect: "reported-email-subject",
+          overrideWidth: true,
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
           hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
           isEditable: false,
-          type: 'attachment',
-          width: 120
+          type: "attachment",
+          width: 120,
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '260',
+          type: "text",
+          width: "260",
           isEditable: false,
-          filterableType: 'text'
+          filterableType: "text",
         },
         {
           property: PROPERTY_STORE.RESOURCEID,
           show: false,
-          label: 'Case Id',
-          type: 'text',
+          label: "Case Id",
+          type: "text",
           isEditable: false,
-          hideOnSettingsPopup: true
+          hideOnSettingsPopup: true,
         },
         {
           property: PROPERTY_STORE.ANALYSISSOURCE,
           isEditable: false,
-          align: 'center',
-          label: 'Analysis Source',
+          align: "center",
+          label: "Analysis Source",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'analysisSource',
-          width: '200',
-          fullWidth: true
+          type: "analysisSource",
+          width: "200",
+          fullWidth: true,
         },
         {
           property: PROPERTY_STORE.RESULT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'badge',
+          type: "badge",
           isEditable: true,
-          filterableType: 'select',
-          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
-          editOptions: {
-            component: 'select',
-            getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
-              } else {
-                return false
-              }
-            },
-            props: {
-              items: ['Phishing', 'Malicious', { text: labels.NonMalicious, value: 'NonMalicious' }]
-            }
-          },
-          props: {
-            style: {
-              maxWidth: '110px'
-            }
-          },
-          width: '150'
-        },
-        {
-          property: PROPERTY_STORE.STATUS,
-          isEditable: true,
-          align: 'center',
-          label: getStoreValue(PROPERTY_STORE.STATUS),
-          fixed: false,
-          sortable: true,
-          show: true,
-          type: 'slot',
-          width: '150',
-          showColorfulText: true,
-          fullWidth: true,
-          filterableType: 'select',
+          filterableType: "select",
           filterableItems: [
-            { text: labels.InAnalysis, value: 'BeingAnalyzed' },
-            labels.Open,
-            labels.Closed,
-            { text: labels.InProgress, value: 'InProgress' },
-            { text: labels.FalsePositive, value: 'FalsePositive' }
+            { text: "Clean", value: "NonMalicious" },
+            "Malicious",
+            "Phishing",
           ],
           editOptions: {
-            component: 'select',
+            component: "select",
             getDisabledValue(row) {
-              if (row.status === 'BeingAnalyzed') {
-                return true
+              if (row.status === "BeingAnalyzed") {
+                return true;
               } else {
-                return false
+                return false;
               }
             },
             props: {
               items: [
-                'Open',
-                'Closed',
-                { text: 'In Progress', value: 'InProgress' },
-                { text: 'False Positive', value: 'FalsePositive' }
-              ]
-            }
+                "Phishing",
+                "Malicious",
+                { text: labels.NonMalicious, value: "NonMalicious" },
+              ],
+            },
           },
           props: {
-            style: { maxWidth: '110px' }
-          }
+            style: {
+              maxWidth: "110px",
+            },
+          },
+          width: "150",
+        },
+        {
+          property: PROPERTY_STORE.STATUS,
+          isEditable: true,
+          align: "center",
+          label: getStoreValue(PROPERTY_STORE.STATUS),
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: "slot",
+          width: "150",
+          showColorfulText: true,
+          fullWidth: true,
+          filterableType: "select",
+          filterableItems: [
+            { text: labels.InAnalysis, value: "BeingAnalyzed" },
+            labels.Open,
+            labels.Closed,
+            { text: labels.InProgress, value: "InProgress" },
+            { text: labels.FalsePositive, value: "FalsePositive" },
+          ],
+          editOptions: {
+            component: "select",
+            getDisabledValue(row) {
+              if (row.status === "BeingAnalyzed") {
+                return true;
+              } else {
+                return false;
+              }
+            },
+            props: {
+              items: [
+                "Open",
+                "Closed",
+                { text: "In Progress", value: "InProgress" },
+                { text: "False Positive", value: "FalsePositive" },
+              ],
+            },
+          },
+          props: {
+            style: { maxWidth: "110px" },
+          },
         },
         {
           property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
+          type: "text",
           editOptions: {
-            component: 'datepicker'
+            component: "datepicker",
           },
-          width: '230',
-          filterableType: 'date'
+          width: "230",
+          filterableType: "date",
         },
         {
-          property: 'tags',
-          align: 'left',
+          property: "tags",
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'smallBadge',
+          type: "smallBadge",
           isEditable: true,
           editOptions: {
-            component: 'combobox',
+            component: "combobox",
             props: {
-              placeholder: 'Enter Tags'
-            }
+              placeholder: "Enter Tags",
+            },
           },
-          width: '150'
-        }
+          width: "150",
+        },
       ],
       pageSizes: [5, 10, 25],
       rowActions: [
         {
           name: labels.Edit,
-          icon: 'mdi-pencil',
-          action: 'edit',
-          isNotShow: true
+          icon: "mdi-pencil",
+          action: "edit",
+          isNotShow: true,
         },
         {
           name: labels.PreviewEmail,
-          icon: 'mdi-eye',
-          action: 'irPreview'
+          icon: "mdi-eye",
+          action: "irPreview",
         },
         {
           name: labels.Details,
-          icon: 'mdi-text-box-multiple',
-          action: 'handleDetails'
+          icon: "mdi-text-box-multiple",
+          action: "handleDetails",
         },
         {
           name: labels.Investigate,
-          icon: 'mdi-magnify',
-          action: 'handleInvestigate'
-        }
+          icon: "mdi-magnify",
+          action: "handleInvestigate",
+        },
       ],
       addMenu: {
         show: true,
-        popUp: false
+        popUp: false,
       },
       iEmpty: {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right'
+        icon: "mdi-arrow-right",
       },
       selectEvent: {
         clipboard: true,
         edit: true,
-        download: false
+        download: false,
       },
       chartOptions: {
         chart: {
           width: 60,
           height: 60,
-          type: 'pie',
+          type: "pie",
           offsetX: -1,
-          offsetY: 1
+          offsetY: 1,
         },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D'],
-        colors: ['#67c23a', '#409eff', '#f56c6c', '#ffcc33'],
+        labels: ["Team A", "Team B", "Team C", "Team D"],
+        colors: ["#67c23a", "#409eff", "#f56c6c", "#ffcc33"],
         legend: {
-          show: false
+          show: false,
         },
         tooltip: {
-          enabled: false
+          enabled: false,
         },
         dataLabels: {
-          enabled: false
-        }
-      }
+          enabled: false,
+        },
+      },
     },
+    serverSideProps: new ServerSideProps(),
     isWantToAddNewInvestigation: false,
     extendedView: {
       isNotify: true,
       isMessage: false,
-      customMessage: ''
+      customMessage: "",
     },
     defaultExtendedViewValues: {
       isNotify: true,
       isMessage: false,
-      customMessage: ''
+      customMessage: "",
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: {
-      isClustered: false,
+      clusteredBy: "",
       pageNumber: 1,
-      pageSize: 500000,
-      orderBy: 'createTime',
+      pageSize: 10,
+      orderBy: "createTime",
       ascending: false,
       filter: {
-        Condition: 'AND',
+        Condition: "AND",
         FilterGroups: [
           {
-            Condition: 'AND',
+            Condition: "AND",
             FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
+            FilterGroups: [],
+          },
+          {
+            Condition: "OR",
+            FilterItems: [],
+            FilterGroups: [],
+          },
+        ],
+      },
     },
     lazyLoadRequestBody: {
       isClustered: false,
       pageNumber: 1,
       pageSize: 500000,
-      orderBy: 'createTime',
+      orderBy: "createTime",
       ascending: false,
       filter: {
-        Condition: 'AND',
+        Condition: "AND",
         FilterGroups: [
           {
-            Condition: 'AND',
+            Condition: "AND",
             FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
+            FilterGroups: [],
+          },
+        ],
+      },
     },
     isReportedEmailsClusteredLoading: false,
     clusteredTable: {
       columns: [
         {
           property: PROPERTY_STORE.SUBJECT,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.SUBJECT),
-          fixed: 'left',
+          fixed: "left",
           sortable: true,
           show: true,
-          type: 'text',
-          width: '300',
+          type: "text",
+          width: "300",
           isEditable: false,
-          filterableType: 'text'
+          filterableType: "text",
         },
         {
           property: PROPERTY_STORE.ATTACHMENTCOUNT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.ATTACHMENTCOUNT),
           hideLabel: true,
           fixed: false,
           sortable: true,
           show: true,
           isEditable: false,
-          type: 'attachment',
-          width: 120
+          type: "attachment",
+          width: 120,
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '260',
+          type: "text",
+          width: "260",
           isEditable: false,
-          filterableType: 'text'
+          filterableType: "text",
         },
         {
           property: PROPERTY_STORE.RESOURCEID,
           show: false,
-          label: 'Case Id',
-          type: 'text',
+          label: "Case Id",
+          type: "text",
           isEditable: false,
-          hideOnSettingsPopup: true
+          hideOnSettingsPopup: true,
         },
         {
           property: PROPERTY_STORE.ANALYSISSOURCE,
           isEditable: false,
-          align: 'center',
-          label: 'Analysis Source',
+          align: "center",
+          label: "Analysis Source",
           fixed: false,
           sortable: false,
           show: true,
-          type: 'analysisSource',
-          width: '200',
-          fullWidth: true
+          type: "analysisSource",
+          width: "200",
+          fullWidth: true,
         },
         {
           property: PROPERTY_STORE.RESULT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.RESULT),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'badge',
+          type: "badge",
           isEditable: true,
-          filterableType: 'select',
-          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
+          filterableType: "select",
+          filterableItems: [
+            { text: "Clean", value: "NonMalicious" },
+            "Malicious",
+            "Phishing",
+          ],
           props: {
             style: {
-              maxWidth: '110px'
-            }
+              maxWidth: "110px",
+            },
           },
-          width: '150'
+          width: "150",
         },
         {
           property: PROPERTY_STORE.STATUS,
           isEditable: true,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.STATUS),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'slot',
-          width: '150',
+          type: "slot",
+          width: "150",
           showColorfulText: true,
           fullWidth: true,
-          filterableType: 'select',
+          filterableType: "select",
           filterableItems: [
-            { text: labels.InAnalysis, value: 'BeingAnalyzed' },
+            { text: labels.InAnalysis, value: "BeingAnalyzed" },
             labels.Open,
             labels.Closed,
-            { text: labels.InProgress, value: 'InProgress' },
-            { text: labels.FalsePositive, value: 'FalsePositive' }
+            { text: labels.InProgress, value: "InProgress" },
+            { text: labels.FalsePositive, value: "FalsePositive" },
           ],
           props: {
-            style: { maxWidth: '110px' }
-          }
+            style: { maxWidth: "110px" },
+          },
         },
         {
           property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
           fixed: false,
           sortable: true,
           show: true,
-          type: 'text',
-          width: '230',
-          filterableType: 'date'
+          type: "text",
+          width: "230",
+          filterableType: "date",
         },
         {
-          property: 'tags',
-          align: 'left',
+          property: "tags",
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.RESULTTAG),
           fixed: false,
           sortable: false,
           show: true,
-          type: 'smallBadge',
+          type: "smallBadge",
           isEditable: true,
-          width: '150'
-        }
+          width: "150",
+        },
       ],
       iEmpty: {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right'
+        icon: "mdi-arrow-right",
       },
       isColumnFilterActive: false,
       extendedViewOptions: {
-        titleKey: 'subject',
+        titleKey: "subject",
         footer: [
           {
-            label: 'Date Created',
-            key: 'createTime'
+            label: "Date Created",
+            key: "createTime",
           },
           {
-            label: 'Last update',
-            key: 'lastUpdateDate'
-          }
+            label: "Last update",
+            key: "lastUpdateDate",
+          },
         ],
         col: [
           {
             property: PROPERTY_STORE.SUBJECT,
             label: getStoreValue(PROPERTY_STORE.SUBJECT),
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.REPORTEDBY,
             label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.RESOURCEID,
-            label: 'Case Id',
+            label: "Case Id",
             isEditable: false,
-            type: 'text',
-            show: true
+            type: "text",
+            show: true,
           },
           {
             property: PROPERTY_STORE.ANALYSISSOURCE,
-            label: 'Analysis Source',
+            label: "Analysis Source",
             isEditable: false,
-            type: 'analysisSource',
-            show: true
+            type: "analysisSource",
+            show: true,
           },
           {
             property: PROPERTY_STORE.RESULT,
             label: getStoreValue(PROPERTY_STORE.RESULT),
             isEditable: true,
-            type: 'badge',
+            type: "badge",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
+                if (row.status === "BeingAnalyzed") {
+                  return true;
                 } else {
-                  return false
+                  return false;
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', { text: 'Clean', value: 'NonMalicious' }]
-              }
+                items: [
+                  "Phishing",
+                  "Malicious",
+                  { text: "Clean", value: "NonMalicious" },
+                ],
+              },
             },
-            show: true
+            show: true,
           },
           {
             property: PROPERTY_STORE.STATUS,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             isEditable: true,
-            type: 'colorfulText',
+            type: "colorfulText",
             editOptions: {
-              component: 'select',
+              component: "select",
               getDisabledValue(row) {
-                if (row.status === 'BeingAnalyzed') {
-                  return true
+                if (row.status === "BeingAnalyzed") {
+                  return true;
                 } else {
-                  return false
+                  return false;
                 }
               },
               props: {
                 items: [
-                  'Open',
-                  'Closed',
-                  { text: labels.InProgress, value: 'InProgress' },
-                  { text: labels.FalsePositive, value: 'FalsePositive' }
-                ]
-              }
-            },
-            show: true
-          },
-          {
-            property: 'tags',
-            label: 'Tags',
-            isEditable: true,
-            type: 'smallBadge',
-            editOptions: {
-              component: 'combobox',
-              props: {
-                placeholder: 'Enter Tags'
-              }
-            },
-            show: true
-          },
-          {
-            property: 'note',
-            label: labels.Notes,
-            isEditable: true,
-            type: 'text',
-            editOptions: {
-              component: 'textarea',
-              getDisabledValue() {
-                return false
+                  "Open",
+                  "Closed",
+                  { text: labels.InProgress, value: "InProgress" },
+                  { text: labels.FalsePositive, value: "FalsePositive" },
+                ],
               },
-              props: {
-                placeholder: 'Enter Notes',
-                rules: [
-                  (v) =>
-                    Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Notes, 256))
-                ]
-              }
             },
             show: true,
-            showOnlyPreview: true
-          }
-        ]
+          },
+          {
+            property: "tags",
+            label: "Tags",
+            isEditable: true,
+            type: "smallBadge",
+            editOptions: {
+              component: "combobox",
+              props: {
+                placeholder: "Enter Tags",
+              },
+            },
+            show: true,
+          },
+          {
+            property: "note",
+            label: labels.Notes,
+            isEditable: true,
+            type: "text",
+            editOptions: {
+              component: "textarea",
+              getDisabledValue() {
+                return false;
+              },
+              props: {
+                placeholder: "Enter Notes",
+                rules: [
+                  (v) =>
+                    Validations.maxLength(
+                      v,
+                      256,
+                      labels.getMaxLengthMessage(labels.Notes, 256)
+                    ),
+                ],
+              },
+            },
+            show: true,
+            showOnlyPreview: true,
+          },
+        ],
       },
       selectEvent: {
         clipboard: true,
         edit: true,
-        download: false
+        download: false,
       },
       rowActions: [
         {
           name: labels.Edit,
-          icon: 'mdi-pencil',
-          action: 'edit',
-          isNotShow: true
+          icon: "mdi-pencil",
+          action: "edit",
+          isNotShow: true,
         },
         {
           name: labels.PreviewEmail,
-          icon: 'mdi-eye',
-          action: 'irPreview'
+          icon: "mdi-eye",
+          action: "irPreview",
         },
         {
           name: labels.Details,
-          icon: 'mdi-text-box-multiple',
-          action: 'handleDetails'
+          icon: "mdi-text-box-multiple",
+          action: "handleDetails",
         },
         {
           name: labels.Investigate,
-          icon: 'mdi-magnify',
-          action: 'handleInvestigate'
-        }
-      ]
+          icon: "mdi-magnify",
+          action: "handleInvestigate",
+        },
+      ],
     },
     clusteredTableData: [],
     clusteredTableAxios: {
       isClustered: false,
       pageNumber: 1,
       pageSize: 500000,
-      orderBy: 'createTime',
+      orderBy: "createTime",
       ascending: false,
       filter: {
-        Condition: 'AND',
+        Condition: "AND",
         FilterGroups: [
           {
-            Condition: 'AND',
+            Condition: "AND",
             FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    }
+            FilterGroups: [],
+          },
+        ],
+      },
+    },
   }),
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter' // for using getters
+      irSummary: "investigations/irSummaryGetter", // for using getters
     }),
     getTitle() {
-      return `${this.selectedPlaybookId ? 'Edit' : 'Create New'} Rule`
+      return `${this.selectedPlaybookId ? "Edit" : "Create New"} Rule`;
     },
     getIconName() {
-      return `${this.selectedPlaybookId ? 'mdi-pencil' : 'mdi-plus'}`
+      return `${this.selectedPlaybookId ? "mdi-pencil" : "mdi-plus"}`;
     },
     getSelectedMatchingIncidentsSubtitle() {
-      return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
-    }
+      return (
+        this.selectedMatch &&
+        `Incidents matching Rule: ${this.selectedMatch.ruleName}`
+      );
+    },
   },
   mounted() {
-    this.incidentLoading = true
-    this.$store.dispatch('investigations/getIrSummary').finally(() => {
-      this.showDatatable = true
-      this.incidentLoading = false
-    })
+    this.incidentLoading = true;
+    this.$store.dispatch("investigations/getIrSummary").finally(() => {
+      this.showDatatable = true;
+      this.incidentLoading = false;
+    });
 
-    this.addQuery()
+    this.addQuery();
   },
   created() {
-    this.initMethods()
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route);
+    this.queryHelper.controlRouteQuery();
+    this.initMethods();
     if (handleIsSafari()) {
-      this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
-        return setSafariClusterFix(obj, 'subject')
-      }
+      this.bindPropsIsSafari["handleSetCellClass"] = (obj) => {
+        return setSafariClusterFix(obj, "subject");
+      };
     }
-    window.addEventListener('resize', this.addQuery)
+    window.addEventListener("resize", this.addQuery);
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.addQuery)
+    window.removeEventListener("resize", this.addQuery);
   },
   methods: {
     ...mapActions({
-      getCurrentUser: 'auth/getCurrentUser'
+      getCurrentUser: "auth/getCurrentUser",
     }),
     handleBackClick() {
-      this.isShowingClusteredTable = false
-      this.clusteredRow = null
+      this.isShowingClusteredTable = false;
+      this.clusteredRow = null;
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.requestBodyReportedEmails.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.queryHelper.setRouterQuery("size", pageSize);
+      this.queryHelper.setRouterQuery("page", 1);
+      this.callForSearchNotifiedMail();
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.requestBodyReportedEmails.pageNumber = pageNumber;
+      this.queryHelper.setRouterQuery("page", pageNumber);
+      this.callForSearchNotifiedMail();
+    },
+    sortChanged({ order, prop } = {}) {
+      this.requestBodyReportedEmails.ascending = order === "ascending";
+      this.requestBodyReportedEmails.orderBy = prop;
+      this.callForSearchNotifiedMail();
     },
     checkPermissions(permission, type) {
-      return checkPermission(permission, type)
+      return checkPermission(permission, type);
     },
-    clusterChanged(selectedCluster = '') {
-      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
-      this.requestBodyReportedEmails.isClustered = true
-      this.isCustomOverflowedColumn = true
-      this.selectedCluster = selectedCluster
-      this.callForSearchNotifiedMail()
+    clusterChanged(selectedCluster = "") {
+      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360;
+      this.requestBodyReportedEmails.isClustered = true;
+      this.isCustomOverflowedColumn = true;
+      this.selectedCluster = selectedCluster;
+      this.callForSearchNotifiedMail();
     },
     getManipulatedChildData(data, isChild = false) {
       data.forEach((item) => {
         if (isChild) {
-          item.isChild = true
+          item.isChild = true;
         }
         if (item.children) {
-          this.getManipulatedChildData(item.children, true)
+          this.getManipulatedChildData(item.children, true);
         }
-      })
-      return data
+      });
+      return data;
     },
     handleRecordButtonClick(row) {
-      this.clusteredRow = row
-      this.callForClusteredTable()
-      this.toggleIsShowingClusteredTable()
+      this.clusteredRow = row;
+      this.callForClusteredTable();
+      this.toggleIsShowingClusteredTable();
     },
     callForClusteredTable() {
-      if (this.checkPermissions('notified-emails/search', 'POST')) {
-        this.isReportedEmailsClusteredLoading = true
-        this.setClusteredFilter()
+      if (this.checkPermissions("notified-emails/search", "POST")) {
+        this.isReportedEmailsClusteredLoading = true;
+        this.setClusteredFilter();
         searchNotifiedMail(this.clusteredTableAxios)
           .then((response) => {
             const {
               data: {
-                data: { results = [] }
-              }
-            } = response
-            this.removeClusteredFilter()
-            this.clusteredTableData = results
+                data: { results = [] },
+              },
+            } = response;
+            this.removeClusteredFilter();
+            this.clusteredTableData = results;
           })
-          .finally(() => (this.isReportedEmailsClusteredLoading = false))
+          .finally(() => (this.isReportedEmailsClusteredLoading = false));
       }
     },
     setClusteredFilter() {
-      let fieldName = this.selectedCluster.replace(/\s/, '')
-      fieldName = fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1, fieldName.length)
+      let fieldName = this.selectedCluster.replace(/\s/, "");
+      fieldName =
+        fieldName.substring(0, 1).toLowerCase() +
+        fieldName.substring(1, fieldName.length);
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.unshift({
         FieldName: fieldName,
-        Operator: '=',
-        Value: this.clusteredRow[fieldName]
-      })
+        Operator: "=",
+        Value: this.clusteredRow[fieldName],
+      });
     },
     removeClusteredFilter() {
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(0, 1)
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.splice(0, 1);
     },
     toggleIsShowingClusteredTable() {
-      this.isShowingClusteredTable = !this.isShowingClusteredTable
+      this.isShowingClusteredTable = !this.isShowingClusteredTable;
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {
-      const copyOfRequestBody = JSON.parse(JSON.stringify(this.lazyLoadRequestBody))
+      const copyOfRequestBody = JSON.parse(
+        JSON.stringify(this.lazyLoadRequestBody)
+      );
       copyOfRequestBody.filter.FilterGroups[0].FilterItems = [
-        ...this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
-      ]
+        ...this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems,
+      ];
       copyOfRequestBody.filter.FilterGroups[0].FilterItems.push({
-        FieldName: 'Subject',
-        Operator: '=',
-        Value: tree.subject
-      })
+        FieldName: "Subject",
+        Operator: "=",
+        Value: tree.subject,
+      });
       searchNotifiedMail(copyOfRequestBody).then((response) => {
         const {
           data: {
-            data: { results }
-          }
-        } = response
-        results.splice(0, 1)
-        const data = this.getManipulatedChildData(results, true)
-        tree['children'] = data
-        treeNode['children'] = data
-        treeNode.loaded = true
-        treeNode.lazy = false
-        treeNode.loading = false
-        treeNode.expanded = true
+            data: { results },
+          },
+        } = response;
+        results.splice(0, 1);
+        const data = this.getManipulatedChildData(results, true);
+        tree["children"] = data;
+        treeNode["children"] = data;
+        treeNode.loaded = true;
+        treeNode.lazy = false;
+        treeNode.loading = false;
+        treeNode.expanded = true;
         setTimeout(() => {
-          resolve(data)
-        }, 500)
-        callback(data)
-      })
+          resolve(data);
+        }, 500);
+        callback(data);
+      });
     },
 
     handleListBulletedClick() {
-      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 200
-      this.requestBodyReportedEmails.isClustered = false
-      this.isCustomOverflowedColumn = false
-      this.selectedCluster = ''
-      this.callForSearchNotifiedMail()
+      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 200;
+      this.requestBodyReportedEmails.isClustered = false;
+      this.isCustomOverflowedColumn = false;
+      this.selectedCluster = "";
+      this.callForSearchNotifiedMail();
     },
     extendedViewDisableChanger() {
-      return JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView)
+      return (
+        JSON.stringify(this.defaultExtendedViewValues) ===
+        JSON.stringify(this.extendedView)
+      );
     },
-    handleSearchChange(bodyData = {}, columnFilterActive = false) {
-      this.emails.isColumnFilterActive = columnFilterActive
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = [
-        ...bodyData.filter.FilterGroups[0].FilterItems
-      ]
-      this.emails.isColumnFilterActive = columnFilterActive
-      this.callForSearchNotifiedMail()
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.emails.isColumnFilterActive = columnFilterActive;
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter(
+        (filterItem) => {
+          const column = this.emails.columns.find(
+            (col) =>
+              col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+          );
+          return column.filterableType;
+        }
+      );
+      debugger;
+      this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [
+        ...filterItems,
+      ];
+      this.resetPageNumber();
+      this.emails.isColumnFilterActive = columnFilterActive;
+      this.callForSearchNotifiedMail();
+    },
+    resetPageNumber() {
+      this.requestBodyReportedEmails.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     closeMatchingModal() {
-      this.showMatchingModal = false
-      this.matchingInvestigationData = []
+      this.showMatchingModal = false;
+      this.matchingInvestigationData = [];
     },
     initMethods() {
-      this.callForGetRunningInvestigations()
-      this.callForGetTopRules()
-      this.callForSearchNotifiedMail()
-      this.callForGetRoiSettings()
+      this.callForGetRunningInvestigations();
+      this.callForGetTopRules();
+      this.callForSearchNotifiedMail();
+      this.callForGetRoiSettings();
     },
     closePlaybookWithUpdate() {
-      this.togglePlaybookModal()
-      this.initMethods()
+      this.togglePlaybookModal();
+      this.initMethods();
     },
     addQuery() {
-      const navigatorWidth = document.querySelector('nav.page-nav').style.width
-      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
+      const navigatorWidth = document.querySelector("nav.page-nav").style.width;
+      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2));
       if (width < 1050 && width > 750) {
         document
           .querySelectorAll(
-            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
+            ".incident-responder-parent .columns-row .dashboard-cards__skeleton-loading"
           )
           .forEach((item) => {
-            item.style = 'width: calc(50%) !important;max-width: calc(50%) !important;'
-          })
+            item.style =
+              "width: calc(50%) !important;max-width: calc(50%) !important;";
+          });
 
-        document.querySelector('.columns-row').style = 'flex-wrap:wrap;'
+        document.querySelector(".columns-row").style = "flex-wrap:wrap;";
       } else {
         document
           .querySelectorAll(
-            '.incident-responder-parent .columns-row .dashboard-cards__skeleton-loading'
+            ".incident-responder-parent .columns-row .dashboard-cards__skeleton-loading"
           )
           .forEach((item) => {
-            item.style = ''
-          })
-        const columnsRowContainer = document.querySelector('.columns-row')
-        if (columnsRowContainer) document.querySelector('.columns-row').style = ''
+            item.style = "";
+          });
+        const columnsRowContainer = document.querySelector(".columns-row");
+        if (columnsRowContainer)
+          document.querySelector(".columns-row").style = "";
       }
     },
     handleRouteToInvestigationDetails(resp) {
-      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`);
     },
     handeRuleNameClick(resourceId) {
-      this.selectedPlaybookId = resourceId
-      this.showPlaybookModal = true
+      this.selectedPlaybookId = resourceId;
+      this.showPlaybookModal = true;
     },
     togglePlaybookModal() {
-      this.selectedPlaybookId = null
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.selectedPlaybookId = null;
+      return (this.showPlaybookModal = !this.showPlaybookModal);
     },
     togglePlaybookModalWithSelected(selectedPlaybookId) {
-      this.selectedPlaybookId = selectedPlaybookId
-      return (this.showPlaybookModal = !this.showPlaybookModal)
+      this.selectedPlaybookId = selectedPlaybookId;
+      return (this.showPlaybookModal = !this.showPlaybookModal);
     },
     getDataTableFieldLabel(text) {
-      return getDataTableFieldLabel(text)
+      return getDataTableFieldLabel(text);
     },
     callForGetRoiSettings() {
       getRoiSettings().then((response) => {
         const {
-          data: { data }
-        } = response
-        this.baseManHour = data.baseManHour
-        this.baseManHourCost = data.baseManHourCost
-      })
+          data: { data },
+        } = response;
+        this.baseManHour = data.baseManHour;
+        this.baseManHourCost = data.baseManHourCost;
+      });
     },
     submitRoiModal() {
       if (this.$refs.form.validate()) {
-        this.isConfirmButtonDisabled = true
+        this.isConfirmButtonDisabled = true;
         updateRoiSettings({
           baseManHour: this.baseManHour,
-          baseManHourCost: this.baseManHourCost
+          baseManHourCost: this.baseManHourCost,
         })
           .then(() => {
-            this.callForGetRoiSettings()
-            this.isShowRoi = false
-            this.$store.dispatch('investigations/getIrSummary')
+            this.callForGetRoiSettings();
+            this.isShowRoi = false;
+            this.$store.dispatch("investigations/getIrSummary");
           })
           .finally(() => {
-            this.isConfirmButtonDisabled = false
-          })
+            this.isConfirmButtonDisabled = false;
+          });
       }
     },
     isRoiSummaryEmpty(summary) {
-      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
-      return revenue === '0' && time === '0'
+      const {
+        roiSummary: { revenue = "0", time = "0" } = { revenue, time },
+      } = summary;
+      return revenue === "0" && time === "0";
     },
     isInvestigationsEmpty(summary) {
       if (summary && summary.investigationTypeCount) {
-        const investigationTypeCountKeys = Object.keys(summary.investigationTypeCount)
+        const investigationTypeCountKeys = Object.keys(
+          summary.investigationTypeCount
+        );
         if (investigationTypeCountKeys.length > 0) {
-          let hasValue = false
+          let hasValue = false;
           for (let key of investigationTypeCountKeys) {
             if (summary.investigationTypeCount[key]) {
-              hasValue = true
+              hasValue = true;
             }
           }
-          return hasValue
+          return hasValue;
         } else {
-          return false
+          return false;
         }
       } else {
-        return false
+        return false;
       }
     },
     onEditClick({ selected: selections, isEditPopupOpen }) {
       if (isEditPopupOpen && selections.length) {
-        this.extendedViewLoading = true
-        this.selectedRowsOfReportedEmailsLength = selections.length
-        this.selectedReportedMails = selections
+        this.extendedViewLoading = true;
+        this.selectedRowsOfReportedEmailsLength = selections.length;
+        this.selectedReportedMails = selections;
         if (selections.length === 1) {
           getNotifiedEmail(selections[0].resourceId)
             .then((response) => {
-              const selectedItem = response.data.data
-              this.extendedView.isNotify = selectedItem.isNotifyUser
-              this.extendedView.customMessage = selectedItem.customMessage
-              this.extendedView.isMessage = selectedItem.customMessage ? true : false
-              this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
-              this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
-              this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
+              const selectedItem = response.data.data;
+              this.extendedView.isNotify = selectedItem.isNotifyUser;
+              this.extendedView.customMessage = selectedItem.customMessage;
+              this.extendedView.isMessage = selectedItem.customMessage
+                ? true
+                : false;
+              this.defaultExtendedViewValues.isNotify =
+                selectedItem.isNotifyUser;
+              this.defaultExtendedViewValues.customMessage =
+                selectedItem.customMessage;
+              this.defaultExtendedViewValues.isMessage = selectedItem.customMessage
+                ? true
+                : false;
               this.extendedViewValue = [
                 {
                   ...selectedItem,
                   resourceId: selections[0].resourceId,
                   reportedBy: selections[0].reportedBy,
                   matchingPlaybooks: selections[0].matchingPlaybooks,
-                  source: selections[0].source
-                }
-              ]
+                  source: selections[0].source,
+                },
+              ];
             })
-            .finally(() => (this.extendedViewLoading = false))
-          this.hasMultipleNoteValue = false
+            .finally(() => (this.extendedViewLoading = false));
+          this.hasMultipleNoteValue = false;
         } else if (selections.length > 1) {
-          const rows = []
-          let index = 0
-          this.extendedView.isNotify = true
-          this.extendedView.isMessage = false
-          this.extendedView.customMessage = ''
-          this.extendedViewLoading = true
+          const rows = [];
+          let index = 0;
+          this.extendedView.isNotify = true;
+          this.extendedView.isMessage = false;
+          this.extendedView.customMessage = "";
+          this.extendedViewLoading = true;
           selections.map((a, ind) => {
             getNotifiedEmail(selections[index].resourceId)
               .then((response) => {
-                const selectedItem = response.data.data
+                const selectedItem = response.data.data;
                 rows.push({
                   ...selectedItem,
                   resourceId: selections[ind].resourceId,
                   reportedBy: selections[ind].reportedBy,
                   matchingPlaybooks: selections[ind].matchingPlaybooks,
-                  source: selections[ind].source
-                })
+                  source: selections[ind].source,
+                });
                 if (index === selections.length) {
-                  const note = rows[0].note
+                  const note = rows[0].note;
                   rows.map((item, i) => {
                     if (item.note !== note) {
-                      this.hasMultipleNoteValue = true
+                      this.hasMultipleNoteValue = true;
                     }
-                  })
-                  this.extendedViewValue = rows
+                  });
+                  this.extendedViewValue = rows;
                 }
               })
               .finally(() => {
                 if (ind === selections.length - 1) {
-                  this.extendedViewLoading = false
+                  this.extendedViewLoading = false;
                 }
-              })
-            index++
-          })
+              });
+            index++;
+          });
         } else {
-          this.extendedView.customMessage = ''
-          this.extendedView.isMessage = false
-          this.extendedView.isNotify = true
-          this.defaultExtendedViewValues.customMessage = ''
-          this.defaultExtendedViewValues.isMessage = false
-          this.defaultExtendedViewValues.isNotify = true
-          this.hasMultipleNoteValue = false
+          this.extendedView.customMessage = "";
+          this.extendedView.isMessage = false;
+          this.extendedView.isNotify = true;
+          this.defaultExtendedViewValues.customMessage = "";
+          this.defaultExtendedViewValues.isMessage = false;
+          this.defaultExtendedViewValues.isNotify = true;
+          this.hasMultipleNoteValue = false;
         }
       }
     },
     closeNewInvestigationModal(value) {
       if (value) {
-        this.callForGetRunningInvestigations()
-        this.callForGetTopRules()
-        this.callForSearchNotifiedMail()
+        this.callForGetRunningInvestigations();
+        this.callForGetTopRules();
+        this.callForSearchNotifiedMail();
       }
-      this.isWantToAddNewInvestigation = false
+      this.isWantToAddNewInvestigation = false;
     },
     callForGetRunningInvestigations() {
-      if (this.checkPermissions('ir/dashboard/running-investigations', 'GET')) {
-        this.investigationsLoading = true
+      if (this.checkPermissions("ir/dashboard/running-investigations", "GET")) {
+        this.investigationsLoading = true;
         getRunningInvestigations()
           .then((response) => {
             const {
-              data: { data, status }
-            } = response
-            this.investigationListData = data
-            this.investigationsData = data || []
+              data: { data, status },
+            } = response;
+            this.investigationListData = data;
+            this.investigationsData = data || [];
           })
           .catch((error) => {
-            this.investigationsData = []
+            this.investigationsData = [];
           })
           .finally(() => {
-            this.investigationsLoading = false
-          })
+            this.investigationsLoading = false;
+          });
       }
     },
     callForGetTopRules() {
-      if (this.checkPermissions('ir/dashboard/top-rules', 'GET')) {
-        this.topRulesLoading = true
+      if (this.checkPermissions("ir/dashboard/top-rules", "GET")) {
+        this.topRulesLoading = true;
         getTopRules()
           .then((response) => {
             const {
-              data: { data, status }
-            } = response
+              data: { data, status },
+            } = response;
 
-            this.topRules.table = data || []
+            this.topRules.table = data || [];
           })
           .catch((error) => {
-            this.topRules.table = []
+            this.topRules.table = [];
           })
-          .finally(() => (this.topRulesLoading = false))
+          .finally(() => (this.topRulesLoading = false));
       }
     },
     callForSearchNotifiedMail() {
-      if (this.checkPermissions('notified-emails/search', 'POST')) {
-        this.reportedEmailsLoading = true
+      if (this.checkPermissions("notified-emails/search", "POST")) {
+        this.reportedEmailsLoading = true;
         searchNotifiedMail(this.requestBodyReportedEmails)
           .then((response) => {
             const {
-              data: {
-                data: { results }
-              }
-            } = response
-            const tableData = this.getManipulatedTableData(results || [])
-            this.reportedEmailsData = tableData || []
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+              results,
+            } = response.data.data;
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
+            const tableData = this.getManipulatedTableData(results || []);
+            this.reportedEmailsData = tableData || [];
           })
           .catch(() => {
-            this.reportedEmailsData = []
+            this.reportedEmailsData = [];
           })
-          .finally(() => (this.reportedEmailsLoading = false))
+          .finally(() => (this.reportedEmailsLoading = false));
       }
     },
     getManipulatedTableData(data, isChild = false) {
@@ -2096,127 +2295,134 @@ export default {
         return data.map((item) => {
           return {
             ...item,
-            hasChildren: true
-          }
-        })
+            hasChildren: true,
+          };
+        });
       }
 
-      return data
+      return data;
     },
     matchingPopupClick(match) {
-      this.selectedMatch = match
-      this.showMatchingModal = true
-      this.isMatchingInvestigationLoading = true
+      this.selectedMatch = match;
+      this.showMatchingModal = true;
+      this.isMatchingInvestigationLoading = true;
       const payload = {
         pageNumber: 1,
         pageSize: 50000,
-        orderBy: 'createDate',
-        ascending: true
-      }
+        orderBy: "createDate",
+        ascending: true,
+      };
       getMatchingIncidents(payload, match.resourceId)
         .then((response) => {
-          const tableData = response.data.data
-          this.matchingInvestigationData = tableData.results
+          const tableData = response.data.data;
+          this.matchingInvestigationData = tableData.results;
         })
-        .finally(() => (this.isMatchingInvestigationLoading = false))
+        .finally(() => (this.isMatchingInvestigationLoading = false));
     },
     onEmptyBtnClicked() {
-      this.$router.push({ path: '/investigations', query: { openPopup: true } })
+      this.$router.push({
+        path: "/investigations",
+        query: { openPopup: true },
+      });
     },
     onTopRulesEmptyBtnClicked() {
-      this.$router.push({ path: '/playbook', query: { openPopup: true } })
+      this.$router.push({ path: "/playbook", query: { openPopup: true } });
     },
     onEmptyReportedEmailsBtnClicked() {
-      this.$router.push({ name: 'Phishing Reporter', params: { tab: 'second' } })
+      this.$router.push({
+        name: "Phishing Reporter",
+        params: { tab: "second" },
+      });
     },
     irPreviewOnClick(row) {
       this.$router.push({
-        name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 'third' }
-      })
+        name: "Analysis Details",
+        params: { id: row.resourceId, tab: "third" },
+      });
     },
     handleIsNotify(value) {
       if (!value) {
-        this.extendedView.isMessage = false
+        this.extendedView.isMessage = false;
       }
     },
     handleEdit(selectedRow) {
-      debugger
+      debugger;
       selectedRow.map((item) => {
-        const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
+        const tag =
+          typeof item.tags === "string" ? item.tags : item.tags.join(",");
         const payload = {
           result: item.result,
           status: item.status,
-          tag: tag || '',
-          note: item.note || '',
+          tag: tag || "",
+          note: item.note || "",
           isNotifyUser: this.extendedView.isNotify,
           customMessage: this.extendedView.isMessage
             ? this.extendedView.customMessage
             : selectedRow.length > 1
             ? item.customMessage
-            : ''
-        }
+            : "",
+        };
         updateNotifiedEmail(item.resourceId, payload).then(() => {
-          debugger
-          this.callForGetRunningInvestigations()
-          this.callForGetTopRules()
-          this.callForSearchNotifiedMail()
+          debugger;
+          this.callForGetRunningInvestigations();
+          this.callForGetTopRules();
+          this.callForSearchNotifiedMail();
           if (this.clusteredRow) {
-            this.callForClusteredTable()
+            this.callForClusteredTable();
           }
           //this.$refs.refClusteredModal.callForTableData(true)
-          this.$store.dispatch('investigations/getIrSummary')
-        })
-      })
+          this.$store.dispatch("investigations/getIrSummary");
+        });
+      });
     },
     irDetailsOnClick(row) {
       this.$router.push({
-        name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 0 }
-      })
+        name: "Analysis Details",
+        params: { id: row.resourceId, tab: 0 },
+      });
     },
     isPhishingEmpty(data) {
       if (data && !data.phishingReporterUserStatusCount) {
-        return true
+        return true;
       } else if (
         data &&
         data.phishingReporterUserStatusCount &&
         (data.phishingReporterUserStatusCount.onlineUsersCount ||
           data.phishingReporterUserStatusCount.offlineUsersCount)
       ) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     },
     isNotifiedEmailEmpty(data) {
       if (data && !data.notifiedEmailResultCount) {
-        return true
+        return true;
       } else if (
         data &&
         data.notifiedEmailResultCount &&
         data.notifiedEmailResultCount.reportedMailCount
       ) {
-        return false
+        return false;
       } else {
-        return true
+        return true;
       }
     },
     handleReportedEmailInvestigate(row) {
       getNotifiedEmail(row.resourceId).then((response) => {
-        this.selectedEmail = response.data.data
+        this.selectedEmail = response.data.data;
 
-        this.isWantToAddNewInvestigation = true
-      })
+        this.isWantToAddNewInvestigation = true;
+      });
     },
     emptyPhishingButtonClick() {
-      this.$router.push('/phishing-reporter')
+      this.$router.push("/phishing-reporter");
     },
     emptyNotifiedEmailButtonClick() {
       //this.$router.push('/phishing-reporter')
     },
     emptyInvestigationButtonClick() {
-      this.$router.push('/investigations')
+      this.$router.push("/investigations");
     },
     exportReportedListEmails(
       { exportTypes, reportAllPages, pageNumber, pageSize },
@@ -2226,179 +2432,205 @@ export default {
         const payload = {
           pageNumber: reportAllPages ? 1 : pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
-          orderBy: 'CreateTime',
+          orderBy: "CreateTime",
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter,
+        };
         exportNotifiedEmails(payload)
           .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `users.${exportType.toLocaleLowerCase()}`
-            link.click()
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
+            link.download = `users.${exportType.toLocaleLowerCase()}`;
+            link.click();
           })
-          .catch((error) => {})
-      })
+          .catch((error) => {});
+      });
     },
-    exportClusteredReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      this.setClusteredFilter()
+    exportClusteredReportedListEmails({
+      exportTypes,
+      reportAllPages,
+      pageNumber,
+      pageSize,
+    }) {
+      this.setClusteredFilter();
       exportTypes.map((exportType, index) => {
         const payload = {
           pageNumber: reportAllPages ? 1 : pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
-          orderBy: 'CreateTime',
+          orderBy: "CreateTime",
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.clusteredTableAxios.filter
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter: this.clusteredTableAxios.filter,
+        };
         exportNotifiedEmails(payload)
           .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `users.${exportType.toLocaleLowerCase()}`
-            link.click()
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
+            link.download = `users.${exportType.toLocaleLowerCase()}`;
+            link.click();
           })
           .finally(() => {
             if (index === exportTypes.length - 1) {
-              this.removeClusteredFilter()
+              this.removeClusteredFilter();
             }
-          })
-      })
+          });
+      });
     },
     clusteredColumnFilterChanged(filter = {}) {
-      this.clusteredTable.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems
+      this.clusteredTable.isColumnFilterActive = true;
+      let items = [];
+      let requestBody = this.clusteredTableAxios.filter.FilterGroups[0]
+        .FilterItems;
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)) {
-              items.push(x)
+            if (
+              x.FieldName !==
+              i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)
+            ) {
+              items.push(x);
             }
-          })
+          });
         } else {
           if (
             x.FieldName !==
             filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
           ) {
-            items.push(x)
+            items.push(x);
           }
         }
-      })
+      });
 
-      requestBody = [...items]
+      requestBody = [...items];
       if (Array.isArray(filter)) {
         filter.forEach((x, i, t) => {
-          const elem = filter[i]
+          const elem = filter[i];
           elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
+            filter[i].FieldName.charAt(0).toUpperCase() +
+            filter[i].FieldName.slice(1);
+          requestBody.push(elem);
+        });
       } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Result' && Value === '') {
+        const elem = filter;
+        elem.FieldName =
+          filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1);
+        const { FieldName, Value } = filter;
+        if (FieldName === "Result" && Value === "") {
         } else {
-          requestBody.push(elem)
+          requestBody.push(elem);
         }
       }
 
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForClusteredTable()
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = requestBody;
+      this.callForClusteredTable();
     },
     clusteredColumnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems
+      let items = [];
+      let filterPayload = this.clusteredTableAxios.filter.FilterGroups[0]
+        .FilterItems;
 
       filterPayload.map((x) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
+        if (
+          x.FieldName !==
+          fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+        ) {
+          items.push(x);
         }
-      })
+      });
 
-      filterPayload = [...items]
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForSearchNotifiedMail()
+      filterPayload = [...items];
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = filterPayload;
+      this.callForSearchNotifiedMail();
 
       this.clusteredTable.isColumnFilterActive =
-        this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.length >= 1
+        this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.length >= 1;
     },
     columnFilterChanged(filter) {
-      this.emails.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+      this.emails.isColumnFilterActive = true;
+      let items = [];
+      let requestBody = this.requestBodyReportedEmails.filter.FilterGroups[0]
+        .FilterItems;
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)) {
-              items.push(x)
+            if (
+              x.FieldName !==
+              i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)
+            ) {
+              items.push(x);
             }
-          })
+          });
         } else {
           if (
             x.FieldName !==
             filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
           ) {
-            items.push(x)
+            items.push(x);
           }
         }
-      })
+      });
 
-      requestBody = [...items]
+      requestBody = [...items];
       if (Array.isArray(filter)) {
         filter.forEach((x, i, t) => {
-          const elem = filter[i]
+          const elem = filter[i];
           elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
+            filter[i].FieldName.charAt(0).toUpperCase() +
+            filter[i].FieldName.slice(1);
+          requestBody.push(elem);
+        });
       } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Result' && Value === '') {
+        const elem = filter;
+        elem.FieldName =
+          filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1);
+        const { FieldName, Value } = filter;
+        if (FieldName === "Result" && Value === "") {
         } else {
-          requestBody.push(elem)
+          requestBody.push(elem);
         }
       }
 
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForClusteredTable()
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody;
+      this.callForClusteredTable();
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+      let items = [];
+      let filterPayload = this.requestBodyReportedEmails.filter.FilterGroups[0]
+        .FilterItems;
 
       filterPayload.map((x, i, t) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
+        if (
+          x.FieldName !==
+          fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
+        ) {
+          items.push(x);
         }
-      })
+      });
 
-      filterPayload = [...items]
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForSearchNotifiedMail()
+      filterPayload = [...items];
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = filterPayload;
+      this.callForSearchNotifiedMail();
 
       this.emails.isColumnFilterActive =
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.length >= 1
-    }
+        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
+          .length >= 1;
+    },
   },
 
   beforeRouteLeave(to, from, next) {
     if (this.openInvestigationOverlay) {
-      this.openInvestigationOverlay = false
-      next(false)
+      this.openInvestigationOverlay = false;
+      next(false);
     } else {
-      next(true)
+      next(true);
     }
-  }
-}
+  },
+};
 </script>
 <style lang="scss">
 .incident-responder-parent {
@@ -2418,15 +2650,27 @@ export default {
 
     .no-data {
       &__opacity-blue {
-        background-image: linear-gradient(to bottom, #3c768e, #25608a) !important;
+        background-image: linear-gradient(
+          to bottom,
+          #3c768e,
+          #25608a
+        ) !important;
       }
 
       &__opacity-red {
-        background-image: linear-gradient(to bottom, #895f5f, #8a4646) !important;
+        background-image: linear-gradient(
+          to bottom,
+          #895f5f,
+          #8a4646
+        ) !important;
       }
 
       &__opacity-green {
-        background-image: linear-gradient(to bottom, #4a764d, #356437) !important;
+        background-image: linear-gradient(
+          to bottom,
+          #4a764d,
+          #356437
+        ) !important;
       }
     }
 
@@ -2664,7 +2908,7 @@ export default {
 
           .title {
             h2 {
-              font-family: 'Open Sans', sans-serif;
+              font-family: "Open Sans", sans-serif;
               font-size: 20px;
               font-weight: 600;
               font-stretch: normal;
@@ -2675,7 +2919,7 @@ export default {
             }
 
             p {
-              font-family: 'Open Sans', sans-serif !important;
+              font-family: "Open Sans", sans-serif !important;
               font-size: 16px;
               font-weight: normal;
               font-stretch: normal;
@@ -2777,7 +3021,7 @@ export default {
           width: 65%;
 
           h2 {
-            font-family: 'Open Sans', sans-serif;
+            font-family: "Open Sans", sans-serif;
             font-size: 20px;
             font-weight: 600;
             font-stretch: normal;
@@ -2788,7 +3032,7 @@ export default {
           }
 
           p {
-            font-family: 'Open Sans', sans-serif !important;
+            font-family: "Open Sans", sans-serif !important;
             font-size: 16px;
             font-weight: normal;
             font-stretch: normal;
@@ -2812,7 +3056,8 @@ export default {
             padding: 0 !important;
             height: 36px !important;
             border-radius: 18px;
-            box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+            box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1),
+              0 2px 5px 0 rgba(33, 150, 243, 0.3);
 
             i {
               font-size: 19px !important;
@@ -2832,7 +3077,8 @@ export default {
 
         .table-wrapper {
           border-radius: 12px;
-          box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+          box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2),
+            0 1px 1px 0 rgba(243, 243, 243, 0.14),
             0 1px 1px -1px rgba(204, 204, 204, 0.12);
 
           .el-table td {
@@ -2921,8 +3167,8 @@ export default {
   }
   .v-card {
     border-radius: 12px;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12);
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
+      0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12);
   }
 }
 
