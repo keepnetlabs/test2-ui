@@ -501,6 +501,7 @@
           </div>
           <datatable
             v-if="isShowingClusteredTable"
+            v-bind="dynamicClusterProps"
             id="incident-responder-reported-emails-clustered-table"
             refName="clustered-ref-name"
             ref="refReportedEmailsClustered"
@@ -620,6 +621,7 @@
           </datatable>
           <datatable
             v-show="!isShowingClusteredTable"
+            v-bind="dynamicReportedEmailProps"
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             is-server-side
@@ -819,8 +821,15 @@ export default {
     CardLoading,
     AppModal
   },
+  props: {
+    isLoadState: {
+      type: Boolean
+    }
+  },
 
   data: () => ({
+    dynamicReportedEmailProps: null,
+    dynamicClusterProps: null,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
     labels,
@@ -831,7 +840,7 @@ export default {
     investigationsData: [],
     reportedEmailsData: [],
     bindPropsIsSafari: {},
-    reportedEmailsLoading: true,
+    reportedEmailsLoading: false,
     incidentLoading: true,
     showPlaybookModal: false,
     selectedPlaybookId: null,
@@ -1754,13 +1763,17 @@ export default {
       this.showDatatable = true
       this.incidentLoading = false
     })
-
     this.addQuery()
   },
   created() {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
-    this.initMethods()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.requestBodyReportedEmails.pageSize = size
+    this.serverSideProps.pageSize = size
+    this.requestBodyReportedEmails.pageNumber = page
+    this.getReportedEmailPersistentStateAndLoad()
+    this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
         return setSafariClusterFix(obj, 'subject')
@@ -1770,11 +1783,87 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.addQuery)
+    const tableState = this.$refs.refReportedEmails.getState()
+    let clusteredTableState
+    if (this.isShowingClusteredTable) {
+      clusteredTableState = this.$refs.refReportedEmailsClustered.getState()
+    }
+    const payload = {
+      tableState,
+      clusteredTableState,
+      serverSideProps: this.serverSideProps,
+      serverSideClusteredProps: this.serverSideClusteredProps,
+      clusteredRow: this.clusteredRow,
+      selectedCluster: this.selectedCluster,
+      requestBodyReportedEmails: JSON.parse(JSON.stringify(this.requestBodyReportedEmails)),
+      clusteredTableAxios: JSON.parse(JSON.stringify(this.clusteredTableAxios)),
+      isShowingClusteredTable: this.isShowingClusteredTable
+    }
+    this.$store.dispatch('datatable/setTable', {
+      key: 'Incident Responder',
+      payload
+    })
   },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    getReportedEmailPersistentStateAndLoad() {
+      if (this.isLoadState) {
+        const persistentStateContainer = this.isPersistentState()
+        if (persistentStateContainer) {
+          const { filterValues = {} } = persistentStateContainer.tableState
+          this.requestBodyReportedEmails = persistentStateContainer.requestBodyReportedEmails
+          if (Object.keys(filterValues).length) {
+            this.emails.isColumnFilterActive = true
+          }
+          this.initMethods(true)
+          const { tableState, serverSideProps, selectedCluster } = persistentStateContainer
+          this.serverSideProps = serverSideProps
+          if (selectedCluster) {
+            this.$nextTick(() => {
+              this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
+            })
+          }
+          this.selectedCluster = selectedCluster
+          this.dynamicReportedEmailProps = { persistentState: tableState }
+        }
+      } else {
+        this.initMethods()
+      }
+    },
+    isPersistentState() {
+      return (
+        this.$store.state['datatable'].tables['Incident Responder'] &&
+        this.$store.state['datatable'].tables['Incident Responder'].payload
+      )
+    },
+    getClusteredEmailPersistentStateAndLoad() {
+      if (!this.isLoadState) {
+        return
+      }
+      const persistentStateContainer = this.isPersistentState()
+      if (!persistentStateContainer) {
+        return
+      }
+      const {
+        isShowingClusteredTable,
+        clusteredTableAxios,
+        serverSideClusteredProps,
+        clusteredRow,
+        clusteredTableState
+      } = persistentStateContainer
+
+      const { filterValues = {} } = clusteredTableState
+      this.clusteredTableAxios = clusteredTableAxios
+      if (Object.keys(filterValues).length) {
+        this.clusteredTable.isColumnFilterActive = true
+      }
+      this.serverSideClusteredProps = serverSideClusteredProps
+      this.clusteredRow = clusteredRow
+      this.dynamicClusterProps = { persistentState: clusteredTableState }
+      this.isShowingClusteredTable = isShowingClusteredTable
+    },
     handleBackClick() {
       this.isShowingClusteredTable = false
       this.clusteredRow = null
@@ -1826,13 +1915,21 @@ export default {
       return checkPermission(permission, type)
     },
     clusterChanged(selectedCluster = '') {
-      this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
-      this.queryHelper.setRouterQuery('page', 1)
+      this.resetTableFilters()
+      this.$nextTick(() => {
+        this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
+      })
       this.requestBodyReportedEmails.pageNumber = 1
       this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(selectedCluster)
       this.isCustomOverflowedColumn = true
       this.selectedCluster = selectedCluster
       this.callForSearchNotifiedMail()
+    },
+    resetTableFilters() {
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = []
+      this.$refs.refReportedEmails.filterValues = {}
+      this.queryHelper.setRouterQuery('page', 1)
+      this.$refs.refReportedEmails.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
     getManipulatedChildData(data, isChild = false) {
       data.forEach((item) => {
@@ -1847,11 +1944,13 @@ export default {
     },
     handleRecordButtonClick(row) {
       this.clusteredRow = row
+      this.dynamicClusterProps = null
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = []
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = []
       this.callForClusteredTable()
       this.toggleIsShowingClusteredTable()
     },
     callForClusteredTable() {
-      debugger
       if (this.checkPermissions('notified-emails/search', 'POST')) {
         this.isReportedEmailsClusteredLoading = true
         this.setClusteredFilter()
@@ -1926,6 +2025,7 @@ export default {
       this.requestBodyReportedEmails.clusteredBy = ''
       this.isCustomOverflowedColumn = false
       this.selectedCluster = ''
+      this.resetTableFilters()
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
@@ -1965,10 +2065,12 @@ export default {
       this.showMatchingModal = false
       this.matchingInvestigationData = []
     },
-    initMethods() {
+    initMethods(isLoadState = false) {
       this.callForGetRunningInvestigations()
       this.callForGetTopRules()
-      this.callForSearchNotifiedMail()
+      if (!isLoadState) {
+        this.callForSearchNotifiedMail()
+      }
       this.callForGetRoiSettings()
     },
     closePlaybookWithUpdate() {
@@ -2194,6 +2296,7 @@ export default {
               pageNumber,
               results
             } = response.data.data
+
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
@@ -2262,7 +2365,6 @@ export default {
       }
     },
     handleEdit(selectedRow) {
-      debugger
       selectedRow.map((item) => {
         const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
         const payload = {
@@ -2278,7 +2380,6 @@ export default {
             : ''
         }
         updateNotifiedEmail(item.resourceId, payload).then(() => {
-          debugger
           this.callForGetRunningInvestigations()
           this.callForGetTopRules()
           this.callForSearchNotifiedMail()
@@ -2490,7 +2591,7 @@ export default {
       }
 
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForClusteredTable()
+      this.callForSearchNotifiedMail()
     },
     columnFilterCleared(fieldName) {
       let items = []
@@ -2517,6 +2618,13 @@ export default {
       next(false)
     } else {
       next(true)
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    if (from.name === 'Analysis Details' && !to.params.isLoadState) {
+      next({ ...to, params: { isLoadState: true } })
+    } else {
+      next()
     }
   }
 }

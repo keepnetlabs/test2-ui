@@ -265,6 +265,7 @@
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
+            v-if="!isServerSide"
             :ripple="false"
             class="btn-all-selection"
             rounded
@@ -902,9 +903,6 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
-    cacheCheckboxFromParent: {
-      type: Boolean
-    },
     columns: {
       type: Array,
       required: true
@@ -1256,10 +1254,7 @@ export default {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
       //This is for refresh button when clicked caching refresh
-      if (
-        (!this.cacheChecks && !this.cacheCheckboxFromParent) ||
-        (this.lazy && this.selectedCluster)
-      ) {
+      if ((!this.cacheChecks && !this.isServerSide) || (this.lazy && this.selectedCluster)) {
         this.multipleSelection = []
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
           this.$refs.elTableRef.clearSelection()
@@ -1539,7 +1534,10 @@ export default {
       const length = this.groupable
         ? this.getTotalLength(this.initialData)
         : this.initialData.length
-      this.isSelectedAll = this.multipleSelection.length === length
+      this.isSelectedAll = this.isServerSide
+        ? !!this.multipleSelection.length &&
+          this.multipleSelection.length === this.serverSideProps.totalNumberOfRecords
+        : this.multipleSelection.length === length
     },
     /**
      * This event comes from el-table for lazy-loading children

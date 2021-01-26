@@ -1,13 +1,14 @@
 <template>
   <v-btn
-    class="the-records-button"
-    :color="getColor"
+    :class="['the-records-button', { 'the-records-button--disabled': this.row.total === 1 }]"
     rounded
+    :color="getColor"
     :style="getStyle"
+    :disabled="isDisabled"
     @click="handleClick"
   >
-    <span>15 records</span>
-    <v-icon right>mdi-open-in-new</v-icon>
+    <span>{{ getText }}</span>
+    <v-icon right :style="isIconVisible">mdi-open-in-new</v-icon>
   </v-btn>
 </template>
 <script>
@@ -18,7 +19,17 @@ export default {
       type: Object
     }
   },
+  watch: {
+    row(row) {
+      this.isDisabled = row.total === 1
+    }
+  },
   emits: ['on-click'],
+  data() {
+    return {
+      isDisabled: this.row.total === 1
+    }
+  },
   computed: {
     getColor() {
       return '#e3f2fd'
@@ -28,6 +39,13 @@ export default {
         boxShadow: 'none !important',
         width: '130px'
       }
+    },
+    getText() {
+      const text = this.row.total === 1 ? 'record' : 'records'
+      return `${this.row.total} ${text}`
+    },
+    isIconVisible() {
+      return { visibility: this.row.total === 1 ? 'hidden' : 'visible' }
     }
   },
   methods: {
@@ -47,6 +65,11 @@ export default {
     color: #2196f3;
     letter-spacing: normal;
     text-transform: lowercase;
+  }
+  &--disabled {
+    .v-btn__content {
+      color: #757575 !important;
+    }
   }
 }
 </style>

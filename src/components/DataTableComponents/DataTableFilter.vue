@@ -329,7 +329,6 @@ export default {
         : this.convertedFilterableItems
     },
     getFilterButtonDisabled() {
-      console.log('this.filterChecked.', this.filterChecked)
       switch (this.filterableType) {
         case 'text':
           return !this.filterValue

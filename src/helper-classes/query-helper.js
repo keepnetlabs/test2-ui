@@ -33,4 +33,13 @@ export default class QueryHelperForTable {
     this.query = { ...this.query, [key]: value }
     this.router.replace({ query: this.query }).catch((e) => {})
   }
+
+  returnQueryValues() {
+    let { page, size } = this.query
+    const parsedPage = parseInt(page)
+    page = isNaN(parsedPage) ? 1 : parsedPage
+    const parsedSize = parseInt(size)
+    size = isNaN(parsedSize) ? 10 : parsedSize
+    return { page, size }
+  }
 }
