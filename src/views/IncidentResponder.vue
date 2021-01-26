@@ -501,15 +501,18 @@
           </div>
           <datatable
             v-if="isShowingClusteredTable"
+            id="incident-responder-reported-emails-clustered-table"
+            refName="clustered-ref-name"
+            ref="refReportedEmailsClustered"
             changeFooterPosition
             disable-extended-view-transition
             selectable
             filterable
+            is-server-side
             options
-            id="incident-responder-reported-emails-clustered-table"
-            refName="clustered-ref-name"
-            ref="refReportedEmailsClustered"
             :table="clusteredTableData"
+            :serverSideProps="serverSideClusteredProps"
+            :server-side-events="{ pagination: true, search: true, sort: true }"
             :extended-view-loading="extendedViewLoading"
             :is-column-filter-active="clusteredTable.isColumnFilterActive"
             :extended-view-options="clusteredTable.extendedViewOptions"
@@ -530,6 +533,10 @@
             @refreshAction="callForClusteredTable"
             @columnFilterChanged="clusteredColumnFilterChanged"
             @columnFilterCleared="clusteredColumnFilterCleared"
+            @server-side-page-number-changed="serverSideClusteredPageNumberChanged"
+            @server-side-size-changed="serverSideClusteredSizeChanged"
+            @searchChangedEvent="handleClusteredSearchChange"
+            @sortChangedEvent="sortClusteredChanged"
           >
             <template #table-search-left-side>
               <v-btn text color="#2196f3" class="clustered-table-back-btn" @click="handleBackClick">
@@ -1366,6 +1373,7 @@ export default {
       }
     },
     serverSideProps: new ServerSideProps(),
+    serverSideClusteredProps: new ServerSideProps(),
     isWantToAddNewInvestigation: false,
     extendedView: {
       isNotify: true,
@@ -1705,7 +1713,7 @@ export default {
     clusteredTableAxios: {
       clusteredBy: '',
       pageNumber: 1,
-      pageSize: 500000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -1713,6 +1721,11 @@ export default {
         FilterGroups: [
           {
             Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
             FilterItems: [],
             FilterGroups: []
           }
@@ -1765,6 +1778,12 @@ export default {
     handleBackClick() {
       this.isShowingClusteredTable = false
       this.clusteredRow = null
+      this.resetClusteredTableParams()
+    },
+    resetClusteredTableParams() {
+      this.clusteredTableAxios.pageNumber = 1
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = []
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = []
     },
     serverSideSizeChanged(pageSize = 10) {
       this.requestBodyReportedEmails.pageSize = pageSize
@@ -1774,15 +1793,34 @@ export default {
       this.queryHelper.setRouterQuery('page', 1)
       this.callForSearchNotifiedMail()
     },
+    serverSideClusteredSizeChanged(pageSize = 10) {
+      this.clusteredTableAxios.pageSize = pageSize
+      this.serverSideClusteredProps.pageSize = pageSize
+      this.resetClusteredPageNumber()
+      this.callForClusteredTable()
+    },
+    resetClusteredPageNumber() {
+      this.clusteredTableAxios.pageNumber = 1
+      this.serverSideClusteredProps.pageNumber = 1
+    },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.requestBodyReportedEmails.pageNumber = pageNumber
       this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSearchNotifiedMail()
     },
+    serverSideClusteredPageNumberChanged(pageNumber = 1) {
+      this.clusteredTableAxios.pageNumber = pageNumber
+      this.callForClusteredTable()
+    },
     sortChanged({ order, prop } = {}) {
       this.requestBodyReportedEmails.ascending = order === 'ascending'
       this.requestBodyReportedEmails.orderBy = prop
       this.callForSearchNotifiedMail()
+    },
+    sortClusteredChanged({ order, prop } = {}) {
+      this.clusteredTableAxios.ascending = order === 'ascending'
+      this.clusteredTableAxios.orderBy = prop
+      this.callForClusteredTable()
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -1813,16 +1851,21 @@ export default {
       this.toggleIsShowingClusteredTable()
     },
     callForClusteredTable() {
+      debugger
       if (this.checkPermissions('notified-emails/search', 'POST')) {
         this.isReportedEmailsClusteredLoading = true
         this.setClusteredFilter()
         searchNotifiedMail(this.clusteredTableAxios)
           .then((response) => {
             const {
-              data: {
-                data: { results = [] }
-              }
-            } = response
+              totalNumberOfRecords,
+              totalNumberOfPages,
+              pageNumber,
+              results
+            } = response.data.data
+            this.serverSideClusteredProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideClusteredProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideClusteredProps.pageNumber = pageNumber
             this.removeClusteredFilter()
             this.clusteredTableData = results
           })
@@ -1900,6 +1943,19 @@ export default {
       this.resetPageNumber()
       this.emails.isColumnFilterActive = columnFilterActive
       this.callForSearchNotifiedMail()
+    },
+    handleClusteredSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.clusteredTable.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.clusteredTable.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetClusteredPageNumber()
+      this.clusteredTable.isColumnFilterActive = columnFilterActive
+      this.callForClusteredTable()
     },
     resetPageNumber() {
       this.requestBodyReportedEmails.pageNumber = 1
@@ -2141,7 +2197,7 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const tableData = this.getManipulatedTableData(results || [])
+            const tableData = results
             this.reportedEmailsData = tableData || []
           })
           .catch(() => {
@@ -2389,7 +2445,7 @@ export default {
 
       filterPayload = [...items]
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForSearchNotifiedMail()
+      this.callForClusteredTable()
 
       this.clusteredTable.isColumnFilterActive =
         this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.length >= 1

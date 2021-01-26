@@ -1161,7 +1161,12 @@ export default {
     },
     getTableHeaderClass() {
       if (this.serverSideEvents.search) {
-        return this.tableData.length === 0 && !this.search && 'table-header-disable'
+        return (
+          this.tableData.length === 0 &&
+          !this.search &&
+          !this.isColumnFilterActive &&
+          'table-header-disable'
+        )
       } else {
         return this.tableData.length === 0 && !this.isColumnFilterActive
           ? 'table-header-disable'
@@ -2328,8 +2333,10 @@ export default {
     downloadEvent(downloadTypes) {
       this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
-        pageNumber: this.currentPage,
-        pageSize: this.rowCount,
+        pageNumber: this.serverSideEvents.pagination
+          ? this.serverSideProps.pageNumber
+          : this.currentPage,
+        pageSize: this.serverSideEvents.pagination ? this.serverSideProps.pageSize : this.rowCount,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       })
     },

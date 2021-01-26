@@ -130,7 +130,7 @@ export default {
           {
             property: PROPERTY_STORE.CATEGORYNAME,
             align: 'left',
-            label: labels.Category,
+            label: labels.TemplateType,
             fixed: false,
             sortable: true,
             show: true,
