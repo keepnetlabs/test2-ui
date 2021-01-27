@@ -106,6 +106,7 @@ export default {
     callForRecentlyReportedIncidents() {
       const payload = {
         pageNumber: 1,
+        clusteredBy: '',
         pageSize: 5,
         orderBy: 'createTime',
         ascending: false

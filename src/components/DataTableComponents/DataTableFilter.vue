@@ -185,7 +185,12 @@ export default {
               this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
             ],
       filterValue: this.value.textValue || '',
-      filterChecked: this.filterableType === 'select' ? this.value.selectValue.split(',') : [],
+      filterChecked:
+        this.filterableType === 'select'
+          ? this.value.selectValue === ''
+            ? []
+            : this.value.selectValue.split(',')
+          : [],
       textFilterItems: [
         { text: 'Contains', value: 'Contains' },
         { text: 'Equal', value: '=' },

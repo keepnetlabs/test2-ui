@@ -58,7 +58,7 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
     gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
   })
 
-  Vue.gtm.push({ event: 'some-event' })
+  //Vue.gtm.push({ event: 'some-event' })
 
   const FullStory = require('@fullstory/browser')
 

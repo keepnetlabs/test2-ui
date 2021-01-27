@@ -401,7 +401,10 @@
               <router-link
                 to="/companies"
                 class="menu-link-default"
-                :class="[routerName === 'Company Group Details' && 'active-link']"
+                :class="[
+                  (routerName === 'Company Group Details' || routerName === 'Companies') &&
+                    'active-link'
+                ]"
               >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Companies</span>
@@ -502,7 +505,10 @@
               <router-link
                 to="/incident-responder"
                 class="menu-link-default"
-                :class="[routerName === 'Analysis Details' && 'active-link']"
+                :class="[
+                  (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
+                    'active-link'
+                ]"
               >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Incident Responder</span>

@@ -43,12 +43,15 @@
       :table="tableData"
       id="companies-data-table"
       ref="refDataList"
+      is-server-side
+      :server-side-props="serverSideProps"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :groupable="true"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
@@ -62,7 +65,6 @@
       @delete="handleTableItemDelete"
       @cellClick="handleCellClick"
       @downloadEvent="handleTableDownload"
-      :is-server-side="false"
       @addButton="addButton"
       @handleListBulleted="handleListBulletedClick"
       @onEmptyBtnClicked="addButton"
@@ -75,6 +77,9 @@
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @handleChangeIsSettingsOpen="handleChangeIsSettingsOpen"
+      @sortChangedEvent="sortChanged"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -130,7 +135,8 @@ import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
-
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'CompanyList',
   components: {
@@ -280,7 +286,7 @@ export default {
     },
     payload: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -290,10 +296,16 @@ export default {
             Condition: 'AND',
             FilterItems: [],
             FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
           }
         ]
       }
-    }
+    },
+    serverSideProps: new ServerSideProps()
   }),
   watch: {
     isShowCreateOrEditModal() {
@@ -301,6 +313,9 @@ export default {
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getLookUpDatas()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
@@ -308,8 +323,37 @@ export default {
       }
     }
   },
-  mounted() {},
   methods: {
+    setQueryValuesToPayload({ page, size }) {
+      const parsedPage = parseInt(page)
+      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.payload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.payload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.getTableData()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
+      this.getTableData()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.getTableData()
+    },
+    resetPageNumber() {
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -321,12 +365,12 @@ export default {
         this.isShowExtended = false
       }
     },
-    handleSearchChange(bodyData = {}, columnFilterActive = false) {
-      this.payload.filter.FilterGroups[0].FilterItems = [
-        ...bodyData.filter.FilterGroups[0].FilterItems
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      this.payload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
       this.getTableData()
     },
     handleCellClick({ column, event }) {
@@ -360,6 +404,13 @@ export default {
       this.loading = true
       searchCompanies(_payload)
         .then((response) => {
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          //this.queryHelper.setRouterQuery('page', pageNumber)
+
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
@@ -383,11 +434,21 @@ export default {
     },
     clusterChanged() {
       this.isClustered = true
+      this.resetPageNumber()
+      this.resetTableFilters()
       this.getTableData()
     },
     handleListBulletedClick() {
       this.isClustered = false
+      this.resetPageNumber()
+      this.resetTableFilters()
       this.getTableData()
+    },
+    resetTableFilters() {
+      this.payload.filter.FilterGroups[0].FilterItems = []
+      this.$refs.refDataList.filterValues = {}
+      this.queryHelper.setRouterQuery('page', 1)
+      this.$refs.refDataList.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
@@ -502,6 +563,7 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
