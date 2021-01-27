@@ -1088,7 +1088,7 @@ export default {
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', { text: 'Clean', value: 'NonMalicious' }]
+                items: ['Phishing', 'Malicious', 'Undetected']
               }
             },
             show: true
@@ -1224,7 +1224,7 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
+          filterableItems: ['Undetected', 'Malicious', 'Phishing'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -1503,7 +1503,7 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: [{ text: 'Clean', value: 'NonMalicious' }, 'Malicious', 'Phishing'],
+          filterableItems: ['Undetected', 'Malicious', 'Phishing'],
           props: {
             style: {
               maxWidth: '110px'
@@ -1623,7 +1623,7 @@ export default {
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', { text: 'Clean', value: 'NonMalicious' }]
+                items: ['Phishing', 'Malicious', 'Undetected']
               }
             },
             show: true
@@ -2301,6 +2301,7 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const tableData = results
+            console.log('results', results)
             this.reportedEmailsData = tableData || []
           })
           .catch(() => {

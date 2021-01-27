@@ -808,7 +808,7 @@ export default {
     getColorOfType(list) {
       let result = this.getResultOfAttachmentList(list)
       switch (result) {
-        case 'Clean':
+        case 'Undetected':
           return '#00bcd4'
         case 'Malicious':
           return '#e6a23c'
@@ -840,8 +840,8 @@ export default {
           result = 'Phishing'
           continue
         }
-        if (item.result === 'Clean' && result !== 'Phishing' && result !== 'Malicious') {
-          result = 'Clean'
+        if (item.result === 'Undetected' && result !== 'Phishing' && result !== 'Malicious') {
+          result = 'Undetected'
         }
       }
       return result
@@ -911,11 +911,11 @@ export default {
               urlTableColumns.add(engine.analysisEngine)
               if (result !== 'Malicious') {
                 if (
-                  (result === 'Phishing' || result === 'Clean') &&
+                  (result === 'Phishing' || result === 'Undetected') &&
                   engine.result === 'Malicious'
                 ) {
                   result = 'Malicious'
-                } else if (result === 'Phishing' && engine.result === 'Clean') {
+                } else if (result === 'Phishing' && engine.result === 'Undetected') {
                   result = 'Phishing'
                 } else {
                   result = engine.result
