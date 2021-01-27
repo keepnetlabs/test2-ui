@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/browser'
 import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
+import VueTagManager from 'vue-tag-manager'
 
 require('vue-tour/dist/vue-tour.css')
 
@@ -43,15 +44,21 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
     tracesSampleRate: 1.0
   })
 
-  const VueAnalytics = require('vue-analytics').default
-  Vue.use(VueAnalytics, {
-    id: APP_CONFIG.VUE_APP_ANALYTICS_ID
-  })
+  // const VueAnalytics = require('vue-analytics').default
+  // Vue.use(VueAnalytics, {
+  //   id: APP_CONFIG.VUE_APP_ANALYTICS_ID
+  // })
 
   const Hotjar = require('vue-hotjar').default
   Vue.use(Hotjar, {
     id: APP_CONFIG.VUE_APP_HOTJAR_ID // Hotjar Site ID
   })
+
+  Vue.use(VueTagManager, {
+    gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
+  })
+
+  Vue.gtm.push({ event: 'some-event' })
 
   const FullStory = require('@fullstory/browser')
 

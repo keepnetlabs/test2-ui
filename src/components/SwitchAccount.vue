@@ -13,8 +13,7 @@
         </v-list-item-content>
       </v-list-item>
       <div class="switch-account__content">
-        <PostCardLoading :loading="companyLoading" v-if="companyLoading"> </PostCardLoading>
-        <div v-if="!companyLoading">
+        <div>
           <div class="switch-account__content--current-user mb-6">
             <div class="switch-account__content--current-user__section-header">
               You are now:
@@ -34,18 +33,19 @@
             </div>
           </div>
         </div>
-        <div class="switch-account__content--current-user" v-if="!companyLoading">
+        <div class="switch-account__content--current-user">
           <div class="switch-account__content--current-user__section-header">
             Switch to
           </div>
           <treeselect
-            v-if="!companyLoading"
             :multiple="false"
             :flat="false"
             placeholder="Select company to manage"
             :options="orderedAccounts"
             v-model="value"
             value-format="object"
+            :load-options="loadOptions"
+            :auto-load-root-options="false"
           >
             <label slot="option-label" slot-scope="{ node }">
               <img
@@ -153,7 +153,9 @@ import PostCardLoading from './SkeletonLoading/PostCardLoading'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import labels from '@/model/constants/labels'
-
+import { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
+const sleep = (d) => new Promise((r) => setTimeout(r, d))
+let called = false
 export default {
   name: 'SwitchAccount',
   data() {
@@ -165,20 +167,18 @@ export default {
       itemsPerPage: 4,
       search: '',
       companies: [],
-      orderedAccounts: [],
+      orderedAccounts: null,
       companyLoading: false,
       isSwitchAccountDisabled: false
     }
   },
   components: {
-    PostCardLoading,
     Treeselect
   },
   created() {
     this.isSwitchAccountDisabled = false
     this.$store.watch((state) => {
       if (state.dashboard.isSwitchDialogOpen) {
-        this.getCompanyData()
       }
     })
   },
@@ -193,7 +193,8 @@ export default {
         ? items.filter((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) >= 0)
         : items
     },
-    getCompanyData() {
+    loadOptions({ callback }) {
+      let vm = this
       this.companyLoading = true
       getCompanyList()
         .then((response) => {
@@ -229,6 +230,7 @@ export default {
             JSON.stringify(accounts).replace(pattern, (m) => `"${swaps[m.slice(1, -2)]}":`)
           )
           this.orderedAccounts = removeEmptyArrays(result)
+          callback() // notify vue-treeselect about data population completion
         })
         .finally(() => {
           this.companyLoading = false
@@ -306,7 +308,6 @@ export default {
   watch: {
     isSwitchDialogOpen(newVal, oldVal) {
       if (newVal) {
-        this.getCompanyData()
       }
     }
   }

@@ -4,6 +4,7 @@ const APP_CONFIG = (() => {
     VUE_APP_HOTJAR_ID: '2045435',
     VUE_APP_FULLSTORY_ID: 'TRDZX',
     VUE_APP_ANALYTICS_ID: 'UA-131042304-4',
+    VUE_APP_GTM_ID: 'GTM-5DXK5QR',
     VUE_APP_ROOT_API: 'https://dev-api.keepnetlabs.com/api',
     VUE_APP_WEB_API: 'https://dev-api.keepnetlabs.com/api',
     VUE_APP_WEB_API_TEST: 'https://dev-api.keepnetlabs.com/api',

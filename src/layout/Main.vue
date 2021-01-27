@@ -118,7 +118,7 @@
         width="600"
         @click:outside="setSwitchDialog(!isSwitchDialogOpen)"
       >
-        <switch-account></switch-account>
+        <switch-account v-if="isSwitchDialogOpen"></switch-account>
       </v-dialog>
     </v-row>
     <v-overlay :absolute="false" :opacity="0.46" :value="sessionCheck" :z-index="999">
