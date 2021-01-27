@@ -62,8 +62,6 @@
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
-      :is-downloadable="false"
-      :download-button="tableOptions.downloadButton"
       @addButton="addButton"
       @onEmptyBtnClicked="addButton"
       @edit="handleTableItemEdit"
@@ -74,6 +72,7 @@
       @refreshAction="getTableData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
+      @downloadEvent="handleTableDownload"
     />
   </div>
 </template>
@@ -81,6 +80,8 @@
 <script>
 import Datatable from '../../components/DataTable'
 import {
+  exportCompanyGroup,
+  exportCompanyGroupDetails,
   getCompanyByID,
   removeCompanyToCompanyGroup,
   searchGroupCompanies,
@@ -275,6 +276,29 @@ export default {
     this.initMethods()
   },
   methods: {
+    handleTableDownload(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.payload.orderBy,
+          ascending: this.payload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.payload.filter
+        }
+
+        exportCompanyGroupDetails(payload, this.$route.params.groupId)
+          .then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Companies.${item.toLocaleLowerCase()}`
+            link.click()
+          })
+          .catch(() => {})
+      })
+    },
     initMethods() {
       this.getIndustries().then(() => {
         this.getLicenceTypes().then(() => this.getTableData())
