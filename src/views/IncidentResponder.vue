@@ -1843,7 +1843,7 @@ export default {
         return
       }
       const persistentStateContainer = this.isPersistentState()
-      if (!persistentStateContainer) {
+      if (!persistentStateContainer || !persistentStateContainer.isShowingClusteredTable) {
         return
       }
       const {
