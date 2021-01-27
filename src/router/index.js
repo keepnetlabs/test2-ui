@@ -34,8 +34,15 @@ Vue.use(Router)
 const router = new Router({
   mode: 'history',
   linkExactActiveClass: 'active-link',
-  scrollBehavior() {
-    return { x: 0, y: 0 }
+  scrollBehavior(to, from, savedPosition) {
+    if (to.name === 'Incident Responder' && from.name === 'Incident Responder') {
+      return
+    }
+    if (savedPosition) {
+      return savedPosition
+    } else {
+      return { x: 0, y: 0 }
+    }
   },
   routes: [
     {

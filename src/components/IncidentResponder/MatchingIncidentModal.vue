@@ -17,6 +17,7 @@
               ref="refMatchingInvestigation"
               id="matching-incident-data-table"
               :refName="'matchingInvestigation'"
+              :count-row="5"
               :table="tableData"
               :columns="columns"
               :loading="isMatchingModalLoading"

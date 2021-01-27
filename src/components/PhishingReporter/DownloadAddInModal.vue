@@ -59,10 +59,7 @@
         </div>
       </v-list-item>
       <v-list-item class="pl-0 pr-0 mt-2 add-in-configuration__list-item">
-        <div class="link__container">
-          <img src="../../assets/img/copy-icon.png" alt="spinner" />
-          <div class="link__text ml-2">Copy Link</div>
-        </div>
+        <div class="link__container"></div>
       </v-list-item>
 
       <v-list-item class="px-0 d-flex align-end mt-6 add-in-configuration__list-item">
@@ -96,7 +93,7 @@
           </template>
         </v-btn>
       </v-list-item>
-      <v-list-item class="px-0 mt-12 add-in-configuration__list-item">
+      <v-list-item class="px-0 mt-6 add-in-configuration__list-item">
         <div class="px-0 overlay__footer">
           <a
             class="overlay__footer-text download-add-in__link"

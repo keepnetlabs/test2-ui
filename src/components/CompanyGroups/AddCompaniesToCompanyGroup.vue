@@ -14,6 +14,7 @@
         :loading="loading"
         :selectable="true"
         :table="tableData"
+        :count-row="5"
         id="companies-data-table"
         ref="refDataList"
         :addButton="tableOptions.addButton"

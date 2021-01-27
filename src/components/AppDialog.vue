@@ -7,6 +7,7 @@
     @click:outside="changeStatus(false)"
     @input="changeStatus"
     class="k-dialog"
+    :hide-overlay="hideOverlay"
   >
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm" onSubmit="return false;">
@@ -81,6 +82,10 @@ export default {
     iconColor: {
       type: String,
       default: 'blue'
+    },
+    hideOverlay: {
+      type: Boolean,
+      default: false
     },
     title: {
       type: String

@@ -79,12 +79,13 @@
         <slot name="extended-custom-view-slot"></slot>
         <div class="table-header" v-if="options" :class="getTableHeaderClass">
           <div class="table-search" v-if="filterable">
+            <slot name="table-search-left-side"> </slot>
             <v-text-field
               class="filter-field"
               placeholder="Search"
               outlined
               prepend-inner-icon="mdi-magnify"
-              v-model="search"
+              v-model.trim="search"
               ref="searchInput"
               @keyup="searchChangedEvent"
             />
@@ -125,7 +126,12 @@
             <div
               v-if="groupable"
               class="cluster__right"
-              :style="[!selectedCluster && { backgroundColor: '#757575', borderColor: '#757575' }]"
+              :style="[
+                !selectedCluster && {
+                  backgroundColor: '#757575',
+                  borderColor: '#757575'
+                }
+              ]"
             >
               <v-menu
                 bottom
@@ -264,6 +270,7 @@
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
+            v-if="!isServerSide"
             :ripple="false"
             class="btn-all-selection"
             rounded
@@ -373,7 +380,10 @@
             :border="border"
             :cell-class-name="setCellClass"
             :data="showfilteredData ? filteredData : tableData"
-            :default-sort="{ prop: defaultSort || '', order: defaultSort || '' }"
+            :default-sort="{
+              prop: defaultSort || '',
+              order: defaultSort || ''
+            }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
             :show-header="showHeader"
@@ -390,7 +400,7 @@
             id="data-table-container"
             :load="handleLoad"
             :indent="32"
-            lazy
+            :lazy="lazy"
             ref="elTableRef"
             :row-key="rowKey"
             style="width: 100%;"
@@ -405,7 +415,7 @@
             <el-table-column
               v-for="(col, ind) of columns"
               v-if="col.show"
-              :key="col.property + ind"
+              :key="col.property + ind + columnKey"
               :align="col.align"
               :fixed="col.fixed"
               :label="col.label"
@@ -714,7 +724,9 @@
               <div class="empty-table">
                 <div class="empty-inline">
                   <slot name="empty-table-inline-sort">
-                    <h2>Sorry, that search and filter criteria has no results.</h2>
+                    <h2>
+                      Sorry, that search and filter criteria has no results.
+                    </h2>
                     <p>Please try adjusting your search or filter</p>
                   </slot>
                 </div>
@@ -749,9 +761,38 @@
           </div>
         </div>
       </div>
+      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0 && isServerSide">
+        <el-pagination
+          :current-page="serverSideProps.pageNumber"
+          :page-size="serverSideProps.pageSize"
+          :page-sizes="pageSizes || [5, 10, 25]"
+          :total="serverSideProps.totalNumberOfRecords"
+          @current-change="handleServerSideCurrentChange"
+          @size-change="handleServerSideSizeChange"
+          layout="sizes, prev, pager, next,slot"
+        >
+          <template>
+            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--2">
+              {{
+                serverSideProps.pageNumber === 1
+                  ? 1
+                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+              }}-{{
+                serverSideProps.pageNumber * serverSideProps.pageSize >
+                serverSideProps.totalNumberOfRecords
+                  ? serverSideProps.totalNumberOfRecords
+                  : serverSideProps.pageNumber * serverSideProps.pageSize
+              }}
+              of
+              {{ serverSideProps.totalNumberOfRecords }}
+            </span>
+          </template>
+        </el-pagination>
+      </div>
       <div
         class="pagination block"
-        v-if="pageSizes.length && tableData.length > 0 && !showfilteredData"
+        v-if="pageSizes.length && tableData.length > 0 && !showfilteredData && !isServerSide"
       >
         <el-pagination
           :current-page.sync="currentPage"
@@ -776,7 +817,7 @@
           </template>
         </el-pagination>
       </div>
-      <div class="pagination block" v-if="showfilteredData">
+      <div class="pagination block" v-if="showfilteredData && !isServerSide">
         <el-pagination
           :current-page.sync="currentPage"
           :page-size="rowCount"
@@ -845,6 +886,7 @@ import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   components: {
     DataTableFilter,
@@ -871,15 +913,13 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
-    cacheCheckboxFromParent: {
-      type: Boolean
-    },
     columns: {
       type: Array,
       required: true
     },
     lazy: {
-      type: Boolean
+      type: Boolean,
+      default: false
     },
     hideParentRowActions: {
       type: Boolean,
@@ -918,6 +958,10 @@ export default {
     isSettingsPopup: {
       type: Boolean,
       default: true
+    },
+    serverSideProps: {
+      type: ServerSideProps,
+      default: () => new ServerSideProps()
     },
     disableExtendedViewTransition: {
       type: Boolean,
@@ -987,6 +1031,10 @@ export default {
     defaultSort: {
       type: String,
       required: false
+    },
+    isCustomOverflowedColumn: {
+      type: Boolean,
+      default: false
     },
     selectable: {
       type: Boolean,
@@ -1121,7 +1169,12 @@ export default {
     },
     getTableHeaderClass() {
       if (this.serverSideEvents.search) {
-        return this.tableData.length === 0 && !this.search && 'table-header-disable'
+        return (
+          this.tableData.length === 0 &&
+          !this.search &&
+          !this.isColumnFilterActive &&
+          'table-header-disable'
+        )
       } else {
         return this.tableData.length === 0 && !this.isColumnFilterActive
           ? 'table-header-disable'
@@ -1156,6 +1209,7 @@ export default {
       selectionRowCheckboxDeterminate
     } = this.persistentState
     return {
+      columnKey: 'column-key',
       cacheChecks: false,
       filteredData,
       renderedColumns,
@@ -1209,12 +1263,8 @@ export default {
     table(table) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
-
       //This is for refresh button when clicked caching refresh
-      if (
-        (!this.cacheChecks && !this.cacheCheckboxFromParent) ||
-        (this.lazy && this.selectedCluster)
-      ) {
+      if ((!this.cacheChecks && !this.isServerSide) || (this.lazy && this.selectedCluster)) {
         this.multipleSelection = []
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
           this.$refs.elTableRef.clearSelection()
@@ -1251,7 +1301,7 @@ export default {
         this.searchChangedEvent(0)
       }
       //if there is just sorting go to the sorting
-      else if (this.sortProps) {
+      else if (this.sortProps && !this.isServerSide) {
         this.sortChangedEvent(this.sortProps)
       } else {
         let maxPage = Math.ceil(table.length / this.rowCount)
@@ -1494,7 +1544,10 @@ export default {
       const length = this.groupable
         ? this.getTotalLength(this.initialData)
         : this.initialData.length
-      this.isSelectedAll = this.multipleSelection.length === length
+      this.isSelectedAll = this.isServerSide
+        ? !!this.multipleSelection.length &&
+          this.multipleSelection.length === this.serverSideProps.totalNumberOfRecords
+        : this.multipleSelection.length === length
     },
     /**
      * This event comes from el-table for lazy-loading children
@@ -1653,8 +1706,11 @@ export default {
      */
     handleListBulletedClick() {
       this.selectedCluster = ''
+      /*
       this.firstColFixed = true
       this.lastColFixed = true
+
+       */
       this.$emit('handleListBulleted')
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
@@ -1804,7 +1860,11 @@ export default {
      * @param cell
      */
     hasOverflowTooltip(row, column, cell) {
-      const parentRect = cell.getBoundingClientRect()
+      const parentRect =
+        this.isCustomOverflowedColumn && column.property === 'subject'
+          ? cell.querySelector(`.${this.columns[0].parentRect}`).getBoundingClientRect()
+          : cell.getBoundingClientRect()
+
       const widthOfParent = parentRect.width
       let span =
         cell.querySelector('span:last-child') ||
@@ -1814,7 +1874,7 @@ export default {
       if ([...span.classList].some((item) => item === 'cell')) {
         span = span.querySelector('div')
       }
-      let aggregation = 20
+      let aggregation = this.isCustomOverflowedColumn ? 0 : 20
       if (window.safari || navigator.vendor.match(/apple/i)) {
         if ([...cell.parentNode.classList].some((item) => item === 'el-table__row--level-1')) {
           aggregation = 0
@@ -1843,7 +1903,7 @@ export default {
         }
         this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
-          top: `${parentRect.top + 60}px`,
+          top: `${parentRect.top + (this.isCustomOverflowedColumn ? 50 : 60)}px`,
           left: `${parentRect.left + this.cellPadding + Number(padding)}px`
         }
       }
@@ -1877,6 +1937,7 @@ export default {
       }
     },
     sortFunction(data, sortProps) {
+      if (this.isServerSide) return
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
           acc.push(
@@ -1986,17 +2047,17 @@ export default {
       const debounceTime = 750
       if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
-          const filterItems = this.columns
-            .filter((column) => column.filterableType)
-            .reduce((acc, filterItem) => {
+          const filterItems = this.columns.reduce((acc, filterItem) => {
+            if (this.renderedColumns.find((property) => property === filterItem.property)) {
               acc.push({
                 FieldName:
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-                Operator: filterItem.filterableType === 'number' ? '=' : 'Contains',
+                Operator: 'Contains',
                 Value: this.search
               })
-              return acc
-            }, [])
+            }
+            return acc
+          }, [])
           const bodyDataFilter = {
             filter: {
               Condition: 'AND',
@@ -2227,20 +2288,6 @@ export default {
     },
     handleSizeChange(rows) {
       this.rowCount = rows
-      if (this.isServerSide && this.serverSideEvents.pagination) {
-        this.paginationChangedEvent({ pageSize: rows, pageNumber: this.currentPage })
-      } else {
-        if (this.currentPage === 1) {
-          this.tableData = this.initialData.slice(0, rows)
-        } else {
-          const temp =
-            this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
-          this.tableData = temp.length === 0 ? [{}] : temp
-        }
-        this.calculateAllSelected()
-      }
-    },
-    handleClientSideSizeChange(rows) {
       if (this.currentPage === 1) {
         this.tableData = this.initialData.slice(0, rows)
       } else {
@@ -2248,19 +2295,23 @@ export default {
           this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
         this.tableData = temp.length === 0 ? [{}] : temp
       }
+      this.calculateAllSelected()
+    },
+    handleServerSideCurrentChange(pageNumber = 1) {
+      this.$emit('server-side-page-number-changed', pageNumber)
+    },
+    handleServerSideSizeChange(pageSize = 10) {
+      this.$emit('server-side-size-changed', pageSize)
     },
     handleCurrentChange(pageNum) {
       this.currentPage = pageNum
-      if (this.isServerSide && this.serverSideEvents.pagination) {
-        this.paginationChangedEvent({ pageSize: this.rowCount, pageNumber: pageNum })
-      } else {
-        this.tableData = this.initialData.slice(
-          (pageNum - 1) * this.rowCount,
-          pageNum * this.rowCount
-        )
-        this.calculateAllSelected()
-      }
+      this.tableData = this.initialData.slice(
+        (pageNum - 1) * this.rowCount,
+        pageNum * this.rowCount
+      )
+      this.calculateAllSelected()
     },
+
     handleFilteredCurrentChange(pageNum) {
       this.currentPage = pageNum
       if (pageNum === 1) {
@@ -2291,8 +2342,10 @@ export default {
     downloadEvent(downloadTypes) {
       this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
-        pageNumber: this.currentPage,
-        pageSize: this.rowCount,
+        pageNumber: this.serverSideEvents.pagination
+          ? this.serverSideProps.pageNumber
+          : this.currentPage,
+        pageSize: this.serverSideEvents.pagination ? this.serverSideProps.pageSize : this.rowCount,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       })
     },
@@ -2378,10 +2431,12 @@ export default {
     printMethod() {
       printJS('table-container', 'html')
     },
-    clusterSelected(name, ind) {
+    clusterSelected(name) {
       this.selectedCluster = name
+      /*
       this.firstColFixed = false
       this.lastColFixed = false
+       */
       this.$emit('clusterChanged', name)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
