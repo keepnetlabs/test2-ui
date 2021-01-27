@@ -109,8 +109,12 @@ export default {
       setTimeout(() => {
         if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
           this.$refs.tsIncidents.getIncidentList()
+          this.$refs.tsIncidents.page = 1
+          this.$refs.tsIncidents.itemsPerPage = 5
         } else {
           if (this.checkPermissions('communities/search/all', 'POST')) {
+            this.$refs.tsCommunities.page = 1
+            this.$refs.tsCommunities.itemsPerPage = 5
             this.$refs.tsCommunities.getAllCommunitiesListData()
             this.$refs.tsCommunities.getInvitationCount()
             this.$refs.tsCommunities.setInitialCommunityValues()

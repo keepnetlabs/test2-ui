@@ -50,6 +50,7 @@
     "vue-recaptcha": "^1.2.0",
     "vue-router": "^3.3.4",
     "vue-smart-widget": "^0.5.5",
+    "vue-tag-manager": "^0.1.2",
     "vue-tel-input": "4.4.2",
     "vue-tour": "^1.1.0",
     "vue-upload-component": "^2.8.20",

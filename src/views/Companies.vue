@@ -16,7 +16,7 @@
               name="second"
               v-if="checkPermissions('company-groups/search', 'POST')"
             >
-              <company-group-list v-if="tab === 'second'"
+              <company-group-list :isLoadState="isLoadState" v-if="tab === 'second'"
             /></el-tab-pane>
           </el-tabs>
         </template>
@@ -39,7 +39,23 @@ export default {
   components: { CompanyGroupDetails, CompanyGroupList, CompanyList },
   data() {
     return {
-      tab: 'first'
+      tab: 'first',
+      isLoadState: false
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    next((vm) => {
+      if (from.name === 'Company Group Details') {
+        vm.tab = 'second'
+        vm.isLoadState = true
+      } else if (to.name === 'Company Group Details') {
+        vm.tab = 'first'
+      }
+    })
+  },
+  watch: {
+    tab(val) {
+      if (val === 'first') this.isLoadState = false
     }
   },
   created() {
