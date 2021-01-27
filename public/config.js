@@ -5,12 +5,12 @@ const APP_CONFIG = (() => {
     VUE_APP_FULLSTORY_ID: 'TRDZX',
     VUE_APP_ANALYTICS_ID: 'UA-131042304-4',
     VUE_APP_GTM_ID: 'GTM-5DXK5QR',
-    VUE_APP_ROOT_API: 'https://dev-api.keepnetlabs.com/api',
-    VUE_APP_WEB_API: 'https://dev-api.keepnetlabs.com/api',
-    VUE_APP_WEB_API_TEST: 'https://dev-api.keepnetlabs.com/api',
+    VUE_APP_ROOT_API: 'https://dev-api.devkeepnet.com/api',
+    VUE_APP_WEB_API: 'https://dev-api.devkeepnet.com/api',
+    VUE_APP_WEB_API_TEST: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_API_KEY: '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
-    VUE_APP_AUTH_API_TEST: 'https://dev-api.keepnetlabs.com',
-    VUE_APP_APP_API_TEST: 'https://dev-api.keepnetlabs.com/api',
+    VUE_APP_AUTH_API_TEST: 'https://dev-api.devkeepnet.com',
+    VUE_APP_APP_API_TEST: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_NEW_RELIC: () => {
       window.NREUM || (NREUM = {})
       NREUM.init = { privacy: { cookies_enabled: true } }

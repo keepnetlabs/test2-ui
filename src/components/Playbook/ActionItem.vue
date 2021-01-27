@@ -361,7 +361,7 @@ export default {
       initialAnalysisEngines: [],
       actionItemType: 'markAs',
       isFormValid: true,
-      markAsOpts: 'Clean',
+      markAsOpts: 'Undetected',
       acceptCheckbox: false,
       tagsearch: '',
       targetUserType: [],
@@ -408,7 +408,7 @@ export default {
           }
         ],
         notifyTypes: ['Reporter', 'Users', 'Groups'],
-        markAsOpts: ['Clean', 'Phishing', 'Malicious'],
+        markAsOpts: ['Undetected', 'Phishing', 'Malicious'],
         notifyTemplates: [
           { label: 'IR User Notification', value: '18' },
           { label: 'IR Delete Action Notification', value: '41' },
@@ -455,7 +455,7 @@ export default {
       durationType: 'ThreeDays',
       emailDateRangeType: 'ThreeDays',
       playbookAction: {
-        markType: 'Clean',
+        markType: 'Undetected',
         tags: []
       },
       playbookActionInvestigationAnalyzeData: {

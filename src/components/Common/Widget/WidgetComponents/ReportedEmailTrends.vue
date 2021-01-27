@@ -208,7 +208,7 @@ export default {
             itemTypes = [...itemTypes]
             const datasets = []
             const colors = {
-              NonMalicious: {
+              Undetected: {
                 backgroundColor: 'white',
                 borderColor: '#2e5bff',
                 pointBorderColor: '#2e5bff',
