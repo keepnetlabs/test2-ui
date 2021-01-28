@@ -1827,6 +1827,8 @@ export default {
           }
           this.selectedCluster = selectedCluster
           this.dynamicReportedEmailProps = { persistentState: tableState }
+        } else {
+          this.initMethods()
         }
       } else {
         this.initMethods()
