@@ -1,6 +1,10 @@
 let timeout = null
 function setRowColors(container) {
-  const rows = [...container.querySelectorAll('tr')]
+  const domRows = container.querySelectorAll('tr')
+  if (!domRows) {
+    return
+  }
+  const rows = [...domRows]
   const zeroLevelRows = rows.filter((row) => {
     const classList = [...row.classList].join('')
     return !/level-[1-9]+/gi.test(classList)

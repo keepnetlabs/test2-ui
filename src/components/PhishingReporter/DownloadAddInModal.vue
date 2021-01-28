@@ -154,7 +154,7 @@ export default {
           link.click()
         })
         .catch((error) => {
-          if (error.response.status === 404 && error.response.statusText === 'Not Found') {
+          if (error.response.status === 404) {
             this.outlookSpinnerStatus = true
             this.downloadOutlookAddInTimeout = setTimeout(() => {
               this.callForDownloadOutlookAddIn(resourceId)
@@ -183,7 +183,7 @@ export default {
           link.click()
         })
         .catch((error) => {
-          if (error.response.status === 404 && error.response.statusText === 'Not Found') {
+          if (error.response.status === 404) {
             this.diagnosticToolSpinnerStatus = true
             this.diagnosticToolAddInTimeout = setTimeout(() => {
               this.callForDownloadDiagnosticTool(id)
