@@ -1446,7 +1446,7 @@ export default {
         filteredData: this.filteredData,
         filterValues: this.filterValues,
         selectedCluster: this.selectedCluster,
-        rowCount: this.rowCount,
+        rowCount: this.isServerSide ? this.serverSideProps.pageSize : this.rowCount,
         isSelectedAll: this.isSelectedAll,
         unRenderedFilterData: this.unRenderedFilterData,
         totalLength: this.totalLength,
