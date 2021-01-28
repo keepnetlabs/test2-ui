@@ -669,7 +669,9 @@
             @sortChangedEvent="sortChanged"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
-              <template v-if="scope.column.property === 'subject'">
+              <template
+                v-if="scope.column.property === 'subject' || scope.column.property === 'reportedBy'"
+              >
                 <span v-if="!selectedCluster"> {{ scope.row[col.property] }}</span>
                 <div class="reported-email-subject__container" v-else>
                   <div class="reported-email-subject">
@@ -1165,6 +1167,7 @@ export default {
           type: 'slot',
           width: 200,
           isEditable: false,
+          isCustomOverflowedColumn: true,
           filterableType: 'text',
           parentRect: 'reported-email-subject',
           overrideWidth: true
@@ -1321,6 +1324,38 @@ export default {
           width: '150'
         }
       ],
+      firstColumnProperties: {
+        parentRect: 'reported-email-subject',
+        overrideWidth: true,
+        fixed: 'left',
+        isCustomOverflowedColumn: true,
+        type: 'slot'
+      },
+      subjectColumn: {
+        property: PROPERTY_STORE.SUBJECT,
+        align: 'left',
+        label: getStoreValue(PROPERTY_STORE.SUBJECT),
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: 200,
+        isEditable: false,
+        filterableType: 'text'
+      },
+      reportedByColumn: {
+        property: PROPERTY_STORE.REPORTEDBY,
+        align: 'left',
+        editable: false,
+        label: getStoreValue(PROPERTY_STORE.REPORTEDBY),
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        width: '260',
+        isEditable: false,
+        filterableType: 'text'
+      },
       pageSizes: [5, 10, 25],
       rowActions: [
         {
@@ -1916,8 +1951,39 @@ export default {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
+    changeColumnsOrder(selectedCluster = '') {
+      selectedCluster = this.getClusteredField(selectedCluster)
+      const { columns } = this.emails
+      if (selectedCluster === PROPERTY_STORE.SUBJECT) {
+        if (!(columns[0].property === PROPERTY_STORE.SUBJECT)) {
+          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[2]))
+          const copyOfReportedBy = JSON.parse(JSON.stringify(this.emails.reportedByColumn))
+          this.$set(this.emails.columns, 0, {
+            ...JSON.parse(JSON.stringify(this.emails.subjectColumn)),
+            ...this.emails.firstColumnProperties,
+            fixed: this.emails.columns[0].fixed
+          })
+          this.$set(this.emails.columns, 1, copyOfAttachmentCount)
+          this.$set(this.emails.columns, 2, copyOfReportedBy)
+        }
+      } else if (selectedCluster === PROPERTY_STORE.REPORTEDBY) {
+        if (!(columns[0].property === PROPERTY_STORE.REPORTEDBY)) {
+          const copyOfAttachmentCount = JSON.parse(JSON.stringify(columns[1]))
+          const copyOfSubject = JSON.parse(JSON.stringify(this.emails.subjectColumn))
+          this.$set(this.emails.columns, 0, {
+            ...JSON.parse(JSON.stringify(this.emails.reportedByColumn)),
+            ...this.emails.firstColumnProperties,
+            fixed: this.emails.columns[0].fixed
+          })
+          this.$set(this.emails.columns, 1, copyOfSubject)
+          this.$set(this.emails.columns, 2, copyOfAttachmentCount)
+        }
+      }
+    },
     clusterChanged(selectedCluster = '') {
       this.resetTableFilters()
+      this.changeColumnsOrder(selectedCluster)
+
       this.$nextTick(() => {
         this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
       })
