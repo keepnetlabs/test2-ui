@@ -1036,6 +1036,10 @@ export default {
       type: Boolean,
       default: false
     },
+    customOverflowProp: {
+      type: String,
+      default: ''
+    },
     selectable: {
       type: Boolean,
       required: false
@@ -1862,8 +1866,11 @@ export default {
      * @param cell
      */
     hasOverflowTooltip(row, column, cell) {
+      const [firstColumn] = this.columns
       const parentRect =
-        this.isCustomOverflowedColumn && column.property === 'subject'
+        this.isCustomOverflowedColumn &&
+        firstColumn.isCustomOverflowedColumn &&
+        firstColumn.property === column.property
           ? cell.querySelector(`.${this.columns[0].parentRect}`).getBoundingClientRect()
           : cell.getBoundingClientRect()
 
