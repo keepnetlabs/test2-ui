@@ -2288,6 +2288,7 @@ export default {
     callForSearchNotifiedMail() {
       if (this.checkPermissions('notified-emails/search', 'POST')) {
         this.reportedEmailsLoading = true
+
         searchNotifiedMail(this.requestBodyReportedEmails)
           .then((response) => {
             const {
@@ -2301,7 +2302,6 @@ export default {
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const tableData = results
-            console.log('results', results)
             this.reportedEmailsData = tableData || []
           })
           .catch(() => {
