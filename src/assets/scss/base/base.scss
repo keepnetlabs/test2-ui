@@ -437,3 +437,9 @@ html {
 .w-100 {
   width: 100%;
 }
+.disabled-button{
+  color: #757575 !important;
+  .v-icon{
+    color: #757575 !important;
+  }
+}

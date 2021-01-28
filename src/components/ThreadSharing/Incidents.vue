@@ -53,7 +53,7 @@
                   item-text="name"
                   :menu-props="{ offsetY: true }"
                   item-value="resourceId"
-                  @change="getIncidentList()"
+                  @change="getIncidentList('', '', true)"
                   :disabled="incidentLoading"
                 />
               </div>
@@ -69,7 +69,7 @@
                   :menu-props="{ offsetY: true }"
                   item-text="name"
                   item-value="resourceId"
-                  @change="getIncidentList()"
+                  @change="getIncidentList('', '', true)"
                   :slots="{ selection: true }"
                   :disabled="incidentLoading"
                 >
@@ -253,10 +253,10 @@ export default {
     search: function (newVal, oldVal) {
       if (newVal !== oldVal) {
         if (!newVal) {
-          this.getIncidentList()
+          this.getIncidentList('', '', true)
         } else {
           this.debounce(() => {
-            this.getIncidentList()
+            this.getIncidentList('', '', true)
           }, 1000)
         }
       }
@@ -334,11 +334,11 @@ export default {
           this.incidentLoading = false
         })
     },
-    getIncidentList(memberId, companyId) {
+    getIncidentList(memberId, companyId, isSearch) {
       let companyResourceId = this.companyValue
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,
-        pageNumber: this.page,
+        pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
         orderBy: 'PostedTime',
         ascending: false,
@@ -391,6 +391,7 @@ export default {
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
           .then((response) => {
+            if (isSearch) this.page = 1
             this.incidentList = response.data.data.results
             this.incidentList = this.incidentList.map((item) => {
               return { ...item, isToggle: false }
@@ -413,6 +414,7 @@ export default {
         if (this.$router.currentRoute.name === 'Community') {
           getCOmmunityIncidentList(this.$route.params.id, payload)
             .then((response) => {
+              if (isSearch) this.page = 1
               this.incidentList = response.data.data.results
               _this.incidentList = _this.incidentList.map((item) => {
                 return { ...item, isToggle: false }
@@ -459,6 +461,7 @@ export default {
         } else {
           getIncidentList(payload)
             .then((response) => {
+              if (isSearch) this.page = 1
               this.incidentList = response.data.data.results
               this.incidentList = this.incidentList.map((item) => {
                 return { ...item, isToggle: false }

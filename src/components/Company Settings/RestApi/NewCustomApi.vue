@@ -104,6 +104,54 @@
             >
           </div>
         </form-group>
+        <form-group
+          title="IP Restriction"
+          sub-title="Restrict access to API by IP addresses"
+          class-name="ip-restriction"
+        >
+          <div class="ip-restriction__container">
+            <v-radio-group v-model="formValues.hasIpAddressRestriction" :mandatory="false" row>
+              <v-radio :value="false" label="Allow all IPs" color="#2196f3"></v-radio>
+              <v-radio
+                :value="true"
+                label="Restrict access by IP address"
+                color="#2196f3"
+              ></v-radio>
+            </v-radio-group>
+            <div
+              v-for="(item, index) in formValues.allowedIpAddresses"
+              :key="item.name"
+              style="position: relative;"
+            >
+              <InputIpAddress
+                :placeholder="labels.EnterIpAdress"
+                :rules="formValues.hasIpAddressRestriction ? [(v) => validations.ip(v)] : []"
+                class="auth-key__textfield"
+                :disabled="!formValues.hasIpAddressRestriction"
+                v-model.trim="item.value"
+              />
+              <div class="ip-restriction__delete-button">
+                <v-icon
+                  medium
+                  left
+                  class="ml-2"
+                  v-if="formValues.allowedIpAddresses.length > 1"
+                  @click="formValues.allowedIpAddresses.splice(index, 1)"
+                  >mdi-close</v-icon
+                >
+              </div>
+            </div>
+            <button
+              :disabled="!formValues.hasIpAddressRestriction"
+              class="ip-restriction__button mb-2"
+              :class="{ 'disabled-button': !formValues.hasIpAddressRestriction }"
+              type="button"
+              @click="formValues.allowedIpAddresses.push({ name: '', value: '' })"
+            >
+              <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD IP ADDRESS
+            </button>
+          </div>
+        </form-group>
         <form-group title="Status">
           <v-switch
             v-model="formValues.status"
@@ -127,12 +175,16 @@ import { scrollToComponent } from '@/utils/functions'
 import RestApiModel from '@/components/Company Settings/RestApi/model'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
+import * as validations from '../../../utils/validations'
+
 export default {
   name: 'NewCustomApi',
   components: {
     AppModal,
     AppModalBodyHeader,
-    FormGroup
+    FormGroup,
+    InputIpAddress
   },
   props: {
     selectedRow: {
@@ -146,6 +198,7 @@ export default {
   emits: ['closeOverlayWithUpdate', 'closeOverlay'],
   data() {
     return {
+      validations: validations,
       isGenerateClientBtnDisabled: false,
       editedClientSecret: '',
       saveDisable: false,
@@ -200,10 +253,19 @@ export default {
         if (key === 'clientSecret') {
           this.editedClientSecret = data[key]
           this.formValues['clientSecret'] = '*************************************'
+        }
+        if (key === 'allowedIpAddresses') {
+          this.formValues['allowedIpAddresses'] =
+            data.allowedIpAddresses &&
+            data.allowedIpAddresses.map((item) => {
+              return { name: '', value: item }
+            })
         } else {
           this.formValues[key] = data[key]
         }
       }
+      if (!this.formValues.allowedIpAddresses)
+        this.formValues.allowedIpAddresses = [{ name: '', value: '' }]
     },
     handleCopyToClipboard(data = '') {
       navigator.clipboard.writeText(data)
@@ -231,9 +293,14 @@ export default {
 
       if (refForm.validate()) {
         this.saveDisable = true
+        let values = {
+          ...this.formValues,
+          allowedIpAddresses: this.formValues.allowedIpAddresses.map((item) => item.value)
+        }
+        if (!values.allowedIpAddresses[0]) values.allowedIpAddresses = []
+        if (!values.hasIpAddressRestriction) values.allowedIpAddresses = []
         if (this.selectedRow && this.selectedRow.resourceId) {
-          const payload = { ...this.formValues, clientSecret: this.editedClientSecret }
-          updateRestApi(this.selectedRow.resourceId, payload)
+          updateRestApi(this.selectedRow.resourceId, values)
             .then(() => {
               this.$emit('closeOverlayWithUpdate')
             })
@@ -241,7 +308,7 @@ export default {
               this.saveDisable = false
             })
         } else {
-          createRestApi(this.formValues)
+          createRestApi(values)
             .then(() => {
               this.$emit('closeOverlayWithUpdate')
             })
@@ -261,6 +328,51 @@ export default {
 </script>
 
 <style lang="scss">
+.ip-restriction {
+  &__delete-button {
+    width: 44px;
+    height: 40px;
+    color: #757575;
+    position: absolute;
+    right: -40px;
+    top: 0px;
+    justify-content: center;
+    display: flex;
+  }
+  &__button {
+    font-size: 14px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.71;
+    letter-spacing: normal;
+    color: #2196f3;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+  }
+  .v-input--selection-controls {
+    margin-top: 0 !important;
+  }
+  .v-input--radio-group__input {
+    display: flex;
+    flex-flow: column;
+  }
+  .v-radio {
+    &:first-child {
+      margin-bottom: 8px !important;
+    }
+    label {
+      font-size: 14px !important;
+      font-weight: normal !important;
+      font-stretch: normal !important;
+      font-style: normal !important;
+      line-height: 1.5 !important;
+      letter-spacing: normal !important;
+      color: #383b41 !important;
+    }
+  }
+}
 .copy-to-clipboard {
   max-width: 720px !important;
   &__container {
