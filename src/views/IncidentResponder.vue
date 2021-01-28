@@ -1904,6 +1904,8 @@ export default {
     handleBackClick() {
       this.isShowingClusteredTable = false
       this.clusteredRow = null
+      this.clusteredTable.columns[0].fixed = 'left'
+
       this.resetClusteredTableParams()
     },
     resetClusteredTableParams() {
@@ -2013,8 +2015,38 @@ export default {
     handleRecordButtonClick(row) {
       this.clusteredRow = row
       this.dynamicClusterProps = null
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = []
-      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = []
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = JSON.parse(
+        JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems)
+      )
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = JSON.parse(
+        JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems)
+      )
+      const persistentStateContainer = this.$refs.refReportedEmails.getState()
+      const { filterValues = {}, search, sortProps } = persistentStateContainer
+      this.dynamicClusterProps = {
+        persistentState: {
+          currentPage: 1,
+          expandedRows: [],
+          firstColFixed: true,
+          filteredDataLength: 0,
+          search,
+          showfilteredData: false,
+          tableData: [],
+          initialData: [],
+          filteredData: [],
+          filterValues,
+          lastColFixed: true,
+          rowCount: this.countRow || 10,
+          isSelectedAll: false,
+          selectedCluster: '',
+          sortProps,
+          unRenderedFilterData: [],
+          totalLength: 0,
+          renderedColumns: [],
+          selectionRowCheckboxDeterminate: false,
+          multipleSelection: []
+        }
+      }
       this.callForClusteredTable()
       this.toggleIsShowingClusteredTable()
     },
@@ -2128,6 +2160,7 @@ export default {
     resetPageNumber() {
       this.requestBodyReportedEmails.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
     },
     closeMatchingModal() {
       this.showMatchingModal = false
@@ -2599,7 +2632,7 @@ export default {
           requestBody.push(elem)
         }
       }
-
+      this.resetClusteredPageNumber()
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = requestBody
       this.callForClusteredTable()
     },
@@ -2615,8 +2648,10 @@ export default {
 
       filterPayload = [...items]
       this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForClusteredTable()
-
+      if (this.clusteredRow) {
+        this.callForClusteredTable()
+      }
+      this.resetClusteredPageNumber()
       this.clusteredTable.isColumnFilterActive =
         this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.length >= 1
     },
@@ -2658,7 +2693,7 @@ export default {
           requestBody.push(elem)
         }
       }
-
+      this.resetPageNumber()
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchNotifiedMail()
     },
@@ -2673,6 +2708,7 @@ export default {
       })
 
       filterPayload = [...items]
+      this.resetPageNumber()
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForSearchNotifiedMail()
 
