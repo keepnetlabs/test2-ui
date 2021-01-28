@@ -1304,16 +1304,18 @@ export default {
       else if (this.sortProps && !this.isServerSide) {
         this.sortChangedEvent(this.sortProps)
       } else {
-        let maxPage = Math.ceil(table.length / this.rowCount)
+        const pageSize = this.isServerSide ? this.serverSideProps.pageSize : this.rowCount
+        let maxPage = Math.ceil(table.length / pageSize)
         if (maxPage > this.currentPage) {
           maxPage = this.currentPage
         }
-        this.tableData = table.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
+
+        this.tableData = table.slice((maxPage - 1) * pageSize, maxPage * pageSize)
         if (table.length && !this.tableData.length && this.currentPage !== 1) {
           this.currentPage -= 1
           this.tableData = [...table].slice(
-            (this.currentPage - 1) * this.rowCount,
-            this.currentPage * this.rowCount
+            (this.currentPage - 1) * pageSize,
+            this.currentPage * pageSize
           )
         }
         setTimeout(() => {
