@@ -160,9 +160,9 @@
                 <template>
                   <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
                   <span class="el-pagination__text el-pagination__text--2">
-                    {{ page }}
+                    {{ page }}-{{ numberOfPages }}
                     of
-                    {{ incidentList && totalNumberOfPages }}
+                    {{ incidentList && totalNumberOfRecords }}
                   </span>
                 </template>
               </el-pagination>
@@ -196,7 +196,7 @@ export default {
   },
   computed: {
     numberOfPages() {
-      return Math.ceil(this.incidentList && this.incidentList.length / this.itemsPerPage)
+      return Math.ceil(this.incidentList && this.totalNumberOfRecords / this.itemsPerPage)
     },
     routerName() {
       return this.$route.name

@@ -52,7 +52,7 @@ const investigations = {
       state.getInvestigationDetailsListData = data
     },
     SET_INVESTIGATIONLISTEMPY(state, payload) {
-      state.state.investigationList = [{}]
+      state.investigationList = []
     },
     SET_INVESTIGATIONDETAILSDATA(state, payload) {
       //set target list data to vuex store
@@ -91,7 +91,7 @@ const investigations = {
   },
   actions: {
     SET_INVESTIGATIONLISTEMPY(state, payload) {
-      state.state.investigationList = []
+      state.investigationList = []
     },
     async deleteInvestigationDetailsItem({ commit, dispatch }, obj) {
       // get investigaiton list via axious

@@ -313,6 +313,7 @@ export default {
     }
   },
   created() {
+    //generic
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
@@ -325,6 +326,7 @@ export default {
   },
   methods: {
     setQueryValuesToPayload({ page, size }) {
+      //generic
       const parsedPage = parseInt(page)
       this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
       const parsedSize = parseInt(size)
@@ -333,16 +335,19 @@ export default {
       this.serverSideProps.pageSize = size
     },
     serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
       this.payload.pageNumber = pageNumber
       this.queryHelper.setRouterQuery('page', pageNumber)
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
+      //generic
       this.payload.ascending = order === 'ascending'
       this.payload.orderBy = prop
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
+      //generic
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -351,6 +356,7 @@ export default {
       this.getTableData()
     },
     resetPageNumber() {
+      //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
@@ -366,6 +372,7 @@ export default {
       }
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -560,6 +567,7 @@ export default {
       this.showCreateNewGroupWithCompany = status
     },
     columnFilterChanged(filter) {
+      //generic
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
@@ -595,6 +603,7 @@ export default {
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
+      //generic
       let items = []
       let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
 
