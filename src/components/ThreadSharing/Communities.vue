@@ -248,7 +248,7 @@
                   outlined
                   class="edit-select search-wrapper__combobox"
                   v-model.trim="industryValue"
-                  @change="updateCommunities()"
+                  @change="updateCommunities(true)"
                   :placeholder="'Industry'"
                   hide-details
                   multiple
@@ -283,7 +283,7 @@
                   hide-details
                   item-text="name"
                   item-value="id"
-                  @change="updateCommunities()"
+                  @change="updateCommunities(true)"
                   :menu-props="{ offsetY: true }"
                   :disabled="selectedTab === 'tab-2' || communityLoading"
                   :slots="{ selection: true, item: false }"
@@ -1078,12 +1078,12 @@ export default {
           })
       }
     },
-    getAllCommunitiesListData() {
+    getAllCommunitiesListData(isSearch) {
       let _this = this
       this.listData = []
       this.communityLoading = true
       const payload = {
-        pageNumber: this.page,
+        pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
         orderBy: 'createTime',
         ascending: false,
@@ -1134,6 +1134,7 @@ export default {
       getAllCommunityList(payload)
         .then((response) => {
           const { data } = response
+          if (isSearch) this.page = 1
           if (this.isCommunity) {
             _this.listData = data.data.results.filter(
               (item) => item.communityResourceId === _this.$route.params.communityId
@@ -1160,11 +1161,11 @@ export default {
           this.communityLoading = false
         })
     },
-    getMyCommunitiesListData() {
+    getMyCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
       const payload = {
-        pageNumber: this.page,
+        pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
         orderBy: 'createTime',
         ascending: false,
@@ -1214,6 +1215,7 @@ export default {
       }
       getMyCommunityList(payload)
         .then((response) => {
+          if (isSearch) this.page = 1
           const { data } = response
           this.listData = data.data.results
           this.totalNumberOfRecords = data.data.totalNumberOfRecords
@@ -1243,14 +1245,14 @@ export default {
         localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
       }
     },
-    updateCommunities() {
+    updateCommunities(isSearch) {
       this.isCommunity = false
       switch (this.selectedTab) {
         case 'tab-0':
-          this.getMyCommunitiesListData()
+          this.getMyCommunitiesListData(true)
           break
         case 'tab-1':
-          if (!this.isCommunity) this.getAllCommunitiesListData()
+          if (!this.isCommunity) this.getAllCommunitiesListData(true)
           break
         case 'tab-2':
           this.getInvitions()

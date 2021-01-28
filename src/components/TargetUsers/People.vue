@@ -41,6 +41,9 @@
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
+      is-server-side
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
@@ -69,6 +72,10 @@
       @handleMultipleDelete="handleMultipleDelete"
       @downloadEvent="exportTargetUserList"
       @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -156,6 +163,9 @@ import {
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 import { checkPermission } from '@/utils/functions'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+
 export default {
   name: 'People',
   components: {
@@ -173,7 +183,7 @@ export default {
   },
   emits: ['call-for-company-licenses'],
   data: () => ({
-    tableCredientials: {
+    payload: {
       pageNumber: 1,
       pageSize: 50000,
       orderBy: 'CreateTime',
@@ -183,6 +193,11 @@ export default {
         FilterGroups: [
           {
             Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
             FilterItems: [],
             FilterGroups: []
           }
@@ -342,10 +357,108 @@ export default {
         }
       ]
     },
-
-    addUsersItems: ['Add users manually', 'Import from a file']
+    addUsersItems: ['Add users manually', 'Import from a file'],
+    serverSideProps: new ServerSideProps()
   }),
   methods: {
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.payload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.payload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    resetPageNumber() {
+      //generic
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    columnFilterChanged(filter) {
+      //generic
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
+      requestBody.map((x) => {
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
+        }
+      })
+
+      requestBody = [...items]
+      if (Array.isArray(filter)) {
+        filter.forEach((x, i) => {
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
+      } else {
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
+      }
+
+      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    columnFilterCleared(fieldName) {
+      //generic
+      let items = []
+      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
+
+      filterPayload.map((x) => {
+        if (x.FieldName !== fieldName) {
+          items.push(x)
+        }
+      })
+
+      filterPayload = [...items]
+      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+
+      this.tableOptions.isColumnFilterActive =
+        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.payload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -478,10 +591,14 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
-      getTargetUsers(this.tableCredientials)
+      getTargetUsers(this.payload)
         .then((response) => {
           this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
             for (let { name, value, dataType } of customFieldValues) {
               if (dataType === 'Boolean') {
                 if (value === 'True') {
@@ -529,7 +646,8 @@ export default {
               label: field.name,
               align: 'left',
               show: true,
-              width: 80 + field.name.length * 7
+              width: 80 + field.name.length * 7,
+              isCustomField: true
             }
           })
           this.tableOptions.columns = [
@@ -548,7 +666,7 @@ export default {
           this.callForTargetUsers()
         })
     },
-    columnFilterChanged(filter) {
+    /*columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
@@ -599,6 +717,8 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     },
+
+     */
     exportTargetUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
@@ -608,7 +728,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.tableCredientials.filter
+          filter: this.payload.filter
         }
         exportTargetUsers(payload).then((response) => {
           const { data } = response
@@ -622,6 +742,9 @@ export default {
   },
   created() {
     // this.tableOptions.columns = [...this.tableOptions.columns, ...this.tableOptions.lastColumns]
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.callForGetTargetUserCustomFieldsByCompanyId()
   },
   mounted() {}

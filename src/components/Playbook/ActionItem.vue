@@ -252,8 +252,8 @@
           <k-select
             v-model="notifyTemplate"
             :items="act.notifyTemplates"
-            item-value="value"
-            item-text="label"
+            item-value="resourceId"
+            item-text="name"
             outlined
             min-width-type="medium"
             nudge-width="50"
@@ -306,6 +306,7 @@ import {
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { searchEmailTemplate } from '@/api/company'
 
 export default {
   components: { AppDialogFooter, KSelect, AppDialog, Investigate },
@@ -365,7 +366,7 @@ export default {
       acceptCheckbox: false,
       tagsearch: '',
       targetUserType: [],
-      notifyTemplate: '18',
+      notifyTemplate: '1c95cf86d193',
       searchUser: '',
       searchGroup: '',
       targets: [],
@@ -914,12 +915,37 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
+    },
+    callForSearchEmailTemplate() {
+      let payload = {
+        pageNumber: 1,
+        pageSize: 50000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                { FieldName: 'categoryResourceId', Operator: 'Include', Value: 'SMnpwDBjAFN9' }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      searchEmailTemplate(payload).then((response) => {
+        this.act.notifyTemplates = response.data.data.results
+      })
     }
   },
   created() {
     if (!this.playbookId) {
       this.addAction()
     }
+
+    this.callForSearchEmailTemplate()
     /*
     this.callForGetTargetGroupItems(
       { pageNumber: 1, pageSize: 10, orderBy: 'Name', ascending: false, groupName: '' },
@@ -1007,6 +1033,9 @@ export default {
     editedNotifications(val) {
       val.map((item) => {
         this.addAction('notify')
+        if (item.emailTemplateId) {
+          this.notifyTemplate = item.emailTemplateId
+        }
       })
       let valIndex = 0
       this.actions.map((item, index) => {

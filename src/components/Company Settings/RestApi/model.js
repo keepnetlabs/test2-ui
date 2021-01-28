@@ -5,6 +5,8 @@ class RestApiModel {
     this.clientSecret = ''
     this.status = true
     this.statusId = 1
+    this.hasIpAddressRestriction = false
+    this.allowedIpAddresses = [{ value: '', name: '' }]
   }
 }
 
