@@ -385,7 +385,7 @@ export default {
       this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
       const _this = this
       this.loading = true
-      if (this.$route.name === 'investigations') {
+      if (this.$route.name === 'Investigations') {
         this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
           this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
           this.loading = false
