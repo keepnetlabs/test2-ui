@@ -2054,10 +2054,14 @@ export default {
 
     searchChangedEvent() {
       const debounceTime = 750
-      if (this.isServerSide && this.serverSideEvents.search) {
+      let _this = this
+      if (_this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
-          const filterItems = this.columns.reduce((acc, filterItem) => {
-            if (this.renderedColumns.find((property) => property === filterItem.property)) {
+          const filterItems = _this.columns.reduce((acc, filterItem) => {
+            if (
+              this.renderedColumns.find((property) => property === filterItem.property) &&
+              !filterItem.isCustomField
+            ) {
               acc.push({
                 FieldName:
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
