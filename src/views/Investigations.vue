@@ -317,6 +317,7 @@ export default {
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       const _this = this
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, this.bodyData)
       })
@@ -329,6 +330,7 @@ export default {
         pageNumber: pageNumber,
         totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
       })
@@ -366,6 +368,7 @@ export default {
 
       const _this = this
       this.loading = true
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
         this.loading = false
@@ -382,22 +385,26 @@ export default {
       this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
       const _this = this
       this.loading = true
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
-        this.loading = false
-      })
+      if (this.$route.name === 'investigations') {
+        this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
+          this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
+          this.loading = false
+        })
+      }
 
       this.isColumnFilterActive = this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     searchChangedEvent({ filter }) {
       this.bodyData = { ...this.bodyData, filter }
       const _this = this
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
       })
     },
     refreshDatatable() {
       this.loading = true
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.loading = false
       })
@@ -464,6 +471,7 @@ export default {
     },
     getInvestigationList() {
       this.loading = true
+
       this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
         this.loading = false
         this.tableData.data = this.tableData.data || []
@@ -512,21 +520,21 @@ export default {
       if (tableState) {
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
-          this.tableOptions.isColumnFilterActive = true
+          this.isColumnFilterActive = true
           for (const [key, value] of Object.entries(filterValues)) {
             if (value.selectValue === 'between') {
-              this.payload.filter.FilterGroups[0].FilterItems.push({
+              this.bodyData.filter.FilterGroups[0].FilterItems.push({
                 Value: value.textValue[0],
                 FieldName: key,
                 Operator: '>='
               })
-              this.payload.filter.FilterGroups[0].FilterItems.push({
+              this.bodyData.filter.FilterGroups[0].FilterItems.push({
                 Value: value.textValue[1],
                 FieldName: key,
                 Operator: '<='
               })
             } else {
-              this.payload.filter.FilterGroups[0].FilterItems.push({
+              this.bodyData.filter.FilterGroups[0].FilterItems.push({
                 Value: value.textValue,
                 FieldName: key,
                 Operator: value.selectValue
@@ -550,6 +558,7 @@ export default {
       key: 'Investigations',
       tableState
     })
+    this.$store.commit('investigations/SET_INVESTIGATIONLISTEMPY', [])
   }
 }
 </script>

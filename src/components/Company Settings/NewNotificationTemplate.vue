@@ -133,6 +133,8 @@ import to from '@/components/GrapesJs/Newsletter/mergedTexts/to'
 import subject from '@/components/GrapesJs/Newsletter/mergedTexts/subject'
 import attachment from '@/components/GrapesJs/Newsletter/mergedTexts/attachment'
 import createDate from '@/components/GrapesJs/Newsletter/mergedTexts/createDate'
+import senderIP from '@/components/GrapesJs/Newsletter/mergedTexts/senderIP'
+import caseID from '@/components/GrapesJs/Newsletter/mergedTexts/caseID'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -381,6 +383,10 @@ export default {
           return attachment
         case '{CREATEDATE}':
           return createDate
+        case '{SENDERIP}':
+          return senderIP
+        case '{CASEID}':
+          return caseID
 
         default:
           break

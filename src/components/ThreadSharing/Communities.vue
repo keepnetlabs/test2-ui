@@ -663,12 +663,12 @@
                 <template>
                   <span class="el-pagination__total el-pagination__text--1">Rows per page:</span>
                   <span class="el-pagination__text el-pagination__text--2">
-                    {{ page }}
+                    {{ page }}-{{ numberOfPages }}
                     of
                     {{
                       selectedTab && selectedTab === 'tab-2'
                         ? invitationData.length
-                        : totalNumberOfPages
+                        : totalNumberOfRecords
                     }}
                   </span>
                 </template>
@@ -719,7 +719,7 @@ export default {
       return Math.ceil(
         this.selectedTab && this.selectedTab === 'tab-2'
           ? this.invitationData && this.invitationData.length / this.itemsPerPage
-          : this.listData && this.listData.length / this.itemsPerPage
+          : this.listData && this.totalNumberOfRecords / this.itemsPerPage
       )
     }
   },
