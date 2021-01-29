@@ -60,6 +60,12 @@ export function downloadDiagnosticTool(id) {
   })
 }
 
+export function generateO365AddIn() {
+  return testRequest.get(`/phishing-reporter/generate/office365-addin`, {
+    responseType: 'blob'
+  })
+}
+
 export function searchGeneratedApplicationHistory(payload) {
   return testRequest.post(`/phishing-reporter/history/search`, payload)
 }
