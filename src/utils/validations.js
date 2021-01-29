@@ -32,6 +32,15 @@ export function ip(value, message = 'Invalid IP address') {
   )
 }
 
+export function ipWithStars(value, message = 'Invalid IP address') {
+  value = getValue(value)
+  return (
+    /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/.test(
+      value
+    ) || message
+  )
+}
+
 export function url(value, message = 'Invalid URL') {
   value = getValue(value)
   //https?:\/\/(www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)
