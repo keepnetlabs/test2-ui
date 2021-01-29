@@ -359,6 +359,7 @@ export default {
       //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)

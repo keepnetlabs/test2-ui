@@ -53,7 +53,7 @@
                   item-text="name"
                   :menu-props="{ offsetY: true }"
                   item-value="resourceId"
-                  @change="getIncidentList('', '', true)"
+                  @change="!isLoadState && getIncidentList('', '', true)"
                   :disabled="incidentLoading"
                 />
               </div>
@@ -69,7 +69,7 @@
                   :menu-props="{ offsetY: true }"
                   item-text="name"
                   item-value="resourceId"
-                  @change="getIncidentList('', '', true)"
+                  @change="!isLoadState && getIncidentList('', '', true)"
                   :slots="{ selection: true }"
                   :disabled="incidentLoading"
                 >
@@ -111,6 +111,16 @@
                     :totalPostCount="props.items.length"
                     @openEditPopupItem="openEditPopupItemFunc"
                     :key="$route.query.postId || '1'"
+                    :searchValues="{
+                      search,
+                      companyValue,
+                      threats,
+                      page,
+                      totalNumberOfRecords,
+                      totalNumberOfPages,
+                      itemsPerPage
+                    }"
+                    :incidents="incidentList"
                   />
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -214,6 +224,12 @@ export default {
     refreshIncidents: {
       type: Boolean,
       required: false
+    },
+    isLoadState: {
+      type: Boolean
+    },
+    setLoadState: {
+      required: false
     }
   },
   data: () => ({
@@ -248,16 +264,22 @@ export default {
       }
     },
     refreshIncidents: function (newVal, oldVal) {
-      if (newVal) this.getIncidentList()
+      if (newVal && !this.isLoadState) {
+        this.getIncidentList()
+      }
     },
     search: function (newVal, oldVal) {
       if (newVal !== oldVal) {
         if (!newVal) {
-          this.getIncidentList('', '', true)
-        } else {
-          this.debounce(() => {
+          if (!this.isLoadState) {
             this.getIncidentList('', '', true)
-          }, 1000)
+          }
+        } else {
+          if (!this.isLoadState) {
+            this.debounce(() => {
+              this.getIncidentList('', '', true)
+            }, 1000)
+          }
         }
       }
     },
@@ -270,10 +292,14 @@ export default {
   methods: {
     handleSizeChange(val) {
       this.itemsPerPage = val
-      this.getIncidentList()
+      if (!this.isLoadState) {
+        this.getIncidentList('', '', true)
+      }
     },
     onChangePagination() {
-      this.getIncidentList()
+      if (!this.isLoadState) {
+        this.getIncidentList()
+      }
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -291,7 +317,9 @@ export default {
       this.showPostIncident = false
     },
     refreshDataFunc() {
-      this.getIncidentList()
+      if (!this.isLoadState) {
+        this.getIncidentList()
+      }
     },
     getThreats() {
       listThreatCategories().then((response) => {
@@ -303,6 +331,8 @@ export default {
       getCommunityPost(this.$route.query.postId)
         .then((response) => {
           let item = response.data.data
+          this.numberOfPages = 1
+          this.totalNumberOfRecords = 1
           item.isToggle = true
           item.communityPostResourceId = this.$route.query.postId
           this.incidentList.push(item)
@@ -459,27 +489,29 @@ export default {
               }
             })
         } else {
-          getIncidentList(payload)
-            .then((response) => {
-              if (isSearch) this.page = 1
-              this.incidentList = response.data.data.results
-              this.incidentList = this.incidentList.map((item) => {
-                return { ...item, isToggle: false }
-              })
-              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-              this.totalNumberOfPages = response.data.data.totalNumberOfPages
-              this.incidentLoading = false
-            })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
-              ) {
-                this.incidentList = []
+          if (!this.isLoadState) {
+            getIncidentList(payload)
+              .then((response) => {
+                if (isSearch) this.page = 1
+                this.incidentList = response.data.data.results
+                this.incidentList = this.incidentList.map((item) => {
+                  return { ...item, isToggle: false }
+                })
+                this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+                this.totalNumberOfPages = response.data.data.totalNumberOfPages
                 this.incidentLoading = false
-              }
-            })
+              })
+              .catch((error) => {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.code === 'RESOURCE_NOT_FOUND'
+                ) {
+                  this.incidentList = []
+                  this.incidentLoading = false
+                }
+              })
+          }
         }
       }
     },
@@ -493,14 +525,40 @@ export default {
       this.itemsPerPage = number
     }
   },
-  mounted() {
+  created() {
     getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
     this.getThreats()
+    let _this = this
     if (this.$route.query && this.$route.query.postId) {
       this.isSharedPost = true
       this.getSharedPost()
     } else {
-      this.getIncidentList()
+      if (this.isLoadState) {
+        const incidentsData = this.$store.state['incidents'].incidents.incidentsData
+        if (incidentsData) {
+          this.incidentList = incidentsData.tableData
+          this.incidentList = this.incidentList.map((item) => {
+            return { ...item, isToggle: false }
+          })
+          this.page = incidentsData.searchValues.page
+          this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords
+          this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages
+          this.itemsPerPage = incidentsData.searchValues.itemsPerPage
+          this.search = incidentsData.searchValues.search
+          this.companyValue = incidentsData.searchValues.companyValue
+          this.threats = incidentsData.searchValues.threats
+          this.incidentLoading = false
+          setTimeout(() => {
+            _this.$emit('setLoadState')
+          }, 1250)
+        } else {
+          this.getIncidentList()
+        }
+      } else {
+        if (!this.isLoadState) {
+          this.getIncidentList()
+        }
+      }
     }
   }
 }

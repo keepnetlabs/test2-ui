@@ -1012,6 +1012,12 @@ export default {
     },
     refreshData: {
       required: false
+    },
+    searchValues: {
+      default: {}
+    },
+    incidents: {
+      default: []
     }
   },
   data: () => ({
@@ -1224,6 +1230,20 @@ export default {
       if (post.communityResourceId) {
         localStorage.setItem('communityName', post.communityName)
         localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
+        let incidentsData = {
+          tableData: this.incidents,
+          searchValues: this.searchValues,
+          type: 'incident'
+        }
+        let communitiesData = null
+        this.$store.dispatch('incidents/setIncidents', {
+          key: 'incidents',
+          incidentsData
+        })
+        this.$store.dispatch('communities/setCommunities', {
+          key: 'communities',
+          communitiesData
+        })
         this.$router.push(`/community/${post.communityResourceId}`)
       }
     },

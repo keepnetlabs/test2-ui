@@ -1342,8 +1342,10 @@ export default {
       }
     },
     getCommunityName() {
-      this.communityId = localStorage.getItem('communityResourceIdForRedirect')
-      this.communityName = localStorage.getItem('communityName')
+      this.communityId =
+        this.$route.query.communityResourceIdForRedirect ||
+        localStorage.getItem('communityResourceIdForRedirect')
+      this.communityName = this.$route.query.communityName || localStorage.getItem('communityName')
     },
     getCompanyGroupName() {
       this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
