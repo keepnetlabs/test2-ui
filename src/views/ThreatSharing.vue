@@ -33,6 +33,7 @@
                 ref="tsIncidents"
                 :isLoadState="isLoadState"
                 @setLoadState="setLoadState"
+                v-if="tab === 0"
               />
             </v-tab-item>
             <v-tab-item v-if="checkPermissions('communities/search/all', 'POST')">
@@ -42,6 +43,7 @@
                 :isCommunity="this.$route.params.isCommunity"
                 :isLoadState="isLoadState"
                 @setLoadState="setLoadState"
+                v-if="tab === 1"
               />
             </v-tab-item>
           </v-tabs-items>

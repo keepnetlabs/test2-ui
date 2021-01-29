@@ -275,11 +275,11 @@ export default {
             this.getIncidentList('', '', true)
           }
         } else {
-          this.debounce(() => {
-            if (!this.isLoadState) {
+          if (!this.isLoadState) {
+            this.debounce(() => {
               this.getIncidentList('', '', true)
-            }
-          }, 1000)
+            }, 1000)
+          }
         }
       }
     },
@@ -293,7 +293,7 @@ export default {
     handleSizeChange(val) {
       this.itemsPerPage = val
       if (!this.isLoadState) {
-        this.getIncidentList()
+        this.getIncidentList('', '', true)
       }
     },
     onChangePagination() {
@@ -331,6 +331,8 @@ export default {
       getCommunityPost(this.$route.query.postId)
         .then((response) => {
           let item = response.data.data
+          this.numberOfPages = 1
+          this.totalNumberOfRecords = 1
           item.isToggle = true
           item.communityPostResourceId = this.$route.query.postId
           this.incidentList.push(item)
@@ -487,27 +489,29 @@ export default {
               }
             })
         } else {
-          getIncidentList(payload)
-            .then((response) => {
-              if (isSearch) this.page = 1
-              this.incidentList = response.data.data.results
-              this.incidentList = this.incidentList.map((item) => {
-                return { ...item, isToggle: false }
-              })
-              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-              this.totalNumberOfPages = response.data.data.totalNumberOfPages
-              this.incidentLoading = false
-            })
-            .catch((error) => {
-              if (
-                error.response &&
-                error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
-              ) {
-                this.incidentList = []
+          if (!this.isLoadState) {
+            getIncidentList(payload)
+              .then((response) => {
+                if (isSearch) this.page = 1
+                this.incidentList = response.data.data.results
+                this.incidentList = this.incidentList.map((item) => {
+                  return { ...item, isToggle: false }
+                })
+                this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
+                this.totalNumberOfPages = response.data.data.totalNumberOfPages
                 this.incidentLoading = false
-              }
-            })
+              })
+              .catch((error) => {
+                if (
+                  error.response &&
+                  error.response.data &&
+                  error.response.data.code === 'RESOURCE_NOT_FOUND'
+                ) {
+                  this.incidentList = []
+                  this.incidentLoading = false
+                }
+              })
+          }
         }
       }
     },
