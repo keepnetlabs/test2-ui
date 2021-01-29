@@ -828,6 +828,7 @@ export default {
           })
         }
         if (this.$route.name === 'Community') {
+          this.$router.replace({ query: null })
           this.$router.push(
             `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
           )
@@ -895,11 +896,13 @@ export default {
             communitiesData
           })
         }
+        this.$router.replace({ query: null })
         if (this.$route.name === 'Community') {
-          this.$router.go(`/community/${post.communityResourceId}`)
+          this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
         }
         this.$router.push({
-          path: `/community/${post.communityResourceId}`
+          path: `/community/${post.communityResourceId}`,
+          query: ''
         })
       }
     },
