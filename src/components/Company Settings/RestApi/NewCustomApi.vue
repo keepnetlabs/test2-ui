@@ -125,7 +125,9 @@
             >
               <InputIpAddress
                 :placeholder="labels.EnterIpAdress"
-                :rules="formValues.hasIpAddressRestriction ? [(v) => validations.ip(v)] : []"
+                :rules="
+                  formValues.hasIpAddressRestriction ? [(v) => validations.ipWithStars(v)] : []
+                "
                 class="auth-key__textfield"
                 :disabled="!formValues.hasIpAddressRestriction"
                 v-model.trim="item.value"
