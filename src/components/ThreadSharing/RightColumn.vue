@@ -623,6 +623,15 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    incidentsRef: {
+      required: false
+    },
+    communitiesRef: {
+      required: false
+    },
+    selectedTab: {
+      required: false
     }
   },
   components: {
@@ -768,6 +777,56 @@ export default {
     },
     goToPostDetails(post) {
       if (post.communityResourceId) {
+        if (this.selectedTab === 1) {
+          let communitiesData = {
+            tableData:
+              this.communitiesRef.selectedTab === 'tab-2'
+                ? this.communitiesRef.invitationData
+                : this.communitiesRef.listData,
+            searchValues: {
+              filter: this.communitiesRef.filter,
+              industryValue: this.communitiesRef.industryValue,
+              privacyValue: this.communitiesRef.privacyValue,
+              selectedTab: this.communitiesRef.selectedTab,
+              page: this.communitiesRef.page,
+              totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
+              totalNumberOfPages: this.communitiesRef.totalNumberOfPages
+            },
+            type: 'communities'
+          }
+          this.$store.dispatch('communities/setCommunities', {
+            key: 'communities',
+            communitiesData
+          })
+          let incidentsData = null
+          this.$store.dispatch('incidents/setIncidents', {
+            key: 'incidents',
+            incidentsData
+          })
+        } else if (this.selectedTab === 0) {
+          let incidentsData = {
+            tableData: this.incidentsRef.incidentList,
+            searchValues: {
+              search: this.incidentsRef.search,
+              companyValue: this.incidentsRef.companyValue,
+              threats: this.incidentsRef.threats,
+              page: this.incidentsRef.page,
+              totalNumberOfRecords: this.incidentsRef.totalNumberOfRecords,
+              totalNumberOfPages: this.incidentsRef.totalNumberOfPages,
+              itemsPerPage: this.incidentsRef.itemsPerPage
+            },
+            type: 'incidents'
+          }
+          let communitiesData = []
+          this.$store.dispatch('incidents/setIncidents', {
+            key: 'incidents',
+            incidentsData
+          })
+          this.$store.dispatch('communities/setCommunities', {
+            key: 'communities',
+            communitiesData
+          })
+        }
         if (this.$route.name === 'Community') {
           this.$router.push(
             `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
@@ -786,8 +845,62 @@ export default {
       if (post.communityResourceId) {
         localStorage.setItem('communityName', post.communityName)
         localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
-        this.$router.push(`/community/${post.communityResourceId}`)
-        this.$router.go(`/community/${post.communityResourceId}`)
+        if (this.selectedTab === 1) {
+          let communitiesData = {
+            tableData:
+              this.communitiesRef.selectedTab === 'tab-2'
+                ? this.communitiesRef.invitationData
+                : this.communitiesRef.listData,
+            searchValues: {
+              filter: this.communitiesRef.filter,
+              industryValue: this.communitiesRef.industryValue,
+              privacyValue: this.communitiesRef.privacyValue,
+              selectedTab: this.communitiesRef.selectedTab,
+              page: this.communitiesRef.page,
+              totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
+              totalNumberOfPages: this.communitiesRef.totalNumberOfPages
+            },
+            type: 'communities'
+          }
+          this.$store.dispatch('communities/setCommunities', {
+            key: 'communities',
+            communitiesData
+          })
+          let incidentsData = null
+          this.$store.dispatch('incidents/setIncidents', {
+            key: 'incidents',
+            incidentsData
+          })
+        } else if (this.selectedTab === 0) {
+          let incidentsData = {
+            tableData: this.incidentsRef.incidentList,
+            searchValues: {
+              search: this.incidentsRef.search,
+              companyValue: this.incidentsRef.companyValue,
+              threats: this.incidentsRef.threats,
+              page: this.incidentsRef.page,
+              totalNumberOfRecords: this.incidentsRef.totalNumberOfRecords,
+              totalNumberOfPages: this.incidentsRef.totalNumberOfPages,
+              itemsPerPage: this.incidentsRef.itemsPerPage
+            },
+            type: 'incidents'
+          }
+          let communitiesData = []
+          this.$store.dispatch('incidents/setIncidents', {
+            key: 'incidents',
+            incidentsData
+          })
+          this.$store.dispatch('communities/setCommunities', {
+            key: 'communities',
+            communitiesData
+          })
+        }
+        if (this.$route.name === 'Community') {
+          this.$router.go(`/community/${post.communityResourceId}`)
+        }
+        this.$router.push({
+          path: `/community/${post.communityResourceId}`
+        })
       }
     },
     inviteMember() {

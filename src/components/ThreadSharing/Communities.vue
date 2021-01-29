@@ -777,11 +777,18 @@ export default {
     refresh: {
       type: Boolean
     },
-    isCommunity: { required: false }
+    isCommunity: { required: false },
+    isLoadState: {
+      type: Boolean
+    },
+
+    setLoadState: {
+      required: false
+    }
   },
   watch: {
     refresh: function (newVal, oldVal) {
-      if (oldVal != newVal) {
+      if (oldVal != newVal && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
@@ -799,8 +806,7 @@ export default {
       }
     }
   },
-  created() {},
-  mounted() {
+  created() {
     this.getIndustryList()
     if (this.isCommunity) {
       if (this.$route.params.communityName === 'empty') {
@@ -821,29 +827,36 @@ export default {
       }
     }
     this.selectedTab = 'tab-1'
+    setTimeout(() => {
+      this.$emit('setLoadState')
+    }, 1250)
   },
   methods: {
     handleSizeChange(val) {
       this.itemsPerPage = val
-      switch (this.selectedTab) {
-        case 'tab-0':
-          this.getMyCommunitiesListData()
-          break
-        case 'tab-1':
-          if (!this.isCommunity) this.getAllCommunitiesListData()
-          break
-        default:
-          return false
+      if (!this.isLoadState) {
+        switch (this.selectedTab) {
+          case 'tab-0':
+            this.getMyCommunitiesListData()
+            break
+          case 'tab-1':
+            if (!this.isCommunity) this.getAllCommunitiesListData()
+            break
+          default:
+            return false
+        }
       }
     },
     onChangePagination() {
-      switch (this.selectedTab) {
-        case 'tab-0':
-          this.getMyCommunitiesListData()
-          break
-        case 'tab-1':
-          if (!this.isCommunity) this.getAllCommunitiesListData()
-          break
+      if (!this.isLoadState) {
+        switch (this.selectedTab) {
+          case 'tab-0':
+            this.getMyCommunitiesListData()
+            break
+          case 'tab-1':
+            if (!this.isCommunity) this.getAllCommunitiesListData()
+            break
+        }
       }
     },
     checkPermissions(permission, type) {
@@ -1237,6 +1250,28 @@ export default {
         localStorage.setItem('communityName', item.communityName)
         localStorage.setItem('communityResourceIdForRedirect', item.communityResourceId)
         localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
+        let communitiesData = {
+          tableData: this.selectedTab === 'tab-2' ? this.invitationData : this.listData,
+          searchValues: {
+            filter: this.filter,
+            industryValue: this.industryValue,
+            privacyValue: this.privacyValue,
+            selectedTab: this.selectedTab,
+            page: this.page,
+            totalNumberOfRecords: this.totalNumberOfRecords,
+            totalNumberOfPages: this.totalNumberOfPages
+          },
+          type: 'community'
+        }
+        this.$store.dispatch('communities/setCommunities', {
+          key: 'communities',
+          communitiesData
+        })
+        let incidentsData = null
+        this.$store.dispatch('incidents/setIncidents', {
+          key: 'incidents',
+          incidentsData
+        })
         this.$router.push({
           name: `Community`,
           params: { id: item.communityResourceId, item: item }
@@ -1247,18 +1282,20 @@ export default {
     },
     updateCommunities(isSearch) {
       this.isCommunity = false
-      switch (this.selectedTab) {
-        case 'tab-0':
-          this.getMyCommunitiesListData(true)
-          break
-        case 'tab-1':
-          if (!this.isCommunity) this.getAllCommunitiesListData(true)
-          break
-        case 'tab-2':
-          this.getInvitions()
-          break
-        default:
-          return false
+      if (!this.isLoadState) {
+        switch (this.selectedTab) {
+          case 'tab-0':
+            this.getMyCommunitiesListData(true)
+            break
+          case 'tab-1':
+            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            break
+          case 'tab-2':
+            this.getInvitions()
+            break
+          default:
+            return false
+        }
       }
     },
     requestJoin(communityId, communityName, type) {
@@ -1269,6 +1306,23 @@ export default {
           if (type === 'join') {
             localStorage.setItem('communityName', communityName)
             localStorage.setItem('communityResourceIdForRedirect', communityId)
+            let communitiesData = {
+              tableData: this.selectedTab === 'tab-2' ? this.invitationData : this.listData,
+              searchValues: {
+                filter: this.filter,
+                industryValue: this.industryValue,
+                privacyValue: this.privacyValue,
+                selectedTab: this.selectedTab,
+                page: this.page,
+                totalNumberOfRecords: this.totalNumberOfRecords,
+                totalNumberOfPages: this.totalNumberOfPages
+              },
+              type: 'community'
+            }
+            this.$store.dispatch('communities/setCommunities', {
+              key: 'communities',
+              communitiesData
+            })
             this.$router.push(`/community/${communityId}`)
           } else {
             if (this.selectedTab === 'tab-1') {
@@ -1298,7 +1352,7 @@ export default {
       this.isCommunity = false
       this.page = 1
       this.itemsPerPage = 5
-      if (name == 'Your Communities') {
+      if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.getMyCommunitiesListData()
       } else if (name == 'All') {

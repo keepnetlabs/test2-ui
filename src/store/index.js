@@ -10,6 +10,8 @@ import investigations from './modules/investigations'
 import playbook from './modules/playbook'
 import rightColumn from './modules/rightColumn'
 import datatable from '@/store/modules/datatable'
+import incidents from '@/store/modules/incidents'
+import communities from '@/store/modules/communities'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -22,7 +24,9 @@ let store = new Vuex.Store({
     investigations,
     playbook,
     rightColumn,
-    datatable
+    datatable,
+    incidents,
+    communities
   }
 })
 
