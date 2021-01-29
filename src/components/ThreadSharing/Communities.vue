@@ -837,10 +837,10 @@ export default {
       if (!this.isLoadState) {
         switch (this.selectedTab) {
           case 'tab-0':
-            this.getMyCommunitiesListData()
+            this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData()
+            if (!this.isCommunity) this.getAllCommunitiesListData(true)
             break
           default:
             return false
