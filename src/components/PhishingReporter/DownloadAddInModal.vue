@@ -26,9 +26,25 @@
         <div class="logos-buttons__container">
           <logos wrapperClasses="mt-10 logos" />
           <div class="buttons__container">
-            <v-btn class="white--text btn-util btn-download-add-in" color="#2196f3" rounded>
+            <v-btn
+              class="white--text btn-util btn-download-add-in"
+              color="#2196f3"
+              rounded
+              :loading="gmailSpinnerStatus"
+              @click="callForGenerateO365AddIn"
+            >
               <v-icon left>mdi-download</v-icon>
               Download
+              <template v-slot:loader>
+                <img
+                  src="../../assets/img/spinner.svg"
+                  class="add-in-settings__spinner"
+                  alt="spinner"
+                />
+                <span style="font-size: 14px; text-transform: capitalize;">
+                  Generating...
+                </span>
+              </template>
             </v-btn>
             <v-btn
               class="white--text btn-util btn-download-add-in"
@@ -118,6 +134,7 @@ import {
   downloadDiagnosticTool,
   downloadOutlookAddIn,
   generateDiagnosticTool,
+  generateO365AddIn,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
 export default {
@@ -140,6 +157,20 @@ export default {
         })
         .catch(() => {
           this.outlookSpinnerStatus = false
+        })
+    },
+    callForGenerateO365AddIn() {
+      this.gmailSpinnerStatus = true
+      generateO365AddIn()
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Office365.msi`
+          link.click()
+        })
+        .finally(() => {
+          this.gmailSpinnerStatus = false
         })
     },
     callForDownloadOutlookAddIn(resourceId) {
@@ -212,7 +243,8 @@ export default {
       outlookSpinnerStatus: false,
       diagnosticToolSpinnerStatus: false,
       downloadOutlookAddInTimeout: null,
-      diagnosticToolAddInTimeout: null
+      diagnosticToolAddInTimeout: null,
+      gmailSpinnerStatus: false
     }
   }
 }

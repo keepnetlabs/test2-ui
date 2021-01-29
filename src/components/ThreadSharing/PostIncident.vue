@@ -2595,7 +2595,8 @@ export default {
         pageNumber: 1,
         pageSize: 500000,
         orderBy: 'createTime',
-        ascending: false
+        ascending: false,
+        clusteredBy: ''
       }
       searchNotifiedMail(payload).then((response) => {
         const { data } = response
