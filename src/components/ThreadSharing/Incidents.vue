@@ -132,13 +132,13 @@
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
                     {{
-                      search || companyValue
+                      search || companyValue || threats
                         ? 'Search criteria has no results'
                         : 'No incident has been shared'
                     }}
                   </span>
                   <div
-                    v-if="!search && !companyValue && routerName === 'Community'"
+                    v-if="!search && !companyValue && !threats && routerName === 'Community'"
                     class="create-post-incident"
                     @click="showPostIncident = true"
                     block
