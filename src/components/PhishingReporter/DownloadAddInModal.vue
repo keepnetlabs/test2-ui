@@ -166,7 +166,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `KeepnetLabsOwaManifest.xml`
+          link.download = `O365PhishingReporterAddin.xml`
           link.click()
         })
         .finally(() => {
