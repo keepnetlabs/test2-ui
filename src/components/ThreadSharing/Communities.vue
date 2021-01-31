@@ -1306,22 +1306,15 @@ export default {
           if (type === 'join') {
             localStorage.setItem('communityName', communityName)
             localStorage.setItem('communityResourceIdForRedirect', communityId)
-            let communitiesData = {
-              tableData: this.selectedTab === 'tab-2' ? this.invitationData : this.listData,
-              searchValues: {
-                filter: this.filter,
-                industryValue: this.industryValue,
-                privacyValue: this.privacyValue,
-                selectedTab: this.selectedTab,
-                page: this.page,
-                totalNumberOfRecords: this.totalNumberOfRecords,
-                totalNumberOfPages: this.totalNumberOfPages
-              },
-              type: 'community'
-            }
+            let communitiesData = null
             this.$store.dispatch('communities/setCommunities', {
-              key: 'communities',
+              key: 'communityJoin',
               communitiesData
+            })
+            let incidentsData = null
+            this.$store.dispatch('incidents/setIncidents', {
+              key: 'incidents',
+              incidentsData
             })
             this.$router.push(`/community/${communityId}`)
           } else {
