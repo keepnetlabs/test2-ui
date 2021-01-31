@@ -1260,6 +1260,14 @@ export default {
         this.show2 = false
         this.showNewPassword = false
       }
+    },
+    $route(to, from) {
+      if (to.name === from.name && !from.params.item) {
+        this.$route.query.communityName = localStorage.getItem('previousCommunityName')
+        this.$route.query.communityResourceIdForRedirect = localStorage.getItem(
+          'previousCommunityResourceIdForRedirect'
+        )
+      }
     }
   },
   mounted() {

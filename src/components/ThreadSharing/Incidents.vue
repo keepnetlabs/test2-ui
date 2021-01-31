@@ -132,7 +132,7 @@
                 <div class="empty-communities-inline">
                   <span class="no-community pt-4">
                     {{
-                      search || companyValue || threats
+                      checkDatatableIsEmpty()
                         ? 'Search criteria has no results'
                         : 'No incident has been shared'
                     }}
@@ -290,6 +290,9 @@ export default {
     }
   },
   methods: {
+    checkDatatableIsEmpty() {
+      return this.search || this.companyValue || this.threats
+    },
     handleSizeChange(val) {
       this.itemsPerPage = val
       if (!this.isLoadState) {
