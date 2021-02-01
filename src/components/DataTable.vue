@@ -2051,7 +2051,21 @@ export default {
         fn()
       }, delay)
     },
-
+    getSearchFilterItems() {
+      return this.columns.reduce((acc, filterItem) => {
+        if (
+          this.renderedColumns.find((property) => property === filterItem.property) &&
+          !filterItem.isCustomField
+        ) {
+          acc.push({
+            FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
+            Operator: 'Contains',
+            Value: this.search
+          })
+        }
+        return acc
+      }, [])
+    },
     searchChangedEvent() {
       const debounceTime = 750
       let _this = this

@@ -16,7 +16,8 @@ export function getPhishingReporter() {
 }
 
 export function getPhishingReporterImg() {
-  return testRequest.get('/phishing-reporter/img', {
+  const time = Date.now()
+  return testRequest.get(`/phishing-reporter/img?time=${time}`, {
     responseType: 'blob'
   })
 }
