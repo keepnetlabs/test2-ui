@@ -764,7 +764,7 @@ export default {
         sortable: false,
         show: true,
         maxWidth: 170,
-        type: 'detected',
+        type: 'badge',
         hasTooltip: true
       }
     ],
@@ -906,6 +906,7 @@ export default {
           const tableData = this.mailDetails.urls.map((item, index) => {
             const returnObj = {}
             let result
+
             for (let engine of item.analysisList) {
               returnObj[engine.analysisEngine] = engine.result
               urlTableColumns.add(engine.analysisEngine)
