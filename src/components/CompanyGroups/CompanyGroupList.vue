@@ -220,7 +220,6 @@ export default {
         copyOfFilter.FilterGroups.push(searchFilter)
       }
       downloadTypes.exportTypes.forEach((item) => {
-        console.log('copyOfFilter', copyOfFilter)
         let payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
