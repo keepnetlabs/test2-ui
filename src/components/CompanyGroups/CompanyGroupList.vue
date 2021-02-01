@@ -207,7 +207,20 @@ export default {
   },
   methods: {
     handleTableDownload(downloadTypes) {
+      const searchFilter = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
+      if (this.$refs.refGroupDataList && this.$refs.refGroupDataList.search) {
+        searchFilter.FilterItems = this.$refs.refGroupDataList
+          .getSearchFilterItems()
+          .filter((item) => item.FieldName.toLowerCase() !== 'companycount')
+        copyOfFilter.FilterGroups.push(searchFilter)
+      }
       downloadTypes.exportTypes.forEach((item) => {
+        console.log('copyOfFilter', copyOfFilter)
         let payload = {
           pageNumber: downloadTypes.pageNumber,
           pageSize: downloadTypes.pageSize,
@@ -215,7 +228,7 @@ export default {
           ascending: this.payload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
           exportType: item === 'XLS' ? 'Excel' : item,
-          filter: this.payload.filter
+          filter: copyOfFilter
         }
         exportCompanyGroup(payload)
           .then((response) => {
