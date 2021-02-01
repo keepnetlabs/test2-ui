@@ -194,7 +194,7 @@ export default {
           const { data } = response
           this.getCommentDetails = true
           this.postComments = data.data
-          this.$emit('changeCommentsValue', this.postComments)
+          this.$emit('changeCommentsValue', this.postComments, id)
         })
         .catch((error) => {
           if (

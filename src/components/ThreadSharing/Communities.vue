@@ -1026,8 +1026,11 @@ export default {
       removeFromCommunities(this.leaveCommunityId)
         .then(() => {
           this.isWantToToLeaveFromCommunity = false
-          this.getAllCommunitiesListData()
-          this.getMyCommunitiesListData()
+          if (this.selectedTab === 'tab-0') {
+            this.getMyCommunitiesListData(true)
+          } else {
+            this.getAllCommunitiesListData()
+          }
           this.getInvitationCount()
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true).finally(() => {
@@ -1259,7 +1262,8 @@ export default {
             selectedTab: this.selectedTab,
             page: this.page,
             totalNumberOfRecords: this.totalNumberOfRecords,
-            totalNumberOfPages: this.totalNumberOfPages
+            totalNumberOfPages: this.totalNumberOfPages,
+            itemsPerPage: this.itemsPerPage
           },
           type: 'community'
         }
@@ -1301,12 +1305,29 @@ export default {
     requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       this.isRequestToJoinDisabled = true
+      let _this = this
       joinCommunity(communityId)
         .then(() => {
           if (type === 'join') {
+            _this.listData.find(
+              (item) => item.communityResourceId === communityId
+            ).membershipStatusId = 2
             localStorage.setItem('communityName', communityName)
             localStorage.setItem('communityResourceIdForRedirect', communityId)
-            let communitiesData = null
+            let communitiesData = {
+              tableData: this.selectedTab === 'tab-2' ? this.invitationData : this.listData,
+              searchValues: {
+                filter: this.filter,
+                industryValue: this.industryValue,
+                privacyValue: this.privacyValue,
+                selectedTab: this.selectedTab,
+                page: this.page,
+                totalNumberOfRecords: this.totalNumberOfRecords,
+                totalNumberOfPages: this.totalNumberOfPages,
+                itemsPerPage: this.itemsPerPage
+              },
+              type: 'community'
+            }
             this.$store.dispatch('communities/setCommunities', {
               key: 'communityJoin',
               communitiesData
@@ -1318,6 +1339,9 @@ export default {
             })
             this.$router.push(`/community/${communityId}`)
           } else {
+            _this.listData.find(
+              (item) => item.communityResourceId === communityId
+            ).membershipStatusId = 3
             if (this.selectedTab === 'tab-1') {
               this.getAllCommunitiesListData()
             } else {

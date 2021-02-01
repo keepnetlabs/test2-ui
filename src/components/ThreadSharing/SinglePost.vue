@@ -1122,8 +1122,16 @@ export default {
     }
   },
   methods: {
-    changeCommentsValue(comments) {
+    changeCommentsValue(comments, postId) {
       this.comments = comments
+      if (this.$store.state['incidents'].incidents.incidentsData) {
+        this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+          (item) => item.communityPostResourceId === postId
+        ).comments = comments
+        this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+          (item) => item.communityPostResourceId === postId
+        ).commentCount = comments.length
+      }
       this.$forceUpdate()
     },
     checkPermissions(permission, type) {
@@ -1322,6 +1330,11 @@ export default {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
+          if (_this.$store.state['incidents'].incidents.incidentsData) {
+            _this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+              (item) => item.communityPostResourceId === postId
+            ).likeCount = response.data.data.likeCount
+          }
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
           }, 500)
@@ -1329,11 +1342,16 @@ export default {
       })
     },
     userUnlikePost(postId) {
+      let _this = this
       likePost(postId).then((response) => {
         getCommunityPost(this.post.communityPostResourceId).then((response) => {
           this.postDetails = response.data.data
           this.post.likeCount = response.data.data.likeCount
-
+          if (_this.$store.state['incidents'].incidents.incidentsData) {
+            _this.$store.state['incidents'].incidents.incidentsData.tableData.find(
+              (item) => item.communityPostResourceId === postId
+            ).likeCount = response.data.data.likeCount
+          }
           setTimeout(() => {
             this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
           }, 500)

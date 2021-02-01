@@ -382,7 +382,10 @@
               <router-link
                 to="/target-users"
                 class="menu-link-default"
-                :class="[routerName === 'Target Group Users' && 'active-link']"
+                :class="[
+                  (routerName === 'Target Group Users' || routerName === 'Target Users') &&
+                    'active-link'
+                ]"
               >
                 <v-list-item-title class="menu-item-wrapper">
                   <span class="menu-item-span">Target Users</span>

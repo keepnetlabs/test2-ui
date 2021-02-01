@@ -155,6 +155,7 @@ export default {
                     communitiesData.searchValues.totalNumberOfPages
                   this.$refs.tsCommunities.selectedTab = communitiesData.searchValues.selectedTab
                   this.$refs.tsCommunities.communityLoading = false
+                  this.$refs.tsCommunities.itemsPerPage = communitiesData.searchValues.itemsPerPage
                   if (communitiesData.searchValues.selectedTab === 'tab-2') {
                     this.$refs.tsCommunities.invitationData = communitiesData.tableData
                   } else {
