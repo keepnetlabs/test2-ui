@@ -755,8 +755,28 @@ export default {
     },
     leaveFromCommunityConfirm() {
       this.isLeaveFromCommunityButtonDisabled = true
+      let _this = this
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
+          if (_this.communityDetails.privacyStatusId === 1) {
+            if (_this.$store.state['communities'].communities.communitiesData) {
+              _this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === _this.communityDetails.resourceId
+              ).membershipStatusId = 0
+              _this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === _this.communityDetails.resourceId
+              ).privacyStatusName = 'Public'
+            }
+          } else {
+            if (_this.$store.state['communities'].communities.communitiesData) {
+              _this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === _this.communityDetails.resourceId
+              ).membershipStatusId = 0
+              _this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === _this.communityDetails.resourceId
+              ).privacyStatusName = 'Private'
+            }
+          }
           this.isWantToToLeaveFromCommunity = false
           this.$router.push(`/threat-sharing`)
         })
@@ -796,7 +816,8 @@ export default {
               selectedTab: this.communitiesRef.selectedTab,
               page: this.communitiesRef.page,
               totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
-              totalNumberOfPages: this.communitiesRef.totalNumberOfPages
+              totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
+              itemsPerPage: this.itemsPerPage
             },
             type: 'communities'
           }
@@ -867,7 +888,8 @@ export default {
               selectedTab: this.communitiesRef.selectedTab,
               page: this.communitiesRef.page,
               totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
-              totalNumberOfPages: this.communitiesRef.totalNumberOfPages
+              totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
+              itemsPerPage: this.itemsPerPage
             },
             type: 'communities'
           }
@@ -1061,12 +1083,34 @@ export default {
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
       this.isJoinCommunityButtonDisabled = true
+      let _this = this
       joinCommunity(resourceId)
         .then(() => {
           this.getsuggestedCommunities()
           localStorage.setItem('communityName', communityName)
           localStorage.setItem('communityResourceIdForRedirect', resourceId)
-          let communitiesData = null
+          if (privacyStatusName === 'Public') {
+            _this.communitiesRef.listData.find(
+              (item) => item.communityResourceId === resourceId
+            ).membershipStatusId = 2
+          }
+          let communitiesData = {
+            tableData:
+              this.communitiesRef.selectedTab === 'tab-2'
+                ? this.communitiesRef.invitationData
+                : this.communitiesRef.listData,
+            searchValues: {
+              filter: this.communitiesRef.filter,
+              industryValue: this.communitiesRef.industryValue,
+              privacyValue: this.communitiesRef.privacyValue,
+              selectedTab: this.communitiesRef.selectedTab,
+              page: this.communitiesRef.page,
+              totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
+              totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
+              itemsPerPage: this.itemsPerPage
+            },
+            type: 'communities'
+          }
           this.$store.dispatch('communities/setCommunities', {
             key: 'communitiesJoin',
             communitiesData
