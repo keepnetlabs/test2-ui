@@ -776,6 +776,12 @@ export default {
       this.isWantToAddNewCommunity = false
     },
     goToPostDetails(post) {
+      let currentCommunityName = localStorage.getItem('communityName')
+      let currentCommunityId = localStorage.getItem('communityResourceIdForRedirect')
+      localStorage.setItem('previousCommunityName', currentCommunityName)
+      localStorage.setItem('previousCommunityResourceIdForRedirect', currentCommunityId)
+      localStorage.setItem('communityName', post.communityName)
+      localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
       if (post.communityResourceId) {
         if (this.selectedTab === 1) {
           let communitiesData = {
@@ -832,9 +838,7 @@ export default {
           this.$router.push(
             `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
           )
-          this.$router.go(
-            `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
-          )
+          //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
           this.$router.push(
             `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
@@ -844,6 +848,10 @@ export default {
     },
     goToCommunityDetails(post) {
       if (post.communityResourceId) {
+        let currentCommunityName = localStorage.getItem('communityName')
+        let currentCommunityId = localStorage.getItem('communityResourceIdForRedirect')
+        localStorage.setItem('previousCommunityName', currentCommunityName)
+        localStorage.setItem('previousCommunityResourceIdForRedirect', currentCommunityId)
         localStorage.setItem('communityName', post.communityName)
         localStorage.setItem('communityResourceIdForRedirect', post.communityResourceId)
         if (this.selectedTab === 1) {
@@ -897,13 +905,14 @@ export default {
           })
         }
         this.$router.replace({ query: null })
-        if (this.$route.name === 'Community') {
-          this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
-        }
+        let previousRouteName = this.$route.name
         this.$router.push({
           path: `/community/${post.communityResourceId}`,
           query: ''
         })
+        if (previousRouteName === 'Community') {
+          //this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
+        }
       }
     },
     inviteMember() {
@@ -1057,10 +1066,20 @@ export default {
           this.getsuggestedCommunities()
           localStorage.setItem('communityName', communityName)
           localStorage.setItem('communityResourceIdForRedirect', resourceId)
+          let communitiesData = null
+          this.$store.dispatch('communities/setCommunities', {
+            key: 'communitiesJoin',
+            communitiesData
+          })
+          let incidentsData = null
+          this.$store.dispatch('incidents/setIncidents', {
+            key: 'incidents',
+            incidentsData
+          })
           if (privacyStatusName !== 'Private') {
             if (this.$route.name == 'Community') {
               this.$router.push(`/community/${resourceId}`)
-              this.$router.go(`/community/${resourceId}`)
+              //this.$router.go(`/community/${resourceId}`)
               this.$emit('joinRequestSuccess')
             } else {
               this.$emit('joinRequestSuccess')

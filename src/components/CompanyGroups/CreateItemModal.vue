@@ -240,7 +240,6 @@ export default {
           this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
           searchCompanies(this.payload)
             .then((response) => {
-              debugger
               this.companies = [
                 ...this.companies,
                 ...(response.data.data.hasOwnProperty('results') &&
