@@ -291,7 +291,8 @@ export default {
   },
   methods: {
     checkDatatableIsEmpty() {
-      return this.search || this.companyValue || this.threats
+      let result = this.search || this.companyValue || this.threats.length
+      return result
     },
     handleSizeChange(val) {
       this.itemsPerPage = val
