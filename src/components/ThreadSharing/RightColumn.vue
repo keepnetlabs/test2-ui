@@ -758,7 +758,6 @@ export default {
       let _this = this
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
-          debugger
           if (_this.communityDetails.privacyStatusId === 1) {
             if (_this.$store.state['communities'].communities.communitiesData) {
               _this.$store.state['communities'].communities.communitiesData.tableData.find(
