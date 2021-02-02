@@ -854,6 +854,7 @@ export default {
       } else {
         const communitiesData = this.$store.state['communities'].communities.communitiesData
         if (communitiesData) {
+          debugger
           this.filter = communitiesData.searchValues.filter
           this.industryValue = communitiesData.searchValues.industryValue
           this.privacyValue = communitiesData.searchValues.privacyValue
@@ -884,6 +885,7 @@ export default {
           this.industryValue = communitiesData.searchValues.industryValue
           this.privacyValue = communitiesData.searchValues.privacyValue
           this.selectedTab = communitiesData.searchValues.selectedTab
+          debugger
           this.page = communitiesData.searchValues.page
           this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
           this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
@@ -1131,6 +1133,7 @@ export default {
     getAllCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
+      debugger
       const payload = {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
@@ -1183,6 +1186,7 @@ export default {
       getAllCommunityList(payload)
         .then((response) => {
           const { data } = response
+          debugger
           if (isSearch) this.page = 1
           if (this.isCommunity) {
             this.listData = data.data.results.filter(
@@ -1213,6 +1217,7 @@ export default {
     getMyCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
+      debugger
       const payload = {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
@@ -1264,6 +1269,7 @@ export default {
       }
       getMyCommunityList(payload)
         .then((response) => {
+          debugger
           if (isSearch) this.page = 1
           const { data } = response
           this.listData = data.data.results
@@ -1399,9 +1405,6 @@ export default {
     },
     subTabSelected(name) {
       this.isCommunity = false
-      console.log('subselect')
-      this.page = 1
-      this.itemsPerPage = 5
       if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.getMyCommunitiesListData()
