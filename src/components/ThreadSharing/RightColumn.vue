@@ -1135,7 +1135,7 @@ export default {
             }
           }
           this.$store.dispatch('communities/setCommunities', {
-            key: 'communitiesJoin',
+            key: 'communities',
             communitiesData
           })
           this.$store.dispatch('incidents/setIncidents', {

@@ -1369,7 +1369,7 @@ export default {
               type: 'community'
             }
             this.$store.dispatch('communities/setCommunities', {
-              key: 'communityJoin',
+              key: 'communities',
               communitiesData
             })
             let incidentsData = null
