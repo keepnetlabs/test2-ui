@@ -1252,7 +1252,10 @@ export default {
           key: 'communities',
           communitiesData
         })
-        this.$router.push(`/community/${post.communityResourceId}`)
+        this.$router.push({
+          path: `/community/${post.communityResourceId}`,
+          query: { communityName: post.communityName }
+        })
       }
     },
     closeNewInvestigationModal(value) {

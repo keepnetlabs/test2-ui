@@ -1318,7 +1318,8 @@ export default {
         })
         this.$router.push({
           name: `Community`,
-          params: { id: item.communityResourceId, item: item }
+          params: { id: item.communityResourceId, item: item },
+          query: { communityName: item.communityName }
         })
       } else {
         localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
@@ -1376,7 +1377,10 @@ export default {
               key: 'incidents',
               incidentsData
             })
-            this.$router.push(`/community/${communityId}`)
+            this.$router.push({
+              path: `/community/${communityId}`,
+              query: { communityName: communityName }
+            })
           } else {
             this.listData.find(
               (item) => item.communityResourceId === communityId
@@ -1408,13 +1412,16 @@ export default {
       this.isCommunity = false
       if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
+        this.page = 1
         this.getMyCommunitiesListData()
       } else if (name == 'All' && !this.isLoadState) {
         this.selectedTab = 'tab-1'
+        this.page = 1
         this.getAllCommunitiesListData()
       } else {
         if (!this.isLoadState) {
           this.selectedTab = 'tab-2'
+          this.page = 1
           this.filter = ''
           this.industryValue = []
           this.privacyValue = []
