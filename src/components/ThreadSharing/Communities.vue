@@ -814,12 +814,6 @@ export default {
   },
   created() {
     this.getIndustryList()
-    const communitiesDataGlobal =
-      this.$store.state['communities'].communities &&
-      this.$store.state['communities'].communities.communitiesData
-
-    this.page = (communitiesDataGlobal && communitiesDataGlobal.page) || 1
-    console.log(this.page)
     if (this.isCommunity) {
       if (this.$route.params.communityName === 'empty') {
         getCommunityDetails(this.$route.params.communityId)
@@ -838,7 +832,7 @@ export default {
         }, 2000)
       }
     }
-    this.selectedTab = 'tab-1'
+    if (!this.isLoadState) this.selectedTab = 'tab-1'
     setTimeout(() => {
       this.$emit('setLoadState')
     }, 1250)
