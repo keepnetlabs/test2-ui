@@ -808,6 +808,12 @@ export default {
   },
   created() {
     this.getIndustryList()
+    const communitiesDataGlobal =
+      _this.$store.state['communities'].communities &&
+      _this.$store.state['communities'].communities.communitiesData
+
+    this.page = (communitiesDataGlobal && communitiesDataGlobal.page) || 1
+    console.log(this.page)
     if (this.isCommunity) {
       if (this.$route.params.communityName === 'empty') {
         getCommunityDetails(this.$route.params.communityId)
@@ -1373,16 +1379,18 @@ export default {
       if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.getMyCommunitiesListData()
-      } else if (name == 'All') {
+      } else if (name == 'All' && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
       } else {
-        this.selectedTab = 'tab-2'
-        this.filter = ''
-        this.industryValue = []
-        this.privacyValue = []
-        this.getInvitions()
-        this.getInvitationCount()
+        if (!this.isLoadState) {
+          this.selectedTab = 'tab-2'
+          this.filter = ''
+          this.industryValue = []
+          this.privacyValue = []
+          this.getInvitions()
+          this.getInvitationCount()
+        }
         return
       }
     }
