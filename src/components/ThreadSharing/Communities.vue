@@ -809,8 +809,8 @@ export default {
   created() {
     this.getIndustryList()
     const communitiesDataGlobal =
-      _this.$store.state['communities'].communities &&
-      _this.$store.state['communities'].communities.communitiesData
+      this.$store.state['communities'].communities &&
+      this.$store.state['communities'].communities.communitiesData
 
     this.page = (communitiesDataGlobal && communitiesDataGlobal.page) || 1
     console.log(this.page)
@@ -851,6 +851,20 @@ export default {
           default:
             return false
         }
+      } else {
+        const communitiesData = this.$store.state['communities'].communities.communitiesData
+        if (communitiesData) {
+          this.filter = communitiesData.searchValues.filter
+          this.industryValue = communitiesData.searchValues.industryValue
+          this.privacyValue = communitiesData.searchValues.privacyValue
+          this.selectedTab = communitiesData.searchValues.selectedTab
+          this.page = communitiesData.searchValues.page
+          this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
+          this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
+          this.selectedTab = communitiesData.searchValues.selectedTab
+          this.communityLoading = false
+          this.itemsPerPage = communitiesData.searchValues.itemsPerPage
+        }
       }
     },
     onChangePagination() {
@@ -862,6 +876,20 @@ export default {
           case 'tab-1':
             if (!this.isCommunity) this.getAllCommunitiesListData()
             break
+        }
+      } else {
+        const communitiesData = this.$store.state['communities'].communities.communitiesData
+        if (communitiesData) {
+          this.filter = communitiesData.searchValues.filter
+          this.industryValue = communitiesData.searchValues.industryValue
+          this.privacyValue = communitiesData.searchValues.privacyValue
+          this.selectedTab = communitiesData.searchValues.selectedTab
+          this.page = communitiesData.searchValues.page
+          this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
+          this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
+          this.selectedTab = communitiesData.searchValues.selectedTab
+          this.communityLoading = false
+          this.itemsPerPage = communitiesData.searchValues.itemsPerPage
         }
       }
     },
@@ -1101,7 +1129,6 @@ export default {
       }
     },
     getAllCommunitiesListData(isSearch) {
-      let _this = this
       this.listData = []
       this.communityLoading = true
       const payload = {
@@ -1158,13 +1185,13 @@ export default {
           const { data } = response
           if (isSearch) this.page = 1
           if (this.isCommunity) {
-            _this.listData = data.data.results.filter(
-              (item) => item.communityResourceId === _this.$route.params.communityId
+            this.listData = data.data.results.filter(
+              (item) => item.communityResourceId === this.$route.params.communityId
             )
             this.totalNumberOfRecords = data.data.totalNumberOfRecords
             this.totalNumberOfPages = data.data.totalNumberOfPages
           } else {
-            _this.listData = data.data.results
+            this.listData = data.data.results
             this.totalNumberOfRecords = data.data.totalNumberOfRecords
             this.totalNumberOfPages = data.data.totalNumberOfPages
           }
@@ -1311,11 +1338,10 @@ export default {
     requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       this.isRequestToJoinDisabled = true
-      let _this = this
       joinCommunity(communityId)
         .then(() => {
           if (type === 'join') {
-            _this.listData.find(
+            this.listData.find(
               (item) => item.communityResourceId === communityId
             ).membershipStatusId = 2
             localStorage.setItem('communityName', communityName)
@@ -1345,7 +1371,7 @@ export default {
             })
             this.$router.push(`/community/${communityId}`)
           } else {
-            _this.listData.find(
+            this.listData.find(
               (item) => item.communityResourceId === communityId
             ).membershipStatusId = 3
             if (this.selectedTab === 'tab-1') {
