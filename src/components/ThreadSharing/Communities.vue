@@ -804,6 +804,12 @@ export default {
           }, 1000)
         }
       }
+    },
+    page: function (newVal, oldVal) {
+      if (newVal !== oldVal) {
+        console.log(newVal)
+        console.log(oldVal)
+      }
     }
   },
   created() {
