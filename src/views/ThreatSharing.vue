@@ -126,7 +126,8 @@ export default {
                 debugger
                 this.$refs.tsCommunities.page =
                   (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
-                this.$refs.tsCommunities.itemsPerPage = 5
+                this.$refs.tsCommunities.itemsPerPage =
+                  (communitiesDataGlobal && communitiesDataGlobal.searchValues.itemsPerPage) || 5
                 this.$refs.tsCommunities.getAllCommunitiesListData()
                 this.$refs.tsCommunities.getInvitationCount()
                 this.$refs.tsCommunities.setInitialCommunityValues()
@@ -134,50 +135,15 @@ export default {
               }
             } else {
               if (this.isLoadState) {
-                const communitiesData =
-                  _this.$store.state['communities'].communities.communitiesData
-                if (communitiesData) {
-                  this.$refs.tsCommunities.filter = communitiesData.searchValues.filter
-                  this.$refs.tsCommunities.industryValue =
-                    communitiesData.searchValues.industryValue
-                  this.$refs.tsCommunities.privacyValue = communitiesData.searchValues.privacyValue
-                  this.$refs.tsCommunities.selectedTab = communitiesData.searchValues.selectedTab
-                  debugger
-                  this.$refs.tsCommunities.page = communitiesData.searchValues.page
-                  this.$refs.tsCommunities.totalNumberOfRecords =
-                    communitiesData.searchValues.totalNumberOfRecords
-                  this.$refs.tsCommunities.totalNumberOfPages =
-                    communitiesData.searchValues.totalNumberOfPages
-                  this.$refs.tsCommunities.selectedTab = communitiesData.searchValues.selectedTab
-                  this.$refs.tsCommunities.communityLoading = false
-                  this.$refs.tsCommunities.itemsPerPage = communitiesData.searchValues.itemsPerPage
-                  if (communitiesData.searchValues.selectedTab === 'tab-2') {
-                    this.$refs.tsCommunities.invitationData = communitiesData.tableData
-                  } else {
-                    this.$refs.tsCommunities.listData = communitiesData.tableData
-                  }
-                } else {
-                  debugger
-                  this.$refs.tsCommunities.page =
-                    (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
-                  this.$refs.tsCommunities.itemsPerPage = 5
-                  this.$refs.tsCommunities.getAllCommunitiesListData()
-                  this.$refs.tsCommunities.getInvitationCount()
-                  this.$refs.tsCommunities.setInitialCommunityValues()
-                  this.$refs.tsCommunities.isCommunity = false
-                }
-                setTimeout(() => {
-                  _this.$emit('setLoadState')
-                }, 1250)
               } else {
                 if (!this.isLoadState) {
-                  _this.$emit('latest if')
                   if (this.$refs.tsCommunities) {
                     debugger
                     this.$refs.tsCommunities.page =
                       (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
                   }
-                  this.$refs.tsCommunities.itemsPerPage = 5
+                  this.$refs.tsCommunities.itemsPerPage =
+                    (communitiesDataGlobal && communitiesDataGlobal.searchValues.itemsPerPage) || 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
                   this.$refs.tsCommunities.getInvitationCount()
                   this.$refs.tsCommunities.setInitialCommunityValues()
