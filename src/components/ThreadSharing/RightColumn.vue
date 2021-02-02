@@ -755,25 +755,25 @@ export default {
     },
     leaveFromCommunityConfirm() {
       this.isLeaveFromCommunityButtonDisabled = true
-      let _this = this
+
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
-          if (_this.communityDetails.privacyStatusId === 1) {
-            if (_this.$store.state['communities'].communities.communitiesData) {
-              _this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === _this.communityDetails.resourceId
+          if (this.communityDetails.privacyStatusId === 1) {
+            if (this.$store.state['communities'].communities.communitiesData) {
+              this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
               ).membershipStatusId = 0
-              _this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === _this.communityDetails.resourceId
+              this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
               ).privacyStatusName = 'Public'
             }
           } else {
-            if (_this.$store.state['communities'].communities.communitiesData) {
-              _this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === _this.communityDetails.resourceId
+            if (this.$store.state['communities'].communities.communitiesData) {
+              this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
               ).membershipStatusId = 0
-              _this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === _this.communityDetails.resourceId
+              this.$store.state['communities'].communities.communitiesData.tableData.find(
+                (item) => item.communityResourceId === this.communityDetails.resourceId
               ).privacyStatusName = 'Private'
             }
           }
@@ -817,7 +817,7 @@ export default {
               page: this.communitiesRef.page,
               totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
               totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-              itemsPerPage: this.itemsPerPage
+              itemsPerPage: this.communitiesRef.itemsPerPage
             },
             type: 'communities'
           }
@@ -889,7 +889,7 @@ export default {
               page: this.communitiesRef.page,
               totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
               totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-              itemsPerPage: this.itemsPerPage
+              itemsPerPage: this.communitiesRef.itemsPerPage
             },
             type: 'communities'
           }
@@ -969,13 +969,12 @@ export default {
       }, 200)
     },
     getCommunityDetails() {
-      const _this = this
       if (this.$route.name == 'Community') {
         this.ownerDetails = this.$route.params.item
         getCommunityDetails(this.$route.params.id)
           .then((response) => {
             this.communityDetails = response.data.data
-            if (_this.$route.query && _this.$route.query.postId) {
+            if (this.$route.query && this.$route.query.postId) {
               localStorage.setItem('communityName', response.data.data.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
             }
@@ -987,8 +986,8 @@ export default {
                 name: 'Threat Sharing',
                 params: {
                   isCommunity: true,
-                  postId: _this.$route.query.postId,
-                  communityId: _this.$route.params['id'],
+                  postId: this.$route.query.postId,
+                  communityId: this.$route.params['id'],
                   communityName: 'empty'
                 }
               })
@@ -1083,7 +1082,7 @@ export default {
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
       this.isJoinCommunityButtonDisabled = true
-      let _this = this
+
       joinCommunity(resourceId)
         .then(() => {
           this.getsuggestedCommunities()
@@ -1091,10 +1090,16 @@ export default {
           localStorage.setItem('communityResourceIdForRedirect', resourceId)
           let communitiesData = null
           let incidentsData = null
-          if (privacyStatusName === 'Public' && _this.communitiesRef) {
-            _this.communitiesRef.listData.find(
-              (item) => item.communityResourceId === resourceId
-            ).membershipStatusId = 2
+
+          if (privacyStatusName === 'Public' && this.communitiesRef) {
+            if (
+              this.communitiesRef.listData.find((item) => item.communityResourceId === resourceId)
+            ) {
+              this.communitiesRef.listData.find(
+                (item) => item.communityResourceId === resourceId
+              ).membershipStatusId = 2
+            }
+
             communitiesData = {
               tableData:
                 this.communitiesRef.selectedTab === 'tab-2'
@@ -1108,12 +1113,12 @@ export default {
                 page: this.communitiesRef.page,
                 totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
                 totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-                itemsPerPage: this.itemsPerPage
+                itemsPerPage: this.communitiesRef.itemsPerPage
               },
               type: 'communities'
             }
             incidentsData = null
-          } else if (_this.incidentsRef) {
+          } else if (this.incidentsRef) {
             communitiesData = null
             incidentsData = {
               tableData: this.incidentsRef.incidentList,
