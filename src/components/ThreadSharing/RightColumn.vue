@@ -731,8 +731,17 @@ export default {
       return newVal
     },
     deleteCommunityConfirm() {
+      let _this = this
       deleteCommunity(this.communityDetails.resourceId).then(() => {
         this.isWantToDelete = false
+        _this.$store.state['communities'].communities.communitiesData.tableData = this.$store.state[
+          'communities'
+        ].communities.communitiesData.tableData.reduce((acc, item) => {
+          if (item.communityResourceId !== this.communityDetails.resourceId) {
+            acc.push(item)
+          }
+          return acc
+        }, [])
         this.$router.push(`/threat-sharing`)
       })
     },
@@ -755,13 +764,14 @@ export default {
     },
     leaveFromCommunityConfirm() {
       this.isLeaveFromCommunityButtonDisabled = true
-
+      let _this = this
       removeFromCommunities(this.communityDetails.resourceId)
         .then(() => {
-          if (this.communityDetails.privacyStatusId === 1) {
-            if (this.$store.state['communities'].communities.communitiesData) {
+          if (_this.communityDetails.privacyStatusId === 1) {
+            if (_this.$store.state['communities'].communities.communitiesData) {
               if (
-                this.$parent.$refs.tsCommunities.listData.find(
+                _this.$parent.$refs.tsCommunities &&
+                _this.$parent.$refs.tsCommunities.listData.find(
                   (item) => item.communityResourceId === resourceId
                 )
               ) {
@@ -776,6 +786,7 @@ export default {
           } else {
             if (this.$store.state['communities'].communities.communitiesData) {
               if (
+                this.$parent.$refs.tsCommunities &&
                 this.$parent.$refs.tsCommunities.listData.find(
                   (item) => item.communityResourceId === resourceId
                 )
@@ -806,6 +817,9 @@ export default {
     },
     onAddClose() {
       this.isWantToAddNewCommunity = false
+      setTimeout(() => {
+        this.$router.go(0)
+      }, 250)
     },
     goToPostDetails(post) {
       let currentCommunityName = localStorage.getItem('communityName')
