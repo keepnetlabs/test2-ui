@@ -123,8 +123,6 @@ export default {
     getSelectedTabData() {
       let _this = this
       setTimeout(() => {
-        console.log(this.isLoadState)
-        debugger
         if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
           if (!this.isLoadState) {
             this.$refs.tsIncidents.getIncidentList()
@@ -133,12 +131,10 @@ export default {
           }
         } else {
           if (this.checkPermissions('communities/search/all', 'POST')) {
-            debugger
             const communitiesDataGlobal =
               _this.$store.state['communities'].communities &&
               _this.$store.state['communities'].communities.communitiesData
             if (!this.isLoadState) {
-              console.log('first if')
               if (this.$refs.tsCommunities) {
                 this.$refs.tsCommunities.page =
                   (communitiesDataGlobal && communitiesDataGlobal.page) || 1
@@ -152,7 +148,6 @@ export default {
               if (this.isLoadState) {
                 const communitiesData =
                   _this.$store.state['communities'].communities.communitiesData
-                console.log(communitiesData)
                 if (communitiesData) {
                   this.$refs.tsCommunities.filter = communitiesData.searchValues.filter
                   this.$refs.tsCommunities.industryValue =
@@ -173,8 +168,6 @@ export default {
                     this.$refs.tsCommunities.listData = communitiesData.tableData
                   }
                 } else {
-                  console.log('else')
-                  console.log(this.$refs.tsCommunities)
                   this.$refs.tsCommunities.page =
                     (communitiesDataGlobal && communitiesDataGlobal.page) || 1
                   this.$refs.tsCommunities.itemsPerPage = 5
@@ -184,7 +177,6 @@ export default {
                   this.$refs.tsCommunities.isCommunity = false
                 }
                 setTimeout(() => {
-                  console.log(this.$refs.tsCommunities.page)
                   _this.$emit('setLoadState')
                 }, 1250)
               } else {
@@ -207,7 +199,6 @@ export default {
         this.$forceUpdate()
       }, 50)
       setTimeout(() => {
-        console.log('setTimeout')
         this.setLoadState()
       }, 3000)
     },
