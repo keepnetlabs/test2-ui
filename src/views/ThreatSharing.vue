@@ -140,6 +140,7 @@ export default {
               this.$refs.tsCommunities.isCommunity = false
             } else {
               if (this.isLoadState) {
+                debugger
                 const communitiesData =
                   _this.$store.state['communities'].communities.communitiesData
                 if (communitiesData) {
