@@ -734,14 +734,21 @@ export default {
       let _this = this
       deleteCommunity(this.communityDetails.resourceId).then(() => {
         this.isWantToDelete = false
-        _this.$store.state['communities'].communities.communitiesData.tableData = this.$store.state[
-          'communities'
-        ].communities.communitiesData.tableData.reduce((acc, item) => {
-          if (item.communityResourceId !== this.communityDetails.resourceId) {
-            acc.push(item)
-          }
-          return acc
-        }, [])
+        if (
+          _this.$store.state['communities'].communities &&
+          _this.$store.state['communities'].communities.communitiesData
+        ) {
+          _this.$store.state[
+            'communities'
+          ].communities.communitiesData.tableData = this.$store.state[
+            'communities'
+          ].communities.communitiesData.tableData.reduce((acc, item) => {
+            if (item.communityResourceId !== this.communityDetails.resourceId) {
+              acc.push(item)
+            }
+            return acc
+          }, [])
+        }
         this.$router.push(`/threat-sharing`)
       })
     },
@@ -770,9 +777,8 @@ export default {
           if (_this.communityDetails.privacyStatusId === 1) {
             if (_this.$store.state['communities'].communities.communitiesData) {
               if (
-                _this.$parent.$refs.tsCommunities &&
-                _this.$parent.$refs.tsCommunities.listData.find(
-                  (item) => item.communityResourceId === resourceId
+                _this.$store.state['communities'].communities.communitiesData.tableData.find(
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
                 )
               ) {
                 this.$store.state['communities'].communities.communitiesData.tableData.find(
@@ -781,6 +787,12 @@ export default {
                 this.$store.state['communities'].communities.communitiesData.tableData.find(
                   (item) => item.communityResourceId === this.communityDetails.resourceId
                 ).privacyStatusName = 'Public'
+                this.$store.state['communities'].communities.communitiesData.tableData.find(
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
+                ).memberCount =
+                  this.$store.state['communities'].communities.communitiesData.tableData.find(
+                    (item) => item.communityResourceId === this.communityDetails.resourceId
+                  ).memberCount - 1
               }
             }
           } else {
@@ -788,7 +800,7 @@ export default {
               if (
                 this.$parent.$refs.tsCommunities &&
                 this.$parent.$refs.tsCommunities.listData.find(
-                  (item) => item.communityResourceId === resourceId
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
                 )
               ) {
                 this.$store.state['communities'].communities.communitiesData.tableData.find(
