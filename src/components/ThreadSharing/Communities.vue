@@ -582,7 +582,11 @@
             ></v-skeleton-loader>
           </template>
           <template
-            v-if="(!communityLoading && filter) || (!communityLoading && industryValue.length)"
+            v-if="
+              (!communityLoading && filter) ||
+              (!communityLoading && industryValue.length) ||
+              (!communityLoading && privacyValue.length)
+            "
             slot="no-data"
           >
             <div
@@ -606,7 +610,10 @@
               </div>
             </div>
           </template>
-          <template v-if="!communityLoading && !industryValue.length && !filter" slot="no-data">
+          <template
+            v-else-if="!communityLoading && !industryValue.length && !filter"
+            slot="no-data"
+          >
             <div class="empty-communities" v-if="selectedTab === 'tab-1'">
               <div class="empty-communities-inline">
                 <span class="no-community">
