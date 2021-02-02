@@ -810,6 +810,7 @@ export default {
       }
     },
     page: function (newVal, oldVal) {
+      debugger
       if (newVal !== oldVal) {
         console.log(newVal)
         console.log(oldVal)

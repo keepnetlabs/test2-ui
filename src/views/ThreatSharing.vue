@@ -99,9 +99,7 @@ export default {
       this.tab = 1
     } else if (this.$route.query.showInvitation && !this.isLoadState) {
       this.tab = 1
-      setTimeout(() => {
-        this.$refs.tsCommunities.subTabSelected('tab-2')
-      }, 300)
+      this.$refs.tsCommunities.subTabSelected('tab-2')
     }
     if (
       !this.checkPermissions('community-posts/search', 'POST') &&
@@ -179,7 +177,7 @@ export default {
                 }
                 setTimeout(() => {
                   _this.$emit('setLoadState')
-                }, 1250)
+                }, 3000)
               } else {
                 if (!this.isLoadState) {
                   _this.$emit('latest if')
@@ -197,7 +195,6 @@ export default {
             }
           }
         }
-        this.$forceUpdate()
       }, 50)
       setTimeout(() => {
         this.setLoadState()
