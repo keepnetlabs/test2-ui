@@ -164,6 +164,7 @@ export default {
                     this.$refs.tsCommunities.listData = communitiesData.tableData
                   }
                 } else {
+                  console.log('else', this.$refs.tsCommunities)
                   this.$refs.tsCommunities.page = 1
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
@@ -174,7 +175,7 @@ export default {
                 setTimeout(() => {
                   console.log(this.$refs.tsCommunities.page)
                   _this.$emit('setLoadState')
-                }, 2000)
+                }, 3000)
               } else {
                 if (!this.isLoadState) {
                   this.$refs.tsCommunities.page = 1
@@ -191,8 +192,9 @@ export default {
         this.$forceUpdate()
       }, 50)
       setTimeout(() => {
+        console.log('setTimeout')
         this.setLoadState()
-      }, 2000)
+      }, 1250)
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
