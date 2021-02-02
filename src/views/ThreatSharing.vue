@@ -123,6 +123,7 @@ export default {
     getSelectedTabData() {
       let _this = this
       setTimeout(() => {
+        console.log(this.isLoadState)
         if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
           if (!this.isLoadState) {
             this.$refs.tsIncidents.getIncidentList()
@@ -140,9 +141,9 @@ export default {
               this.$refs.tsCommunities.isCommunity = false
             } else {
               if (this.isLoadState) {
-                debugger
                 const communitiesData =
                   _this.$store.state['communities'].communities.communitiesData
+                console.log(communitiesData)
                 if (communitiesData) {
                   this.$refs.tsCommunities.filter = communitiesData.searchValues.filter
                   this.$refs.tsCommunities.industryValue =
@@ -171,8 +172,9 @@ export default {
                   this.$refs.tsCommunities.isCommunity = false
                 }
                 setTimeout(() => {
+                  console.log(this.$refs.tsCommunities.page)
                   _this.$emit('setLoadState')
-                }, 1250)
+                }, 2000)
               } else {
                 if (!this.isLoadState) {
                   this.$refs.tsCommunities.page = 1
@@ -190,7 +192,7 @@ export default {
       }, 50)
       setTimeout(() => {
         this.setLoadState()
-      }, 1250)
+      }, 2000)
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
