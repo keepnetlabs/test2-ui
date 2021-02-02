@@ -616,8 +616,8 @@
                 :to="`/threat-sharing?detailsId=${communityId}`"
                 v-if="communityId"
                 class="page-header__title-link text-decoration-none"
-                >{{ getCommunityName || $route.params.name }}</router-link
-              ><span v-else>{{ getCommunityName || $route.params.name }}</span>
+                >{{ communityName || getCommunityName || $route.params.name }}</router-link
+              ><span v-else>{{ communityName || getCommunityName || $route.params.name }}</span>
             </h1>
             <h1 v-else-if="routerName === 'Company Group Details'">
               {{ companyGroupName || $route.params.name }}
@@ -1101,7 +1101,6 @@ export default {
       _this.communityId =
         _this.$route.query.communityResourceIdForRedirect ||
         localStorage.getItem('communityResourceIdForRedirect')
-
       return _this.$route.query.communityName || localStorage.getItem('communityName')
     },
     getDialogBody() {
@@ -1274,6 +1273,9 @@ export default {
       }
     },
     $route(to, from) {
+      if (to.name === 'Community') {
+        this.communityName = to.query.communityName
+      }
       if (to.name === from.name && !from.params.item) {
         this.$route.query.communityName = localStorage.getItem('previousCommunityName')
         this.$route.query.communityResourceIdForRedirect = localStorage.getItem(

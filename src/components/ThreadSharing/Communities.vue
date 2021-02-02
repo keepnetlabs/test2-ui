@@ -1352,6 +1352,8 @@ export default {
             this.listData.find(
               (item) => item.communityResourceId === communityId
             ).membershipStatusId = 2
+            this.listData.find((item) => item.communityResourceId === communityId).memberCount =
+              this.listData.find((item) => item.communityResourceId === communityId).memberCount + 1
             localStorage.setItem('communityName', communityName)
             localStorage.setItem('communityResourceIdForRedirect', communityId)
             let communitiesData = {
