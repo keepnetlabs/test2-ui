@@ -222,7 +222,7 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     getIncidents() {
-      this.$router.replace({ postId: null })
+      //this.$router.replace({ postId: null })
       setTimeout(() => {
         if (this.checkPermissions('community-posts/search/{communityResourceId}', 'POST')) {
           this.$refs.refIncidents.getIncidentList()

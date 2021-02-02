@@ -324,6 +324,7 @@
           to="/threat-sharing"
           class="menu-link-default"
           :class="[routerName === 'Community' && 'active-link']"
+          @click.native="deleteTSVuexData"
           v-if="
             !checkPermissionMultiple(
               [
@@ -615,8 +616,8 @@
                 :to="`/threat-sharing?detailsId=${communityId}`"
                 v-if="communityId"
                 class="page-header__title-link text-decoration-none"
-                >{{ communityName || $route.params.name }}</router-link
-              ><span v-else>{{ communityName || $route.params.name }}</span>
+                >{{ getCommunityName || $route.params.name }}</router-link
+              ><span v-else>{{ getCommunityName || $route.params.name }}</span>
             </h1>
             <h1 v-else-if="routerName === 'Company Group Details'">
               {{ companyGroupName || $route.params.name }}
@@ -1095,6 +1096,14 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    getCommunityName() {
+      let _this = this
+      _this.communityId =
+        _this.$route.query.communityResourceIdForRedirect ||
+        localStorage.getItem('communityResourceIdForRedirect')
+
+      return _this.$route.query.communityName || localStorage.getItem('communityName')
+    },
     getDialogBody() {
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
@@ -1294,13 +1303,24 @@ export default {
     clearInterval(this.interval)
   },
   updated() {
-    this.getCommunityName()
     this.routerName === 'Company Group Details' && this.getCompanyGroupName()
   },
   methods: {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    deleteTSVuexData() {
+      let communitiesData = null
+      this.$store.dispatch('communities/setCommunities', {
+        key: 'communities',
+        communitiesData
+      })
+      let incidentsData = null
+      this.$store.dispatch('incidents/setIncidents', {
+        key: 'incidents',
+        incidentsData
+      })
+    },
     callForLicenseCheck() {
       if (this.$route.name !== 'Target Users') {
         const companyResourceId = localStorage.getItem('companyId')
@@ -1351,12 +1371,6 @@ export default {
           this.openPasswordChange = false
         })
       }
-    },
-    getCommunityName() {
-      this.communityId =
-        this.$route.query.communityResourceIdForRedirect ||
-        localStorage.getItem('communityResourceIdForRedirect')
-      this.communityName = this.$route.query.communityName || localStorage.getItem('communityName')
     },
     getCompanyGroupName() {
       this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
