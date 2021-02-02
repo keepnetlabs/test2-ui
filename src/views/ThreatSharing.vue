@@ -81,7 +81,6 @@ export default {
   },
   watch: {
     tab(value) {
-      debugger
       this.getSelectedTabData()
     }
   },
@@ -123,7 +122,6 @@ export default {
             this.page = (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
             if (!this.isLoadState) {
               if (this.$refs.tsCommunities) {
-                debugger
                 this.$refs.tsCommunities.page =
                   (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
                 this.$refs.tsCommunities.itemsPerPage =
@@ -138,7 +136,6 @@ export default {
               } else {
                 if (!this.isLoadState) {
                   if (this.$refs.tsCommunities) {
-                    debugger
                     this.$refs.tsCommunities.page =
                       (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
                   }
@@ -186,7 +183,6 @@ export default {
         const incidentsData = vm.$store.state['incidents'].incidents
         const communitiesData = vm.$store.state['communities'].communities
         if (incidentsData.incidentsData || communitiesData.communitiesData) {
-          debugger
           vm.tab = !incidentsData.incidentsData ? 1 : 0
           vm.isLoadState = true
         }
