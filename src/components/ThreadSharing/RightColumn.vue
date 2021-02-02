@@ -761,7 +761,9 @@ export default {
           if (this.communityDetails.privacyStatusId === 1) {
             if (this.$store.state['communities'].communities.communitiesData) {
               if (
-                this.communitiesRef.listData.find((item) => item.communityResourceId === resourceId)
+                this.$parent.$refs.tsCommunities.listData.find(
+                  (item) => item.communityResourceId === resourceId
+                )
               ) {
                 this.$store.state['communities'].communities.communitiesData.tableData.find(
                   (item) => item.communityResourceId === this.communityDetails.resourceId
@@ -774,7 +776,9 @@ export default {
           } else {
             if (this.$store.state['communities'].communities.communitiesData) {
               if (
-                this.communitiesRef.listData.find((item) => item.communityResourceId === resourceId)
+                this.$parent.$refs.tsCommunities.listData.find(
+                  (item) => item.communityResourceId === resourceId
+                )
               ) {
                 this.$store.state['communities'].communities.communitiesData.tableData.find(
                   (item) => item.communityResourceId === this.communityDetails.resourceId
@@ -814,18 +818,18 @@ export default {
         if (this.selectedTab === 1) {
           let communitiesData = {
             tableData:
-              this.communitiesRef.selectedTab === 'tab-2'
-                ? this.communitiesRef.invitationData
-                : this.communitiesRef.listData,
+              this.$parent.$refs.tsCommunities.selectedTab === 'tab-2'
+                ? this.$parent.$refs.tsCommunities.invitationData
+                : this.$parent.$refs.tsCommunities.listData,
             searchValues: {
-              filter: this.communitiesRef.filter,
-              industryValue: this.communitiesRef.industryValue,
-              privacyValue: this.communitiesRef.privacyValue,
-              selectedTab: this.communitiesRef.selectedTab,
-              page: this.communitiesRef.page,
-              totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
-              totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-              itemsPerPage: this.communitiesRef.itemsPerPage
+              filter: this.$parent.$refs.tsCommunities.filter,
+              industryValue: this.$parent.$refs.tsCommunities.industryValue,
+              privacyValue: this.$parent.$refs.tsCommunities.privacyValue,
+              selectedTab: this.$parent.$refs.tsCommunities.selectedTab,
+              page: this.$parent.$refs.tsCommunities.page,
+              totalNumberOfRecords: this.$parent.$refs.tsCommunities.totalNumberOfRecords,
+              totalNumberOfPages: this.$parent.$refs.tsCommunities.totalNumberOfPages,
+              itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage
             },
             type: 'communities'
           }
@@ -840,15 +844,15 @@ export default {
           })
         } else if (this.selectedTab === 0) {
           let incidentsData = {
-            tableData: this.incidentsRef.incidentList,
+            tableData: this.$parent.$refs.tsIncidents.incidentList,
             searchValues: {
-              search: this.incidentsRef.search,
-              companyValue: this.incidentsRef.companyValue,
-              threats: this.incidentsRef.threats,
-              page: this.incidentsRef.page,
-              totalNumberOfRecords: this.incidentsRef.totalNumberOfRecords,
-              totalNumberOfPages: this.incidentsRef.totalNumberOfPages,
-              itemsPerPage: this.incidentsRef.itemsPerPage
+              search: this.$parent.$refs.tsIncidents.search,
+              companyValue: this.$parent.$refs.tsIncidents.companyValue,
+              threats: this.$parent.$refs.tsIncidents.threats,
+              page: this.$parent.$refs.tsIncidents.page,
+              totalNumberOfRecords: this.$parent.$refs.tsIncidents.totalNumberOfRecords,
+              totalNumberOfPages: this.$parent.$refs.tsIncidents.totalNumberOfPages,
+              itemsPerPage: this.$parent.$refs.tsIncidents.itemsPerPage
             },
             type: 'incidents'
           }
@@ -863,15 +867,17 @@ export default {
           })
         }
         if (this.$route.name === 'Community') {
-          this.$router.replace({ query: null })
-          this.$router.push(
-            `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
-          )
+          //this.$router.replace({ query: null })
+          this.$router.push({
+            path: `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`,
+            query: { communityName: post.communityName }
+          })
           //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
-          this.$router.push(
-            `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`
-          )
+          this.$router.push({
+            path: `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`,
+            query: { communityName: post.communityName }
+          })
         }
       }
     },
@@ -886,18 +892,18 @@ export default {
         if (this.selectedTab === 1) {
           let communitiesData = {
             tableData:
-              this.communitiesRef.selectedTab === 'tab-2'
-                ? this.communitiesRef.invitationData
-                : this.communitiesRef.listData,
+              this.$parent.$refs.tsCommunities.selectedTab === 'tab-2'
+                ? this.$parent.$refs.tsCommunities.invitationData
+                : this.$parent.$refs.tsCommunities.listData,
             searchValues: {
-              filter: this.communitiesRef.filter,
-              industryValue: this.communitiesRef.industryValue,
-              privacyValue: this.communitiesRef.privacyValue,
-              selectedTab: this.communitiesRef.selectedTab,
-              page: this.communitiesRef.page,
-              totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
-              totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-              itemsPerPage: this.communitiesRef.itemsPerPage
+              filter: this.$parent.$refs.tsCommunities.filter,
+              industryValue: this.$parent.$refs.tsCommunities.industryValue,
+              privacyValue: this.$parent.$refs.tsCommunities.privacyValue,
+              selectedTab: this.$parent.$refs.tsCommunities.selectedTab,
+              page: this.$parent.$refs.tsCommunities.page,
+              totalNumberOfRecords: this.$parent.$refs.tsCommunities.totalNumberOfRecords,
+              totalNumberOfPages: this.$parent.$refs.tsCommunities.totalNumberOfPages,
+              itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage
             },
             type: 'communities'
           }
@@ -912,15 +918,15 @@ export default {
           })
         } else if (this.selectedTab === 0) {
           let incidentsData = {
-            tableData: this.incidentsRef.incidentList,
+            tableData: this.$parent.$refs.tsIncidents.incidentList,
             searchValues: {
-              search: this.incidentsRef.search,
-              companyValue: this.incidentsRef.companyValue,
-              threats: this.incidentsRef.threats,
-              page: this.incidentsRef.page,
-              totalNumberOfRecords: this.incidentsRef.totalNumberOfRecords,
-              totalNumberOfPages: this.incidentsRef.totalNumberOfPages,
-              itemsPerPage: this.incidentsRef.itemsPerPage
+              search: this.$parent.$refs.tsIncidents.search,
+              companyValue: this.$parent.$refs.tsIncidents.companyValue,
+              threats: this.$parent.$refs.tsIncidents.threats,
+              page: this.$parent.$refs.tsIncidents.page,
+              totalNumberOfRecords: this.$parent.$refs.tsIncidents.totalNumberOfRecords,
+              totalNumberOfPages: this.$parent.$refs.tsIncidents.totalNumberOfPages,
+              itemsPerPage: this.$parent.$refs.tsIncidents.itemsPerPage
             },
             type: 'incidents'
           }
@@ -934,11 +940,11 @@ export default {
             communitiesData
           })
         }
-        this.$router.replace({ query: null })
+        //this.$router.replace({ query: null })
         let previousRouteName = this.$route.name
         this.$router.push({
           path: `/community/${post.communityResourceId}`,
-          query: ''
+          query: { communityName: post.communityName }
         })
         if (previousRouteName === 'Community') {
           //this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
@@ -1099,45 +1105,47 @@ export default {
           let communitiesData = null
           let incidentsData = null
 
-          if (privacyStatusName === 'Public' && this.communitiesRef) {
+          if (privacyStatusName === 'Public' && this.$parent.$refs.tsCommunities) {
             if (
-              this.communitiesRef.listData.find((item) => item.communityResourceId === resourceId)
+              this.$parent.$refs.tsCommunities.listData.find(
+                (item) => item.communityResourceId === resourceId
+              )
             ) {
-              this.communitiesRef.listData.find(
+              this.$parent.$refs.tsCommunities.listData.find(
                 (item) => item.communityResourceId === resourceId
               ).membershipStatusId = 2
             }
 
             communitiesData = {
               tableData:
-                this.communitiesRef.selectedTab === 'tab-2'
-                  ? this.communitiesRef.invitationData
-                  : this.communitiesRef.listData,
+                this.$parent.$refs.tsCommunities.selectedTab === 'tab-2'
+                  ? this.$parent.$refs.tsCommunities.invitationData
+                  : this.$parent.$refs.tsCommunities.listData,
               searchValues: {
-                filter: this.communitiesRef.filter,
-                industryValue: this.communitiesRef.industryValue,
-                privacyValue: this.communitiesRef.privacyValue,
-                selectedTab: this.communitiesRef.selectedTab,
-                page: this.communitiesRef.page,
-                totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
-                totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-                itemsPerPage: this.communitiesRef.itemsPerPage
+                filter: this.$parent.$refs.tsCommunities.filter,
+                industryValue: this.$parent.$refs.tsCommunities.industryValue,
+                privacyValue: this.$parent.$refs.tsCommunities.privacyValue,
+                selectedTab: this.$parent.$refs.tsCommunities.selectedTab,
+                page: this.$parent.$refs.tsCommunities.page,
+                totalNumberOfRecords: this.$parent.$refs.tsCommunities.totalNumberOfRecords,
+                totalNumberOfPages: this.$parent.$refs.tsCommunities.totalNumberOfPages,
+                itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage
               },
               type: 'communities'
             }
             incidentsData = null
-          } else if (this.incidentsRef) {
+          } else if (this.$parent.$refs.tsIncidents) {
             communitiesData = null
             incidentsData = {
-              tableData: this.incidentsRef.incidentList,
+              tableData: this.$parent.$refs.tsIncidents.incidentList,
               searchValues: {
-                search: this.incidentsRef.search,
-                companyValue: this.incidentsRef.companyValue,
-                threats: this.incidentsRef.threats,
-                page: this.incidentsRef.page,
-                totalNumberOfRecords: this.incidentsRef.totalNumberOfRecords,
-                totalNumberOfPages: this.incidentsRef.totalNumberOfPages,
-                itemsPerPage: this.incidentsRef.itemsPerPage
+                search: this.$parent.$refs.tsIncidents.search,
+                companyValue: this.$parent.$refs.tsIncidents.companyValue,
+                threats: this.$parent.$refs.tsIncidents.threats,
+                page: this.$parent.$refs.tsIncidents.page,
+                totalNumberOfRecords: this.$parent.$refs.tsIncidents.totalNumberOfRecords,
+                totalNumberOfPages: this.$parent.$refs.tsIncidents.totalNumberOfPages,
+                itemsPerPage: this.$parent.$refs.tsIncidents.itemsPerPage
               },
               type: 'incidents'
             }
@@ -1152,12 +1160,18 @@ export default {
           })
           if (privacyStatusName !== 'Private') {
             if (this.$route.name == 'Community') {
-              this.$router.push(`/community/${resourceId}`)
+              this.$router.push({
+                path: `/community/${resourceId}`,
+                query: { communityName: communityName }
+              })
               //this.$router.go(`/community/${resourceId}`)
               this.$emit('joinRequestSuccess')
             } else {
               this.$emit('joinRequestSuccess')
-              this.$router.push(`/community/${resourceId}`)
+              this.$router.push({
+                path: `/community/${resourceId}`,
+                query: { communityName: communityName }
+              })
             }
           } else {
             this.$emit('joinRequestSuccess')
