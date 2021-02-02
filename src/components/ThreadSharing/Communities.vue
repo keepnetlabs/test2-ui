@@ -791,7 +791,6 @@ export default {
   },
   watch: {
     refresh: function (newVal, oldVal) {
-      debugger
       if (oldVal != newVal && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
@@ -799,7 +798,6 @@ export default {
       }
     },
     filter: function (newVal, oldVal) {
-      debugger
       if (newVal !== oldVal && !this.isLoadState) {
         if (!newVal) {
           this.updateCommunities()
@@ -808,13 +806,6 @@ export default {
             this.updateCommunities()
           }, 1000)
         }
-      }
-    },
-    page: function (newVal, oldVal) {
-      debugger
-      if (newVal !== oldVal) {
-        console.log(newVal)
-        console.log(oldVal)
       }
     }
   },
@@ -1195,9 +1186,7 @@ export default {
       getAllCommunityList(payload)
         .then((response) => {
           const { data } = response
-
           if (isSearch) {
-            debugger
             this.page = 1
           }
           if (this.isCommunity) {
@@ -1229,7 +1218,6 @@ export default {
     getMyCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
-      debugger
       const payload = {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
@@ -1282,7 +1270,6 @@ export default {
       getMyCommunityList(payload)
         .then((response) => {
           if (isSearch) {
-            debugger
             this.page = 1
           }
           const { data } = response
