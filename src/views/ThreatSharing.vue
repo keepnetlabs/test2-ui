@@ -136,15 +136,14 @@ export default {
               _this.$store.state['communities'].communities.communitiesData
             if (!this.isLoadState) {
               if (this.$refs.tsCommunities) {
-                debugger
                 this.$refs.tsCommunities.page =
                   (communitiesDataGlobal && communitiesDataGlobal.page) || 1
+                this.$refs.tsCommunities.itemsPerPage = 5
+                this.$refs.tsCommunities.getAllCommunitiesListData()
+                this.$refs.tsCommunities.getInvitationCount()
+                this.$refs.tsCommunities.setInitialCommunityValues()
+                this.$refs.tsCommunities.isCommunity = false
               }
-              this.$refs.tsCommunities.itemsPerPage = 5
-              this.$refs.tsCommunities.getAllCommunitiesListData()
-              this.$refs.tsCommunities.getInvitationCount()
-              this.$refs.tsCommunities.setInitialCommunityValues()
-              this.$refs.tsCommunities.isCommunity = false
             } else {
               if (this.isLoadState) {
                 const communitiesData =
@@ -155,7 +154,7 @@ export default {
                     communitiesData.searchValues.industryValue
                   this.$refs.tsCommunities.privacyValue = communitiesData.searchValues.privacyValue
                   this.$refs.tsCommunities.selectedTab = communitiesData.searchValues.selectedTab
-                  debugger
+
                   this.$refs.tsCommunities.page = communitiesData.searchValues.page
                   this.$refs.tsCommunities.totalNumberOfRecords =
                     communitiesData.searchValues.totalNumberOfRecords
@@ -170,7 +169,6 @@ export default {
                     this.$refs.tsCommunities.listData = communitiesData.tableData
                   }
                 } else {
-                  debugger
                   this.$refs.tsCommunities.page =
                     (communitiesDataGlobal && communitiesDataGlobal.page) || 1
                   this.$refs.tsCommunities.itemsPerPage = 5
@@ -186,7 +184,6 @@ export default {
                 if (!this.isLoadState) {
                   _this.$emit('latest if')
                   if (this.$refs.tsCommunities) {
-                    debugger
                     this.$refs.tsCommunities.page =
                       (communitiesDataGlobal && communitiesDataGlobal.page) || 1
                   }
