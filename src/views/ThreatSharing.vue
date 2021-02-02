@@ -139,8 +139,10 @@ export default {
               _this.$store.state['communities'].communities.communitiesData
             if (!this.isLoadState) {
               console.log('first if')
-              this.$refs.tsCommunities.page =
-                (communitiesDataGlobal.page && communitiesDataGlobal.page) || 1
+              if (this.$refs.tsCommunities) {
+                this.$refs.tsCommunities.page =
+                  (communitiesDataGlobal && communitiesDataGlobal.page) || 1
+              }
               this.$refs.tsCommunities.itemsPerPage = 5
               this.$refs.tsCommunities.getAllCommunitiesListData()
               this.$refs.tsCommunities.getInvitationCount()
@@ -174,7 +176,7 @@ export default {
                   console.log('else')
                   console.log(this.$refs.tsCommunities)
                   this.$refs.tsCommunities.page =
-                    (communitiesDataGlobal.page && communitiesDataGlobal.page) || 1
+                    (communitiesDataGlobal && communitiesDataGlobal.page) || 1
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
                   this.$refs.tsCommunities.getInvitationCount()
@@ -190,7 +192,7 @@ export default {
                   _this.$emit('latest if')
                   if (this.$refs.tsCommunities) {
                     this.$refs.tsCommunities.page =
-                      (communitiesDataGlobal.page && communitiesDataGlobal.page) || 1
+                      (communitiesDataGlobal && communitiesDataGlobal.page) || 1
                   }
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
