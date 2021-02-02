@@ -124,6 +124,7 @@ export default {
       let _this = this
       setTimeout(() => {
         console.log(this.isLoadState)
+        debugger
         if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
           if (!this.isLoadState) {
             this.$refs.tsIncidents.getIncidentList()
@@ -132,6 +133,7 @@ export default {
           }
         } else {
           if (this.checkPermissions('communities/search/all', 'POST')) {
+            debugger
             if (!this.isLoadState) {
               console.log('first if')
               this.$refs.tsCommunities.page = 1
