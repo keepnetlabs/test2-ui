@@ -188,8 +188,10 @@ export default {
               } else {
                 if (!this.isLoadState) {
                   _this.$emit('latest if')
-                  this.$refs.tsCommunities.page =
-                    (communitiesDataGlobal.page && communitiesDataGlobal.page) || 1
+                  if (this.$refs.tsCommunities) {
+                    this.$refs.tsCommunities.page =
+                      (communitiesDataGlobal.page && communitiesDataGlobal.page) || 1
+                  }
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
                   this.$refs.tsCommunities.getInvitationCount()
