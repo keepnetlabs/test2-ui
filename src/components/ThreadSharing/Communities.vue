@@ -716,10 +716,14 @@ export default {
   },
   computed: {
     numberOfPages() {
+      const communitiesData =
+        this.$store.state['communities'].communities ||
+        this.$store.state['communities'].communities.communitiesData
       return Math.ceil(
         this.selectedTab && this.selectedTab === 'tab-2'
           ? this.invitationData && this.invitationData.length / this.itemsPerPage
-          : this.listData && this.totalNumberOfRecords / this.itemsPerPage
+          : (this.listData && communitiesData.totalNumberOfRecords) ||
+              this.totalNumberOfRecords / this.itemsPerPage
       )
     }
   },
@@ -781,7 +785,6 @@ export default {
     isLoadState: {
       type: Boolean
     },
-
     setLoadState: {
       required: false
     }
@@ -795,7 +798,7 @@ export default {
       }
     },
     filter: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
+      if (newVal !== oldVal && !this.isLoadState) {
         if (!newVal) {
           this.updateCommunities()
         } else {
@@ -808,6 +811,39 @@ export default {
   },
   created() {
     this.getIndustryList()
+    if (this.isLoadState) {
+      const communitiesData =
+        this.$store.state['communities'].communities &&
+        this.$store.state['communities'].communities.communitiesData
+      if (communitiesData) {
+        this.filter = communitiesData.searchValues.filter
+        this.industryValue = communitiesData.searchValues.industryValue
+        this.privacyValue = communitiesData.searchValues.privacyValue
+        this.selectedTab = communitiesData.searchValues.selectedTab
+        this.page = communitiesData.searchValues.page
+        this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
+        this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
+        this.selectedTab = communitiesData.searchValues.selectedTab
+        this.communityLoading = false
+        this.itemsPerPage = communitiesData.searchValues.itemsPerPage
+        if (communitiesData.searchValues.selectedTab === 'tab-2') {
+          this.invitationData = communitiesData.tableData
+        } else {
+          this.listData = communitiesData.tableData
+        }
+      } else {
+        this.page = (communitiesData && communitiesData.searchValues.page) || 1
+        this.itemsPerPage = (communitiesData && communitiesData.searchValues.itemsPerPage) || 5
+        this.getAllCommunitiesListData()
+        this.getInvitationCount()
+        this.setInitialCommunityValues()
+        this.isCommunity = false
+      }
+      setTimeout(() => {
+        this.$emit('setLoadState')
+      }, 1250)
+    }
+
     if (this.isCommunity) {
       if (this.$route.params.communityName === 'empty') {
         getCommunityDetails(this.$route.params.communityId)
@@ -826,7 +862,7 @@ export default {
         }, 2000)
       }
     }
-    this.selectedTab = 'tab-1'
+    if (!this.isLoadState) this.selectedTab = 'tab-1'
     setTimeout(() => {
       this.$emit('setLoadState')
     }, 1250)
@@ -978,7 +1014,7 @@ export default {
       })
     },
     setInitialCommunityValues() {
-      this.selectedTab = 'tab-1'
+      if (!this.isLoadState) this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
       if (this.checkPermissions('communities/my-invitations', 'GET')) {
@@ -1095,9 +1131,9 @@ export default {
       }
     },
     getAllCommunitiesListData(isSearch) {
-      let _this = this
       this.listData = []
       this.communityLoading = true
+
       const payload = {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
@@ -1150,15 +1186,17 @@ export default {
       getAllCommunityList(payload)
         .then((response) => {
           const { data } = response
-          if (isSearch) this.page = 1
+          if (isSearch) {
+            this.page = 1
+          }
           if (this.isCommunity) {
-            _this.listData = data.data.results.filter(
-              (item) => item.communityResourceId === _this.$route.params.communityId
+            this.listData = data.data.results.filter(
+              (item) => item.communityResourceId === this.$route.params.communityId
             )
             this.totalNumberOfRecords = data.data.totalNumberOfRecords
             this.totalNumberOfPages = data.data.totalNumberOfPages
           } else {
-            _this.listData = data.data.results
+            this.listData = data.data.results
             this.totalNumberOfRecords = data.data.totalNumberOfRecords
             this.totalNumberOfPages = data.data.totalNumberOfPages
           }
@@ -1231,7 +1269,9 @@ export default {
       }
       getMyCommunityList(payload)
         .then((response) => {
-          if (isSearch) this.page = 1
+          if (isSearch) {
+            this.page = 1
+          }
           const { data } = response
           this.listData = data.data.results
           this.totalNumberOfRecords = data.data.totalNumberOfRecords
@@ -1305,11 +1345,10 @@ export default {
     requestJoin(communityId, communityName, type) {
       this.communityLoading = true
       this.isRequestToJoinDisabled = true
-      let _this = this
       joinCommunity(communityId)
         .then(() => {
           if (type === 'join') {
-            _this.listData.find(
+            this.listData.find(
               (item) => item.communityResourceId === communityId
             ).membershipStatusId = 2
             localStorage.setItem('communityName', communityName)
@@ -1329,7 +1368,7 @@ export default {
               type: 'community'
             }
             this.$store.dispatch('communities/setCommunities', {
-              key: 'communityJoin',
+              key: 'communities',
               communitiesData
             })
             let incidentsData = null
@@ -1339,7 +1378,7 @@ export default {
             })
             this.$router.push(`/community/${communityId}`)
           } else {
-            _this.listData.find(
+            this.listData.find(
               (item) => item.communityResourceId === communityId
             ).membershipStatusId = 3
             if (this.selectedTab === 'tab-1') {
@@ -1367,21 +1406,21 @@ export default {
     },
     subTabSelected(name) {
       this.isCommunity = false
-      this.page = 1
-      this.itemsPerPage = 5
       if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.getMyCommunitiesListData()
-      } else if (name == 'All') {
+      } else if (name == 'All' && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
       } else {
-        this.selectedTab = 'tab-2'
-        this.filter = ''
-        this.industryValue = []
-        this.privacyValue = []
-        this.getInvitions()
-        this.getInvitationCount()
+        if (!this.isLoadState) {
+          this.selectedTab = 'tab-2'
+          this.filter = ''
+          this.industryValue = []
+          this.privacyValue = []
+          this.getInvitions()
+          this.getInvitationCount()
+        }
         return
       }
     }
