@@ -879,6 +879,7 @@ export default {
             query: { communityName: post.communityName }
           })
         }
+        this.getAllRightColumnData()
       }
     },
     goToCommunityDetails(post) {
@@ -949,6 +950,7 @@ export default {
         if (previousRouteName === 'Community') {
           //this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
         }
+        this.getAllRightColumnData()
       }
     },
     inviteMember() {
