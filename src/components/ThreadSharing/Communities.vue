@@ -820,6 +820,39 @@ export default {
   },
   created() {
     this.getIndustryList()
+    if (this.isLoadState) {
+      const communitiesData =
+        this.$store.state['communities'].communities &&
+        this.$store.state['communities'].communities.communitiesData
+      if (communitiesData) {
+        this.filter = communitiesData.searchValues.filter
+        this.industryValue = communitiesData.searchValues.industryValue
+        this.privacyValue = communitiesData.searchValues.privacyValue
+        this.selectedTab = communitiesData.searchValues.selectedTab
+        this.page = communitiesData.searchValues.page
+        this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
+        this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
+        this.selectedTab = communitiesData.searchValues.selectedTab
+        this.communityLoading = false
+        this.itemsPerPage = communitiesData.searchValues.itemsPerPage
+        if (communitiesData.searchValues.selectedTab === 'tab-2') {
+          this.invitationData = communitiesData.tableData
+        } else {
+          this.listData = communitiesData.tableData
+        }
+      } else {
+        this.page = (communitiesData && communitiesData.searchValues.page) || 1
+        this.itemsPerPage = (communitiesData && communitiesData.searchValues.itemsPerPage) || 5
+        this.getAllCommunitiesListData()
+        this.getInvitationCount()
+        this.setInitialCommunityValues()
+        this.isCommunity = false
+      }
+      setTimeout(() => {
+        this.$emit('setLoadState')
+      }, 1250)
+    }
+
     if (this.isCommunity) {
       if (this.$route.params.communityName === 'empty') {
         getCommunityDetails(this.$route.params.communityId)
