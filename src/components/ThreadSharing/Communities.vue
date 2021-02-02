@@ -785,13 +785,13 @@ export default {
     isLoadState: {
       type: Boolean
     },
-
     setLoadState: {
       required: false
     }
   },
   watch: {
     refresh: function (newVal, oldVal) {
+      debugger
       if (oldVal != newVal && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
@@ -799,7 +799,8 @@ export default {
       }
     },
     filter: function (newVal, oldVal) {
-      if (newVal !== oldVal) {
+      debugger
+      if (newVal !== oldVal && !this.isLoadState) {
         if (!newVal) {
           this.updateCommunities()
         } else {
@@ -840,7 +841,7 @@ export default {
     if (!this.isLoadState) this.selectedTab = 'tab-1'
     setTimeout(() => {
       this.$emit('setLoadState')
-    }, 3000)
+    }, 1250)
   },
   methods: {
     handleSizeChange(val) {
@@ -856,20 +857,6 @@ export default {
           default:
             return false
         }
-      } else {
-        const communitiesData = this.$store.state['communities'].communities.communitiesData
-        if (communitiesData) {
-          this.filter = communitiesData.searchValues.filter
-          this.industryValue = communitiesData.searchValues.industryValue
-          this.privacyValue = communitiesData.searchValues.privacyValue
-          this.selectedTab = communitiesData.searchValues.selectedTab
-          this.page = communitiesData.searchValues.page
-          this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
-          this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
-          this.selectedTab = communitiesData.searchValues.selectedTab
-          this.communityLoading = false
-          this.itemsPerPage = communitiesData.searchValues.itemsPerPage
-        }
       }
     },
     onChangePagination() {
@@ -881,21 +868,6 @@ export default {
           case 'tab-1':
             if (!this.isCommunity) this.getAllCommunitiesListData()
             break
-        }
-      } else {
-        const communitiesData = this.$store.state['communities'].communities.communitiesData
-        if (communitiesData) {
-          this.filter = communitiesData.searchValues.filter
-          this.industryValue = communitiesData.searchValues.industryValue
-          this.privacyValue = communitiesData.searchValues.privacyValue
-          this.selectedTab = communitiesData.searchValues.selectedTab
-
-          this.page = communitiesData.searchValues.page
-          this.totalNumberOfRecords = communitiesData.searchValues.totalNumberOfRecords
-          this.totalNumberOfPages = communitiesData.searchValues.totalNumberOfPages
-          this.selectedTab = communitiesData.searchValues.selectedTab
-          this.communityLoading = false
-          this.itemsPerPage = communitiesData.searchValues.itemsPerPage
         }
       }
     },
@@ -1018,7 +990,7 @@ export default {
       })
     },
     setInitialCommunityValues() {
-      this.selectedTab = 'tab-1'
+      if (!this.isLoadState) this.selectedTab = 'tab-1'
     },
     getInvitationCount() {
       if (this.checkPermissions('communities/my-invitations', 'GET')) {
@@ -1191,7 +1163,10 @@ export default {
         .then((response) => {
           const { data } = response
 
-          if (isSearch) this.page = 1
+          if (isSearch) {
+            debugger
+            this.page = 1
+          }
           if (this.isCommunity) {
             this.listData = data.data.results.filter(
               (item) => item.communityResourceId === this.$route.params.communityId
@@ -1221,7 +1196,7 @@ export default {
     getMyCommunitiesListData(isSearch) {
       this.listData = []
       this.communityLoading = true
-
+      debugger
       const payload = {
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
@@ -1273,7 +1248,10 @@ export default {
       }
       getMyCommunityList(payload)
         .then((response) => {
-          if (isSearch) this.page = 1
+          if (isSearch) {
+            debugger
+            this.page = 1
+          }
           const { data } = response
           this.listData = data.data.results
           this.totalNumberOfRecords = data.data.totalNumberOfRecords

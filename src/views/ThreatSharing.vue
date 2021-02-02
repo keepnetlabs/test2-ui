@@ -43,6 +43,7 @@
                 :isCommunity="this.$route.params.isCommunity"
                 :isLoadState="isLoadState"
                 @setLoadState="setLoadState"
+                :page="page"
                 v-if="tab === 1"
               />
             </v-tab-item>
@@ -80,6 +81,7 @@ export default {
   },
   watch: {
     tab(value) {
+      debugger
       this.getSelectedTabData()
     }
   },
@@ -87,27 +89,13 @@ export default {
     tab: null,
     isWantToAddNewCommunity: false,
     refreshMemberTable: false,
-    isLoadState: false
+    isLoadState: false,
+    page: 1
   }),
   beforeRouteUpdate(to, from, next) {
     next(true)
   },
-  mounted() {
-    if (this.$route.query.detailsId) {
-      this.tab = 1
-    } else if (this.$route.params.isCommunity) {
-      this.tab = 1
-    } else if (this.$route.query.showInvitation && !this.isLoadState) {
-      this.tab = 1
-      this.$refs.tsCommunities.subTabSelected('tab-2')
-    }
-    if (
-      !this.checkPermissions('community-posts/search', 'POST') &&
-      !this.checkPermissions('communities/search/all', 'POST')
-    ) {
-      this.$router.push('/')
-    }
-  },
+  created() {},
   methods: {
     setLoadState() {
       this.isLoadState = false
@@ -132,10 +120,12 @@ export default {
             const communitiesDataGlobal =
               _this.$store.state['communities'].communities &&
               _this.$store.state['communities'].communities.communitiesData
+            this.page = (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
             if (!this.isLoadState) {
               if (this.$refs.tsCommunities) {
+                debugger
                 this.$refs.tsCommunities.page =
-                  (communitiesDataGlobal && communitiesDataGlobal.page) || 1
+                  (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
                 this.$refs.tsCommunities.itemsPerPage = 5
                 this.$refs.tsCommunities.getAllCommunitiesListData()
                 this.$refs.tsCommunities.getInvitationCount()
@@ -152,7 +142,7 @@ export default {
                     communitiesData.searchValues.industryValue
                   this.$refs.tsCommunities.privacyValue = communitiesData.searchValues.privacyValue
                   this.$refs.tsCommunities.selectedTab = communitiesData.searchValues.selectedTab
-
+                  debugger
                   this.$refs.tsCommunities.page = communitiesData.searchValues.page
                   this.$refs.tsCommunities.totalNumberOfRecords =
                     communitiesData.searchValues.totalNumberOfRecords
@@ -167,8 +157,9 @@ export default {
                     this.$refs.tsCommunities.listData = communitiesData.tableData
                   }
                 } else {
+                  debugger
                   this.$refs.tsCommunities.page =
-                    (communitiesDataGlobal && communitiesDataGlobal.page) || 1
+                    (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
                   this.$refs.tsCommunities.getInvitationCount()
@@ -177,13 +168,14 @@ export default {
                 }
                 setTimeout(() => {
                   _this.$emit('setLoadState')
-                }, 3000)
+                }, 1250)
               } else {
                 if (!this.isLoadState) {
                   _this.$emit('latest if')
                   if (this.$refs.tsCommunities) {
+                    debugger
                     this.$refs.tsCommunities.page =
-                      (communitiesDataGlobal && communitiesDataGlobal.page) || 1
+                      (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
                   }
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
@@ -198,7 +190,7 @@ export default {
       }, 50)
       setTimeout(() => {
         this.setLoadState()
-      }, 3000)
+      }, 1250)
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
@@ -210,10 +202,25 @@ export default {
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
+      if (vm.$route.query.detailsId) {
+        vm.tab = 1
+      } else if (vm.$route.params.isCommunity) {
+        vm.tab = 1
+      } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
+        vm.tab = 1
+        vm.$refs.tsCommunities.subTabSelected('tab-2')
+      }
+      if (
+        !vm.checkPermissions('community-posts/search', 'POST') &&
+        !vm.checkPermissions('communities/search/all', 'POST')
+      ) {
+        vm.$router.push('/')
+      }
       if (from.name === 'Community') {
         const incidentsData = vm.$store.state['incidents'].incidents
         const communitiesData = vm.$store.state['communities'].communities
         if (incidentsData.incidentsData || communitiesData.communitiesData) {
+          debugger
           vm.tab = !incidentsData.incidentsData ? 1 : 0
           vm.isLoadState = true
         }
