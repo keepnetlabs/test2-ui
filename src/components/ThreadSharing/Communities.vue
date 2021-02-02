@@ -835,7 +835,7 @@ export default {
     if (!this.isLoadState) this.selectedTab = 'tab-1'
     setTimeout(() => {
       this.$emit('setLoadState')
-    }, 1250)
+    }, 3000)
   },
   methods: {
     handleSizeChange(val) {
