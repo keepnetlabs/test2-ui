@@ -1089,33 +1089,50 @@ export default {
           this.getsuggestedCommunities()
           localStorage.setItem('communityName', communityName)
           localStorage.setItem('communityResourceIdForRedirect', resourceId)
-          if (privacyStatusName === 'Public') {
+          let communitiesData = null
+          let incidentsData = null
+          if (privacyStatusName === 'Public' && _this.communitiesRef) {
             _this.communitiesRef.listData.find(
               (item) => item.communityResourceId === resourceId
             ).membershipStatusId = 2
-          }
-          let communitiesData = {
-            tableData:
-              this.communitiesRef.selectedTab === 'tab-2'
-                ? this.communitiesRef.invitationData
-                : this.communitiesRef.listData,
-            searchValues: {
-              filter: this.communitiesRef.filter,
-              industryValue: this.communitiesRef.industryValue,
-              privacyValue: this.communitiesRef.privacyValue,
-              selectedTab: this.communitiesRef.selectedTab,
-              page: this.communitiesRef.page,
-              totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
-              totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
-              itemsPerPage: this.itemsPerPage
-            },
-            type: 'communities'
+            communitiesData = {
+              tableData:
+                this.communitiesRef.selectedTab === 'tab-2'
+                  ? this.communitiesRef.invitationData
+                  : this.communitiesRef.listData,
+              searchValues: {
+                filter: this.communitiesRef.filter,
+                industryValue: this.communitiesRef.industryValue,
+                privacyValue: this.communitiesRef.privacyValue,
+                selectedTab: this.communitiesRef.selectedTab,
+                page: this.communitiesRef.page,
+                totalNumberOfRecords: this.communitiesRef.totalNumberOfRecords,
+                totalNumberOfPages: this.communitiesRef.totalNumberOfPages,
+                itemsPerPage: this.itemsPerPage
+              },
+              type: 'communities'
+            }
+            incidentsData = null
+          } else if (_this.incidentsRef) {
+            communitiesData = null
+            incidentsData = {
+              tableData: this.incidentsRef.incidentList,
+              searchValues: {
+                search: this.incidentsRef.search,
+                companyValue: this.incidentsRef.companyValue,
+                threats: this.incidentsRef.threats,
+                page: this.incidentsRef.page,
+                totalNumberOfRecords: this.incidentsRef.totalNumberOfRecords,
+                totalNumberOfPages: this.incidentsRef.totalNumberOfPages,
+                itemsPerPage: this.incidentsRef.itemsPerPage
+              },
+              type: 'incidents'
+            }
           }
           this.$store.dispatch('communities/setCommunities', {
             key: 'communitiesJoin',
             communitiesData
           })
-          let incidentsData = null
           this.$store.dispatch('incidents/setIncidents', {
             key: 'incidents',
             incidentsData
