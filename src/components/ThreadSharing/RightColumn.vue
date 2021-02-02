@@ -760,21 +760,29 @@ export default {
         .then(() => {
           if (this.communityDetails.privacyStatusId === 1) {
             if (this.$store.state['communities'].communities.communitiesData) {
-              this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === this.communityDetails.resourceId
-              ).membershipStatusId = 0
-              this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === this.communityDetails.resourceId
-              ).privacyStatusName = 'Public'
+              if (
+                this.communitiesRef.listData.find((item) => item.communityResourceId === resourceId)
+              ) {
+                this.$store.state['communities'].communities.communitiesData.tableData.find(
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
+                ).membershipStatusId = 0
+                this.$store.state['communities'].communities.communitiesData.tableData.find(
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
+                ).privacyStatusName = 'Public'
+              }
             }
           } else {
             if (this.$store.state['communities'].communities.communitiesData) {
-              this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === this.communityDetails.resourceId
-              ).membershipStatusId = 0
-              this.$store.state['communities'].communities.communitiesData.tableData.find(
-                (item) => item.communityResourceId === this.communityDetails.resourceId
-              ).privacyStatusName = 'Private'
+              if (
+                this.communitiesRef.listData.find((item) => item.communityResourceId === resourceId)
+              ) {
+                this.$store.state['communities'].communities.communitiesData.tableData.find(
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
+                ).membershipStatusId = 0
+                this.$store.state['communities'].communities.communitiesData.tableData.find(
+                  (item) => item.communityResourceId === this.communityDetails.resourceId
+                ).privacyStatusName = 'Private'
+              }
             }
           }
           this.isWantToToLeaveFromCommunity = false
