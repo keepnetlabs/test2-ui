@@ -182,6 +182,7 @@ export default {
                 }, 1250)
               } else {
                 if (!this.isLoadState) {
+                  _this.$emit('latest if')
                   this.$refs.tsCommunities.page = 1
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()

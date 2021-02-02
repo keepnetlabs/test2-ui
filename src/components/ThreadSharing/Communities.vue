@@ -1367,6 +1367,7 @@ export default {
     },
     subTabSelected(name) {
       this.isCommunity = false
+      console.log('subselect')
       this.page = 1
       this.itemsPerPage = 5
       if (name == 'Your Communities' && !this.isLoadState) {
