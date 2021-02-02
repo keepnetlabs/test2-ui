@@ -1096,7 +1096,7 @@ export default {
     },
     joinCommunity({ resourceId, communityName, privacyStatusName }) {
       this.isJoinCommunityButtonDisabled = true
-
+      let _this = this
       joinCommunity(resourceId)
         .then(() => {
           this.getsuggestedCommunities()
