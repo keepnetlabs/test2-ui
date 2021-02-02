@@ -133,6 +133,7 @@ export default {
         } else {
           if (this.checkPermissions('communities/search/all', 'POST')) {
             if (!this.isLoadState) {
+              console.log('first if')
               this.$refs.tsCommunities.page = 1
               this.$refs.tsCommunities.itemsPerPage = 5
               this.$refs.tsCommunities.getAllCommunitiesListData()
@@ -164,7 +165,8 @@ export default {
                     this.$refs.tsCommunities.listData = communitiesData.tableData
                   }
                 } else {
-                  console.log('else', this.$refs.tsCommunities)
+                  console.log('else')
+                  console.log(this.$refs.tsCommunities)
                   this.$refs.tsCommunities.page = 1
                   this.$refs.tsCommunities.itemsPerPage = 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
@@ -175,7 +177,7 @@ export default {
                 setTimeout(() => {
                   console.log(this.$refs.tsCommunities.page)
                   _this.$emit('setLoadState')
-                }, 3000)
+                }, 1250)
               } else {
                 if (!this.isLoadState) {
                   this.$refs.tsCommunities.page = 1
@@ -194,7 +196,7 @@ export default {
       setTimeout(() => {
         console.log('setTimeout')
         this.setLoadState()
-      }, 1250)
+      }, 3000)
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
