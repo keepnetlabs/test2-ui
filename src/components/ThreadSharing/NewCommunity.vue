@@ -280,7 +280,11 @@ export default {
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
-              this.$router.push(`/community/${this.resourceId}`)
+              debugger
+              this.$router.push({
+                path: `/community/${this.resourceId}`,
+                query: { communityName: this.name }
+              })
             })
             .finally(() => (this.saveDisable = false))
         } else {
@@ -289,7 +293,10 @@ export default {
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
-              this.$router.push(`/community/${response.data.data.resourceId}`)
+              this.$router.push({
+                path: `/community/${response.data.data.resourceId}`,
+                query: { communityName: this.name }
+              })
             })
             .finally(() => (this.saveDisable = false))
         }
