@@ -280,7 +280,6 @@ export default {
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
-              debugger
               this.$router.push({
                 path: `/community/${this.resourceId}`,
                 query: { communityName: this.name }
