@@ -2755,6 +2755,7 @@ export default {
         updateCommunityPost(this.editItem.communityPostResourceId, payload)
           .then(() => {
             this.saveDisable = false
+            this.$store.dispatch('tableReload/setTableReload', true)
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
@@ -2803,6 +2804,7 @@ export default {
         }
         createCommunityPost(payload)
           .then(() => {
+            this.$store.dispatch('tableReload/setTableReload', true)
             this.onCancelClicked()
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)

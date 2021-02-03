@@ -1253,8 +1253,7 @@ export default {
           communitiesData
         })
         this.$router.push({
-          path: `/community/${post.communityResourceId}`,
-          query: { communityName: post.communityName }
+          path: `/community/${post.communityResourceId}`
         })
       }
     },
