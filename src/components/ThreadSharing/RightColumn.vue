@@ -748,6 +748,11 @@ export default {
             }
             return acc
           }, [])
+          _this.$store.state[
+            'communities'
+          ].communities.communitiesData.searchValues.totalNumberOfRecords =
+            _this.$store.state['communities'].communities.communitiesData.searchValues
+              .totalNumberOfRecords - 1
         }
         this.$router.push(`/threat-sharing`)
       })
