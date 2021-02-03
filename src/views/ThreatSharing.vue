@@ -33,7 +33,6 @@
                 ref="tsIncidents"
                 :isLoadState="isLoadState"
                 @setLoadState="setLoadState"
-                v-if="tab === 0"
               />
             </v-tab-item>
             <v-tab-item v-if="checkPermissions('communities/search/all', 'POST')">
@@ -44,7 +43,6 @@
                 :isLoadState="isLoadState"
                 @setLoadState="setLoadState"
                 :page="page"
-                v-if="tab === 1"
               />
             </v-tab-item>
           </v-tabs-items>
@@ -122,10 +120,6 @@ export default {
             this.page = (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
             if (!this.isLoadState) {
               if (this.$refs.tsCommunities) {
-                this.$refs.tsCommunities.page =
-                  (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
-                this.$refs.tsCommunities.itemsPerPage =
-                  (communitiesDataGlobal && communitiesDataGlobal.searchValues.itemsPerPage) || 5
                 this.$refs.tsCommunities.getAllCommunitiesListData()
                 this.$refs.tsCommunities.getInvitationCount()
                 this.$refs.tsCommunities.setInitialCommunityValues()
@@ -135,12 +129,6 @@ export default {
               if (this.isLoadState) {
               } else {
                 if (!this.isLoadState) {
-                  if (this.$refs.tsCommunities) {
-                    this.$refs.tsCommunities.page =
-                      (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
-                  }
-                  this.$refs.tsCommunities.itemsPerPage =
-                    (communitiesDataGlobal && communitiesDataGlobal.searchValues.itemsPerPage) || 5
                   this.$refs.tsCommunities.getAllCommunitiesListData()
                   this.$refs.tsCommunities.getInvitationCount()
                   this.$refs.tsCommunities.setInitialCommunityValues()
