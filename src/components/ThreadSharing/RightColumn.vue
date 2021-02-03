@@ -757,6 +757,7 @@ export default {
             _this.$store.state['communities'].communities.communitiesData.searchValues
               .totalNumberOfRecords - 1
         }
+        this.$store.dispatch('tableReload/setTableReload', true)
         this.$router.push(`/threat-sharing`)
       })
     },
