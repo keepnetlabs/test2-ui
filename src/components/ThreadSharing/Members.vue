@@ -581,12 +581,15 @@ export default {
     },
     getCommunityDetails() {
       this.membersLoading = true
+      let _this = this
       getCommunityDetails(this.$route.params.id).then((response) => {
         localStorage.setItem(
           'isCommunityOwner',
           response.data.data.myMembershipStatusId == 1 ? 'owner' : 'member'
         )
         this.communityDetails = response.data.data
+        _this.$parent.$parent.$parent.$parent.$parent.$parent.communityName =
+          response.data.data.name
         this.getMembers()
         this.getRequestMembers()
       })

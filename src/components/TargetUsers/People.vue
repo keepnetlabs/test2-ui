@@ -584,6 +584,7 @@ export default {
     handleDeleteUser(selectedUser) {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
+          this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
           this.$emit('call-for-company-licenses')
           this.callForTargetUsers()
         }

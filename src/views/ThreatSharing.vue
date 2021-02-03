@@ -32,6 +32,7 @@
               <incidents
                 ref="tsIncidents"
                 :isLoadState="isLoadState"
+                :isTableReload="isTableReload"
                 @setLoadState="setLoadState"
               />
             </v-tab-item>
@@ -41,6 +42,7 @@
                 :refresh="refreshMemberTable"
                 :isCommunity="this.$route.params.isCommunity"
                 :isLoadState="isLoadState"
+                :isTableReload="isTableReload"
                 @setLoadState="setLoadState"
                 :page="page"
               />
@@ -56,6 +58,7 @@
           :incidentsRef="this.$refs.tsIncidents"
           :communitiesRef="this.$refs.tsCommunities"
           :selectedTab="tab"
+          :subTabSelected="this.$refs.tsCommunities && this.$refs.tsCommunities.subSelectedTab"
         />
       </v-col>
     </v-layout>
@@ -87,7 +90,9 @@ export default {
     isWantToAddNewCommunity: false,
     refreshMemberTable: false,
     isLoadState: false,
-    page: 1
+    isTableReload: false,
+    page: 1,
+    subSelectedTab: null
   }),
   beforeRouteUpdate(to, from, next) {
     next(true)
@@ -96,6 +101,7 @@ export default {
   methods: {
     setLoadState() {
       this.isLoadState = false
+      this.isTableReload = false
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -117,7 +123,11 @@ export default {
             const communitiesDataGlobal =
               _this.$store.state['communities'].communities &&
               _this.$store.state['communities'].communities.communitiesData
-            this.page = (communitiesDataGlobal && communitiesDataGlobal.searchValues.page) || 1
+            this.page =
+              (communitiesDataGlobal &&
+                communitiesDataGlobal.searchValues &&
+                communitiesDataGlobal.searchValues.page) ||
+              1
             if (!this.isLoadState) {
               if (this.$refs.tsCommunities) {
                 this.$refs.tsCommunities.getAllCommunitiesListData()
@@ -141,7 +151,7 @@ export default {
       }, 50)
       setTimeout(() => {
         this.setLoadState()
-      }, 1250)
+      }, 2000)
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
@@ -170,9 +180,11 @@ export default {
       if (from.name === 'Community') {
         const incidentsData = vm.$store.state['incidents'].incidents
         const communitiesData = vm.$store.state['communities'].communities
+        const isTableReload = vm.$store.state['tableReload'].tableReload
         if (incidentsData.incidentsData || communitiesData.communitiesData) {
           vm.tab = !incidentsData.incidentsData ? 1 : 0
           vm.isLoadState = true
+          vm.isTableReload = isTableReload
         }
       }
     })

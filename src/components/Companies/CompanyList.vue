@@ -466,6 +466,7 @@ export default {
     },
     deleteConfirmedItem(selectedItem) {
       deleteCompany(selectedItem.companyResourceId).then((response) => {
+        this.$refs.refDataList.$refs.elTableRef.toggleRowSelection(selectedItem, false)
         if (response.data && response.data.message) {
           this.getTableData()
         }

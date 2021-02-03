@@ -616,8 +616,17 @@
                 :to="`/threat-sharing?detailsId=${communityId}`"
                 v-if="communityId"
                 class="page-header__title-link text-decoration-none"
-                >{{ communityName || getCommunityName || $route.params.name }}</router-link
-              ><span v-else>{{ communityName || getCommunityName || $route.params.name }}</span>
+                ref="communityNameRef"
+                >{{ communityName || $route.params.name }}</router-link
+              ><span v-else>
+                <MainListItemLoading
+                  v-if="communityName === 'Loading...'"
+                  :loading="communityName === 'Loading...'"
+                />
+                <span v-else>
+                  {{ communityName || $route.params.name }}
+                </span>
+              </span>
             </h1>
             <h1 v-else-if="routerName === 'Company Group Details'">
               {{ companyGroupName || $route.params.name }}
@@ -715,7 +724,7 @@
         style="height: 100%; padding-bottom: 47px !important;"
         class="app-container ml-0 pa-0 pt-2 mr-0 pb-12"
       >
-        <router-view :key="$router.fullPath" />
+        <router-view :key="$route.fullPath" />
       </v-container>
       <app-footer />
     </v-content>
@@ -757,6 +766,7 @@ import { checkPermission, checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
 import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
+import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 
 export default {
   name: 'Main',
@@ -771,7 +781,8 @@ export default {
     AppDialog,
     PasswordChecker,
     Breadcrumb,
-    TargetUsersCheckLicenseDialog
+    TargetUsersCheckLicenseDialog,
+    MainListItemLoading
   },
   data() {
     return {
@@ -1098,10 +1109,10 @@ export default {
     }),
     getCommunityName() {
       let _this = this
-      _this.communityId =
-        _this.$route.query.communityResourceIdForRedirect ||
-        localStorage.getItem('communityResourceIdForRedirect')
-      return _this.$route.query.communityName || localStorage.getItem('communityName')
+      _this.communityId = localStorage.getItem('communityResourceIdForRedirect')
+      _this.communityName =
+        _this.$route.params.communityName || localStorage.getItem('communityName')
+      return this.communityName
     },
     getDialogBody() {
       return this.companyLicense
@@ -1272,16 +1283,14 @@ export default {
         this.showNewPassword = false
       }
     },
-    $route(to, from) {
-      if (to.name === 'Community') {
-        this.communityName = to.query.communityName
-      }
-      if (to.name === from.name && !from.params.item) {
-        this.$route.query.communityName = localStorage.getItem('previousCommunityName')
-        this.$route.query.communityResourceIdForRedirect = localStorage.getItem(
-          'previousCommunityResourceIdForRedirect'
-        )
-      }
+    $route: {
+      handler: function (to, from) {
+        if (to.name === 'Community') {
+          this.communityName = to.params.communityName
+        }
+      },
+      deep: true,
+      immediate: true
     }
   },
   mounted() {

@@ -280,10 +280,14 @@ export default {
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
-              this.$router.push({
-                path: `/community/${this.resourceId}`,
-                query: { communityName: this.name }
+              refThis.$router.replace({
+                name: 'Community',
+                params: { communityName: this.name, rnd: Math.random(), id: this.resourceId }
               })
+              this.$store.dispatch('tableReload/setTableReload', true)
+              setTimeout(() => {
+                refThis.$parent.$parent.$parent.$parent.$parent.$parent.communityName = this.name
+              }, 200)
             })
             .finally(() => (this.saveDisable = false))
         } else {
@@ -292,9 +296,14 @@ export default {
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
+              this.$store.dispatch('tableReload/setTableReload', true)
               this.$router.push({
-                path: `/community/${response.data.data.resourceId}`,
-                query: { communityName: this.name }
+                name: 'Community',
+                params: {
+                  communityName: this.name,
+                  rnd: Math.random(),
+                  id: response.data.data.resourceId
+                }
               })
             })
             .finally(() => (this.saveDisable = false))
