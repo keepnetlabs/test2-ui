@@ -632,6 +632,9 @@ export default {
     },
     selectedTab: {
       required: false
+    },
+    subTabSelected: {
+      required: false
     }
   },
   components: {
@@ -817,7 +820,30 @@ export default {
               }
             }
           }
+          this.$store.dispatch('tableReload/setTableReload', true)
           this.isWantToToLeaveFromCommunity = false
+          if (
+            _this.$store.state['communities'].communities &&
+            _this.$store.state['communities'].communities.communitiesData &&
+            _this.$store.state['communities'].communities.communitiesData.searchValues
+              .selectedTab === 'tab-0'
+          ) {
+            _this.$store.state[
+              'communities'
+            ].communities.communitiesData.tableData = this.$store.state[
+              'communities'
+            ].communities.communitiesData.tableData.reduce((acc, item) => {
+              if (item.communityResourceId !== this.communityDetails.resourceId) {
+                acc.push(item)
+              }
+              return acc
+            }, [])
+            _this.$store.state[
+              'communities'
+            ].communities.communitiesData.searchValues.totalNumberOfRecords =
+              _this.$store.state['communities'].communities.communitiesData.searchValues
+                .totalNumberOfRecords - 1
+          }
           this.$router.push(`/threat-sharing`)
         })
         .catch((error) => {
@@ -899,16 +925,19 @@ export default {
           })
         }
         if (this.$route.name === 'Community') {
-          //this.$router.replace({ query: null })
+          this.$router.replace({ query: null, params: null })
           this.$router.push({
-            path: `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`,
-            query: { communityName: post.communityName }
+            name: 'Community',
+            query: { postId: post.communityPostResourceId },
+            params: { communityName: post.communityName, id: post.communityResourceId }
           })
           //this.$router.go(`/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`)
         } else {
+          this.$router.replace({ query: null, params: null })
           this.$router.push({
-            path: `/community/${post.communityResourceId}?postId=${post.communityPostResourceId}`,
-            query: { communityName: post.communityName }
+            name: 'Community',
+            query: { postId: post.communityPostResourceId },
+            params: { communityName: post.communityName, id: post.communityResourceId }
           })
         }
         this.getAllRightColumnData()
@@ -936,7 +965,8 @@ export default {
               page: this.$parent.$refs.tsCommunities.page,
               totalNumberOfRecords: this.$parent.$refs.tsCommunities.totalNumberOfRecords,
               totalNumberOfPages: this.$parent.$refs.tsCommunities.totalNumberOfPages,
-              itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage
+              itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage,
+              subSelectedTab: this.$parent.$refs.tsCommunities.subSelectedTab
             },
             type: 'communities'
           }
@@ -976,8 +1006,8 @@ export default {
         //this.$router.replace({ query: null })
         let previousRouteName = this.$route.name
         this.$router.push({
-          path: `/community/${post.communityResourceId}`,
-          query: { communityName: post.communityName }
+          name: 'Community',
+          params: { communityName: post.communityName, id: post.communityResourceId }
         })
         if (previousRouteName === 'Community') {
           //this.$router.go({ path: `/community/${post.communityResourceId}`, query: '' })
@@ -1017,8 +1047,10 @@ export default {
       }, 200)
     },
     getCommunityDetails() {
+      let _this = this
       if (this.$route.name == 'Community') {
         this.ownerDetails = this.$route.params.item
+        _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
         getCommunityDetails(this.$route.params.id)
           .then((response) => {
             this.communityDetails = response.data.data
@@ -1026,6 +1058,7 @@ export default {
               localStorage.setItem('communityName', response.data.data.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
             }
+            _this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
             this.$forceUpdate()
           })
           .catch((error) => {
@@ -1110,6 +1143,57 @@ export default {
       // this.$emit('closeCommunity')
     },
     createNewCommunity() {
+      if (this.selectedTab === 1) {
+        let communitiesData = {
+          tableData:
+            this.$parent.$refs.tsCommunities.selectedTab === 'tab-2'
+              ? this.$parent.$refs.tsCommunities.invitationData
+              : this.$parent.$refs.tsCommunities.listData,
+          searchValues: {
+            filter: this.$parent.$refs.tsCommunities.filter,
+            industryValue: this.$parent.$refs.tsCommunities.industryValue,
+            privacyValue: this.$parent.$refs.tsCommunities.privacyValue,
+            selectedTab: this.$parent.$refs.tsCommunities.selectedTab,
+            page: this.$parent.$refs.tsCommunities.page,
+            totalNumberOfRecords: this.$parent.$refs.tsCommunities.totalNumberOfRecords,
+            totalNumberOfPages: this.$parent.$refs.tsCommunities.totalNumberOfPages,
+            itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage
+          },
+          type: 'communities'
+        }
+        this.$store.dispatch('communities/setCommunities', {
+          key: 'communities',
+          communitiesData
+        })
+        let incidentsData = null
+        this.$store.dispatch('incidents/setIncidents', {
+          key: 'incidents',
+          incidentsData
+        })
+      } else if (this.selectedTab === 0) {
+        let incidentsData = {
+          tableData: this.$parent.$refs.tsIncidents.incidentList,
+          searchValues: {
+            search: this.$parent.$refs.tsIncidents.search,
+            companyValue: this.$parent.$refs.tsIncidents.companyValue,
+            threats: this.$parent.$refs.tsIncidents.threats,
+            page: this.$parent.$refs.tsIncidents.page,
+            totalNumberOfRecords: this.$parent.$refs.tsIncidents.totalNumberOfRecords,
+            totalNumberOfPages: this.$parent.$refs.tsIncidents.totalNumberOfPages,
+            itemsPerPage: this.$parent.$refs.tsIncidents.itemsPerPage
+          },
+          type: 'incidents'
+        }
+        let communitiesData = []
+        this.$store.dispatch('incidents/setIncidents', {
+          key: 'incidents',
+          incidentsData
+        })
+        this.$store.dispatch('communities/setCommunities', {
+          key: 'communities',
+          communitiesData
+        })
+      }
       this.$emit('createCommunityAction')
       this.closeCommunityInfo()
     },
@@ -1163,7 +1247,8 @@ export default {
                 page: this.$parent.$refs.tsCommunities.page,
                 totalNumberOfRecords: this.$parent.$refs.tsCommunities.totalNumberOfRecords,
                 totalNumberOfPages: this.$parent.$refs.tsCommunities.totalNumberOfPages,
-                itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage
+                itemsPerPage: this.$parent.$refs.tsCommunities.itemsPerPage,
+                subSelectedTab: this.$parent.$refs.tsCommunities.subSelectedTab
               },
               type: 'communities'
             }
@@ -1195,16 +1280,16 @@ export default {
           if (privacyStatusName !== 'Private') {
             if (this.$route.name == 'Community') {
               this.$router.push({
-                path: `/community/${resourceId}`,
-                query: { communityName: communityName }
+                name: 'Community',
+                params: { communityName: communityName, id: resourceId }
               })
               //this.$router.go(`/community/${resourceId}`)
               this.$emit('joinRequestSuccess')
             } else {
               this.$emit('joinRequestSuccess')
               this.$router.push({
-                path: `/community/${resourceId}`,
-                query: { communityName: communityName }
+                name: 'Community',
+                params: { communityName: communityName, id: resourceId }
               })
             }
           } else {

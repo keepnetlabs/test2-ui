@@ -230,6 +230,9 @@ export default {
     },
     setLoadState: {
       required: false
+    },
+    isTableReload: {
+      required: false
     }
   },
   data: () => ({
@@ -493,7 +496,10 @@ export default {
               }
             })
         } else {
-          if (!this.isLoadState) {
+          if (
+            !this.isLoadState ||
+            (this.isTableReload && !payload.postedCompanyResourceId.length)
+          ) {
             getIncidentList(payload)
               .then((response) => {
                 if (isSearch) this.page = 1
@@ -557,6 +563,14 @@ export default {
           }, 1250)
         } else {
           this.getIncidentList()
+        }
+        if (this.isTableReload) {
+          this.page = 1
+          this.search = null
+          this.companyValue = []
+          this.threats = []
+          this.getIncidentList()
+          this.$store.dispatch('tableReload/setTableReload', false)
         }
       } else {
         if (!this.isLoadState) {

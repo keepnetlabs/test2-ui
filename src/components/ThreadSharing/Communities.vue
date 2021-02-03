@@ -794,6 +794,9 @@ export default {
     },
     setLoadState: {
       required: false
+    },
+    isTableReload: {
+      required: false
     }
   },
   watch: {
@@ -846,17 +849,42 @@ export default {
         this.setInitialCommunityValues()
         this.isCommunity = false
       }
+      if (this.isTableReload) {
+        this.page = 1
+        this.filter = null
+        this.industryValue = []
+        this.privacyValue = []
+        switch (this.selectedTab) {
+          case 'tab-0':
+            this.getMyCommunitiesListData(true)
+            break
+          case 'tab-1':
+            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            break
+          case 'tab-2':
+            this.getInvitions()
+            break
+          default:
+            return false
+        }
+        this.$store.dispatch('tableReload/setTableReload', false)
+      }
       setTimeout(() => {
         this.$emit('setLoadState')
-      }, 1250)
+      }, 2000)
     }
 
     if (this.isCommunity) {
+      let _this = this
       if (this.$route.params.communityName === 'empty') {
+        _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
         getCommunityDetails(this.$route.params.communityId)
           .then((response) => {
             this.communityDetails = response.data.data
             this.filter = response.data.data.name
+            setTimeout(() => {
+              _this.$parent.$parent.$parent.$parent.communityName = response.data.data.name
+            }, 250)
           })
           .catch((error) => {
             error.response.data
@@ -872,7 +900,7 @@ export default {
     if (!this.isLoadState) this.selectedTab = 'tab-1'
     setTimeout(() => {
       this.$emit('setLoadState')
-    }, 1250)
+    }, 2000)
   },
   methods: {
     handleSizeChange(val) {
@@ -1325,8 +1353,7 @@ export default {
         })
         this.$router.push({
           name: `Community`,
-          params: { id: item.communityResourceId, item: item },
-          query: { communityName: item.communityName }
+          params: { id: item.communityResourceId, item: item, communityName: item.communityName }
         })
       } else {
         localStorage.setItem('isCommunityOwner', item.membershipStatusId == 1 ? 'owner' : 'member')
@@ -1388,7 +1415,7 @@ export default {
             })
             this.$router.push({
               path: `/community/${communityId}`,
-              query: { communityName: communityName }
+              params: { communityName: communityName }
             })
           } else {
             this.listData.find(
