@@ -830,7 +830,8 @@ export default {
     onAddClose() {
       this.isWantToAddNewCommunity = false
       setTimeout(() => {
-        this.$router.go(0)
+        this.getAllRightColumnData()
+        //this.$router.go(0)
       }, 250)
     },
     goToPostDetails(post) {
