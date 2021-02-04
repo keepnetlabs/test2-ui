@@ -372,7 +372,7 @@ export default {
         })
     },
     getIncidentList(memberId, companyId, isSearch) {
-      let companyResourceId = this.companyValue
+      let companyResourceId = Array.isArray(this.companyValue) ? null : this.companyValue
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,
         pageNumber: isSearch ? 1 : this.page,
@@ -496,10 +496,7 @@ export default {
               }
             })
         } else {
-          if (
-            !this.isLoadState ||
-            (this.isTableReload && !payload.postedCompanyResourceId.length)
-          ) {
+          if (!this.isLoadState || this.isTableReload) {
             getIncidentList(payload)
               .then((response) => {
                 if (isSearch) this.page = 1
