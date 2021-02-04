@@ -871,7 +871,7 @@ export default {
       }
       setTimeout(() => {
         this.$emit('setLoadState')
-      }, 2000)
+      }, 100)
     }
 
     if (this.isCommunity) {
@@ -900,7 +900,7 @@ export default {
     if (!this.isLoadState) this.selectedTab = 'tab-1'
     setTimeout(() => {
       this.$emit('setLoadState')
-    }, 2000)
+    }, 100)
   },
   methods: {
     handleSizeChange(val) {

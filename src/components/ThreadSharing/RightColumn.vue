@@ -915,7 +915,7 @@ export default {
             },
             type: 'incidents'
           }
-          let communitiesData = []
+          let communitiesData = null
           this.$store.dispatch('incidents/setIncidents', {
             key: 'incidents',
             incidentsData
@@ -994,7 +994,7 @@ export default {
             },
             type: 'incidents'
           }
-          let communitiesData = []
+          let communitiesData = null
           this.$store.dispatch('incidents/setIncidents', {
             key: 'incidents',
             incidentsData
@@ -1185,7 +1185,7 @@ export default {
           },
           type: 'incidents'
         }
-        let communitiesData = []
+        let communitiesData = null
         this.$store.dispatch('incidents/setIncidents', {
           key: 'incidents',
           incidentsData
