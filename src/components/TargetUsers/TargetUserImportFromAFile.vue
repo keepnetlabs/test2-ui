@@ -216,7 +216,7 @@
                     @searchChangedEvent="searchChangedEvent($event)"
                     :dataLength="tableData && tableData.totalNumberOfRecords"
                     :requestParams="bodyData"
-                    :isServerSide="true"
+                    :isServerSide="false"
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
                     :server-side-events="{ search: false, sort: false, pagination: false }"
@@ -260,6 +260,31 @@
                         }}
                         users processed
                       </div>
+                    </div>
+                  </div>
+                  <div v-if="false" class="target-user-import-file__error">
+                    <div class="target-user-import-file__error--text">
+                      <v-icon class="target-user-import-file__error--text--icon" small color="error"
+                        >mdi-alert-circle</v-icon
+                      >
+                      An error occured while processing the imported file
+                    </div>
+                    <div class="target-user-import-file__error__button">
+                      <v-btn
+                        class="target-user-import-file__error__button--primary"
+                        outlined
+                        rounded
+                        color="white"
+                        @click="getMappingStatus"
+                      >
+                        <v-icon
+                          color="white"
+                          class="target-user-import-file__error__button--icon"
+                          small
+                          >mdi-refresh</v-icon
+                        >
+                        {{ labels.Retry }}</v-btn
+                      >
                     </div>
                   </div>
                 </div>
@@ -585,7 +610,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200,
+            minWidth: 200,
+            overrideWidth: true,
             dbName: 'CreateTime',
             emptyText: 'No Data'
           }
@@ -665,7 +691,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200,
+            minWidth: 200,
+            overrideWidth: true,
             dbName: 'CreateTime',
             emptyText: 'No Data'
           }
@@ -711,11 +738,26 @@ export default {
     }
   },
   methods: {
+    getExcelName(item) {
+      if (item.selectedValue === 'First Name') item.selectedValue.name = 'First Name'
+      if (item.selectedValue === 'First Name') item.selectedValue.dbName = 'First Name'
+      if (item.selectedValue === 'Last Name') item.selectedValue.name = 'Last Name'
+      if (item.selectedValue === 'Last Name') item.selectedValue.dbName = 'Last Name'
+      if (item.selectedValue === 'FirstName') item.selectedValue.name = 'First Name'
+      if (item.selectedValue === 'FirstName') item.selectedValue.dbName = 'First Name'
+      if (item.selectedValue === 'LastName') item.selectedValue.name = 'Last Name'
+      if (item.selectedValue === 'LastName') item.selectedValue.dbName = 'Last Name'
+      return (
+        (item.selectedValue && item.selectedValue.dbName) ||
+        (item.selectedValue && item.selectedValue.name) ||
+        item.name
+      )
+    },
     getFieldName(item) {
-      if (item.name === 'First Name') item.name = 'FirstName'
-      if (item.dbName === 'First Name') item.dbName = 'FirstName'
-      if (item.name === 'Last Name') item.name = 'LastName'
-      if (item.dbName === 'Last Name') item.dbName = 'LastName'
+      if (item.selectedValue === 'First Name') item.selectedValuename = 'FirstName'
+      if (item.selectedValue === 'First Name') item.selectedValuedbName = 'FirstName'
+      if (item.selectedValue === 'Last Name') item.selectedValuename = 'LastName'
+      if (item.selectedValue === 'Last Name') item.selectedValuedbName = 'LastName'
       return (
         (item.selectedValue && item.selectedValue.dbName) ||
         (item.selectedValue && item.selectedValue.name) ||
@@ -1049,9 +1091,20 @@ export default {
     createMapFields() {
       this.step3InitialLoading = true
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
+        let excelColumnName = item.name
+        let fieldName =
+          (item.selectedValue && item.selectedValue.dbName) ||
+          (item.selectedValue && item.selectedValue.name) ||
+          item.name
+        if (excelColumnName === 'First Name') excelColumnName = 'First Name'
+        if (excelColumnName === 'Last Name') excelColumnName = 'Last Name'
+        if (excelColumnName === 'FirstName') excelColumnName = 'First Name'
+        if (excelColumnName === 'LastName') excelColumnName = 'Last Name'
+        if (fieldName === 'First Name') fieldName = 'FirstName'
+        if (fieldName === 'Last Name') fieldName = 'LastName'
         let val = {
-          excelColumnName: item.name,
-          fieldName: this.getFieldName(item)
+          excelColumnName: excelColumnName,
+          fieldName: fieldName
         }
         return val
       })
@@ -1163,7 +1216,14 @@ export default {
           //this.sortCustomFields(this.customFields)
           this.sortCustomFields(this.unActiveCustomFields)
           this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))*/
-          _this.mappingData.columns = _this.columns
+          let allColumns = []
+          let mainColumns = _this.columns.filter((item) => !item.isCustomField)
+          let customColumns = _this.columns.filter((item) => item.isCustomField)
+          allColumns = mainColumns
+          if (customColumns) {
+            allColumns = allColumns.concat(customColumns)
+          }
+          _this.mappingData.columns = allColumns
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
                 return {
@@ -1315,6 +1375,54 @@ export default {
       }
     }
   }
+  &__error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 340px;
+    flex-flow: column;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+      0 1px 1px -1px rgba(204, 204, 204, 0.12);
+    &--text {
+      font-size: 24px !important;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: #f56c6c;
+      margin-bottom: 24px;
+      display: flex;
+      &--icon {
+        margin-right: 8px;
+        font-size: 24px !important;
+      }
+    }
+    &__button {
+      &--primary {
+        border-radius: 18px;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+        background-color: #2196f3;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71 !important;
+        letter-spacing: normal;
+        color: #ffffff;
+        text-align: center;
+        display: flex;
+        flex-flow: column;
+        color: white;
+      }
+      &--icon {
+        margin-right: 8px;
+        font-size: 18px !important;
+      }
+    }
+  }
+
   .wizard {
     .target-user-import-file__list-item {
       max-width: 100% !important;
