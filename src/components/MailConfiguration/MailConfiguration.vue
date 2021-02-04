@@ -262,12 +262,14 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on: tooltip }">
                   <v-btn
-                    class="btn-add mr-1"
-                    icon
+                    class="button-new mr-1"
+                    rounded
+                    color="#2196f3"
                     v-on="{ ...tooltip, ...menu }"
                     :disabled="!checkPermissions('mail-configurations/o365', 'POST')"
                   >
-                    <v-icon>mdi-plus</v-icon>
+                    <v-icon color="white">mdi-plus</v-icon>
+                    <span class="button-new__text">NEW</span>
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{ 'Add Mail Configuration' }}</span>

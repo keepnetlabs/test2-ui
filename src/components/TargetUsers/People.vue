@@ -84,11 +84,13 @@
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn
                   :disabled="!checkPermissions('target-users/search', 'POST')"
-                  class="btn-add mr-1"
-                  icon
+                  class="button-new mr-1"
+                  rounded
+                  color="#2196f3"
                   v-on="{ ...tooltip, ...menu }"
                 >
                   <v-icon>mdi-plus</v-icon>
+                  <span class="button-new__text">NEW</span>
                 </v-btn>
               </template>
               <span class="tooltip-span">{{ 'Add User' }}</span>

@@ -90,13 +90,14 @@
     </div>
     <v-btn
       class="query__button"
-      style="margin-left: 104px;"
+      style="margin-left: 104px; margin-top: 6px;"
       v-if="depth < maxDepth && depth === 1"
-      text
-      color="#2196f3"
+      color="#00bcd4"
+      rounded
       @click="addGroup"
     >
-      <v-icon>mdi-plus</v-icon> {{ labels.addGroup }}
+      <v-icon color="white">mdi-plus</v-icon>
+      <span style="color: white; margin-left: 8px;"> {{ labels.addGroup }} </span>
     </v-btn>
   </div>
 </template>
@@ -478,9 +479,10 @@ export default {
   border-radius: 4px;
   line-height: 1.33;
   font-weight: 600;
-  background-color: #00bcd4;
+  background-color: #e0f9fc;
+  border: solid 1px rgba(42, 201, 221, 0.65);
   font-size: 12px;
   z-index: 9;
-  color: white;
+  color: #00bcd4;
 }
 </style>
