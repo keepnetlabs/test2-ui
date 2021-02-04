@@ -216,7 +216,7 @@
                     @searchChangedEvent="searchChangedEvent($event)"
                     :dataLength="tableData && tableData.totalNumberOfRecords"
                     :requestParams="bodyData"
-                    :isServerSide="true"
+                    :isServerSide="false"
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
                     :server-side-events="{ search: false, sort: false, pagination: false }"
