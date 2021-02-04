@@ -224,7 +224,8 @@ export const labels = {
   SMTPServerAddressSecondLower: 'SMTP server address',
   Port: 'Port',
   Message: 'Message',
-  EnterIpAdress: 'Enter IP address'
+  EnterIpAdress: 'Enter IP address',
+  Retry: 'RETRY'
 }
 
 export default labels

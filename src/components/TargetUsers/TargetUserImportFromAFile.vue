@@ -262,6 +262,31 @@
                       </div>
                     </div>
                   </div>
+                  <div v-if="false" class="target-user-import-file__error">
+                    <div class="target-user-import-file__error--text">
+                      <v-icon class="target-user-import-file__error--text--icon" small color="error"
+                        >mdi-alert-circle</v-icon
+                      >
+                      An error occured while processing the imported file
+                    </div>
+                    <div class="target-user-import-file__error__button">
+                      <v-btn
+                        class="target-user-import-file__error__button--primary"
+                        outlined
+                        rounded
+                        color="white"
+                        @click="getMappingStatus"
+                      >
+                        <v-icon
+                          color="white"
+                          class="target-user-import-file__error__button--icon"
+                          small
+                          >mdi-refresh</v-icon
+                        >
+                        {{ labels.Retry }}</v-btn
+                      >
+                    </div>
+                  </div>
                 </div>
               </v-stepper-content>
             </v-stepper-items>
@@ -713,6 +738,21 @@ export default {
     }
   },
   methods: {
+    getExcelName(item) {
+      if (item.name === 'First Name') item.name = 'First Name'
+      if (item.dbName === 'First Name') item.dbName = 'First Name'
+      if (item.name === 'Last Name') item.name = 'Last Name'
+      if (item.dbName === 'Last Name') item.dbName = 'Last Name'
+      if (item.name === 'FirstName') item.name = 'First Name'
+      if (item.dbName === 'FirstName') item.dbName = 'First Name'
+      if (item.name === 'LastName') item.name = 'Last Name'
+      if (item.dbName === 'LastName') item.dbName = 'Last Name'
+      return (
+        (item.selectedValue && item.selectedValue.dbName) ||
+        (item.selectedValue && item.selectedValue.name) ||
+        item.name
+      )
+    },
     getFieldName(item) {
       if (item.name === 'First Name') item.name = 'FirstName'
       if (item.dbName === 'First Name') item.dbName = 'FirstName'
@@ -1052,7 +1092,7 @@ export default {
       this.step3InitialLoading = true
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
         let val = {
-          excelColumnName: item.name,
+          excelColumnName: this.getExcelName(item),
           fieldName: this.getFieldName(item)
         }
         return val
@@ -1324,6 +1364,54 @@ export default {
       }
     }
   }
+  &__error {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 340px;
+    flex-flow: column;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
+      0 1px 1px -1px rgba(204, 204, 204, 0.12);
+    &--text {
+      font-size: 24px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.29;
+      letter-spacing: normal;
+      color: #f56c6c;
+      margin-bottom: 24px;
+      display: flex;
+      &--icon {
+        margin-right: 8px;
+        font-size: 24px !important;
+      }
+    }
+    &__button {
+      &--primary {
+        border-radius: 18px;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
+        background-color: #2196f3;
+        font-size: 14px !important;
+        font-weight: 600 !important;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71 !important;
+        letter-spacing: normal;
+        color: #ffffff;
+        text-align: center;
+        display: flex;
+        flex-flow: column;
+        color: white;
+      }
+      &--icon {
+        margin-right: 8px;
+        font-size: 18px !important;
+      }
+    }
+  }
+
   .wizard {
     .target-user-import-file__list-item {
       max-width: 100% !important;
