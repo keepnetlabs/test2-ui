@@ -797,9 +797,17 @@ export default {
     },
     isTableReload: {
       required: false
+    },
+    setThreatSharingStepLoading: {
+      required: false
     }
   },
   watch: {
+    communityLoading: function (newVal, oldVal) {
+      if (oldVal != newVal) {
+        this.$emit('setThreatSharingStepLoading', newVal)
+      }
+    },
     refresh: function (newVal, oldVal) {
       if (oldVal != newVal && !this.isLoadState) {
         this.selectedTab = 'tab-1'
