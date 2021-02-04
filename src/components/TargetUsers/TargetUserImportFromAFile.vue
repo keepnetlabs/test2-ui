@@ -1163,7 +1163,14 @@ export default {
           //this.sortCustomFields(this.customFields)
           this.sortCustomFields(this.unActiveCustomFields)
           this.copyOfCustomFields = JSON.parse(JSON.stringify(this.customFields))*/
-          _this.mappingData.columns = _this.columns
+          let allColumns = []
+          let mainColumns = _this.columns.filter((item) => !item.isCustomField)
+          let customColumns = _this.columns.filter((item) => item.isCustomField)
+          allColumns = mainColumns
+          if (customColumns) {
+            allColumns = allColumns.concat(customColumns)
+          }
+          _this.mappingData.columns = allColumns
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
                 return {
