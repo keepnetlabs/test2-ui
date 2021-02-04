@@ -711,6 +711,17 @@ export default {
     }
   },
   methods: {
+    getFieldName(item) {
+      if (item.name === 'First Name') item.name = 'FirstName'
+      if (item.dbName === 'First Name') item.dbName = 'FirstName'
+      if (item.name === 'Last Name') item.name = 'LastName'
+      if (item.dbName === 'Last Name') item.dbName = 'LastName'
+      return (
+        (item.selectedValue && item.selectedValue.dbName) ||
+        (item.selectedValue && item.selectedValue.name) ||
+        item.name
+      )
+    },
     showConfirmModal(actionName) {
       this.selectedActionName = actionName
       let newMemberCount = this.getLabelCount(actionName)
@@ -1040,10 +1051,7 @@ export default {
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
         let val = {
           excelColumnName: item.name,
-          fieldName:
-            (item.selectedValue && item.selectedValue.dbName) ||
-            (item.selectedValue && item.selectedValue.name) ||
-            item.name
+          fieldName: this.getFieldName(item)
         }
         return val
       })
