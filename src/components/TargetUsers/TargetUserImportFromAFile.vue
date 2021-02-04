@@ -1374,7 +1374,7 @@ export default {
     box-shadow: 0 1px 3px 0 rgba(142, 142, 142, 0.2), 0 1px 1px 0 rgba(243, 243, 243, 0.14),
       0 1px 1px -1px rgba(204, 204, 204, 0.12);
     &--text {
-      font-size: 24px;
+      font-size: 24px !important;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
