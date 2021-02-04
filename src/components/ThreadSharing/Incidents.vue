@@ -233,6 +233,9 @@ export default {
     },
     isTableReload: {
       required: false
+    },
+    setThreatSharingStepLoading: {
+      required: false
     }
   },
   data: () => ({
@@ -261,6 +264,11 @@ export default {
     incidentLoading: true
   }),
   watch: {
+    incidentLoading: function (newVal, oldVal) {
+      if (oldVal != newVal) {
+        this.$emit('setThreatSharingStepLoading', newVal)
+      }
+    },
     openEditPopupItem: function (newVal, oldVal) {
       if (oldVal != newVal) {
         this.showPostIncident = true
@@ -557,7 +565,7 @@ export default {
           this.incidentLoading = false
           setTimeout(() => {
             _this.$emit('setLoadState')
-          }, 1250)
+          }, 100)
         } else {
           this.getIncidentList()
         }

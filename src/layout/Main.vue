@@ -295,30 +295,8 @@
           </div>
         </div>
 
-        <router-link
-          to="/"
-          class="menu-link-default"
-          v-if="
-            checkPermissionMultiple([
-              'dashboard/widgets|GET',
-              'dashboard/widgets|POST',
-              'community-posts/top-posts|GET',
-              'notified-emails/search|POST',
-              'dashboard/summary|GET',
-              'dashboard/reported-email-trends|POST',
-              'ir/dashboard/summary|GET',
-              'ir/dashboard/top-rules|GET',
-              'ir/dashboard/running-investigations|GET',
-              'community-posts/search|POST'
-            ])
-          "
-        >
-          <v-list-item class="menu-list-item">
-            <v-list-item-icon>
-              <v-icon>mdi-home</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Dashboard</v-list-item-title>
-          </v-list-item>
+        <router-link v-if="checkDashboardPermission()" to="/" class="menu-link-default">
+          <app-router-item icon="mdi-home" title="Dashboard" />
         </router-link>
         <router-link
           to="/threat-sharing"
@@ -336,37 +314,110 @@
             )
           "
         >
-          <v-list-item class="menu-list-item">
-            <v-list-item-icon>
-              <v-icon>mdi-flag</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Threat Sharing</v-list-item-title>
+          <app-router-item icon="mdi-flag" title="Threat Sharing" />
+        </router-link>
+        <v-list-group
+          prepend-icon="mdi-flash"
+          no-action
+          :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
+          v-if="checkIncidentResponderPermissions()"
+        >
+          <template v-slot:activator>
+            <v-list-item-content class="menu-list-item">
+              <v-list-item-title>Incident Responder</v-list-item-title>
+            </v-list-item-content>
+          </template>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="
+              checkPermissionMultiple([
+                'ir/dashboard/running-investigations|GET',
+                'companies/roi-settings|GET',
+                'ir/dashboard/top-rules|GET',
+                'notified-emails/search|POST'
+              ])
+            "
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link
+                to="/incident-responder"
+                class="menu-link-default"
+                :class="[
+                  (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
+                    'active-link'
+                ]"
+              >
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Incident Responder</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
           </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['investigations/search|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link
+                to="/investigations"
+                class="menu-link-default"
+                :class="[routerName === 'Investigation Details' && 'active-link']"
+              >
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Investigations</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/integrations" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Integrations</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['playbooks/search|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/playbook" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Playbook</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
+            style="padding-left: 0 !important; margin-left: -5px;"
+            v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
+          >
+            <v-list-item-content class="menu-item-content">
+              <router-link to="/mailConfiguration" class="menu-link-default">
+                <v-list-item-title class="menu-item-wrapper">
+                  <span class="menu-item-span">Mail Configurations</span>
+                </v-list-item-title>
+              </router-link>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-group>
+
+        <router-link
+          to="/phishing-reporter"
+          class="menu-link-default"
+          v-if="checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])"
+        >
+          <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
         </router-link>
         <v-list-group
           prepend-icon="mdi-briefcase"
           no-action
-          class="menu-with-item menu-link-default"
-          :class="{
-            'primary--text active-menu-parent':
-              routerName === 'Company' ||
-              routerName === 'Target Users' ||
-              routerName === 'Companies' ||
-              routerName === 'Company Settings' ||
-              routerName === 'Company Group Details' ||
-              routerName === 'Target Group Users' ||
-              routerName === 'System Users' ||
-              routerName === 'Audit',
-            'un-selected-list-item':
-              routerName !== 'Company' ||
-              routerName === 'Target Users' ||
-              routerName === 'Companies' ||
-              routerName === 'Company Settings' ||
-              routerName === 'System Users' ||
-              routerName === 'Target Group Users' ||
-              routerName === 'Company Group Details' ||
-              routerName === 'Audit'
-          }"
+          :class="['menu-with-item menu-link-default', getCompanyClasses]"
         >
           <template v-slot:activator>
             <v-list-item-content class="menu-list-item">
@@ -454,149 +505,6 @@
             </v-list-item-content>
           </v-list-item>
         </v-list-group>
-        <v-list-group
-          prepend-icon="mdi-flash"
-          no-action
-          class="menu-with-item menu-link-default"
-          :class="{
-            'primary--text active-menu-parent':
-              routerName === 'Incident Responder' ||
-              routerName === 'Investigations' ||
-              routerName === 'Integrations' ||
-              routerName === 'Playbook' ||
-              routerName === 'Mail Configurations' ||
-              routerName === 'Analysis Details' ||
-              routerName === 'Investigation Details',
-            'un-selected-list-item':
-              routerName !== 'Incident Responder' ||
-              routerName === 'Investigations' ||
-              routerName === 'Integrations' ||
-              routerName === 'Playbook' ||
-              routerName === 'Analysis Details' ||
-              routerName === 'Mail Configurations' ||
-              routerName === 'Investigation Details'
-          }"
-          v-if="
-            checkPermissionMultiple([
-              'ir/dashboard/running-investigations|GET',
-              'companies/roi-settings|GET',
-              'ir/dashboard/top-rules|GET',
-              'notified-emails/search|POST',
-              'investigations/search|POST',
-              'analysis-engines/search|POST',
-              'playbooks/search|POST',
-              'mail-configurations/search|POST'
-            ])
-          "
-        >
-          <template v-slot:activator>
-            <v-list-item-content class="menu-list-item">
-              <v-list-item-title>Incident Responder</v-list-item-title>
-            </v-list-item-content>
-          </template>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="
-              checkPermissionMultiple([
-                'ir/dashboard/running-investigations|GET',
-                'companies/roi-settings|GET',
-                'ir/dashboard/top-rules|GET',
-                'notified-emails/search|POST'
-              ])
-            "
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link
-                to="/incident-responder"
-                class="menu-link-default"
-                :class="[
-                  (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
-                    'active-link'
-                ]"
-              >
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Incident Responder</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['investigations/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link
-                to="/investigations"
-                class="menu-link-default"
-                :class="[routerName === 'Investigation Details' && 'active-link']"
-              >
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Investigations</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/integrations" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Integrations</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['playbooks/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/playbook" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Playbook</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/mailConfiguration" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Mail Configurations</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-        <router-link
-          to="/phishing-reporter"
-          class="menu-link-default"
-          v-if="checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])"
-        >
-          <v-list-item class="menu-list-item">
-            <v-list-item-icon>
-              <v-icon>mdi-account-voice</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Phishing Reporter</v-list-item-title>
-          </v-list-item>
-        </router-link>
-        <router-link
-          to="/grapesjs"
-          class="menu-link-default"
-          v-if="isGrapesDebug || routerName === 'Grapes'"
-        >
-          <v-list-item class="menu-list-item">
-            <v-list-item-icon>
-              <v-icon>mdi-account-voice</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Grapes JS</v-list-item-title>
-          </v-list-item>
-        </router-link>
       </v-list>
     </v-navigation-drawer>
     <!-- Header Begin -->
@@ -767,10 +675,12 @@ import labels from '@/model/constants/labels'
 import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
+import AppRouterItem from '@/layout/AppRouterItem'
 
 export default {
   name: 'Main',
   components: {
+    AppRouterItem,
     FeedbackPopup,
     AppFooter,
     ConnectionLost,
@@ -1107,6 +1017,50 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    getCompanyClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Company' ||
+          routerName === 'Target Users' ||
+          routerName === 'Companies' ||
+          routerName === 'Company Settings' ||
+          routerName === 'Company Group Details' ||
+          routerName === 'Target Group Users' ||
+          routerName === 'System Users' ||
+          routerName === 'Audit',
+        'un-selected-list-item':
+          routerName !== 'Company' ||
+          routerName === 'Target Users' ||
+          routerName === 'Companies' ||
+          routerName === 'Company Settings' ||
+          routerName === 'System Users' ||
+          routerName === 'Target Group Users' ||
+          routerName === 'Company Group Details' ||
+          routerName === 'Audit'
+      }
+    },
+    getIncidentResponderClasses() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Incident Responder' ||
+          routerName === 'Investigations' ||
+          routerName === 'Integrations' ||
+          routerName === 'Playbook' ||
+          routerName === 'Mail Configurations' ||
+          routerName === 'Analysis Details' ||
+          routerName === 'Investigation Details',
+        'un-selected-list-item':
+          routerName !== 'Incident Responder' ||
+          routerName === 'Investigations' ||
+          routerName === 'Integrations' ||
+          routerName === 'Playbook' ||
+          routerName === 'Analysis Details' ||
+          routerName === 'Mail Configurations' ||
+          routerName === 'Investigation Details'
+      }
+    },
     getCommunityName() {
       let _this = this
       _this.communityId = localStorage.getItem('communityResourceIdForRedirect')
@@ -1320,6 +1274,32 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    checkDashboardPermission() {
+      return checkPermissionMultiple([
+        'dashboard/widgets|GET',
+        'dashboard/widgets|POST',
+        'community-posts/top-posts|GET',
+        'notified-emails/search|POST',
+        'dashboard/summary|GET',
+        'dashboard/reported-email-trends|POST',
+        'ir/dashboard/summary|GET',
+        'ir/dashboard/top-rules|GET',
+        'ir/dashboard/running-investigations|GET',
+        'community-posts/search|POST'
+      ])
+    },
+    checkIncidentResponderPermissions() {
+      return checkPermissionMultiple([
+        'ir/dashboard/running-investigations|GET',
+        'companies/roi-settings|GET',
+        'ir/dashboard/top-rules|GET',
+        'notified-emails/search|POST',
+        'investigations/search|POST',
+        'analysis-engines/search|POST',
+        'playbooks/search|POST',
+        'mail-configurations/search|POST'
+      ])
+    },
     deleteTSVuexData() {
       let communitiesData = null
       this.$store.dispatch('communities/setCommunities', {
