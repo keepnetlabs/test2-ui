@@ -22,6 +22,7 @@
           :filterable="true"
           :is-downloadable="false"
           :options="true"
+          :count-row="5"
           :rowActions="table.rowActions"
           :empty="table.iEmpty"
           @handleDetails="handleDetails"
