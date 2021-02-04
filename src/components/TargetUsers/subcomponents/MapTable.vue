@@ -29,7 +29,7 @@
         >
           <td v-for="excel in item" :key="`${excel + index + 2} `">
             <span>
-              <v-tooltip bottom opacity="1" v-if="excel.length > 23">
+              <v-tooltip bottom opacity="1" v-if="excel && excel.length > 23">
                 <template v-slot:activator="{ on }">
                   <span v-on="on">{{ excel }}</span>
                 </template>
