@@ -557,7 +557,7 @@ export default {
           this.incidentLoading = false
           setTimeout(() => {
             _this.$emit('setLoadState')
-          }, 1250)
+          }, 100)
         } else {
           this.getIncidentList()
         }

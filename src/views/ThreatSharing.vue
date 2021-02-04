@@ -151,7 +151,7 @@ export default {
       }, 50)
       setTimeout(() => {
         this.setLoadState()
-      }, 2000)
+      }, 100)
     },
     openCreateCommunityModal() {
       this.isWantToAddNewCommunity = true
