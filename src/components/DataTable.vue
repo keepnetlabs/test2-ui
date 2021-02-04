@@ -181,17 +181,20 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on }">
                   <v-btn
-                    icon
-                    :class="[
-                      'btn-add mr-1',
-                      addButton && addButton.disabled && 'btn-add--disabled'
-                    ]"
-                    style="order: 3;"
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
+                    :class="[
+                      'button-new mr-1',
+                      addButton && addButton.disabled && 'btn-add--disabled'
+                    ]"
+                    rounded
+                    color="#2196f3"
+                    style="order: 3;"
                     :disabled="addButton && addButton['disabled']"
+                    @click="addButtonFunction(addButton.action)"
                   >
-                    <v-icon @click="addButtonFunction(addButton.action)">mdi-plus</v-icon>
+                    <v-icon>mdi-plus</v-icon>
+                    <span class="button-new__text">NEW</span>
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{

@@ -1004,6 +1004,21 @@
         height: 0;
       }
     }
+    .button-new{
+      color:#fff;
+      padding:6px 16px;
+      border-radius: 18px;
+      box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
+      background-color: #2196f3;
+      &__text{
+        margin-left:8px;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: #ffffff;
+      }
+    }
   }
 
   &__link{

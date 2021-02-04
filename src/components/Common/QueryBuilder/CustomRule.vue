@@ -411,9 +411,10 @@ export default {
   border-radius: 4px;
   line-height: 1.33;
   font-weight: 600;
-  background-color: #2196f3;
+  background-color: #e3f2fd;
   font-size: 12px;
-  color: white;
+  border: solid 1px rgba(100, 181, 246, 0.5);
+  color: #2196f3;
   z-index: 9;
 }
 </style>

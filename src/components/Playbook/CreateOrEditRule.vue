@@ -366,7 +366,7 @@ export default {
           { id: 'AND', label: 'AND' }
         ],
         addRule: 'ADD CONDITION',
-        addGroup: 'ADD CONDITION SET',
+        addGroup: 'ADD ANOTHER CONDITION SET',
         textInputPlaceholder: 'value'
       },
       rules: [

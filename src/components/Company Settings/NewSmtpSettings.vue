@@ -129,7 +129,7 @@
           v-model="formValues.availableForRequests"
           class="mb-2"
         />
-        <form-group title="Reply to">
+        <form-group title="Reply to" sub-title="Send replies to this email address">
           <InputEmail
             placeholder="Enter Reply to"
             v-model.trim="formValues.replyTo"
@@ -138,7 +138,7 @@
             :required="false"
           />
         </form-group>
-        <form-group title="Error to">
+        <form-group title="Error to" sub-title="Send error messages to this email address">
           <InputEmail
             placeholder="Enter Error to"
             v-model.trim="formValues.errorTo"
