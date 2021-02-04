@@ -137,7 +137,7 @@
                       :empty="relayTable.iEmpty"
                       :selectEvent="selectEvent"
                       :sizeable="true"
-                      :isDownloadable="true"
+                      :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
                     />
                   </div>
@@ -160,7 +160,7 @@
                       :empty="headersTable.iEmpty"
                       :selectEvent="selectEvent"
                       :sizeable="true"
-                      :isDownloadable="true"
+                      :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
                     />
                   </div>
@@ -383,6 +383,7 @@
                         :pageSizes="pageSizes"
                         :options="false"
                         :empty="attachmentTableOptions.iEmpty"
+                        :download-button="{ show: false }"
                         @refreshAction="getPostDetails"
                       >
                         <template v-slot:datatable-custom-column="{ scope }">
