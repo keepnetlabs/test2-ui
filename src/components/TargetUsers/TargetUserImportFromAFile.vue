@@ -585,7 +585,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200,
+            minWidth: 200,
+            overrideWidth: true,
             dbName: 'CreateTime',
             emptyText: 'No Data'
           }
@@ -665,7 +666,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 200,
+            minWidth: 200,
+            overrideWidth: true,
             dbName: 'CreateTime',
             emptyText: 'No Data'
           }
