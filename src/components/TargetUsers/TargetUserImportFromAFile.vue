@@ -739,14 +739,14 @@ export default {
   },
   methods: {
     getExcelName(item) {
-      if (item.name === 'First Name') item.name = 'First Name'
-      if (item.dbName === 'First Name') item.dbName = 'First Name'
-      if (item.name === 'Last Name') item.name = 'Last Name'
-      if (item.dbName === 'Last Name') item.dbName = 'Last Name'
-      if (item.name === 'FirstName') item.name = 'First Name'
-      if (item.dbName === 'FirstName') item.dbName = 'First Name'
-      if (item.name === 'LastName') item.name = 'Last Name'
-      if (item.dbName === 'LastName') item.dbName = 'Last Name'
+      if (item.selectedValue === 'First Name') item.selectedValue.name = 'First Name'
+      if (item.selectedValue === 'First Name') item.selectedValue.dbName = 'First Name'
+      if (item.selectedValue === 'Last Name') item.selectedValue.name = 'Last Name'
+      if (item.selectedValue === 'Last Name') item.selectedValue.dbName = 'Last Name'
+      if (item.selectedValue === 'FirstName') item.selectedValue.name = 'First Name'
+      if (item.selectedValue === 'FirstName') item.selectedValue.dbName = 'First Name'
+      if (item.selectedValue === 'LastName') item.selectedValue.name = 'Last Name'
+      if (item.selectedValue === 'LastName') item.selectedValue.dbName = 'Last Name'
       return (
         (item.selectedValue && item.selectedValue.dbName) ||
         (item.selectedValue && item.selectedValue.name) ||
@@ -754,10 +754,10 @@ export default {
       )
     },
     getFieldName(item) {
-      if (item.name === 'First Name') item.name = 'FirstName'
-      if (item.dbName === 'First Name') item.dbName = 'FirstName'
-      if (item.name === 'Last Name') item.name = 'LastName'
-      if (item.dbName === 'Last Name') item.dbName = 'LastName'
+      if (item.selectedValue === 'First Name') item.selectedValuename = 'FirstName'
+      if (item.selectedValue === 'First Name') item.selectedValuedbName = 'FirstName'
+      if (item.selectedValue === 'Last Name') item.selectedValuename = 'LastName'
+      if (item.selectedValue === 'Last Name') item.selectedValuedbName = 'LastName'
       return (
         (item.selectedValue && item.selectedValue.dbName) ||
         (item.selectedValue && item.selectedValue.name) ||
@@ -1091,9 +1091,20 @@ export default {
     createMapFields() {
       this.step3InitialLoading = true
       let fieldMappingData = this.getMapTableData().headers.map((item) => {
+        let excelColumnName = item.name
+        let fieldName =
+          (item.selectedValue && item.selectedValue.dbName) ||
+          (item.selectedValue && item.selectedValue.name) ||
+          item.name
+        if (excelColumnName === 'First Name') excelColumnName = 'First Name'
+        if (excelColumnName === 'Last Name') excelColumnName = 'Last Name'
+        if (excelColumnName === 'FirstName') excelColumnName = 'First Name'
+        if (excelColumnName === 'LastName') excelColumnName = 'Last Name'
+        if (fieldName === 'First Name') fieldName = 'FirstName'
+        if (fieldName === 'Last Name') fieldName = 'LastName'
         let val = {
-          excelColumnName: this.getExcelName(item),
-          fieldName: this.getFieldName(item)
+          excelColumnName: excelColumnName,
+          fieldName: fieldName
         }
         return val
       })
