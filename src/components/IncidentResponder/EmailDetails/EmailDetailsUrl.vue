@@ -72,7 +72,7 @@
               :selectEvent="selectEvent"
               :sizeable="true"
               :download-button="downloadButton"
-              @refreshAction="$emit('getPostDetails')"
+              @refreshAction="$emit('get-post-details')"
             >
               <template v-slot:datatable-custom-column="{ scope, col }">
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">

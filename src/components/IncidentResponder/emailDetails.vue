@@ -98,7 +98,11 @@
           </el-tab-pane>
           <el-tab-pane label="URLs" name="fourth">
             <template v-if="mailDetails">
-              <email-details-url :mailDetails="mailDetails" @getPostDetails="getPostDetails" />
+              <email-details-url
+                :mailDetails="mailDetails"
+                :is-loading="isLoading"
+                @get-post-details="getPostDetails"
+              />
             </template>
           </el-tab-pane>
           <el-tab-pane label="Attachments" name="fifth">
@@ -372,16 +376,8 @@ a{position:relative}
 
 import Datatable from '../../components/DataTable'
 import DownloadModal from './DownloadModal'
-import {
-  getNotifiedEmail,
-  getAnalysisEngineTypes,
-  downloadAttachment
-} from '../../api/notifiedEmail'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
@@ -595,14 +591,12 @@ export default {
       title: 'Url Analysis',
       subTitle: ''
     },
-    tableData: [],
     selectEvent: {
       clipboard: true,
       download: false
     }
   }),
   mounted() {
-    this.getEngineDetails()
     this.getPostDetails()
   },
   methods: {
@@ -718,80 +712,11 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-          const urlTableColumns = new Set()
-          debugger
-          const tableData = this.mailDetails.urls.map((item, index) => {
-            const returnObj = {}
-            let result
-
-            for (let engine of item.analysisList) {
-              returnObj[engine.analysisEngine] = engine.result
-              urlTableColumns.add(engine.analysisEngine)
-              if (result !== 'Malicious') {
-                if (
-                  (result === 'Phishing' || result === 'Undetected') &&
-                  engine.result === 'Malicious'
-                ) {
-                  result = 'Malicious'
-                } else if (result === 'Phishing' && engine.result === 'Undetected') {
-                  result = 'Phishing'
-                } else {
-                  result = engine.result
-                }
-              }
-            }
-            returnObj['status'] = result
-            returnObj['url'] = item.url
-            return returnObj
-          })
-          let colObj = []
-          urlTableColumns.forEach((item) => {
-            if (this.columns.find((col) => col.property === item)) {
-              return
-            }
-            colObj.push({
-              property: item,
-              align: 'left',
-              editable: false,
-              label: item,
-              sortable: true,
-              show: true,
-              minWidth: 60 + item.length * 7,
-              type: 'text',
-              emptyText: 'None'
-            })
-          })
-          if (colObj.length) {
-            this.columns[1]['width'] = 170
-          }
-          this.columns = [...this.columns, ...colObj]
-          this.tableData = tableData
           this.attachmentTableOptions.tableData = this.mailDetails.attachments
-          const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
         })
         .finally(() => (this.isLoading = false))
-    },
-    getEngineDetails() {
-      getAnalysisEngineTypes().then((response) => {
-        const engineTypes = response.data.data
-        /*
-          engineTypes.map((item) => {
-            this.columns.push({
-              property: 'analysisEngine',
-              align: 'left',
-              editable: false,
-              label: item.name,
-              fixed: false,
-              sortable: true,
-              show: true,
-              type: 'text'
-            })
-          })
-
-           */
-      })
     },
     getMd5Text(index) {
       return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1
