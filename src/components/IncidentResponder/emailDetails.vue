@@ -1,7 +1,10 @@
 <template>
   <div class="single-wrapper">
     <div class="single-post">
-      <span class="single-post-header">Email Details - File Format Exploit</span>
+      <span class="single-post-header"
+        >Email Details -
+        {{ mailDetails && mailDetails.subject ? mailDetails.subject : 'File Format Exploit' }}</span
+      >
       <div class="single-post__container">
         <el-tabs v-model="tab" class="email-details__tabs">
           <el-tab-pane label="Details" name="first">
