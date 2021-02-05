@@ -1259,129 +1259,88 @@ export default {
   methods: {
     getActionStatusOptions(
       actionStatusItem,
-      {
-        actionType,
-        status,
-        isPermanentDelete,
-        warningMessage,
-        actionResultErrorMessage
-      } = actionStatusItem
+      { actionType, status, isPermanentDelete, isTooltip, tooltipText, text } = actionStatusItem
     ) {
-      let returnValue = { isTooltip: null, color: null, icon: null, text: null, tooltipText: null }
+      let returnValue = {
+        isTooltip: isTooltip,
+        color: null,
+        icon: null,
+        tooltipText: tooltipText,
+        text: text
+      }
       //status = 'CompletedWithError'
       //actionType = 'Warning'
       //isPermanentDelete = false
       switch (status) {
         case 'Idle':
-          returnValue.isTooltip = false
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleting...'
               returnValue.icon = null
               returnValue.color = '#fff'
             } else {
-              returnValue.text = 'Moving to trash…'
               returnValue.icon = null
               returnValue.color = '#fff'
             }
           } else if (actionType === 'DeleteAndNotify') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleting and sending message...'
               returnValue.icon = null
               returnValue.color = '#fff'
             } else {
-              returnValue.text = 'Moving to trash and sending message...'
               returnValue.icon = null
               returnValue.color = '#fff'
             }
           } else if (actionType === 'Warning') {
-            returnValue.text = 'Message sent'
             returnValue.icon = 'mdi-check-circle'
             returnValue.color = '#43a047'
-            returnValue.isTooltip = true
-            returnValue.tooltipText = `Message sent. \n\n“${warningMessage}”`
           }
           break
         case 'Completed':
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleted'
               returnValue.icon = 'mdi-close-circle'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = 'The email has been deleted permanently'
             } else {
-              returnValue.text = 'Moved to trash'
               returnValue.icon = 'mdi-delete'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = 'The email has been moved to trash folder'
             }
           } else if (actionType === 'DeleteAndNotify') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleted and message sent'
               returnValue.icon = 'mdi-close-circle'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Deleted and message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
             } else {
-              returnValue.text = 'Moved to trash and message sent'
               returnValue.icon = 'mdi-close-circle'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Deleted and message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
             }
           } else if (actionType === 'Warning') {
-            returnValue.text = 'Message delivered'
             returnValue.icon = 'mdi-check-underline-circle'
             returnValue.color = '#43a047'
-            returnValue.isTooltip = true
-            returnValue.tooltipText = `Message delivered. \n\n“${warningMessage}”`
           }
           break
         case 'CompletedWithError':
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
-              returnValue.text = 'Could not move to trash '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not move email to trash! Click to try again. \n\n ${actionResultErrorMessage}`
             } else {
-              returnValue.text = 'Could not delete '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
             }
           } else if (actionType === 'DeleteAndNotify') {
             if (isPermanentDelete) {
-              returnValue.text = 'Could not delete '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
             } else {
-              returnValue.text = 'Could not delete '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
             }
           } else if (actionType === 'Warning') {
-            returnValue.text = 'Could not send message'
             returnValue.icon = 'mdi-alert-circle'
             returnValue.color = '#f56c6c'
-            returnValue.isTooltip = true
-            returnValue.tooltipText = `Message sending error! Click to try again.\n\n ${actionResultErrorMessage}`
           }
           break
         case 'ItemNotFound':
-          returnValue.text = 'Item Not Found'
           returnValue.icon = 'mdi-alert-circle'
           returnValue.color = '#f56c6c'
-          returnValue.isTooltip = true
-          returnValue.tooltipText = `Item not found. Either it's moved or deleted.`
           break
         default:
           break
