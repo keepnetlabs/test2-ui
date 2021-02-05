@@ -519,10 +519,10 @@
           <div id="post-step-four" v-if="step === 4">
             <!-- Step 4 Starts -->
             <div class="investigate-header">
-              <p>Attributes</p>
+              <p>Select Attributes To Share</p>
               <span>
-                Select the information you want to hide. Other attributes will be visible and
-                shared.
+                Hide the information you want to exclude when sharing. You must share at least 1
+                attribute. Mark harmful attributes to let others know about them.
               </span>
             </div>
             <div class="investigation-content">
@@ -625,6 +625,8 @@
                         v-model="uploadRespond.isSubjectHidden"
                         @change="subjectValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">Subject</label>
                     </div>
@@ -687,6 +689,8 @@
                         v-model="uploadRespond.isFromHidden"
                         @change="fromValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">From</label>
                     </div>
@@ -752,6 +756,8 @@
                         v-model="uploadRespond.isToHidden"
                         @change="toValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">To</label>
                     </div>
@@ -816,6 +822,8 @@
                         v-model="uploadRespond.isCcHidden"
                         @change="ccValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">CC</label>
                     </div>
@@ -880,6 +888,8 @@
                         v-model="uploadRespond.isBccHidden"
                         @change="bccValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">BCC</label>
                     </div>
@@ -976,6 +986,8 @@
                         v-model="url.isHidden"
                         @change="urlSwitchChange(url, ind)"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <v-tooltip bottom opacity="1" z-index="9999">
                         <template v-slot:activator="{ on }">
@@ -1082,6 +1094,8 @@
                         v-model="attachment.isHidden"
                         @change="checkAttachmentsChangeForAllLinksSwitch(attachment, ind)"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <v-tooltip bottom opacity="1" z-index="9999">
                         <template v-slot:activator="{ on }">
