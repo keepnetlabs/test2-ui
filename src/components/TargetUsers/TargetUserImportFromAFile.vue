@@ -239,7 +239,7 @@
                     </template>
                   </data-table>
                   <div
-                    v-else-if="mappingStatus && !showDatatable"
+                    v-else-if="mappingStatus && !showDatatable && !showDatatableErrorState"
                     class="target-user-import-file__progression"
                   >
                     <div class="target-user-import-file__progression--text">
@@ -262,7 +262,10 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="false" class="target-user-import-file__error">
+                  <div
+                    v-if="showDatatableErrorState && mappingStatus.status === 'FinishedWithError'"
+                    class="target-user-import-file__error"
+                  >
                     <div class="target-user-import-file__error--text">
                       <v-icon class="target-user-import-file__error--text--icon" small color="error"
                         >mdi-alert-circle</v-icon
@@ -430,7 +433,6 @@ import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { scrollToComponent } from '@/utils/functions'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
@@ -510,6 +512,7 @@ export default {
       responsNumbers: false,
       isShowInvalid: false,
       showDatatable: false,
+      showDatatableErrorState: false,
       mappingStatus: null,
       isExcelUploaded: false,
       closeTargetUserImport: false,
@@ -828,12 +831,14 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })
-            this.getDatatableList()
+            this.showDatatableErrorState = true
           } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
+            this.showDatatableErrorState = false
             setTimeout(() => {
               this.getMappingStatus()
             }, 2500)
           } else {
+            this.showDatatableErrorState = false
             this.getDatatableList()
           }
         })

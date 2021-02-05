@@ -465,13 +465,6 @@
                   class="comment-input"
                   rows="5"
                   row-height="15"
-                  :rules="[
-                    explanationRules.default,
-                    explanationRules.required,
-                    explanationRules.empty,
-                    explanationRules.minLength
-                  ]"
-                  requied
                   solo
                 ></v-textarea>
               </v-form>
@@ -519,14 +512,6 @@
                   solo
                   validate-on-blur
                   ref="scopeTextField"
-                  required
-                  :rules="[
-                    scopeRules.default,
-                    scopeRules.regex,
-                    scopeRules.required,
-                    scopeRules.empty,
-                    scopeRules.minLength
-                  ]"
                 ></v-text-field>
               </v-form>
             </div>
@@ -1819,7 +1804,6 @@
             </v-btn>
             <v-btn
               v-if="step === 3"
-              :class="{ 'disabled-cursor': !stepThreeDisabled() }"
               id="post-step-three-next-btn"
               class="create-btn"
               text
@@ -2319,7 +2303,7 @@ export default {
       ).shadowRoot.innerHTML
     },
     handleTagItemChange(value) {
-      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      //value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
@@ -2677,18 +2661,11 @@ export default {
       }
     },
     onThirdStep() {
-      if (
-        !this.$refs.affectInput.validate() ||
-        !this.$refs.discoveryInput.validate() ||
-        !this.stepThreeDisabled()
-      ) {
-        this.$refs.scopeInput.validate()
-        this.$refs.discoveryInput.validate()
-        return false
-      } else {
-        this.step++
-        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
-      }
+      if (!this.uploadRespond.DiscoveryAndDetection) this.uploadRespond.DiscoveryAndDetection = ''
+      if (!this.uploadRespond.Scope) this.uploadRespond.Scope = ''
+      if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = ''
+      this.step++
+      this.setShadowRootMalicousLink('last-preview-body-shadow-root')
     },
     onBeforeLastStep() {
       this.setVisibleBody()

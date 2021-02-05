@@ -397,6 +397,9 @@
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
+                        <p class="v-list-item__archived--title pt-4 pb-2">
+                          Folders
+                        </p>
                         <v-list-item
                           link
                           @click="menuClick('Inbox')"
@@ -616,7 +619,9 @@
                         <v-list-item>
                           <v-divider></v-divider>
                         </v-list-item>
-                        <p class="v-list-item__archived--title">Archived</p>
+                        <p class="v-list-item__archived--title">
+                          Archived
+                        </p>
                         <v-list-item
                           link
                           @click="menuClick('Stored')"
@@ -2359,14 +2364,17 @@ export default {
                       }
 
                       &--title {
-                        font-size: 12px;
-                        font-weight: 600;
-                        letter-spacing: normal;
-                        color: rgba(0, 0, 0, 0.87);
                         margin-bottom: 0;
                         background: #fafafa;
                         padding-left: 16px;
                         padding-bottom: 5px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        font-stretch: normal;
+                        font-style: normal;
+                        line-height: normal;
+                        letter-spacing: normal;
+                        color: #383b41 !important;
                       }
 
                       &--link {

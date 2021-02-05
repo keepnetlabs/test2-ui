@@ -321,7 +321,14 @@
                   </div>
                   <div class="flex-grow-1"></div>
                   <div class="ts-header-btn-1">
-                    <v-btn v-if="item.membershipStatusId == 1" outlined rounded medium color="blue">
+                    <v-btn
+                      class="ts-header-btn-1__status"
+                      v-if="item.membershipStatusId == 1"
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                    >
                       OWNER
                     </v-btn>
                     <v-btn
@@ -339,6 +346,7 @@
                       rounded
                       medium
                       color="blue"
+                      class="ts-header-btn-1__status"
                     >
                       MEMBER
                     </v-btn>
@@ -415,7 +423,15 @@
                     v-if="isOwnerOrMember(item) || item.membershipStatusId == 3"
                   >
                     <template v-slot:activator="{ on }">
-                      <v-btn icon color="blue" v-on="on">
+                      <v-btn
+                        icon
+                        :color="
+                          item.membershipStatusId == 1 || item.membershipStatusId == 2
+                            ? '#757575'
+                            : 'blue'
+                        "
+                        v-on="on"
+                      >
                         <v-icon>mdi-dots-vertical</v-icon>
                       </v-btn>
                     </template>
