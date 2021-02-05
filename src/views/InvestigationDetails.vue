@@ -619,9 +619,9 @@
                         <p class="v-list-item__archived--title">Archived</p>
                         <v-list-item
                           link
-                          @click="menuClick('stored')"
+                          @click="menuClick('Stored')"
                           class="v-list-item__archived--main"
-                          :class="{ 'v-list-item--active': activeMenu == 'stored' }"
+                          :class="{ 'v-list-item--active': activeMenu == 'Stored' }"
                         >
                           <div class="v-list-item__archived"></div>
                           <div class="v-list-item__archived--link">
@@ -1447,6 +1447,30 @@ export default {
       return retValue
     },
     exportInvestigationEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      let fileName = 'Investigation Details '
+      switch (this.activeMenu) {
+        case 'SentItems':
+          fileName += 'Sent'
+          break
+        case 'DeletedItems':
+          fileName += 'Deleted Items'
+          break
+        case 'JunkEmail':
+          fileName += 'Junk'
+          break
+        case 'Drafts':
+          fileName += 'Draft'
+          break
+        case 'Others':
+          fileName += 'Others'
+          break
+        case 'Stored':
+          fileName += 'Stored'
+          break
+        default:
+          fileName += 'Inbox'
+          break
+      }
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -1461,7 +1485,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `email.${exportType.toLocaleLowerCase()}`
+          link.download = `${fileName}.${exportType.toLocaleLowerCase()}`
           link.click()
         })
       })
@@ -1482,7 +1506,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `user.${exportType.toLocaleLowerCase()}`
+          link.download = `Investigation Details Target Users.${exportType.toLocaleLowerCase()}`
           link.click()
         })
       })
