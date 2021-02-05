@@ -14,108 +14,7 @@
                 @changeDownloadModalStatus="downloadModalStatus = $event"
                 :id="$attrs.id"
               />
-              <div class="details-content">
-                <div class="details-content--item mb-6" style="justify-content: space-between;">
-                  <div style="display: flex; align-items: center;">
-                    <div class="details-content--item--key">
-                      Analysis Date
-                    </div>
-                    <div class="details-content--item--value">
-                      {{ mailDetails.analysisDate }}
-                    </div>
-                  </div>
-                  <div>
-                    <div @click="handleDownloadEmail()" class="cursor-pointer download">
-                      <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                      DOWNLOAD EMAIL
-                    </div>
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    From
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.from }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    From Name
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.senderName }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    To
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.to && mailDetails.to.toString() }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    CC
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.to && mailDetails.cc.toString() }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    BCC
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.to && mailDetails.bcc.toString() }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Date Received
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.receivedDate }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Sender IP
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.senderIp }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Folder Name
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.folderName }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Attachment Count
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.attachments.length }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Url Count
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.urls.length }}
-                  </div>
-                </div>
-              </div>
+              <email-details-content-details :mail-details="mailDetails" />
             </template>
           </el-tab-pane>
           <el-tab-pane label="Header" name="second">
@@ -189,53 +88,11 @@
               <div class="border-for-header"></div>
               <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
               <div class="border-for-header mt-8 mb-3"></div>
-              <div
-                id="preview-footer-container"
-                class="preview-footer"
+              <email-details-preview-footer
                 v-if="!!mailDetails.attachments.length"
-              >
-                <h2>Attachments</h2>
-                <div class="attachment-wrapper">
-                  <div
-                    v-for="(att, ind) of mailDetails.attachments"
-                    :key="att.resourceId"
-                    :id="'attachment-' + att.name"
-                    class="attachment red-attach"
-                    :class="[
-                      att.isFlagged ? 'red-attach' : '',
-                      !att.isFlagged ? 'blue-attach' : '',
-                      !att.isHidden ? 'clean-attach' : ''
-                    ]"
-                  >
-                    <div v-if="att.isFlagged" class="attach-icon red-icon">
-                      <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                    </div>
-                    <div v-else class="attach-icon blue-icon">
-                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                    </div>
-                    <v-menu
-                      content-class="email-preview__attachment-container-menu"
-                      bottom
-                      right
-                      offset-y
-                      transition="scale-transition"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <div v-on="on" class="pl-2 email-preview__attachment-container">
-                          <span> {{ att.name }} </span>
-                          <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
-                        </div>
-                      </template>
-                      <v-list class="v-cart-dropdown-list el-table__action-buttons">
-                        <v-list-item @click="handleAttachmentClick(ind, att.sha512)">
-                          <v-icon>mdi-text-box-multiple</v-icon>
-                          <span class="ml-4"> Attachment Details</span>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-                </div>
-              </div>
+                :mail-details="mailDetails"
+                @on-attachment-click="handleAttachmentClick"
+              />
             </template>
           </el-tab-pane>
           <el-tab-pane label="URLs" name="fourth">
@@ -546,9 +403,14 @@ import {
 } from '../../model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
+import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   components: {
+    EmailDetailsPreviewFooter,
+    EmailDetailsContentDetails,
     DatatableLoading,
     PreviewHeaderForSinglePost,
     Datatable,
@@ -824,11 +686,9 @@ export default {
       this.tab = 'fifth'
       this.panel.push(index)
       this.showSecondCollapse.push(index)
-      setTimeout(() => {
-        const anchor = document.createElement('a')
-        anchor.href = `#${id}`
-        anchor.click()
-      }, 800)
+      this.$nextTick(() => {
+        scrollToComponent(document.getElementById(id))
+      })
     },
     getResultOfAttachmentList(list) {
       let result = 'N/A'
@@ -904,6 +764,7 @@ export default {
         .then((response) => {
           this.mailDetails = response.data.data
           const urlTableColumns = new Set()
+          debugger
           const tableData = this.mailDetails.urls.map((item, index) => {
             const returnObj = {}
             let result
