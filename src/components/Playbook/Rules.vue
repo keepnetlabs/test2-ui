@@ -38,6 +38,7 @@
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :pageSizes="[5, 10, 25]"
                 :showHeader="true"
+                :count-row="5"
                 :loading="isMatchingTableLoading"
                 :defaultSort="'subject'"
                 :selectable="false"
@@ -440,7 +441,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Playbook Rules.${exportType.toLocaleLowerCase()}`
+            link.download = `Playbook.${exportType.toLocaleLowerCase()}`
             link.click()
           })
           .catch(() => {})
@@ -605,7 +606,7 @@ export default {
     getMatchingModalDownloadButton() {
       const { MATCHING_PLAYBOOKS_EXPORT } = this.PERMISSIONS
       const obj = {
-        show: true
+        show: false
       }
       if (!MATCHING_PLAYBOOKS_EXPORT.hasPermission) {
         obj['disabled'] = true

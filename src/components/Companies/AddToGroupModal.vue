@@ -14,6 +14,7 @@
         <Datatable
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :loading="isLoading"
+          :count-row="5"
           :download-button="{ show: false, disabled: false }"
           :columns="tableOptions.columns"
           :empty="tableOptions.iEmpty"

@@ -25,6 +25,7 @@
           :count-row="5"
           :rowActions="table.rowActions"
           :empty="table.iEmpty"
+          :download-button="{ show: false }"
           @handleDetails="handleDetails"
           @handleDownload="handleDownload"
           @refreshAction="callForTableData"

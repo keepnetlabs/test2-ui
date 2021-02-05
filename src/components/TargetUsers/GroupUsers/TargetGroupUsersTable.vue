@@ -428,7 +428,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `target-group-users.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Group Details.${exportType.toLocaleLowerCase()}`
           link.click()
         })
       })

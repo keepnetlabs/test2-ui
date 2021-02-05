@@ -268,7 +268,7 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `smtp-settings.${exportType.toLocaleLowerCase()}`
+            link.download = `Smtp Settings.${exportType.toLocaleLowerCase()}`
             link.click()
           })
         })
