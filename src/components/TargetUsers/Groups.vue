@@ -81,7 +81,6 @@ import {
   updateTargetGroup,
   deleteTargetGroup,
   searchTargetGroups,
-  exportTargetUsers,
   exportTargetGroups
 } from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
@@ -350,7 +349,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `target-groups.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Groups.${exportType.toLocaleLowerCase()}`
           link.click()
         })
       })

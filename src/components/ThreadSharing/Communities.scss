@@ -3,6 +3,20 @@
     padding: 0 !important;
   }
 
+  .ts-header-btn-1{
+    &__status{
+      border: none !important;
+      font-size: 14px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.71;
+      letter-spacing: normal !important;
+      color: #757575 !important;
+      pointer-events: none;
+    }
+  }
+
   .el-pagination {
     display: flex;
     .el-pagination__text--1 {

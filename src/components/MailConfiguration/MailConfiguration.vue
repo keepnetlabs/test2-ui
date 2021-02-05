@@ -544,7 +544,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `mail-configuration.${exportType.toLocaleLowerCase()}`
+          link.download = `Mail Configurations.${exportType.toLocaleLowerCase()}`
           link.click()
         })
       })
