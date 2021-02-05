@@ -225,7 +225,9 @@ export const labels = {
   Port: 'Port',
   Message: 'Message',
   EnterIpAdress: 'Enter IP address',
-  Retry: 'RETRY'
+  Retry: 'RETRY',
+  NoUrlToDisplay: 'No URL to display',
+  EmptyUrl: 'This url is not analyzed'
 }
 
 export default labels

@@ -14,7 +14,10 @@
                 @changeDownloadModalStatus="downloadModalStatus = $event"
                 :id="$attrs.id"
               />
-              <email-details-content-details :mail-details="mailDetails" />
+              <email-details-content-details
+                :mail-details="mailDetails"
+                @handleDownloadEmail="handleDownloadEmail"
+              />
             </template>
           </el-tab-pane>
           <el-tab-pane label="Header" name="second">
@@ -29,7 +32,6 @@
                       :table="relayTable.data"
                       :refName="'relayTable'"
                       :columns="relayTable.columns"
-                      :pageSizes="pageSizes"
                       :selectable="false"
                       :filterable="true"
                       :options="true"
@@ -51,7 +53,6 @@
                       :refName="'headersTable'"
                       :columns="headersTable.columns"
                       :countRow="25"
-                      :pageSizes="pageSizes"
                       :defaultSort="'date'"
                       :selectable="false"
                       :filterable="true"
@@ -97,26 +98,7 @@
           </el-tab-pane>
           <el-tab-pane label="URLs" name="fourth">
             <template v-if="mailDetails">
-              <div>
-                <datatable
-                  id="urlAnalysisTable"
-                  ref="refUrlAnalysisTable"
-                  :loading="isLoading"
-                  :table="tableData"
-                  :refName="'urlAnalysisTable'"
-                  :columns="columns"
-                  :pageSizes="pageSizes"
-                  :defaultSort="'date'"
-                  :selectable="false"
-                  :filterable="true"
-                  :options="true"
-                  :empty="iEmpty"
-                  :selectEvent="selectEvent"
-                  :sizeable="true"
-                  :download-button="{ show: false, disabled: false }"
-                  @refreshAction="getPostDetails"
-                />
-              </div>
+              <email-details-url :mailDetails="mailDetails" @getPostDetails="getPostDetails" />
             </template>
           </el-tab-pane>
           <el-tab-pane label="Attachments" name="fifth">
@@ -237,7 +219,6 @@
                         :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
                         :table="attachmentTableOptions.tableData[index].analysisList"
-                        :pageSizes="pageSizes"
                         :options="false"
                         :empty="attachmentTableOptions.iEmpty"
                         :download-button="{ show: false }"
@@ -406,9 +387,11 @@ import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
 import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
 import { scrollToComponent } from '@/utils/functions'
+import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 
 export default {
   components: {
+    EmailDetailsUrl,
     EmailDetailsPreviewFooter,
     EmailDetailsContentDetails,
     DatatableLoading,
@@ -579,32 +562,8 @@ export default {
     mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: [],
-    expanded: false,
-    commentOpened: false,
-    isWantToShareIncident: false,
-    isWantToInvestigate: false,
-    isWantToPostIncident: false,
     tab: 'first',
-    showAllTags: false,
-    seeComments: false,
-    rules: {
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
-    },
-    likeCount: 15,
-    userLiked: false,
-    hasPermission: false,
-    valid: false,
-    userComment: '',
-    comments: [],
-    hoverTool: false,
     details: {},
-    shareSettings: {},
-    addCommentValue: '',
-    showDatatable: true,
     columns: [
       // Should be defined to show the table
       {
@@ -636,15 +595,11 @@ export default {
       title: 'Url Analysis',
       subTitle: ''
     },
-    pageSizes: [5, 10, 25],
-    iEmpty: {
-      message: 'No URL to display'
-    },
+    tableData: [],
     selectEvent: {
       clipboard: true,
       download: false
-    },
-    tableData: []
+    }
   }),
   mounted() {
     this.getEngineDetails()

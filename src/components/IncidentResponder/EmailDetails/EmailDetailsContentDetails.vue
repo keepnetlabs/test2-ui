@@ -10,7 +10,7 @@
         </div>
       </div>
       <div>
-        <div @click="handleDownloadEmail()" class="cursor-pointer download">
+        <div @click="$emit('handleDownloadEmail')" class="cursor-pointer download">
           <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
           DOWNLOAD EMAIL
         </div>
