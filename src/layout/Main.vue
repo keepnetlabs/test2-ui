@@ -157,7 +157,7 @@
         :z-index="12"
         :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
       ></v-overlay>
-      <div>
+      <div class="page-nav__fixed-content">
         <div class="page-nav__logo-wrapper">
           <div
             v-show="isTourActive"
@@ -186,103 +186,110 @@
             </div>
           </div>
         </div>
-      </div>
-      <div class="d-flex justify-center flex-wrap user-wrapper">
-        <div class="user-name-dropdown">
-          <div class="user-name-dropdown__menu">
-            <v-menu
-              class="user-name-dropdown__menu-item"
-              :disabled="false"
-              :absolute="false"
-              :open-on-hover="false"
-              :close-on-click="true"
-              :close-on-content-click="true"
-              :offset-x="true"
-              :offset-y="false"
-              :z-index="999"
-              :nudge-right="19"
-              :nudge-top="25"
-              max-width="226"
-              @click="removeTooltip"
-            >
-              <template #activator="{ on: onMenu }">
-                <div
-                  class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
-                  v-on="onMenu"
-                >
-                  <div class="user-name-dropdown-font__tooltip-wrapper">
-                    <div class="user-name-dropdown__logo">
-                      <img v-if="!!getLogoImage" :src="getLogoImage" />
-                    </div>
-                    <div class="user-name-dropdown__details">
-                      <v-tooltip
-                        bottom
-                        :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
-                        ref="accountTooltip"
-                      >
-                        <template #activator="{ on: onTooltip }">
-                          <span v-on="{ ...onTooltip }" class="user-name-dropdown__details-item">{{
-                            getSelectedCompanyName
-                          }}</span>
-                        </template>
-                        <span>{{ getSelectedCompanyName }}</span>
-                      </v-tooltip>
-                      <v-tooltip
-                        bottom
-                        :disabled="getFirstName && getFirstName.length < 15"
-                        ref="firstNameTooltip"
-                      >
-                        <template #activator="{ on: onTooltipFirstName }">
-                          <span
-                            v-on="{ ...onTooltipFirstName }"
-                            class="user-name-dropdown__details-item"
-                            >{{ getFirstName }}</span
-                          >
-                        </template>
-                        <span>{{ getFirstName }}</span>
-                      </v-tooltip>
-                      <v-tooltip
-                        bottom
-                        :disabled="getRolename && getRolename.length < 15"
-                        ref="roleTooltip"
-                      >
-                        <template #activator="{ on: onTooltipRoleName }">
-                          <span
-                            v-on="{ ...onTooltipRoleName }"
-                            class="user-name-dropdown__details--item"
-                            >{{ getRolename }}</span
-                          >
-                        </template>
-                        <span>{{ getRolename }}</span>
-                      </v-tooltip>
-                    </div>
-                    <div class="user-name-dropdown__icon">
-                      <v-icon class="user-name-dropdown-font__icon">mdi-chevron-right</v-icon>
+        <div
+          class="d-flex justify-center flex-wrap user-wrapper"
+          :class="{
+            'user-wrapper__scroll-on': isScroll
+          }"
+        >
+          <div class="user-name-dropdown">
+            <div class="user-name-dropdown__menu">
+              <v-menu
+                class="user-name-dropdown__menu-item"
+                :disabled="false"
+                :absolute="false"
+                :open-on-hover="false"
+                :close-on-click="true"
+                :close-on-content-click="true"
+                :offset-x="true"
+                :offset-y="false"
+                :z-index="999"
+                :nudge-right="19"
+                :nudge-top="25"
+                max-width="226"
+                @click="removeTooltip"
+              >
+                <template #activator="{ on: onMenu }">
+                  <div
+                    class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
+                    v-on="onMenu"
+                  >
+                    <div class="user-name-dropdown-font__tooltip-wrapper">
+                      <div class="user-name-dropdown__logo">
+                        <img v-if="!!getLogoImage" :src="getLogoImage" />
+                      </div>
+                      <div class="user-name-dropdown__details">
+                        <v-tooltip
+                          bottom
+                          :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
+                          ref="accountTooltip"
+                        >
+                          <template #activator="{ on: onTooltip }">
+                            <span
+                              v-on="{ ...onTooltip }"
+                              class="user-name-dropdown__details-item"
+                              >{{ getSelectedCompanyName }}</span
+                            >
+                          </template>
+                          <span>{{ getSelectedCompanyName }}</span>
+                        </v-tooltip>
+                        <v-tooltip
+                          bottom
+                          :disabled="getFirstName && getFirstName.length < 15"
+                          ref="firstNameTooltip"
+                        >
+                          <template #activator="{ on: onTooltipFirstName }">
+                            <span
+                              v-on="{ ...onTooltipFirstName }"
+                              class="user-name-dropdown__details-item"
+                              >{{ getFirstName }}</span
+                            >
+                          </template>
+                          <span>{{ getFirstName }}</span>
+                        </v-tooltip>
+                        <v-tooltip
+                          bottom
+                          :disabled="getRolename && getRolename.length < 15"
+                          ref="roleTooltip"
+                        >
+                          <template #activator="{ on: onTooltipRoleName }">
+                            <span
+                              v-on="{ ...onTooltipRoleName }"
+                              class="user-name-dropdown__details--item"
+                              >{{ getRolename }}</span
+                            >
+                          </template>
+                          <span>{{ getRolename }}</span>
+                        </v-tooltip>
+                      </div>
+                      <div class="user-name-dropdown__icon">
+                        <v-icon class="user-name-dropdown-font__icon">mdi-chevron-right</v-icon>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
+                </template>
 
-              <v-list class="user-name-dropdown__content">
-                <v-list-item
-                  v-for="item in dropdownData"
-                  :key="item.key"
-                  @click="changeDropdownItem(item.value)"
-                  v-if="setDropdownVisibility(item)"
-                  :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
-                >
-                  <v-list-item-title>
-                    <v-icon>{{ item.icon }}</v-icon>
-                    {{ item.text }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+                <v-list class="user-name-dropdown__content">
+                  <v-list-item
+                    v-for="item in dropdownData"
+                    :key="item.key"
+                    @click="changeDropdownItem(item.value)"
+                    v-if="setDropdownVisibility(item)"
+                    :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
+                  >
+                    <v-list-item-title>
+                      <v-icon>{{ item.icon }}</v-icon>
+                      {{ item.text }}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
           </div>
+          <div class="user-role-wrapper"></div>
         </div>
-        <div class="user-role-wrapper"></div>
       </div>
-      <v-list dense>
+      <v-list dense class="page-nav__content" ref="pageNavContent">
         <div
           v-show="isTourActive"
           class="tour-btn-container tour-six"
@@ -696,6 +703,7 @@ export default {
   },
   data() {
     return {
+      isScroll: null,
       companyLicense: null,
       showLicenseExceededDialog: false,
       labels,
@@ -1263,6 +1271,13 @@ export default {
         }, 20000)
       }
     })
+    setTimeout(() => {
+      document
+        .getElementsByClassName('v-navigation-drawer__content')[0]
+        .addEventListener('scroll', (event) => {
+          this.scroll()
+        })
+    }, 500)
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -1274,6 +1289,10 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    scroll() {
+      this.isScroll =
+        document.getElementsByClassName('page-nav__content')[0].getBoundingClientRect().top < 200
+    },
     checkDashboardPermission() {
       return checkPermissionMultiple([
         'dashboard/widgets|GET',
@@ -1608,13 +1627,41 @@ export default {
   }
   .page-nav {
     overflow: visible;
+    background: white !important;
+    &__content {
+      margin-top: 250px;
+    }
+    &__fixed-content {
+      position: absolute;
+      background: white;
+      width: 100%;
+      z-index: 5;
+    }
+    ::-webkit-scrollbar {
+      width: 16px; /* width of the entire scrollbar */
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      box-shadow: inset -1.5px 0 0 0 rgba(0, 0, 0, 0.07), inset -2px 0 0 0 rgba(0, 0, 0, 0.02),
+        inset 1.5px 0 0 0 rgba(0, 0, 0, 0.02), inset 1px 0 0 0 rgba(0, 0, 0, 0.07);
+    }
+
+    ::-webkit-scrollbar-track {
+      margin-top: 220px;
+      margin-bottom: 220px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.51);
+      border: 5px solid transparent;
+      border-radius: 22px;
+      background-clip: content-box;
+    }
+
     &__menu-toggle {
-      left: 232px;
+      left: 224px;
       top: 25px !important;
       position: fixed;
       z-index: 9;
       transition: all 0.2s ease-in-out;
-      box-shadow: 0 2px 10px 5px rgba(33, 150, 243, 0.2);
       background-color: #edf7fd;
       margin-left: -15px;
     }
@@ -1928,6 +1975,8 @@ export default {
     display: flex;
     position: relative;
     padding: 21px 16px;
+    border-radius: 8px;
+    background-color: #fafafa;
     &__content--divider {
       border-bottom: 1px solid #e0e0e0;
     }
@@ -2027,8 +2076,12 @@ export default {
   }
 
   .user-wrapper {
-    margin: 0 0 88px;
+    //margin: 0 0 88px;
     background: white;
+    padding: 8px;
+    &__scroll-on {
+      box-shadow: 0 1px 3px 0 rgb(142 142 142 / 20%);
+    }
   }
 
   .logo-wrapper {
