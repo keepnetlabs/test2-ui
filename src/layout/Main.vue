@@ -169,12 +169,7 @@
             </div>
           </div>
         </div>
-        <div
-          class="d-flex justify-center flex-wrap user-wrapper"
-          :class="{
-            'user-wrapper__scroll-on': isScroll
-          }"
-        >
+        <div :class="scroll()">
           <div class="user-name-dropdown">
             <div class="user-name-dropdown__menu">
               <v-menu
@@ -1295,11 +1290,14 @@ export default {
       }
     })
     setTimeout(() => {
-      document
-        .getElementsByClassName('v-navigation-drawer__content')[0]
-        .addEventListener('scroll', (event) => {
-          this.scroll()
-        })
+      let contentDom = document.getElementsByClassName('v-navigation-drawer__content')[0]
+      if (contentDom) {
+        document
+          .getElementsByClassName('v-navigation-drawer__content')[0]
+          .addEventListener('scroll', (event) => {
+            this.scroll()
+          })
+      }
     }, 500)
   },
   beforeDestroy() {
@@ -1313,8 +1311,19 @@ export default {
       getCurrentUser: 'auth/getCurrentUser'
     }),
     scroll() {
-      this.isScroll =
-        document.getElementsByClassName('page-nav__content')[0].getBoundingClientRect().top < 200
+      const main = 'd-flex justify-center flex-wrap user-wrapper'
+      const shadow = 'user-wrapper__scroll-on'
+      let content =
+        document.getElementsByClassName('page-nav__content') &&
+        document.getElementsByClassName('page-nav__content')[0]
+      let userContent =
+        document.getElementsByClassName('user-wrapper') &&
+        document.getElementsByClassName('user-wrapper')[0]
+      let isScroll = content && content.getBoundingClientRect().top < 200
+      let _class = main
+      if (isScroll) _class = _class + ' ' + shadow
+      if (userContent) userContent.className = _class
+      return _class
     },
     checkDashboardPermission() {
       return checkPermissionMultiple([
