@@ -134,7 +134,7 @@
     <v-navigation-drawer
       color="rgba(255, 255, 255, 0.9)"
       app
-      width="270"
+      width="285"
       v-model="getDrawer"
       :mini-variant.sync="getMini"
       transition="scale-transition"
@@ -631,7 +631,7 @@
     </v-app-bar>
     <!-- Header End -->
     <v-content
-      :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'"
+      :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'"
       :class="{ 'bg-blur': sessionCheck }"
     >
       <v-container
@@ -1634,7 +1634,7 @@ export default {
     &__fixed-content {
       position: absolute;
       background: white;
-      width: 100%;
+      width: calc(100% - 15px);
       z-index: 5;
     }
     ::-webkit-scrollbar {
@@ -1644,8 +1644,7 @@ export default {
         inset 1.5px 0 0 0 rgba(0, 0, 0, 0.02), inset 1px 0 0 0 rgba(0, 0, 0, 0.07);
     }
 
-    ::-webkit-scrollbar-track {
-    }
+    //::-webkit-scrollbar-track {}
 
     ::-webkit-scrollbar-thumb {
       background-color: rgba(0, 0, 0, 0.51);
