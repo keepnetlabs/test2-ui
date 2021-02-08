@@ -1645,8 +1645,6 @@ export default {
     }
 
     ::-webkit-scrollbar-track {
-      margin-top: 220px;
-      margin-bottom: 220px;
     }
 
     ::-webkit-scrollbar-thumb {
