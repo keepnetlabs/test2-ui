@@ -77,7 +77,7 @@ export default {
             v
           ) || 'invalid url'
       },
-      urlMergedTexts: [{ value: ' ', name: 'No Merged Text' }]
+      urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
     }
   },
   mounted() {
@@ -90,15 +90,17 @@ export default {
   },
   methods: {
     asd(a, b, c) {
+      let _this = this
       const component = this.editor.getSelected()
       setTimeout(() => {
-        if (component.getTrait('href').props().value === ' ') {
-          document.querySelector(
-            '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
-          ).value = ''
+        let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
+        if (
+          component.getTrait('href').props().value === '' ||
+          !mergedTextsNames.includes(component.getTrait('href').props().value)
+        ) {
           document.querySelector(
             '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-          ).value = 'No Merged Text'
+          ).selectedIndex = 0
         }
         //console.log(component.getTrait('href').props())
       }, 10)
@@ -132,16 +134,17 @@ export default {
             { value: '', name: 'This Window' },
             { value: '_blank', name: 'New Window' }
           ]
-        }
-      ]
-      if (this.urlMergedTexts.length > 1) {
-        this.traits.push({
+        },
+        {
           type: 'select',
           label: 'Merged Texts',
           name: 'href',
           options: this.urlMergedTexts
-        })
-      }
+        }
+      ]
+      /*if (this.urlMergedTexts.length > 1) {
+        this.traits.push()
+      }*/
     },
     setGrapesEditor() {
       let _this = this
@@ -165,23 +168,24 @@ export default {
         if (selected && selected.is('link')) {
           document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
           setTimeout(() => {
-            if (
-              document.querySelector(
+            document
+              .querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+              )
+              .addEventListener('change', (a, b, c) => {
+                this.asd(a, b, c)
+              })
+            document
+              .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
-            ) {
-              document
-                .querySelector(
-                  '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-                )
-                .addEventListener('change', (a, b, c) => {
-                  this.asd(a, b, c)
-                })
-              if (selected.getTrait('href').props().value === ' ') {
-                document.querySelector(
-                  '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
-                ).value = ''
-              }
+              .addEventListener('change', (a, b, c) => {
+                this.asd(a, b, c)
+              })
+            if (selected.getTrait('href').props().value === '') {
+              document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+              ).value = ''
             }
             let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
             if (
