@@ -159,9 +159,12 @@
                 solo
                 :rules="autocomplete"
                 required
+                :loading="isFindIncidentLoading"
+                :hide-no-data="isFindIncidentLoading"
                 @change="getSelectedEmailPreview"
+                @focus="handleLoadingState"
                 @input="handleTagItemChange"
-                :slots="{ selection: true, item: true }"
+                :slots="{ selection: true, item: true, progress: true }"
                 autocomplete="off"
               >
                 <template v-slot:selection="{ attrs, item }">
@@ -203,6 +206,9 @@
                       <div id="email-time" class="email-time">{{ item.createDate }}</div>
                     </div>
                   </div>
+                </template>
+                <template v-slot:progress>
+                  <k-select-loading v-show="showLoader" />
                 </template>
               </k-select>
               <div class="input-header mb-6">- or -</div>
@@ -1875,6 +1881,7 @@ import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/fun
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
+import KSelectLoading from '@/components/KSelectLoading'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1993,6 +2000,7 @@ a{position:relative}
 
 export default {
   components: {
+    KSelectLoading,
     KSelect,
     KFileUpload,
     VClamp,
@@ -2077,7 +2085,10 @@ export default {
     acceptCheckbox: false,
     editHtmlData: null,
     showNewsletterPageGrapes: false,
+    isFindIncidentLoading: true,
+    showLoader: false,
     value: 'wFlYRDMW946M',
+    isInit: true,
     items2: [
       {
         text: 'TLP: WHITE',
@@ -2289,6 +2300,11 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    handleLoadingState() {
+      if (this.isInit) {
+        this.showLoader = true
+      }
+    },
     setVisibleBody() {
       let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden)
       for (let url of urls) {
@@ -2596,11 +2612,16 @@ export default {
         ascending: false,
         clusteredBy: ''
       }
-      searchNotifiedMail(payload).then((response) => {
-        const { data } = response
-        this.listData = data.data.results
-        this.backupListData = JSON.parse(JSON.stringify(data.data.results))
-      })
+      searchNotifiedMail(payload)
+        .then((response) => {
+          const { data } = response
+          this.listData = data.data.results
+          this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+        })
+        .finally(() => {
+          this.isFindIncidentLoading = false
+          this.showLoader = false
+        })
     },
     getSelectedEmailPreview(selectedItem) {
       const _this = this
