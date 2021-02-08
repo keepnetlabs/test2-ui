@@ -188,9 +188,16 @@
             <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
             </DatatableLoading>
             <template v-else>
-              <PreviewHeaderForSinglePost :uploadRespond="mailDetails" />
+              <PreviewHeaderForSinglePost
+                style="word-break: break-all;"
+                :uploadRespond="mailDetails"
+              />
               <div class="border-for-header"></div>
-              <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
+              <k-shadow-frame
+                style="word-break: break-all;"
+                id="sframe"
+                v-bind:content="mailDetails.htmlBody"
+              />
               <div class="border-for-header mt-8 mb-3"></div>
               <div
                 id="preview-footer-container"

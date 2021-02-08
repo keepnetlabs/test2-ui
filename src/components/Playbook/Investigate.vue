@@ -145,7 +145,7 @@
           <v-list-item-content class="py-0">
             <label>Email Date Range</label>
             <v-list-item-title class="v-card-sub-header bottom-margin">
-              Select range of emails sending date according to reporting date
+              Select range of emails sending date according to email received date
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
