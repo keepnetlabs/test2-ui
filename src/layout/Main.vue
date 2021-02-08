@@ -2121,7 +2121,7 @@ export default {
     background: white;
     padding: 8px;
     &__scroll-on {
-      box-shadow: 0 1px 3px 0 rgb(142 142 142 / 20%);
+      box-shadow: 0px 2px 3px 0 rgb(142 142 142 / 20%);
     }
   }
 
