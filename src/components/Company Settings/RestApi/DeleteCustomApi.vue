@@ -5,6 +5,7 @@
     :title="getTitle"
     @changeStatus="closeModal"
     :subtitle="labels.RestApi"
+    id="rest-api-delete-popup"
   >
     <template v-slot:app-dialog-body>
       {{ labels.DeleteRestApiBody }}

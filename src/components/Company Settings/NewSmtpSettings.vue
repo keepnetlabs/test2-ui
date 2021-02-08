@@ -2,6 +2,9 @@
   <app-modal
     v-if="status"
     :status="status"
+    :id="isEdit ? 'edit-smtp-settings-modal' : 'new-smtp-settings-modal'"
+    confirm-button-id="btn-save--smtp-settings-modal"
+    cancel-button-id="btn-cancel--smtp-settings-modal"
     @closeOverlay="closeOverlay"
     @submit="submit"
     :title="getTitle"

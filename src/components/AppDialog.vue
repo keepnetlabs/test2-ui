@@ -3,6 +3,7 @@
     :content-class="className"
     :opacity="0.23"
     :value="status"
+    :id="id"
     :width="dialogWidth"
     @click:outside="changeStatus(false)"
     @input="changeStatus"
@@ -111,6 +112,9 @@ export default {
       default: 'small'
     },
     className: {
+      type: String
+    },
+    id: {
       type: String
     }
   },

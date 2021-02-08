@@ -4,16 +4,23 @@
     icon="mdi-alert"
     :title="getTitle"
     :subtitle="labels.NotificationTemplate"
+    id="notification-template-delete-popup"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>{{ labels.DeleteNotificationTemplateBody }}</template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-        <v-btn class="users__button" text color="#f56c6c" @click="handleCloseDialog">{{
-          labels.Cancel
-        }}</v-btn>
+        <v-btn
+          class="users__button"
+          id="btn-cancel--notification-template-delete-popup"
+          text
+          color="#f56c6c"
+          @click="handleCloseDialog"
+          >{{ labels.Cancel }}</v-btn
+        >
         <v-btn
           :disabled="isDeleteButtonDisabled"
+          id="btn-delete--notification-template-delete-popup"
           class="users__button"
           text
           color="#2196f3"

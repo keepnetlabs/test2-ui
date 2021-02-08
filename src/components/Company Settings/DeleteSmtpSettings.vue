@@ -4,13 +4,18 @@
     icon="mdi-alert"
     title="Delete SMTP Setting?"
     :subtitle="getSubtitle"
+    id="smtp-settings-delete-popup"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
       {{ getSubtitle }} will be deleted. All data will be lost.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="handleCloseDialog" @handleConfirm="handleDelete" />
+      <app-dialog-footer
+        @handleClose="handleCloseDialog"
+        @handleConfirm="handleDelete"
+        confirm-button-id="btn-delete--smpt-settings-popup"
+      />
     </template>
   </app-dialog>
 </template>

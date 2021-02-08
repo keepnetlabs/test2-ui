@@ -21,7 +21,7 @@
         sub-title="Create API Key to your customers for integration"
       />
       <data-table
-        id="custom-api-data-table"
+        id="company-settings-rest-api-data-table"
         ref="refCustomApiList"
         :refName="'smtpSettingsList'"
         :loading="loading"
@@ -145,11 +145,13 @@ export default {
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
+            id: 'btn-edit--rest-api-row-actions',
             action: 'editAction'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
+            id: 'btn-delete--rest-api-row-actions',
             action: 'deleteAction'
           }
         ],
@@ -157,12 +159,14 @@ export default {
           message: labels.EmptyCustomApiMessage,
           subMes: labels.SubMesCustomApiMessage,
           btn: labels.NewCustomApiBtnMessage,
-          icon: 'mdi-plus'
+          icon: 'mdi-plus',
+          id: 'btn-empty--rest-api'
         },
         addButton: {
           show: true,
           action: 'handleAddNewCustomApi',
-          tooltip: labels.NewCustomApiBtnTooltip
+          tooltip: labels.NewCustomApiBtnTooltip,
+          id: 'btn-add--rest-api'
         }
       }
     }

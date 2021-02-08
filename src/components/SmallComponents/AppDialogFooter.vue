@@ -12,6 +12,7 @@
     <v-btn
       text
       :color="actionButtonColor"
+      :id="confirmButtonId"
       class="k-dialog__button"
       @click="confirmButtonClick"
       :disabled="confirmButtonDisabled"
@@ -34,6 +35,9 @@ export default {
     actionButtonColor: {
       type: String,
       default: '#2196f3'
+    },
+    confirmButtonId: {
+      type: String
     },
     cancelButtonText: {
       type: String,
