@@ -183,6 +183,7 @@
                   <v-btn
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
+                    :id="addButton.id"
                     :class="[
                       'button-new mr-1',
                       addButton && addButton.disabled && 'btn-add--disabled'
@@ -689,6 +690,7 @@
                             ? handleEdit(scope.row, scope.$index)
                             : rowAct(rowActions[0].action, scope.row)
                         "
+                        :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
                         :disabled="rowActions[0]['disabled']"
                         class="btn-hover mr-1"
                         icon
@@ -710,6 +712,7 @@
                           scope.row.status === 'NoMatch' ||
                           rowActions[1]['disabled']
                         "
+                        :id="`${rowActions[1].id}-${Math.random().toString().substring(2)}`"
                         @click.native="rowAct(rowActions[1].action, scope.row)"
                         class="btn-hover"
                         icon
@@ -751,6 +754,7 @@
               <p>{{ empty.subMes }}</p>
               <v-btn
                 :disabled="empty['disabled']"
+                :id="empty['id']"
                 @click="onEmptyBtnClicked"
                 class="empty-btn"
                 :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"

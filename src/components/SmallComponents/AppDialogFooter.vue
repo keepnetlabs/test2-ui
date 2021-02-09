@@ -4,6 +4,7 @@
       type="but"
       text
       :color="cancelButtonColor"
+      :id="cancelButtonId"
       class="k-dialog__button mr-4"
       @click="closeButtonClick"
     >
@@ -12,6 +13,7 @@
     <v-btn
       text
       :color="actionButtonColor"
+      :id="confirmButtonId"
       class="k-dialog__button"
       @click="confirmButtonClick"
       :disabled="confirmButtonDisabled"
@@ -34,6 +36,12 @@ export default {
     actionButtonColor: {
       type: String,
       default: '#2196f3'
+    },
+    confirmButtonId: {
+      type: String
+    },
+    cancelButtonId: {
+      type: String
     },
     cancelButtonText: {
       type: String,

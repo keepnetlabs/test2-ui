@@ -5,6 +5,7 @@
     :title="getTitle"
     @changeStatus="closeModal"
     :subtitle="labels.RestApi"
+    id="rest-api-delete-popup"
   >
     <template v-slot:app-dialog-body>
       {{ labels.DeleteRestApiBody }}
@@ -12,6 +13,8 @@
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
         :confirm-button-disabled="saveDisable"
+        cancel-button-id="btn-cancel--rest-api-popup"
+        confirm-button-id="btn-delete--rest-api-popup"
         action-button-text="DELETE"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"

@@ -2,18 +2,24 @@
   <div class="company-settings" id="company-settings">
     <v-layout wrap class="company-settings__container">
       <v-card class="company-settings__container-card">
-        <el-tabs v-model="tab">
-          <el-tab-pane label="SMTP Settings" name="first">
+        <el-tabs v-model="tab" ref="refTabContainer">
+          <el-tab-pane label="SMTP Settings" name="smtp-settings" id="smtp-settings-content">
             <s-m-t-p-settings
               :PERMISSIONS="PERMISSIONS['SMTP_SETTINGS_PERMISSIONS']"
-              v-if="tab === 'first'"
+              v-if="tab === 'smtp-settings'"
               ref="refSmtpSettings"
           /></el-tab-pane>
-          <el-tab-pane label="Notification Templates" name="second">
-            <notification-templates v-if="tab === 'second'" ref="refNotificationTemplates"
+          <el-tab-pane
+            label="Notification Templates"
+            name="notification-template"
+            id="notification-template-content"
+          >
+            <notification-templates
+              v-if="tab === 'notification-template'"
+              ref="refNotificationTemplates"
           /></el-tab-pane>
-          <el-tab-pane label="Rest API" name="third">
-            <custom-api v-if="tab === 'third'" ref="refCustomApi"
+          <el-tab-pane label="Rest API" name="custom-api" id="custom-api-content">
+            <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
           /></el-tab-pane>
         </el-tabs>
       </v-card>
@@ -36,7 +42,7 @@ export default {
   },
   data() {
     return {
-      tab: 'first',
+      tab: 'smtp-settings',
       tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
