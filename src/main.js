@@ -54,16 +54,18 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
     id: APP_CONFIG.VUE_APP_HOTJAR_ID // Hotjar Site ID
   })
 
-  Vue.use(VueTagManager, {
-    gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
-  })
-
-  //Vue.gtm.push({ event: 'some-event' })
+  if (!!APP_CONFIG.VUE_APP_GTM_ID) {
+    Vue.use(VueTagManager, {
+      gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
+    })
+  }
 
   const FullStory = require('@fullstory/browser')
 
-  FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
-  Vue.prototype.$FullStory = FullStory
+  if (!!APP_CONFIG.VUE_APP_FULLSTORY_ID) {
+    FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
+    Vue.prototype.$FullStory = FullStory
+  }
 
   APP_CONFIG.VUE_APP_NEW_RELIC()
 }

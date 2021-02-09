@@ -1247,7 +1247,7 @@ export default {
               {
                 FieldName: 'Status',
                 Operator: 'Include',
-                Value: 'Cancelled,Running,Idle'
+                Value: 'Canceled,Running,Idle'
               }
             ],
             FilterGroups: []
@@ -1533,7 +1533,7 @@ export default {
               return this.statsAndMenuData.estimatedTime
                 ? this.statsAndMenuData.estimatedTime
                 : 'Estimated time can not be calculated at the moment'
-            case 'Cancelled':
+            case 'Canceled':
               return this.investigationDetailsData.endDate
             case 'Expired':
               return this.investigationDetailsData.expireDate
@@ -1547,7 +1547,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `${val} User(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `${val} User(s)`
             case 'Expired':
               return `${val} User(s)`
@@ -1561,7 +1561,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `Could not be scanned`
-            case 'Cancelled':
+            case 'Canceled':
               return `Could not be scanned`
             case 'Expired':
               return `Could not be scanned`
@@ -1575,7 +1575,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `${val} Scanned User(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `${val} Scanned User(s)`
             case 'Expired':
               return `${val} Scanned User(s)`
@@ -1589,7 +1589,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `of total ${val} user(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `of total ${val} user(s)`
             case 'Expired':
               return `of total ${val} user(s)`
@@ -1603,7 +1603,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `${val} Email(s) Scanned`
-            case 'Cancelled':
+            case 'Canceled':
               return `${val} Email(s) Scanned`
             case 'Expired':
               return `${val} Email(s) Scanned`
@@ -1617,7 +1617,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `of total ${val} email(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `of total ${val} email(s)`
             case 'Expired':
               return `of total ${val} email(s)`
