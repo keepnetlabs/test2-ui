@@ -7,6 +7,9 @@
     :title="getModalTitle"
     icon-name="mdi-email"
     class-name="new-smtp-setting"
+    :id="selectedItem ? 'edit-notification-template-modal' : 'new-notification-template-modal'"
+    confirm-button-id="btn-save--notification-template-modal"
+    cancel-button-id="btn-cancel--notification-template-modal"
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>

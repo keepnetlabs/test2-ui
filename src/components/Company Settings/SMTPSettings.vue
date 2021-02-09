@@ -55,6 +55,7 @@
                 :disabled="getDisabledStatusOfEdit(scope.row)"
                 class="btn-hover mr-1"
                 icon
+                :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -69,6 +70,7 @@
                 @click.native="handleDeleteAction(scope.row)"
                 class="btn-hover"
                 icon
+                :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -109,7 +111,6 @@ export default {
       loading: false,
       selectedDeleteSmtpSettings: null,
       selectedEditSmtpSettings: null,
-
       isEdit: false,
       tableOptions: {
         columns: [
@@ -195,12 +196,14 @@ export default {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction',
+            id: 'btn-edit--smtp-settings-row-actions',
             disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
+            id: 'btn-delete--smtp-settings-row-actions',
             disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
@@ -208,12 +211,14 @@ export default {
           message: 'No SMTP Configurations',
           btn: 'Create SMTP Configuration',
           icon: 'mdi-plus',
+          id: 'btn-empty--smtp-settings',
           disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
           action: 'addNewSmtpSetting',
           tooltip: 'Add SMTP Setting',
+          id: 'btn-add--smtp-settings',
           disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },

@@ -1,8 +1,9 @@
 <template>
   <v-overlay
+    v-if="status"
     :value="status"
     :opacity="1"
-    v-if="status"
+    :id="id"
     :z-index="zIndex || 99"
     color="white"
     class="k-overlay"
@@ -23,7 +24,7 @@
         <slot name="overlay-body"> </slot>
         <div class="k-overlay__footer" v-if="showFooter">
           <slot name="overlay-footer">
-            <v-btn class="k-overlay__btn-cancel" rounded @click="closeOverlay">
+            <v-btn class="k-overlay__btn-cancel" :id="cancelButtonId" rounded @click="closeOverlay">
               {{ labels.Cancel }}
             </v-btn>
             <v-btn
@@ -31,6 +32,7 @@
               color="#2196f3"
               rounded
               @click="submit"
+              :id="confirmButtonId"
               :disabled="saveDisable"
             >
               {{ labels.Save }}
@@ -61,6 +63,12 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'AppModal',
   props: {
+    cancelButtonId: {
+      type: String
+    },
+    confirmButtonId: {
+      type: String
+    },
     status: {
       type: Boolean,
       default: false
@@ -88,6 +96,9 @@ export default {
     saveDisable: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: String
     }
   },
   emits: ['closeOverlay', 'submit'],
