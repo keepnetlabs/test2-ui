@@ -4,6 +4,7 @@
       type="but"
       text
       :color="cancelButtonColor"
+      :id="cancelButtonId"
       class="k-dialog__button mr-4"
       @click="closeButtonClick"
     >
@@ -37,6 +38,9 @@ export default {
       default: '#2196f3'
     },
     confirmButtonId: {
+      type: String
+    },
+    cancelButtonId: {
       type: String
     },
     cancelButtonText: {

@@ -8,6 +8,8 @@
     :icon-name="getIconName"
     class-name="new-smtp-setting"
     :id="selectedRow ? 'edit-rest-api-modal' : 'new-rest-api-modal'"
+    confirm-button-id="btn-save--rest-api-modal"
+    cancel-button-id="btn-cancel--rest-api-modal"
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>

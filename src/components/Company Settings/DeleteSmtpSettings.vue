@@ -14,7 +14,8 @@
       <app-dialog-footer
         @handleClose="handleCloseDialog"
         @handleConfirm="handleDelete"
-        confirm-button-id="btn-delete--smpt-settings-popup"
+        cancel-button-id="btn-cancel--smtp-settings-popup"
+        confirm-button-id="btn-delete--smtp-settings-popup"
       />
     </template>
   </app-dialog>
