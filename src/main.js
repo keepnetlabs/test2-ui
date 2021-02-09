@@ -54,9 +54,11 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
     id: APP_CONFIG.VUE_APP_HOTJAR_ID // Hotjar Site ID
   })
 
-  Vue.use(VueTagManager, {
-    gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
-  })
+  if (!!APP_CONFIG.VUE_APP_GTM_ID) {
+    Vue.use(VueTagManager, {
+      gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
+    })
+  }
 
   //Vue.gtm.push({ event: 'some-event' })
 
