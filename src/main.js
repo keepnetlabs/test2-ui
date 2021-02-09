@@ -60,12 +60,12 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
     })
   }
 
-  //Vue.gtm.push({ event: 'some-event' })
-
   const FullStory = require('@fullstory/browser')
 
-  FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
-  Vue.prototype.$FullStory = FullStory
+  if (!!APP_CONFIG.VUE_APP_FULLSTORY_ID) {
+    FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
+    Vue.prototype.$FullStory = FullStory
+  }
 
   APP_CONFIG.VUE_APP_NEW_RELIC()
 }
