@@ -28,7 +28,7 @@
         icon="mdi-cog"
         :title="'ROI Summary Settings'"
         @changeStatus="isShowRoi = false"
-        subtitle="To calculate saving in time and money for autom ating the email analysis"
+        subtitle="To calculate saving in time and money for automating the email analysis"
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
