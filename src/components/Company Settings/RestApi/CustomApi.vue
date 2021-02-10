@@ -201,6 +201,9 @@ export default {
       )
       if (this.$refs.refCustomApiList.search) {
         clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'StatusId'
       }
       if (this.$refs.refCustomApiList.sortProps && this.$refs.refCustomApiList.sortProps.order) {
         clientTableExportHelper.addSortItems()
