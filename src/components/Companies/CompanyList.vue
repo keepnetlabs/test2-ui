@@ -212,6 +212,7 @@ export default {
           sortable: true,
           show: true,
           type: 'slot',
+          filterableType: 'text',
           width: 130
         },
         {
@@ -222,6 +223,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
+          filterableType: 'date',
           width: 180
         },
         {
@@ -600,7 +602,6 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
       this.payload.filter.FilterGroups[0].FilterItems = requestBody
       this.getTableData()
     },

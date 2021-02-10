@@ -89,6 +89,7 @@ import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
 import Badge from '@/components/Badge'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'Users',
   components: {
@@ -128,6 +129,7 @@ export default {
             type: 'text',
             width: 150,
             isEditable: true,
+            filterableType: 'text',
             editComponent: 'textfield'
           },
           {
@@ -138,6 +140,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            filterableType: 'text',
             width: 150,
             isEditable: true,
             editComponent: 'textfield'
@@ -208,6 +211,7 @@ export default {
             type: 'fiber',
             isEditable: true,
             editComponent: 'textfield',
+            filterableType: 'text',
             width: 200
           },
           {
@@ -221,7 +225,8 @@ export default {
             type: 'text',
             isEditable: true,
             editComponent: 'textfield',
-            width: 140
+            width: 140,
+            filterableType: 'text'
             //minWidth: 80
           }
         ],
@@ -383,15 +388,28 @@ export default {
       }
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.requestBody.filter)),
+        this.$refs.refUsersList,
+        'LastSeen'
+      )
+      if (this.$refs.refUsersList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+      }
+      if (this.$refs.refUsersList.sortProps && this.$refs.refUsersList.sortProps.order) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'LastSeen',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
+          filter
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {

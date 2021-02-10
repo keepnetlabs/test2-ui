@@ -657,7 +657,7 @@
         style="height: 100%; padding-bottom: 47px !important;"
         class="app-container ml-0 pa-0 pt-2 mr-0 pb-12"
       >
-        <router-view :key="$route.fullPath" />
+        <router-view :key="getRouterKey" />
       </v-container>
       <app-footer />
     </v-content>
@@ -1043,6 +1043,13 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    getRouterKey() {
+      const { name } = this.$route
+      if (['Community', 'Threat Sharing'].includes(name)) {
+        return this.$route.fullPath
+      }
+      return ''
+    },
     getCompanyClasses() {
       const routerName = this.routerName
       return {
