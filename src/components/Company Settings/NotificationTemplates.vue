@@ -30,7 +30,7 @@
         :empty="tableOptions.empty"
         :loading="loading"
         :filterable="true"
-        :row-key="'name'"
+        :row-key="'resourceId'"
         :is-downloadable="false"
         :options="true"
         :addButton="tableOptions.addButton"
@@ -101,6 +101,7 @@ import {
   exportEmailTemplate
 } from '@/api/company'
 import labels from '@/model/constants/labels'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 
 export default {
   name: 'NotificationTemplates',
@@ -290,15 +291,30 @@ export default {
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     exportNotificationTemplate({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
+        this.$refs.refNotificationList,
+        'CreateTime'
+      )
+      if (this.$refs.refNotificationList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+      }
+      if (
+        this.$refs.refNotificationList.sortProps &&
+        this.$refs.refNotificationList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: PROPERTY_STORE.CREATETIME,
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.axiosPayload.filter
+          filter
         }
         exportEmailTemplate(payload).then((response) => {
           const { data } = response
@@ -359,7 +375,7 @@ export default {
           const {
             data: { data: categoriesData }
           } = categories
-
+          debugger
           this.tableData = templateData.results
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }

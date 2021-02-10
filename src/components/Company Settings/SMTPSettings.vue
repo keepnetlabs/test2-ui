@@ -279,7 +279,6 @@ export default {
         }
 
         const { filter, sortFilter } = clientTableExportHelper
-
         exportTypes.map((exportType) => {
           const payload = {
             ...sortFilter,
