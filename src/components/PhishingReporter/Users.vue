@@ -392,28 +392,38 @@ export default {
         FilterItems: [],
         FilterGroups: []
       }
+      const sortFilter = {
+        orderBy: 'LastSeen',
+        ascending: false
+      }
       const copyOfFilter = JSON.parse(JSON.stringify(this.requestBody.filter))
-      if (this.$refs.refUsersList && this.$refs.refUsersList.search) {
-        searchFilter.FilterItems = this.$refs.refUsersList
-          .getSearchFilterItems()
-          .filter((filterItem) =>
-            this.tableOptions.columns.find(
-              (col) =>
-                col.filterableType &&
-                col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+      if (this.$refs.refUsersList) {
+        if (this.$refs.refUsersList.search) {
+          searchFilter.FilterItems = this.$refs.refUsersList
+            .getSearchFilterItems()
+            .filter((filterItem) =>
+              this.tableOptions.columns.find(
+                (col) =>
+                  col.filterableType &&
+                  col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+              )
             )
-          )
-        copyOfFilter.FilterGroups.push(searchFilter)
+          copyOfFilter.FilterGroups.push(searchFilter)
+        }
+        if (this.$refs.refUsersList.sortProps && this.$refs.refUsersList.sortProps.order) {
+          const { sortProps } = this.$refs.refUsersList
+          sortFilter.ascending = sortProps.order === 'ascending'
+          sortFilter.orderBy = sortProps.prop
+        }
       }
 
       debugger
 
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'LastSeen',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: copyOfFilter
