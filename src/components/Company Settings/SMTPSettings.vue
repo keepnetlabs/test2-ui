@@ -85,12 +85,13 @@
 </template>
 
 <script>
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
 import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
 import DeleteSmtpSettings from '@/components/Company Settings/DeleteSmtpSettings'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -259,15 +260,34 @@ export default {
     exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const { EXPORT } = this.PERMISSIONS
       if (EXPORT.hasPermission) {
+        const clientTableExportHelper = new ClientTableExportHelper(
+          JSON.parse(JSON.stringify(this.bodyOptions.filter)),
+          this.$refs.refSmtpSettingsList,
+          'CreateTime'
+        )
+        if (this.$refs.refSmtpSettingsList.search) {
+          clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+          clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+            (item) => item.FieldName === 'StatusName'
+          ).FieldName = 'Status'
+        }
+        if (
+          this.$refs.refSmtpSettingsList.sortProps &&
+          this.$refs.refSmtpSettingsList.sortProps.order
+        ) {
+          clientTableExportHelper.addSortItems()
+        }
+
+        const { filter, sortFilter } = clientTableExportHelper
+
         exportTypes.map((exportType) => {
           const payload = {
+            ...sortFilter,
             pageNumber: pageNumber,
             pageSize: pageSize,
-            orderBy: PROPERTY_STORE.CREATETIME,
-            ascending: false,
             reportAllPages,
             exportType: exportType === 'XLS' ? 'Excel' : exportType,
-            filter: this.bodyOptions.filter
+            filter
           }
           exportSmtpSettings(payload).then((response) => {
             const { data } = response

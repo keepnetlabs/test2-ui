@@ -89,6 +89,7 @@ import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
 import Badge from '@/components/Badge'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'Users',
   components: {
@@ -387,37 +388,19 @@ export default {
       }
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const searchFilter = {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.requestBody.filter)),
+        this.$refs.refUsersList,
+        'LastSeen'
+      )
+      if (this.$refs.refUsersList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
       }
-      const sortFilter = {
-        orderBy: 'LastSeen',
-        ascending: false
-      }
-      const copyOfFilter = JSON.parse(JSON.stringify(this.requestBody.filter))
-      if (this.$refs.refUsersList) {
-        if (this.$refs.refUsersList.search) {
-          searchFilter.FilterItems = this.$refs.refUsersList
-            .getSearchFilterItems()
-            .filter((filterItem) =>
-              this.tableOptions.columns.find(
-                (col) =>
-                  col.filterableType &&
-                  col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-              )
-            )
-          copyOfFilter.FilterGroups.push(searchFilter)
-        }
-        if (this.$refs.refUsersList.sortProps && this.$refs.refUsersList.sortProps.order) {
-          const { sortProps } = this.$refs.refUsersList
-          sortFilter.ascending = sortProps.order === 'ascending'
-          sortFilter.orderBy = sortProps.prop
-        }
+      if (this.$refs.refUsersList.sortProps && this.$refs.refUsersList.sortProps.order) {
+        clientTableExportHelper.addSortItems()
       }
 
-      debugger
+      const { filter, sortFilter } = clientTableExportHelper
 
       exportTypes.map((exportType) => {
         const payload = {
@@ -426,7 +409,7 @@ export default {
           pageSize: pageSize,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: copyOfFilter
+          filter
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
