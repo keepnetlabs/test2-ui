@@ -31,26 +31,33 @@ Vue.component(
 
 const hotjarID = APP_CONFIG.VUE_APP_HOTJAR_ID
 const gtmID = APP_CONFIG.VUE_APP_GTM_ID
+const gtmPreviewEnv = APP_CONFIG.VUE_APP_GTM_ENV
+const gtmAuth = APP_CONFIG.VUE_APP_GTM_AUTH
 const fullstoryID = APP_CONFIG.VUE_APP_FULLSTORY_ID
 const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
 const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
+const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
+const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
+const fullstoryStatus = APP_CONFIG.VUE_APP_FULLSTORY_STATUS
+const hotjarStatus = APP_CONFIG.VUE_APP_HOTJAR_STATUS
 
 if (isCloud) {
   //Sentry
-  Sentry.init({
-    dsn: sentryDSN,
-    integrations: [
-      new VueIntegration({
-        Vue,
-        tracing: true
-      }),
-      new Integrations.BrowserTracing()
-    ],
+  sentryStatus &&
+    Sentry.init({
+      dsn: sentryDSN,
+      integrations: [
+        new VueIntegration({
+          Vue,
+          tracing: true
+        }),
+        new Integrations.BrowserTracing()
+      ],
 
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
-    tracesSampleRate: 1.0
-  })
+      // We recommend adjusting this value in production, or using tracesSampler
+      // for finer control
+      tracesSampleRate: 1.0
+    })
 
   //Analytics
   /* const VueAnalytics = require('vue-analytics').default
@@ -61,20 +68,24 @@ if (isCloud) {
   //Hotjar
   const Hotjar = require('vue-hotjar').default
 
-  hotjarID &&
+  hotjarStatus &&
     Vue.use(Hotjar, {
       id: hotjarID // Hotjar Site ID
     })
 
   //Google Tag Manager
-  !!gtmID &&
+  !!gtmStatus &&
     Vue.use(VueTagManager, {
-      gtmId: gtmID // GTM ID
+      gtmId: gtmID, // GTM ID
+      queryParams: {
+        gtm_preview: gtmPreviewEnv,
+        gtm_auth: gtmAuth
+      }
     })
 
   //FullSTORY
   const FullStory = require('@fullstory/browser')
-  if (!!fullstoryID) {
+  if (!!fullstoryStatus) {
     FullStory.init({ orgId: fullstoryID })
     Vue.prototype.$FullStory = FullStory
   }
