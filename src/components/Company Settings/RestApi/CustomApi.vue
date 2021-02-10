@@ -31,7 +31,6 @@
         :filterable="true"
         :isServerSide="false"
         :options="true"
-        :download-button="{ show: false }"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
@@ -39,6 +38,7 @@
         :sizeable="true"
         :table="tableData"
         @editAction="handleEdit"
+        @downloadEvent="exportRestApi"
         @deleteAction="handleDelete"
         @onEmptyBtnClicked="toggleNewCustomApiStatus"
         @handleAddNewCustomApi="toggleNewCustomApiStatus"
@@ -56,8 +56,9 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
 import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { deleteRestApi, searchRestApi } from '@/api/restApi'
+import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'CustomApi',
   data() {
@@ -191,6 +192,38 @@ export default {
         .finally(() => {
           this.loading = false
         })
+    },
+    exportRestApi({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
+        this.$refs.refCustomApiList,
+        'CreateTime'
+      )
+      if (this.$refs.refCustomApiList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+      }
+      if (this.$refs.refCustomApiList.sortProps && this.$refs.refCustomApiList.sortProps.order) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+      exportTypes.map((exportType) => {
+        const payload = {
+          ...sortFilter,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
+        exportRestApi(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Rest Api.${exportType.toLocaleLowerCase()}`
+          link.click()
+        })
+      })
     },
     closeNewCustomApiWithUpdate() {
       this.callForSearch()
