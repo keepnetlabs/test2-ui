@@ -128,6 +128,7 @@ export default {
             type: 'text',
             width: 150,
             isEditable: true,
+            filterableType: 'text',
             editComponent: 'textfield'
           },
           {
@@ -138,6 +139,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            filterableType: 'text',
             width: 150,
             isEditable: true,
             editComponent: 'textfield'
@@ -208,6 +210,7 @@ export default {
             type: 'fiber',
             isEditable: true,
             editComponent: 'textfield',
+            filterableType: 'text',
             width: 200
           },
           {
@@ -221,7 +224,8 @@ export default {
             type: 'text',
             isEditable: true,
             editComponent: 'textfield',
-            width: 140
+            width: 140,
+            filterableType: 'text'
             //minWidth: 80
           }
         ],
@@ -383,6 +387,27 @@ export default {
       }
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const searchFilter = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      const copyOfFilter = JSON.parse(JSON.stringify(this.requestBody.filter))
+      if (this.$refs.refUsersList && this.$refs.refUsersList.search) {
+        searchFilter.FilterItems = this.$refs.refUsersList
+          .getSearchFilterItems()
+          .filter((filterItem) =>
+            this.tableOptions.columns.find(
+              (col) =>
+                col.filterableType &&
+                col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+            )
+          )
+        copyOfFilter.FilterGroups.push(searchFilter)
+      }
+
+      debugger
+
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -391,7 +416,7 @@ export default {
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
+          filter: copyOfFilter
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
