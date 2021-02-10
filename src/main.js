@@ -28,9 +28,17 @@ Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
-if (APP_CONFIG.VUE_APP_IS_CLOUD) {
+
+const hotjarID = APP_CONFIG.VUE_APP_HOTJAR_ID
+const gtmID = APP_CONFIG.VUE_APP_GTM_ID
+const fullstoryID = APP_CONFIG.VUE_APP_FULLSTORY_ID
+const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
+const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
+
+if (isCloud) {
+  //Sentry
   Sentry.init({
-    dsn: 'https://d33f2fcc4295420588d442dfde43d2c5@o466336.ingest.sentry.io/5480520',
+    dsn: sentryDSN,
     integrations: [
       new VueIntegration({
         Vue,
@@ -44,39 +52,39 @@ if (APP_CONFIG.VUE_APP_IS_CLOUD) {
     tracesSampleRate: 1.0
   })
 
-  // const VueAnalytics = require('vue-analytics').default
-  // Vue.use(VueAnalytics, {
-  //   id: APP_CONFIG.VUE_APP_ANALYTICS_ID
-  // })
+  //Analytics
+  /* const VueAnalytics = require('vue-analytics').default
+   Vue.use(VueAnalytics, {
+     id: APP_CONFIG.VUE_APP_ANALYTICS_ID
+   })*/
 
+  //Hotjar
   const Hotjar = require('vue-hotjar').default
-  Vue.use(Hotjar, {
-    id: APP_CONFIG.VUE_APP_HOTJAR_ID // Hotjar Site ID
-  })
 
-  if (!!APP_CONFIG.VUE_APP_GTM_ID) {
-    Vue.use(VueTagManager, {
-      gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
+  hotjarID &&
+    Vue.use(Hotjar, {
+      id: hotjarID // Hotjar Site ID
     })
-  }
 
+  //Google Tag Manager
+  !!gtmID &&
+    Vue.use(VueTagManager, {
+      gtmId: gtmID // GTM ID
+    })
+
+  //FullSTORY
   const FullStory = require('@fullstory/browser')
-
-  if (!!APP_CONFIG.VUE_APP_FULLSTORY_ID) {
-    FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
+  if (!!fullstoryID) {
+    FullStory.init({ orgId: fullstoryID })
     Vue.prototype.$FullStory = FullStory
   }
-
-  APP_CONFIG.VUE_APP_NEW_RELIC()
 }
+
 Vue.use(VueTour)
-
 Vue.use(require('vue-moment'))
-
 Vue.use(VueMask)
 Vue.directive('mask', VueMaskDirective)
 Vue.config.productionTip = false
-
 Vue.filter('formatSize', function (size) {
   if (size > 1024 * 1024 * 1024 * 1024) {
     return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
@@ -89,12 +97,10 @@ Vue.filter('formatSize', function (size) {
   }
   return size.toString() + ' B'
 })
-
 const vm = new Vue({
   router,
   store,
   vuetify,
   render: (h) => h(App)
 }).$mount('#app')
-
 global.vm = vm
