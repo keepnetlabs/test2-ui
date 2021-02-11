@@ -1,6 +1,7 @@
 <template>
   <DataTable
     id="target-users-group-users-data-table"
+    ref="refTargetGroupUsersTable"
     selectable
     :refName="'groupsTable'"
     :loading="loading"
@@ -64,6 +65,7 @@ import {
   getTargetUserCustomFieldsByCompanyId,
   searchTargetGroupUsers
 } from '@/api/targetUsers'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -414,15 +416,30 @@ export default {
       this.$emit('handleRemoveToGroup', selectedRow)
     },
     exportTargetGroupsUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
+        this.$refs.refTargetGroupUsersTable,
+        'CreateTime'
+      )
+      if (this.$refs.refTargetGroupUsersTable.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+      }
+      if (
+        this.$refs.refTargetGroupUsersTable.sortProps &&
+        this.$refs.refTargetGroupUsersTable.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.axiosPayload.filter
+          filter
         }
         exportTargetGroupUsers(this.resourceId, payload).then((response) => {
           const { data } = response
