@@ -1686,7 +1686,7 @@ export default {
       position: fixed;
       background: white;
       width: 285px;
-      z-index: 13;
+      z-index: 20;
     }
     ::-webkit-scrollbar {
       width: 16px; /* width of the entire scrollbar */

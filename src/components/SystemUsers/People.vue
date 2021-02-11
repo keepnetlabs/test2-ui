@@ -58,6 +58,7 @@ import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemU
 import { deleteSystemUser, getSystemUsers, exportSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 import { checkPermission } from '@/utils/functions'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'People',
   components: {
@@ -160,7 +161,13 @@ export default {
             show: true,
             fixed: false,
             type: 'badge',
-            width: 150
+            width: 150,
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Active', value: '1' },
+              { text: 'Inactive', value: '0' }
+            ],
+            filterableCustomFieldName: 'StatusId'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -171,7 +178,8 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'date'
           }
         ],
         selectEvent: {
@@ -231,15 +239,33 @@ export default {
   },
   methods: {
     exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.requestBody.filter)),
+        this.$refs.refSystemUsersList,
+        'CreateTime'
+      )
+      if (this.$refs.refSystemUsersList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'StatusId'
+      }
+      if (
+        this.$refs.refSystemUsersList.sortProps &&
+        this.$refs.refSystemUsersList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
+          filter: filter
         }
         exportSystemUsers(payload).then((response) => {
           const { data } = response

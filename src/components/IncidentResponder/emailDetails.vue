@@ -1087,6 +1087,7 @@ export default {
     letter-spacing: normal;
     color: #2196f3;
     display: block;
+    overflow-wrap: break-word;
   }
   .tab-bar {
     width: 100%;

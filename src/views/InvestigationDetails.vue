@@ -841,6 +841,7 @@
                 :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
+                ref="investigationDetailsTargetUsersList"
                 :columns="columnsTargetUsers"
                 :table="
                   investigationDetailsTargetUsersListData &&
@@ -927,6 +928,7 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 
 export default {
   components: {
@@ -1435,15 +1437,32 @@ export default {
           fileName += 'Inbox'
           break
       }
+
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.investigationListBodyData.filter)),
+        this.$refs.refInvestigationListData,
+        'ReceivedTime'
+      )
+      if (this.$refs.refInvestigationListData.search) {
+        clientTableExportHelper.addSearchItems(this.columns)
+      }
+      if (
+        this.$refs.refInvestigationListData.sortProps &&
+        this.$refs.refInvestigationListData.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: reportAllPages ? this.investigationDetailsList.length + 25 : pageSize,
-          orderBy: 'ReceivedTime',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.investigationListBodyData.filter
+          filter
         }
         exportInvestigationEmailList(payload, this.$route.params.id).then((response) => {
           const { data } = response
@@ -1455,15 +1474,31 @@ export default {
       })
     },
     exportTargetUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.investigationTargetUsersListBodyData.filter)),
+        this.$refs.investigationDetailsTargetUsersList,
+        'Email'
+      )
+      if (this.$refs.investigationDetailsTargetUsersList.search) {
+        clientTableExportHelper.addSearchItems(this.columnsTargetUsers)
+      }
+      if (
+        this.$refs.investigationDetailsTargetUsersList.sortProps &&
+        this.$refs.investigationDetailsTargetUsersList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
-          orderBy: 'CreateTime',
-          ascending: true,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.investigationTargetUsersListBodyData.filter
+          filter
         }
 
         exportInvestigationUserList(payload, this.$route.params.id).then((response) => {
