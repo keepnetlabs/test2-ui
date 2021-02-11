@@ -1,5 +1,5 @@
 function createNewRelic() {
-  if (!VUE_APP_IS_CLOUD || !APP_CONFIG.VUE_APP_NEW_RELIC_STATUS) {
+  if (!APP_CONFIG.VUE_APP_IS_CLOUD || !APP_CONFIG.VUE_APP_NEW_RELIC_STATUS) {
     return false
   }
   var NREUM = {}
@@ -1658,5 +1658,6 @@ function createNewRelic() {
       ['loader', 2, 16, 5, 3, 4]
     ))
 }
-
-createNewRelic()
+if (APP_CONFIG.VUE_APP_IS_CLOUD && APP_CONFIG.VUE_APP_NEW_RELIC_STATUS) {
+  createNewRelic()
+}
