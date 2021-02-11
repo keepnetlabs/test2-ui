@@ -1658,6 +1658,4 @@ function createNewRelic() {
       ['loader', 2, 16, 5, 3, 4]
     ))
 }
-if (APP_CONFIG.VUE_APP_IS_CLOUD && APP_CONFIG.VUE_APP_NEW_RELIC_STATUS) {
-  createNewRelic()
-}
+createNewRelic()
