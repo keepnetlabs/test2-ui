@@ -375,7 +375,6 @@ export default {
           const {
             data: { data: categoriesData }
           } = categories
-          debugger
           this.tableData = templateData.results
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }

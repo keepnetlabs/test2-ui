@@ -1,6 +1,6 @@
 const APP_CONFIG = (() => {
   return {
-    VUE_APP_IS_CLOUD: true,
+    VUE_APP_IS_CLOUD: #{knl_cloud_status}#,
     VUE_APP_GTM_STATUS: #{knl_google_tag_manager_status}#,
     VUE_APP_SENTRY_STATUS: #{knl_sentry_dsn_status}#,
     VUE_APP_FULLSTORY_STATUS: #{knl_fullstory_status}#,
