@@ -45,8 +45,9 @@ testService.interceptors.response.use(
   },
   (error) => {
     //if there is global loader param
-    error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    debugger
 
+    error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (!error.response) {
       return Promise.reject(error)
     } else if (error.response.status === 401 || error.response.status === 306) {
