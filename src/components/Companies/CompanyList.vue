@@ -1,5 +1,11 @@
 <template>
   <div class="company-list">
+    <create-or-edit-system-user
+      v-if="showCreateOrEditSystemUserModal"
+      :status="showCreateOrEditSystemUserModal"
+      @closeOverlayWithUpdate="toggleCreateOrEditSystemUser"
+      @closeOverlay="toggleCreateOrEditSystemUser"
+    />
     <app-modal
       :status="isShowCreateOrEditModal"
       v-if="isShowCreateOrEditModal"
@@ -9,10 +15,11 @@
     >
       <template v-slot:overlay-body>
         <CompanyCreateOrEdit
-          @cancelForm="cancelCreateOrEditForm"
           :selectedRow="selectedRow"
           :selectedExtend="selectedExtend"
           :edit="editModal"
+          @cancelForm="cancelCreateOrEditForm"
+          @closeFormAndOpenSystemUserModal="closeFormAndOpenSystemUserModal"
         />
       </template>
     </app-modal>
@@ -137,6 +144,7 @@ import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 export default {
   name: 'CompanyList',
   components: {
@@ -146,11 +154,13 @@ export default {
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
+    CreateOrEditSystemUser,
     DeleteModal
   },
   data: () => ({
     loading: true,
     tableData: [],
+    showCreateOrEditSystemUserModal: false,
     tableHeight: 0,
     extendTop: 0,
     bindPropsIsSafari: {},
@@ -335,6 +345,9 @@ export default {
       size = isNaN(parsedSize) ? 10 : parsedSize
       this.payload.pageSize = size
       this.serverSideProps.pageSize = size
+    },
+    toggleCreateOrEditSystemUser() {
+      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
@@ -543,6 +556,10 @@ export default {
       this.selectedExtend = {}
       this.selectedRow = {}
       this.getTableData({ orderBy: 'createTime', ascending: false })
+    },
+    closeFormAndOpenSystemUserModal() {
+      this.cancelCreateOrEditForm()
+      this.toggleCreateOrEditSystemUser()
     },
     closeExtend() {
       this.selectedExtend = {}
