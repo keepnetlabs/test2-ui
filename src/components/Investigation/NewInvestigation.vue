@@ -117,18 +117,34 @@
                 >
                 <div class="filter-item" v-for="(list, index) in filterList" :key="index">
                   <div class="filter-item__selectbox">
-                    <k-select
-                      :items="filterListOption"
-                      item-text="name"
-                      item-value="val"
-                      v-model.trim="list.option"
-                      placeholder="Select filter"
-                      outlined
-                      class="edit-select standard-height"
-                      required
-                      @change="handleChangeFilterListItem"
-                      :rules="[filterSelectRules.required]"
-                    ></k-select>
+                    <Treeselect
+                      v-model="list.option"
+                      disable-branch-nodes
+                      open-direction="below"
+                      :class="[
+                        'filter-list-select',
+                        'k-treeselect',
+                        { 'k-treeselect--error': isSubmitted && !list.option }
+                      ]"
+                      :clearable="false"
+                      :options="filterListOption"
+                      :max-height="320"
+                    />
+                    <div
+                      v-if="isSubmitted && !list.option"
+                      class="v-text-field__details checkbox-error"
+                      style="left: 2px !important; bottom: -17px !important;"
+                    >
+                      <transition appear name="bounce">
+                        <div class="v-messages theme--light error--text" role="alert">
+                          <div class="v-messages__wrapper">
+                            <div class="v-messages__message" style="padding-left: 10px;">
+                              Required
+                            </div>
+                          </div>
+                        </div>
+                      </transition>
+                    </div>
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
@@ -298,6 +314,7 @@
   </app-modal>
 </template>
 <script>
+import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
 import {
   getTargetGroups,
@@ -316,7 +333,8 @@ export default {
     KSelect,
     AppModalBodyHeader,
     AppModal,
-    InputDate
+    InputDate,
+    Treeselect
   },
   watch: {
     date(val) {
@@ -369,6 +387,7 @@ export default {
     return {
       warningMessage: null,
       saveDisable: false,
+      isSubmitted: false,
       labels,
       timeout: null,
       defaultUserGroupItems: [],
@@ -463,23 +482,44 @@ export default {
         },
         { actionLabel: 'Notify user only', actionValue: 'Warning' }
       ],
-      filterList: [{ option: '', text: '' }],
+      filterList: [{}],
       sources: [],
       filterListOption: [
-        { name: 'IP', val: 'ip' },
-        { name: 'From', val: 'from' },
-        { name: 'To', val: 'to' },
-        { name: 'CC', val: 'cc' },
-        { name: 'BCC', val: 'bcc' },
-        { name: 'Subject', val: 'subject' },
-        { name: 'Sender Name', val: 'from_name' },
-        { name: 'Url', val: 'url' },
-        { name: 'Keyword', val: 'keyword' },
-        { name: 'Size', val: 'size' },
-        { name: 'File Name', val: 'name' },
-        { name: 'SHA512', val: 'sha512' },
-        { name: 'MD5', val: 'md5' },
-        { name: 'File Extension', val: 'extension' }
+        {
+          label: 'Header',
+          id: 'header',
+          isDefaultExpanded: true,
+          children: [
+            { label: 'Subject', id: 'subject' },
+            { label: 'From', id: 'from' },
+            { label: 'To', id: 'to' },
+            { label: 'CC', id: 'cc' },
+            { label: 'BCC', id: 'bcc' },
+            { label: 'IP Address', id: 'ip' },
+            { label: 'Sender Name', id: 'from_name' }
+          ]
+        },
+        {
+          label: 'Body',
+          id: 'body',
+          isDefaultExpanded: true,
+          children: [
+            { label: 'URL', id: 'url' },
+            { label: 'Keyword', id: 'keyword' }
+          ]
+        },
+        {
+          label: 'Attachment',
+          id: 'attachment',
+          isDefaultExpanded: true,
+          children: [
+            { label: 'File Name', id: 'name' },
+            { label: 'File size', id: 'size' },
+            { label: 'File Extension', id: 'extension' },
+            { label: 'SHA512', id: 'sha512' },
+            { label: 'MD5', id: 'md5' }
+          ]
+        }
       ],
       valid: false,
       menu1: '',
@@ -657,7 +697,7 @@ export default {
       }, delay)
     },
     addNewFilterListOption() {
-      this.filterList.push({ option: '', text: '' })
+      this.filterList.push({})
     },
     onCancelClicked() {
       this.$emit('closeAdd')
@@ -665,7 +705,7 @@ export default {
     onCreateClicked() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
-
+      this.isSubmitted = true
       if (this.date.length < 1) {
         this.isDateValid = false
       }
@@ -1410,7 +1450,7 @@ export default {
       &__button {
         font-size: 14px;
         font-weight: 600;
-        margin-top: 8px;
+        margin-top: 12px;
         line-height: 1.71;
         letter-spacing: normal;
         color: #2196f3 !important;
@@ -3142,6 +3182,26 @@ export default {
 .select-specific-users {
   .v-chip {
     margin: 4px !important;
+  }
+}
+.filter-list-select {
+  .vue-treeselect__indent-level-0:not(:first-child) {
+    border-top: 1px solid #e0e0e0;
+  }
+  &.k-treeselect .vue-treeselect__input-container input {
+    height: 40px;
+  }
+
+  .vue-treeselect__indent-level-1 .vue-treeselect__option.vue-treeselect__option--selected {
+    border-left: solid 5px !important;
+    border-color: #2196f3 !important;
+    padding-left: 11px !important;
+    .vue-treeselect__label {
+      color: #1976d2 !important;
+    }
+  }
+  .vue-treeselect__indent-level-1 .vue-treeselect__option {
+    padding-left: 16px !important;
   }
 }
 </style>

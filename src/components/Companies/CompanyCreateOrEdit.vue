@@ -1,5 +1,26 @@
 <template>
   <div class="fullscreen-form company-create-modal">
+    <app-dialog
+      v-if="isAddTheFirstSystemUserShow"
+      icon="mdi-delete"
+      title="Add The First System User"
+      :status="isAddTheFirstSystemUserShow"
+      :subtitle="formData.name"
+      @changeStatus="closeFirstSystemUserDialog"
+    >
+      <template v-slot:app-dialog-body>
+        {{ getAddTheFirstSystemUserBody }}
+      </template>
+      <template v-slot:app-dialog-footer>
+        <app-dialog-footer
+          cancel-button-text="I’ll Do it later"
+          cancel-button-color="#00bcd4"
+          action-button-text="YES, create a system user"
+          @handleClose="closeFirstSystemUserDialog"
+          @handleConfirm="confirmFirstSystemUserDialog"
+        />
+      </template>
+    </app-dialog>
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-cart-icon-wrapper">
@@ -549,14 +570,11 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import {
-  createCompany,
-  searchCompanies,
-  searchCompanyGroups,
-  updateCompany
-} from '../../api/company'
+import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AppDialog from '@/components/AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { scrollToComponent } from '@/utils/functions'
 import { getLicences, getLookupListByTypeIdList } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -572,10 +590,19 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KSelect, InputCompany, InputUrl, KFileUpload, InputDate },
+  components: {
+    KSelect,
+    InputCompany,
+    InputUrl,
+    KFileUpload,
+    InputDate,
+    AppDialog,
+    AppDialogFooter
+  },
   data() {
     return {
       saveDisable: false,
+      isAddTheFirstSystemUserShow: false,
       labels,
       stepLock: false,
       totalStep: 4,
@@ -644,6 +671,9 @@ export default {
     canNext() {
       return this.activeStep < this.totalStep
     },
+    getAddTheFirstSystemUserBody() {
+      return `Would you like to create the first system user for ${this.formData.name}?`
+    },
     canPrev() {
       return this.activeStep > 1
     }
@@ -687,6 +717,12 @@ export default {
     }
   },
   methods: {
+    confirmFirstSystemUserDialog() {
+      this.formData = []
+      this.LicenseDates = null
+      this.activeStep = 1
+      this.$emit('closeFormAndOpenSystemUserModal')
+    },
     getLookupContents() {
       Promise.all([
         getLookupListByTypeIdList({ typeidlist: [1, 2, 4, 5, 6, 7] }),
@@ -725,6 +761,10 @@ export default {
         })
         .catch((error) => {})
     },
+    closeFirstSystemUserDialog() {
+      this.isAddTheFirstSystemUserShow = false
+      this.cancelForm()
+    },
     handleSave() {
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
         this.saveDisable = true
@@ -746,7 +786,8 @@ export default {
           createCompany(this.formData)
             .then(() => {
               this.saveDisable = false
-              this.cancelForm()
+              this.isAddTheFirstSystemUserShow = true
+              //this.cancelForm()
             })
             .catch(() => {
               this.saveDisable = false
