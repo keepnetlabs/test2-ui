@@ -1,5 +1,13 @@
 <template>
   <div class="target-users-groups">
+    <TargetGroupUsersAddUsersModal
+      v-if="showAddUsersModal"
+      :status="showAddUsersModal"
+      :group-name="getGroupName"
+      :resource-id="getResourceId"
+      @closeOverlay="toggleAddUserModal"
+      @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
+    />
     <create-new-user-group-modal
       v-if="showNewUserGroupModal"
       :status="showNewUserGroupModal"
@@ -43,6 +51,7 @@
       @onEditClick="onEditClick"
       @delete="handleDelete"
       @onEmptyBtnClicked="showNewUserGroupModal = true"
+      @add-group="handleAddGroup"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForTargetGroups"
@@ -85,6 +94,7 @@ import {
 } from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DeleteGroupModal from './DeleteGroupModal'
+import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 import {
   COMMON_CONSTANTS,
   getStoreValue,
@@ -99,6 +109,7 @@ export default {
   components: {
     DeleteGroupModal,
     CreateNewUserGroupModal,
+    TargetGroupUsersAddUsersModal,
     datatable: DataTable
   },
   props: {
@@ -108,9 +119,11 @@ export default {
   },
   data() {
     return {
+      showAddUsersModal: false,
       isCreateButtonDisabled: false,
       loading: false,
       tableData: [],
+      selectedGroup: {},
       extendedViewLoading: true,
       tableOptions: {
         isColumnFilterActive: false,
@@ -191,6 +204,11 @@ export default {
             action: 'edit',
             isNotShow: true,
             disabled: !checkPermission('target-groups/{resourceId}', 'PUT')
+          },
+          {
+            name: 'Add users to group',
+            icon: 'mdi-account-multiple-plus',
+            action: 'add-group'
           },
           {
             name: 'Delete',
@@ -275,11 +293,30 @@ export default {
       tableState: null
     }
   },
+  computed: {
+    getGroupName() {
+      return this.selectedGroup.name
+    },
+    getResourceId() {
+      return this.selectedGroup.resourceId
+    }
+  },
   methods: {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
     handleSyncWithLDAP(row) {},
+    handleAddGroup(row = {}) {
+      this.selectedGroup = row
+      this.toggleAddUserModal()
+    },
+    toggleAddUserModal() {
+      this.showAddUsersModal = !this.showAddUsersModal
+    },
+    closeAddOverlayWithUpdate() {
+      this.toggleAddUserModal()
+      this.callForTargetGroups()
+    },
     handleGroupNameClick(row) {
       this.$router.push({
         name: 'Target Group Users',
