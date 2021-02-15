@@ -81,6 +81,7 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       v-bind="bindPropsIsSafari"
+      @switchCompany="handleSwitchCompany"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @handleChangeIsSettingsOpen="handleChangeIsSettingsOpen"
@@ -289,6 +290,12 @@ export default {
           disabled: !checkPermission('companies/search', 'POST')
         },
         {
+          name: 'Switch to company',
+          icon: 'mdi-swap-horizontal',
+          action: 'switchCompany',
+          disabled: !checkPermission('companies/search', 'POST')
+        },
+        {
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'delete',
@@ -348,6 +355,14 @@ export default {
     },
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+    },
+    handleSwitchCompany(account = {}) {
+      this.$router.go(0)
+      localStorage.setItem('isSelectCompany', true)
+      localStorage.setItem('companyId', account.companyResourceId)
+      localStorage.setItem('companyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyName', account.companyName)
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
