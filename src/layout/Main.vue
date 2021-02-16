@@ -1668,6 +1668,7 @@ export default {
     overflow: visible;
     background: white !important;
     padding-top: 218px;
+    z-index: 7 !important;
     &__left-menu-mini {
       width: 56px;
       height: 200px;
@@ -1686,7 +1687,7 @@ export default {
       position: fixed;
       background: white;
       width: 285px;
-      z-index: 20;
+      z-index: 8;
     }
     ::-webkit-scrollbar {
       width: 16px; /* width of the entire scrollbar */
@@ -2260,7 +2261,7 @@ export default {
 
   .v-navigation-drawer {
     overflow: visible !important;
-    z-index: 12;
+    z-index: 8;
 
     @media only screen and (max-width: 1025px) {
       position: fixed !important;
