@@ -509,8 +509,8 @@
                     :disabled="commun.isJoined || isJoinCommunityButtonDisabled"
                     style="background-color: #2196f3 !important;"
                   >
-                    <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
-                    <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
+                    <v-icon v-if="!commun.isJoined" class="mr-2">mdi-account-circle </v-icon>
+                    <v-icon v-if="commun.isJoined" class="mr-2" style="color: #fff !important;"
                       >mdi-account-clock
                     </v-icon>
                     <div v-if="commun.privacyStatusName != 'Private'" :key="commun.resourceId">
