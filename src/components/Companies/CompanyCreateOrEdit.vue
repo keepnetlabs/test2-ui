@@ -5,7 +5,7 @@
       icon="mdi-delete"
       title="Add The First System User"
       :status="isAddTheFirstSystemUserShow"
-      :subtitle="formData.name"
+      :subtitle="formData.Name"
       @changeStatus="closeFirstSystemUserDialog"
     >
       <template v-slot:app-dialog-body>
@@ -672,7 +672,7 @@ export default {
       return this.activeStep < this.totalStep
     },
     getAddTheFirstSystemUserBody() {
-      return `Would you like to create the first system user for ${this.formData.name}?`
+      return `Would you like to create the first system user for ${this.formData.Name}?`
     },
     canPrev() {
       return this.activeStep > 1
@@ -1241,5 +1241,11 @@ export default {
   .k-checkbox:nth-child(2n) {
     margin-left: 120px;
   }
+}
+.my-dialog {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.23);
 }
 </style>
