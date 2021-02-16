@@ -5,7 +5,7 @@
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
-      :z-index="9"
+      :z-index="22"
       color="white"
       v-if="showPostIncident"
     >
