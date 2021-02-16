@@ -89,7 +89,7 @@
                   color="#2196f3"
                   v-on="{ ...tooltip, ...menu }"
                 >
-                  <v-icon>mdi-plus</v-icon>
+                  <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
                   <span class="button-new__text">NEW</span>
                 </v-btn>
               </template>

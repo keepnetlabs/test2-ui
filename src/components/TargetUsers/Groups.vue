@@ -67,7 +67,7 @@
               @click.native="showNewUserGroupModal = true"
               :disabled="!checkPermissions('target-groups', 'POST')"
             >
-              <v-icon color="white">mdi-plus</v-icon>
+              <v-icon color="white" style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
               <span class="button-new__text">NEW</span>
             </v-btn>
           </template>
