@@ -2333,6 +2333,7 @@ export default {
       ).shadowRoot.innerHTML
     },
     handleTagItemChange(value) {
+      if (this.isFindIncidentLoading) return false
       //value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
     checkCheckboxValidation() {
@@ -2625,7 +2626,6 @@ export default {
     },
     getSelectedEmailPreview(selectedItem) {
       const _this = this
-      if (this.isFindIncidentLoading) return false
       if (_this.editItem) {
         getCommunityPost(_this.editItem.communityPostResourceId).then((response) => {
           const { data } = response
