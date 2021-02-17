@@ -2625,7 +2625,6 @@ export default {
     },
     getSelectedEmailPreview(selectedItem) {
       const _this = this
-      if (this.isFindIncidentLoading) return false
       if (_this.editItem) {
         getCommunityPost(_this.editItem.communityPostResourceId).then((response) => {
           const { data } = response
