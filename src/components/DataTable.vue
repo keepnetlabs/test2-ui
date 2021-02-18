@@ -888,7 +888,12 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getDataTableFieldLabel,
+  scrollToComponent
+} from '@/utils/functions'
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
@@ -2334,6 +2339,7 @@ export default {
           this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
         this.tableData = temp.length === 0 ? [{}] : temp
       }
+      this.$emit('onSizeChanged')
       this.calculateAllSelected()
     },
     handleServerSideCurrentChange(pageNumber = 1) {
@@ -2348,6 +2354,8 @@ export default {
         (pageNum - 1) * this.rowCount,
         pageNum * this.rowCount
       )
+
+      this.$emit('onPageChanged')
       this.calculateAllSelected()
     },
 
