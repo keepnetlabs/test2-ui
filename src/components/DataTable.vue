@@ -1975,11 +1975,16 @@ export default {
         })
       } else {
         const collator = new Intl.Collator('tr')
-
         sortData = data.sort(function (a, b) {
           if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
-            const aProp = String(a[sortProps.prop])
-            const bProp = String(b[sortProps.prop])
+            let aProp = String(a[sortProps.prop])
+            let bProp = String(b[sortProps.prop])
+            if (aProp === 'null') {
+              aProp = ''
+            }
+            if (bProp === 'null') {
+              bProp = ''
+            }
             if (aProp === bProp) {
               return 0
             }
