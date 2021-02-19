@@ -888,12 +888,7 @@ import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
 import printJS from 'print-js'
-import {
-  getBtnPriorityColor,
-  getBtnStatusColor,
-  getDataTableFieldLabel,
-  scrollToComponent
-} from '@/utils/functions'
+import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
@@ -1545,7 +1540,8 @@ export default {
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
-      if (this.isSelectedAll && this.multipleSelection.length === this.totalLength) {
+      const comparedSelectionObj = this.isServerSide ? selectedItems : this.multipleSelection
+      if (this.isSelectedAll && comparedSelectionObj.length === this.totalLength) {
         this.selectionCheckbox = true
         this.selectionRowCheckboxDeterminate = false
       } else if (selectedItems.length) {
@@ -2430,7 +2426,12 @@ export default {
 
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {
-              this.$refs.elTableRef.toggleRowSelection(selectedItem)
+              const thisTableItem = this.isServerSide
+                ? this.tableData.find((item) => {
+                    return JSON.stringify(item) === JSON.stringify(selectedItem)
+                  })
+                : selectedItem
+              this.$refs.elTableRef.toggleRowSelection(thisTableItem)
             }
           } else {
             this.$refs.elTableRef.clearSelection()
