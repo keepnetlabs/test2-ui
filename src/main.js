@@ -14,6 +14,12 @@ import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
+import Vlf from 'vlf'
+import localforage from 'localforage'
+localforage.config({
+  name: 'keepnet'
+})
+Vue.use(Vlf, localforage)
 
 require('vue-tour/dist/vue-tour.css')
 
