@@ -89,6 +89,11 @@
               ref="searchInput"
               @keyup="searchChangedEvent"
             />
+            <data-table-filter-options
+              @set-default-search="$emit('set-default-search')"
+              @restore-default-search="$emit('restore-default-search')"
+              @clear-filters="$emit('clear-filters')"
+            />
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
@@ -894,8 +899,10 @@ import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
 export default {
   components: {
+    DataTableFilterOptions,
     DataTableFilter,
     DataTableColorfulText,
     Badge,
