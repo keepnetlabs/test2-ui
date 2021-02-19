@@ -1540,7 +1540,8 @@ export default {
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
-      if (this.isSelectedAll && this.multipleSelection.length === this.totalLength) {
+      const comparedSelectionObj = this.isServerSide ? selectedItems : this.multipleSelection
+      if (this.isSelectedAll && comparedSelectionObj.length === this.totalLength) {
         this.selectionCheckbox = true
         this.selectionRowCheckboxDeterminate = false
       } else if (selectedItems.length) {
@@ -1975,11 +1976,16 @@ export default {
         })
       } else {
         const collator = new Intl.Collator('tr')
-
         sortData = data.sort(function (a, b) {
           if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
-            const aProp = String(a[sortProps.prop])
-            const bProp = String(b[sortProps.prop])
+            let aProp = String(a[sortProps.prop])
+            let bProp = String(b[sortProps.prop])
+            if (aProp === 'null') {
+              aProp = ''
+            }
+            if (bProp === 'null') {
+              bProp = ''
+            }
             if (aProp === bProp) {
               return 0
             }
@@ -2329,6 +2335,7 @@ export default {
           this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
         this.tableData = temp.length === 0 ? [{}] : temp
       }
+      this.$emit('onSizeChanged')
       this.calculateAllSelected()
     },
     handleServerSideCurrentChange(pageNumber = 1) {
@@ -2343,6 +2350,8 @@ export default {
         (pageNum - 1) * this.rowCount,
         pageNum * this.rowCount
       )
+
+      this.$emit('onPageChanged')
       this.calculateAllSelected()
     },
 
@@ -2417,7 +2426,12 @@ export default {
 
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {
-              this.$refs.elTableRef.toggleRowSelection(selectedItem)
+              const thisTableItem = this.isServerSide
+                ? this.tableData.find((item) => {
+                    return JSON.stringify(item) === JSON.stringify(selectedItem)
+                  })
+                : selectedItem
+              this.$refs.elTableRef.toggleRowSelection(thisTableItem)
             }
           } else {
             this.$refs.elTableRef.clearSelection()

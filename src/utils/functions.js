@@ -677,11 +677,14 @@ export function passwordComplexity(pwd) {
   }
 }
 
-export function scrollToComponent(el) {
+export function scrollToComponent(
+  el,
+  options = { behavior: 'smooth', block: 'center', inline: 'center' }
+) {
   if (window.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView()
   } else {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+    el.scrollIntoView(options)
   }
 }
 
