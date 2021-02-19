@@ -129,6 +129,7 @@
                   <div style="margin-top: 40px;">
                     <datatable
                       ref="refRelayTable"
+                      id="relay-data-table"
                       :loading="isLoading"
                       :table="relayTable.data"
                       :refName="'relayTable'"
@@ -145,11 +146,12 @@
                     />
                   </div>
                 </v-card>
-                <v-card light class="email-details__header-card">
+                <v-card light class="email-details__header-card" id="email-details--header">
                   <v-card-title class="email-details__header-title">Headers Found</v-card-title>
                   <div class="email-details__datatable-container">
                     <datatable
                       ref="refHeadersTable"
+                      id="headers-data-table"
                       :loading="isLoading"
                       :table="headersTable.data"
                       :refName="'headersTable'"
@@ -165,6 +167,8 @@
                       :sizeable="true"
                       :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
+                      @onPageChanged="adjustScroll"
+                      @onSizeChanged="adjustScroll"
                     />
                   </div>
                 </v-card>
@@ -556,6 +560,7 @@ import {
 } from '../../model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import { scrollToComponent } from '@/utils/functions'
 
 export default {
   components: {
@@ -799,6 +804,15 @@ export default {
     this.getPostDetails()
   },
   methods: {
+    adjustScroll() {
+      this.$nextTick(() => {
+        scrollToComponent(document.getElementById('email-details--header'), {
+          behavior: 'auto',
+          block: 'start',
+          inline: 'start'
+        })
+      })
+    },
     isFileUploaded(attachments) {
       if (attachments) {
         const data = attachments.filter((item) => item.isSendFile || item.isSendFileHash)

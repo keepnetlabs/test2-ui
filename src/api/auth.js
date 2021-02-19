@@ -12,6 +12,8 @@ export function loginAction(payload) {
   params.append('scope', 'api1')
   params.append('client_id', 'ui_client')
   params.append('client_secret', 'secret')
+  params.append('skip_mfa', 'true')
+  params.append('mfa_code', '')
   return authTestRequest.post('connect/token', params, {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
