@@ -472,6 +472,16 @@
                   rows="5"
                   row-height="15"
                   solo
+                  @input="$forceUpdate()"
+                  :rules="
+                    uploadRespond.DiscoveryAndDetection
+                      ? [
+                          explanationRules.empty,
+                          explanationRules.minLength,
+                          explanationRules.required
+                        ]
+                      : []
+                  "
                 ></v-textarea>
               </v-form>
 
@@ -492,12 +502,10 @@
                   deletable-chips
                   class="affect-combobox affect-input"
                   @keyup.tab="updateTags"
-                  @paste="false"
                   solo
                   outlined
                   dense
                   validate-on-blur
-                  onPaste="return false"
                   @blur="validateAffectArea"
                   :rules="[affectRules.regex]"
                   @input="handleTagItemChange"
@@ -518,6 +526,17 @@
                   solo
                   validate-on-blur
                   ref="scopeTextField"
+                  @input="$forceUpdate()"
+                  :rules="
+                    uploadRespond.Scope
+                      ? [
+                          scopeRules.regex,
+                          scopeRules.empty,
+                          scopeRules.minLength,
+                          scopeRules.required
+                        ]
+                      : []
+                  "
                 ></v-text-field>
               </v-form>
             </div>
@@ -2334,7 +2353,7 @@ export default {
     },
     handleTagItemChange(value) {
       if (this.isFindIncidentLoading) return false
-      //value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
@@ -2697,11 +2716,30 @@ export default {
       }
     },
     onThirdStep() {
-      if (!this.uploadRespond.DiscoveryAndDetection) this.uploadRespond.DiscoveryAndDetection = ''
-      if (!this.uploadRespond.Scope) this.uploadRespond.Scope = ''
-      if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = ''
-      this.step++
-      this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      if (this.uploadRespond.AffectArea && !this.$refs.affectInput.validate()) {
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
+      }
+      if (this.uploadRespond.DiscoveryAndDetection && !this.$refs.discoveryInput.validate()) {
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
+      }
+      if (this.uploadRespond.Scope && !this.$refs.scopeInput.validate()) {
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
+      } else {
+        if (!this.uploadRespond.DiscoveryAndDetection) this.uploadRespond.DiscoveryAndDetection = ''
+        if (!this.uploadRespond.Scope) this.uploadRespond.Scope = ''
+        if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = ''
+        this.step++
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      }
     },
     onBeforeLastStep() {
       this.setVisibleBody()
