@@ -66,6 +66,7 @@
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
+      :show-all-records="showAllRecords"
       ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
@@ -89,6 +90,7 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
+      @on-all-records-button-click="handleAllRecordsClick"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -157,6 +159,8 @@ export default {
     return {
       deleteButtonDisabled: false,
       tableData: [],
+      totalNumberOfRecords: 0,
+      showAllRecords: false,
       labels,
       loading: false,
       matchingPlaybookData: [],
@@ -267,7 +271,7 @@ export default {
       },
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -339,6 +343,11 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    handleAllRecordsClick() {
+      this.tableCredientials.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchPlaybook()
+    },
     getTableEmptyStatus() {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
@@ -410,7 +419,6 @@ export default {
         if (toggleModal) {
           this.toggleMatchingModal()
         }
-
         const payload = {
           pageNumber: 1,
           pageSize: 50000,
@@ -557,7 +565,15 @@ export default {
     callForSearchPlaybook() {
       this.loading = true
       this.getPlaybookList(this.tableCredientials)
-        .then(() => {
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
           this.tableData = this.playbookList.results
         })
         .finally(() => (this.loading = false))

@@ -761,6 +761,7 @@
                 ref="refInvestigationListData"
                 :columns="columns"
                 :table="investigationDetailsList"
+                :show-all-records="showAllRecordsFolder"
                 :pageSizes="pageSizes"
                 :selectable="true"
                 :filterable="true"
@@ -782,6 +783,7 @@
                 @columnFilterChanged="columnFilterChanged"
                 @columnFilterCleared="columnFilterCleared"
                 @refreshAction="refreshDatatable"
+                @on-all-records-button-click="handleAllRecordsInboxClick"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -853,6 +855,7 @@
                 :filterable="true"
                 :options="true"
                 :empty="iEmpty"
+                :show-all-records="showAllRecordsTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 :clusterItems="clusterItems"
@@ -866,6 +869,7 @@
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
                 @refreshAction="refreshDatatable"
+                @on-all-records-button-click="handleAllRecordsTargetUsersClick"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -943,6 +947,10 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    showAllRecordsTargetUser: false,
+    totalNumberOfRecordsTargetUser: 0,
+    showAllRecordsFolder: false,
+    totalNumberOfRecordsFolder: 0,
     warningButtonDisabled: false,
     warnAndDeleteButtonDisabled: false,
     stopButtonDisabled: false,
@@ -977,7 +985,7 @@ export default {
     },
     investigationListBodyData: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 1000,
       orderBy: 'ReceivedTime',
       ascending: true,
       filter: {
@@ -999,7 +1007,7 @@ export default {
     },
     investigationTargetUsersListBodyData: {
       pageNumber: 1,
-      pageSize: 500000,
+      pageSize: 1000,
       orderBy: 'Email',
       ascending: true,
       filter: {
@@ -1237,7 +1245,7 @@ export default {
     },
     bodyData: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 1000,
       orderBy: 'ExpireDate',
       ascending: false,
       filter: {
@@ -1259,6 +1267,16 @@ export default {
     }
   }),
   methods: {
+    handleAllRecordsTargetUsersClick() {
+      this.investigationTargetUsersListBodyData.pageSize = 75000
+      this.showAllRecordsTargetUser = false
+      this.refreshDatatable()
+    },
+    handleAllRecordsInboxClick() {
+      this.investigationListBodyData.pageSize = 75000
+      this.showAllRecordsFolder = false
+      this.refreshDatatable()
+    },
     getActionStatusOptions(
       actionStatusItem,
       { actionType, status, isPermanentDelete, isTooltip, tooltipText, text } = actionStatusItem
@@ -1531,7 +1549,6 @@ export default {
         this.progressValue = progressValue
       }
     },
-    showRemainingDays() {},
     isWantToStopConfirm() {
       this.stopButtonDisabled = true
       this.$store
@@ -1696,11 +1713,40 @@ export default {
             data: this.investigationTargetUsersListBodyData,
             id: this.$route.params.id
           })
+          .then((response) => {
+            this.adjustTargetUserShowRecords(response)
+          })
           .finally(() => {
             this.showTargetUsersDetails = true
             this.loading = false
             vm.$forceUpdate()
           })
+      }
+    },
+    adjustTargetUserShowRecords(response = {}) {
+      const {
+        data: { data }
+      } = response
+      const { totalNumberOfRecords = 0 } = data
+      this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
+      if (
+        this.investigationTargetUsersListBodyData.pageSize === 1000 &&
+        this.totalNumberOfRecordsTargetUser > 1000
+      ) {
+        this.showAllRecordsTargetUser = true
+      }
+    },
+    adjustInboxShowRecords(response = {}) {
+      const {
+        data: { data }
+      } = response
+      const { totalNumberOfRecords = 0 } = data
+      this.totalNumberOfRecordsFolder = totalNumberOfRecords
+      if (
+        this.investigationListBodyData.pageSize === 1000 &&
+        this.totalNumberOfRecordsFolder > 1000
+      ) {
+        this.showAllRecordsFolder = true
       }
     },
     restartStopInvestigationData() {
@@ -1724,31 +1770,6 @@ export default {
             })
         })
     },
-    restartAllData() {
-      this.showEmails = false
-      this.showTargetUsersDetails = false
-      if (this.activeMenu == 'targetUsers') {
-        this.$store
-          .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.investigationTargetUsersListBodyData,
-            id: this.$route.params.id
-          })
-          .finally(() => {
-            this.showTargetUsersDetails = true
-            vm.$forceUpdate()
-          })
-      } else {
-        this.$store
-          .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.investigationTargetUsersListBodyData,
-            id: this.$route.params.id
-          })
-          .finally(() => {
-            vm.$forceUpdate()
-            this.showEmails = true
-          })
-      }
-    },
     refreshDatatable() {
       this.leftMenuLoading = true
       this.topMenuLoading = true
@@ -1763,6 +1784,9 @@ export default {
                 .dispatch('investigations/getInvestigationDetailsListData', {
                   data: this.investigationListBodyData,
                   id: this.$route.params.id
+                })
+                .then((response) => {
+                  this.adjustInboxShowRecords(response)
                 })
                 .finally(() => {
                   this.calculateProgressData()
@@ -1782,9 +1806,8 @@ export default {
           data: this.investigationTargetUsersListBodyData,
           id: this.$route.params.id
         })
-        .finally(() => {
-          //this.showTargetUsersDetails = true;
-          //vm.$forceUpdate();
+        .then((response) => {
+          this.adjustTargetUserShowRecords(response)
         })
     },
     onAddClose(resp) {

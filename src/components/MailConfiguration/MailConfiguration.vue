@@ -231,6 +231,7 @@
     </app-dialog>
     <div class="mail-configuration__content">
       <datatable
+        id="mail-configurations-data-table"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
@@ -239,9 +240,9 @@
         :empty="tableOptions.iEmpty"
         :filterable="true"
         :options="true"
+        :show-all-records="showAllRecords"
         :pageSizes="tableOptions.pageSizes"
         :refName="'peopleTable'"
-        id="mail-configurations-data-table"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
         :setClassName="setCellClassName"
@@ -255,6 +256,7 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="getTableData"
+        @on-all-records-button-click="handleAllRecordsClick"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -355,6 +357,8 @@ export default {
   data: () => ({
     labels,
     delaySaveFunction: false,
+    showAllRecords: false,
+    totalNumberOfRecords: 0,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
     gsuite: {
@@ -489,7 +493,7 @@ export default {
     validations: validations,
     requestBody: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 1000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -517,6 +521,11 @@ export default {
           })
         }
       }
+    },
+    handleAllRecordsClick() {
+      this.requestBody.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchPlaybook()
     },
     isValidate() {
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
@@ -566,6 +575,14 @@ export default {
       this.loading = true
       getMailConfigurationList(this.requestBody)
         .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
           this.tableData = response.data.data.results
         })
         .finally(() => {
