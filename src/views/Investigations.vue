@@ -31,6 +31,7 @@
         <datatable
           v-bind="tableState"
           :loading="loading"
+          :show-all-records="showAllRecords"
           :is-column-filter-active="isColumnFilterActive"
           id="investigations-data-table"
           ref="investigationTable"
@@ -62,6 +63,7 @@
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @refreshAction="getInvestigationList"
+          @on-all-records-button-click="handleAllRecordsClick"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -138,6 +140,8 @@ export default {
   },
   data: () => ({
     tableState: false,
+    showAllRecords: false,
+    totalNumberOfRecords: 0,
     stopInvestigateButtonDisabled: false,
     loading: false,
     showPlaybookModal: false,
@@ -280,7 +284,7 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 1000,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -298,6 +302,11 @@ export default {
   methods: {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
+    },
+    handleAllRecordsClick() {
+      this.bodyData.pageSize = 75000
+      this.showAllRecords = false
+      this.getInvestigationList()
     },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
@@ -472,10 +481,23 @@ export default {
     getInvestigationList() {
       this.loading = true
 
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.loading = false
-        this.tableData.data = this.tableData.data || []
-      })
+      this.$store
+        .dispatch('investigations/getInvestigationList', this.bodyData)
+        .finally(() => {
+          this.loading = false
+          this.tableData.data = this.tableData.data || []
+        })
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+        })
     }
   },
   computed: {

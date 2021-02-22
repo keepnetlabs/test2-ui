@@ -110,18 +110,22 @@ const investigations = {
     },
     async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
       // get investigaiton details
-      await investigationDetailsTargetUsersListFunction(obj.data, obj.id).then((response) => {
-        const result = response.data
-        commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
-      })
+      return await investigationDetailsTargetUsersListFunction(obj.data, obj.id).then(
+        (response) => {
+          const result = response.data
+          commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
+          return response
+        }
+      )
     },
     async getInvestigationDetailsListData({ commit, dispatch }, obj) {
       // get investigaiton details
-      await investigationDetailsListFunction(obj.data, obj.id)
+      return await investigationDetailsListFunction(obj.data, obj.id)
         .then((response) => {
           const result = response.data
 
           commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
+          return response
         })
         .catch((error) => {
           const payload = {
@@ -154,9 +158,10 @@ const investigations = {
     },
     async getInvestigationList({ commit, dispatch }, obj) {
       // get investigaiton list via axious
-      await investigationList(obj).then((response) => {
+      return await investigationList(obj).then((response) => {
         const result = response.data
         commit('SET_INVESTIGATIONLIST', result)
+        return response
       })
     },
     async getIrSummary({ commit, dispatch }, obj) {

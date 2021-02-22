@@ -33,6 +33,7 @@
       :table="tableData"
       titleKey="name"
       :columns="tableOptions.columns"
+      :show-all-records="showAllRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
@@ -55,6 +56,7 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForTargetGroups"
+      @on-all-records-button-click="handleAllRecordsClick"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -122,6 +124,8 @@ export default {
       showAddUsersModal: false,
       isCreateButtonDisabled: false,
       loading: false,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       selectedGroup: {},
       extendedViewLoading: true,
@@ -276,7 +280,7 @@ export default {
       extendedViewValue: [],
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 50000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -304,6 +308,11 @@ export default {
   methods: {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
+    },
+    handleAllRecordsClick() {
+      this.tableCredientials.pageSize = 75000
+      this.showAllRecords = false
+      this.callForTargetGroups()
     },
     handleSyncWithLDAP(row) {},
     handleAddGroup(row = {}) {
@@ -354,7 +363,14 @@ export default {
       this.loading = true
       searchTargetGroups(this.tableCredientials)
         .then((response) => {
-          let data = response.data.data
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
           this.tableData = data.results.length ? data.results : []
         })
         .catch(() => {
