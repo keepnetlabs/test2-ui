@@ -89,6 +89,11 @@
               ref="searchInput"
               @keyup="searchChangedEvent"
             />
+            <data-table-filter-options
+              @set-default-search="$emit('set-default-search')"
+              @restore-default-search="$emit('restore-default-search')"
+              @clear-filters="$emit('clear-filters')"
+            />
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
@@ -262,6 +267,10 @@
             </v-tooltip>
           </div>
         </div>
+        <data-table-load-all-records
+          v-if="isShowAllRecords"
+          @on-all-records-button-click="$emit('on-all-records-button-click')"
+        />
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
@@ -894,8 +903,12 @@ import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
+import DataTableLoadAllRecords from '@/components/DataTableComponents/DataTableLoadAllRecords'
 export default {
   components: {
+    DataTableLoadAllRecords,
+    DataTableFilterOptions,
     DataTableFilter,
     DataTableColorfulText,
     Badge,
@@ -923,6 +936,10 @@ export default {
     columns: {
       type: Array,
       required: true
+    },
+    showAllRecords: {
+      type: Boolean,
+      default: false
     },
     lazy: {
       type: Boolean,
@@ -1168,6 +1185,9 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isShowAllRecords() {
+      return !this.isServerSide && this.showAllRecords
+    },
     getSelectionText() {
       return this.isSelectedAll
         ? 'All selected'

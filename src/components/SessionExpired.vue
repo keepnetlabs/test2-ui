@@ -136,8 +136,17 @@ export default {
   created() {
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
-      this.email = localStorage.getItem('username')
-      this.password = localStorage.getItem('password')
+      this.$vlf.getItem('username', (err, username = '') => {
+        if (!err) {
+          this.email = username
+        }
+      })
+
+      this.$vlf.getItem('password', (err, password) => {
+        if (!err) {
+          this.password = password
+        }
+      })
     }
     setTimeout(() => {
       this.$refs.email.focus()

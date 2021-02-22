@@ -442,10 +442,20 @@ export default {
   },
   created() {
     //AuthenticationService.removeToken()
+
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
-      this.email = localStorage.getItem('username')
-      this.password = localStorage.getItem('password')
+      this.$vlf.getItem('username', (err, username = '') => {
+        if (!err) {
+          this.email = username
+        }
+      })
+
+      this.$vlf.getItem('password', (err, password) => {
+        if (!err) {
+          this.password = password
+        }
+      })
     }
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
@@ -707,13 +717,15 @@ export default {
 
             setTimeout(() => {
               if (_this.rememberMe) {
-                localStorage.setItem('username', _this.email)
-                localStorage.setItem('password', _this.password)
+                this.$vlf.setItem('username', _this.email)
+                this.$vlf.setItem('password', _this.password)
                 localStorage.setItem('isRemember', _this.rememberMe)
               } else {
                 localStorage.removeItem('username')
                 localStorage.removeItem('password')
                 localStorage.removeItem('isRemember')
+                this.$vlf.removeItem('username')
+                this.$vlf.removeItem('password')
               }
             }, 500)
           })
