@@ -131,6 +131,9 @@ export default {
         case 'maximum':
           retValue = '650'
           break
+        case 'ultraMaximum':
+          retValue = '700'
+          break
         default:
           break
       }

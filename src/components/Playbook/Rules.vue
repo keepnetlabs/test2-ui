@@ -37,6 +37,7 @@
                 :table="matchingPlaybookData"
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :pageSizes="[5, 10, 25]"
+                :show-all-records="showAllRecordsMatchingPopup"
                 :showHeader="true"
                 :count-row="5"
                 :loading="isMatchingTableLoading"
@@ -49,6 +50,7 @@
                 :cell-padding="15"
                 :empty="matchingInvestigationPlaybookRules.iEmpty"
                 @refreshAction="matchingPopupClick(selectedMatch, false)"
+                @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
               />
             </v-list-item-content>
           </v-list-item>
@@ -161,10 +163,18 @@ export default {
       tableData: [],
       totalNumberOfRecords: 0,
       showAllRecords: false,
+      showAllRecordsMatchingPopup: false,
+      totalNumberOfRecordsMatchingPopup: 0,
       labels,
       loading: false,
       matchingPlaybookData: [],
       showRuleModal: false,
+      matchingPopupPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateDate',
+        ascending: true
+      },
       selectedMatch: null,
       showMatchingModal: false,
       isWantToDelete: false,
@@ -343,6 +353,11 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    handleAllRecordsMatchingPopupClick() {
+      this.matchingPopupPayload.pageSize = 75000
+      this.showAllRecordsMatchingPopup = false
+      this.matchingPopupClick(this.selectedMatch)
+    },
     handleAllRecordsClick() {
       this.tableCredientials.pageSize = 75000
       this.showAllRecords = false
@@ -419,15 +434,18 @@ export default {
         if (toggleModal) {
           this.toggleMatchingModal()
         }
-        const payload = {
-          pageNumber: 1,
-          pageSize: 50000,
-          orderBy: 'CreateDate',
-          ascending: true
-        }
-        getMatchingIncidents(payload, match.resourceId)
+
+        getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
           .then((response) => {
-            const matchingPlaybookData = response.data.data
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+            if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+            const matchingPlaybookData = data
             this.matchingPlaybookData = matchingPlaybookData.results || []
           })
           .finally(() => (this.isMatchingTableLoading = false))
