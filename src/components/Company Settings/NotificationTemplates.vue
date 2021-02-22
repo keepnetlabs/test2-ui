@@ -22,9 +22,9 @@
     />
     <div class="notification-templates__container">
       <data-table
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
+        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
@@ -38,6 +38,7 @@
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
+        :show-all-records="showAllRecords"
         :select-event="tableOptions.selectEvent"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -45,6 +46,7 @@
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
         @refreshAction="callForDatas"
+        @on-all-records-button-click="handleAllRecordsClick"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -116,6 +118,8 @@ export default {
       categories: [],
       loading: false,
       tableData: [],
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       editItemsDisabled: false,
       tableOptions: {
         columns: [
@@ -218,7 +222,7 @@ export default {
       selectedItem: null,
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 50000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -375,6 +379,12 @@ export default {
           const {
             data: { data: categoriesData }
           } = categories
+
+          const { totalNumberOfRecords = 0 } = templateData
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
           this.tableData = templateData.results
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
@@ -385,6 +395,11 @@ export default {
           })
         })
         .finally(() => (this.loading = false))
+    },
+    handleAllRecordsClick() {
+      this.axiosPayload.pageSize = 75000
+      this.showAllRecords = false
+      this.callForDatas()
     },
     handleEdit(row) {
       if (!row.isOwner) {

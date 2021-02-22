@@ -231,6 +231,7 @@
     </app-dialog>
     <div class="mail-configuration__content">
       <datatable
+        ref="refPeopleTable"
         id="mail-configurations-data-table"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -248,7 +249,6 @@
         :setClassName="setCellClassName"
         @syncUser="handleSyncUser"
         @delete="handleDelete"
-        ref="refPeopleTable"
         @editTargetUsers="handleEditTargetUsers"
         @onEmptyBtnClicked="status = true"
         :is-downloadable="true"
@@ -525,7 +525,7 @@ export default {
     handleAllRecordsClick() {
       this.requestBody.pageSize = 75000
       this.showAllRecords = false
-      this.callForSearchPlaybook()
+      this.getTableData()
     },
     isValidate() {
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()

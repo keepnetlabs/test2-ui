@@ -3,11 +3,11 @@
     <div class="audit-logs__container">
       <div class="audit-logs__datatable">
         <data-table
+          id="audit-data-list"
+          ref="refAuditList"
           :loading="loading"
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
-          id="audit-data-list"
-          ref="refAuditList"
           :refName="'auditList'"
           :columns="tableOptions.columns"
           :selectable="true"
@@ -17,6 +17,7 @@
           :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
+          :show-all-records="showAllRecords"
           :addButton="tableOptions.addButton"
           :dataLength="tableData && tableData.totalNumberOfRecords"
           :requestParams="bodyData"
@@ -24,6 +25,7 @@
           @refreshAction="getDatatableList"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
+          @on-all-records-button-click="handleAllRecordsClick"
         ></data-table>
       </div>
     </div>
@@ -50,6 +52,8 @@ export default {
     return {
       loading: true,
       labels,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
@@ -187,7 +191,7 @@ export default {
       },
       bodyData: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 1000,
         orderBy: 'LogDate',
         ascending: false,
         filter: {
@@ -208,11 +212,24 @@ export default {
       this.loading = true
       getAuditLogs(this.bodyData)
         .then((response) => {
-          this.tableData = response.data.data.results
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          this.tableData = data.results
         })
         .finally(() => {
           this.loading = false
         })
+    },
+    handleAllRecordsClick() {
+      this.bodyData.pageSize = 75000
+      this.showAllRecords = false
+      this.getDatatableList()
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
