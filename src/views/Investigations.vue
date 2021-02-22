@@ -492,7 +492,7 @@ export default {
             data: { data }
           } = response
           const { totalNumberOfRecords = 0 } = data
-          debugger
+
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true

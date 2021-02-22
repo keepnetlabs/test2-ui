@@ -439,8 +439,10 @@ export default {
           pageSize: pageSize,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
+          filter,
+          excludeGroupUsers: this.excludeGroupUsers
         }
+
         exportTargetGroupUsers(this.resourceId, payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
