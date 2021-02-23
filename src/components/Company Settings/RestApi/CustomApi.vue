@@ -31,6 +31,7 @@
         :filterable="true"
         :isServerSide="false"
         :show-all-records="showAllRecords"
+        :total-number-of-records="totalNumberOfRecords"
         :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
@@ -197,6 +198,9 @@ export default {
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
+            this.showAllRecords = false
           }
           this.tableData = data.results || []
         })

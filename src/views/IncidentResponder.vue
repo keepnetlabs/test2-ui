@@ -391,6 +391,7 @@
                               :count-row="5"
                               :show-all-records="showAllRecordsMatchingPopup"
                               :table="matchingInvestigationData"
+                              :total-number-of-records="totalNumberOfRecordsMatchingPopup"
                               :loading="isMatchingInvestigationLoading"
                               :columns="matchingInvestigation.columns"
                               :pageSizes="[5, 10, 25]"
@@ -2447,11 +2448,17 @@ export default {
           const {
             data: { data }
           } = response
+
           const { totalNumberOfRecords = 0 } = data
           this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+
           if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
+            this.showAllRecordsMatchingPopup = true
           }
+          if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
+            this.showAllRecordsMatchingPopup = false
+          }
+
           this.matchingInvestigationData = data.results
         })
         .finally(() => (this.isMatchingInvestigationLoading = false))

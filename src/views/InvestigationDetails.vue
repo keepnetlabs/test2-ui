@@ -762,6 +762,7 @@
                 :columns="columns"
                 :table="investigationDetailsList"
                 :show-all-records="showAllRecordsFolder"
+                :total-number-of-records="totalNumberOfRecordsFolder"
                 :pageSizes="pageSizes"
                 :selectable="true"
                 :filterable="true"
@@ -854,6 +855,7 @@
                 :selectable="false"
                 :filterable="true"
                 :options="true"
+                :total-number-of-records="totalNumberOfRecordsTargetUser"
                 :empty="iEmpty"
                 :show-all-records="showAllRecordsTargetUser"
                 :selectEvent="selectEvent"
@@ -1735,6 +1737,12 @@ export default {
       ) {
         this.showAllRecordsTargetUser = true
       }
+      if (
+        this.totalNumberOfRecordsTargetUser <= 1000 &&
+        this.investigationTargetUsersListBodyData.pageSize === 1000
+      ) {
+        this.showAllRecordsTargetUser = false
+      }
     },
     adjustInboxShowRecords(response = {}) {
       const {
@@ -1747,6 +1755,12 @@ export default {
         this.totalNumberOfRecordsFolder > 1000
       ) {
         this.showAllRecordsFolder = true
+      }
+      if (
+        this.totalNumberOfRecordsFolder <= 1000 &&
+        this.investigationListBodyData.pageSize === 1000
+      ) {
+        this.showAllRecordsFolder = false
       }
     },
     restartStopInvestigationData() {

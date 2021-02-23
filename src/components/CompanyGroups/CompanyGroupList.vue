@@ -24,6 +24,7 @@
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-downloadable="true"
@@ -263,6 +264,9 @@ export default {
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
           }
           this.tableData = data.results.length > 0 ? data.results : []
         })

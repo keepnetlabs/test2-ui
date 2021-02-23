@@ -32,6 +32,7 @@
       :show-all-records="showAllRecords"
       :refName="'integrationsList'"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :selectable="true"
       :filterable="true"
       :options="true"
@@ -353,14 +354,14 @@ export default {
             const { results = [], totalNumberOfRecords = 0 } = data
             this.tableData = results
             this.totalNumberOfRecords = totalNumberOfRecords
+
             if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
               this.showAllRecords = true
             }
-            /*
-                  this.bodyData.pageNumber = data.pageNumber
-                  this.bodyData.pageSize = data.pageSize
-                  this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-                   */
+
+            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+              this.showAllRecords = false
+            }
           })
           .catch(() => {
             this.tableData = []

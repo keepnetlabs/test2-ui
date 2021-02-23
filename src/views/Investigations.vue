@@ -37,6 +37,7 @@
           ref="investigationTable"
           :refName="'investigationTable'"
           :columns="columns"
+          :totalNumberOfRecords="totalNumberOfRecords"
           :table="tableData.data"
           :pageSizes="pageSizes"
           :defaultSort="'date'"
@@ -494,8 +495,13 @@ export default {
           const { totalNumberOfRecords = 0 } = data
 
           this.totalNumberOfRecords = totalNumberOfRecords
+
           if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+
+          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+            this.showAllRecords = false
           }
         })
     }

@@ -39,6 +39,7 @@
                 :pageSizes="[5, 10, 25]"
                 :show-all-records="showAllRecordsMatchingPopup"
                 :showHeader="true"
+                :total-number-of-records="totalNumberOfRecordsMatchingPopup"
                 :count-row="5"
                 :loading="isMatchingTableLoading"
                 :defaultSort="'subject'"
@@ -72,6 +73,7 @@
       ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :selectable="true"
       :filterable="true"
       :options="true"
@@ -442,9 +444,15 @@ export default {
             } = response
             const { totalNumberOfRecords = 0 } = data
             this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+
             if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
+              this.showAllRecordsMatchingPopup = true
             }
+
+            if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
+              this.showAllRecordsMatchingPopup = false
+            }
+
             const matchingPlaybookData = data
             this.matchingPlaybookData = matchingPlaybookData.results || []
           })
@@ -591,6 +599,9 @@ export default {
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.tableCredientials.pageSize === 1000) {
+            this.showAllRecords = false
           }
           this.tableData = this.playbookList.results
         })
