@@ -17,6 +17,7 @@
           :count-row="5"
           :download-button="{ show: false, disabled: false }"
           :show-all-records="showAllRecords"
+          :total-number-of-records="totalNumberOfRecords"
           :columns="tableOptions.columns"
           :empty="tableOptions.iEmpty"
           :filterable="true"
@@ -209,6 +210,10 @@ export default {
           if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
           }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+
           this.tableData = data.results.length > 0 ? data.results : []
         })
         .finally(() => (this.isLoading = false))

@@ -53,6 +53,7 @@
       :loading="loading"
       :table="tableData"
       :addButton="tableOptions.addButton"
+      :total-number-of-records="totalNumberOfRecords"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
       :show-all-records="showAllRecords"
@@ -331,6 +332,9 @@ export default {
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
           }
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0

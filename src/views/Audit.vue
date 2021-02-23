@@ -10,6 +10,7 @@
           :table="tableData"
           :refName="'auditList'"
           :columns="tableOptions.columns"
+          :total-number-of-records="totalNumberOfRecords"
           :selectable="true"
           :filterable="true"
           :options="true"
@@ -217,9 +218,15 @@ export default {
           } = response
           const { totalNumberOfRecords = 0 } = data
           this.totalNumberOfRecords = totalNumberOfRecords
+
           if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
           }
+
+          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+
           this.tableData = data.results
         })
         .finally(() => {

@@ -24,6 +24,7 @@
         ref="refSystemUsersList"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :total-number-of-records="totalNumberOfRecords"
         :table="tableData"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
@@ -311,6 +312,9 @@ export default {
             this.totalNumberOfRecords = totalNumberOfRecords
             if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
               this.showAllRecords = true
+            }
+            if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
+              this.showAllRecords = false
             }
             this.tableData = data.results || []
           })

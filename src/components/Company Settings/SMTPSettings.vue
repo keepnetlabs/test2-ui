@@ -26,6 +26,7 @@
         :table="tableData"
         :refName="'smtpSettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :total-number-of-records="totalNumberOfRecords"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :filterable="true"
@@ -324,6 +325,11 @@ export default {
             if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
               this.showAllRecords = true
             }
+
+            if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
+              this.showAllRecords = false
+            }
+
             this.tableData = data.results
           })
           .finally(() => (this.loading = false))

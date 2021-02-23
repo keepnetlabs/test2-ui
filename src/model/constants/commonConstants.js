@@ -322,3 +322,7 @@ export const COMMON_SNACKBAR = {
   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
   icon: 'mdi-check-circle'
 }
+
+export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  PHISHING_REPORTER: 'PhishingReporter'
+}

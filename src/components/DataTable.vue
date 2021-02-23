@@ -90,7 +90,7 @@
               @keyup="searchChangedEvent"
             />
             <data-table-filter-options
-              @set-default-search="$emit('set-default-search')"
+              @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
             />
@@ -269,6 +269,7 @@
         </div>
         <data-table-load-all-records
           v-if="isShowAllRecords"
+          :total-number-of-records="totalNumberOfRecords"
           @on-all-records-button-click="$emit('on-all-records-button-click')"
         />
         <slot name="table-notification"></slot>
@@ -944,6 +945,10 @@ export default {
     lazy: {
       type: Boolean,
       default: false
+    },
+    totalNumberOfRecords: {
+      type: Number,
+      default: 0
     },
     hideParentRowActions: {
       type: Boolean,

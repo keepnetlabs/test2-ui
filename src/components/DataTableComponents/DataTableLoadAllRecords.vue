@@ -11,7 +11,7 @@
       style="box-shadow: none; border: 1px solid #2196f3 !important;"
       @click="handleAllRecordsButtonClick"
     >
-      Load All Records
+      {{ getButtonText }}
     </v-btn>
   </div>
 </template>
@@ -19,7 +19,18 @@
 <script>
 export default {
   name: 'DataTableLoadAllRecords',
+  props: {
+    totalNumberOfRecords: {
+      type: Number,
+      default: 0
+    }
+  },
   emits: ['on-all-records-button-click'],
+  computed: {
+    getButtonText() {
+      return `Load All ${this.totalNumberOfRecords} Records`
+    }
+  },
   methods: {
     handleAllRecordsButtonClick() {
       this.$emit('on-all-records-button-click')
