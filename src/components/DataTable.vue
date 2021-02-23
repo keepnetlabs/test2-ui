@@ -90,7 +90,7 @@
               @keyup="searchChangedEvent"
             />
             <data-table-filter-options
-              @set-default-search="$emit('set-default-search', search)"
+              @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
             />
