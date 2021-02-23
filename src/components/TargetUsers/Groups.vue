@@ -37,6 +37,7 @@
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
+      :total-number-of-records="totalNumberOfRecords"
       :pageSizes="tableOptions.pageSizes"
       :rowActions="tableOptions.rowActions"
       :extended-view-options="tableOptions.extendedViewOptions"
@@ -371,6 +372,10 @@ export default {
           if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
           }
+          if (totalNumberOfRecords <= 1000 && this.tableCredientials.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+
           this.tableData = data.results.length ? data.results : []
         })
         .catch(() => {

@@ -243,6 +243,7 @@
         :options="true"
         :show-all-records="showAllRecords"
         :pageSizes="tableOptions.pageSizes"
+        :total-number-of-records="totalNumberOfRecords"
         :refName="'peopleTable'"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
@@ -582,6 +583,9 @@ export default {
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.tableOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.tableOptions.pageSize === 1000) {
+            this.showAllRecords = false
           }
           this.tableData = response.data.data.results
         })

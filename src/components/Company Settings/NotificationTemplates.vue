@@ -28,6 +28,7 @@
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
+        :total-number-of-records="totalNumberOfRecords"
         :loading="loading"
         :filterable="true"
         :row-key="'resourceId'"
@@ -384,6 +385,9 @@ export default {
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
+            this.showAllRecords = false
           }
           this.tableData = templateData.results
           this.categories = categoriesData.map((category) => {
