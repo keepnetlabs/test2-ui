@@ -48,6 +48,9 @@
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
         @refreshAction="callForDatas"
         @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -91,6 +94,7 @@ import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -217,11 +221,28 @@ export default {
           download: false
         }
       },
+      isRestoredOrClearedFilters: false,
       isDeleteButtonDisabled: false,
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
       selectedItem: null,
       axiosPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultAxiosPayload: {
         pageNumber: 1,
         pageSize: 1000,
         orderBy: 'CreateTime',
@@ -279,6 +300,9 @@ export default {
       this.callForDatas()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
       let items = []
       let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
 
@@ -294,6 +318,29 @@ export default {
 
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE,
+        JSON.stringify({
+          filter: this.axiosPayload.filter,
+          filterValues
+        })
+      )
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
+      this.$refs.refNotificationList.filterValues = {}
+      this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE)
+      this.callForDatas()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
     },
     exportNotificationTemplate({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
@@ -398,7 +445,10 @@ export default {
             filterableItems: this.categories
           })
         })
-        .finally(() => (this.loading = false))
+        .finally(() => {
+          this.loading = false
+          this.isRestoredOrClearedFilters = false
+        })
     },
     handleAllRecordsClick() {
       this.axiosPayload.pageSize = 75000
@@ -411,10 +461,26 @@ export default {
       }
       this.selectedItem = row
       this.toggleNewNotificationTemplate()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE)
+      )
+      if (savedFilter) {
+        this.axiosPayload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refNotificationList.filterValues = savedFilter.filterValues
+          this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForDatas()
     }
   },
   created() {
-    this.callForDatas()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>
