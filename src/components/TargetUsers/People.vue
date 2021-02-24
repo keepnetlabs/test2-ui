@@ -653,11 +653,25 @@ export default {
               isCustomField: true
             }
           })
-          this.tableOptions.columns = [
+
+          const newColumns = [
             ...this.tableOptions.defaultColumns,
             ...columnsOfCustomFields,
             ...this.tableOptions.lastColumns
           ]
+
+          if (this.tableOptions.columns.length) {
+            this.tableOptions.columns.forEach((column) => {
+              const findedColumn = newColumns.find(
+                (newColumn) => newColumn.property === column.property
+              )
+              if (!findedColumn) {
+                return
+              }
+              findedColumn.show = column.show
+            })
+          }
+          this.tableOptions.columns = newColumns
         })
         .catch(() => {
           this.tableOptions.columns = [

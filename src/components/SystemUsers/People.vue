@@ -20,14 +20,16 @@
 
       <data-table
         v-if="checkPermissions('system-users/search', 'POST')"
+        id="system-users-people-data-table"
+        ref="refSystemUsersList"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :total-number-of-records="totalNumberOfRecords"
         :table="tableData"
-        ref="refSystemUsersList"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
-        id="system-users-people-data-table"
         :empty="tableOptions.empty"
+        :show-all-records="showAllRecords"
         :filterable="true"
         :isServerSide="false"
         :options="true"
@@ -46,6 +48,7 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForListSystemUsers"
+        @on-all-records-button-click="handleAllRecordsClick"
       />
     </div>
   </div>
@@ -70,6 +73,8 @@ export default {
     return {
       deleteButtonDisabled: false,
       loading: true,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       tableOptions: {
         downloadButton: {
@@ -217,7 +222,7 @@ export default {
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 50000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -286,6 +291,11 @@ export default {
         this.selectedRow = null
       }
     },
+    handleAllRecordsClick() {
+      this.requestBody.pageSize = 75000
+      this.showAllRecords = false
+      this.callForListSystemUsers()
+    },
     closeOverlayWithUpdate() {
       this.toggleCreateOrEditSystemUser()
       this.callForListSystemUsers()
@@ -295,7 +305,17 @@ export default {
       if (this.checkPermissions('system-users/search', 'POST')) {
         getSystemUsers(this.requestBody)
           .then((response) => {
-            const { data } = response.data
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecords = totalNumberOfRecords
+            if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+            if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
+              this.showAllRecords = false
+            }
             this.tableData = data.results || []
           })
           .catch(() => {

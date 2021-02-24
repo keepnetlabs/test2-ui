@@ -90,7 +90,7 @@
               @keyup="searchChangedEvent"
             />
             <data-table-filter-options
-              @set-default-search="$emit('set-default-search')"
+              @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
             />
@@ -267,6 +267,11 @@
             </v-tooltip>
           </div>
         </div>
+        <data-table-load-all-records
+          v-if="isShowAllRecords"
+          :total-number-of-records="totalNumberOfRecords"
+          @on-all-records-button-click="$emit('on-all-records-button-click')"
+        />
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
@@ -900,8 +905,10 @@ import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
+import DataTableLoadAllRecords from '@/components/DataTableComponents/DataTableLoadAllRecords'
 export default {
   components: {
+    DataTableLoadAllRecords,
     DataTableFilterOptions,
     DataTableFilter,
     DataTableColorfulText,
@@ -931,9 +938,17 @@ export default {
       type: Array,
       required: true
     },
+    showAllRecords: {
+      type: Boolean,
+      default: false
+    },
     lazy: {
       type: Boolean,
       default: false
+    },
+    totalNumberOfRecords: {
+      type: Number,
+      default: 0
     },
     hideParentRowActions: {
       type: Boolean,
@@ -1175,6 +1190,9 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isShowAllRecords() {
+      return !this.isServerSide && this.showAllRecords
+    },
     getSelectionText() {
       return this.isSelectedAll
         ? 'All selected'

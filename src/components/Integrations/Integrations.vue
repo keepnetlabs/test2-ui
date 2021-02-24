@@ -23,13 +23,16 @@
     />
 
     <data-table
+      v-if="checkPermissions('analysis-engines/search', 'POST')"
+      id="integrations-data-table"
+      ref="refIntegrationsList"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      id="integrations-data-table"
-      ref="refIntegrationsList"
+      :show-all-records="showAllRecords"
       :refName="'integrationsList'"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :selectable="true"
       :filterable="true"
       :options="true"
@@ -55,8 +58,8 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
-      v-if="checkPermissions('analysis-engines/search', 'POST')"
       @refreshAction="getDatatableList"
+      @on-all-records-button-click="handleAllRecordsClick"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -142,6 +145,8 @@ export default {
       loading: true,
       integrationId: null,
       labels,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       selectedIntegration: {},
@@ -246,7 +251,7 @@ export default {
       modalStatus: false,
       bodyData: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -265,6 +270,11 @@ export default {
   methods: {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
+    },
+    handleAllRecordsClick() {
+      this.bodyData.pageSize = 75000
+      this.showAllRecords = false
+      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -339,14 +349,19 @@ export default {
         getIntegrationList(this.bodyData)
           .then((response) => {
             const {
-              data: { data, status }
+              data: { data }
             } = response
-            this.tableData = data.results || []
-            /*
-                  this.bodyData.pageNumber = data.pageNumber
-                  this.bodyData.pageSize = data.pageSize
-                  this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-                   */
+            const { results = [], totalNumberOfRecords = 0 } = data
+            this.tableData = results
+            this.totalNumberOfRecords = totalNumberOfRecords
+
+            if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+
+            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+              this.showAllRecords = false
+            }
           })
           .catch(() => {
             this.tableData = []

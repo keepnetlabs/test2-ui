@@ -16,6 +16,8 @@
           :loading="isLoading"
           :count-row="5"
           :download-button="{ show: false, disabled: false }"
+          :show-all-records="showAllRecords"
+          :total-number-of-records="totalNumberOfRecords"
           :columns="tableOptions.columns"
           :empty="tableOptions.iEmpty"
           :filterable="true"
@@ -30,6 +32,7 @@
           @columnFilterCleared="columnFilterCleared"
           @handleSelectionChange="handleSelectionChange"
           @refreshAction="getTableData"
+          @on-all-records-button-click="handleAllRecordsClick"
         />
       </v-form>
     </template>
@@ -86,6 +89,8 @@ export default {
       isLoading: false,
       saveDisable: false,
       labels,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       selectedArray: [],
       showTable: false,
@@ -142,7 +147,7 @@ export default {
         }
       },
       payload: {
-        pageSize: 30000,
+        pageSize: 1000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -175,6 +180,11 @@ export default {
         this.showTable = false
       }
     },
+    handleAllRecordsClick() {
+      this.payload.pageSize = 75000
+      this.showAllRecords = false
+      this.getTableData()
+    },
     confirm() {
       if (this.selectedArray && this.selectedArray.length > 0) {
         this.saveDisable = true
@@ -192,7 +202,19 @@ export default {
       this.isLoading = true
       searchCompanyGroups(this.payload)
         .then((response) => {
-          this.tableData = response.data.data.results.length > 0 ? response.data.data.results : []
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+
+          this.tableData = data.results.length > 0 ? data.results : []
         })
         .finally(() => (this.isLoading = false))
     },

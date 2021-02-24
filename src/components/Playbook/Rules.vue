@@ -37,7 +37,9 @@
                 :table="matchingPlaybookData"
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :pageSizes="[5, 10, 25]"
+                :show-all-records="showAllRecordsMatchingPopup"
                 :showHeader="true"
+                :total-number-of-records="totalNumberOfRecordsMatchingPopup"
                 :count-row="5"
                 :loading="isMatchingTableLoading"
                 :defaultSort="'subject'"
@@ -49,6 +51,7 @@
                 :cell-padding="15"
                 :empty="matchingInvestigationPlaybookRules.iEmpty"
                 @refreshAction="matchingPopupClick(selectedMatch, false)"
+                @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
               />
             </v-list-item-content>
           </v-list-item>
@@ -66,9 +69,11 @@
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
+      :show-all-records="showAllRecords"
       ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :selectable="true"
       :filterable="true"
       :options="true"
@@ -89,6 +94,7 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
+      @on-all-records-button-click="handleAllRecordsClick"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -157,10 +163,20 @@ export default {
     return {
       deleteButtonDisabled: false,
       tableData: [],
+      totalNumberOfRecords: 0,
+      showAllRecords: false,
+      showAllRecordsMatchingPopup: false,
+      totalNumberOfRecordsMatchingPopup: 0,
       labels,
       loading: false,
       matchingPlaybookData: [],
       showRuleModal: false,
+      matchingPopupPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateDate',
+        ascending: true
+      },
       selectedMatch: null,
       showMatchingModal: false,
       isWantToDelete: false,
@@ -267,7 +283,7 @@ export default {
       },
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -339,6 +355,16 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    handleAllRecordsMatchingPopupClick() {
+      this.matchingPopupPayload.pageSize = 75000
+      this.showAllRecordsMatchingPopup = false
+      this.matchingPopupClick(this.selectedMatch)
+    },
+    handleAllRecordsClick() {
+      this.tableCredientials.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchPlaybook()
+    },
     getTableEmptyStatus() {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
@@ -411,15 +437,23 @@ export default {
           this.toggleMatchingModal()
         }
 
-        const payload = {
-          pageNumber: 1,
-          pageSize: 50000,
-          orderBy: 'CreateDate',
-          ascending: true
-        }
-        getMatchingIncidents(payload, match.resourceId)
+        getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
           .then((response) => {
-            const matchingPlaybookData = response.data.data
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+
+            if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecordsMatchingPopup = true
+            }
+
+            if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
+              this.showAllRecordsMatchingPopup = false
+            }
+
+            const matchingPlaybookData = data
             this.matchingPlaybookData = matchingPlaybookData.results || []
           })
           .finally(() => (this.isMatchingTableLoading = false))
@@ -557,7 +591,18 @@ export default {
     callForSearchPlaybook() {
       this.loading = true
       this.getPlaybookList(this.tableCredientials)
-        .then(() => {
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.tableCredientials.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData = this.playbookList.results
         })
         .finally(() => (this.loading = false))

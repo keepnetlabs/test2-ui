@@ -30,6 +30,8 @@
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
+        :show-all-records="showAllRecords"
+        :total-number-of-records="totalNumberOfRecords"
         :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
@@ -45,6 +47,7 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearch"
+        @on-all-records-button-click="handleAllRecordsClick"
       />
     </div>
   </div>
@@ -63,9 +66,11 @@ export default {
   name: 'CustomApi',
   data() {
     return {
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -186,7 +191,17 @@ export default {
       this.loading = true
       searchRestApi(this.axiosPayload)
         .then((response) => {
-          const { data: { data = {} } = {} } = response
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData = data.results || []
         })
         .finally(() => {
@@ -286,6 +301,11 @@ export default {
     handleEdit(row = {}) {
       this.selectedRow = row
       this.toggleNewCustomApiStatus()
+    },
+    handleAllRecordsClick() {
+      this.axiosPayload.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearch()
     },
     handleDelete(row = {}) {
       this.selectedRow = row

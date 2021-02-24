@@ -47,14 +47,16 @@
     />
 
     <datatable
+      id="company-groups-details-data-table"
+      ref="refDataList"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
-      ref="refDataList"
       :addButton="tableOptions.addButton"
+      :total-number-of-records="totalNumberOfRecords"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      id="company-groups-details-data-table"
+      :show-all-records="showAllRecords"
       :filterable="true"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
@@ -73,6 +75,7 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
+      @on-all-records-button-click="handleAllRecordsClick"
     />
   </div>
 </template>
@@ -116,6 +119,8 @@ export default {
   data: () => ({
     showAddCompanyModal: false,
     loading: true,
+    showAllRecords: false,
+    totalNumberOfRecords: 0,
     editCreateGroup: false,
     forCompany: true,
     tableData: [],
@@ -247,7 +252,7 @@ export default {
       ]
     },
     payload: {
-      pageSize: 3000,
+      pageSize: 1000,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -276,6 +281,11 @@ export default {
     this.initMethods()
   },
   methods: {
+    handleAllRecordsClick() {
+      this.payload.pageSize = 75000
+      this.showAllRecords = false
+      this.getTableData()
+    },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
@@ -315,6 +325,17 @@ export default {
       this.loading = true
       searchGroupCompanies(this.groupId, this.payload)
         .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? response.data.data.results

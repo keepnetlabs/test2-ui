@@ -18,13 +18,14 @@ const playbook = {
   },
   actions: {
     async getPlaybookList({ commit }, obj) {
-      await searchPlaybook(obj)
+      return await searchPlaybook(obj)
         .then((response) => {
           let result = response.data
           result.data.results = result.data.results.map((item) => {
             return { ...item, matchCount: 1 }
           })
           commit('SET_PLAYBOOK_LIST', result)
+          return response
         })
         .catch(() => {
           commit('common/SET_SNACK_STATUS', true, { root: true })

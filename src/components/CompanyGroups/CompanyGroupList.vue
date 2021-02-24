@@ -17,17 +17,18 @@
 
     <datatable
       v-bind="tableState"
+      id="company-groups-data-table"
+      ref="refGroupDataList"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
-      ref="refGroupDataList"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-downloadable="true"
-      @downloadEvent="handleTableDownload"
-      id="company-groups-data-table"
+      :show-all-records="showAllRecords"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
@@ -35,12 +36,14 @@
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       @addButton="addButton"
+      @downloadEvent="handleTableDownload"
       @delete="handleTableItemDelete"
       @editAction="editAction"
       @onEmptyBtnClicked="addButton"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
+      @on-all-records-button-click="handleAllRecordsClick"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" class="datatable-link">
@@ -151,8 +154,10 @@ export default {
           }
         ]
       },
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       payload: {
-        pageSize: 30000,
+        pageSize: 1000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -240,6 +245,11 @@ export default {
           .catch(() => {})
       })
     },
+    handleAllRecordsClick() {
+      this.payload.pageSize = 75000
+      this.showAllRecords = false
+      this.getTableData()
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -247,7 +257,18 @@ export default {
       this.loading = true
       searchCompanyGroups(this.payload)
         .then((response) => {
-          this.tableData = response.data.data.results.length > 0 ? response.data.data.results : []
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+          this.tableData = data.results.length > 0 ? data.results : []
         })
         .catch((error) => {
           this.tableData = []

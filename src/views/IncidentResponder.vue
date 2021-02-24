@@ -376,7 +376,7 @@
                     v-if="showMatchingModal"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
                     @changeStatus="showMatchingModal = false"
-                    size="maximum"
+                    size="ultraMaximum"
                     class-name="matching-modal"
                     maxHeightSize="665"
                   >
@@ -385,13 +385,15 @@
                         <v-list-item class="matching-modal__list-item">
                           <v-list-item-content>
                             <datatable
-                              :refName="'matchingInvestigation'"
+                              id="incident-responder-matching-investigations-data-table"
                               ref="refMatchingInvestigation"
+                              :refName="'matchingInvestigation'"
                               :count-row="5"
+                              :show-all-records="showAllRecordsMatchingPopup"
                               :table="matchingInvestigationData"
+                              :total-number-of-records="totalNumberOfRecordsMatchingPopup"
                               :loading="isMatchingInvestigationLoading"
                               :columns="matchingInvestigation.columns"
-                              id="incident-responder-matching-investigations-data-table"
                               :pageSizes="[5, 10, 25]"
                               :showHeader="true"
                               :defaultSort="'subject'"
@@ -402,6 +404,7 @@
                               :cell-padding="15"
                               :empty="matchingInvestigation.iEmpty"
                               @refreshAction="matchingPopupClick(selectedMatch)"
+                              @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
                             />
                           </v-list-item-content>
                         </v-list-item>
@@ -832,6 +835,13 @@ export default {
   data: () => ({
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
+    matchingPopupPayload: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'createDate',
+      ascending: true
+    },
+    totalNumberOfRecordsMatchingPopup: 0,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
     labels,
@@ -868,6 +878,7 @@ export default {
       startsWith,
       maxLength
     },
+    showAllRecordsMatchingPopup: false,
     extendedViewValue: [],
     topRules: {
       table: [],
@@ -1982,6 +1993,11 @@ export default {
         }
       }
     },
+    handleAllRecordsMatchingPopupClick() {
+      this.matchingPopupPayload.pageSize = 75000
+      this.showAllRecordsMatchingPopup = false
+      this.matchingPopupClick(this.selectedMatch)
+    },
     clusterChanged(selectedCluster = '') {
       this.resetTableFilters()
       this.changeColumnsOrder(selectedCluster)
@@ -2427,16 +2443,23 @@ export default {
       this.selectedMatch = match
       this.showMatchingModal = true
       this.isMatchingInvestigationLoading = true
-      const payload = {
-        pageNumber: 1,
-        pageSize: 50000,
-        orderBy: 'createDate',
-        ascending: true
-      }
-      getMatchingIncidents(payload, match.resourceId)
+      getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
         .then((response) => {
-          const tableData = response.data.data
-          this.matchingInvestigationData = tableData.results
+          const {
+            data: { data }
+          } = response
+
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+
+          if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecordsMatchingPopup = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
+            this.showAllRecordsMatchingPopup = false
+          }
+
+          this.matchingInvestigationData = data.results
         })
         .finally(() => (this.isMatchingInvestigationLoading = false))
     },

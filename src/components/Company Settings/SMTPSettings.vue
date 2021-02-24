@@ -20,32 +20,35 @@
     />
     <div class="smtp-settings__container">
       <data-table
-        :loading="loading"
+        id="company-settings-smtp-settings-data-table"
         ref="refSmtpSettingsList"
+        :loading="loading"
         :table="tableData"
         :refName="'smtpSettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :total-number-of-records="totalNumberOfRecords"
         :columns="tableOptions.columns"
-        id="company-settings-smtp-settings-data-table"
         :empty="tableOptions.empty"
-        @addNewSmtpSetting="toggleSmtpModalStatus"
         :filterable="true"
+        :show-all-records="showAllRecords"
         :options="true"
         :download-button="tableOptions.downloadButton"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :is-downloadable="true"
-        @downloadEvent="exportSmtpSettingsList"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
         :resizable="true"
+        @addNewSmtpSetting="toggleSmtpModalStatus"
         @onEmptyBtnClicked="toggleSmtpModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearchSmtpSettings"
+        @downloadEvent="exportSmtpSettingsList"
+        @on-all-records-button-click="handleAllRecordsClick"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -113,6 +116,8 @@ export default {
       selectedDeleteSmtpSettings: null,
       selectedEditSmtpSettings: null,
       isEdit: false,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableOptions: {
         columns: [
           {
@@ -227,7 +232,7 @@ export default {
       deleteSmtpModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -250,6 +255,11 @@ export default {
         this.isEdit = false
       }
       this.newSmtpModalStatus = !this.newSmtpModalStatus
+    },
+    handleAllRecordsClick() {
+      this.bodyOptions.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchSmtpSettings()
     },
     getDisabledStatusOfEdit({ isOwner } = {}) {
       return this.tableOptions.rowActions[0].disabled || !isOwner
@@ -307,8 +317,20 @@ export default {
         this.loading = true
         searchSmtpSettings(this.bodyOptions)
           .then((response) => {
-            const { data: { data: { results = [] } = {} } = {} } = response
-            this.tableData = results
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecords = totalNumberOfRecords
+            if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+
+            if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
+              this.showAllRecords = false
+            }
+
+            this.tableData = data.results
           })
           .finally(() => (this.loading = false))
       }
