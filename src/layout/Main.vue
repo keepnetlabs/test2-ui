@@ -1216,12 +1216,10 @@ export default {
       return this.$store.state.auth.userRoleName
     },
     getDrawerPadding2() {
-      if (window.outerWidth > 767) {
-        if (this.mini) {
-          return 'left: 5px !important;'
-        }
-        return 'left : 232px !important;'
+      if (this.mini) {
+        return 'left: 5px !important;'
       }
+      return 'left : 232px !important;'
       if (this.drawer) {
         return 'left: 232px !important;'
       }
