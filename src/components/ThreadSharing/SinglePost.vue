@@ -1260,6 +1260,7 @@ export default {
     closeNewInvestigationModal(value) {
       this.$emit('refreshData')
       this.isWantToAddNewInvestigation = false
+      document.getElementById('component-incidents').style.zIndex = 6
     },
     deleteIncidentConfirm() {
       deleteCommunityPost(this.deleteIncidentId).then(() => {
@@ -1288,6 +1289,7 @@ export default {
       getCommunityPost(post.communityPostResourceId).then((response) => {
         this.selectedEmail = response.data.data.communityPostEmail
         this.isWantToAddNewInvestigation = true
+        document.getElementById('component-incidents').style.zIndex = 8
       })
     },
     getPostDetails(postId, ind, bool) {
