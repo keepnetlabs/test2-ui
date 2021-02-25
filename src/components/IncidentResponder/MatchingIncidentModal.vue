@@ -5,7 +5,7 @@
     title="Matching Incidents"
     :subtitle="getSelectedMatchingIncidentsSubtitle"
     @changeStatus="closeOverlay"
-    size="maximum"
+    size="ultraMaximum"
     class-name="matching-modal"
     maxHeightSize="665"
   >

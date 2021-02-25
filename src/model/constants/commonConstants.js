@@ -46,7 +46,7 @@ export const COMMON_CONSTANTS = {
     { text: 'UpdateMany', value: 'UpdateMany' },
     { text: 'DeleteMany', value: 'DeleteMany' }
   ],
-  FILTER_OPTIONS: ['Set as default search', 'Restore default search', 'Clear filters']
+  FILTER_OPTIONS: ['Set as default filter', 'Restore default filter', 'Clear filters']
 }
 
 export const LABEL_STORE = {
