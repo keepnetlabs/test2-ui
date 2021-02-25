@@ -324,5 +324,10 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
-  PHISHING_REPORTER: 'PhishingReporter'
+  PHISHING_REPORTER: 'PhishingReporter',
+  SMTP_SETTINGS: 'SmtpSettings',
+  NOTIFICATION_TEMPLATE: 'NotificationTemplate',
+  REST_API: 'RestApi',
+  REPORTED_EMAIL: 'ReportedEmail',
+  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered'
 }

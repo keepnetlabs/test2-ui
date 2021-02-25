@@ -49,6 +49,9 @@
         @refreshAction="callForSearchSmtpSettings"
         @downloadEvent="exportSmtpSettingsList"
         @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -88,7 +91,11 @@
 </template>
 
 <script>
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
@@ -114,6 +121,7 @@ export default {
       tableData: [],
       loading: false,
       selectedDeleteSmtpSettings: null,
+      isRestoredOrClearedFilters: false,
       selectedEditSmtpSettings: null,
       isEdit: false,
       showAllRecords: false,
@@ -245,6 +253,22 @@ export default {
             }
           ]
         }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
@@ -332,7 +356,10 @@ export default {
 
             this.tableData = data.results
           })
-          .finally(() => (this.loading = false))
+          .finally(() => {
+            this.loading = false
+            this.isRestoredOrClearedFilters = false
+          })
       }
     },
     handleEditAction({ resourceId } = {}) {
@@ -407,6 +434,9 @@ export default {
       this.callForSearchSmtpSettings()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
       let items = []
       let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
 
@@ -422,6 +452,19 @@ export default {
         this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
       this.callForSearchSmtpSettings()
     },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS,
+        JSON.stringify({
+          filter: this.bodyOptions.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
     handleMultipleDelete(selections) {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
@@ -429,15 +472,41 @@ export default {
         this.toggleDeleteSmtpModalStatus()
       }
     },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refSmtpSettingsList.filterValues = {}
+      this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
+      this.callForSearchSmtpSettings()
+    },
     handleDeleteMultipleSmtpSettings(selections) {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         selections.forEach((item) => this.handleDeleteSmtpSettings(item))
       }
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
+      )
+      if (savedFilter) {
+        this.bodyOptions.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refSmtpSettingsList.filterValues = savedFilter.filterValues
+          this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearchSmtpSettings()
     }
   },
   created() {
-    this.callForSearchSmtpSettings()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>
