@@ -48,6 +48,9 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearch"
         @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       />
     </div>
   </div>
@@ -57,7 +60,7 @@
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { DEFAULT_SEARCH_CONTAINER_KEYS, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
@@ -68,7 +71,24 @@ export default {
     return {
       showAllRecords: false,
       totalNumberOfRecords: 0,
+      isRestoredOrClearedFilters: false,
       axiosPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultAxiosPayload: {
         pageNumber: 1,
         pageSize: 1000,
         orderBy: 'CreateTime',
@@ -184,7 +204,7 @@ export default {
     NewCustomApi
   },
   created() {
-    this.callForSearch()
+    this.getDefaultFilterAndSearch()
   },
   methods: {
     callForSearch() {
@@ -206,6 +226,7 @@ export default {
         })
         .finally(() => {
           this.loading = false
+          this.isRestoredOrClearedFilters = false
         })
     },
     exportRestApi({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -282,6 +303,10 @@ export default {
       this.callForSearch()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
+
       let items = []
       let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
 
@@ -298,9 +323,32 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.REST_API,
+        JSON.stringify({
+          filter: this.axiosPayload.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
     handleEdit(row = {}) {
       this.selectedRow = row
       this.toggleNewCustomApiStatus()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
+      this.$refs.refCustomApiList.filterValues = {}
+      this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.REST_API)
+      this.callForSearch()
     },
     handleAllRecordsClick() {
       this.axiosPayload.pageSize = 75000
@@ -333,6 +381,20 @@ export default {
         this.selectedRow = null
       }
       this.showDeleteCustomApi = !this.showDeleteCustomApi
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REST_API))
+      if (savedFilter) {
+        this.axiosPayload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refCustomApiList.filterValues = savedFilter.filterValues
+          this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearch()
     }
   }
 }

@@ -384,7 +384,6 @@ export default {
               data: { results }
             }
           } = response
-          console.log('iam called')
           this.tableOptions.table =
             results.map((item) => {
               const { lastSeen, diagnosticToolStatus, diagnosticToolLastSeen } = item

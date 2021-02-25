@@ -304,6 +304,7 @@
                         :text="getTextOfType(mailDetails.attachments[index].analysisList)"
                         :color="getColorOfType(mailDetails.attachments[index].analysisList)"
                         size="small"
+                        :outline="false"
                         class-name="mr-4 badge"
                       />
                       <div
