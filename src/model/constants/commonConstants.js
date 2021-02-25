@@ -327,5 +327,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
-  REST_API: 'RestApi'
+  REST_API: 'RestApi',
+  REPORTED_EMAIL: 'ReportedEmail',
+  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered'
 }
