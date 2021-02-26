@@ -1347,7 +1347,12 @@ export default {
         }
       }
 
-      if (!oldTable.length && this.multipleSelection.length && !this.clusteredItems.length) {
+      if (
+        !oldTable.length &&
+        this.multipleSelection.length &&
+        !this.clusteredItems.length &&
+        this.isServerSide
+      ) {
         this.$nextTick(() => {
           this.getSelectedObjectAndSelectRows()
         })
@@ -1369,7 +1374,6 @@ export default {
             } else {
               this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
             }
-            console.log('asasasthis.multipleSelection', this.multipleSelection)
           })
         })
       }
@@ -1503,16 +1507,17 @@ export default {
       }
     },
     //This is a element ui bug it doesnt cache it added to making caching
-    getSelectedObjectAndSelectRows(selections = this.multipleSelection) {
+    getSelectedObjectAndSelectRows(
+      selections = JSON.parse(JSON.stringify(this.multipleSelection))
+    ) {
       this.$nextTick(() => {
-        selections.forEach((selectedItem, index) => {
-          const thisTableItem = this.isServerSide
-            ? this.tableData.find((item) => {
-                return JSON.stringify(item) === JSON.stringify(selectedItem)
-              })
-            : selectedItem
+        this.multipleSelection = []
+        this.$refs.elTableRef.clearSelection()
+        selections.forEach((selectedItem) => {
+          const thisTableItem = this.tableData.find((item) => {
+            return JSON.stringify(item) === JSON.stringify(selectedItem)
+          })
           if (thisTableItem) {
-            this.multipleSelection.splice(index, 1)
             this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
           } else {
             this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
