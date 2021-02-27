@@ -25,6 +25,7 @@
               <badge
                 size="small"
                 class-name="widget-badge"
+                :outline="false"
                 :color="getBtnStatusColor(value)"
                 :text="getDataTableFieldLabel(value)"
               />
