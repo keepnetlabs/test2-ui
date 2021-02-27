@@ -390,7 +390,6 @@
           <el-table
             v-row-color-handler
             v-if="!allHidden"
-            :key="tableKey"
             :border="border"
             :cell-class-name="setCellClass"
             :data="showfilteredData ? filteredData : tableData"
@@ -1284,7 +1283,7 @@ export default {
         csv: false,
         pdf: false
       },
-      tableKey: `table-key${Math.random().toString().substring(0, 8)}`,
+      cachedClusterIds: [],
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
@@ -1296,7 +1295,8 @@ export default {
     }
   },
   watch: {
-    table(table) {
+    table(table, oldTable) {
+      console.log('table', table)
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
       //This is for refresh button when clicked caching refresh
@@ -1307,23 +1307,6 @@ export default {
         }
       } else {
         //If there is clustered items selected table has reselect bug. It solves it
-        if (this.groupable && this.clusteredItems.length) {
-          if (this.$refs && this.$refs.elTableRef) {
-            const deletedIds = []
-            for (const child of this.clusteredItems) {
-              this.$refs.elTableRef.toggleRowSelection(child, false)
-              deletedIds.push(child[this.rowKey])
-            }
-
-            const allItems = this.getAllItems(this.initialData, [], false, false)
-            for (const id of deletedIds) {
-              this.clusteredItems = this.clusteredItems.filter((item) => item[this.rowKey] !== id)
-              const findedNewClusterItem = allItems.find((i) => i[this.rowKey] === id)
-              this.clusteredItems.push(findedNewClusterItem)
-              this.$refs.elTableRef.toggleRowSelection(findedNewClusterItem, true)
-            }
-          }
-        }
       }
       this.cacheChecks = false
 
@@ -1354,6 +1337,7 @@ export default {
             this.currentPage * pageSize
           )
         }
+
         setTimeout(() => {
           this.renderFixedItems()
         }, 500)
@@ -1361,6 +1345,37 @@ export default {
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
         }
+      }
+
+      if (
+        !oldTable.length &&
+        this.multipleSelection.length &&
+        !this.clusteredItems.length &&
+        this.isServerSide
+      ) {
+        this.$nextTick(() => {
+          this.getSelectedObjectAndSelectRows()
+        })
+      }
+
+      if (this.groupable && this.clusteredItems.length && this.isServerSide) {
+        this.$nextTick(() => {
+          const selections = JSON.parse(JSON.stringify(this.multipleSelection))
+          this.multipleSelection = []
+          this.$refs.elTableRef.clearSelection()
+          const allItems = this.getAllItems(this.tableData, [], false, false)
+          selections.forEach((selectedItem, index) => {
+            const thisTableItem = allItems.find((item) => {
+              return item[this.rowKey] === selectedItem[this.rowKey]
+            })
+
+            if (thisTableItem) {
+              this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+            } else {
+              this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+            }
+          })
+        })
       }
 
       if (this.groupable && this.lazy && this.selectedCluster) {
@@ -1490,6 +1505,25 @@ export default {
         multipleSelection: this.multipleSelection,
         selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate
       }
+    },
+    //This is a element ui bug it doesnt cache it added to making caching
+    getSelectedObjectAndSelectRows(
+      selections = JSON.parse(JSON.stringify(this.multipleSelection))
+    ) {
+      this.$nextTick(() => {
+        this.multipleSelection = []
+        this.$refs.elTableRef.clearSelection()
+        selections.forEach((selectedItem) => {
+          const thisTableItem = this.tableData.find((item) => {
+            return JSON.stringify(item) === JSON.stringify(selectedItem)
+          })
+          if (thisTableItem) {
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+          } else {
+            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+          }
+        })
+      })
     },
     setPersistentStateToDataValues() {
       const {
@@ -2421,6 +2455,7 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
+      console.log('iam invoked')
       if (this.renderedTotalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
@@ -2450,6 +2485,7 @@ export default {
           )
 
           if (selectedItems.length) {
+            console.log('iam destroyed')
             for (let selectedItem of selectedItems) {
               const thisTableItem = this.isServerSide
                 ? this.tableData.find((item) => {
