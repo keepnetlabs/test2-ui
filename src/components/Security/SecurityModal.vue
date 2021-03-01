@@ -3,7 +3,7 @@
     :status="openPasswordChange"
     v-if="openPasswordChange"
     icon="mdi-lock"
-    :title="labels.Security"
+    :title="getTitle"
     size="big"
     @changeStatus="$emit('changePasswordChange')"
     :max-height-size="'500'"
@@ -91,18 +91,20 @@
         <div class="new-password-wrapper">
           <v-row align="center" justify="center" class="mr-0">
             <v-col sm="12" class="p-0">
-              <v-form ref="newPasswordByMain">
+              <v-form ref="refDisableMfa">
                 <div>
                   <label class="new-password-wrapper__label mb-2"
                     >Enter MFA code to disable your MFA status</label
                   >
                   <v-text-field
+                    type="number"
                     v-model="mfaCode"
-                    label="MFA Code"
+                    placeholder="MFA Code"
                     class="reset-pass-textfield mt-3 max-width-228"
                     :rules="[rules.required]"
                     outlined
                     hint="*Required"
+                    persistent-hint
                     autocomplete="disabled"
                   ></v-text-field>
                 </div>
@@ -122,6 +124,7 @@
                   @confirmSetupMFA="confirmSetupMFA"
                   :rules="rules"
                   :isLogin="false"
+                  ref="mfaSetup"
                 />
               </v-form>
             </v-col>
@@ -140,37 +143,28 @@
         >
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 2">
-        <v-btn
-          text
-          color="#f56c6c"
-          class="k-dialog__button"
-          @click="$emit('changePasswordChange')"
-          >{{ labels.Cancel }}</v-btn
-        >
+        <v-btn text color="#f56c6c" class="k-dialog__button" @click="step = 1">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword">{{
           labels.Confirm
         }}</v-btn>
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 3">
-        <v-btn
-          text
-          color="#f56c6c"
-          class="k-dialog__button"
-          @click="$emit('changePasswordChange')"
-          >{{ labels.Cancel }}</v-btn
-        >
+        <v-btn text color="#f56c6c" class="k-dialog__button" @click="step = 1">{{
+          labels.Cancel
+        }}</v-btn>
         <v-btn text color="#2196f3" class="k-dialog__button" @click="disableMFA">{{
           labels.Confirm
         }}</v-btn>
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 4">
-        <v-btn
-          text
-          color="#2196f3"
-          class="k-dialog__button"
-          @click="$emit('changePasswordChange')"
-          >{{ labels.Close }}</v-btn
-        >
+        <v-btn text color="#2196f3" class="k-dialog__button" @click="step = 1">{{
+          labels.Close
+        }}</v-btn>
+        <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmSetupMFA">{{
+          labels.Confirm
+        }}</v-btn>
       </div>
     </template>
   </app-dialog>
@@ -229,8 +223,30 @@ export default {
   created() {
     this.getMfaStatus()
   },
+  computed: {
+    getTitle() {
+      let title = null
+      switch (this.step) {
+        case 1:
+          title = labels.Security
+          break
+        case 2:
+          title = labels.LoginPassword
+          break
+        case 3:
+          title = labels.DisableMfa
+          break
+        case 4:
+          title = labels.EnableMfa
+          break
+        default:
+          break
+      }
+      return title
+    }
+  },
   methods: {
-    confirmSetupMFA(code) {
+    confirmSetupMFA() {
       this.$vlf.getItem('username', (err, username = '') => {
         if (!err) {
           this.email = username
@@ -243,7 +259,7 @@ export default {
           let payload = {
             email: this.email,
             password: this.password,
-            code: code
+            code: this.$refs.mfaSetup.mfaCode
           }
           setMFA(payload)
             .then(() => {
@@ -277,12 +293,13 @@ export default {
         }
       })
     },
-    enableMFA() {},
     disableMFA() {
       const payload = { code: this.mfaCode }
-      disableMfaStatus(payload).then((response) => {
-        this.$emit('changePasswordChange')
-      })
+      if (this.$refs.refDisableMfa.validate()) {
+        disableMfaStatus(payload).then((response) => {
+          this.$emit('changePasswordChange')
+        })
+      }
     },
     onMfaStatusChangeButton() {
       switch (this.mfaStatus) {

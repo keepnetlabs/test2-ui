@@ -13,7 +13,7 @@
       <div class="verification-code-wrapper">
         <v-row align="center" justify="center">
           <v-col md="6" sm="12" class="mb-6">
-            <v-form ref="resetEmail">
+            <v-form ref="refMfaCantLoginForm">
               <v-text-field
                 v-model.trim="verificationCode"
                 class="verification-code-wrapper--textfield"

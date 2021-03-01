@@ -6,8 +6,7 @@
       </div>
       <div class="login-desc">
         You must enable multi-factor authentication on your account until
-        {{ mfaDetails && mfaDetails.ExpireTime }}. From that date login will require multi-factor
-        authentication.
+        {{ getExpireTime }}. From that date login will require multi-factor authentication.
       </div>
     </v-card-text>
     <v-card-actions class="justify-center">
@@ -35,6 +34,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { datePrettier } from '@/utils/functions'
 
 export default {
   name: 'MFAWelcome',
@@ -42,7 +42,6 @@ export default {
     mfaDetails: {
       required: false
     },
-
     rules: {
       required: false
     }
@@ -51,7 +50,13 @@ export default {
     ...mapGetters({
       getErrors: 'common/getErrors',
       isErrorActive: 'common/getErrorStatus'
-    })
+    }),
+    getExpireTime() {
+      if (!this.mfaDetails || !this.mfaDetails.ExpireTime) {
+        return false
+      }
+      return datePrettier(this.mfaDetails.ExpireTime)
+    }
   }
 }
 </script>

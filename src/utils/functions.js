@@ -870,3 +870,8 @@ export function getPermissionsOfAllItems(PERMISSIONS = {}) {
   }
   return COPY_OF_PERMISSIONS
 }
+export function datePrettier(date) {
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  const newDate = new Date(date)
+  return newDate.toLocaleDateString('en-US', options)
+}

@@ -370,17 +370,40 @@
                   @withoutContinueMFA="withoutContinueMFA()"
                   @setupMFA="setupMFA"
                   :rules="rules"
+                  ref="refMfaWelcome"
                 />
               </div>
               <div v-if="pageNumber === 7">
+                <div v-if="isErrorActive" class="login-error-container">
+                  <div v-if="isErrorActive" class="login-error-wrapper">
+                    <div class="login-error-icon dark pr-2">
+                      <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                    </div>
+                    <div class="login-error-message pr-1">
+                      {{ getErrors }}
+                    </div>
+                  </div>
+                </div>
                 <MFASetup
                   :mfaCode="mfaCode"
                   :mfaSetupDetails="mfaSetupDetails"
                   @confirmSetupMFA="confirmSetupMFA"
                   :rules="rules"
+                  ref="refMfaSetup"
+                  :isLogin="true"
                 />
               </div>
               <div v-if="pageNumber === 8">
+                <div v-if="isErrorActive" class="login-error-container">
+                  <div v-if="isErrorActive" class="login-error-wrapper">
+                    <div class="login-error-icon dark pr-2">
+                      <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                    </div>
+                    <div class="login-error-message pr-1">
+                      {{ getErrors }}
+                    </div>
+                  </div>
+                </div>
                 <MFALogin
                   :validReset="validReset"
                   :verificationCode="verificationCode"
@@ -388,9 +411,20 @@
                   @onCantLoginButtonClick="onCantLoginButtonClick"
                   @verificationCodeLogin="verificationCodeLogin"
                   :rules="rules"
+                  ref="refMfaLogin"
                 />
               </div>
               <div v-if="pageNumber === 9">
+                <div v-if="isErrorActive" class="login-error-container">
+                  <div v-if="isErrorActive" class="login-error-wrapper">
+                    <div class="login-error-icon dark pr-2">
+                      <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                    </div>
+                    <div class="login-error-message pr-1">
+                      {{ getErrors }}
+                    </div>
+                  </div>
+                </div>
                 <MFACantLogin
                   :phoneNumber="phoneNumber"
                   :validReset="validReset"
@@ -399,9 +433,10 @@
                   @onCantLoginButtonClick="onCantLoginButtonClick"
                   @verificationCodeLogin="verificationCodeLogin"
                   :rules="rules"
+                  ref="refMfaCantLogin"
                 />
               </div>
-              <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
+              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber)">
                 <div class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
@@ -657,21 +692,32 @@ export default {
         mfa: this.mfaDetails,
         recovery_code: isCantLogin ? verificationCode : '',
         code: isCantLogin ? '' : verificationCode,
-        rememberMeOnThisDevice: rememberMeOnThisDevice
+        rememberMeOnThisDevice: rememberMeOnThisDevice,
+        skipMfa: 'forced'
       }
-      this.loginAction(payload)
+      if (this.pageNumber === 8) {
+        if (this.$refs.refMfaLogin.$refs.refMfaLoginForm.validate()) {
+          this.loginAction(payload)
+        }
+      } else if (this.pageNumber === 9) {
+        if (this.$refs.refMfaCantLogin.$refs.refMfaCantLoginForm.validate()) {
+          this.loginAction(payload)
+        }
+      }
     },
     confirmSetupMFA(code) {
-      let payload = {
-        email: this.email,
-        password: this.password,
-        code: code
+      if (this.$refs.refMfaSetup.$refs.refMfaSetupForm.validate()) {
+        let payload = {
+          email: this.email,
+          password: this.password,
+          code: code
+        }
+        setMFA(payload)
+          .then(() => {
+            this.pageNumber = 1
+          })
+          .catch(() => {})
       }
-      setMFA(payload)
-        .then(() => {
-          this.pageNumber = 1
-        })
-        .catch(() => {})
     },
     withoutContinueMFA() {
       let payload = {
@@ -1000,6 +1046,14 @@ export default {
               (error.response && error.response.data && error.response.data.message) ||
               (error.response && error.response.data && error.response.data.Message)
           })
+      }
+    }
+  },
+
+  watch: {
+    pageNumber(oldVal, newVal) {
+      if (oldVal !== newVal) {
+        this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
       }
     }
   }

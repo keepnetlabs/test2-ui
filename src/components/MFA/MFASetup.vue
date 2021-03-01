@@ -41,12 +41,12 @@
             </p>
           </v-col>
           <v-col sm="12">
-            <v-form ref="mfaForm" :lazy-validation="false">
+            <v-form ref="refMfaSetupForm" :lazy-validation="false">
               <div>
                 <label class="mfa-setup__content--header p-0">MFA Code</label>
                 <v-text-field
                   v-model.trim="mfaCode"
-                  :rules="[]"
+                  :rules="[rules.required]"
                   placeholder="Enter Code"
                   class="mfa-setup__content-textfield"
                   outlined
@@ -55,6 +55,7 @@
                   autocomplete="disabled"
                   hint="*Required"
                   persistent-hint
+                  type="number"
                 ></v-text-field>
               </div>
             </v-form>
@@ -62,7 +63,7 @@
         </v-row>
       </div>
     </v-card-text>
-    <v-card-actions class="justify-center">
+    <v-card-actions class="justify-center" v-if="isLogin">
       <v-btn
         color="blue"
         class="pl-4 white--text login_setup-mfa-button"
@@ -109,6 +110,13 @@ export default {
 <style lang="scss">
 .mfa-setup {
   &--dashboard {
+    .mfa__content-textfield {
+      .v-text-field__slot {
+        input {
+          padding-bottom: 0 !important;
+        }
+      }
+    }
     .v-card__text {
       padding-top: 0;
     }

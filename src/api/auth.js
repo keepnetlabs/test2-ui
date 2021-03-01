@@ -12,6 +12,7 @@ export function loginAction(payload) {
   } else if (payload.mfa && payload.mfa.StatusName === 'Inactive') {
     skipMfa = payload.mfa.IsExpired ? false : true
   }
+  if (payload.skipMfa === 'forced') skipMfa = false
   params.append('grant_type', 'password')
   params.append('username', payload.email)
   params.append('password', payload.password)
