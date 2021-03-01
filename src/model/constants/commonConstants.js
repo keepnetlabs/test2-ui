@@ -146,6 +146,7 @@ export const PROPERTY_STORE = {
   DIRECTORYID: 'directoryId',
   APPLICATIONID: 'applicationId',
   APPLICATIONSECRET: 'applicationSecret',
+  ANALYSISENGINETYPE: 'analysisEngineType',
   NAME: 'name',
   PRIORITY: 'priority',
   USERNAME: 'userName',

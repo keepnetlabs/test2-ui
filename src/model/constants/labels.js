@@ -227,7 +227,8 @@ export const labels = {
   Port: 'Port',
   Message: 'Message',
   EnterIpAdress: 'Enter IP address',
-  Retry: 'RETRY'
+  Retry: 'RETRY',
+  AnalysisEngineType: 'Analysis Engine Type'
 }
 
 export default labels
