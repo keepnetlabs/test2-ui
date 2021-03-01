@@ -227,7 +227,14 @@ export const labels = {
   Port: 'Port',
   Message: 'Message',
   EnterIpAdress: 'Enter IP address',
-  Retry: 'RETRY'
+  Retry: 'RETRY',
+  Change: 'CHANGE',
+  LoginPassword: 'Login Password',
+  Security: 'Security',
+  Mfa: 'Multi-factor Authentication',
+  Enable: 'ENABLE',
+  DisableMfa: 'Disable virtual MFA device?',
+  EnableMfa: 'Enable your virtual MFA device'
 }
 
 export default labels
