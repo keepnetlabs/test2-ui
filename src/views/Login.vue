@@ -45,6 +45,16 @@
                       </div>
                     </div>
                   </div>
+                  <div v-if="showMfaMessage" class="login-error-container">
+                    <div class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div class="login-error-message pr-1">
+                        {{ 'Multifactor authentication is required' }}
+                      </div>
+                    </div>
+                  </div>
                   <div v-if="isPasswordStep5Complete" class="login-success-container">
                     <div v-if="isPasswordStep5Complete" class="login-success-wrapper">
                       <div class="login-success-icon dark pr-2">
@@ -491,6 +501,7 @@ export default {
   },
   data() {
     return {
+      showMfaMessage: false,
       mfaSetupErrorText: null,
       phoneNumber: null,
       recoveryCode: null,
@@ -546,6 +557,10 @@ export default {
   },
   created() {
     //AuthenticationService.removeToken()
+    if (this.$route.query && this.$route.query.mfaRequired) {
+      this.showMfaMessage = true
+      this.$router.replace('/login')
+    }
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
       this.$vlf.getItem('username', (err, username = '') => {
@@ -1062,6 +1077,7 @@ export default {
     pageNumber(oldVal, newVal) {
       if (oldVal !== newVal) {
         this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+        this.showMfaMessage = false
       }
     }
   }

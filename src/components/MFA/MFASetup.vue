@@ -110,10 +110,11 @@ export default {
 <style lang="scss">
 .mfa-setup {
   &--dashboard {
-    .mfa__content-textfield {
+    .mfa-setup__content-textfield {
       .v-text-field__slot {
         input {
           padding-bottom: 0 !important;
+          padding-top: 0 !important;
         }
       }
     }

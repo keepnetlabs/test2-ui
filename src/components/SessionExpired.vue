@@ -110,6 +110,7 @@ import { getCompanyList } from '@/api/company'
 import jwt_decode from 'jwt-decode'
 import { setGlobalUserData } from '@/utils/functions'
 import indexStore from '@/store'
+import store from '@/store'
 
 export default {
   name: 'SessionExpired',
@@ -165,7 +166,7 @@ export default {
     loginAction() {
       let _this = this
       let payload = {
-        email: this.username,
+        email: this.userName,
         password: this.password,
         router: this.$router
       }
@@ -289,45 +290,25 @@ export default {
             error.response.data.mfa &&
             error.response.data.mfa.StatusId === 1
           ) {
-            this.pageNumber = 8
+            AuthenticationService.removeToken()
+            this.$store.dispatch('common/changeSessionExpiredStatus', false)
+            this.$router.push('/login?mfaRequired=show')
           } else if (
             error.response.data &&
             error.response.data.mfa &&
             error.response.data.mfa.StatusId === 0
           ) {
-            this.mfaDetails = error.response.data.mfa
-            this.pageNumber = 6
+            AuthenticationService.removeToken()
+            this.$store.dispatch('common/changeSessionExpiredStatus', false)
+            this.$router.push('/login?mfaRequired=show')
           } else {
-            this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
-              root: true
+            this.$store.dispatch('common/createSnackBar', {
+              message: error.response.data.error_description,
+              color: 'red'
             })
-            this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
-            if (error.response && error.response.status === 401) {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              this.$store.commit(
-                'common/SET_ERROR_MESSAGE',
-                error.response.data.errors[0].message,
-                {
-                  root: true
-                }
-              )
-            } else {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              let content =
-                error.response.data && error.response.data.error_description
-                  ? error.response.data.error_description
-                  : error.response.data.Message
-                  ? error.response.data.Message
-                  : 'Unknown Error Occured !!!'
-              this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
-            }
           }
         })
-        .finally(() => {
-          this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
-            root: true
-          })
-        })
+        .finally(() => {})
     }
   },
   mounted() {
