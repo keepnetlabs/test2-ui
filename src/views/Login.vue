@@ -380,7 +380,7 @@
                       <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                     </div>
                     <div class="login-error-message pr-1">
-                      {{ getErrors }}
+                      {{ getErrors ? getErrors : mfaSetupErrorText }}
                     </div>
                   </div>
                 </div>
@@ -491,6 +491,7 @@ export default {
   },
   data() {
     return {
+      mfaSetupErrorText: null,
       phoneNumber: null,
       recoveryCode: null,
       mfaDetails: null,
@@ -715,8 +716,15 @@ export default {
         setMFA(payload)
           .then(() => {
             this.pageNumber = 1
+            this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
           })
-          .catch(() => {})
+          .catch((error) => {
+            if (error.response && error.response.data) {
+              this.mfaSetupErrorText =
+                error.response.data.message || error.response.data.validationMessages[0]
+            }
+            this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          })
       }
     },
     withoutContinueMFA() {
