@@ -1,16 +1,15 @@
 <template functional>
   <v-btn
-    rounded
+    v-bind="$options.getDynamicProps(props)"
     :ripple="false"
     style="cursor: default;"
-    :color="props.color"
-    :style="props.col && props.col.props && props.col.props.style"
     v-on="props.listeners"
     :class="[
       'k-badge',
       props.fullWidth ? 'full-width' : '',
       $options.getBadgeSize(props.size, props),
-      props.className
+      props.className,
+      { 'k-badge--default': !props.outline }
     ]"
   >
     {{ props.text }}
@@ -25,6 +24,10 @@ export default {
     color: {
       type: String,
       default: ''
+    },
+    defaultBackgroundColor: {
+      type: String,
+      default: '#fff'
     },
     text: {
       type: String || Number
@@ -46,6 +49,10 @@ export default {
     },
     col: {
       type: Object
+    },
+    outline: {
+      type: Boolean,
+      default: true
     }
   },
   getBadgeSize(val) {
@@ -64,12 +71,32 @@ export default {
         break
     }
     return retValue
+  },
+  getDynamicProps(props = {}) {
+    const dynamicProps = {}
+    if (!props.outline) {
+      dynamicProps['color'] = props.color
+      dynamicProps['style'] = props.col && props.col.props && props.col.props.style
+      dynamicProps['rounded'] = true
+      return dynamicProps
+    }
+    dynamicProps['color'] = props.defaultBackgroundColor
+    dynamicProps['style'] = [
+      { border: `1px solid ${props.color} !important`, color: props.color },
+      props.col && props.col.props && props.col.props.style
+    ]
+    return dynamicProps
   }
 }
 </script>
 
 <style lang="scss">
 .k-badge {
+  &--default {
+    .v-btn__content {
+      color: #fff;
+    }
+  }
   &:focus {
     &:before {
       opacity: 0.12 !important;
@@ -83,18 +110,19 @@ export default {
   .v-btn__content {
     font-size: 12px !important;
     font-weight: 600 !important;
-    letter-spacing: normal;
+    line-height: 1.33;
+    padding-top: 1px;
+    letter-spacing: normal !important;
     text-align: center;
     text-transform: none !important;
-    color: #ffffff;
   }
   &__sizes {
     &--medium {
       &.v-btn {
-        border-radius: 18px !important;
+        border-radius: 4px;
         margin: 0 auto;
-        max-width: 90px;
-        height: 34px !important;
+        max-width: 76px;
+        height: 24px !important;
         box-shadow: none !important;
       }
       &.v-btn:not(.v-btn--round).v-size--default {

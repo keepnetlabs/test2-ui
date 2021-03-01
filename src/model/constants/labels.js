@@ -179,7 +179,7 @@ export const labels = {
   NotStartedUserCount: 'Not Started User Count',
   IntegrationName: 'Integration Name',
   Disable: 'Disable',
-  LicenceType: 'Licence Type',
+  LicenceType: 'License Type',
   ExpiryPeriod: 'Expiry Period',
   NumberOfUsers: 'Number of users',
   ImportSelected: 'IMPORT SELECTED',

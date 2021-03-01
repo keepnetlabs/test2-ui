@@ -226,7 +226,7 @@ export default {
   },
   beforeDestroy() {
     if (this.isFilterActive) {
-      this.clearFilter(false)
+      this.clearDataParams()
     }
   },
   methods: {
@@ -237,6 +237,13 @@ export default {
       }
     },
     clearFilter(isEmit = true) {
+      this.clearDataParams()
+      this.$emit('handleClearColumnFilter', this.fieldName)
+      if (isEmit) {
+        this.emitValue()
+      }
+    },
+    clearDataParams() {
       this.menu = false
       this.isFilterActive = false
       this.filterValue = ''
@@ -244,10 +251,6 @@ export default {
       this.filterChecked = []
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
-      this.$emit('handleClearColumnFilter', this.fieldName)
-      if (isEmit) {
-        this.emitValue()
-      }
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })

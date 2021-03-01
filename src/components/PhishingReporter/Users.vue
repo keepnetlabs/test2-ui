@@ -16,6 +16,7 @@
     <data-table
       id="phishing-reporter-data-table"
       ref="refUsersList"
+      is-server-side
       :loading="isLoading"
       :select-event="tableOptions.selectEvent"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -24,6 +25,8 @@
       :empty="tableOptions.empty"
       :filterable="true"
       :options="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       :pageSizes="tableOptions.pageSizes"
       :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
@@ -40,6 +43,10 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
     >
       <template #datatable-custom-column="{scope,col}">
         <v-btn style="display: none;" />
@@ -97,6 +104,8 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
 import Badge from '@/components/Badge'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'Users',
   components: {
@@ -178,7 +187,12 @@ export default {
             show: true,
             type: 'slot',
             width: 150,
-            isEditable: false
+            isEditable: false,
+            props: {
+              style: {
+                maxWidth: '110px'
+              }
+            }
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -260,7 +274,7 @@ export default {
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 10,
         orderBy: 'LastSeen',
         ascending: false,
         filter: {
@@ -268,6 +282,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -276,7 +295,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 10,
         orderBy: 'LastSeen',
         ascending: false,
         filter: {
@@ -286,10 +305,16 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   computed: {
@@ -381,9 +406,12 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results }
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.tableOptions.table =
             results.map((item) => {
               const { lastSeen, diagnosticToolStatus, diagnosticToolLastSeen } = item
@@ -438,28 +466,15 @@ export default {
       }
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.requestBody.filter)),
-        this.$refs.refUsersList,
-        'LastSeen'
-      )
-      if (this.$refs.refUsersList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-      }
-      if (this.$refs.refUsersList.sortProps && this.$refs.refUsersList.sortProps.order) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-
       exportTypes.map((exportType) => {
         const payload = {
-          ...sortFilter,
+          orderBy: this.requestBody.orderBy,
+          ascending: this.requestBody.ascending,
           pageNumber: pageNumber,
           pageSize: pageSize,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
+          filter: this.requestBody.filter
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
@@ -564,9 +579,51 @@ export default {
         })
       }
       this.callForPhishingReporterUser()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.requestBody.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForPhishingReporterUser()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.requestBody.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForPhishingReporterUser()
+    },
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.tableOptions.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.callForPhishingReporterUser()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.requestBody.ascending = order === 'ascending'
+      this.requestBody.orderBy = prop
+      this.callForPhishingReporterUser()
+    },
+    resetPageNumber() {
+      this.requestBody.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.requestBody.pageSize = size
+    this.serverSideProps.pageSize = size
+    this.requestBody.pageNumber = page
     this.getDefaultFilterAndSearch()
   }
 }

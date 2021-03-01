@@ -46,7 +46,7 @@ export const COMMON_CONSTANTS = {
     { text: 'UpdateMany', value: 'UpdateMany' },
     { text: 'DeleteMany', value: 'DeleteMany' }
   ],
-  FILTER_OPTIONS: ['Set as default search', 'Restore default search', 'Clear filters']
+  FILTER_OPTIONS: ['Set as default filter', 'Restore default filter', 'Clear filters']
 }
 
 export const LABEL_STORE = {
@@ -324,5 +324,10 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
-  PHISHING_REPORTER: 'PhishingReporter'
+  PHISHING_REPORTER: 'PhishingReporter',
+  SMTP_SETTINGS: 'SmtpSettings',
+  NOTIFICATION_TEMPLATE: 'NotificationTemplate',
+  REST_API: 'RestApi',
+  REPORTED_EMAIL: 'ReportedEmail',
+  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered'
 }
