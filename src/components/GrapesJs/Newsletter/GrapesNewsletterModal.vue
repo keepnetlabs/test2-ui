@@ -102,7 +102,7 @@ export default {
             '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
           ).selectedIndex = 0
         }
-        //console.log(component.getTrait('href').props())
+        //component.getTrait('href').props()
       }, 10)
     },
     setMergedTextsForLinks() {
