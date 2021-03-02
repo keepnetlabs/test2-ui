@@ -53,8 +53,8 @@ export function updateIntegration(id, payload) {
   })
 }
 
-export function testAnalysis(id, apiKey) {
-  return testRequest.put(`/analysis-engines-types/${id}/test-connection/${apiKey}`)
+export function testAnalysis(id, payload) {
+  return testRequest.put(`/analysis-engines-types/${id}/test-connection`, payload)
 }
 
 export function searchNotifiedMail(payload) {

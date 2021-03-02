@@ -1296,7 +1296,6 @@ export default {
   },
   watch: {
     table(table, oldTable) {
-      console.log('table', table)
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
       //This is for refresh button when clicked caching refresh
@@ -1348,10 +1347,10 @@ export default {
       }
 
       if (
+        this.isServerSide &&
         !oldTable.length &&
         this.multipleSelection.length &&
-        !this.clusteredItems.length &&
-        this.isServerSide
+        !this.clusteredItems.length
       ) {
         this.$nextTick(() => {
           this.getSelectedObjectAndSelectRows()
@@ -2455,7 +2454,6 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      console.log('iam invoked')
       if (this.renderedTotalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
@@ -2485,7 +2483,6 @@ export default {
           )
 
           if (selectedItems.length) {
-            console.log('iam destroyed')
             for (let selectedItem of selectedItems) {
               const thisTableItem = this.isServerSide
                 ? this.tableData.find((item) => {
