@@ -644,8 +644,9 @@ export default {
             return {
               property: field.name,
               type: 'text',
-              sortable: true,
-              filterable: true,
+              sortable: false,
+              filterable: false,
+              hideSort: true,
               label: field.name,
               align: 'left',
               show: true,
@@ -758,7 +759,6 @@ export default {
     }
   },
   created() {
-    // this.tableOptions.columns = [...this.tableOptions.columns, ...this.tableOptions.lastColumns]
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
