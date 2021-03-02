@@ -270,7 +270,7 @@ export default {
       modalStatus: false,
       bodyData: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 1000,
         orderBy: 'createTime',
         ascending: false,
         filter: {

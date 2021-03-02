@@ -330,5 +330,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
   REPORTED_EMAIL: 'ReportedEmail',
-  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered'
+  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
+  COMPANY_LIST: 'CompanyList',
+  COMPANY_GROUP_LIST: 'CompanyGroupList'
 }
