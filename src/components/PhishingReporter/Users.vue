@@ -7,9 +7,14 @@
       subtitle="Do you want to delete this user?"
       @changeStatus="isWantToDelete = false"
     >
-      <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
+      <template v-slot:app-dialog-body>
+        {{ getUserName }} will be permanently deleted.
+      </template>
       <template v-slot:app-dialog-footer>
-        <app-dialog-footer @handleClose="isWantToDelete = false" @handleConfirm="deleteUser" />
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteUser"
+        />
       </template>
     </app-dialog>
 
@@ -48,14 +53,14 @@
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
     >
-      <template #datatable-custom-column="{scope,col}">
-        <v-btn style="display: none;" />
+      <template #datatable-custom-column="{ scope, col }">
+        <v-btn style="display: none" />
         <v-tooltip
           bottom
           content-class="users__tooltip"
           v-if="col.property === PROPERTY_STORE.ADDINSTATUSNAME"
         >
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <badge
               :listeners="on"
               :color="getBtnStatusColor(scope.row[col.property])"
@@ -87,38 +92,38 @@
 </template>
 
 <script>
-import DataTable from '../DataTable'
+import DataTable from "../DataTable";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
-} from '@/model/constants/commonConstants'
+  PROPERTY_STORE,
+} from "@/model/constants/commonConstants";
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList,
-  deletePhishingReporterUser
-} from '@/api/phishingReporter'
-import labels from '@/model/constants/labels'
-import AppDialog from '../AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
-import Badge from '@/components/Badge'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
-import QueryHelperForTable from '@/helper-classes/query-helper'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
+  deletePhishingReporterUser,
+} from "@/api/phishingReporter";
+import labels from "@/model/constants/labels";
+import AppDialog from "../AppDialog";
+import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
+import { getDataTableFieldLabel, getBtnStatusColor } from "@/utils/functions";
+import Badge from "@/components/Badge";
+import ClientTableExportHelper from "@/helper-classes/client-table-export-helper";
+import QueryHelperForTable from "@/helper-classes/query-helper";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
 export default {
-  name: 'Users',
+  name: "Users",
   components: {
     AppDialogFooter,
     DataTable,
     AppDialog,
-    Badge
+    Badge,
   },
   props: {
     resizable: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
@@ -132,137 +137,137 @@ export default {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
+          download: false,
         },
         columns: [
           {
             property: PROPERTY_STORE.FIRSTNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
             sortable: true,
             show: true,
-            fixed: 'left',
-            type: 'text',
+            fixed: "left",
+            type: "text",
             width: 150,
             isEditable: true,
-            filterableType: 'text',
-            editComponent: 'textfield'
+            filterableType: "text",
+            editComponent: "textfield",
           },
           {
             property: PROPERTY_STORE.LASTNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.LASTNAME),
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'text',
+            type: "text",
+            filterableType: "text",
             width: 150,
             isEditable: true,
-            editComponent: 'textfield'
+            editComponent: "textfield",
           },
           {
             property: PROPERTY_STORE.EMAIL,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.EMAIL),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 300,
             isEditable: true,
-            editComponent: 'textfield',
-            filterableType: 'text',
-            filterableCustomFieldName: 'Email'
+            editComponent: "textfield",
+            filterableType: "text",
+            filterableCustomFieldName: "Email",
           },
           {
             property: PROPERTY_STORE.ADDINSTATUSNAME,
-            align: 'center',
+            align: "center",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'slot',
+            type: "slot",
             width: 150,
             isEditable: false,
             props: {
               style: {
-                maxWidth: '110px'
-              }
-            }
+                maxWidth: "110px",
+              },
+            },
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.LASTSEEN),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             isEditable: true,
-            editComponent: 'textfield',
+            editComponent: "textfield",
             width: 220,
-            filterableType: 'date',
-            filterableCustomFieldName: 'LastSeen'
+            filterableType: "date",
+            filterableCustomFieldName: "LastSeen",
             //minWidth: 80
           },
           {
             property: PROPERTY_STORE.DIAGNOSTICTOOL,
-            align: 'left',
+            align: "left",
             editable: false,
-            label: 'Diagnostic Tool',
+            label: "Diagnostic Tool",
             fixed: false,
             sortable: true,
             show: true,
-            type: 'slot',
+            type: "slot",
             isEditable: true,
-            width: 160
+            width: 160,
           },
           {
             property: PROPERTY_STORE.HOSTNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.HOSTNAME),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'fiber',
+            type: "fiber",
             isEditable: true,
-            editComponent: 'textfield',
-            filterableType: 'text',
-            width: 200
+            editComponent: "textfield",
+            filterableType: "text",
+            width: 200,
           },
           {
             property: PROPERTY_STORE.ADDINVERSION,
-            align: 'center',
+            align: "center",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.ADDINVERSION),
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             isEditable: true,
-            editComponent: 'textfield',
+            editComponent: "textfield",
             width: 140,
-            filterableType: 'text'
+            filterableType: "text",
             //minWidth: 80
-          }
+          },
         ],
         empty: {
-          message: 'No Users'
+          message: "No Users",
         },
         rowActions: [
           {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction'
-          }
+            name: "Delete",
+            icon: "mdi-delete",
+            action: "deleteAction",
+          },
         ],
-        pageSizes: [5, 10, 25]
+        pageSizes: [5, 10, 25],
       },
       isWantToDelete: false,
       selectedRow: null,
@@ -270,180 +275,203 @@ export default {
         clipboard: true,
         edit: false,
         delete: false,
-        download: false
+        download: false,
       },
       requestBody: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'LastSeen',
+        orderBy: "LastSeen",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
+              FilterGroups: [],
+            },
+          ],
+        },
       },
       defaultRequestBody: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'LastSeen',
+        orderBy: "LastSeen",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
+              FilterGroups: [],
+            },
+          ],
+        },
       },
-      serverSideProps: new ServerSideProps()
-    }
+      serverSideProps: new ServerSideProps(),
+    };
   },
   computed: {
     getUserName() {
-      return this.selectedRow && (this.selectedRow.firstName || this.selectedRow.lastName)
+      return this.selectedRow &&
+        (this.selectedRow.firstName || this.selectedRow.lastName)
         ? `${this.selectedRow.firstName} ${this.selectedRow.lastName}`
-        : 'This user'
-    }
+        : "This user";
+    },
   },
   methods: {
     getBtnStatusColor(type) {
-      return getBtnStatusColor(type)
+      return getBtnStatusColor(type);
     },
     getDataTableFieldLabel(field) {
-      return getDataTableFieldLabel(field)
+      return getDataTableFieldLabel(field);
     },
     getDiagnosticToolTooltipMessage(row = {}) {
-      const { diagnosticToolLastSeen } = row
-      return `Last seen: ${diagnosticToolLastSeen}`
+      const { diagnosticToolLastSeen } = row;
+      return `Last seen: ${diagnosticToolLastSeen}`;
     },
     getStatusTooltipMessage(row = {}) {
-      const { operatingSystemEdition, addInDisabledReason, addInDisabledLastDisabledTime } = row
-      let text = ''
-      const textOS = `OS version: ${operatingSystemEdition ? operatingSystemEdition : 'Unknown'}`
+      const {
+        operatingSystemEdition,
+        addInDisabledReason,
+        addInDisabledLastDisabledTime,
+      } = row;
+      let text = "";
+      const textOS = `OS version: ${
+        operatingSystemEdition ? operatingSystemEdition : "Unknown"
+      }`;
 
       switch (row[PROPERTY_STORE.ADDINSTATUSNAME]) {
-        case 'Online':
-          text = 'Add-in is installed and active\n'
-          text += textOS
-          break
-        case 'Offline':
-          text = 'Add-in is installed\n'
-          text += 'User is offline\n'
-          text += textOS
-          break
-        case 'Disabled':
-          text = 'Add-in is installed but disabled\n'
-          text += `Cause: ${addInDisabledReason ? addInDisabledReason : 'Unknown'}\n`
+        case "Online":
+          text = "Add-in is installed and active\n";
+          text += textOS;
+          break;
+        case "Offline":
+          text = "Add-in is installed\n";
+          text += "User is offline\n";
+          text += textOS;
+          break;
+        case "Disabled":
+          text = "Add-in is installed but disabled\n";
+          text += `Cause: ${
+            addInDisabledReason ? addInDisabledReason : "Unknown"
+          }\n`;
           text += `Disabled time: ${
-            addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
-          }\n`
-          text += textOS
-          break
-        case 'NotInstalled':
-          text = 'Add-in has not been installed'
-          break
-        case 'N/A':
-          text = 'This user is not an active user in your active directory'
-          break
+            addInDisabledLastDisabledTime
+              ? addInDisabledLastDisabledTime
+              : "Unknown"
+          }\n`;
+          text += textOS;
+          break;
+        case "NotInstalled":
+          text = "Add-in has not been installed";
+          break;
+        case "N/A":
+          text = "This user is not an active user in your active directory";
+          break;
         default:
-          break
+          break;
       }
-      return text
+      return text;
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refUsersList.filterValues = {}
-      this.$refs.refUsersList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER)
-      this.callForPhishingReporterUser()
+      this.isRestoredOrClearedFilters = true;
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody));
+      this.$refs.refUsersList.filterValues = {};
+      this.$refs.refUsersList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`;
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER);
+      this.callForPhishingReporterUser();
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
+      this.isRestoredOrClearedFilters = true;
+      this.getDefaultFilterAndSearch();
     },
     handleDelete(row) {
-      this.selectedRow = row
-      this.isWantToDelete = true
+      this.selectedRow = row;
+      this.isWantToDelete = true;
     },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
+    handleSetDefaultSearch(search = "", filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER,
         JSON.stringify({
           filter: this.requestBody.filter,
-          filterValues
+          filterValues,
         })
-      )
+      );
     },
     getDateValue(value) {
-      value = typeof value == 'string' ? value : value.toString()
-      return value.length === 1 ? `0${value}` : `${value}`
+      value = typeof value == "string" ? value : value.toString();
+      return value.length === 1 ? `0${value}` : `${value}`;
     },
     handleEdit(rows) {},
     handleAdd(row) {},
     callForPhishingReporterUser() {
-      this.isLoading = true
+      this.isLoading = true;
       searchPhishingReporterUser(this.requestBody)
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
+              data: {
+                results,
+                totalNumberOfRecords,
+                totalNumberOfPages,
+                pageNumber,
+              },
+            },
+          } = response;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
           this.tableOptions.table =
             results.map((item) => {
-              const { lastSeen, diagnosticToolStatus, diagnosticToolLastSeen } = item
+              const {
+                lastSeen,
+                diagnosticToolStatus,
+                diagnosticToolLastSeen,
+              } = item;
 
               const newItem = {
                 ...item,
                 lastSeen: this.getUtcToNowDate(lastSeen),
                 diagnosticToolStatus:
-                  diagnosticToolStatus === 'NotInstalled'
+                  diagnosticToolStatus === "NotInstalled"
                     ? labels.NotInstalled
                     : diagnosticToolStatus,
-                diagnosticToolLastSeen: this.getUtcToNowDate(diagnosticToolLastSeen)
-              }
-              return newItem
-            }) || []
-          this.isLoading = false
+                diagnosticToolLastSeen: this.getUtcToNowDate(
+                  diagnosticToolLastSeen
+                ),
+              };
+              return newItem;
+            }) || [];
+          this.isLoading = false;
         })
         .catch(() => {
-          this.isLoading = false
+          this.isLoading = false;
         })
         .finally(() => {
           if (this.isRestoredOrClearedFilters) {
-            this.isRestoredOrClearedFilters = false
+            this.isRestoredOrClearedFilters = false;
           }
-        })
+        });
     },
     getUtcToNowDate(strDate) {
       if (strDate) {
-        const lastSeenSplittedFormat = strDate.split(' ')
-        const lastSeenDateSide = lastSeenSplittedFormat[0].split('-')
-        const lastSeenTimeSide = lastSeenSplittedFormat[1].split(':')
+        const lastSeenSplittedFormat = strDate.split(" ");
+        const lastSeenDateSide = lastSeenSplittedFormat[0].split("-");
+        const lastSeenTimeSide = lastSeenSplittedFormat[1].split(":");
         const dateOfLastSeen = new Date(
           lastSeenDateSide[0],
           lastSeenDateSide[1] - 1,
@@ -451,11 +479,11 @@ export default {
           lastSeenTimeSide[0],
           lastSeenTimeSide[1],
           lastSeenTimeSide[2]
-        )
-        const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
+        );
+        const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60);
         const timezonedDate = new Date(
           dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
-        )
+        );
 
         return `${timezonedDate.getFullYear()}-${this.getDateValue(
           timezonedDate.getMonth() + 1
@@ -463,10 +491,15 @@ export default {
           timezonedDate.getHours()
         )}:${this.getDateValue(timezonedDate.getMinutes())}:${this.getDateValue(
           timezonedDate.getSeconds()
-        )}`
+        )}`;
       }
     },
-    exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportPhishingReporterUserList({
+      exportTypes,
+      reportAllPages,
+      pageNumber,
+      pageSize,
+    }) {
       exportTypes.map((exportType) => {
         const payload = {
           orderBy: this.requestBody.orderBy,
@@ -474,160 +507,165 @@ export default {
           pageNumber: pageNumber,
           pageSize: pageSize,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter: this.requestBody.filter,
+        };
         exportPhishingReporterUserList(payload)
           .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Phishing Reporter Users.${exportType.toLocaleLowerCase()}`
-            link.click()
+            const { data } = response;
+            const link = document.createElement("a");
+            link.href = window.URL.createObjectURL(data);
+            link.download = `Phishing Reporter Users.${exportType.toLocaleLowerCase()}`;
+            link.click();
           })
-          .catch(() => {})
-      })
+          .catch(() => {});
+      });
     },
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
         .then(() => {
-          this.callForPhishingReporterUser()
-          this.$emit('callForPhishingReporterSummary')
+          this.callForPhishingReporterUser();
+          this.$emit("callForPhishingReporterSummary");
         })
-        .catch(() => {})
+        .catch(() => {});
     },
     deleteUser() {
-      this.callForDeletePhishingReporterUser()
-      this.isWantToDelete = false
+      this.callForDeletePhishingReporterUser();
+      this.isWantToDelete = false;
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      this.tableOptions.isColumnFilterActive = true;
+      let items = [];
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems;
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
             if (x.FieldName !== i.FieldName) {
-              items.push(x)
+              items.push(x);
             }
-          })
+          });
         } else {
           if (x.FieldName !== filter.FieldName) {
-            items.push(x)
+            items.push(x);
           }
         }
-      })
+      });
 
-      requestBody = [...items]
+      requestBody = [...items];
       if (Array.isArray(filter)) {
         filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
+          const elem = filter[i];
+          elem.FieldName = filter[i].FieldName;
+          requestBody.push(elem);
+        });
       } else {
-        const elem = filter
-        if (filter.FieldName === 'LastSeen') {
-          const { Value: value } = filter
-          const lastSeenDate = new Date(value)
+        const elem = filter;
+        if (filter.FieldName === "LastSeen") {
+          const { Value: value } = filter;
+          const lastSeenDate = new Date(value);
           const utcLastSeen = `${lastSeenDate.getUTCFullYear()}-${this.getDateValue(
             lastSeenDate.getUTCMonth() + 1
-          )}-${this.getDateValue(lastSeenDate.getUTCDate())} ${this.getDateValue(
+          )}-${this.getDateValue(
+            lastSeenDate.getUTCDate()
+          )} ${this.getDateValue(
             lastSeenDate.getUTCHours()
-          )}:${this.getDateValue(lastSeenDate.getUTCMinutes())}:${this.getDateValue(
-            lastSeenDate.getUTCSeconds()
-          )}`
-          filter.Value = utcLastSeen
+          )}:${this.getDateValue(
+            lastSeenDate.getUTCMinutes()
+          )}:${this.getDateValue(lastSeenDate.getUTCSeconds())}`;
+          filter.Value = utcLastSeen;
         }
 
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
+        elem.FieldName = filter.FieldName;
+        requestBody.push(elem);
       }
 
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForPhishingReporterUser()
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody;
+      this.callForPhishingReporterUser();
     },
     columnFilterCleared(fieldName) {
       if (this.isRestoredOrClearedFilters) {
-        return
+        return;
       }
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+      let items = [];
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems;
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
-          items.push(x)
+          items.push(x);
         }
-      })
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForPhishingReporterUser()
+      });
+      filterPayload = [...items];
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload;
+      this.callForPhishingReporterUser();
 
       this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
+        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1;
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER)
-      )
+      );
       if (savedFilter) {
-        this.requestBody.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
+        this.requestBody.filter = savedFilter.filter;
+        this.tableOptions.isColumnFilterActive = true;
         this.$nextTick(() => {
-          this.$refs.refUsersList.filterValues = savedFilter.filterValues
+          this.$refs.refUsersList.filterValues = savedFilter.filterValues;
           this.$refs.refUsersList.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`
-        })
+            .substring(0, 5)}`;
+        });
       }
-      this.callForPhishingReporterUser()
+      this.callForPhishingReporterUser();
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.requestBody.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
-      this.callForPhishingReporterUser()
+      this.requestBody.pageNumber = pageNumber;
+      this.queryHelper.setRouterQuery("page", pageNumber);
+      this.callForPhishingReporterUser();
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.requestBody.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
-      this.callForPhishingReporterUser()
+      this.requestBody.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.queryHelper.setRouterQuery("size", pageSize);
+      this.queryHelper.setRouterQuery("page", 1);
+      this.callForPhishingReporterUser();
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
-      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
-        const column = this.tableOptions.columns.find(
-          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
-      this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
-      this.callForPhishingReporterUser()
+      this.tableOptions.isColumnFilterActive = columnFilterActive;
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter(
+        (filterItem) => {
+          const column = this.tableOptions.columns.find(
+            (col) =>
+              col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+          );
+          return column.filterableType;
+        }
+      );
+      this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems];
+      this.resetPageNumber();
+      this.tableOptions.isColumnFilterActive = columnFilterActive;
+      this.callForPhishingReporterUser();
     },
     sortChanged({ order, prop } = {}) {
-      this.requestBody.ascending = order === 'ascending'
-      this.requestBody.orderBy = prop
-      this.callForPhishingReporterUser()
+      this.requestBody.ascending = order === "ascending";
+      this.requestBody.orderBy = prop;
+      this.callForPhishingReporterUser();
     },
     resetPageNumber() {
-      this.requestBody.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
-    }
+      this.requestBody.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
+      this.queryHelper.setRouterQuery("page", 1);
+    },
   },
   created() {
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.requestBody.pageSize = size
-    this.serverSideProps.pageSize = size
-    this.requestBody.pageNumber = page
-    this.getDefaultFilterAndSearch()
-  }
-}
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route);
+    this.queryHelper.controlRouteQuery();
+    const { page, size } = this.queryHelper.returnQueryValues();
+    this.requestBody.pageSize = size;
+    this.serverSideProps.pageSize = size;
+    this.requestBody.pageNumber = page;
+    this.getDefaultFilterAndSearch();
+  },
+};
 </script>
 
 <style lang="scss">
