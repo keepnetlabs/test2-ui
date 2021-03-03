@@ -1269,6 +1269,33 @@ export default {
     }
   }),
   methods: {
+    getUserFriendlyName(activeMenu) {
+      let name
+      switch (activeMenu) {
+        case 'SentItems':
+          name = 'Sent'
+          break
+        case 'DeletedItems':
+          name = 'Deleted Items'
+          break
+        case 'JunkEmail':
+          name = 'Junk'
+          break
+        case 'Drafts':
+          name = 'Draft'
+          break
+        case 'Others':
+          name = 'Others'
+          break
+        case 'Stored':
+          name = 'Stored'
+          break
+        default:
+          name = 'Inbox'
+          break
+      }
+      return name
+    },
     handleAllRecordsTargetUsersClick() {
       this.investigationTargetUsersListBodyData.pageSize = 75000
       this.showAllRecordsTargetUser = false
@@ -1537,7 +1564,7 @@ export default {
     deleteMessage() {
       return `${this.totalSelectedItemsCount} ${
         this.totalSelectedItemsCount > 1 ? 'emails' : 'email'
-      } will be deleted from mailbox`
+      } will be deleted from ${this.getUserFriendlyName(this.activeMenu)}`
     },
     calculateProgressData() {
       let today = moment(new Date()).toDate()
@@ -1703,7 +1730,8 @@ export default {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
         }
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
-        this.$store
+        this.refreshDatatable()
+        /*this.$store
           .dispatch('investigations/getInvestigationDetailsListData', {
             data: dataBody,
             id: this.$route.params.id
@@ -1712,7 +1740,7 @@ export default {
             this.loading = false
             this.showEmails = true
             //vm.$forceUpdate()
-          })
+          })*/
       } else {
         this.$store
           .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
