@@ -55,6 +55,7 @@
                 @set-default-search="handleSetDefaultSearchForMatchingPlaybook"
                 @restore-default-search="handleRestoreDefaultSearchForMatchingPlaybook"
                 @clear-filters="handleClearFiltersForMatchingPlaybook"
+                :show-filter-options="false"
               />
             </v-list-item-content>
           </v-list-item>

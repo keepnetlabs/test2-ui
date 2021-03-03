@@ -785,6 +785,9 @@
                 @columnFilterCleared="columnFilterCleared"
                 @refreshAction="refreshDatatable"
                 @on-all-records-button-click="handleAllRecordsInboxClick"
+                @set-default-search="handleSetDefaultSearch"
+                @restore-default-search="handleRestoreDefaultSearch"
+                @clear-filters="handleClearFilters"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -872,6 +875,9 @@
                 @columnFilterCleared="columnFilterClearedTargetUsers"
                 @refreshAction="refreshDatatable"
                 @on-all-records-button-click="handleAllRecordsTargetUsersClick"
+                @set-default-search="handleSetDefaultSearchForTargetUsers"
+                @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
+                @clear-filters="handleClearFiltersForTargetUsers"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -921,7 +927,11 @@ import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import { getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
@@ -1007,7 +1017,45 @@ export default {
         ]
       }
     },
+    defaultRequestBody: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'ReceivedTime',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [
+              {
+                FieldName: 'Folder',
+                Operator: 'Include',
+                Value: 'Inbox'
+              }
+            ],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
     investigationTargetUsersListBodyData: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'Email',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBodyForTargetUsers: {
       pageNumber: 1,
       pageSize: 1000,
       orderBy: 'Email',
@@ -1269,6 +1317,86 @@ export default {
     }
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
+      )
+      if (savedFilter) {
+        this.investigationListBodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refInvestigationListData.filterValues = savedFilter.filterValues
+          this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.refreshDatatable()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refInvestigationListData.filterValues = {}
+      this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
+      this.refreshDatatable()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER,
+        JSON.stringify({
+          filter: this.investigationListBodyData.filter,
+          filterValues
+        })
+      )
+    },
+    getDefaultFilterAndSearchForTargetUsers() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
+      )
+      if (savedFilter) {
+        this.investigationTargetUsersListBodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.investigationDetailsTargetUsersList.filterValues = savedFilter.filterValues
+          this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.refreshDatatable()
+    },
+    handleClearFiltersForTargetUsers() {
+      this.isRestoredOrClearedFilters = true
+      this.investigationTargetUsersListBodyData = JSON.parse(
+        JSON.stringify(this.defaultRequestBodyForTargetUsers)
+      )
+      this.$refs.investigationDetailsTargetUsersList.filterValues = {}
+      this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
+      this.refreshDatatable()
+    },
+    handleRestoreDefaultSearchForTargetUsers() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearchForTargetUsers()
+    },
+    handleSetDefaultSearchForTargetUsers(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS,
+        JSON.stringify({
+          filter: this.investigationTargetUsersListBodyData.filter,
+          filterValues
+        })
+      )
+    },
     getUserFriendlyName(activeMenu) {
       let name
       switch (activeMenu) {
@@ -1721,10 +1849,10 @@ export default {
       this.activeMenu = menu
       this.showTargetUsersDetails = false
       this.showEmails = false
-      this.loading = true
       this.investigationDetailsList = []
 
       if (menu != 'targetUsers') {
+        this.loading = true
         let dataBody = this.investigationListBodyData
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
@@ -1742,7 +1870,8 @@ export default {
             //vm.$forceUpdate()
           })*/
       } else {
-        this.$store
+        this.getDefaultFilterAndSearchForTargetUsers()
+        /* this.$store
           .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
             data: this.investigationTargetUsersListBodyData,
             id: this.$route.params.id
@@ -1754,7 +1883,7 @@ export default {
             this.showTargetUsersDetails = true
             this.loading = false
             vm.$forceUpdate()
-          })
+          })*/
       }
     },
     adjustTargetUserShowRecords(response = {}) {
@@ -2120,7 +2249,7 @@ export default {
     // triggered to relevant action at investigations.js
     //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
     const _this = this
-    this.refreshDatatable()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

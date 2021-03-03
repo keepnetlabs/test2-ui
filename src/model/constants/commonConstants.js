@@ -342,5 +342,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   MAILCONFIG: 'MailConfig',
   COMPANY_LIST: 'CompanyList',
   COMPANY_GROUP_LIST: 'CompanyGroupList',
-  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails'
+  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
+  INVESTIGATIONSFOLDER: 'InvestigationsFolder',
+  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
 }
