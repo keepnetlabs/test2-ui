@@ -88,14 +88,40 @@
               hint="*Required"
               persistent-hint
               dense
-              height="40"
               outlined
               placeholder="Enter API URL"
               required
               @input="handleApiKeyChange"
             ></v-text-field>
           </form-group>
-          <v-list-item class="px-0">
+          <form-group title="Username" has-hint v-if="selectedIntegrationType.name === 'FortiNet'">
+            <v-text-field
+              v-model.trim="formValues.userName"
+              hint="*Required"
+              persistent-hint
+              dense
+              height="40"
+              outlined
+              placeholder="Enter username"
+              required
+            ></v-text-field>
+          </form-group>
+          <form-group title="Password" has-hint v-if="selectedIntegrationType.name === 'FortiNet'">
+            <v-text-field
+              placeholder="Enter password"
+              outlined
+              dense
+              v-model.trim="formValues.password"
+              hint="*Required"
+              persistent-hint
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+              class="username-field input-group--focused"
+              @click:append="showPassword = !showPassword"
+            ></v-text-field>
+          </form-group>
+
+          <v-list-item class="px-0" v-if="selectedIntegrationType.name === 'VirusTotal'">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 API Key
@@ -224,7 +250,7 @@
               </div>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0 mt-3">
+          <v-list-item :class="['px-0', { 'mt-3': selectedIntegrationType.name === 'VirusTotal' }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 Tags
@@ -309,7 +335,7 @@
               ></v-checkbox>
               <div v-if="selectedIntegrationType.isSendFile">
                 <v-checkbox
-                  v-model="formValues.isSendFile"
+                  v-model="formValues.isUploadExecutableFile"
                   :label="`Upload PE files`"
                   color="#2196f3"
                 ></v-checkbox>
@@ -430,9 +456,12 @@ export default {
   data() {
     return {
       saveDisable: false,
+      showPassword: false,
       labels,
       loadingState: [],
       formValues: {
+        userName: '',
+        password: '',
         description: null,
         analysisEngineTypeResourceId: null,
         tags: [],
@@ -484,24 +513,41 @@ export default {
     }
   },
   created() {
-    if (this.integrationId) this.updateVModel(this.integrationId)
-    getIntegrationTypes().then((response) => {
-      const {
-        data: { data }
-      } = response
-
-      this.integrationTypes = data
-      this.selectedIntegrationType =
-        this.integrationTypes.find(
-          (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
-        ) || {}
-    })
+    getIntegrationTypes()
+      .then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.integrationTypes = data
+      })
+      .finally(() => {
+        if (this.integrationId) this.updateVModel(this.integrationId)
+      })
     this.getFileTypes()
   },
   methods: {
     saveIntegration() {
       const data = { ...this.formValues }
-      data.apiKeys = data.apiKeys.map((i) => i.value)
+
+      if (this.selectedIntegrationType.name === 'VirusTotal') {
+        data.apiKeys = data.apiKeys.map((i) => i.value)
+        data.apiCredentials = data.apiKeys.map((i) => {
+          return {
+            apiKey: i
+          }
+        })
+      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+        data.apiCredentials = [
+          {
+            userName: this.formValues.userName,
+            password: this.formValues.password
+          }
+        ]
+      }
+      delete data.apiKeys
+      delete data.userName
+      delete data.password
+
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then(() => {
@@ -544,7 +590,10 @@ export default {
     },
     getTestConnectionDisableStatus() {
       if (
+        this.selectedIntegrationType.name === 'VirusTotal' &&
         this.formValues.apiUrl &&
+        this.formValues.apiKeys[0] &&
+        this.formValues.apiKeys[0].value &&
         this.formValues.apiKeys[0].value.length > 0 &&
         typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
       ) {
@@ -605,11 +654,22 @@ export default {
     },
     updateVModel(id) {
       getIntegrationDetails(id).then((response) => {
-        response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
-          return { value: item, status: null }
-        })
-        const integrationData = response['data'].data
-        this.formValues = integrationData
+        this.selectedIntegrationType =
+          this.integrationTypes.find(
+            (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
+          ) || {}
+
+        if (this.selectedIntegrationType.name === 'VirusTotal') {
+          response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
+            return { value: item.apiKey, status: null }
+          })
+        } else if (this.selectedIntegrationType.name === 'FortiNet') {
+          const { userName, password } = response['data'].data['apiCredentials'][0]
+          response.data.data.userName = userName
+          response.data.data.password = password
+        }
+        delete response['data'].data['apiCredentials']
+        this.formValues = response['data'].data
       })
     },
     resetValues() {
@@ -653,47 +713,86 @@ export default {
         .finally(() => this.loadingState.shift('loading'))
     },
     testConnection(isSave) {
-      for (let i = 0; i < this.formValues.apiKeys.length; i++) {
-        const item = this.formValues.apiKeys[i]
-        this.formValues.apiKeys[i].status = 'loading'
-        this.loadingState.push('loading')
-        testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
-          .then((response) => {
-            if (response.data.status === 'FAILED') {
-              this.formValues.apiKeys[i].status = 'failed'
-              this.formValues.apiKeys[i].errorMessage = response.data.message
-            } else {
-              this.formValues.apiKeys[i].status = 'success'
+      if (this.selectedIntegrationType.name === 'VirusTotal') {
+        for (let i = 0; i < this.formValues.apiKeys.length; i++) {
+          const item = this.formValues.apiKeys[i]
+          this.formValues.apiKeys[i].status = 'loading'
+          this.loadingState.push('loading')
+          const payload = {
+            apiUrl: this.formValues.apiUrl,
+            apiCredential: {
+              apiKey: item.value
             }
+          }
+          testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
+            .then((response) => {
+              if (response.data.status === 'FAILED') {
+                this.formValues.apiKeys[i].status = 'failed'
+                this.formValues.apiKeys[i].errorMessage = response.data.message
+              } else {
+                this.formValues.apiKeys[i].status = 'success'
+              }
+              this.saveDisable = false
+            })
+            .catch((error) => {
+              this.saveDisable = false
+              this.formValues.apiKeys[i].status = 'failed'
+              if (error.response.data.Message === 'Internal server error') {
+                this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
+              } else {
+                this.formValues.apiKeys[i].errorMessage =
+                  error.response.data.message || error.response.data.Message
+              }
+            })
+            .finally(() => {
+              this.loadingState.shift('loading')
+              if (
+                isSave &&
+                !this.loadingState.length &&
+                !this.formValues.apiKeys.find((item) => item.status === 'failed')
+              )
+                this.saveIntegration()
+            })
+        }
+      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+        const payload = {
+          apiUrl: this.formValues.apiUrl,
+          apiCredential: {
+            userName: this.formValues.userName,
+            password: this.formValues.password
+          }
+        }
+        testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
+          .then((response) => {
+            this.saveIntegration()
             this.saveDisable = false
           })
           .catch((error) => {
             this.saveDisable = false
-            this.formValues.apiKeys[i].status = 'failed'
-            if (error.response.data.Message === 'Internal server error') {
-              this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
-            } else {
-              this.formValues.apiKeys[i].errorMessage =
-                error.response.data.message || error.response.data.Message
-            }
-          })
-          .finally(() => {
-            this.loadingState.shift('loading')
-            if (
-              isSave &&
-              !this.loadingState.length &&
-              !this.formValues.apiKeys.find((item) => item.status === 'failed')
-            )
-              this.saveIntegration()
           })
       }
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
-      if (this.selectedIntegrationType.name === 'VirusTotal') {
-        this.formValues.isSendUrl = true
-        this.formValues.isSendFileHash = true
+      const { name, isSendFile, isSendFileHash, isSendUrl } = this.selectedIntegrationType
+
+      this.formValues.isSendUrl = isSendUrl
+      this.formValues.isSendFileHash = isSendFileHash
+      this.formValues.isSendFile = isSendFile
+
+      if (!isSendFile) {
+        this.formValues.isUploadExecutableFile = false
+        this.formValues.isUploadOtherFileType = false
+        this.formValues.uploadFileTypes = []
+      }
+
+      if (name === 'VirusTotal') {
         this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
+        if (!this.formValues.apiKeys) {
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+        }
+        this.formValues.userName = ''
+        this.formValues.password = ''
       }
     }
   },

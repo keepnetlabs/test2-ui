@@ -777,7 +777,14 @@
           </div>
         </div>
       </div>
-      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0 && isServerSide">
+      <div
+        class="pagination block"
+        v-if="
+          pageSizes.length &&
+          (tableData.length > 0 || isColumnFilterActive || search) &&
+          isServerSide
+        "
+      >
         <el-pagination
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
@@ -793,7 +800,9 @@
               {{
                 serverSideProps.pageNumber === 1
                   ? 1
-                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1 > 0
+                  ? (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+                  : 0
               }}-{{
                 serverSideProps.pageNumber * serverSideProps.pageSize >
                 serverSideProps.totalNumberOfRecords
@@ -1296,7 +1305,6 @@ export default {
   },
   watch: {
     table(table, oldTable) {
-      console.log('table', table)
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
       //This is for refresh button when clicked caching refresh
@@ -1348,10 +1356,10 @@ export default {
       }
 
       if (
+        this.isServerSide &&
         !oldTable.length &&
         this.multipleSelection.length &&
-        !this.clusteredItems.length &&
-        this.isServerSide
+        !this.clusteredItems.length
       ) {
         this.$nextTick(() => {
           this.getSelectedObjectAndSelectRows()
@@ -2455,7 +2463,6 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      console.log('iam invoked')
       if (this.renderedTotalLength === selections.length) {
         this.$refs.elTableRef.toggleAllSelection()
       } else {
@@ -2485,7 +2492,6 @@ export default {
           )
 
           if (selectedItems.length) {
-            console.log('iam destroyed')
             for (let selectedItem of selectedItems) {
               const thisTableItem = this.isServerSide
                 ? this.tableData.find((item) => {

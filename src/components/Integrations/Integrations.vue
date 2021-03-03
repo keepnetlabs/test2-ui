@@ -64,6 +64,11 @@
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
     >
+      <template #datatable-custom-column="{scope}">
+        <span v-if="scope.column.property === 'analysisEngineType'">
+          {{ scope.row.analysisEngineType.name }}
+        </span>
+      </template>
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -169,6 +174,20 @@ export default {
             width: 240,
             filterableType: 'text',
             filterableCustomFieldName: 'Name'
+          },
+          {
+            property: PROPERTY_STORE.ANALYSISENGINETYPE,
+            align: 'left',
+            editable: false,
+            label: labels.AnalysisEngineType,
+            sortable: true,
+            show: true,
+            type: 'slot',
+            fixed: false,
+            width: 240,
+            filterableType: 'select',
+            filterableCustomFieldName: 'analysisEngineTypeId',
+            filterableItems: ['FortiNet', 'VirusTotal']
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,

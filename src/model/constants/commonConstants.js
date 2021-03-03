@@ -146,6 +146,7 @@ export const PROPERTY_STORE = {
   DIRECTORYID: 'directoryId',
   APPLICATIONID: 'applicationId',
   APPLICATIONSECRET: 'applicationSecret',
+  ANALYSISENGINETYPE: 'analysisEngineType',
   NAME: 'name',
   PRIORITY: 'priority',
   USERNAME: 'userName',
@@ -338,5 +339,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   AUDIT: 'Audit',
   INTEGRATIONS: 'Integrations',
   PLAYBOOKRULES: 'PlaybookRules',
-  MAILCONFIG: 'MailConfig'
+  MAILCONFIG: 'MailConfig',
+  COMPANY_LIST: 'CompanyList',
+  COMPANY_GROUP_LIST: 'CompanyGroupList',
+  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails'
 }

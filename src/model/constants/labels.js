@@ -228,6 +228,7 @@ export const labels = {
   Message: 'Message',
   EnterIpAdress: 'Enter IP address',
   Retry: 'RETRY',
+  AnalysisEngineType: 'Analysis Engine Type',
   Change: 'CHANGE',
   LoginPassword: 'Login Password',
   Security: 'Security',

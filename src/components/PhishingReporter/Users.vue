@@ -48,14 +48,14 @@
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
     >
-      <template #datatable-custom-column="{scope,col}">
+      <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
         <v-tooltip
           bottom
           content-class="users__tooltip"
           v-if="col.property === PROPERTY_STORE.ADDINSTATUSNAME"
         >
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <badge
               :listeners="on"
               :color="getBtnStatusColor(scope.row[col.property])"
