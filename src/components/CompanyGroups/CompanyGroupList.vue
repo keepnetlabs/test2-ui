@@ -228,37 +228,38 @@ export default {
           }
         }
         this.loading = true
-        searchCompanyGroups(this.payload).then((response) => {
-          const {
-            data: { data }
-          } = response
-          tableState.initialData = data.results
+        searchCompanyGroups(this.payload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            tableState.initialData = data.results
 
-          let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
-          if (maxPage > tableState.currentPage) {
-            maxPage = tableState.currentPage
-          }
-          tableState.tableData = tableState.initialData.slice(
-            (maxPage - 1) * tableState.rowCount,
-            maxPage * tableState.rowCount
-          )
-          tableState.multipleSelection = tableState.initialData.filter((row) => {
-            return tableState.multipleSelection.find((selection) => {
-              return row.resourceId === selection.resourceId
-            })
-          })
-          if (tableState.search) {
-            tableState.filteredData = tableState.initialData.filter((row) => {
-              return tableState.filteredData.find((filteredRow) => {
-                return filteredRow.resourceId === row.resourceId
+            let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
+            if (maxPage > tableState.currentPage) {
+              maxPage = tableState.currentPage
+            }
+            tableState.tableData = tableState.initialData.slice(
+              (maxPage - 1) * tableState.rowCount,
+              maxPage * tableState.rowCount
+            )
+            tableState.multipleSelection = tableState.initialData.filter((row) => {
+              return tableState.multipleSelection.find((selection) => {
+                return row.resourceId === selection.resourceId
               })
             })
-          }
+            if (tableState.search) {
+              tableState.filteredData = tableState.initialData.filter((row) => {
+                return tableState.filteredData.find((filteredRow) => {
+                  return filteredRow.resourceId === row.resourceId
+                })
+              })
+            }
 
-          this.tableState = { persistentState: tableState }
-          this.tableKey = Math.random().toString().substring(0, 5)
-          this.loading = false
-        })
+            this.tableState = { persistentState: tableState }
+            this.tableKey = Math.random().toString().substring(0, 5)
+          })
+          .finally(() => (this.loading = false))
       }
     } else {
       this.getDefaultFilterAndSearch()
