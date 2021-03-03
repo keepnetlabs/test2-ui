@@ -44,6 +44,9 @@
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
       @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" class="datatable-link">
@@ -58,7 +61,10 @@
 import Datatable from '../../components/DataTable'
 import { deleteCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS
+} from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission } from '@/utils/functions'
 
@@ -171,6 +177,21 @@ export default {
           ]
         }
       },
+      defaultPayload: {
+        pageSize: 1000,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       tableState: null
     }
   },
@@ -207,10 +228,48 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
+      this.getDefaultFilterAndSearch()
       this.getTableData()
     }
   },
   methods: {
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST,
+        JSON.stringify({
+          filter: this.payload.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.getTableData()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.$refs.refGroupDataList.filterValues = {}
+      this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST)
+      this.getTableData()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refGroupDataList.filterValues = savedFilter.filterValues
+          this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+    },
     handleTableDownload(downloadTypes) {
       const searchFilter = {
         Condition: 'OR',

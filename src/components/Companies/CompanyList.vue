@@ -45,12 +45,12 @@
     />
 
     <datatable
-      :loading="loading"
-      :selectable="true"
-      :table="tableData"
       id="companies-data-table"
       ref="refDataList"
       is-server-side
+      :loading="loading"
+      :selectable="true"
+      :table="tableData"
       :server-side-props="serverSideProps"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -88,6 +88,9 @@
       @sortChangedEvent="sortChanged"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -135,7 +138,11 @@
 import Datatable from '../../components/DataTable'
 import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
@@ -324,6 +331,27 @@ export default {
         ]
       }
     },
+    defaultPayload: {
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
     serverSideProps: new ServerSideProps()
   }),
   watch: {
@@ -336,6 +364,7 @@ export default {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
+    this.getDefaultFilterAndSearch()
     this.getLookUpDatas()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
@@ -353,6 +382,47 @@ export default {
       this.payload.pageSize = size
       this.serverSideProps.pageSize = size
     },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
+      copyOfFilter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
+        JSON.stringify({
+          filter: copyOfFilter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.getLookUpDatas()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.payload.pageNumber = 1
+      this.$refs.refDataList.filterValues = {}
+      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST)
+      this.getLookUpDatas()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refDataList.filterValues = savedFilter.filterValues
+          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    },
+
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
     },
@@ -474,12 +544,14 @@ export default {
       this.isClustered = true
       this.resetPageNumber()
       this.resetTableFilters()
+      this.getDefaultFilterAndSearch()
       this.getTableData()
     },
     handleListBulletedClick() {
       this.isClustered = false
       this.resetPageNumber()
       this.resetTableFilters()
+      this.getDefaultFilterAndSearch()
       this.getTableData()
     },
     resetTableFilters() {

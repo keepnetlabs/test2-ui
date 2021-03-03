@@ -265,8 +265,9 @@ export default {
         return {
           property: field.name,
           type: 'text',
-          sortable: true,
-          filterable: true,
+          sortable: false,
+          filterable: false,
+          hideSort: true,
           label: field.name,
           align: 'left',
           show: true,
