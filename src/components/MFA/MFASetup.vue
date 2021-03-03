@@ -37,7 +37,7 @@
           </v-col>
           <v-col sm="12">
             <p class="mfa-setup__content--header">
-              3. Enter two consecutive MFA codes
+              3. Enter consecutive MFA codes
             </p>
           </v-col>
           <v-col sm="12">

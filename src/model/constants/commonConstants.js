@@ -329,5 +329,14 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
   REPORTED_EMAIL: 'ReportedEmail',
-  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered'
+  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
+  INVESTIGATIONS: 'Investigations',
+  TARGETUSERS: 'TargetUsers',
+  TARGETUSERSGROUP: 'TargetUsersGroup',
+  TARGETGROUPUSERSTABLE: 'TargetGroupUsersTable',
+  SYSTEMUSERSPEOPLE: 'SystemUsersPeople',
+  AUDIT: 'Audit',
+  INTEGRATIONS: 'Integrations',
+  PLAYBOOKRULES: 'PlaybookRules',
+  MAILCONFIG: 'MailConfig'
 }

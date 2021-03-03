@@ -27,6 +27,9 @@
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @on-all-records-button-click="handleAllRecordsClick"
+          @set-default-search="handleSetDefaultSearch"
+          @restore-default-search="handleRestoreDefaultSearch"
+          @clear-filters="handleClearFilters"
         ></data-table>
       </div>
     </div>
@@ -39,7 +42,8 @@ import {
   COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
-  LABEL_STORE
+  LABEL_STORE,
+  DEFAULT_SEARCH_CONTAINER_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { getAuditLogs } from '@/api/dashboard'
@@ -205,10 +209,61 @@ export default {
             }
           ]
         }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'LogDate',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT))
+      if (savedFilter) {
+        this.bodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refAuditList.filterValues = savedFilter.filterValues
+          this.$refs.refAuditList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.getDatatableList()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refAuditList.filterValues = {}
+      this.$refs.refAuditList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT)
+      this.getDatatableList()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT,
+        JSON.stringify({
+          filter: this.bodyData.filter,
+          filterValues
+        })
+      )
+    },
     getDatatableList() {
       this.loading = true
       getAuditLogs(this.bodyData)
@@ -295,7 +350,7 @@ export default {
     }
   },
   mounted() {
-    this.getDatatableList()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

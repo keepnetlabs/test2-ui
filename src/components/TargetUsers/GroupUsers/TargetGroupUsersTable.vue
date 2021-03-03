@@ -24,6 +24,9 @@
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
+    @set-default-search="handleSetDefaultSearch"
+    @restore-default-search="handleRestoreDefaultSearch"
+    @clear-filters="handleClearFilters"
   >
     <template #selection-all-slot v-if="hasSelectionSlot">
       <v-tooltip bottom opacity="1">
@@ -58,7 +61,12 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import {
   exportTargetGroupUsers,
@@ -113,6 +121,23 @@ export default {
   data() {
     return {
       axiosPayload: {
+        pageNumber: 1,
+        pageSize: 1000000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        },
+        excludeGroupUsers: this.excludeGroupUsers
+      },
+      defaultRequestBody: {
         pageNumber: 1,
         pageSize: 1000000,
         orderBy: 'CreateTime',
@@ -255,11 +280,50 @@ export default {
 
   created() {
     if (this.resourceId) {
-      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDefaultFilterAndSearch()
     }
   },
 
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE)
+      )
+      if (savedFilter) {
+        this.axiosPayload.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refTargetGroupUsersTable.filterValues = savedFilter.filterValues
+          this.$refs.refTargetGroupUsersTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refTargetGroupUsersTable.filterValues = {}
+      this.$refs.refTargetGroupUsersTable.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE,
+        JSON.stringify({
+          filter: this.axiosPayload.filter,
+          filterValues
+        })
+      )
+    },
     addCustomFieldColumns() {
       const columnsOfCustomFields = this.customFields.map((field) => {
         return {
@@ -447,7 +511,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Target Group Details.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Group Details.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })

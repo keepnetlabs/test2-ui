@@ -76,6 +76,9 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -158,6 +161,7 @@ import {
 } from '@/api/targetUsers'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -186,6 +190,27 @@ export default {
   emits: ['call-for-company-licenses'],
   data: () => ({
     payload: {
+      pageNumber: 1,
+      pageSize: 50000,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBody: {
       pageNumber: 1,
       pageSize: 50000,
       orderBy: 'CreateTime',
@@ -363,6 +388,43 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
+          this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.payload = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refPeopleTable.filterValues = {}
+      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
+        JSON.stringify({
+          filter: this.payload.filter,
+          filterValues
+        })
+      )
+    },
     setQueryValuesToPayload({ page, size }) {
       //generic
       const parsedPage = parseInt(page)
@@ -751,7 +813,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Target Users.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Users.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -762,7 +826,7 @@ export default {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
-    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.getDefaultFilterAndSearch()
   },
   mounted() {}
 }

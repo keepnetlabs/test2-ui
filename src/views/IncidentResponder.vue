@@ -2731,7 +2731,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Reported Emails.${exportType.toLocaleLowerCase()}`
+          link.download = `Reported Emails.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -2755,7 +2757,7 @@ export default {
             link.href = window.URL.createObjectURL(data)
             link.download = `Reported Emails ${
               this.clusteredRow[this.getClusteredField(this.selectedCluster)]
-            }.${exportType.toLocaleLowerCase()}`
+            }.${exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()}`
             link.click()
           })
           .finally(() => {

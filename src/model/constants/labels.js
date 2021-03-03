@@ -234,7 +234,7 @@ export const labels = {
   Mfa: 'Multi-factor Authentication',
   Enable: 'ENABLE',
   DisableMfa: 'Disable virtual MFA device?',
-  EnableMfa: 'Enable your virtual MFA device'
+  EnableMfa: 'Setup Multi-factor Authentication'
 }
 
 export default labels

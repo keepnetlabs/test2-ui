@@ -52,6 +52,9 @@
                 :empty="matchingInvestigationPlaybookRules.iEmpty"
                 @refreshAction="matchingPopupClick(selectedMatch, false)"
                 @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
+                @set-default-search="handleSetDefaultSearchForMatchingPlaybook"
+                @restore-default-search="handleRestoreDefaultSearchForMatchingPlaybook"
+                @clear-filters="handleClearFiltersForMatchingPlaybook"
               />
             </v-list-item-content>
           </v-list-item>
@@ -95,6 +98,9 @@
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
       @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -131,6 +137,7 @@ import CreateOrEditRule from './CreateOrEditRule'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -297,6 +304,22 @@ export default {
           ]
         }
       },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       matchingInvestigationPlaybookRules: {
         table: [],
         columns: [
@@ -355,6 +378,80 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      )
+      if (savedFilter) {
+        this.tableCredientials.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refRulesList.filterValues = savedFilter.filterValues
+          this.$refs.refRulesList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearchPlaybook()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refRulesList.filterValues = {}
+      this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      this.callForSearchPlaybook()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
+        JSON.stringify({
+          filter: this.tableCredientials.filter,
+          filterValues
+        })
+      )
+    },
+    getDefaultFilterAndSearchForMatchingPlaybook() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      )
+      if (savedFilter) {
+        this.tableCredientials.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refRulesList.filterValues = savedFilter.filterValues
+          this.$refs.refRulesList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearchPlaybook()
+    },
+    handleClearFiltersForMatchingPlaybook() {
+      this.isRestoredOrClearedFilters = true
+      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refRulesList.filterValues = {}
+      this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      this.callForSearchPlaybook()
+    },
+    handleRestoreDefaultSearchForMatchingPlaybook() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearchForMatchingPlaybook(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
+        JSON.stringify({
+          filter: this.tableCredientials.filter,
+          filterValues
+        })
+      )
+    },
     handleAllRecordsMatchingPopupClick() {
       this.matchingPopupPayload.pageSize = 75000
       this.showAllRecordsMatchingPopup = false
@@ -475,7 +572,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Playbook.${exportType.toLocaleLowerCase()}`
+            link.download = `Playbook.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})
@@ -619,7 +718,7 @@ export default {
   },
   mounted() {
     if (this.PERMISSIONS.SEARCH.hasPermission) {
-      this.callForSearchPlaybook()
+      this.getDefaultFilterAndSearch()
     }
     this.controlGetAndUpdatePermission(this.playbookId)
   },
