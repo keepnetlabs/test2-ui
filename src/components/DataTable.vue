@@ -777,7 +777,14 @@
           </div>
         </div>
       </div>
-      <div class="pagination block" v-if="pageSizes.length && isServerSide">
+      <div
+        class="pagination block"
+        v-if="
+          pageSizes.length &&
+          (tableData.length > 0 || isColumnFilterActive || search) &&
+          isServerSide
+        "
+      >
         <el-pagination
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
