@@ -332,5 +332,6 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   REPORTED_EMAIL: 'ReportedEmail',
   REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
   COMPANY_LIST: 'CompanyList',
-  COMPANY_GROUP_LIST: 'CompanyGroupList'
+  COMPANY_GROUP_LIST: 'CompanyGroupList',
+  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails'
 }

@@ -76,6 +76,9 @@
       @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
       @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     />
   </div>
 </template>
@@ -92,7 +95,11 @@ import {
 } from '@/api/company'
 import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
@@ -266,6 +273,21 @@ export default {
         ]
       }
     },
+    defaultPayload: {
+      pageSize: 1000,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
     industries: null,
     licenceTypes: null
   }),
@@ -278,6 +300,7 @@ export default {
     }
   },
   created() {
+    this.getDefaultFilterAndSearch()
     this.initMethods()
   },
   methods: {
@@ -285,6 +308,39 @@ export default {
       this.payload.pageSize = 75000
       this.showAllRecords = false
       this.getTableData()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS,
+        JSON.stringify({
+          filter: this.payload.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.initMethods()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.$refs.refDataList.filterValues = {}
+      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS)
+      this.initMethods()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refDataList.filterValues = savedFilter.filterValues
+          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
     },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
