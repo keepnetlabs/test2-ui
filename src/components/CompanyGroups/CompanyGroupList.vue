@@ -19,6 +19,7 @@
       v-bind="tableState"
       id="company-groups-data-table"
       ref="refGroupDataList"
+      :key="tableKey"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
@@ -82,6 +83,7 @@ export default {
   },
   data() {
     return {
+      tableKey: 'key-table-company-group',
       loading: false,
       tableData: [],
       isShowDeleteModal: false,
@@ -225,7 +227,39 @@ export default {
             }
           }
         }
-        this.tableState = { persistentState: tableState }
+        this.loading = true
+        searchCompanyGroups(this.payload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            tableState.initialData = data.results
+
+            let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
+            if (maxPage > tableState.currentPage) {
+              maxPage = tableState.currentPage
+            }
+            tableState.tableData = tableState.initialData.slice(
+              (maxPage - 1) * tableState.rowCount,
+              maxPage * tableState.rowCount
+            )
+            tableState.multipleSelection = tableState.initialData.filter((row) => {
+              return tableState.multipleSelection.find((selection) => {
+                return row.resourceId === selection.resourceId
+              })
+            })
+            if (tableState.search) {
+              tableState.filteredData = tableState.initialData.filter((row) => {
+                return tableState.filteredData.find((filteredRow) => {
+                  return filteredRow.resourceId === row.resourceId
+                })
+              })
+            }
+
+            this.tableState = { persistentState: tableState }
+            this.tableKey = Math.random().toString().substring(0, 5)
+          })
+          .finally(() => (this.loading = false))
       }
     } else {
       this.getDefaultFilterAndSearch()
