@@ -777,7 +777,7 @@
           </div>
         </div>
       </div>
-      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0 && isServerSide">
+      <div class="pagination block" v-if="pageSizes.length && isServerSide">
         <el-pagination
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
@@ -793,7 +793,9 @@
               {{
                 serverSideProps.pageNumber === 1
                   ? 1
-                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1 > 0
+                  ? (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+                  : 0
               }}-{{
                 serverSideProps.pageNumber * serverSideProps.pageSize >
                 serverSideProps.totalNumberOfRecords
