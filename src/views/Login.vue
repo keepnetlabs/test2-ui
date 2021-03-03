@@ -1164,6 +1164,9 @@ export default {
     background-color: #ffffff;
     max-width: 128px;
     margin-right: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     img {
       width: 100%;
     }

@@ -65,6 +65,9 @@
           @columnFilterCleared="columnFilterCleared"
           @refreshAction="getInvestigationList"
           @on-all-records-button-click="handleAllRecordsClick"
+          @set-default-search="handleSetDefaultSearch"
+          @restore-default-search="handleRestoreDefaultSearch"
+          @clear-filters="handleClearFilters"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -112,7 +115,7 @@ import newInvestigation from '../components/Investigation/NewInvestigation'
 import AppDialog from '../components/AppDialog'
 import { mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
-import { getStoreValue } from '@/model/constants/commonConstants'
+import { DEFAULT_SEARCH_CONTAINER_KEYS, getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -298,9 +301,64 @@ export default {
           }
         ]
       }
+    },
+    defaultRequestBody: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
     }
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
+      )
+      if (savedFilter) {
+        this.bodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.investigationTable.filterValues = savedFilter.filterValues
+          this.$refs.investigationTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.getInvestigationList()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.investigationTable.filterValues = {}
+      this.$refs.investigationTable.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
+      this.getInvestigationList()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
+        JSON.stringify({
+          filter: this.bodyData.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -453,7 +511,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Investigations.${exportType.toLocaleLowerCase()}`
+          link.download = `Investigations.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -573,7 +633,7 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.getInvestigationList()
+      this.getDefaultFilterAndSearch()
     }
 
     if (this.$route.query.openPopup) {

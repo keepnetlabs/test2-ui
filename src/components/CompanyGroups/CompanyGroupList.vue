@@ -332,7 +332,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Company Groups.${item.toLocaleLowerCase()}`
+            link.download = `Company Groups.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})

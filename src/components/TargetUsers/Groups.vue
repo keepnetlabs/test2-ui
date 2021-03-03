@@ -58,6 +58,9 @@
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForTargetGroups"
       @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -100,6 +103,7 @@ import DeleteGroupModal from './DeleteGroupModal'
 import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -295,6 +299,22 @@ export default {
           ]
         }
       },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       tableState: null
     }
   },
@@ -307,6 +327,43 @@ export default {
     }
   },
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP)
+      )
+      if (savedFilter) {
+        this.tableCredientials.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refGroupsTable.filterValues = savedFilter.filterValues
+          this.$refs.refGroupsTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForTargetGroups()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refGroupsTable.filterValues = {}
+      this.$refs.refGroupsTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP)
+      this.callForTargetGroups()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP,
+        JSON.stringify({
+          filter: this.tableCredientials.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -407,7 +464,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Target Groups.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Groups.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -512,7 +571,7 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.callForTargetGroups()
+      this.getDefaultFilterAndSearch()
     }
   },
   beforeDestroy() {

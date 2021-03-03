@@ -258,6 +258,9 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="getTableData"
         @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -322,7 +325,12 @@
 <script>
 import Datatable from '../../components/DataTable'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import {
@@ -507,9 +515,60 @@ export default {
           }
         ]
       }
+    },
+    defaultRequestBody: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
     }
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG))
+      if (savedFilter) {
+        this.requestBody.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
+          this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.getTableData()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refPeopleTable.filterValues = {}
+      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG)
+      this.getTableData()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG,
+        JSON.stringify({
+          filter: this.requestBody.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -556,7 +615,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Mail Configurations.${exportType.toLocaleLowerCase()}`
+          link.download = `Mail Configurations.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -773,7 +834,7 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
-      this.getTableData()
+      this.getDefaultFilterAndSearch()
     }
   }
 }

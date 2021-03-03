@@ -93,6 +93,7 @@
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
+              v-if="showFilterOptions"
             />
           </div>
           <div class="table-settings" v-if="options">
@@ -942,6 +943,11 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    showFilterOptions: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     columns: {
       type: Array,
       required: true
