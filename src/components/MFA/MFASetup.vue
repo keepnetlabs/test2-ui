@@ -41,7 +41,11 @@
             </p>
           </v-col>
           <v-col sm="12">
-            <v-form ref="refMfaSetupForm" :lazy-validation="false">
+            <v-form
+              ref="refMfaSetupForm"
+              :lazy-validation="false"
+              @submit="(event) => event.preventDefault()"
+            >
               <div>
                 <label class="mfa-setup__content--header p-0">MFA Code</label>
                 <v-text-field
@@ -56,6 +60,7 @@
                   hint="*Required"
                   persistent-hint
                   type="number"
+                  v-on:keyup.enter="$emit('confirmSetupMFA', mfaCode)"
                 ></v-text-field>
               </div>
             </v-form>
