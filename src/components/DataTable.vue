@@ -545,6 +545,7 @@
                   :filterableItems="col.filterableItems"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
+                  :is-settings-opened.sync="isSettingsOpened"
                   @handleFilterColumn="handleFilterColumn"
                   @handleClearColumnFilter="handleClearColumnFilter"
                 />

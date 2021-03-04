@@ -145,6 +145,10 @@ export default {
       type: Array,
       default: () => []
     },
+    isSettingsOpened: {
+      type: Boolean,
+      default: false
+    },
     filterableCustomFieldName: {
       type: String,
       default: null
@@ -214,7 +218,13 @@ export default {
       convertedFilterableItems: []
     }
   },
-  mounted() {},
+  watch: {
+    menu(newVal) {
+      if (newVal) {
+        this.$emit('update:isSettingsOpened', false)
+      }
+    }
+  },
   created() {
     if (this.filterableType === 'select') {
       this.filterableItems.forEach((x) => {
