@@ -94,7 +94,7 @@
               @input="handleApiKeyChange"
             ></v-text-field>
           </form-group>
-          <form-group title="Username" has-hint v-if="selectedIntegrationType.name === 'FortiNet'">
+          <form-group title="Username" has-hint v-if="isFortiNet">
             <v-text-field
               v-model.trim="formValues.userName"
               hint="*Required"
@@ -106,7 +106,7 @@
               required
             ></v-text-field>
           </form-group>
-          <form-group title="Password" has-hint v-if="selectedIntegrationType.name === 'FortiNet'">
+          <form-group title="Password" has-hint v-if="isFortiNet">
             <v-text-field
               placeholder="Enter password"
               outlined
@@ -121,7 +121,7 @@
             ></v-text-field>
           </form-group>
 
-          <v-list-item class="px-0" v-if="selectedIntegrationType.name === 'VirusTotal'">
+          <v-list-item class="px-0" v-if="isVmrayOrVirusTotal">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 API Key
@@ -250,7 +250,7 @@
               </div>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item :class="['px-0', { 'mt-3': selectedIntegrationType.name === 'VirusTotal' }]">
+          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 Tags
@@ -428,7 +428,7 @@ import {
   testAnalysis,
   updateIntegration
 } from '@/api/integrations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { COMMON_CONSTANTS, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
@@ -512,6 +512,16 @@ export default {
       }
     }
   },
+  computed: {
+    isFortiNet() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET
+    },
+    isVmrayOrVirusTotal() {
+      return [INTEGRATION_TYPES.VIRUSTOTAL, INTEGRATION_TYPES.VMRAY].includes(
+        this.selectedIntegrationType.name
+      )
+    }
+  },
   created() {
     getIntegrationTypes()
       .then((response) => {
@@ -529,7 +539,7 @@ export default {
     saveIntegration() {
       const data = { ...this.formValues }
 
-      if (this.selectedIntegrationType.name === 'VirusTotal') {
+      if (['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name)) {
         data.apiKeys = data.apiKeys.map((i) => i.value)
         data.apiCredentials = data.apiKeys.map((i) => {
           return {
@@ -544,6 +554,7 @@ export default {
           }
         ]
       }
+
       delete data.apiKeys
       delete data.userName
       delete data.password
@@ -590,7 +601,7 @@ export default {
     },
     getTestConnectionDisableStatus() {
       if (
-        this.selectedIntegrationType.name === 'VirusTotal' &&
+        ['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
         this.formValues.apiKeys[0].value &&
@@ -659,7 +670,7 @@ export default {
             (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
           ) || {}
 
-        if (this.selectedIntegrationType.name === 'VirusTotal') {
+        if (['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name)) {
           response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
             return { value: item.apiKey, status: null }
           })
@@ -713,7 +724,7 @@ export default {
         .finally(() => this.loadingState.shift('loading'))
     },
     testConnection(isSave) {
-      if (this.selectedIntegrationType.name === 'VirusTotal') {
+      if (['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name)) {
         for (let i = 0; i < this.formValues.apiKeys.length; i++) {
           const item = this.formValues.apiKeys[i]
           this.formValues.apiKeys[i].status = 'loading'
@@ -786,13 +797,26 @@ export default {
         this.formValues.uploadFileTypes = []
       }
 
-      if (name === 'VirusTotal') {
+      if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
         this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
         if (!this.formValues.apiKeys) {
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
         }
         this.formValues.userName = ''
         this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.VMRAY) {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+        }
+        if (!this.formValues.apiKeys) {
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+        }
+        this.formValues.userName = ''
+        this.formValues.password = ''
+      } else {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+        }
       }
     }
   },
