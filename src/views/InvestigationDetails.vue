@@ -788,6 +788,7 @@
                 @set-default-search="handleSetDefaultSearch"
                 @restore-default-search="handleRestoreDefaultSearch"
                 @clear-filters="handleClearFilters"
+                :show-filter-options="false"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -878,6 +879,7 @@
                 @set-default-search="handleSetDefaultSearchForTargetUsers"
                 @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
                 @clear-filters="handleClearFiltersForTargetUsers"
+                :show-filter-options="false"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -1445,6 +1447,7 @@ export default {
         tooltipText: tooltipText,
         text: text
       }
+      //exampple
       //status = 'CompletedWithError'
       //actionType = 'Warning'
       //isPermanentDelete = false
@@ -1870,8 +1873,8 @@ export default {
             //vm.$forceUpdate()
           })*/
       } else {
-        this.getDefaultFilterAndSearchForTargetUsers()
-        /* this.$store
+        //this.getDefaultFilterAndSearchForTargetUsers()
+        this.$store
           .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
             data: this.investigationTargetUsersListBodyData,
             id: this.$route.params.id
@@ -1883,7 +1886,7 @@ export default {
             this.showTargetUsersDetails = true
             this.loading = false
             vm.$forceUpdate()
-          })*/
+          })
       }
     },
     adjustTargetUserShowRecords(response = {}) {
@@ -2249,7 +2252,7 @@ export default {
     // triggered to relevant action at investigations.js
     //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
     const _this = this
-    this.getDefaultFilterAndSearch()
+    this.refreshDatatable()
   }
 }
 </script>
