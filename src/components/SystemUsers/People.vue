@@ -49,13 +49,20 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForListSystemUsers"
         @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 import { deleteSystemUser, getSystemUsers, exportSystemUsers } from '@/api/systemUsers'
@@ -236,6 +243,22 @@ export default {
           ]
         }
       },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       showCreateOrEditSystemUserModal: false,
       selectedRow: null,
       showDeleteSystemUserModal: false,
@@ -243,6 +266,45 @@ export default {
     }
   },
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
+      )
+      if (savedFilter) {
+        this.requestBody.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refSystemUsersList.filterValues = savedFilter.filterValues
+          this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForListSystemUsers()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refSystemUsersList.filterValues = {}
+      this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
+      this.callForListSystemUsers()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE,
+        JSON.stringify({
+          filter: this.requestBody.filter,
+          filterValues
+        })
+      )
+    },
     exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.requestBody.filter)),
@@ -276,7 +338,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `System Users.${exportType.toLocaleLowerCase()}`
+          link.download = `System Users.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -405,7 +469,7 @@ export default {
     }
   },
   created() {
-    this.callForListSystemUsers()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

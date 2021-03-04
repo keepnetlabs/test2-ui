@@ -331,7 +331,18 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   REST_API: 'RestApi',
   REPORTED_EMAIL: 'ReportedEmail',
   REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
+  INVESTIGATIONS: 'Investigations',
+  TARGETUSERS: 'TargetUsers',
+  TARGETUSERSGROUP: 'TargetUsersGroup',
+  TARGETGROUPUSERSTABLE: 'TargetGroupUsersTable',
+  SYSTEMUSERSPEOPLE: 'SystemUsersPeople',
+  AUDIT: 'Audit',
+  INTEGRATIONS: 'Integrations',
+  PLAYBOOKRULES: 'PlaybookRules',
+  MAILCONFIG: 'MailConfig',
   COMPANY_LIST: 'CompanyList',
   COMPANY_GROUP_LIST: 'CompanyGroupList',
-  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails'
+  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
+  INVESTIGATIONSFOLDER: 'InvestigationsFolder',
+  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
 }

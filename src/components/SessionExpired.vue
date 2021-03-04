@@ -73,7 +73,7 @@
                   dense
                   v-model="rememberMe"
                   color="#2196f3"
-                  :label="`Remember me`"
+                  :label="`Remember`"
                 ></v-checkbox>
                 <div class="flex-grow-1"></div>
                 <span
