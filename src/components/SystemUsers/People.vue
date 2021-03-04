@@ -272,7 +272,7 @@ export default {
       )
       if (savedFilter) {
         this.requestBody.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refSystemUsersList.filterValues = savedFilter.filterValues
           this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()

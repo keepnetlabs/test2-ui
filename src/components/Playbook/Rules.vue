@@ -385,7 +385,7 @@ export default {
       )
       if (savedFilter) {
         this.tableCredientials.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refRulesList.filterValues = savedFilter.filterValues
           this.$refs.refRulesList.columnKey = `column-key${Math.random()
@@ -422,7 +422,7 @@ export default {
       )
       if (savedFilter) {
         this.tableCredientials.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refRulesList.filterValues = savedFilter.filterValues
           this.$refs.refRulesList.columnKey = `column-key${Math.random()

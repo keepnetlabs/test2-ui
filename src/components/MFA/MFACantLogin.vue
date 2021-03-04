@@ -2,11 +2,11 @@
   <div class="mfa-cant-login">
     <v-card-text>
       <div class="login-title">
-        Login with Email Authentication
+        Login with SMS Authentication
       </div>
       <div class="login-desc">
         <p class="mb-2">
-          A message with verification code is sent to {{ phoneNumber }}. Enter the verification code
+          An SMS with verification code is sent to {{ phoneNumber }}. Enter the verification code
           below to continue
         </p>
       </div>

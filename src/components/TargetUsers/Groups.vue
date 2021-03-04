@@ -333,7 +333,7 @@ export default {
       )
       if (savedFilter) {
         this.tableCredientials.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refGroupsTable.filterValues = savedFilter.filterValues
           this.$refs.refGroupsTable.columnKey = `column-key${Math.random()
