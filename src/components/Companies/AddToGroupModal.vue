@@ -5,17 +5,18 @@
     :title="title"
     subtitle="Select groups to add companies to"
     @changeStatus="changeStatus"
-    size="maximum"
+    size="ultraMaximum"
     maxHeightSize="auto"
     class-name="add-to-group-modal"
   >
     <template v-slot:app-dialog-body>
       <v-form ref="refFormAddToGroup" lazy-validation>
         <Datatable
+          ref="refGroupDataList"
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :loading="isLoading"
           :count-row="5"
-          :download-button="{ show: false, disabled: false }"
+          :download-button="{ show: true, disabled: false }"
           :show-all-records="showAllRecords"
           :total-number-of-records="totalNumberOfRecords"
           :columns="tableOptions.columns"
@@ -30,6 +31,7 @@
           refName="refNameTableAddToGroup"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
+          @downloadEvent="handleTableDownload"
           @handleSelectionChange="handleSelectionChange"
           @refreshAction="getTableData"
           @on-all-records-button-click="handleAllRecordsClick"
@@ -62,6 +64,7 @@
 import AppDialog from '../AppDialog'
 import {
   addCompanyToCompanyGroup,
+  exportCompanyGroup,
   getCompanyGroups,
   searchCompanyGroups,
   updateCompanyGroup
@@ -126,7 +129,8 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 160,
+            width: 212,
+            overrideWidth: true,
             filterableType: 'date'
           }
         ],
@@ -179,6 +183,40 @@ export default {
         this.saveDisable = false
         this.showTable = false
       }
+    },
+    handleTableDownload(downloadTypes) {
+      const searchFilter = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
+      if (this.$refs.refGroupDataList && this.$refs.refGroupDataList.search) {
+        searchFilter.FilterItems = this.$refs.refGroupDataList
+          .getSearchFilterItems()
+          .filter((item) => item.FieldName.toLowerCase() !== 'companycount')
+        copyOfFilter.FilterGroups.push(searchFilter)
+      }
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.payload.orderBy,
+          ascending: this.payload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: copyOfFilter
+        }
+        exportCompanyGroup(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Company Groups.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     handleAllRecordsClick() {
       this.payload.pageSize = 75000
