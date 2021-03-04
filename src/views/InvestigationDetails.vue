@@ -1447,6 +1447,7 @@ export default {
         tooltipText: tooltipText,
         text: text
       }
+      //exampple
       //status = 'CompletedWithError'
       //actionType = 'Warning'
       //isPermanentDelete = false
