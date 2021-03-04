@@ -30,10 +30,14 @@
               <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
                   <div class="login-title">
-                    Welcome To Keepnet Labs
+                    {{ isSessionExpired ? 'Session Expired' : 'Welcome To Keepnet Labs' }}
                   </div>
                   <div class="login-desc">
-                    Please Login
+                    {{
+                      isSessionExpired
+                        ? 'Your session has been timed out. Please log in.'
+                        : 'Please Login'
+                    }}
                   </div>
                   <div v-if="isErrorActive" class="login-error-container">
                     <div v-if="isErrorActive" class="login-error-wrapper">
@@ -237,49 +241,6 @@
                     </div>
                   </div>
                 </v-card-text>
-              </div>
-              <div v-if="pageNumber == 4">
-                <v-card-text>
-                  <div class="login-title">
-                    2-Step Authentication
-                  </div>
-                  <div class="login-desc">
-                    Please enter your verification code
-                  </div>
-                  <div class="reset-password-wrapper">
-                    <v-row align="center" justify="center">
-                      <v-col md="6" sm="12">
-                        <v-text-field
-                          solo
-                          outlined
-                          v-model.trim="verificationCode"
-                          label="Verification Code"
-                          v-on:keyup.enter="onTwoStepLogin"
-                          autocomplete="disabled"
-                          validate-on-blur
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </div>
-                </v-card-text>
-                <v-card-actions class="justify-center">
-                  <v-btn
-                    color="blue"
-                    class="pr-4 mr-2 white--text"
-                    rounded
-                    @click="
-                      pageNumber = 1
-                      clearError()
-                    "
-                  >
-                    <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
-                    {{ labels.Back }}
-                  </v-btn>
-                  <v-btn color="blue" class="pl-4 white--text" rounded @click="onTwoStepLogin">
-                    LOGIN
-                    <v-icon right dark>mdi-arrow-right</v-icon>
-                  </v-btn>
-                </v-card-actions>
               </div>
               <div v-if="pageNumber === 5">
                 <v-card-text>
@@ -557,6 +518,7 @@ export default {
   },
   created() {
     //AuthenticationService.removeToken()
+    this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
     if (this.$route.query && this.$route.query.mfaRequired) {
       this.showMfaMessage = true
       this.$router.replace('/login')
@@ -927,7 +889,14 @@ export default {
     },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false
-      this.pageNumber = 1
+      if (this.pageNumber === 7) {
+        this.pageNumber = 6
+      }
+      if (this.pageNumber === 9) {
+        this.pageNumber = 8
+      } else {
+        this.pageNumber = 1
+      }
       this.clearError()
     },
     onForgetPasswordButtonClick() {

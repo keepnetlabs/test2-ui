@@ -50,7 +50,7 @@ testService.interceptors.response.use(
       return Promise.reject(error)
     } else if (error.response.status === 401 || error.response.status === 306) {
       AuthenticationService.removeToken()
-      store.dispatch('common/changeSessionExpiredStatus', true)
+      router.push({ name: 'login', params: { isSessionExpired: 'true' } })
     } else if (error.response && error.response.status !== 404) {
       store.dispatch(
         'common/createSnackBar',
@@ -74,7 +74,7 @@ testService.interceptors.response.use(
     ) {
       if (error.response.status === 401 || error.response.status === '401_UNAUTHORIZED') {
         AuthenticationService.removeToken()
-        store.dispatch('common/changeSessionExpiredStatus', true)
+        router.push({ name: 'login', params: { isSessionExpired: 'true' } })
       } else {
         router.push('/login')
       }

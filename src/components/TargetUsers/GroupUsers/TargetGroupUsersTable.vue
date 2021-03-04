@@ -442,7 +442,6 @@ export default {
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true
-      debugger
       let customFields = this.customFields.map((item) => item.name)
       this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
