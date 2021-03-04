@@ -24,6 +24,7 @@
           :requestParams="bodyData"
           :isServerSide="false"
           @refreshAction="getDatatableList"
+          @downloadEvent="exportAuditLog"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @on-all-records-button-click="handleAllRecordsClick"
@@ -46,7 +47,9 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { getAuditLogs } from '@/api/dashboard'
+import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import { exportSmtpSettings } from '@/api/smtpSettings'
 
 export default {
   name: 'Audit',
@@ -250,6 +253,41 @@ export default {
       this.$refs.refAuditList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
       localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT)
       this.getDatatableList()
+    },
+    exportAuditLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.bodyData.filter)),
+        this.$refs.refAuditList,
+        'LogDate'
+      )
+      if (this.$refs.refAuditList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+      }
+      if (this.$refs.refAuditList.sortProps && this.$refs.refAuditList.sortProps.order) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
+      exportTypes.map((exportType) => {
+        const payload = {
+          ...sortFilter,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
+        exportAuditLog(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Audit Log.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     handleRestoreDefaultSearch() {
       this.isRestoredOrClearedFilters = true
