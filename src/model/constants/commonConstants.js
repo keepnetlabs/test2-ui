@@ -346,3 +346,9 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   INVESTIGATIONSFOLDER: 'InvestigationsFolder',
   INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
 }
+
+export const INTEGRATION_TYPES = {
+  VMRAY: 'Vmray',
+  FORTINET: 'FortiNet',
+  VIRUSTOTAL: 'VirusTotal'
+}

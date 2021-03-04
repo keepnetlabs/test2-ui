@@ -236,7 +236,7 @@ export default {
       const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT))
       if (savedFilter) {
         this.bodyData.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refAuditList.filterValues = savedFilter.filterValues
           this.$refs.refAuditList.columnKey = `column-key${Math.random()

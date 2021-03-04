@@ -538,7 +538,7 @@ export default {
       const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG))
       if (savedFilter) {
         this.requestBody.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
           this.$refs.refPeopleTable.columnKey = `column-key${Math.random()

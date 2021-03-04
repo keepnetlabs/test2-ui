@@ -187,7 +187,7 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: ['FortiNet', 'VirusTotal']
+            filterableItems: ['FortiNet', 'VirusTotal', 'Vmray']
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,
@@ -313,7 +313,7 @@ export default {
       )
       if (savedFilter) {
         this.bodyData.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refIntegrationsList.filterValues = savedFilter.filterValues
           this.$refs.refIntegrationsList.columnKey = `column-key${Math.random()

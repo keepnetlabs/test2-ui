@@ -8,12 +8,16 @@
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
+    :pageSizes="tableOptions.pageSizes"
     :empty="tableOptions.iEmpty"
     :filterable="true"
     :options="true"
     :add-button="tableOptions.addButton"
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
+    is-server-side
+    :server-side-props="serverSideProps"
+    :server-side-events="{ pagination: true, search: false, sort: true }"
     @addAction="handleAddAction"
     @downloadEvent="exportTargetGroupsUserList"
     @onEmptyBtnClicked="handleAddAction"
@@ -24,6 +28,10 @@
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
+    @server-side-page-number-changed="serverSidePageNumberChanged"
+    @server-side-size-changed="serverSideSizeChanged"
+    @sortChangedEvent="sortChanged"
+    @searchChangedEvent="handleSearchChange"
     @set-default-search="handleSetDefaultSearch"
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
@@ -74,6 +82,9 @@ import {
   searchTargetGroupUsers
 } from '@/api/targetUsers'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -132,6 +143,11 @@ export default {
               Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         },
@@ -145,6 +161,11 @@ export default {
         filter: {
           Condition: 'AND',
           FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            },
             {
               Condition: 'OR',
               FilterItems: [],
@@ -251,6 +272,7 @@ export default {
       ],
       loading: false,
       tableOptions: {
+        pageSizes: [5, 10, 25],
         addButton: {
           show: this.hasAddButton,
           action: 'addAction',
@@ -269,7 +291,8 @@ export default {
       },
       tableData: [],
       customFields: [],
-      selections: []
+      selections: [],
+      serverSideProps: new ServerSideProps()
     }
   },
   watch: {
@@ -280,18 +303,65 @@ export default {
 
   created() {
     if (this.resourceId) {
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.controlRouteQuery()
+      this.setQueryValuesToPayload(this.$route.query)
       this.getDefaultFilterAndSearch()
     }
   },
 
   methods: {
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.axiosPayload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.axiosPayload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.axiosPayload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.axiosPayload.ascending = order === 'ascending'
+      this.axiosPayload.orderBy = prop
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    resetPageNumber() {
+      //generic
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE)
       )
       if (savedFilter) {
         this.axiosPayload.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refTargetGroupUsersTable.filterValues = savedFilter.filterValues
           this.$refs.refTargetGroupUsersTable.columnKey = `column-key${Math.random()
@@ -374,6 +444,10 @@ export default {
       this.loading = true
       searchTargetGroupUsers(id, this.axiosPayload)
         .then((response) => {
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           const { data: { data: { results = [] } } = {} } = response
           this.tableData = results.map((item) => {
             const { customFieldValues } = item
