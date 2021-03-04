@@ -216,14 +216,19 @@
                     @searchChangedEvent="searchChangedEvent($event)"
                     :dataLength="tableData && tableData.totalNumberOfRecords"
                     :requestParams="bodyData"
-                    :isServerSide="false"
+                    is-server-side
+                    :server-side-props="serverSideProps"
+                    :server-side-events="{ pagination: true, search: true, sort: true }"
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
-                    :server-side-events="{ search: false, sort: false, pagination: false }"
                     :downloadButton="{
                       show: false
                     }"
+                    @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
+                    @server-side-page-number-changed="serverSidePageNumberChanged"
+                    @server-side-size-changed="serverSideSizeChanged"
                     @handleSelectionChange="handleSelectionChange"
+                    :show-filter-options="false"
                   >
                     <template v-slot:table-notification>
                       <div class="target-user-import-file__header-detail">
@@ -437,6 +442,8 @@ import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -498,6 +505,7 @@ export default {
   },
   data() {
     return {
+      serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
       selectedActionName: null,
       showLicenseExceededDialog: false,
@@ -720,12 +728,12 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             },
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -741,6 +749,47 @@ export default {
     }
   },
   methods: {
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.bodyData.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.bodyData.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDatatableList()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.bodyData.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDatatableList()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDatatableList()
+    },
+    resetPageNumber() {
+      //generic
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
     getExcelName(item) {
       if (item.selectedValue === 'First Name') item.selectedValue.name = 'First Name'
       if (item.selectedValue === 'First Name') item.selectedValue.dbName = 'First Name'
@@ -859,10 +908,22 @@ export default {
     },
     getDatatableList() {
       let _this = this
-      this.bodyData.pageSize = this.mappingStatus.totalRowCount
+      //this.bodyData.pageSize = this.mappingStatus.totalRowCount
       this.step3Loading = true
+      let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
+      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
+        (acc, item) => {
+          if (!customFields.includes(item.FieldName)) acc.push(item)
+          return acc
+        },
+        []
+      )
       searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data.items
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.responsNumbers = response.data.data
           _this.tableOptions.columns = JSON.parse(JSON.stringify(_this.tableOptions.backupColumns))
           let data = ({ data, status } = response.data.data.items.results)
@@ -988,8 +1049,14 @@ export default {
       }
       this.getDatatableList()
     },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
+    searchChangedEvent(searchFilter = {}, filterActive = false) {
+      //generic
+      this.bodyData.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
@@ -1269,6 +1336,9 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getTargetUsers()
   },
   beforeRouteLeave(to, from, next) {

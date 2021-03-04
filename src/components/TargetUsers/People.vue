@@ -394,7 +394,7 @@ export default {
       )
       if (savedFilter) {
         this.payload.filter = savedFilter.filter
-        this.isColumnFilterActive = true
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
           this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
           this.$refs.refPeopleTable.columnKey = `column-key${Math.random()

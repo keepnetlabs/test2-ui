@@ -85,21 +85,16 @@ export function getNotifications(payload) {
   return request.post('/system-users/notification-setting', payload)
 }
 
-export function getPermissions() {
-  /*
-  const user = getTokenSub()
-  const token = getToken()
-
-  return request.get(`https://localhost:44313/api/Permissions?userNameOrEmail=${user}`, {
-    headers: { Authorization: `Bearer ${token}` }
-  })
-  */
-}
-
 export function getNotifiedEmailsTrend(payload) {
   return testRequest.post('/dashboard/reported-email-trends', payload)
 }
 
 export function getAuditLogs(payload) {
   return testRequest.post('/audit-logs/search', payload)
+}
+
+export function exportAuditLog(payload = {}) {
+  return testRequest.post('/audit-logs/search/export', payload, {
+    responseType: 'blob'
+  })
 }
