@@ -390,6 +390,7 @@
                     </div>
                     <div class="attachments-table">
                       <datatable
+                        id="attachmentsTable"
                         ref="refAttachmentsTable"
                         :loading="isLoading"
                         :refName="'attachmentsTable'"
@@ -600,6 +601,11 @@ export default {
           show: true,
           fixed: false,
           type: 'badge',
+          props: {
+            style: {
+              maxWidth: '100px'
+            }
+          },
           width: 170
         },
         {
@@ -784,7 +790,7 @@ export default {
         type: 'badge',
         props: {
           style: {
-            maxWidth: '110px'
+            maxWidth: '100px'
           }
         },
         hasTooltip: true
@@ -2393,7 +2399,8 @@ export default {
   padding-bottom: 0;
 }
 
-.single-wrapper #urlAnalysisTable .v-btn:not(.v-btn--round).v-size--default {
+.single-wrapper #urlAnalysisTable .v-btn:not(.v-btn--round).v-size--default,
+.single-wrapper #attachmentsTable .v-btn:not(.v-btn--round).v-size--default {
   border-radius: 4px !important;
   height: 24px !important;
 }
