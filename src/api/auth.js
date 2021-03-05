@@ -92,6 +92,13 @@ export function getMfaStatus(payload) {
   })
 }
 
+export function getMfaEnable(payload) {
+  return testRequest.get('/system-users/mfa/setup', payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function disableMfaStatus(payload) {
   return testRequest.put('/system-users/mfa/disable', payload, {
     loading: true,

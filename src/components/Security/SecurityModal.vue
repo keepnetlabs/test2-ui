@@ -174,7 +174,14 @@
 import labels from '@/model/constants/labels'
 import AppDialog from '@/components/AppDialog'
 import PasswordChecker from '@/components/Common/PasswordChecker/PasswordChecker'
-import { disableMfaStatus, getMfaQRCode, getMfaStatus, setMFA, updatePassword } from '@/api/auth'
+import {
+  disableMfaStatus,
+  getMfaEnable,
+  getMfaQRCode,
+  getMfaStatus,
+  setMFA,
+  updatePassword
+} from '@/api/auth'
 import MFASetup from '@/components/MFA/MFASetup'
 export default {
   name: 'SecurityModal',
@@ -221,7 +228,7 @@ export default {
     }
   },
   created() {
-    this.getMfaStatus()
+    this.getMfaEnable()
   },
   computed: {
     getTitle() {
@@ -284,7 +291,7 @@ export default {
             email,
             password
           }
-          getMfaQRCode(payload)
+          getMfaEnable(payload)
             .then((response) => {
               this.mfaSetupDetails = response.data['data']
               this.step = 4
@@ -310,8 +317,8 @@ export default {
           this.setupMFA()
       }
     },
-    getMfaStatus() {
-      getMfaStatus()
+    getMfaEnable() {
+      getMfaEnable()
         .then((response) => {
           this.mfaStatus = response.data.data.statusId
         })
