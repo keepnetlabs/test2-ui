@@ -935,12 +935,13 @@ export default {
                 editable: false,
                 label: item.name,
                 fixed: false,
-                sortable: false,
                 show: true,
                 type: 'text',
                 dbName: 'item.name',
                 width: 250,
-                emptyText: 'No Data'
+                emptyText: 'No Data',
+                sortable: false,
+                hideSort: true
               }
               return itemObj
             })
