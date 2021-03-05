@@ -341,6 +341,7 @@
           <router-link
             to="/phishing-reporter"
             class="menu-link-default"
+            :class="[routerName === 'Phishing Reporter' && 'active-link']"
             v-if="
               checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])
             "
