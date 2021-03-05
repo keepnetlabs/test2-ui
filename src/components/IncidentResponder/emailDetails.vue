@@ -827,8 +827,8 @@ export default {
     },
     isFileUploaded(attachments) {
       if (attachments) {
-        const data = attachments.filter((item) => item.isSendFile || item.isSendFileHash)
-        return !!data.length
+        const data = attachments.filter((item) => item.isSendFile)
+        return !data.length
       }
     },
     handleIsSha512Copied(index, attachment) {
@@ -935,6 +935,7 @@ export default {
       })
     },
     getPostDetails() {
+      let _this = this
       this.isLoading = true
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
@@ -986,7 +987,7 @@ export default {
           }
           this.columns = [...this.columns, ...colObj]
           this.tableData = tableData
-          this.attachmentTableOptions.tableData = this.mailDetails.attachments
+          _this.attachmentTableOptions.tableData = _this.mailDetails.attachments
           const urls = this.mailDetails.urls
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
