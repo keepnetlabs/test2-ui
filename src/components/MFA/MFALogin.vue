@@ -10,7 +10,7 @@
       <div class="verification-code-wrapper">
         <v-row align="center" justify="center">
           <v-col md="6" sm="12" class="mb-6">
-            <v-form ref="refMfaLoginForm">
+            <v-form ref="refMfaLoginForm" @submit="(event) => event.preventDefault()">
               <v-text-field
                 v-model.trim="verificationCode"
                 class="verification-code-wrapper--textfield"
@@ -25,6 +25,9 @@
                 required
                 :rules="[rules.required]"
                 type="number"
+                v-on:keyup.enter="
+                  $emit('verificationCodeLogin', false, verificationCode, rememberMeOnThisDevice)
+                "
               />
             </v-form>
           </v-col>

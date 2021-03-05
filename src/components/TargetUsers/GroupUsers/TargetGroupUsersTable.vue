@@ -17,7 +17,7 @@
     :select-event="tableOptions.selectEvent"
     is-server-side
     :server-side-props="serverSideProps"
-    :server-side-events="{ pagination: true, search: false, sort: true }"
+    :server-side-events="{ pagination: true, search: true, sort: true }"
     @addAction="handleAddAction"
     @downloadEvent="exportTargetGroupsUserList"
     @onEmptyBtnClicked="handleAddAction"
@@ -442,6 +442,14 @@ export default {
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true
+      let customFields = this.customFields.map((item) => item.name)
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.reduce(
+        (acc, item) => {
+          if (!customFields.includes(item.FieldName)) acc.push(item)
+          return acc
+        },
+        []
+      )
       searchTargetGroupUsers(id, this.axiosPayload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
