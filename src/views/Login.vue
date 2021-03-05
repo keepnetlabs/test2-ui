@@ -891,8 +891,7 @@ export default {
       this.isPasswordStep5Complete = false
       if (this.pageNumber === 7) {
         this.pageNumber = 6
-      }
-      if (this.pageNumber === 9) {
+      } else if (this.pageNumber === 9) {
         this.pageNumber = 8
       } else {
         this.pageNumber = 1
