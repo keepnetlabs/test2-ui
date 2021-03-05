@@ -1264,7 +1264,7 @@ export default {
           },
           props: {
             style: {
-              maxWidth: '110px'
+              maxWidth: '100px'
             }
           },
           width: '150'

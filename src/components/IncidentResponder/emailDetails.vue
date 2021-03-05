@@ -390,6 +390,7 @@
                     </div>
                     <div class="attachments-table">
                       <datatable
+                        id="attachmentsTable"
                         ref="refAttachmentsTable"
                         :loading="isLoading"
                         :refName="'attachmentsTable'"
@@ -600,6 +601,11 @@ export default {
           show: true,
           fixed: false,
           type: 'badge',
+          props: {
+            style: {
+              maxWidth: '100px'
+            }
+          },
           width: 170
         },
         {
@@ -782,6 +788,11 @@ export default {
         show: true,
         maxWidth: 170,
         type: 'badge',
+        props: {
+          style: {
+            maxWidth: '100px'
+          }
+        },
         hasTooltip: true
       }
     ],
@@ -2387,6 +2398,13 @@ export default {
 #urlAnalysisTable.k-table__wrapper {
   padding-bottom: 0;
 }
+
+.single-wrapper #urlAnalysisTable .v-btn:not(.v-btn--round).v-size--default,
+.single-wrapper #attachmentsTable .v-btn:not(.v-btn--round).v-size--default {
+  border-radius: 4px !important;
+  height: 24px !important;
+}
+
 .email-details__tabs {
   .el-tabs__content {
     margin-top: 24px;
