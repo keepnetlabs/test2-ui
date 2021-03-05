@@ -1119,10 +1119,9 @@ export default {
       })
         .then((response) => {
           this.excelInfo = response.data.data
-        })
-        .finally(() => {
           this.step1Loading = false
         })
+        .finally(() => {})
     },
     getUploadedExcelData() {
       this.step2Loading = true
