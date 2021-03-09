@@ -26,7 +26,7 @@
                 <div class="password-modal__list-header mt-6">
                   <label class="new-password-wrapper__label mb-0">{{ labels.Mfa }}</label>
                   <v-btn outlined rounded medium color="blue" @click="onMfaStatusChangeButton">{{
-                    labels.Resync
+                    mfaStatus ? labels.Resync : labels.Enable
                   }}</v-btn>
                 </div>
               </v-col>
