@@ -1616,11 +1616,11 @@ export default {
     }
     &__logo-wrapper {
       width: 180px;
-      height: 60px;
-      margin: 25px 24px 15px;
+      max-height: 48px;
+      margin: 25px 24px 16px;
       &__logo {
         width: 139px;
-        height: 50px;
+        max-height: 48px;
       }
     }
     &.v-navigation-drawer--mini-variant {
@@ -1989,6 +1989,7 @@ export default {
       }
     }
     &__icon {
+      padding-left: 10px;
       i {
         cursor: pointer;
         &:before {
