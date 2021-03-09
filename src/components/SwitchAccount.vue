@@ -382,14 +382,13 @@ export default {
 }
 
 .v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
   font-size: 20px;
   font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
+  line-height: 1.15;
   letter-spacing: normal;
-  color: var(--black-87);
+  color: #2196f3 !important;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .v-cart-icon-wrapper {

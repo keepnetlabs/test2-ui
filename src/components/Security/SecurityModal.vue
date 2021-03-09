@@ -9,128 +9,133 @@
     :max-height-size="'500'"
   >
     <template v-slot:app-dialog-body>
-      <v-card-text class="password-modal" v-if="step === 1">
-        <div class="new-password-wrapper">
-          <v-row align="center" justify="center" class="mr-0">
-            <v-col sm="12" class="p-0">
-              <div class="password-modal__list-header">
-                <label class="new-password-wrapper__label mb-0">{{ labels.LoginPassword }}</label>
-                <v-btn outlined rounded medium color="blue" @click="step = 2">{{
-                  labels.Change
-                }}</v-btn>
-              </div>
-              <div class="password-modal__list-header mt-6">
-                <label class="new-password-wrapper__label mb-0">{{ labels.Mfa }}</label>
-                <v-btn outlined rounded medium color="blue" @click="onMfaStatusChangeButton">{{
-                  mfaStatus ? labels.Disable : labels.Enable
-                }}</v-btn>
-              </div>
-            </v-col>
-          </v-row>
-        </div>
-      </v-card-text>
-      <v-card-text class="password-modal" v-if="step === 2">
-        <div class="new-password-wrapper">
-          <v-row align="center" justify="center">
-            <v-col sm="12" class="p-0">
-              <v-form ref="newPasswordByMain">
-                <div>
-                  <label class="new-password-wrapper__label mb-2">Current Password</label>
-                  <v-text-field
-                    v-model="currentPassword"
-                    label="Current password"
-                    class="reset-pass-textfield mb-6"
-                    :rules="[rules.required]"
-                    outlined
-                    hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                    :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                    :type="show1 ? '' : 'password'"
-                    @click:append="show1 = !show1"
-                    autocomplete="disabled"
-                  ></v-text-field>
+      <div v-if="loadingSecurityModal">
+        <PostCardLoading :loading="loadingSecurityModal" />
+      </div>
+      <div v-else>
+        <v-card-text class="password-modal" v-if="step === 1">
+          <div class="new-password-wrapper">
+            <v-row align="center" justify="center" class="mr-0">
+              <v-col sm="12" class="p-0">
+                <div class="password-modal__list-header">
+                  <label class="new-password-wrapper__label mb-0">{{ labels.LoginPassword }}</label>
+                  <v-btn outlined rounded medium color="blue" @click="step = 2">{{
+                    labels.Change
+                  }}</v-btn>
                 </div>
-                <div>
-                  <label class="new-password-wrapper__label mb-2">New Password</label>
-                  <v-text-field
-                    v-model="newPassword"
-                    label="Enter new password"
-                    class="reset-pass-textfield mb-6"
-                    :rules="[rules.required, rules.minPassword, rules.equal]"
-                    outlined
-                    hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                    :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                    :type="show2 ? '' : 'password'"
-                    @click:append="show2 = !show2"
-                    autocomplete="false"
-                  ></v-text-field>
+                <div class="password-modal__list-header mt-6">
+                  <label class="new-password-wrapper__label mb-0">{{ labels.Mfa }}</label>
+                  <v-btn outlined rounded medium color="blue" @click="onMfaStatusChangeButton">{{
+                    mfaStatus ? labels.Resync : labels.Enable
+                  }}</v-btn>
                 </div>
-                <div class="pl-2 pr-2">
-                  <PasswordChecker :password="newPassword" />
-                </div>
-                <div>
-                  <label class="new-password-wrapper__label mb-2">Confirm Password</label>
-                  <v-text-field
-                    v-model="reNewPassword"
-                    :rules="[rules.required, rules.minPassword, rules.equal]"
-                    label="Enter new password again"
-                    class="reset-pass-textfield"
-                    :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                    :type="showNewPassword ? '' : 'password'"
-                    @click:append="showNewPassword = !showNewPassword"
-                    outlined
-                    hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                    autocomplete="off"
-                  ></v-text-field>
-                </div>
-              </v-form>
-            </v-col>
-          </v-row>
-        </div>
-      </v-card-text>
-      <v-card-text class="password-modal" v-if="step === 3">
-        <div class="new-password-wrapper">
-          <v-row align="center" justify="center" class="mr-0">
-            <v-col sm="12" class="p-0">
-              <v-form ref="refDisableMfa">
-                <div>
-                  <label class="new-password-wrapper__label mb-2"
-                    >Enter MFA code to disable your MFA status</label
-                  >
-                  <v-text-field
-                    type="number"
-                    v-model="mfaCode"
-                    placeholder="MFA Code"
-                    class="reset-pass-textfield mt-3 max-width-228"
-                    :rules="[rules.required]"
-                    outlined
-                    hint="*Required"
-                    persistent-hint
-                    autocomplete="disabled"
-                  ></v-text-field>
-                </div>
-              </v-form>
-            </v-col>
-          </v-row>
-        </div>
-      </v-card-text>
-      <v-card-text class="password-modal" v-if="step === 4">
-        <div class="new-password-wrapper">
-          <v-row align="center" justify="center" class="mr-0">
-            <v-col sm="12" class="p-0">
-              <v-form ref="newPasswordByMain">
-                <MFASetup
-                  :mfaCode="mfaCode"
-                  :mfaSetupDetails="mfaSetupDetails"
-                  @confirmSetupMFA="confirmSetupMFA"
-                  :rules="rules"
-                  :isLogin="false"
-                  ref="mfaSetup"
-                />
-              </v-form>
-            </v-col>
-          </v-row>
-        </div>
-      </v-card-text>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card-text>
+        <v-card-text class="password-modal" v-if="step === 2">
+          <div class="new-password-wrapper">
+            <v-row align="center" justify="center">
+              <v-col sm="12" class="p-0">
+                <v-form ref="newPasswordByMain">
+                  <div>
+                    <label class="new-password-wrapper__label mb-2">Current Password</label>
+                    <v-text-field
+                      v-model="currentPassword"
+                      label="Current password"
+                      class="reset-pass-textfield mb-6"
+                      :rules="[rules.required]"
+                      outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="show1 ? '' : 'password'"
+                      @click:append="show1 = !show1"
+                      autocomplete="disabled"
+                    ></v-text-field>
+                  </div>
+                  <div>
+                    <label class="new-password-wrapper__label mb-2">New Password</label>
+                    <v-text-field
+                      v-model="newPassword"
+                      label="Enter new password"
+                      class="reset-pass-textfield mb-6"
+                      :rules="[rules.required, rules.minPassword, rules.equal]"
+                      outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="show2 ? '' : 'password'"
+                      @click:append="show2 = !show2"
+                      autocomplete="false"
+                    ></v-text-field>
+                  </div>
+                  <div class="pl-2 pr-2">
+                    <PasswordChecker :password="newPassword" />
+                  </div>
+                  <div>
+                    <label class="new-password-wrapper__label mb-2">Confirm Password</label>
+                    <v-text-field
+                      v-model="reNewPassword"
+                      :rules="[rules.required, rules.minPassword, rules.equal]"
+                      label="Enter new password again"
+                      class="reset-pass-textfield"
+                      :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                      :type="showNewPassword ? '' : 'password'"
+                      @click:append="showNewPassword = !showNewPassword"
+                      outlined
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      autocomplete="off"
+                    ></v-text-field>
+                  </div>
+                </v-form>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card-text>
+        <v-card-text class="password-modal" v-if="step === 3">
+          <div class="new-password-wrapper">
+            <v-row align="center" justify="center" class="mr-0">
+              <v-col sm="12" class="p-0">
+                <v-form ref="refDisableMfa">
+                  <div>
+                    <label class="new-password-wrapper__label mb-2"
+                      >Enter MFA code to disable your MFA status</label
+                    >
+                    <v-text-field
+                      type="number"
+                      v-model="mfaCode"
+                      placeholder="MFA Code"
+                      class="reset-pass-textfield mt-3 max-width-228"
+                      :rules="[rules.required]"
+                      outlined
+                      hint="*Required"
+                      persistent-hint
+                      autocomplete="disabled"
+                    ></v-text-field>
+                  </div>
+                </v-form>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card-text>
+        <v-card-text class="password-modal" v-if="step === 4">
+          <div class="new-password-wrapper">
+            <v-row align="center" justify="center" class="mr-0">
+              <v-col sm="12" class="p-0">
+                <v-form ref="newPasswordByMain">
+                  <MFASetup
+                    :mfaCode="mfaCode"
+                    :mfaSetupDetails="mfaSetupDetails"
+                    @confirmSetupMFA="confirmSetupMFA"
+                    :rules="rules"
+                    :isLogin="false"
+                    ref="mfaSetup"
+                  />
+                </v-form>
+              </v-col>
+            </v-row>
+          </div>
+        </v-card-text>
+      </div>
     </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 1">
@@ -176,13 +181,15 @@ import AppDialog from '@/components/AppDialog'
 import PasswordChecker from '@/components/Common/PasswordChecker/PasswordChecker'
 import {
   disableMfaStatus,
-  getMfaEnable,
-  getMfaQRCode,
   getMfaStatus,
+  getMfaQRCode,
   setMFA,
-  updatePassword
+  updatePassword,
+  getMfaSetup,
+  setMfaResync
 } from '@/api/auth'
 import MFASetup from '@/components/MFA/MFASetup'
+import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
 export default {
   name: 'SecurityModal',
   props: {
@@ -191,7 +198,8 @@ export default {
   components: {
     MFASetup,
     AppDialog,
-    PasswordChecker
+    PasswordChecker,
+    PostCardLoading
   },
   data() {
     return {
@@ -224,11 +232,12 @@ export default {
       mfaCode: null,
       mfaSetupDetails: null,
       email: null,
-      password: null
+      password: null,
+      loadingSecurityModal: false
     }
   },
   created() {
-    this.getMfaEnable()
+    this.getMfaStatus()
   },
   computed: {
     getTitle() {
@@ -254,27 +263,14 @@ export default {
   },
   methods: {
     confirmSetupMFA() {
-      this.$vlf.getItem('username', (err, username = '') => {
-        if (!err) {
-          this.email = username
-        }
-      })
-
-      this.$vlf.getItem('password', (err, password) => {
-        if (!err) {
-          this.password = password
-          let payload = {
-            email: this.email,
-            password: this.password,
-            code: this.$refs.mfaSetup.mfaCode
-          }
-          setMFA(payload)
-            .then(() => {
-              this.$emit('changePasswordChange')
-            })
-            .catch(() => {})
-        }
-      })
+      let payload = {
+        code: this.$refs.mfaSetup.mfaCode
+      }
+      setMfaResync(payload)
+        .then(() => {
+          this.$emit('changePasswordChange')
+        })
+        .catch(() => {})
     },
     setupMFA() {
       let email, password
@@ -291,7 +287,7 @@ export default {
             email,
             password
           }
-          getMfaEnable(payload)
+          getMfaSetup(payload)
             .then((response) => {
               this.mfaSetupDetails = response.data['data']
               this.step = 4
@@ -309,20 +305,18 @@ export default {
       }
     },
     onMfaStatusChangeButton() {
-      switch (this.mfaStatus) {
-        case 1:
-          this.step = 3
-          break
-        case 0:
-          this.setupMFA()
-      }
+      this.setupMFA()
     },
-    getMfaEnable() {
-      getMfaEnable()
+    getMfaStatus() {
+      this.loadingSecurityModal = true
+      getMfaStatus()
         .then((response) => {
           this.mfaStatus = response.data.data.statusId
         })
         .catch((response) => {})
+        .finally(() => {
+          this.loadingSecurityModal = false
+        })
     },
     changePassword() {
       if (this.$refs.newPasswordByMain.validate()) {
