@@ -564,7 +564,13 @@ export default {
       },
       apiUrlRules: {
         required: (v) => Validations.required(v),
-        format: (v) => Validations.url(v),
+        format: (v) => {
+          const isValid =
+            /[(http(s)?):  \/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z0-9]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+              v
+            ) || 'Invalid URL'
+          return isValid
+        },
         maxLength: (v) => Validations.maxLength(v, 1000, labels.getMaxLengthMessage('URL', 1000))
       },
       apiKeyRules: {
