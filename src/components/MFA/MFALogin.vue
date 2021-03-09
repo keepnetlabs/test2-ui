@@ -63,7 +63,7 @@
         rounded
         @click="$emit('verificationCodeLogin', false, verificationCode, rememberMeOnThisDevice)"
       >
-        Login
+        Continue
         <v-icon right dark>mdi-arrow-right</v-icon>
       </v-btn>
     </v-card-actions>

@@ -24,6 +24,7 @@ export function loginAction(payload) {
   params.append('remember_this_device', payload.rememberMeOnThisDevice || '')
   params.append('recovery_code', payload.recovery_code || '')
   return authTestRequest.post('connect/token', params, {
+    loading: true,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
@@ -78,6 +79,13 @@ export function setMFA(payload) {
   })
 }
 
+export function setMfaResync(payload) {
+  return testRequest.put('/system-users/mfa/resync', payload, {
+    loading: true,
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function cantLogin(payload) {
   return testRequest.post('/system-users/mfa/send-recovery-sms', payload, {
     loading: true,
@@ -92,7 +100,7 @@ export function getMfaStatus(payload) {
   })
 }
 
-export function getMfaEnable(payload) {
+export function getMfaSetup(payload) {
   return testRequest.get('/system-users/mfa/setup', payload, {
     loading: true,
     snackbar: COMMON_SNACKBAR
