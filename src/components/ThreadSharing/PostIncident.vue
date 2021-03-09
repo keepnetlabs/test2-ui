@@ -155,7 +155,7 @@
                 hide-selected
                 no-filter
                 label="Search for incident name or status"
-                class="first-select input-select mb-6"
+                class="first-select input-select mb-6 no-action-on-click"
                 solo
                 :rules="autocomplete"
                 required
@@ -343,6 +343,8 @@
                     titleRule.empty,
                     titleRule.minLength
                   ]"
+                  hint="*Required"
+                  persistent-hint
                 ></v-text-field>
               </v-form>
               <!--<span class="required">*Required</span>-->
@@ -363,6 +365,8 @@
                   validate-on-blur
                   :rules="[descRule.required, descRule.empty, descRule.default, descRule.minLength]"
                   v-model.trim="uploadRespond.Description"
+                  hint="*Required"
+                  persistent-hint
                 ></v-textarea>
               </v-form>
 
@@ -391,6 +395,8 @@
                       uploadRespond.CategoryResourceIdArray &&
                       uploadRespond.CategoryResourceIdArray.length < 1
                   }"
+                  hint="*Required"
+                  persistent-hint
                 >
                   <template v-slot:append-item></template>
                 </k-select>
@@ -419,6 +425,8 @@
                   class="tlp-select"
                   position="top"
                   :slots="{ selection: true, item: true }"
+                  hint="*Required"
+                  persistent-hint
                 >
                   <template v-slot:selection="{ attrs, item, select }">
                     <v-chip @click="select" :class="item.cssClass">
@@ -1818,7 +1826,7 @@
               text
               color="#2196f3"
               @click="onPreviousButtonClick(step)"
-              >Previous
+              >BACK
             </v-btn>
             <v-btn
               v-if="step === 1"

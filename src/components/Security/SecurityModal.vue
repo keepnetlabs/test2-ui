@@ -39,22 +39,25 @@
               <v-col sm="12" class="p-0">
                 <v-form ref="newPasswordByMain">
                   <div>
-                    <label class="new-password-wrapper__label mb-2">Current Password</label>
+                    <label class="new-password-wrapper__label d-block mb-2">Current Password</label>
                     <v-text-field
                       v-model="currentPassword"
                       label="Current password"
                       class="reset-pass-textfield mb-6"
-                      :rules="[rules.required]"
+                      :rules="[rules.required, rules.minPassword]"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
                       :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show1 ? '' : 'password'"
                       @click:append="show1 = !show1"
-                      autocomplete="disabled"
+                      autocomplete="new"
+                      :id="dynamicID"
+                      browser-autocomplete="username"
+                      persistent-hint
                     ></v-text-field>
                   </div>
                   <div>
-                    <label class="new-password-wrapper__label mb-2">New Password</label>
+                    <label class="new-password-wrapper__label d-block mb-2">New Password</label>
                     <v-text-field
                       v-model="newPassword"
                       label="Enter new password"
@@ -65,14 +68,17 @@
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show2 ? '' : 'password'"
                       @click:append="show2 = !show2"
-                      autocomplete="false"
+                      autocomplete="password"
+                      :id="dynamicID"
+                      browser-autocomplete="password"
+                      persistent-hint
                     ></v-text-field>
                   </div>
                   <div class="pl-2 pr-2">
                     <PasswordChecker :password="newPassword" />
                   </div>
                   <div>
-                    <label class="new-password-wrapper__label mb-2">Confirm Password</label>
+                    <label class="new-password-wrapper__label d-block mb-2">Confirm Password</label>
                     <v-text-field
                       v-model="reNewPassword"
                       :rules="[rules.required, rules.minPassword, rules.equal]"
@@ -83,7 +89,10 @@
                       @click:append="showNewPassword = !showNewPassword"
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                      autocomplete="off"
+                      autocomplete="new-password"
+                      :id="dynamicID"
+                      browser-autocomplete="new-password"
+                      persistent-hint
                     ></v-text-field>
                   </div>
                 </v-form>
@@ -97,7 +106,7 @@
               <v-col sm="12" class="p-0">
                 <v-form ref="refDisableMfa">
                   <div>
-                    <label class="new-password-wrapper__label mb-2"
+                    <label class="new-password-wrapper__label d-block mb-2"
                       >Enter MFA code to disable your MFA status</label
                     >
                     <v-text-field
@@ -109,7 +118,7 @@
                       outlined
                       hint="*Required"
                       persistent-hint
-                      autocomplete="disabled"
+                      autocomplete="nope"
                     ></v-text-field>
                   </div>
                 </v-form>
@@ -218,7 +227,7 @@ export default {
         },
         min: (v) => v.length >= 8 || 'Minimum 8 characters',
         max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
-        required: (value) => !!value || 'Required.',
+        required: (value) => !!value || 'Required',
         minPassword: (value) => {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return (
@@ -240,6 +249,9 @@ export default {
     this.getMfaStatus()
   },
   computed: {
+    dynamicID() {
+      return 'dynamicID-' + Math.floor(Math.random() * Date.now().toString())
+    },
     getTitle() {
       let title = null
       switch (this.step) {
@@ -337,6 +349,11 @@ export default {
 <style lang="scss">
 .password-modal {
   padding: 0 !important;
+  .v-text-field__slot {
+    input {
+      pointer-events: none;
+    }
+  }
   &__list-header {
     display: flex;
     justify-content: space-between;
