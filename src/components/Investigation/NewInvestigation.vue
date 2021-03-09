@@ -721,9 +721,18 @@ export default {
         } else {
           this.checkboxError = false
         }
+
         if (!this.isDateValid) {
           this.$nextTick(() => {
             const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
+          return false
+        }
+
+        if (!this.filterList.every((filter) => filter.text && filter.option)) {
+          this.$nextTick(() => {
+            const el = this.$refs.form.$el.querySelector('.error--text')
             scrollToComponent(el)
           })
           return false
