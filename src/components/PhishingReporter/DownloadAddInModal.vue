@@ -113,7 +113,7 @@
         <div class="px-0 overlay__footer">
           <a
             class="overlay__footer-text download-add-in__link"
-            href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+            href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
             target="_blank"
           >
             Installation and configuration guide

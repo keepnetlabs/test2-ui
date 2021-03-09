@@ -39,12 +39,12 @@ export const COMMON_CONSTANTS = {
     (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
   ],
   OPERATION_ITEMS: [
-    'Create',
-    'Update',
-    'Delete',
-    { text: 'CreateMany', value: 'CreateMany' },
-    { text: 'UpdateMany', value: 'UpdateMany' },
-    { text: 'DeleteMany', value: 'DeleteMany' }
+    { text: 'Create', value: 0 },
+    { text: 'Update', value: 1 },
+    { text: 'Delete', value: 2 },
+    { text: 'CreateMany', value: 3 },
+    { text: 'UpdateMany', value: 4 },
+    { text: 'DeleteMany', value: 5 }
   ],
   FILTER_OPTIONS: ['Set as default filter', 'Restore default filter', 'Clear filters']
 }
@@ -147,6 +147,7 @@ export const PROPERTY_STORE = {
   APPLICATIONID: 'applicationId',
   APPLICATIONSECRET: 'applicationSecret',
   ANALYSISENGINETYPE: 'analysisEngineType',
+  ANALYSISENGINENAME: 'analysisEngineName',
   NAME: 'name',
   PRIORITY: 'priority',
   USERNAME: 'userName',

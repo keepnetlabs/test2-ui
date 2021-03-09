@@ -26,7 +26,7 @@
       </v-list-item-content>
       <v-list-item-content>
         <a
-          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
           class="other-settings__link"
           target="_blank"
           v-if="showHeaderLink"
