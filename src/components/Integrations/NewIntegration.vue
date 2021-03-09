@@ -119,8 +119,67 @@
               class="username-field input-group--focused"
               @click:append="showPassword = !showPassword"
             ></v-text-field>
+            <div
+              v-if="isFortiNet"
+              :class="{
+                'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
+              }"
+              class="new-integration__api-key__text"
+              :style="[
+                {
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  maxHeight: '23px'
+                },
+                isFortiNetConnectionDisabled && { cursor: 'default' }
+              ]"
+              @click="testFortiNetConnection(false)"
+            >
+              <div
+                v-if="isFortiNetTestingConnection"
+                class="test-connection new-integration__api-key__disabled-text"
+                style="cursor: default !important;"
+              >
+                <v-icon
+                  class="ml-1 loading-spin"
+                  color="#00bcd4"
+                  left
+                  medium
+                  disabled
+                  style="cursor: default !important; font-size: '2px';"
+                  >mdi-rotate-left
+                </v-icon>
+                TESTING CONNECTION
+              </div>
+              <div
+                v-else
+                :class="{
+                  'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
+                }"
+                class="test-connection"
+              >
+                <v-icon
+                  v-if="isFortiNetConnected && isFortiNetConnectionSended"
+                  color="#43a047"
+                  class="ml-1"
+                  style="margin-top: -2px; font-size: 22px;"
+                  left
+                  medium
+                  >mdi-check
+                </v-icon>
+                <v-icon
+                  v-if="!isFortiNetConnected && isFortiNetConnectionSended"
+                  class="ml-1"
+                  style="margin-top: -2px; font-size: 22px;"
+                  color="#f56c6c"
+                  left
+                  medium
+                  >mdi-close
+                </v-icon>
+                <span>TEST CONNECTION </span>
+              </div>
+            </div>
           </form-group>
-
           <v-list-item class="px-0" v-if="isVmrayOrVirusTotal">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -428,7 +487,7 @@ import {
   testAnalysis,
   updateIntegration
 } from '@/api/integrations'
-import { COMMON_CONSTANTS, INTEGRATION_TYPES } from '@/model/constants/commonConstants'
+import { INTEGRATION_TYPES } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
@@ -458,6 +517,7 @@ export default {
       saveDisable: false,
       showPassword: false,
       labels,
+      isFortiNetTestingConnection: false,
       loadingState: [],
       formValues: {
         userName: '',
@@ -481,6 +541,8 @@ export default {
         isSendFileHash: false,
         isSendFile: false
       },
+      isFortiNetConnected: false,
+      isFortiNetConnectionSended: false,
       integrationTypes: [],
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
@@ -520,6 +582,10 @@ export default {
       return [INTEGRATION_TYPES.VIRUSTOTAL, INTEGRATION_TYPES.VMRAY].includes(
         this.selectedIntegrationType.name
       )
+    },
+    isFortiNetConnectionDisabled() {
+      const { userName, password, apiUrl } = this.formValues
+      return !(userName && password && apiUrl)
     }
   },
   created() {
@@ -580,6 +646,32 @@ export default {
           })
       }
     },
+    testFortiNetConnection(callApi = false) {
+      this.isFortiNetTestingConnection = true
+      const payload = {
+        apiUrl: this.formValues.apiUrl,
+        apiCredential: {
+          userName: this.formValues.userName,
+          password: this.formValues.password
+        }
+      }
+      testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
+        .then(() => {
+          if (callApi) {
+            this.saveIntegration()
+          }
+          this.isFortiNetConnected = true
+          this.saveDisable = false
+        })
+        .catch(() => {
+          this.saveDisable = false
+          this.isFortiNetConnected = false
+        })
+        .finally(() => {
+          this.isFortiNetTestingConnection = false
+          this.isFortiNetConnectionSended = true
+        })
+    },
     handleTagItemChange(value) {
       value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
@@ -620,7 +712,7 @@ export default {
     getFileTypes() {
       getFileTypes().then((response) => {
         const {
-          data: { data, status }
+          data: { data }
         } = response
         this.uploadFileTypes = data.map((item) => {
           switch (item.name) {
@@ -659,9 +751,6 @@ export default {
       this.formValues.uploadFileTypes = []
       this.formValues.isUploadOtherFileType = false
       this.showConfirmModal = false
-    },
-    updateIntegration() {
-      updateIntegration().then((response) => {})
     },
     updateVModel(id) {
       getIntegrationDetails(id).then((response) => {
@@ -703,7 +792,13 @@ export default {
     retryTestConnection(item) {
       item.status = 'loading'
       this.loadingState.push('loading')
-      testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
+      const payload = {
+        apiUrl: this.formValues.apiUrl,
+        apiCredential: {
+          apiKey: item.value
+        }
+      }
+      testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
         .then((response) => {
           if (response.data.status === 'FAILED') {
             item.status = 'failed'
@@ -766,21 +861,7 @@ export default {
             })
         }
       } else if (this.selectedIntegrationType.name === 'FortiNet') {
-        const payload = {
-          apiUrl: this.formValues.apiUrl,
-          apiCredential: {
-            userName: this.formValues.userName,
-            password: this.formValues.password
-          }
-        }
-        testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
-          .then((response) => {
-            this.saveIntegration()
-            this.saveDisable = false
-          })
-          .catch((error) => {
-            this.saveDisable = false
-          })
+        this.testFortiNetConnection(true)
       }
     },
     handleIntegrationTypeChange(val) {
