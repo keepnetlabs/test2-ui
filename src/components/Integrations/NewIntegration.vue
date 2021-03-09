@@ -569,7 +569,7 @@ export default {
         required: (v) => Validations.required(v),
         format: (v) => {
           const isValid =
-            /[(http(s)?):  \/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z0-9]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+            /[(http(s)?):  \/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
               v
             ) || 'Invalid URL'
           return isValid
