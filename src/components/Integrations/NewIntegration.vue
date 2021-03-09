@@ -56,14 +56,17 @@
             ></v-text-field>
           </form-group>
           <form-group title="Description">
-            <v-text-field
+            <v-textarea
               id="description"
+              rows="2"
+              no-resize
+              height="80"
               v-model.trim="formValues.description"
               :rules="[descriptionValidation.empty, descriptionValidation.maxLength]"
               dense
               outlined
               placeholder="Enter description"
-            ></v-text-field>
+            ></v-textarea>
           </form-group>
           <form-group title="Integration Type" has-hint>
             <k-select
