@@ -43,7 +43,7 @@
         <v-list-item-content>
           <div class="first-time__guide-container">
             <a
-              href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+              href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
               target="_blank"
             >
               Installation and configuration guide
