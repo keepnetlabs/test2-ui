@@ -464,3 +464,13 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+.vue-treeselect__control-arrow,
+.vue-treeselect svg {
+  color: #757575 !important;
+  fill: #757575 !important;
+  path {
+    color: #757575 !important;
+    fill: #757575 !important;
+  }
+}

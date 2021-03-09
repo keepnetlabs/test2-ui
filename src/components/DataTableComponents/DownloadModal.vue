@@ -13,7 +13,7 @@
         <v-checkbox
           class="download-modal__checkbox"
           color="#2196f3"
-          label="XLS"
+          label="XLSX"
           v-model="downloadType[0]"
           hide-details
         />
