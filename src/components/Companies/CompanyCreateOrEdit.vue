@@ -1014,7 +1014,7 @@ export default {
     padding: 32px 96px 0 96px;
     margin-bottom: 24px;
     flex-shrink: 0;
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       padding: 2rem 2rem;
     }
 
@@ -1124,7 +1124,7 @@ export default {
     height: 4rem;
     box-shadow: none;
     background-color: #f5f7fa;
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       padding: 0 3rem;
     }
 
@@ -1185,7 +1185,7 @@ export default {
 
   .v-stepper__content {
     padding: 32px 6rem;
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       padding: 32px 1rem;
     }
 
