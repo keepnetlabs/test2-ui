@@ -474,3 +474,11 @@ input[type=number]::-webkit-outer-spin-button {
     fill: #757575 !important;
   }
 }
+.no-action-on-click{
+  .v-select__selections{
+    input{
+      pointer-events: none !important;
+    }
+  }
+
+}

@@ -1524,7 +1524,6 @@ export default {
       margin-bottom: 1px;
     }
     &__title {
-      margin-bottom: 6px;
       h1 {
         color: white;
         font-size: 34px;
@@ -1683,7 +1682,14 @@ export default {
     .v-list-group .v-list-group__header .v-list-item__icon.v-list-group__header__append-icon {
       margin-left: 6px !important;
       min-width: 24px !important;
-      margin-right: 1px !important;
+      margin-right: -4px !important;
+    }
+    .v-list-group__header__append-icon {
+      margin-left: 6px !important;
+      min-width: 24px !important;
+      margin-right: -4px !important;
+      margin-bottom: 0 !important;
+      margin-top: 0px !important;
     }
 
     .v-list-item__title {
@@ -1707,6 +1713,8 @@ export default {
 
     .v-list-group__header__prepend-icon {
       margin-right: 16px !important;
+      margin-bottom: 0 !important;
+      margin-top: 7px !important;
     }
   }
 }
@@ -1765,11 +1773,13 @@ export default {
     .v-list-item--active > .v-list-item__icon,
     .menu-list-item > .v-list-item__icon {
       margin-right: 16px !important;
-      margin-bottom: 12px !important;
-      margin-top: 12px !important;
-
+      margin-bottom: 0 !important;
+      margin-top: 7px !important;
+      &.v-list-group__header__append-icon {
+        margin-top: 0 !important;
+      }
       i {
-        font-size: 22px !important;
+        font-size: 24px !important;
       }
     }
   }
@@ -2051,6 +2061,14 @@ export default {
     .v-list-item {
       border-left: 5px solid transparent;
     }
+    .v-list--dense .v-list-item .v-list-item__content {
+      padding: 0 !important;
+    }
+    .menu-list-item,
+    .v-list-group__header {
+      max-height: 36px;
+      min-height: 36px;
+    }
   }
 
   .v-list-item--active {
@@ -2173,9 +2191,6 @@ export default {
     // min-height: calc(100vh - 46px);
     height: 100%;
     margin-top: 16px;
-    @media only screen and (max-width: 1025px) {
-      padding: 160px 0 0 65px !important;
-    }
     @media only screen and (max-width: 769px) {
       padding: 160px 0 0 60px !important;
     }
@@ -2377,7 +2392,7 @@ export default {
   .menu-item-wrapper {
     line-height: 1.2 !important;
     border-radius: 23px;
-    padding-left: 70px;
+    padding-left: 72px;
     height: 35px !important;
     margin-right: 30px;
     border-top-left-radius: 0;
@@ -2396,17 +2411,21 @@ export default {
     }
   }
 
-  .menu-with-item .v-list-item {
-    align-items: center;
-    display: flex;
-    min-height: 48px !important;
+  .v-list-group__items {
+    .v-list-item {
+      align-items: center;
+      display: flex;
+      max-height: 36px !important;
+      min-height: 36px !important;
+      margin: 2px 0 !important;
 
-    .v-list-item__icon:first-child {
-      margin-top: 12px;
-      margin-left: 0;
+      .v-list-item__icon:first-child {
+        margin-top: 12px;
+        margin-left: 0;
 
-      i {
-        font-size: 22px !important;
+        i {
+          font-size: 22px !important;
+        }
       }
     }
   }

@@ -2671,6 +2671,8 @@ export default {
                 color: rgba(0, 0, 0, 0.87);
                 font-weight: normal;
                 text-transform: capitalize;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
 
               &--action-button {

@@ -309,7 +309,7 @@
               </div>
             </v-menu>
           </div>
-          <div class="right-side-post-container pt-2 pb-9">
+          <div class="right-side-post-container pt-2 pb-8">
             <span class="about-community-statement">{{ communityDetails.description }}</span>
             <v-row>
               <v-col cols="12" sm="5" class="about-community-table-td pb-0">

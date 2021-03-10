@@ -70,7 +70,7 @@
                       :extensions="['.xlsx', '.xls', '.csv']"
                       :is-stand-alone="true"
                       @inputFile="onFileChanged"
-                      hint="Only XLS or CSV files. Max. file size 30MB"
+                      hint="Only XLS/XLSX or CSV files. Max. file size 30MB"
                       :on-upload-progress="onUploadProgress"
                       :is-loading="step1Loading"
                     />
@@ -79,7 +79,7 @@
                       v-if="!step1Loading && excelInfo"
                     >
                       {{
-                        `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
+                        `This xls/xlsx file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
                       }}
                     </p>
                     <p class="target-user-import-file__total-excel-score" v-if="step1Loading">
@@ -1398,6 +1398,9 @@ export default {
       color: #2196f3 !important;
       box-shadow: none !important;
       margin-right: 8px;
+      &.v-btn--disabled {
+        border: none !important;
+      }
     }
     &--import-all {
       border-radius: 18px;
