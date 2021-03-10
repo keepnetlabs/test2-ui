@@ -190,13 +190,10 @@
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
                     :id="addButton.id"
-                    :class="[
-                      'button-new mr-1',
-                      addButton && addButton.disabled && 'btn-add--disabled'
-                    ]"
+                    :class="['button-new', addButton && addButton.disabled && 'btn-add--disabled']"
                     rounded
                     color="#2196f3"
-                    style="order: 3;"
+                    style="order: 3; margin-right: 10px;"
                     :disabled="addButton && addButton['disabled']"
                     @click="addButtonFunction(addButton.action)"
                   >

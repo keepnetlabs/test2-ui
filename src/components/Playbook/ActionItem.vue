@@ -166,6 +166,7 @@
             persistent-hint
             small-chips
             :return-object="false"
+            @input="handleTagItemChange"
             placeholder="Enter tags and press enter key"
             required
           />
@@ -526,6 +527,11 @@ export default {
       this.openEnginesModal = false
       this.$refs.refForm.validate()
       this.getSelectedIntegrations()
+    },
+    handleTagItemChange(value) {
+      if (value && value[value.length - 1]) {
+        value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      }
     },
     validateIntegrations(v) {
       return !!this.getSelectedIntegrations() || 'Required'

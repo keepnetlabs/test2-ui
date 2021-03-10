@@ -115,6 +115,9 @@ export default {
     },
     selectedRow: {
       type: Object
+    },
+    createdCompanyResourceId: {
+      type: String
     }
   },
   data() {
@@ -212,6 +215,10 @@ export default {
       this.toggleWelcomeEmailModal()
     },
     callForCreateSystemUser(payload) {
+      if (this.createdCompanyResourceId) {
+        payload.CompanyResourceId = this.createdCompanyResourceId
+      }
+
       createSystemUser(payload)
         .then(() => {
           this.saveDisable = false

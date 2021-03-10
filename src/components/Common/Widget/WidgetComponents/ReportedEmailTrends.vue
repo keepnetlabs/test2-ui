@@ -198,10 +198,20 @@ export default {
                 display: true,
                 labels: {
                   usePointStyle: true,
-                  lineDashOffset: 0,
                   fontColor: '#757575',
+                  generateLabels(chart = {}) {
+                    const { data } = chart
+                    return data.datasets.map((item) => {
+                      return {
+                        text: item.label,
+                        fillStyle: item.borderColor,
+                        lineWidth: 0
+                      }
+                    })
+                  },
                   fontFamily: 'Open-sans,sans-serif',
-                  padding: 12
+                  padding: 16,
+                  fontSize: 12
                 }
               }
             }
