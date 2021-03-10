@@ -460,7 +460,7 @@ export default {
       startDate: '',
       endDate: '',
       selectedDuration: 3,
-      selectedAction: 'Delete',
+      selectedAction: 'NoAction',
       name: '',
       description: '',
       privacy: false,

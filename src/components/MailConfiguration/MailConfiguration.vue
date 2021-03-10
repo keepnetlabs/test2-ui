@@ -268,8 +268,9 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on: tooltip }">
                   <v-btn
-                    class="button-new mr-1"
+                    class="button-new"
                     rounded
+                    style="margin-right: 10px;"
                     color="#2196f3"
                     v-on="{ ...tooltip, ...menu }"
                     :disabled="!checkPermissions('mail-configurations/o365', 'POST')"

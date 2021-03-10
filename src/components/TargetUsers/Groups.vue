@@ -66,9 +66,10 @@
         <v-tooltip bottom opacity="1">
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
-              class="btn-new mr-1"
+              class="btn-new"
               rounded
               color="#2196f3"
+              style="margin-right: 10px;"
               v-on="{ ...tooltip }"
               @click.native="showNewUserGroupModal = true"
               :disabled="!checkPermissions('target-groups', 'POST')"

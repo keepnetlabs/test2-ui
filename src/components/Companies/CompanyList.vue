@@ -3,6 +3,7 @@
     <create-or-edit-system-user
       v-if="showCreateOrEditSystemUserModal"
       :status="showCreateOrEditSystemUserModal"
+      :created-company-resource-id="createdCompanyResourceIdForSystemUser"
       @closeOverlayWithUpdate="toggleCreateOrEditSystemUser"
       @closeOverlay="toggleCreateOrEditSystemUser"
     />
@@ -168,6 +169,7 @@ export default {
   data: () => ({
     loading: true,
     tableData: [],
+    createdCompanyResourceIdForSystemUser: '',
     showCreateOrEditSystemUserModal: false,
     tableHeight: 0,
     extendTop: 0,
@@ -425,6 +427,9 @@ export default {
 
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+      if (!this.showCreateOrEditSystemUserModal) {
+        this.createdCompanyResourceIdForSystemUser = ''
+      }
     },
     handleSwitchCompany(account = {}) {
       this.$router.go(0)
@@ -646,7 +651,8 @@ export default {
       this.selectedRow = {}
       this.getTableData({ orderBy: 'createTime', ascending: false })
     },
-    closeFormAndOpenSystemUserModal() {
+    closeFormAndOpenSystemUserModal(createdCompanyResourceId = '') {
+      this.createdCompanyResourceIdForSystemUser = createdCompanyResourceId
       this.cancelCreateOrEditForm()
       this.toggleCreateOrEditSystemUser()
     },

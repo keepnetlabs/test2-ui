@@ -3,7 +3,7 @@
     :status="status"
     icon="mdi-alert"
     :title="getTitle"
-    :subtitle="labels.NotificationTemplate"
+    :subtitle="getSubtitle"
     id="notification-template-delete-popup"
     @changeStatus="handleCloseDialog"
   >
@@ -58,7 +58,10 @@ export default {
   },
   computed: {
     getTitle() {
-      return `${labels.Delete} ${this.selectedItem.name}`
+      return `Delete Notification Template`
+    },
+    getSubtitle() {
+      return `${this.selectedItem.name}`
     }
   },
   methods: {

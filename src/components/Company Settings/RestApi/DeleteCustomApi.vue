@@ -4,7 +4,7 @@
     icon="mdi-delete"
     :title="getTitle"
     @changeStatus="closeModal"
-    :subtitle="labels.RestApi"
+    :subtitle="getSubtitle"
     id="rest-api-delete-popup"
   >
     <template v-slot:app-dialog-body>
@@ -52,7 +52,10 @@ export default {
   },
   computed: {
     getTitle() {
-      return `${labels.Delete} ${this.selectedRow['clientName']}`
+      return `Delete Rest API`
+    },
+    getSubtitle() {
+      return `${this.selectedRow.clientName}`
     }
   },
   methods: {

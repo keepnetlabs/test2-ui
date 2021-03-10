@@ -2258,6 +2258,32 @@ export default {
 </script>
 <style lang="scss">
 .investigation-details-wrapper {
+  .table-wrapper {
+    .table-search {
+      @media (max-width: 1150px) {
+        min-width: 250px !important;
+      }
+      @media (min-width: 1151px) and (max-width: 1250px) {
+        min-width: 400px !important;
+      }
+    }
+  }
+
+  .el-pagination {
+    @media (max-width: 896px) {
+      padding: 2px 0 !important;
+    }
+    &__sizes {
+      @media (max-width: 896px) {
+        margin-right: 4px !important;
+      }
+    }
+    &__text {
+      @media (max-width: 896px) {
+        margin-right: 4px !important;
+      }
+    }
+  }
   min-height: 90vh;
   .v-navigation-drawer__border {
     display: none;
