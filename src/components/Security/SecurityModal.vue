@@ -325,7 +325,9 @@ export default {
         .then((response) => {
           this.mfaStatus = response.data.data.statusId
         })
-        .catch((response) => {})
+        .catch((response) => {
+          this.$emit('changePasswordChange')
+        })
         .finally(() => {
           this.loadingSecurityModal = false
         })
