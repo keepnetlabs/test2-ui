@@ -87,7 +87,8 @@
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn
                   :disabled="!checkPermissions('target-users/search', 'POST')"
-                  class="button-new mr-1"
+                  class="button-new"
+                  style="margin-right: 10px;"
                   rounded
                   color="#2196f3"
                   v-on="{ ...tooltip, ...menu }"
