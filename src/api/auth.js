@@ -36,7 +36,10 @@ export function getCurrentUser() {
 }
 
 export function resetPassword(payload) {
-  return testRequest.post('system-users/send-reset-password-link', { Email: payload })
+  return testRequest.post('system-users/send-reset-password-link', {
+    loading: true,
+    Email: payload
+  })
 }
 
 export function profile() {
