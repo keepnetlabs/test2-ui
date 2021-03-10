@@ -11,7 +11,7 @@
       <new-community @closeAdd="onAddClose" />
     </v-overlay>
     <v-layout id="ts-layout" wrap style="min-height: 79vh;">
-      <v-col class="main-column pr-0" cols="12" md="8">
+      <v-col class="main-column pr-4 pl-4" cols="12" md="8">
         <v-card id="ts-card" class="pl-1 pt-2 pr-1">
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
             <v-tab
@@ -64,7 +64,7 @@
           </v-tabs-items>
         </v-card>
       </v-col>
-      <v-col id="ts-right-column" class="right-column" cols="12" md="4">
+      <v-col id="ts-right-column" class="right-column pl-2" cols="12" md="4">
         <right-column
           class="right-col-desktop"
           @createCommunityAction="openCreateCommunityModal()"
@@ -636,6 +636,7 @@ export default {
     line-height: normal;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    padding-top: 8px !important;
   }
 
   .about-community-table-td-sec {
@@ -647,6 +648,7 @@ export default {
     line-height: 1.5;
     letter-spacing: normal;
     color: rgba(0, 0, 0, 0.87);
+    padding-top: 8px !important;
   }
 
   .right-side-like .v-icon,
