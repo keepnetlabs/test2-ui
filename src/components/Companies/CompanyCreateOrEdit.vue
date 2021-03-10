@@ -602,6 +602,7 @@ export default {
   data() {
     return {
       saveDisable: false,
+      createdCompanyResourceId: null,
       isAddTheFirstSystemUserShow: false,
       labels,
       stepLock: false,
@@ -721,7 +722,7 @@ export default {
       this.formData = []
       this.LicenseDates = null
       this.activeStep = 1
-      this.$emit('closeFormAndOpenSystemUserModal')
+      this.$emit('closeFormAndOpenSystemUserModal', this.createdCompanyResourceId)
     },
     getLookupContents() {
       Promise.all([
@@ -784,7 +785,11 @@ export default {
             })
         } else {
           createCompany(this.formData)
-            .then(() => {
+            .then((response) => {
+              const {
+                data: { data }
+              } = response
+              this.createdCompanyResourceId = data.resourceId
               this.saveDisable = false
               this.isAddTheFirstSystemUserShow = true
               //this.cancelForm()
