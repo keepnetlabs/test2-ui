@@ -70,6 +70,8 @@
         <template v-slot:app-dialog-footer>
           <div class="download-modal__footer justify-end">
             <app-dialog-footer
+              cancel-button-id="btn-cancel--incident-responder-roi-popup"
+              confirm-button-id="btn-save--incident-responder-roi-popup"
               :actionButtonText="labels.Save"
               :confirmButtonDisabled="isConfirmButtonDisabled"
               @handleClose="isShowRoi = false"
@@ -330,6 +332,7 @@
               </div>
               <div class="action">
                 <v-btn
+                  id="btn-link--incident-responder-playbook"
                   class="btn-action btn-playbook"
                   block
                   rounded
@@ -446,6 +449,7 @@
               </div>
               <div class="action">
                 <v-btn
+                  id="btn-link--incident-responder-investigation"
                   class="btn-action btn-investigations"
                   style="padding: 0 13px !important;"
                   block
@@ -932,7 +936,8 @@ export default {
       iEmpty: {
         message: labels.NoRulesConfigured,
         btn: labels.CreateNewRule,
-        icon: 'mdi-plus'
+        icon: 'mdi-plus',
+        id: 'btn-empty--incident-responder-rules'
       },
       addUsers: {
         show: false,
@@ -994,7 +999,8 @@ export default {
       iEmpty: {
         message: labels.NoInvestigation,
         btn: labels.StartNewInvestigation,
-        icon: 'mdi-plus'
+        icon: 'mdi-plus',
+        id: 'btn-empty--incident-responder-investigation'
       },
       selectEvent: {},
       chartOptions: {}
@@ -1381,22 +1387,26 @@ export default {
       rowActions: [
         {
           name: labels.Edit,
+          id: 'btn-edit--incident-responder-emails-row-actions',
           icon: 'mdi-pencil',
           action: 'edit',
           isNotShow: true
         },
         {
           name: labels.PreviewEmail,
+          id: 'btn-preview-email--incident-responder-emails-row-actions',
           icon: 'mdi-eye',
           action: 'irPreview'
         },
         {
           name: labels.Details,
+          id: 'btn-details--incident-responder-emails-row-actions',
           icon: 'mdi-text-box-multiple',
           action: 'handleDetails'
         },
         {
           name: labels.Investigate,
+          id: 'btn-investigate--incident-responder-emails-row-actions',
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
         }
@@ -1409,7 +1419,8 @@ export default {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right'
+        icon: 'mdi-arrow-right',
+        id: 'btn-empty--incident-responder-phishing-reporter'
       },
       selectEvent: {
         clipboard: true,
@@ -1642,7 +1653,8 @@ export default {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right'
+        icon: 'mdi-arrow-right',
+        id: 'btn-empty--incident-responder-cluster-phishing-reporter'
       },
       isColumnFilterActive: false,
       extendedViewOptions: {
@@ -1776,21 +1788,25 @@ export default {
         {
           name: labels.Edit,
           icon: 'mdi-pencil',
+          id: 'btn-edit--incident-responder-clustered-emails-row-actions',
           action: 'edit',
           isNotShow: true
         },
         {
           name: labels.PreviewEmail,
+          id: 'btn-preview-email--incident-responder-clustered-emails-row-actions',
           icon: 'mdi-eye',
           action: 'irPreview'
         },
         {
           name: labels.Details,
+          id: 'btn-details--incident-responder-clustered-emails-row-actions',
           icon: 'mdi-text-box-multiple',
           action: 'handleDetails'
         },
         {
           name: labels.Investigate,
+          id: 'btn-investigate--incident-responder-clustered-emails-row-actions',
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
         }
