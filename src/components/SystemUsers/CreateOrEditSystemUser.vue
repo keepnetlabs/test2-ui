@@ -1,13 +1,15 @@
 <template>
   <app-modal
     v-if="status"
-    :status="status"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
-    :title="getTitle"
     icon-name="mdi-account-outline"
     class-name="create-edit-system-user"
+    confirm-button-id="btn-save--system-users-people-modal"
+    cancel-button-id="btn-cancel--system-users-people-modal"
+    :status="status"
+    :title="getTitle"
     :saveDisable="saveDisable"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
   >
     <template v-slot:overlay-body>
       <send-welcome-email-to-new-user-modal
@@ -79,14 +81,8 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { mail, maxLength, required } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
-import {
-  createSystemUser,
-  getUserRoles,
-  sendInformationEmail,
-  updateSystemUser
-} from '@/api/systemUsers'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { scrollToComponent, setGlobalUserData } from '@/utils/functions'
+import { createSystemUser, sendInformationEmail, updateSystemUser } from '@/api/systemUsers'
+import { scrollToComponent } from '@/utils/functions'
 import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import InputLastName from '@/components/Common/Inputs/InputLastName'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -166,12 +162,6 @@ export default {
     closeOverlay() {
       this.$emit('closeOverlay')
     },
-    /*
-    handleTelChange(val) {
-      this.$refs.refTelInput.phone = val
-    },
-
-     */
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
     },
