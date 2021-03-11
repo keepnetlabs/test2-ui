@@ -233,6 +233,7 @@
       <datatable
         ref="refPeopleTable"
         id="mail-configurations-data-table"
+        selectable
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
