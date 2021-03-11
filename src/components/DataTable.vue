@@ -537,6 +537,7 @@
                   v-if="col.filterableType"
                   v-model="filterValues[col.property]"
                   :column="column"
+                  :custom-field-name="col.customFieldName"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
