@@ -15,6 +15,7 @@
     <div class="add-in-settings__footer mr-2" :class="className">
       <v-btn
         @click="submit"
+        id="btn-save--phishing-reporter-settings"
         class="white--text btn-util btn-save-changes"
         color="#2196f3"
         rounded
@@ -24,6 +25,7 @@
       </v-btn>
       <v-btn
         @click="submitWithDownload"
+        id="btn-save-download--phishing-reporter-settings"
         class="white--text btn-util btn-download-add-in ml-3"
         color="#00bcd4"
         rounded
@@ -32,7 +34,11 @@
         <v-icon left>mdi-download</v-icon>
         {{ labels.SaveAndDownload }}
       </v-btn>
-      <div class="add-in-settings__link" @click="versionHistoryModalStatus = true">
+      <div
+        class="add-in-settings__link"
+        id="btn-download-history--phishing-reporter-settings"
+        @click="versionHistoryModalStatus = true"
+      >
         DOWNLOAD History
       </div>
     </div>

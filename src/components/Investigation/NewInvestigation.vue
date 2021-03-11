@@ -297,11 +297,16 @@
     </template>
     <template v-slot:overlay-footer>
       <div class="new-investigation-footer">
-        <v-btn class="k-overlay__btn-cancel" rounded @click="onCancelClicked">{{
-          labels.Cancel
-        }}</v-btn>
+        <v-btn
+          class="k-overlay__btn-cancel"
+          id="btn-cancel--investigation-modal"
+          rounded
+          @click="onCancelClicked"
+          >{{ labels.Cancel }}</v-btn
+        >
         <v-btn
           :disabled="saveDisable"
+          id="btn-save--investigation-modal"
           class="k-overlay__btn-save white--text"
           style="width: auto;"
           rounded

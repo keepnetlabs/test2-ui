@@ -15,7 +15,8 @@
     <el-tabs id="settings-el-tabs" v-model="tab" v-if="!inModal || applicationType === 'Outlook'">
       <el-tab-pane
         label="Add-in Settings"
-        name="first"
+        name="phishing-reporter-settings-add-in-settings"
+        id="phishing-reporter-settings-add-in-settings-content"
         v-if="!inModal || applicationType === 'Outlook'"
       >
         <addin-settings
@@ -30,7 +31,8 @@
       /></el-tab-pane>
       <el-tab-pane
         label="Email Settings"
-        name="second"
+        name="phishing-reporter-settings-email-settings"
+        id="phishing-reporter-settings-email-settings-content"
         v-if="!inModal || applicationType === 'Outlook'"
       >
         <email-settings
@@ -45,7 +47,8 @@
       </el-tab-pane>
       <el-tab-pane
         label="Other Settings"
-        name="third"
+        name="phishing-reporter-settings-other-settings"
+        id="phishing-reporter-settings-other-settings-content"
         v-if="!inModal || applicationType === 'Outlook'"
       >
         <other-settings
@@ -60,7 +63,8 @@
       </el-tab-pane>
       <el-tab-pane
         label="Diagnostic Tool"
-        name="fourth"
+        name="phishing-reporter-settings-diagnostic-tool"
+        id="phishing-reporter-settings-diagnostic-tool-content"
         v-if="!inModal || applicationType === 'DiagnosticTool'"
       >
         <diagnostic-tool
@@ -116,13 +120,13 @@ export default {
     formData() {
       this.$nextTick(() => {
         setTimeout(() => {
-          if (this.tab !== 'first') {
+          if (this.tab !== 'phishing-reporter-settings-add-in-settings') {
             let transformValue
             switch (this.tab) {
-              case 'second':
+              case 'phishing-reporter-settings-email-settings':
                 transformValue = 'translateX(130px)'
                 break
-              case 'third':
+              case 'phishing-reporter-settings-other-settings':
                 transformValue = 'translateX(253px)'
                 break
               default:
@@ -146,7 +150,7 @@ export default {
   data() {
     return {
       saveDisable: false,
-      tab: 'first',
+      tab: 'phishing-reporter-settings-add-in-settings',
       spinnerStatus: false,
       downloadAddInModalStatus: false
     }
