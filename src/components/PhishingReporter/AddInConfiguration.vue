@@ -101,6 +101,7 @@
         <div class="add-in-configuration__footer__right-col">
           <v-btn
             @click="changeStep(-1)"
+            id="btn-back--phishing-reporter-settings-add-in-configuration"
             class="add-in-configuration__footer-btn-back mr-4"
             rounded
             v-if="step > 1"
@@ -109,6 +110,7 @@
           </v-btn>
           <v-btn
             @click="changeStep(+1)"
+            id="btn-next--phishing-reporter-settings-add-in-configuration"
             class="add-in-configuration__footer-btn-next"
             color="#2196f3"
             rounded
@@ -118,6 +120,7 @@
           </v-btn>
           <v-btn
             @click="submit"
+            id="btn-save--phishing-reporter-settings-add-in-configuration"
             class="add-in-configuration__footer-btn-next"
             color="#2196f3"
             rounded

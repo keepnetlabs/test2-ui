@@ -2626,7 +2626,7 @@ export default {
     onEmptyReportedEmailsBtnClicked() {
       this.$router.push({
         name: 'Phishing Reporter',
-        params: { tab: 'second' }
+        params: { tab: 'phishing-reporter-settings' }
       })
     },
     irPreviewOnClick(row) {

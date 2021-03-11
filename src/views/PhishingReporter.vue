@@ -128,16 +128,18 @@
             <el-tabs v-model="tab" @tab-click="handleTabClick">
               <el-tab-pane
                 :label="labels.Users"
-                name="first"
+                name="phishing-reporter-users"
+                id="phishing-reporter-users-content"
                 v-if="checkPermissions('phishing-reporter/search', 'POST')"
                 ><users
-                  v-if="tab === 'first'"
+                  v-if="tab === 'phishing-reporter-users'"
                   ref="refUsers"
                   @callForPhishingReporterSummary="getPhishingReportSummary()"
               /></el-tab-pane>
               <el-tab-pane
                 :label="labels.Settings"
-                name="second"
+                name="phishing-reporter-settings"
+                id="phishing-reporter-settings-content"
                 v-if="checkPermissions('phishing-reporter', 'GET')"
               >
                 <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
@@ -179,7 +181,7 @@ export default {
   data() {
     return {
       loading: true,
-      tab: 'first',
+      tab: 'phishing-reporter-users',
       labels,
       isHeaderLoading: true,
       phishingReportSummary: null,
@@ -388,7 +390,7 @@ export default {
             ref: 'refFirstTime',
             formData: null
           }
-          this.tab = 'second'
+          this.tab = 'phishing-reporter-settings'
         })
         .finally(() => (this.isLoading = false))
     }

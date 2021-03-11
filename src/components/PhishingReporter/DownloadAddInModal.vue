@@ -31,6 +31,7 @@
               Download
             </v-btn>
             <v-btn
+              id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
               class="white--text btn-util btn-download-add-in"
               style="margin-left: -6px;"
               color="#2196f3"
@@ -52,6 +53,7 @@
               </template>
             </v-btn>
             <v-btn
+              id="btn-download-office--phishing-reporter-settings-add-in-modal"
               class="white--text btn-util btn-download-add-in mr-n1"
               color="#2196f3"
               rounded
@@ -118,7 +120,11 @@
           >
             Installation and configuration guide
           </a>
-          <div @click="$emit('handleClose')" class="overlay__footer-text download-add-in__link">
+          <div
+            @click="$emit('handleClose')"
+            id="btn-cancel--phishing-reporter-settings-add-in-modal"
+            class="overlay__footer-text download-add-in__link"
+          >
             Close
           </div>
         </div>
