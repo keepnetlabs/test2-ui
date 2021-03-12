@@ -36,10 +36,16 @@
     </template>
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
-        <v-btn @click="closeOverlay" color="#f56c6c" class="delete-user__footer-button" text>{{
-          labels.Cancel
-        }}</v-btn>
         <v-btn
+          @click="closeOverlay"
+          id="btn-cancel--add-companies-to-company-group-modal"
+          color="#f56c6c"
+          class="delete-user__footer-button"
+          text
+          >{{ labels.Cancel }}</v-btn
+        >
+        <v-btn
+          id="btn-save--add-companies-to-company-group-modal"
           @click="confirm"
           :disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
           color="#2196f3"

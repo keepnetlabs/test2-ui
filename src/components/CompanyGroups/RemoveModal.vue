@@ -5,6 +5,8 @@
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
+        cancel-button-id="btn-cancel--company-group-detail-popup"
+        confirm-button-id="btn-delete--company-group-detail-popup"
         :confirm-button-disabled="saveDisable"
         @handleClose="closeModal"
         @handleConfirm="confirmRemove"
