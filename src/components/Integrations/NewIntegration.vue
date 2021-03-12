@@ -30,6 +30,28 @@
         </div>
       </v-card>
     </v-overlay>
+    <app-dialog
+      v-if="isShowErrorMessage"
+      title="Error Occurred"
+      icon="mdi-alert"
+      className="integration-error-message-popup"
+      :status="isShowErrorMessage"
+      :body="errorMessageOfApiKey"
+      @changeStatus="isShowErrorMessage = false"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex" style="justify-content: flex-end;">
+          <v-btn
+            id="btn-close--phishing-reporter-settings-download-history-modal"
+            class="pa-0 k-dialog__button"
+            text
+            color="#2196f3"
+            @click="isShowErrorMessage = false"
+            >CLOSE
+          </v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <app-modal
       v-if="showModal"
       :status="showModal"
@@ -215,7 +237,13 @@
                     v-if="item.status === 'failed' && item.value.length > 0"
                     class="connection-error-state"
                   >
-                    {{ item.errorMessage || 'Error' }}
+                    <span>{{ getErrorMessageOfApiKey(item) }}</span>
+                    <span
+                      v-if="isShowSeeMore(item)"
+                      style="cursor: pointer;"
+                      @click="showErrorMessage(item)"
+                      >See error message</span
+                    >
                   </div>
                   <div v-if="!!item.status" class="new-integration__api-keys__connection-status">
                     <v-icon
@@ -498,9 +526,11 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import AppDialog from '@/components/AppDialog'
 export default {
   name: 'NewIntegration',
   components: {
+    AppDialog,
     KSelect,
     FormGroup,
     AppModal,
@@ -519,6 +549,8 @@ export default {
     return {
       saveDisable: false,
       showPassword: false,
+      errorMessageOfApiKey: '',
+      isShowErrorMessage: false,
       labels,
       isFortiNetTestingConnection: false,
       loadingState: [],
@@ -611,6 +643,18 @@ export default {
     this.getFileTypes()
   },
   methods: {
+    getErrorMessageOfApiKey(item) {
+      const message = item.errorMessage || 'Error'
+      return `${message.substring(0, 75)}...`
+    },
+    isShowSeeMore(item) {
+      const message = item.errorMessage || 'Error'
+      return message.length > 75
+    },
+    showErrorMessage(item) {
+      this.isShowErrorMessage = true
+      this.errorMessageOfApiKey = item.errorMessage || 'Error'
+    },
     saveIntegration() {
       const data = { ...this.formValues }
 
@@ -1290,6 +1334,18 @@ export default {
     letter-spacing: normal;
     text-align: center;
     color: #f56c6c;
+  }
+}
+.integration-error-message-popup {
+  .k-dialog__header {
+    padding: 12px 24px !important;
+    .v-cart-icon-wrapper {
+      display: none;
+    }
+  }
+
+  .k-dialog__title {
+    color: #f56c6c !important;
   }
 }
 </style>
