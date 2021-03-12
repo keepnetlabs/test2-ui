@@ -60,6 +60,7 @@
         </form-group>
         <form-group v-if="selectedRow">
           <v-btn
+            id="btn-send-information-email--system-users-people-modal"
             @click="callForSendInformationEmail(selectedRow.resourceId)"
             color="#2196f3"
             rounded

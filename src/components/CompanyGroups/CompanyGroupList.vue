@@ -136,18 +136,21 @@ export default {
           download: false
         },
         iEmpty: {
+          id: 'btn-empty--company-group',
           message: 'No company groups defined',
           btn: 'ADD A COMPANY GROUP',
           icon: 'mdi-account-plus'
         },
         addButton: {
           show: true,
+          id: 'btn-add--company-group',
           action: 'addButton',
           tooltip: 'Add Company Group',
           disabled: !this.checkPermissions('company-groups', 'POST')
         },
         rowActions: [
           {
+            id: 'btn-edit--company-group-row-actions',
             name: 'Edit this row',
             icon: 'mdi-pencil',
             action: 'editAction',
@@ -155,6 +158,7 @@ export default {
             disabled: !this.checkPermissions('company-groups/{resourceId}', 'PUT')
           },
           {
+            id: 'btn-delete--company-group-row-actions',
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',

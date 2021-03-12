@@ -41,6 +41,7 @@
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
         <v-btn
+          id="btn-back--company-add-to-group-modal"
           @click="changeStatus(false)"
           color="#f56c6c"
           class="delete-user__footer-button"
@@ -48,6 +49,7 @@
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
+          id="btn-save--company-add-to-group-modal"
           @click="confirm"
           :disabled="(selectedArray && selectedArray.length === 0) || saveDisable"
           color="#2196f3"
