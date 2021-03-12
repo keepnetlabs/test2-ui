@@ -225,33 +225,39 @@ export default {
         download: false
       },
       iEmpty: {
+        id: 'btn-empty--company-group-detail',
         message: 'No company defined',
         btn: 'ADD A COMPANY',
         icon: 'mdi-account-plus'
       },
       addButton: {
         show: true,
+        id: 'btn-add--company-group-detail',
         action: 'addButton',
         tooltip: 'Add Company to Company Group'
       },
       rowActions: [
         {
           name: 'Edit this row',
+          id: 'btn-edit--company-group-detail-row-actions',
           icon: 'mdi-pencil',
           action: 'editAction',
           isNotShow: true
         },
         {
           name: 'Add to a company group',
+          id: 'btn-add--company-group-detail-add-to-company-group-row-actions',
           icon: 'mdi-account-multiple-plus',
           action: 'AddGroupToModal'
         },
         {
           name: 'Create a new company group with company',
+          id: 'btn-add--company-group-detail-create-new-company-row-actions',
           icon: 'mdi-account-multiple',
           action: 'createNewGroupWithCompany'
         },
         {
+          id: 'btn-delete--company-group-detail-row-actions',
           name: 'Remove from group',
           icon: 'mdi-minus-circle',
           action: 'remove'

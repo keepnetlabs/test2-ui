@@ -1,10 +1,10 @@
 <template>
   <div>
     <add-in-configuration
-      @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
-      @getPhishingReport="getReport"
       v-if="showAddInConfiguration"
       :status="showAddInConfiguration"
+      @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
+      @getPhishingReport="getReport"
       @closeOverlay="showAddInConfiguration = false"
     />
 
@@ -30,6 +30,7 @@
             <v-btn
               @click="changeAddInConfigurationStatus(true)"
               rounded
+              id="btn--phishing-reporter-settings-configure-add-in"
               class="white--text first-time__btn-util"
               color="#2196f3"
             >

@@ -135,6 +135,9 @@ export default {
     column: {
       type: Object
     },
+    customFieldName: {
+      type: String
+    },
     filterProps: {
       type: Object
     },
@@ -262,55 +265,71 @@ export default {
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
     },
-    emitValue(textValue = '', selectValue = '', fieldName = '') {
-      this.$emit('input', { textValue, selectValue, fieldName })
+    emitValue(textValue = '', selectValue = '', fieldName = '', customFieldName = null) {
+      const emittedObj = { textValue, selectValue, fieldName }
+      if (customFieldName) {
+        emittedObj['CustomFieldName'] = customFieldName
+      }
+      this.$emit('input', emittedObj)
     },
     handleFilter() {
       this.menu = false
       this.isFilterActive = true
-
+      const CustomFieldName = this.customFieldName
+      const FieldName = this.customFieldName ? '_CustomField' : this.fieldName
       if (this.filterableType === 'text') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
-          FieldName: this.fieldName,
-          Operator: this.filteredSelectValue
+          FieldName,
+          Operator: this.filteredSelectValue,
+          CustomFieldName
         })
-        this.emitValue(this.filterValue, this.filteredSelectValue, this.fieldName)
+        this.emitValue(this.filterValue, this.filteredSelectValue, FieldName, CustomFieldName)
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
-          FieldName: this.fieldName,
-          Operator: this.filteredSelectValueNum
+          FieldName,
+          Operator: this.filteredSelectValueNum,
+          CustomFieldName
         })
-        this.emitValue(this.filterValue, this.filteredSelectValueNum, this.fieldName)
+        this.emitValue(this.filterValue, this.filteredSelectValueNum, FieldName, CustomFieldName)
       }
       if (this.filterableType === 'date') {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
               Value: this.filteredDateRangeValue[0],
-              FieldName: this.fieldName,
-              Operator: '>='
+              FieldName,
+              Operator: '>=',
+              CustomFieldName
             },
             {
               value: this.filteredDateRangeValue[1],
-              FieldName: this.fieldName,
-              Operator: '<='
+              FieldName,
+              Operator: '<=',
+              CustomFieldName
             }
           ])
           this.emitValue(
             [this.filteredDateRangeValue[0], this.filteredDateRangeValue[1]],
             this.filteredSelectValueDate,
-            this.fieldName
+            FieldName,
+            CustomFieldName
           )
         } else {
           this.$emit('handleFilterColumn', {
             Value: this.filteredDateValue,
-            FieldName: this.fieldName,
-            Operator: this.filteredSelectValueDate
+            FieldName,
+            Operator: this.filteredSelectValueDate,
+            CustomFieldName
           })
-          this.emitValue(this.filteredDateValue, this.filteredSelectValueDate, this.fieldName)
+          this.emitValue(
+            this.filteredDateValue,
+            this.filteredSelectValueDate,
+            FieldName,
+            CustomFieldName
+          )
         }
       }
       if (this.filterableType === 'select') {
@@ -318,10 +337,11 @@ export default {
         const Operator = 'Include'
         this.$emit('handleFilterColumn', {
           Value,
-          FieldName: this.fieldName,
-          Operator
+          FieldName,
+          Operator,
+          CustomFieldName
         })
-        this.emitValue(this.filterValue, Value, this.fieldName)
+        this.emitValue(this.filterValue, Value, FieldName, CustomFieldName)
       }
     }
   },

@@ -4,9 +4,9 @@
       <create-or-edit-system-user
         v-if="showCreateOrEditSystemUserModal"
         :status="showCreateOrEditSystemUserModal"
+        :selectedRow="selectedRow"
         @closeOverlayWithUpdate="closeOverlayWithUpdate"
         @closeOverlay="toggleCreateOrEditSystemUser"
-        :selectedRow="selectedRow"
       />
       <delete-system-user-modal
         v-if="showDeleteSystemUserModal"
@@ -205,6 +205,7 @@ export default {
           {
             name: 'Edit',
             icon: 'mdi-pencil',
+            id: 'btn-edit--system-users-people-row-actions',
             action: 'editAction',
             disabled: !this.checkPermissions('system-users/{resourceId}', 'PUT')
           },
@@ -212,17 +213,20 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
+            id: 'btn-delete--system-users-people-row-actions',
             disabled: !this.checkPermissions('system-users/{resourceId}', 'DELETE')
           }
         ],
         empty: {
           message: 'You do not have any System Users',
           btn: 'Create a New System User',
+          id: 'btn-empty--system-users-people',
           icon: 'mdi-plus'
         },
         addButton: {
           show: true,
           action: 'handleAddNewSystemUsers',
+          id: 'btn-add--system-users-people',
           tooltip: 'Add a New System User',
           disabled: !this.checkPermissions('system-users', 'POST')
         }

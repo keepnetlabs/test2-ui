@@ -3,10 +3,9 @@
     <v-layout wrap class="system-users__container">
       <v-card class="system-users__container-card">
         <el-tabs v-model="tab">
-          <el-tab-pane label="People" name="first"><people ref="refPeople" /></el-tab-pane>
-          <!--<el-tab-pane label="User Roles" name="second">
-            <user-roles ref="refUserRoles" />
-          </el-tab-pane>-->
+          <el-tab-pane label="People" name="system-users--people" id="system-users--people-content"
+            ><people ref="refPeople"
+          /></el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -15,7 +14,6 @@
 
 <script>
 import People from '@/components/SystemUsers/People'
-import UserRoles from '@/components/SystemUsers/UserRoles'
 export default {
   name: 'SystemUsers',
   components: {
@@ -23,8 +21,7 @@ export default {
   },
   data() {
     return {
-      tabItems: ['People', 'User Roles'],
-      tab: 'first'
+      tab: 'system-users--people'
     }
   },
   methods: {
@@ -33,7 +30,7 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    const { refPeople, refUserRoles } = this.$refs
+    const { refPeople } = this.$refs
     if (refPeople && refPeople.showCreateOrEditSystemUserModal) {
       refPeople.toggleCreateOrEditSystemUser()
       next(false)
@@ -52,7 +49,7 @@ export default {
     margin-top: 24px;
   }
   &__container {
-    padding: 0px 16px 24px 16px !important;
+    padding: 0 16px 24px 16px !important;
     width: 100%;
     .v-slide-group__next--disabled,
     .v-slide-group__prev--disabled {

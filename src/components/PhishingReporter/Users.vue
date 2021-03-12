@@ -9,7 +9,12 @@
     >
       <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
       <template v-slot:app-dialog-footer>
-        <app-dialog-footer @handleClose="isWantToDelete = false" @handleConfirm="deleteUser" />
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteUser"
+          cancel-button-id="btn-cancel--phishing-reporter-users-popup"
+          confirm-button-id="btn-delete--phishing-reporter-users-popup"
+        />
       </template>
     </app-dialog>
 
@@ -103,7 +108,6 @@ import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
 import Badge from '@/components/Badge'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
@@ -253,12 +257,14 @@ export default {
           }
         ],
         empty: {
-          message: 'No Users'
+          message: 'No Users',
+          id: 'btn-empty--phishing-reporter-users'
         },
         rowActions: [
           {
             name: 'Delete',
             icon: 'mdi-delete',
+            id: 'btn-delete--phishing-reporter-users-row-actions',
             action: 'deleteAction'
           }
         ],

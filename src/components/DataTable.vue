@@ -537,6 +537,7 @@
                   v-if="col.filterableType"
                   v-model="filterValues[col.property]"
                   :column="column"
+                  :custom-field-name="col.customFieldName"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
@@ -564,11 +565,12 @@
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
                         <v-btn
-                          @click="handleEdit(scope.row, scope.$index)"
+                          v-on="on"
                           class="btn-hover"
                           icon
-                          v-on="on"
                           :disabled="rowActions[0].disabled"
+                          :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                          @click="handleEdit(scope.row, scope.$index)"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -580,11 +582,12 @@
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
                         <v-btn
-                          @click="rowAct(rowActions[0].action, scope.row, scope)"
+                          v-on="on"
                           class="btn-hover"
                           icon
-                          v-on="on"
                           :disabled="rowActions[0].disabled"
+                          :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                          @click="rowAct(rowActions[0].action, scope.row, scope)"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -614,10 +617,11 @@
                     </template>
                     <v-list class="v-cart-dropdown-list el-table__action-buttons">
                       <v-list-item
-                        :key="ind"
-                        class="sub-menu-el"
-                        v-for="(act, ind) of rowActions"
                         v-if="!act.subElements && !act.isNotShow"
+                        v-for="(act, ind) of rowActions"
+                        :key="ind"
+                        :id="`${rowActions[ind].id}-${Math.random().toString().substring(2)}`"
+                        class="sub-menu-el"
                       >
                         <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
                           <v-icon class="pr-3">{{ act.icon }}</v-icon>
@@ -666,10 +670,11 @@
                 <v-tooltip bottom right>
                   <template v-slot:activator="{ on }">
                     <v-btn
+                      v-on="on"
                       @click.native="rowAct(rowActions[0].action, scope.row, scope)"
+                      :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
                       class="btn-hover"
                       icon
-                      v-on="on"
                       :disabled="rowActions[0].disabled"
                     >
                       <v-icon :class="rowActions[0].className">{{ rowActions[0].icon }}</v-icon>
