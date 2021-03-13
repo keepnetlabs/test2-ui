@@ -13,6 +13,8 @@
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          cancel-button-id="btn-cancel--add-first-system-user-company-modal-popup"
+          confirm-button-id="btn-confirm--add-first-system-user-company-modal-popup"
           cancel-button-text="I’ll Do it later"
           cancel-button-color="#00bcd4"
           action-button-text="YES, create a system user"
@@ -534,6 +536,7 @@
       <div>
         <v-btn
           v-if="canPrev"
+          id="btn-back--company-modal"
           class="playbook-rule-form__button mr-4"
           outlined
           rounded
@@ -545,6 +548,7 @@
 
         <v-btn
           v-if="canNext"
+          id="btn-next--company-modal"
           class="playbook-rule-form__button"
           style="color: white;"
           rounded
@@ -556,6 +560,7 @@
 
         <v-btn
           v-if="!canNext"
+          id="btn-save--company-modal"
           class="playbook-rule-form__button white--text"
           rounded
           color="#2196f3"

@@ -349,7 +349,7 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
-            prepend-icon="mdi-briefcase"
+            prepend-icon="mdi-briefcase-variant"
             no-action
             :class="['menu-with-item menu-link-default', getCompanyClasses]"
           >
@@ -1130,9 +1130,9 @@ export default {
       if (this.mini) {
         return 'left: 5px !important;'
       }
-      return 'left : 232px !important;'
+      return 'left : 244px !important;'
       if (this.drawer) {
-        return 'left: 232px !important;'
+        return 'left: 244px !important;'
       }
       return 'left : 262px !important;'
     },
@@ -1566,7 +1566,7 @@ export default {
   .page-nav {
     overflow: visible;
     background: white !important;
-    padding-top: 218px;
+    padding-top: 210px;
     z-index: 7 !important;
     &__left-menu-mini {
       width: 56px;
@@ -1581,6 +1581,7 @@ export default {
       }
     }
     &__content {
+      padding-top: 2px;
     }
     &__fixed-content {
       position: fixed;
@@ -1614,11 +1615,10 @@ export default {
       margin-left: -15px;
     }
     &__logo-wrapper {
-      width: 180px;
+      max-width: 150px;
       max-height: 48px;
-      margin: 25px 24px 16px;
+      margin: 24px 24px 16px;
       &__logo {
-        width: 139px;
         max-height: 48px;
       }
     }
@@ -1714,7 +1714,7 @@ export default {
     .v-list-group__header__prepend-icon {
       margin-right: 16px !important;
       margin-bottom: 0 !important;
-      margin-top: 7px !important;
+      margin-top: 13px !important;
     }
   }
 }
@@ -1774,7 +1774,7 @@ export default {
     .menu-list-item > .v-list-item__icon {
       margin-right: 16px !important;
       margin-bottom: 0 !important;
-      margin-top: 7px !important;
+      margin-top: 13px !important;
       &.v-list-group__header__append-icon {
         margin-top: 0 !important;
       }
@@ -1933,7 +1933,7 @@ export default {
   .user-name-dropdown {
     display: flex;
     position: relative;
-    padding: 21px 16px;
+    padding: 16px 8px;
     border-radius: 8px;
     background-color: #fafafa;
     &__content--divider {
@@ -1957,7 +1957,6 @@ export default {
         max-width: 60px;
         max-height: 60px;
         border-radius: 40px;
-        margin-right: 8px;
       }
     }
     &__details {
@@ -1968,6 +1967,7 @@ export default {
       word-wrap: break-word;
       max-width: 150px;
       min-width: 150px;
+      margin-left: 8px;
       cursor: pointer;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -1981,20 +1981,22 @@ export default {
         max-width: 150px;
         text-align: left;
         font-size: 14px;
-        font-weight: normal;
         font-stretch: normal;
         font-style: normal;
-        line-height: normal;
+        line-height: 1.5;
         letter-spacing: normal;
-        color: #313131;
+        color: #383b41;
         &:first-child {
           font-weight: 600;
-          margin-bottom: 5px;
         }
         &:last-child {
-          opacity: 0.9;
           font-size: 12px;
           font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1;
+          height: 16px;
+          color: #757575;
         }
       }
     }
@@ -2066,8 +2068,8 @@ export default {
     }
     .menu-list-item,
     .v-list-group__header {
-      max-height: 36px;
-      min-height: 36px;
+      max-height: 48px;
+      min-height: 48px;
     }
   }
 
@@ -2171,7 +2173,7 @@ export default {
   }
 
   .menu-icon-wrapper {
-    left: 232px;
+    left: 244px;
     top: 16px;
     position: fixed;
     z-index: 20;
@@ -2393,7 +2395,7 @@ export default {
     line-height: 1.2 !important;
     border-radius: 23px;
     padding-left: 72px;
-    height: 35px !important;
+    height: 36px !important;
     margin-right: 30px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -2402,7 +2404,6 @@ export default {
     .menu-item-span {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 13px;
-      font-weight: 600;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.54;
@@ -2472,7 +2473,7 @@ export default {
     }
   }
   .v-list-item__title {
-    color: rgba(0, 0, 0, 0.87) !important;
+    color: #383b41 !important;
   }
 }
 .layout-container .active-link .menu-item-wrapper .menu-item-span {

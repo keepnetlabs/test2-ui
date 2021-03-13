@@ -173,7 +173,7 @@
         }}</v-btn>
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 4">
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="step = 1">{{
+        <v-btn text color="#f56c6c" class="k-dialog__button" @click="step = 1">{{
           labels.Close
         }}</v-btn>
         <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmSetupMFA">{{

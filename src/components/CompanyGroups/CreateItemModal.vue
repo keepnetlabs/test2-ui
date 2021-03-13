@@ -72,6 +72,7 @@
     <template v-slot:app-dialog-footer>
       <div class="delete-user__footer">
         <v-btn
+          id="btn-cancel--company-save-company-groups-popup"
           @click="changeStatus(false)"
           color="#f56c6c"
           class="delete-user__footer-button"
@@ -79,6 +80,7 @@
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
+          id="btn-save--company-save-company-groups-popup"
           @click="save"
           color="#2196f3"
           class="delete-user__footer-button"

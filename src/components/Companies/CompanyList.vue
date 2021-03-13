@@ -33,9 +33,9 @@
       @changeModalStatus="changeDeleteModalStatus"
     />
     <AddGroupToModal
+      v-if="showAddGroupToModal"
       :companyIdArray="companyIdArray"
       :status="showAddGroupToModal"
-      v-if="showAddGroupToModal"
       @changeStatus="handleStatusAddGroupToModal"
     />
     <create-item-modal
@@ -270,10 +270,12 @@ export default {
       iEmpty: {
         message: 'No company defined',
         btn: 'ADD A COMPANY',
+        id: 'btn-empty--company',
         icon: 'mdi-account-plus'
       },
       addButton: {
         show: true,
+        id: 'btn-add--company',
         action: 'addButton',
         tooltip: 'Add Company',
         disabled: !checkPermission('companies', 'POST')
@@ -281,30 +283,35 @@ export default {
       rowActions: [
         {
           name: 'Edit this row',
+          id: 'btn-edit--company-row-actions',
           icon: 'mdi-pencil',
           action: 'editAction',
           isNotShow: true,
           disabled: !checkPermission('companies/{resourceId}', 'PUT')
         },
         {
+          id: 'btn-add--company-add-to-a-group-row-actions',
           name: 'Add to a company group',
           icon: 'mdi-account-multiple-plus',
           action: 'AddGroupToModal',
           disabled: !checkPermission('company-groups/search', 'POST')
         },
         {
+          id: 'btn-add--company-create-new-company-group-with-company-row-actions',
           name: 'Create a new company group with company',
           icon: 'mdi-account-multiple',
           action: 'createNewGroupWithCompany',
           disabled: !checkPermission('companies/search', 'POST')
         },
         {
+          id: 'btn-switch--company-switch-to-company-row-actions',
           name: 'Switch to company',
           icon: 'mdi-swap-horizontal',
           action: 'switchCompany',
           disabled: !checkPermission('companies/search', 'POST')
         },
         {
+          id: 'btn-delete--company-row-actions',
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'delete',

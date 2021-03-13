@@ -6,17 +6,21 @@
           <el-tabs v-model="tab">
             <el-tab-pane
               label="Companies"
-              name="first"
+              name="company-companies"
+              id="company-companies-content"
               v-if="checkPermissions('companies/search', 'POST')"
             >
-              <company-list v-if="tab === 'first'"
+              <company-list v-if="tab === 'company-companies'"
             /></el-tab-pane>
             <el-tab-pane
               label="Company Groups"
-              name="second"
+              name="company-company-groups"
+              id="company-company-groups-content"
               v-if="checkPermissions('company-groups/search', 'POST')"
             >
-              <company-group-list :isLoadState="isLoadState" v-if="tab === 'second'"
+              <company-group-list
+                :isLoadState="isLoadState"
+                v-if="tab === 'company-company-groups'"
             /></el-tab-pane>
           </el-tabs>
         </template>
@@ -39,28 +43,28 @@ export default {
   components: { CompanyGroupDetails, CompanyGroupList, CompanyList },
   data() {
     return {
-      tab: 'first',
+      tab: 'company-companies',
       isLoadState: false
     }
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (from.name === 'Company Group Details') {
-        vm.tab = 'second'
+        vm.tab = 'company-company-groups'
         vm.isLoadState = true
       } else if (to.name === 'Company Group Details') {
-        vm.tab = 'first'
+        vm.tab = 'company-companies'
       }
     })
   },
   watch: {
     tab(val) {
-      if (val === 'first') this.isLoadState = false
+      if (val === 'company-companies') this.isLoadState = false
     }
   },
   created() {
     if (!this.checkPermissions('companies/search', 'POST')) {
-      this.tab = 'second'
+      this.tab = 'company-company-groups'
     }
   },
   updated() {
@@ -68,7 +72,7 @@ export default {
       this.tab = this.$route.params.tab
     }
     if (!this.checkPermissions('companies/search', 'POST')) {
-      this.tab = 'second'
+      this.tab = 'company-company-groups'
     }
   },
   methods: {
