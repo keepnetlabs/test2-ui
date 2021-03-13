@@ -46,7 +46,7 @@
                       class="reset-pass-textfield mb-6"
                       :rules="[rules.required, rules.minPassword]"
                       outlined
-                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show1 ? '' : 'password'"
                       @click:append="show1 = !show1"
@@ -64,7 +64,7 @@
                       class="reset-pass-textfield mb-6"
                       :rules="[rules.required, rules.minPassword, rules.equal]"
                       outlined
-                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                       :type="show2 ? '' : 'password'"
                       @click:append="show2 = !show2"
@@ -88,7 +88,7 @@
                       :type="showNewPassword ? '' : 'password'"
                       @click:append="showNewPassword = !showNewPassword"
                       outlined
-                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       autocomplete="new-password"
                       :id="dynamicID"
                       browser-autocomplete="new-password"
@@ -232,7 +232,7 @@ export default {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return (
             pattern.test(value) ||
-            'At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number'
+            'At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character'
           )
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
