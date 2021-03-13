@@ -26,12 +26,6 @@
               id="ts-tab-community"
               >Communities</v-tab
             >
-            <div class="tablet-info-btn" style="display: none !important;">
-              <v-btn id="ts-info-btn" class="create-com-btn" block rounded>
-                <v-icon class="pr-1">mdi-information</v-icon>
-                INFO
-              </v-btn>
-            </div>
           </v-tabs>
           <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
             <v-tab-item

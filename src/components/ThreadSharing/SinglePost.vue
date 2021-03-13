@@ -76,6 +76,7 @@
             text
             color="#f56c6c"
             class="k-dialog__button"
+            id="threat-sharing-single-post-share-modal-close"
             @click="
               openShareModal = false
               shareEmail = []
@@ -88,6 +89,7 @@
             color="#2196f3"
             class="k-dialog__button"
             @click="shareIncident"
+            id="threat-sharing-single-post-share-modal-save"
             >Send</v-btn
           >
         </div>
@@ -356,7 +358,15 @@
             }}</span>
           </div>
           <div :id="'single-post-harmful' + post.communityPostResourceId" class="ts-harmful mt-1">
-            <v-btn readonly v-if="post.harmfulItemCount" text x-small icon color="red">
+            <v-btn
+              id="threat-sharing-single-post-harmful-items"
+              readonly
+              v-if="post.harmfulItemCount"
+              text
+              x-small
+              icon
+              color="red"
+            >
               <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
             </v-btn>
             <span class="ts-actions">{{ post.harmfulItemCount }} harmful item(s)</span>
@@ -370,7 +380,7 @@
               rounded
               outlined
               class="tag-btn text-none"
-              id="incident-badge-att"
+              id="threat-sharing-single-post-badge-attachment"
             >
               <span v-if="post.categoryResourceIdArray.length === 1">Attachment</span>
               <span v-else-if="post.categoryResourceIdArray.length > 1">Attachments</span>
@@ -382,7 +392,7 @@
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              id="incident-badge--cat"
+              id="threat-sharing-single-post-badge--category"
               >{{
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]) &&
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]).name
@@ -399,7 +409,7 @@
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              id="incident-badge"
+              id="threat-sharing-single-post-badge"
               >{{
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[1]) &&
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[1]).name

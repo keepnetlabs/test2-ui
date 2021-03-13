@@ -136,7 +136,9 @@ export const LABEL_STORE = {
   NEWVALUE: 'New Value',
   IP: 'IP',
   USERAGENT: 'Browser User Agent',
-  CHANGESET: 'Changed Set'
+  CHANGESET: 'Changed Set',
+  INVESTIGATIONNAME: 'Investigation Name',
+  TRIGGER: 'Trigger'
 }
 
 export const PROPERTY_STORE = {

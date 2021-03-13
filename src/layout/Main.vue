@@ -1520,7 +1520,7 @@ export default {
       //flex-direction: column;
       flex-flow: column;
       width: 100%;
-      padding-left: 8px;
+      padding-left: 16px;
       margin-bottom: 1px;
     }
     &__title {

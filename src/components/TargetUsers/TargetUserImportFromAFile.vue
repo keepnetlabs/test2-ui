@@ -505,6 +505,7 @@ export default {
   },
   data() {
     return {
+      stopMappingData: false,
       serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
       selectedActionName: null,
@@ -883,9 +884,11 @@ export default {
             this.showDatatableErrorState = true
           } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
             this.showDatatableErrorState = false
-            setTimeout(() => {
-              this.getMappingStatus()
-            }, 2500)
+            if (this.activeStep === 3) {
+              setTimeout(() => {
+                this.getMappingStatus()
+              }, 2500)
+            }
           } else {
             this.showDatatableErrorState = false
             this.getDatatableList()
@@ -941,7 +944,11 @@ export default {
                 width: 250,
                 emptyText: 'No Data',
                 sortable: false,
-                hideSort: true
+                hideSort: true,
+                filterable: true,
+                customFieldName: item.name,
+                filterableType: 'text',
+                FilterableItems: 'Yes'
               }
               return itemObj
             })
@@ -1347,6 +1354,9 @@ export default {
     } else if (this.isLeaveAccepted) {
       next()
     } else next()
+  },
+  beforeDestroy() {
+    this.activeStep = 1
   }
 }
 </script>

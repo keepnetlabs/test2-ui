@@ -7,6 +7,7 @@
       title="Edit Post Email"
       z-index="999999"
       :show-header="false"
+      id="threat-sharing-post-incident-create-edit-modal"
     >
       <template v-slot:overlay-body>
         <GrapesNewsletterModal
@@ -17,7 +18,12 @@
         ></GrapesNewsletterModal>
       </template>
       <template v-slot:overlay-footer>
-        <v-btn class="new-integration__footer-btn-cancel" rounded @click="closeGrapesJs()">
+        <v-btn
+          class="new-integration__footer-btn-cancel"
+          id="threat-sharing-grapesjs-modal-close-button"
+          rounded
+          @click="closeGrapesJs()"
+        >
           {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
@@ -25,6 +31,7 @@
             class="new-integration__footer-btn-save white--text"
             color="#2196f3"
             rounded
+            id="threat-sharing-grapesjs-modal-save-button"
             @click="saveGrapesJs()"
           >
             {{ labels.Save }}
@@ -146,7 +153,7 @@
               <input style="display: none;" type="text" name="fakeusernameremembered" />
               <k-select
                 type="autocomplete"
-                id="select-incident-autocomplete"
+                id="threat-sharing-select-incident-autocomplete"
                 v-model.trim="selectedEmail"
                 :search-input.sync="searchIncident"
                 :items="listData"
@@ -222,6 +229,7 @@
                   @inputFile="uploadFile"
                   @clear="clearUpload"
                   :on-upload-progress="onUploadProgress"
+                  id="threat-sharing-upload-post-incident"
                 />
                 <!-- <div
                   class="v-input up-btn v-input--dense theme--light v-text-field v-text-field--is-booted v-text-field--placeholder"
@@ -275,7 +283,7 @@
               >
                 <div class="mail-preview">
                   <v-icon
-                    id="post-first-preview-close"
+                    id="threat-sharing-post-first-preview-close"
                     v-if="!editItem"
                     class="close-incident"
                     @click="closePreview()"
@@ -569,6 +577,7 @@
                     Body
                   </h2>
                   <v-btn
+                    id="threat-sharing-post-incident-edit-html-button"
                     class="create-btn v-btn v-btn--flat v-btn--text theme--dark v-size--default edit-html-template-button"
                     @click="editHtmlTemplate"
                   >
@@ -680,6 +689,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-subject-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isSubjectHidden }"
@@ -744,6 +754,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-from-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isFromHidden }"
@@ -810,6 +821,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-to-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isToHidden }"
@@ -876,6 +888,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-cc-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isCcHidden }"
@@ -942,6 +955,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-bcc-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isBccHidden }"
@@ -1049,6 +1063,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            :id="`threat-sharing-post-incident-urls-${ind}`"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': url.isHidden }"
@@ -1159,6 +1174,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            :id="`threat-sharing-post-incident-attachments-${ind}`"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': attachment.isHidden }"
@@ -1236,7 +1252,7 @@
                         >
                           <template v-slot:actions mandatory="true">
                             <v-btn
-                              id="last-preview-collapse"
+                              id="threat-sharing-post-incident-last-preview-collapse"
                               v-if="!toggle"
                               outlined
                               rounded
@@ -1245,7 +1261,7 @@
                               >COLLAPSE
                             </v-btn>
                             <v-btn
-                              id="last-preview-details"
+                              id="threat-sharing-post-incident-last-preview-details"
                               v-else
                               outlined
                               rounded
@@ -1291,19 +1307,38 @@
                     </div>
                     <div id="post-inc-preview-footer" class="ts-footer d-flex row wrap">
                       <div class="ts-like mt-1">
-                        <v-btn text x-small icon color="grey">
+                        <v-btn
+                          id="threat-sharing-post-incident-like-button"
+                          text
+                          x-small
+                          icon
+                          color="grey"
+                        >
                           <v-icon>mdi-thumb-up</v-icon>
                         </v-btn>
                         <span class="ts-action-counter">0</span>
                       </div>
                       <div class="ts-message mt-1">
-                        <v-btn text x-small icon color="grey">
+                        <v-btn
+                          id="threat-sharing-post-incident-reply-button"
+                          text
+                          x-small
+                          icon
+                          color="grey"
+                        >
                           <v-icon>mdi-message-reply-text</v-icon>
                         </v-btn>
                         <span class="ts-action-counter">0</span>
                       </div>
                       <div class="ts-harmful mt-1">
-                        <v-btn v-if="maliciousCount" text x-small icon color="red">
+                        <v-btn
+                          id="threat-sharing-post-incident-malicious-count"
+                          v-if="maliciousCount"
+                          text
+                          x-small
+                          icon
+                          color="red"
+                        >
                           <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
                         </v-btn>
                         <span class="ts-actions">{{ maliciousCount }} harmful item(s)</span>
@@ -1317,7 +1352,7 @@
                           rounded
                           outlined
                           class="tag-btn text-none"
-                          id="post-inc-last-prev-attach"
+                          id="threat-sharing-post-incident-last-prev-attach"
                         >
                           <span v-if="uploadRespond.attachments.length === 1">Attachment</span>
                           <span v-else-if="uploadRespond.attachments.length > 1">Attachments</span>
@@ -1332,7 +1367,7 @@
                           rounded
                           outlined
                           class="tag-btn ml-1 text-none"
-                          id="incident-badge"
+                          id="threat-sharing-post-incident-badge"
                           >{{ findCategory(uploadRespond.CategoryResourceIdArray[0]) }}
                         </v-btn>
                         <v-btn
@@ -1347,7 +1382,7 @@
                           rounded
                           outlined
                           class="tag-btn ml-1 text-none"
-                          id="incident-badge-attach"
+                          id="threat-sharing-post-incident-badge-attach"
                           >{{ findCategory(uploadRespond.CategoryResourceIdArray[1]) }}
                         </v-btn>
                         <div style="position: relative;">
@@ -1367,7 +1402,7 @@
                             class="tag-btn ml-1 text-none"
                             @mouseover="hoverTool = true"
                             @mouseleave="hoverTool = false"
-                            id="post-inc-last-prev-with-tooltip"
+                            id="threat-sharing-post-incident-last-prev-with-tooltip"
                           >
                             <span
                               v-if="uploadRespond.attachments && uploadRespond.attachments.length"
@@ -1811,7 +1846,7 @@
         </v-card>
         <div id="post-footer-actions" class="footer-actions">
           <v-btn
-            id="post-cancel-btn"
+            id="threat-sharing-post-incident-cancel-button"
             class="cancel-btn"
             text
             color="#f56c6c"
@@ -1821,7 +1856,7 @@
           <div>
             <v-btn
               v-if="step === 2 || step === 3 || step === 4 || step === 5"
-              id="post-previous-btn"
+              id="threat-sharing-post-incident-back-button"
               class="previous-btn mr-4"
               text
               color="#2196f3"
@@ -1830,7 +1865,7 @@
             </v-btn>
             <v-btn
               v-if="step === 1"
-              id="post-next-btn"
+              id="threat-sharing-post-incident-next-button"
               :disabled="!selectedEmail && !uploadRespond.IsActive"
               :class="{ 'disabled-cursor': !selectedEmail && !uploadRespond.IsActive }"
               class="create-btn"
@@ -1841,7 +1876,7 @@
             </v-btn>
             <v-btn
               v-if="step === 2"
-              id="post-step-two-next-btn"
+              id="threat-sharing-post-incident-step-two-next-button"
               :class="{ 'disabled-cursor': !stepTwoDisabled() }"
               class="create-btn"
               text
@@ -1851,7 +1886,7 @@
             </v-btn>
             <v-btn
               v-if="step === 3"
-              id="post-step-three-next-btn"
+              id="threat-sharing-post-incident-step-three-next-button"
               class="create-btn"
               text
               color="#2196f3"
@@ -1859,7 +1894,7 @@
               >Next
             </v-btn>
             <v-btn
-              id="post-step-four-next-btn"
+              id="threat-sharing-post-incident-step-four-next-button"
               v-if="step === 4"
               :class="{ 'disabled-cursor': allFiltersClosed() }"
               class="create-btn"
@@ -1869,7 +1904,7 @@
               >Next
             </v-btn>
             <v-btn
-              id="post-step-five-next-btn"
+              id="threat-sharing-post-incident-step-five-next-button"
               v-if="step === 5"
               class="create-btn"
               text
