@@ -2165,12 +2165,17 @@ export default {
               this.renderedColumns.find((property) => property === filterItem.property) &&
               !filterItem.isCustomField
             ) {
-              acc.push({
+              const obj = {
                 FieldName:
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
                 Operator: 'Contains',
                 Value: this.search
-              })
+              }
+              if (filterItem.customFieldName) {
+                obj['FieldName'] = '_CustomField'
+                obj['CustomFieldName'] = filterItem.customFieldName
+              }
+              acc.push(obj)
             }
             return acc
           }, [])
