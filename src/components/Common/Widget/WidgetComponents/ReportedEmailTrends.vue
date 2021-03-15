@@ -220,7 +220,7 @@ export default {
             const colors = {
               Undetected: {
                 backgroundColor: 'white',
-                borderColor: '#2e5bff',
+                borderColor: '#00bcd4',
                 pointBorderColor: '#2e5bff',
                 pointBackgroundColor: 'white',
                 fill: false,
@@ -230,7 +230,7 @@ export default {
               },
               Phishing: {
                 backgroundColor: 'white',
-                borderColor: '#ff6167',
+                borderColor: '#f56c6c',
                 fill: false,
                 pointRadius: 3,
                 borderWidth: 2,
@@ -238,7 +238,7 @@ export default {
               },
               Malicious: {
                 backgroundColor: 'white',
-                borderColor: '#f19f10',
+                borderColor: '#b83a3a',
                 fill: false,
                 pointRadius: 3,
                 borderWidth: 2,
