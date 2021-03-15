@@ -12,7 +12,7 @@
           Helper tool to check status of the add-in and diagnose problems
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content v-if="showHeaderLink">
+      <v-list-item-content v-if="showHeaderLink" style="text-align: right;">
         <a
           href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
           class="other-settings__link"
