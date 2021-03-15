@@ -222,7 +222,7 @@
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
                     :downloadButton="{
-                      show: false
+                      show: true
                     }"
                     @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
                     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -426,6 +426,7 @@ import {
   createMapping,
   createTargetUserCustomField,
   downloadExampleTargetUserFile,
+  exportTargetUserBulk,
   getMappingStatus,
   getTargetGroups,
   getTargetUserCustomFieldsByCompanyId,
@@ -505,6 +506,7 @@ export default {
   },
   data() {
     return {
+      stopMappingData: false,
       serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
       selectedActionName: null,
@@ -883,9 +885,11 @@ export default {
             this.showDatatableErrorState = true
           } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
             this.showDatatableErrorState = false
-            setTimeout(() => {
-              this.getMappingStatus()
-            }, 2500)
+            if (this.activeStep === 3) {
+              setTimeout(() => {
+                this.getMappingStatus()
+              }, 2500)
+            }
           } else {
             this.showDatatableErrorState = false
             this.getDatatableList()
@@ -941,7 +945,11 @@ export default {
                 width: 250,
                 emptyText: 'No Data',
                 sortable: false,
-                hideSort: true
+                hideSort: true,
+                filterable: true,
+                customFieldName: item.name,
+                filterableType: 'text',
+                FilterableItems: 'Yes'
               }
               return itemObj
             })
@@ -1075,12 +1083,12 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportReportedEmails(payload)
+        exportTargetUserBulk(this.excelInfo.transactionId, payload)
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `integrations.${
+            link.download = `target-users-import.${
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`
             link.click()
@@ -1347,6 +1355,9 @@ export default {
     } else if (this.isLeaveAccepted) {
       next()
     } else next()
+  },
+  beforeDestroy() {
+    this.activeStep = 1
   }
 }
 </script>
