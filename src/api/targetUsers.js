@@ -90,6 +90,12 @@ export function downloadExampleTargetUserFile(payload) {
   })
 }
 
+export function exportTargetUserBulk(id, payload) {
+  return testRequest.post(`/target-users/${id}/search/export`, payload, {
+    responseType: 'blob'
+  })
+}
+
 export function getUploadedFileData(id) {
   return testRequest.get(`/target-users/upload/${id}`)
 }

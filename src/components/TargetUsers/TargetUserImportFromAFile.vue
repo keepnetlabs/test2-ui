@@ -222,7 +222,7 @@
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
                     :downloadButton="{
-                      show: false
+                      show: true
                     }"
                     @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
                     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -426,6 +426,7 @@ import {
   createMapping,
   createTargetUserCustomField,
   downloadExampleTargetUserFile,
+  exportTargetUserBulk,
   getMappingStatus,
   getTargetGroups,
   getTargetUserCustomFieldsByCompanyId,
@@ -1082,12 +1083,12 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportReportedEmails(payload)
+        exportTargetUserBulk(this.excelInfo.transactionId, payload)
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `integrations.${
+            link.download = `target-users-import.${
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`
             link.click()

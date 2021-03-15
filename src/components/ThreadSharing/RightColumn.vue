@@ -335,6 +335,7 @@
                         (!!communityDetails && communityDetails.privacyStatusName === 'Public')) &&
                       checkPermissions('communities/{resourceId}/invite', 'POST')
                     "
+                    id="threat-sharing-right-column-invite-plus"
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"

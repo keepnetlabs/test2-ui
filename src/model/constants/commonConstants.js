@@ -138,7 +138,8 @@ export const LABEL_STORE = {
   USERAGENT: 'Browser User Agent',
   CHANGESET: 'Changed Set',
   INVESTIGATIONNAME: 'Investigation Name',
-  TRIGGER: 'Trigger'
+  TRIGGER: 'Trigger',
+  FILEUPLOADED: 'File Uploaded'
 }
 
 export const PROPERTY_STORE = {
@@ -227,7 +228,8 @@ export const PROPERTY_STORE = {
   NEWVALUE: 'newValue',
   IP: 'ip',
   USERAGENT: 'userAgent',
-  USERID: 'userId'
+  USERID: 'userId',
+  FILEUPLOADED: 'fileUploaded'
 }
 
 export function getStoreValue(key, type) {
