@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 70px !important;">
+  <div style="margin-bottom: 70px !important;" id="threat-sharing-post-incident-grapesjs-modal">
     <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>

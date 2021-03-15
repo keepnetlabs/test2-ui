@@ -708,15 +708,20 @@ export default {
               property: field.name,
               type: 'text',
               sortable: false,
-              filterable: false,
+              filterable: true,
               hideSort: true,
               label: field.name,
               align: 'left',
               show: true,
               width: 80 + field.name.length * 7,
-              isCustomField: true
+              isCustomField: true,
+              customFieldName: field.name,
+              filterableType: 'text',
+              FilterableItems: 'Yes'
             }
           })
+
+          console.log(columnsOfCustomFields)
 
           const newColumns = [
             ...this.tableOptions.defaultColumns,

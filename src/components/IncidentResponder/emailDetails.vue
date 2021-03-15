@@ -620,12 +620,12 @@ export default {
         {
           property: PROPERTY_STORE.ISSENDFILE,
           align: 'left',
-          label: getStoreValue(PROPERTY_STORE.ISSENDFILE),
+          label: getStoreValue(PROPERTY_STORE.FILEUPLOADED),
           show: true,
           type: 'text',
           fixed: false,
           emptyText: 'false',
-          width: 130
+          width: 150
         },
         {
           property: PROPERTY_STORE.DETAILS,
