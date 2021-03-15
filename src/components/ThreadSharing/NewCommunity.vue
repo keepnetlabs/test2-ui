@@ -13,10 +13,16 @@
             class="k-dialog__button"
             color="#f56c6c"
             text
+            id="threat-sharing-new-community-accept-modal-cancel-button"
             @click=";(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
             >{{ labels.Cancel }}
           </v-btn>
-          <v-btn class="k-dialog__button" color="#2196f3" text @click="isWantToAccept = false"
+          <v-btn
+            id="threat-sharing-new-community-accept-modal-accept-all-button"
+            class="k-dialog__button"
+            color="#2196f3"
+            text
+            @click="isWantToAccept = false"
             >Accept All
           </v-btn>
         </div>
@@ -148,7 +154,12 @@
       </v-card>
     </div>
     <div class="footer-actions">
-      <v-btn class="cancel-btn" color="#f56c6c" text @click="onCancelClicked"
+      <v-btn
+        id="threat-sharing-new-community-cancel-modal-button"
+        class="cancel-btn"
+        color="#f56c6c"
+        text
+        @click="onCancelClicked"
         >{{ labels.Cancel }}
       </v-btn>
       <v-btn
@@ -157,6 +168,7 @@
         color="#2196f3"
         text
         @click="onCreateClicked"
+        id="threat-sharing-new-community-update-or-create-modal-button"
         >{{ resourceId ? 'Update' : 'Create' }}
       </v-btn>
     </div>

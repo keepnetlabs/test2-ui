@@ -663,7 +663,7 @@ export default {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return (
             pattern.test(value) ||
-            'At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number'
+            'At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character'
           )
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
@@ -1520,7 +1520,7 @@ export default {
       //flex-direction: column;
       flex-flow: column;
       width: 100%;
-      padding-left: 8px;
+      padding-left: 16px;
       margin-bottom: 1px;
     }
     &__title {

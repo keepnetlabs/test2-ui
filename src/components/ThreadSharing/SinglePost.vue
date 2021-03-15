@@ -24,6 +24,8 @@
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteIncidentConfirm()"
           actionButtonText="DELETE"
+          :confirm-button-id="`threat-sharing-single-post-delete-incident-confirm`"
+          :cancel-button-id="`threat-sharing-single-post-delete-incident-confirm`"
         />
       </template>
     </app-dialog>
@@ -76,6 +78,7 @@
             text
             color="#f56c6c"
             class="k-dialog__button"
+            id="threat-sharing-single-post-share-modal-close"
             @click="
               openShareModal = false
               shareEmail = []
@@ -88,6 +91,7 @@
             color="#2196f3"
             class="k-dialog__button"
             @click="shareIncident"
+            id="threat-sharing-single-post-share-modal-save"
             >Send</v-btn
           >
         </div>
@@ -119,7 +123,7 @@
                 <v-btn
                   v-if="post.isToggle"
                   @click.native="getPostDetails(post.communityPostResourceId, postIndex, false)"
-                  :id="'single-post-collapse' + post.communityPostResourceId"
+                  :id="'threat-sharing-single-post' + post.communityPostResourceId"
                   :key="'single-post-collapse' + post.communityPostResourceId"
                   outlined
                   rounded
@@ -133,7 +137,7 @@
                   @click.native="
                     getPostDetails(post.communityPostResourceId, postIndex, true, post)
                   "
-                  :id="'single-post-details' + post.communityPostResourceId"
+                  :id="'threat-sharing-single-post' + post.communityPostResourceId"
                   :key="'single-post-details' + post.communityPostResourceId"
                   outlined
                   rounded
@@ -148,7 +152,7 @@
           <v-menu offset-y transition="scale-transition">
             <template v-slot:activator="{ on }">
               <v-btn
-                :id="'single-post-dots' + post.communityPostResourceId"
+                :id="'threat-sharing-single-post-dots' + post.communityPostResourceId"
                 icon
                 color="blue"
                 v-on="on"
@@ -163,7 +167,7 @@
               <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
                   <v-list-item
-                    :id="'edit-btn' + post.communityPostResourceId"
+                    :id="'threat-sharing-single-post-edit-button' + post.communityPostResourceId"
                     v-if="checkPermissions('community-posts/{resourceId}', 'GET') && canEdit(post)"
                     @click="editIncident(post, post.communityPostResourceId, post.communityName)"
                   >
@@ -175,7 +179,9 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    :id="'investigate-btn' + post.communityPostResourceId"
+                    :id="
+                      'threat-sharing-single-post-investigate-button' + post.communityPostResourceId
+                    "
                     v-if="checkPermissions('community-posts/{resourceId}', 'GET')"
                     @click="openInvestigate(post)"
                   >
@@ -192,7 +198,7 @@
                       checkPermissions('community-posts/{resourceId}/share', 'POST') &&
                       post.communityPrivacyStatusId !== 1
                     "
-                    :id="'share-btn' + post.communityPostResourceId"
+                    :id="'threat-sharing-single-post-share-button' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
                       <template v-slot:activator="{ on }">
@@ -212,7 +218,7 @@
                   </v-list-item>
                   <v-list-item
                     v-else
-                    :id="'share-btn' + post.communityPostResourceId"
+                    :id="'threat-sharing-single-post-share-button' + post.communityPostResourceId"
                     @click="openShareModalFunc(post)"
                   >
                     <v-list-item-icon>
@@ -225,7 +231,7 @@
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
-                    :id="'delete-btn' + post.communityPostResourceId"
+                    :id="'threat-sharing-single-post-delete-button' + post.communityPostResourceId"
                     v-if="
                       checkPermissions('community-posts/{resourceId}', 'DELETE') && canDelete(post)
                     "
@@ -263,7 +269,7 @@
             >
             <b v-else class="pl-1 pr-1">Company Name</b> on
             <a
-              :id="post.communityName"
+              :id="`threat-sharing-incidents-list-go-to-community-details${post.communityName}`"
               v-if="post.communityName"
               @click="goToCommunityDetails(post)"
               class="pl-1"
@@ -315,7 +321,7 @@
         >
           <div class="ts-like mt-1">
             <v-btn
-              :id="'single-post-like' + post.communityPostResourceId"
+              :id="'threat-sharing-single-post-like' + post.communityPostResourceId"
               disabled
               text
               x-small
@@ -325,7 +331,7 @@
               <v-icon>mdi-thumb-up</v-icon>
             </v-btn>
             <v-btn
-              :id="'single-post-unlike' + post.communityPostResourceId"
+              :id="'threat-sharing-single-post-unlike' + post.communityPostResourceId"
               v-if="false"
               disabled
               text
@@ -341,7 +347,7 @@
           </div>
           <div class="ts-message mt-1">
             <v-btn
-              :id="'single-post-reply' + post.communityPostResourceId"
+              :id="'threat-sharing-single-post-reply' + post.communityPostResourceId"
               text
               x-small
               icon
@@ -356,7 +362,15 @@
             }}</span>
           </div>
           <div :id="'single-post-harmful' + post.communityPostResourceId" class="ts-harmful mt-1">
-            <v-btn readonly v-if="post.harmfulItemCount" text x-small icon color="red">
+            <v-btn
+              id="threat-sharing-single-post-harmful-items"
+              readonly
+              v-if="post.harmfulItemCount"
+              text
+              x-small
+              icon
+              color="red"
+            >
               <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
             </v-btn>
             <span class="ts-actions">{{ post.harmfulItemCount }} harmful item(s)</span>
@@ -370,7 +384,7 @@
               rounded
               outlined
               class="tag-btn text-none"
-              id="incident-badge-att"
+              id="threat-sharing-single-post-badge-attachment"
             >
               <span v-if="post.categoryResourceIdArray.length === 1">Attachment</span>
               <span v-else-if="post.categoryResourceIdArray.length > 1">Attachments</span>
@@ -382,7 +396,7 @@
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              id="incident-badge--cat"
+              id="threat-sharing-single-post-badge--category"
               >{{
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]) &&
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[0]).name
@@ -399,7 +413,7 @@
               rounded
               outlined
               class="tag-btn ml-1 text-none"
-              id="incident-badge"
+              id="threat-sharing-single-post-badge"
               >{{
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[1]) &&
                 categories.find((item) => item.resourceId === post.categoryResourceIdArray[1]).name
@@ -483,8 +497,8 @@
             color="basil"
             class="v-tabs-bar__details-tab"
           >
-            <v-tab id="expansion-preview">Email Preview</v-tab>
-            <v-tab id="expansion-details">Details</v-tab>
+            <v-tab id="threat-sharing-single-post-email-preview-button">Email Preview</v-tab>
+            <v-tab id="threat-sharing-single-post-email-details-button">Details</v-tab>
           </v-tabs>
           <v-tabs-items v-show="emailData && post.isToggle" v-model="tab">
             <v-tab-item>
