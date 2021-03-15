@@ -428,6 +428,7 @@
             </v-list-item>
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
+              :class="[routerName === 'Audit' && 'active-link']"
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
               <v-list-item-content class="menu-item-content">

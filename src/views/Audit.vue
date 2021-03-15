@@ -5,6 +5,7 @@
         <data-table
           id="audit-data-list"
           ref="refAuditList"
+          is-server-side
           :loading="loading"
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
@@ -15,6 +16,8 @@
           :filterable="true"
           :options="true"
           :sizeable="true"
+          :server-side-props="serverSideProps"
+          :server-side-events="{ pagination: true, search: true, sort: true }"
           :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
@@ -22,7 +25,6 @@
           :addButton="tableOptions.addButton"
           :dataLength="tableData && tableData.totalNumberOfRecords"
           :requestParams="bodyData"
-          :isServerSide="false"
           @refreshAction="getDatatableList"
           @downloadEvent="exportAuditLog"
           @columnFilterChanged="columnFilterChanged"
@@ -31,6 +33,10 @@
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
+          @server-side-page-number-changed="serverSidePageNumberChanged"
+          @server-side-size-changed="serverSideSizeChanged"
+          @searchChangedEvent="handleSearchChange"
+          @sortChangedEvent="sortChanged"
         ></data-table>
       </div>
     </div>
@@ -50,6 +56,8 @@ import labels from '@/model/constants/labels'
 import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import { exportSmtpSettings } from '@/api/smtpSettings'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
   name: 'Audit',
@@ -199,7 +207,7 @@ export default {
       },
       bodyData: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'LogDate',
         ascending: false,
         filter: {
@@ -207,6 +215,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -215,7 +228,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'LogDate',
         ascending: false,
         filter: {
@@ -225,10 +238,16 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   methods: {
@@ -244,6 +263,42 @@ export default {
             .substring(0, 5)}`
         })
       }
+      this.getDatatableList()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.bodyData.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.getDatatableList()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.getDatatableList()
+    },
+    resetPageNumber() {
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
+    },
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.tableOptions.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.getDatatableList()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     handleClearFilters() {
@@ -294,10 +349,16 @@ export default {
       this.getDefaultFilterAndSearch()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfFilter = JSON.parse(JSON.stringify(this.bodyData.filter))
+      copyOfFilter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT,
         JSON.stringify({
-          filter: this.bodyData.filter,
+          filter: copyOfFilter,
           filterValues
         })
       )
@@ -307,20 +368,14 @@ export default {
       getAuditLogs(this.bodyData)
         .then((response) => {
           const {
-            data: { data }
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
           } = response
-          const { totalNumberOfRecords = 0 } = data
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
-
-          this.tableData = data.results
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
         })
         .finally(() => {
           this.loading = false
@@ -335,6 +390,7 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
@@ -387,7 +443,13 @@ export default {
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
-  mounted() {
+  created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.bodyData.pageSize = size
+    this.bodyData.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }
