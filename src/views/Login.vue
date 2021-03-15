@@ -711,6 +711,7 @@ export default {
         router: this.$router,
         mfa: this.mfaDetails
       }
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
       this.loginAction(payload)
     },
     setupMFA() {
@@ -738,13 +739,7 @@ export default {
           )
           if (response.data.status === 3) {
             this.$store.commit('SET_PAGE_NUMBER', 4)
-            this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
-              root: true
-            })
           } else {
-            this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
-              root: true
-            })
             this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
           }
           if (payload.sessionExpired) {
@@ -856,9 +851,6 @@ export default {
             this.mfaDetails = error.response.data.mfa
             this.pageNumber = 6
           } else {
-            this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
-              root: true
-            })
             this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
             if (error.response && error.response.status === 401) {
               this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
