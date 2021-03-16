@@ -140,7 +140,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             },
@@ -162,7 +162,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             },
@@ -406,12 +406,10 @@ export default {
           align: 'left',
           show: true,
           width: 80 + field.name.length * 7,
-          customFieldName: field.name,
           filterableType: 'text',
           FilterableItems: 'Yes'
         }
       })
-
       if (!columnsOfCustomFields.length) {
         this.tableOptions.columns = [...this.defaultColumns, ...this.lastColumns]
       } else {
@@ -445,14 +443,6 @@ export default {
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true
-      let customFields = this.customFields.map((item) => item.name)
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.reduce(
-        (acc, item) => {
-          if (!customFields.includes(item.FieldName)) acc.push(item)
-          return acc
-        },
-        []
-      )
       searchTargetGroupUsers(id, this.axiosPayload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
@@ -500,7 +490,7 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
+      console.log('requestBody', requestBody)
       this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchTargetGroupUsers()
     },

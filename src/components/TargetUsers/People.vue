@@ -727,14 +727,10 @@ export default {
               align: 'left',
               show: true,
               width: 80 + field.name.length * 7,
-              isCustomField: true,
-              customFieldName: field.name,
               filterableType: 'text',
               FilterableItems: 'Yes'
             }
           })
-
-          console.log(columnsOfCustomFields)
 
           const newColumns = [
             ...this.tableOptions.defaultColumns,
