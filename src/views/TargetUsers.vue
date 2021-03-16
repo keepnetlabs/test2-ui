@@ -11,20 +11,22 @@
         <el-tabs v-model="tab">
           <el-tab-pane
             label="People"
-            name="first"
+            name="target-users--people"
+            id="target-users--people-content"
             v-if="checkPermissions('target-users/search', 'POST')"
             ><people
               ref="refPeople"
-              v-if="tab === 'first'"
+              v-if="tab === 'target-users--people'"
               :company-license="companyLicense"
               @call-for-company-licenses="callForLicenseCheck"
           /></el-tab-pane>
           <el-tab-pane
             label="Group"
-            name="second"
+            name="target-users--group"
+            id="target-users--group-content"
             v-if="checkPermissions('target-groups/search', 'POST')"
           >
-            <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'second'"
+            <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
           /></el-tab-pane>
         </el-tabs>
       </v-card>
@@ -53,7 +55,7 @@ export default {
       companyLicense: null,
       isLoadState: false,
       showLicenseExceededDialog: false,
-      tab: 'first'
+      tab: 'target-users--people'
     }
   },
   computed: {
@@ -66,14 +68,14 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (from.name === 'Target Group Users') {
-        vm.tab = 'second'
+        vm.tab = 'target-users--group'
         vm.isLoadState = true
       }
     })
   },
   watch: {
     tab(val) {
-      if (val === 'first') this.isLoadState = false
+      if (val === 'target-users--people') this.isLoadState = false
     }
   },
   created() {
@@ -81,10 +83,22 @@ export default {
       $route: { params }
     } = this
     if (params && params.tab) {
-      this.tab = params.tab
+      let tab
+      switch (params.tab) {
+        case 'first':
+          tab = 'target-users--people'
+          break
+        case 'second':
+          tab = 'target-users--group'
+          break
+        default:
+          tab = params.tab
+          break
+      }
+      this.tab = tab
     }
     if (!this.checkPermissions('target-users/search', 'POST')) {
-      this.tab = 'second'
+      this.tab = 'target-users--group'
     }
     this.callForLicenseCheck(true)
   },

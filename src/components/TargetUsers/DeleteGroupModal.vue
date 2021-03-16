@@ -9,6 +9,9 @@
     <template v-slot:app-dialog-body> {{ getGroupName }} will be permanently deleted. </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
+        cancel-button-id="btn-cancel--target-users-group-popup"
+        confirm-button-id="btn-delete--target-users-group-popup"
+        type="delete"
         @handleClose="changeDeleteGroupStatus(false)"
         @handleConfirm="handleDelete"
       />

@@ -8,6 +8,7 @@
         cancel-button-id="btn-cancel--company-group-detail-popup"
         confirm-button-id="btn-delete--company-group-detail-popup"
         :confirm-button-disabled="saveDisable"
+        type="delete"
         @handleClose="closeModal"
         @handleConfirm="confirmRemove"
       />

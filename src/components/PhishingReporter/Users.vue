@@ -12,6 +12,7 @@
         <app-dialog-footer
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteUser"
+          type="delete"
           cancel-button-id="btn-cancel--phishing-reporter-users-popup"
           confirm-button-id="btn-delete--phishing-reporter-users-popup"
         />
@@ -392,10 +393,16 @@ export default {
       this.isWantToDelete = true
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfFilter = JSON.parse(JSON.stringify(this.requestBody.filter))
+      copyOfFilter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER,
         JSON.stringify({
-          filter: this.requestBody.filter,
+          filter: copyOfFilter,
           filterValues
         })
       )
@@ -511,6 +518,7 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {

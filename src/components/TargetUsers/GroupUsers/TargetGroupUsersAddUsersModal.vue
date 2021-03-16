@@ -4,6 +4,8 @@
     :status="status"
     :title="getTitle"
     :save-disable="saveDisable"
+    confirm-button-id="btn-save--target-users-group-add-users-group-modal"
+    cancel-button-id="btn-cancel--target-users-group-add-users-group-modal"
     icon-name="mdi-account-plus"
     @closeOverlay="closeOverlay"
     @submit="submit"

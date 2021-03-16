@@ -12,10 +12,11 @@
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
-        @handleClose="handleCloseDialog"
-        @handleConfirm="handleDelete"
         cancel-button-id="btn-cancel--smtp-settings-popup"
         confirm-button-id="btn-delete--smtp-settings-popup"
+        type="delete"
+        @handleClose="handleCloseDialog"
+        @handleConfirm="handleDelete"
       />
     </template>
   </app-dialog>

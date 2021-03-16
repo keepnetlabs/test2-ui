@@ -428,6 +428,7 @@
             </v-list-item>
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
+              :class="[routerName === 'Audit' && 'active-link']"
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
               <v-list-item-content class="menu-item-content">
@@ -476,7 +477,7 @@
               {{ companyGroupName || $route.params.name }}
             </h1>
             <h1 v-else-if="routerName === 'Target Group Users'">
-              {{ $route.params.label }}
+              {{ getTargetGroupUsersRouterName }}
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -954,6 +955,9 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    getTargetGroupUsersRouterName() {
+      return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+    },
     getRouterKey() {
       const { name } = this.$route
       if (['Community', 'Threat Sharing'].includes(name)) {

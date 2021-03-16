@@ -102,12 +102,18 @@
       </template>
     </template>
     <template v-slot:overlay-footer>
-      <v-btn @click="closeOverlay" class="new-integration__footer-btn-cancel" rounded>
+      <v-btn
+        @click="closeOverlay"
+        id="btn-cancel--target-users-custom-fields-people-modal"
+        class="new-integration__footer-btn-cancel"
+        rounded
+      >
         {{ labels.Cancel }}
       </v-btn>
       <div class="new-integration__footer__right-col">
         <v-btn
           @click="submit"
+          id="btn-save--target-users-custom-fields-people-modal"
           class="new-integration__footer-btn-save white--text"
           color="#2196f3"
           rounded
