@@ -11,7 +11,13 @@
       in reports.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" type="delete" />
+      <app-dialog-footer
+        cancel-button-id="btn-cancel--target-users-people-popup"
+        confirm-button-id="btn-delete--target-users-people-popup"
+        @handleClose="closeModal"
+        @handleConfirm="handleDelete"
+        type="delete"
+      />
     </template>
   </app-dialog>
 </template>

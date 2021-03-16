@@ -1,7 +1,11 @@
 <template>
   <div class="breadcrumb">
     <template v-for="(item, index) in breadcrumb">
-      <router-link :key="index" :to="{ name: item }">
+      <router-link
+        :key="index"
+        :to="{ name: item }"
+        :style="[item === 'Company' && { pointerEvents: 'none' }]"
+      >
         {{ index === 0 ? baseName : item }}
       </router-link>
       <v-icon

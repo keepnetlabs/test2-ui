@@ -67,6 +67,7 @@
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
               class="btn-new"
+              id="btn-add--target-users-group"
               rounded
               color="#2196f3"
               style="margin-right: 10px;"
@@ -205,18 +206,21 @@ export default {
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
           btn: 'ADD A GROUP',
+          id: 'btn-empty--target-users-group',
           icon: 'mdi-plus'
         },
         rowActions: [
           {
             name: 'Edit this row',
             icon: 'mdi-pencil',
+            id: 'btn-edit--target-users-group-row-actions',
             action: 'edit',
             isNotShow: true,
             disabled: !checkPermission('target-groups/{resourceId}', 'PUT')
           },
           {
             name: 'Add users to group',
+            id: 'btn-add-users-to-group--target-users-group-row-actions',
             icon: 'mdi-account-multiple-plus',
             action: 'add-group'
           },
@@ -224,6 +228,7 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',
+            id: 'btn-delete--target-users-people-row-actions',
             disabled: !checkPermission('target-groups/{resourceId}', 'DELETE')
           }
         ],

@@ -87,6 +87,7 @@
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn
                   :disabled="!checkPermissions('target-users/search', 'POST')"
+                  id="btn-add--target-users-people"
                   class="button-new"
                   style="margin-right: 10px;"
                   rounded
@@ -101,8 +102,13 @@
             </v-tooltip>
           </template>
           <v-list>
-            <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
-              <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+            <v-list-item
+              v-for="item in addUsersItems"
+              :key="item.id"
+              :id="item.id"
+              @click="handleAddUsers(item.text)"
+            >
+              <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -363,17 +369,20 @@ export default {
       iEmpty: {
         message: LABEL_STORE.NO_TARGET_USER_ADDED,
         btn: 'ADD A USER',
+        id: 'btn-empty--target-users-people',
         icon: 'mdi-account-plus'
       },
       addButton: {
         show: true,
-        action: 'addButton'
+        action: 'addButton',
+        id: 'btn-add--target-users-people'
       },
       rowActions: [
         {
           name: 'Edit this row',
           icon: 'mdi-pencil',
           action: 'editTargetUsers',
+          id: 'btn-edit--target-users-people-row-actions',
           isNotShow: true,
           disabled: !checkPermission('system-users/{resourceId}', 'PUT')
         },
@@ -381,11 +390,15 @@ export default {
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'deleteAction',
+          id: 'btn-delete--target-users-people-row-actions',
           disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
         }
       ]
     },
-    addUsersItems: ['Add users manually', 'Import from a file'],
+    addUsersItems: [
+      { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
+      { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
+    ],
     serverSideProps: new ServerSideProps()
   }),
   methods: {
@@ -535,11 +548,11 @@ export default {
     },
     handleAddUsers(item) {
       switch (item) {
-        case this.addUsersItems[0]:
+        case this.addUsersItems[0].text:
           this.selectedRow = null
           this.isWantToShowAddUsersModal = true
           break
-        case this.addUsersItems[1]:
+        case this.addUsersItems[1].text:
           this.isWantToImportFile = true
           break
         default:
