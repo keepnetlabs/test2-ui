@@ -12,6 +12,7 @@
         <app-dialog-footer
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteUser"
+          type="delete"
           cancel-button-id="btn-cancel--phishing-reporter-users-popup"
           confirm-button-id="btn-delete--phishing-reporter-users-popup"
         />

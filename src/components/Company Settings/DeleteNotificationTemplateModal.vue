@@ -14,7 +14,7 @@
           class="users__button"
           id="btn-cancel--notification-template-delete-popup"
           text
-          color="#f56c6c"
+          color="#383b41"
           @click="handleCloseDialog"
           >{{ labels.Cancel }}</v-btn
         >
@@ -23,7 +23,7 @@
           id="btn-delete--notification-template-delete-popup"
           class="users__button"
           text
-          color="#2196f3"
+          color="#f56c6c"
           @click="handleDelete"
           >{{ labels.Delete }}</v-btn
         >

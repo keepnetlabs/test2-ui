@@ -7,6 +7,7 @@
       <app-dialog-footer
         cancel-button-id="btn-cancel--company-popup"
         confirm-button-id="btn-delete--company-popup"
+        type="delete"
         @handleClose="closeModal"
         @handleConfirm="confirmDelete"
       />

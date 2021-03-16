@@ -11,7 +11,7 @@
       in reports.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" />
+      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" type="delete" />
     </template>
   </app-dialog>
 </template>

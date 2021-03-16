@@ -157,6 +157,7 @@
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm"
           actionButtonText="DELETE"
+          type="delete"
         />
       </template>
     </app-dialog>
