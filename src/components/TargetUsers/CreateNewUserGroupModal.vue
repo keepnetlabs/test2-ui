@@ -55,6 +55,7 @@
     <template v-slot:app-dialog-footer>
       <div class="new-user-group__footer">
         <v-btn
+          id="btn-cancel--target-users-group-create-new-user-group-modal"
           class="new-user-group__button"
           color="#f56c6c"
           text
@@ -62,6 +63,7 @@
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
+          id="btn-save--target-users-group-create-new-user-group-modal"
           class="new-user-group__button mr-n4"
           @click="handleSave"
           color="#2196f3"

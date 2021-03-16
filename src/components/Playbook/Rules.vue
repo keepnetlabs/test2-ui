@@ -11,6 +11,7 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          type="delete"
           :confirm-button-disabled="deleteButtonDisabled"
           @handleClose="isWantToDelete = false"
           @handleConfirm="isWantToDeleteRuleConfirm(true)"

@@ -226,7 +226,11 @@
         {{ deleteDialogName }} will be deleted and removed from all integrations.
       </template>
       <template v-slot:app-dialog-footer>
-        <app-dialog-footer @handleClose="closeDeleteDialog" @handleConfirm="handleDeleteDialog" />
+        <app-dialog-footer
+          @handleClose="closeDeleteDialog"
+          @handleConfirm="handleDeleteDialog"
+          type="delete"
+        />
       </template>
     </app-dialog>
     <div class="mail-configuration__content">

@@ -24,6 +24,7 @@
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteIncidentConfirm()"
           actionButtonText="DELETE"
+          type="delete"
           :confirm-button-id="`threat-sharing-single-post-delete-incident-confirm`"
           :cancel-button-id="`threat-sharing-single-post-delete-incident-confirm`"
         />

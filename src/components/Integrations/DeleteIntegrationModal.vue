@@ -10,7 +10,7 @@
       {{ getIntegrationName }} will be deleted and removed from all integrations.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="handleDelete" />
+      <app-dialog-footer type="delete" @handleClose="closeModal" @handleConfirm="handleDelete" />
     </template>
   </app-dialog>
 </template>

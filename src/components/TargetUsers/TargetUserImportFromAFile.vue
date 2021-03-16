@@ -304,6 +304,7 @@
       <template v-slot:overlay-footer>
         <div class="text-left">
           <v-btn
+            id="btn-cancel--target-users-import-people-modal"
             class="target-user-import-file__button"
             outlined
             rounded
@@ -315,6 +316,7 @@
         <div>
           <v-btn
             v-if="canPrev"
+            id="btn-back--target-users-import-people-modal"
             class="target-user-import-file__button mr-4"
             outlined
             rounded
@@ -326,6 +328,7 @@
 
           <v-btn
             v-if="canNext"
+            id="btn-next--target-users-import-people-modal"
             class="target-user-import-file__button"
             style="color: white;"
             rounded
@@ -338,6 +341,7 @@
 
           <v-btn
             v-if="!canNext"
+            id="btn-import-selected--target-users-import-people-modal"
             class="target-user-import-file__button target-user-import-file__button--import-selected"
             rounded
             color="#2196f3"
@@ -348,6 +352,7 @@
           </v-btn>
           <v-btn
             v-if="!canNext"
+            id="btn-import-all--target-users-import-people-modal"
             class="target-user-import-file__button target-user-import-file__button--import-all"
             rounded
             color="#2196f3"
@@ -391,12 +396,18 @@
             <div>
               <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
-                  <v-list-item @click="showConfirmModal('onlyImportNewUsers')">
+                  <v-list-item
+                    id="btn-import-new-users--target-users-import-people-modal"
+                    @click="showConfirmModal('onlyImportNewUsers')"
+                  >
                     <v-list-item-content>
                       <v-list-item-title> Only Import New Users</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item @click="showConfirmModal('onlyUpdateExistingUsers')">
+                  <v-list-item
+                    id="btn-import-existing-users--target-users-import-people-modal"
+                    @click="showConfirmModal('onlyUpdateExistingUsers')"
+                  >
                     <v-list-item-content>
                       <v-list-item-title>Only Update Existing Users</v-list-item-title>
                     </v-list-item-content>

@@ -477,7 +477,7 @@
               {{ companyGroupName || $route.params.name }}
             </h1>
             <h1 v-else-if="routerName === 'Target Group Users'">
-              {{ $route.params.label }}
+              {{ getTargetGroupUsersRouterName }}
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -955,6 +955,9 @@ export default {
       isLoadingFromStore: 'common/getIsLoading',
       sessionCheck: 'common/getSessionCheck'
     }),
+    getTargetGroupUsersRouterName() {
+      return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+    },
     getRouterKey() {
       const { name } = this.$route
       if (['Community', 'Threat Sharing'].includes(name)) {

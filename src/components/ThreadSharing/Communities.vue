@@ -27,6 +27,7 @@
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm()"
           actionButtonText="DELETE"
+          type="delete"
           cancel-button-id="threat-sharing-communities-delete-modal-cancel-button"
           confirm-button-id="threat-sharing-communities-delete-modal-confirm-button"
         />

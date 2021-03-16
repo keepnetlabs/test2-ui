@@ -13,6 +13,7 @@
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
         :confirm-button-disabled="saveDisable"
+        type="delete"
         cancel-button-id="btn-cancel--rest-api-popup"
         confirm-button-id="btn-delete--rest-api-popup"
         action-button-text="DELETE"
