@@ -120,33 +120,37 @@ const investigations = {
     },
     async getInvestigationDetailsListData({ commit, dispatch }, obj) {
       // get investigaiton details
-      return await investigationDetailsListFunction(obj.data, obj.id)
-        .then((response) => {
-          const result = response.data
+      if (obj.id) {
+        return await investigationDetailsListFunction(obj.data, obj.id)
+          .then((response) => {
+            const result = response.data
 
-          commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
-          return response
-        })
-        .catch((error) => {
-          const payload = {
-            data: {
-              pageNumber: 1,
-              pageSize: 1,
-              results: [],
-              totalNumberOfPages: 1,
-              totalNumberOfRecords: 1
+            commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
+            return response
+          })
+          .catch((error) => {
+            const payload = {
+              data: {
+                pageNumber: 1,
+                pageSize: 1,
+                results: [],
+                totalNumberOfPages: 1,
+                totalNumberOfRecords: 1
+              }
             }
-          }
-          commit('SET_INVESTIGATIONDETAILSLISTDATA', payload)
-        })
+            commit('SET_INVESTIGATIONDETAILSLISTDATA', payload)
+          })
+      }
     },
     async getInvestigationDetailsData({ commit, dispatch }, id) {
       // get investigaiton details
-      await getInvestigationDetailsDataFunction(id).then((response) => {
-        const result = response.data
+      if (id) {
+        await getInvestigationDetailsDataFunction(id).then((response) => {
+          const result = response.data
 
-        commit('SET_INVESTIGATIONDETAILSDATA', result)
-      })
+          commit('SET_INVESTIGATIONDETAILSDATA', result)
+        })
+      }
     },
     async getStatsAndMenuData({ commit, dispatch }, id) {
       // get investigaiton list via axious

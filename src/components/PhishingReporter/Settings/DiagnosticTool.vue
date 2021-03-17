@@ -200,6 +200,7 @@ export default {
   }
 
   &__checkbox {
+    z-index: 5;
     @media (min-width: 768px) {
       margin-top: 8px !important;
     }

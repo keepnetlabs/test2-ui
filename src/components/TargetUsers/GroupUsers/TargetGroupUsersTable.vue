@@ -396,18 +396,45 @@ export default {
     },
     addCustomFieldColumns() {
       const columnsOfCustomFields = this.customFields.map((field) => {
+        const { name, fieldDataType } = field
+        const filterableProps = {}
+        switch (fieldDataType.toLowerCase()) {
+          case 'string':
+            filterableProps['filterableType'] = 'text'
+            break
+          case 'email':
+            filterableProps['filterableType'] = 'text'
+            break
+          case 'number':
+            filterableProps['filterableType'] = 'text'
+            break
+          case 'boolean':
+            filterableProps['filterableType'] = 'select'
+            filterableProps['filterableItems'] = [
+              { text: 'Yes', value: 1 },
+              { text: 'No', value: 0 }
+            ]
+            break
+          case 'date':
+            filterableProps['filterableType'] = 'date'
+            break
+          case 'datetime':
+            filterableProps['filterableType'] = 'date'
+            break
+          default:
+            break
+        }
         return {
-          property: field.name,
+          property: name,
           type: 'text',
           sortable: false,
           filterable: true,
           hideSort: true,
-          label: field.name,
+          label: name,
           align: 'left',
           show: true,
-          width: 80 + field.name.length * 7,
-          filterableType: 'text',
-          FilterableItems: 'Yes'
+          width: 80 + name.length * 7,
+          ...filterableProps
         }
       })
       if (!columnsOfCustomFields.length) {
