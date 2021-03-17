@@ -140,7 +140,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             },
@@ -162,7 +162,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
             },
@@ -396,22 +396,47 @@ export default {
     },
     addCustomFieldColumns() {
       const columnsOfCustomFields = this.customFields.map((field) => {
+        const { name, fieldDataType } = field
+        const filterableProps = {}
+        switch (fieldDataType.toLowerCase()) {
+          case 'string':
+            filterableProps['filterableType'] = 'text'
+            break
+          case 'email':
+            filterableProps['filterableType'] = 'text'
+            break
+          case 'number':
+            filterableProps['filterableType'] = 'text'
+            break
+          case 'boolean':
+            filterableProps['filterableType'] = 'select'
+            filterableProps['filterableItems'] = [
+              { text: 'Yes', value: 1 },
+              { text: 'No', value: 0 }
+            ]
+            break
+          case 'date':
+            filterableProps['filterableType'] = 'date'
+            break
+          case 'datetime':
+            filterableProps['filterableType'] = 'date'
+            break
+          default:
+            break
+        }
         return {
-          property: field.name,
+          property: name,
           type: 'text',
           sortable: false,
           filterable: true,
           hideSort: true,
-          label: field.name,
+          label: name,
           align: 'left',
           show: true,
-          width: 80 + field.name.length * 7,
-          customFieldName: field.name,
-          filterableType: 'text',
-          FilterableItems: 'Yes'
+          width: 80 + name.length * 7,
+          ...filterableProps
         }
       })
-
       if (!columnsOfCustomFields.length) {
         this.tableOptions.columns = [...this.defaultColumns, ...this.lastColumns]
       } else {
@@ -445,14 +470,6 @@ export default {
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true
-      let customFields = this.customFields.map((item) => item.name)
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.reduce(
-        (acc, item) => {
-          if (!customFields.includes(item.FieldName)) acc.push(item)
-          return acc
-        },
-        []
-      )
       searchTargetGroupUsers(id, this.axiosPayload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
@@ -500,7 +517,7 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
+      console.log('requestBody', requestBody)
       this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchTargetGroupUsers()
     },

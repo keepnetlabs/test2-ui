@@ -537,12 +537,12 @@
                   v-if="col.filterableType"
                   v-model="filterValues[col.property]"
                   :column="column"
-                  :custom-field-name="col.customFieldName"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
+                  :sortable="!col.hideSort"
                   :is-settings-opened.sync="isSettingsOpened"
                   @handleFilterColumn="handleFilterColumn"
                   @handleClearColumnFilter="handleClearColumnFilter"
@@ -2170,10 +2170,6 @@ export default {
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
                 Operator: 'Contains',
                 Value: this.search
-              }
-              if (filterItem.customFieldName) {
-                obj['FieldName'] = '_CustomField'
-                obj['CustomFieldName'] = filterItem.customFieldName
               }
               acc.push(obj)
             }

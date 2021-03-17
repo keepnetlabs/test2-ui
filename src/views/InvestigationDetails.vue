@@ -1909,22 +1909,24 @@ export default {
       }
     },
     adjustInboxShowRecords(response = {}) {
-      const {
-        data: { data }
-      } = response
-      const { totalNumberOfRecords = 0 } = data
-      this.totalNumberOfRecordsFolder = totalNumberOfRecords
-      if (
-        this.investigationListBodyData.pageSize === 1000 &&
-        this.totalNumberOfRecordsFolder > 1000
-      ) {
-        this.showAllRecordsFolder = true
-      }
-      if (
-        this.totalNumberOfRecordsFolder <= 1000 &&
-        this.investigationListBodyData.pageSize === 1000
-      ) {
-        this.showAllRecordsFolder = false
+      if (response.data) {
+        const {
+          data: { data }
+        } = response
+        const { totalNumberOfRecords = 0 } = data
+        this.totalNumberOfRecordsFolder = totalNumberOfRecords
+        if (
+          this.investigationListBodyData.pageSize === 1000 &&
+          this.totalNumberOfRecordsFolder > 1000
+        ) {
+          this.showAllRecordsFolder = true
+        }
+        if (
+          this.totalNumberOfRecordsFolder <= 1000 &&
+          this.investigationListBodyData.pageSize === 1000
+        ) {
+          this.showAllRecordsFolder = false
+        }
       }
     },
     restartStopInvestigationData() {

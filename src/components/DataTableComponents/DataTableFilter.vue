@@ -12,7 +12,11 @@
     z-index="999"
   >
     <template v-slot:activator="{ on }">
-      <v-icon v-on="on" class="filter__icon" :color="isFilterActive === true ? '#409eff' : ''"
+      <v-icon
+        v-on="on"
+        class="filter__icon"
+        :style="!sortable && { marginTop: '1px' }"
+        :color="isFilterActive === true ? '#409eff' : ''"
         >mdi-filter-variant</v-icon
       >
     </template>
@@ -135,9 +139,6 @@ export default {
     column: {
       type: Object
     },
-    customFieldName: {
-      type: String
-    },
     filterProps: {
       type: Object
     },
@@ -155,6 +156,10 @@ export default {
     filterableCustomFieldName: {
       type: String,
       default: null
+    },
+    sortable: {
+      type: Boolean,
+      default: true
     },
     index: {
       type: Number
@@ -265,71 +270,55 @@ export default {
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
     },
-    emitValue(textValue = '', selectValue = '', fieldName = '', customFieldName = null) {
-      const emittedObj = { textValue, selectValue, fieldName }
-      if (customFieldName) {
-        emittedObj['CustomFieldName'] = customFieldName
-      }
-      this.$emit('input', emittedObj)
+    emitValue(textValue = '', selectValue = '', fieldName = '') {
+      this.$emit('input', { textValue, selectValue, fieldName })
     },
     handleFilter() {
       this.menu = false
       this.isFilterActive = true
-      const CustomFieldName = this.customFieldName
-      const FieldName = this.customFieldName ? '_CustomField' : this.fieldName
+
       if (this.filterableType === 'text') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
-          FieldName,
-          Operator: this.filteredSelectValue,
-          CustomFieldName
+          FieldName: this.fieldName,
+          Operator: this.filteredSelectValue
         })
-        this.emitValue(this.filterValue, this.filteredSelectValue, FieldName, CustomFieldName)
+        this.emitValue(this.filterValue, this.filteredSelectValue, this.fieldName)
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
           Value: this.filterValue,
-          FieldName,
-          Operator: this.filteredSelectValueNum,
-          CustomFieldName
+          FieldName: this.fieldName,
+          Operator: this.filteredSelectValueNum
         })
-        this.emitValue(this.filterValue, this.filteredSelectValueNum, FieldName, CustomFieldName)
+        this.emitValue(this.filterValue, this.filteredSelectValueNum, this.fieldName)
       }
       if (this.filterableType === 'date') {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
               Value: this.filteredDateRangeValue[0],
-              FieldName,
-              Operator: '>=',
-              CustomFieldName
+              FieldName: this.fieldName,
+              Operator: '>='
             },
             {
               value: this.filteredDateRangeValue[1],
-              FieldName,
-              Operator: '<=',
-              CustomFieldName
+              FieldName: this.fieldName,
+              Operator: '<='
             }
           ])
           this.emitValue(
             [this.filteredDateRangeValue[0], this.filteredDateRangeValue[1]],
             this.filteredSelectValueDate,
-            FieldName,
-            CustomFieldName
+            this.fieldName
           )
         } else {
           this.$emit('handleFilterColumn', {
             Value: this.filteredDateValue,
-            FieldName,
-            Operator: this.filteredSelectValueDate,
-            CustomFieldName
+            FieldName: this.fieldName,
+            Operator: this.filteredSelectValueDate
           })
-          this.emitValue(
-            this.filteredDateValue,
-            this.filteredSelectValueDate,
-            FieldName,
-            CustomFieldName
-          )
+          this.emitValue(this.filteredDateValue, this.filteredSelectValueDate, this.fieldName)
         }
       }
       if (this.filterableType === 'select') {
@@ -337,11 +326,10 @@ export default {
         const Operator = 'Include'
         this.$emit('handleFilterColumn', {
           Value,
-          FieldName,
-          Operator,
-          CustomFieldName
+          FieldName: this.fieldName,
+          Operator
         })
-        this.emitValue(this.filterValue, Value, FieldName, CustomFieldName)
+        this.emitValue(this.filterValue, Value, this.fieldName)
       }
     }
   },
