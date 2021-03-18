@@ -12,6 +12,7 @@
     <template v-slot:app-dialog-body>
       <v-card light>
         <data-table
+          ref="refPhishingReporterDownloadHistory"
           :loading="isLoading"
           :refName="'versionHistory'"
           :table="tableData"
@@ -20,12 +21,11 @@
           :selectable="false"
           :pageSizes="[5, 10, 25]"
           :filterable="true"
-          :is-downloadable="false"
           :options="true"
           :count-row="5"
           :rowActions="table.rowActions"
           :empty="table.iEmpty"
-          :download-button="{ show: false }"
+          @downloadEvent="exportDownloadHistoryList"
           @handleDetails="handleDetails"
           @handleDownload="handleDownload"
           @refreshAction="callForTableData"
@@ -50,7 +50,12 @@
 <script>
 import AppDialog from '../../AppDialog'
 import DataTable from '../../DataTable'
-import { searchGeneratedApplicationHistory } from '@/api/phishingReporter'
+import {
+  exportPhishingReporterDownloadHistory,
+  searchGeneratedApplicationHistory
+} from '@/api/phishingReporter'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+
 export default {
   name: 'VersionHistoryModal',
   components: {
@@ -64,23 +69,51 @@ export default {
     }
   },
   methods: {
+    exportDownloadHistoryList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.payload.filter)),
+        this.$refs.refPhishingReporterDownloadHistory,
+        'CreateTime'
+      )
+      if (this.$refs.refPhishingReporterDownloadHistory.search) {
+        clientTableExportHelper.addSearchItems(this.table.columns)
+      }
+      if (
+        this.$refs.refPhishingReporterDownloadHistory.sortProps &&
+        this.$refs.refPhishingReporterDownloadHistory.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
+      exportTypes.map((exportType) => {
+        const payload = {
+          ...sortFilter,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
+        exportPhishingReporterDownloadHistory(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Phishing Reporter Download History.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleDetails(row) {
       this.$emit('handleHistoryRow', row)
     },
     handleDownload(row) {},
     callForTableData() {
       this.isLoading = true
-      const searchPayload = {
-        pageNumber: 1,
-        pageSize: 10000000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: []
-        }
-      }
-      searchGeneratedApplicationHistory(searchPayload)
+      searchGeneratedApplicationHistory(this.payload)
         .then((response) => {
           const {
             data: { data }
@@ -139,7 +172,28 @@ export default {
           message: 'You do not have any versions, yet'
         }
       },
-      isLoading: false
+      isLoading: false,
+      payload: {
+        pageNumber: 1,
+        pageSize: 75000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
     }
   },
   created() {
