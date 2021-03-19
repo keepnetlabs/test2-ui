@@ -345,6 +345,10 @@ export default {
     }
   }
 
+  &__checkbox {
+    z-index: 6;
+  }
+
   &__checkbox-container {
     padding-top: 14px !important;
     padding-bottom: 6px !important;
