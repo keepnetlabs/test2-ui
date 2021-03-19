@@ -182,7 +182,7 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: ['FortiNet', 'VirusTotal', 'Vmray']
+            filterableItems: ['FortiNet', 'VirusTotal', 'Vmray', 'IbmXforce']
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,

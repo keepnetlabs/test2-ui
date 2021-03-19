@@ -131,7 +131,7 @@
               required
             ></v-text-field>
           </form-group>
-          <form-group title="Password" has-hint v-if="isFortiNet">
+          <form-group title="Password" has-hint v-if="isFortiNet || isIbmXForce">
             <v-text-field
               placeholder="Enter password"
               outlined
@@ -205,7 +205,7 @@
               </div>
             </div>
           </form-group>
-          <v-list-item class="px-0" v-if="isVmrayOrVirusTotal">
+          <v-list-item class="px-0" v-if="isVmrayOrVirusTotal || isIbmXForce">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 API Key
@@ -298,8 +298,15 @@
                 </div>
               </div>
               <div></div>
-              <div class="new-integration__api-key__footer">
-                <div class="new-integration__api-key__footer-left-side" @click="addApiKey">
+              <div
+                class="new-integration__api-key__footer"
+                :style="[isIbmXForce && { justifyContent: 'flex-end' }]"
+              >
+                <div
+                  v-if="!isIbmXForce"
+                  class="new-integration__api-key__footer-left-side"
+                  @click="addApiKey"
+                >
                   <v-icon color="#2196f3" style="cursor: pointer !important;">mdi-plus</v-icon>
                   <div class="ml-2 new-integration__api-key__text">ADD API KEY</div>
                 </div>
@@ -624,6 +631,9 @@ export default {
         this.selectedIntegrationType.name
       )
     },
+    isIbmXForce() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE
+    },
     isFortiNetConnectionDisabled() {
       const { userName, password, apiUrl } = this.formValues
       return !(userName && password && apiUrl)
@@ -658,12 +668,22 @@ export default {
     saveIntegration() {
       const data = { ...this.formValues }
 
-      if (['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name)) {
+      if (
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE
+        ].includes(this.selectedIntegrationType.name)
+      ) {
         data.apiKeys = data.apiKeys.map((i) => i.value)
         data.apiCredentials = data.apiKeys.map((i) => {
-          return {
+          const obj = {
             apiKey: i
           }
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+            obj['password'] = this.formValues.password
+          }
+          return obj
         })
       } else if (this.selectedIntegrationType.name === 'FortiNet') {
         data.apiCredentials = [
@@ -677,7 +697,8 @@ export default {
       delete data.apiKeys
       delete data.userName
       delete data.password
-
+      console.log('data', data)
+      console.log('this.formValues', this.formValues)
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then(() => {
@@ -746,7 +767,11 @@ export default {
     },
     getTestConnectionDisableStatus() {
       if (
-        ['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name) &&
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE
+        ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
         this.formValues.apiKeys[0].value &&
@@ -812,10 +837,19 @@ export default {
             (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
           ) || {}
 
-        if (['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name)) {
+        if (
+          [
+            INTEGRATION_TYPES.VIRUSTOTAL,
+            INTEGRATION_TYPES.VMRAY,
+            INTEGRATION_TYPES.IBMXFORCE
+          ].includes(this.selectedIntegrationType.name)
+        ) {
           response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
             return { value: item.apiKey, status: null }
           })
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+            response.data.data.password = response['data'].data['apiCredentials'][0].password
+          }
         } else if (this.selectedIntegrationType.name === 'FortiNet') {
           const { userName, password } = response['data'].data['apiCredentials'][0]
           response.data.data.userName = userName
@@ -851,6 +885,9 @@ export default {
           apiKey: item.value
         }
       }
+      if (this.isIbmXForce) {
+        payload['apiCredential']['password'] = this.formValues.password
+      }
       testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
         .then((response) => {
           if (response.data.status === 'FAILED') {
@@ -872,7 +909,13 @@ export default {
         .finally(() => this.loadingState.shift('loading'))
     },
     testConnection(isSave) {
-      if (['VirusTotal', 'Vmray'].includes(this.selectedIntegrationType.name)) {
+      if (
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE
+        ].includes(this.selectedIntegrationType.name)
+      ) {
         for (let i = 0; i < this.formValues.apiKeys.length; i++) {
           const item = this.formValues.apiKeys[i]
           this.formValues.apiKeys[i].status = 'loading'
@@ -882,6 +925,9 @@ export default {
             apiCredential: {
               apiKey: item.value
             }
+          }
+          if (this.isIbmXForce) {
+            payload['apiCredential']['password'] = this.formValues.password
           }
           testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
             .then((response) => {
@@ -947,6 +993,12 @@ export default {
         }
         this.formValues.userName = ''
         this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+          this.formValues.userName = ''
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+        }
       } else {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''
