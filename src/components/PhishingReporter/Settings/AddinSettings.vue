@@ -842,6 +842,7 @@ export default {
         }
       }
       &-checkbox {
+        z-index: 6;
         margin-top: 8px;
         align-self: flex-start !important;
       }

@@ -441,6 +441,7 @@
             </v-list-item>
           </v-list-group>
         </v-list>
+        <navigation-drawer-footer :is-mini="getMini" />
       </v-navigation-drawer>
     </div>
 
@@ -614,10 +615,12 @@ import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersC
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
 import SecurityModal from '@/components/Security/SecurityModal'
+import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 
 export default {
   name: 'Main',
   components: {
+    NavigationDrawerFooter,
     SecurityModal,
     AppRouterItem,
     FeedbackPopup,
@@ -1586,6 +1589,7 @@ export default {
     }
     &__content {
       padding-top: 2px;
+      flex-basis: 90%;
     }
     &__fixed-content {
       position: fixed;
@@ -2064,6 +2068,8 @@ export default {
   }
 
   .v-navigation-drawer__content {
+    display: flex;
+    flex-direction: column;
     .v-list-item {
       border-left: 5px solid transparent;
     }
