@@ -1223,6 +1223,9 @@ export default {
       }
     }, 500)
   },
+  created() {
+    this.$store.dispatch('whitelabel/callForData')
+  },
   beforeDestroy() {
     clearInterval(this.interval)
   },
