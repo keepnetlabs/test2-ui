@@ -10,3 +10,7 @@ export function updateWhiteLabel(payload = {}, id = '') {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getSystemVersion() {
+  return testRequest.get('/system-info/version')
+}

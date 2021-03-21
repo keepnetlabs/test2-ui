@@ -1,4 +1,4 @@
-import { getWhiteLabel, updateWhiteLabel } from '@/api/whitelabel'
+import { getSystemVersion, getWhiteLabel, updateWhiteLabel } from '@/api/whitelabel'
 
 const whitelabel = {
   namespaced: true,
@@ -19,11 +19,15 @@ const whitelabel = {
     footerCookiePolicyUrl: '',
     isShowReleaseVersionNumber: false,
     isShowReleaseNotes: false,
-    releaseNotesUrl: ''
+    releaseNotesUrl: '',
+    systemVersion: null
   },
   getters: {
     getState(state) {
       return state
+    },
+    getEmailTemplateLogoUrl({ emailTemplateLogoUrl }) {
+      return emailTemplateLogoUrl
     },
     getFooterLinks({
       footerPrivacyPolicyUrl,
@@ -39,25 +43,27 @@ const whitelabel = {
       }
     },
     getNavigatorMenuProps({
-      mainLogoFile,
-      minimizedMenuLogoFile,
+      mainLogoUrl,
+      minimizedMenuLogoUrl,
       isShowReleaseVersionNumber,
       isShowReleaseNotes,
-      releaseNotesUrl
+      releaseNotesUrl,
+      systemVersion
     }) {
       return {
-        mainLogoFile,
-        minimizedMenuLogoFile,
+        mainLogoUrl,
+        minimizedMenuLogoUrl,
         isShowReleaseVersionNumber,
         isShowReleaseNotes,
-        releaseNotesUrl
+        releaseNotesUrl,
+        systemVersion
       }
     },
     getSupportEmailAddress({ supportEmailAddress }) {
       return supportEmailAddress
     },
-    getFavIcon({ faviconFile }) {
-      return faviconFile
+    getFavIcon({ faviconUrl }) {
+      return faviconUrl
     },
     getBrandName({ brandName }) {
       return brandName
@@ -66,8 +72,17 @@ const whitelabel = {
   mutations: {
     SET_DATA(state = {}, payload = {}) {
       for (const key of Object.keys(state)) {
-        state[key] = payload[key]
+        if (key === 'faviconUrl' && payload[key]) {
+          const favIcon = document.querySelector('link[rel="icon"]')
+          favIcon.href = payload[key]
+        }
+        if (key !== 'systemVersion') {
+          state[key] = payload[key]
+        }
       }
+    },
+    SET_SYSTEM_VERSION(state = {}, payload = {}) {
+      state.systemVersion = payload
     },
     TOGGLE_LOADING(state, payload) {
       state.loading = payload
@@ -92,8 +107,15 @@ const whitelabel = {
       for (const [key, value] of formData.entries()) {
         console.log(`${key}:${value}`)
       }
-      return updateWhiteLabel(formData, id).then((response) => {
+      return updateWhiteLabel(formData, id).then(() => {
         context.dispatch('callForData')
+        context.dispatch('callForSystemVersion')
+      })
+    },
+    callForSystemVersion(context = {}, payload = {}) {
+      getSystemVersion().then((response) => {
+        console.log(' response.data.data.version', response.data.data.version)
+        context.commit('SET_SYSTEM_VERSION', response.data.data.version)
       })
     }
   }
