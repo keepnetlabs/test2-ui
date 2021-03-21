@@ -1,13 +1,17 @@
+import { getWhiteLabel, updateWhiteLabel } from '@/api/whitelabel'
+
 const whitelabel = {
   namespaced: true,
   state: {
+    resourceId: null,
+    loading: true,
     brandName: '',
     mainDomainProtocol: '',
     mainDomainUrl: '',
-    mainLogoFile: null,
-    minimizedMenuLogoFile: null,
-    faviconFile: null,
-    emailTemplateLogoFile: null,
+    mainLogoUrl: null,
+    minimizedMenuLogoUrl: null,
+    faviconUrl: null,
+    emailTemplateLogoUrl: null,
     supportEmailAddress: null,
     footerPrivacyPolicyUrl: '',
     footerTermsAndConditionsUrl: '',
@@ -18,6 +22,9 @@ const whitelabel = {
     releaseNotesUrl: ''
   },
   getters: {
+    getState(state) {
+      return state
+    },
     getFooterLinks({
       footerPrivacyPolicyUrl,
       footerTermsAndConditionsUrl,
@@ -61,10 +68,34 @@ const whitelabel = {
       for (const key of Object.keys(state)) {
         state[key] = payload[key]
       }
+    },
+    TOGGLE_LOADING(state, payload) {
+      state.loading = payload
     }
   },
   actions: {
-    callForData(payload = {}) {}
+    callForData(context = {}) {
+      context.commit('TOGGLE_LOADING', true)
+      getWhiteLabel()
+        .then((response) => {
+          context.commit('SET_DATA', response.data.data)
+        })
+        .finally(() => context.commit('TOGGLE_LOADING', false))
+    },
+    updateData(context = {}, payload = {}) {
+      const formData = new FormData()
+      const id = payload['resourceId']
+      delete payload.id
+      Object.keys(payload).map((key) => {
+        formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
+      })
+      for (const [key, value] of formData.entries()) {
+        console.log(`${key}:${value}`)
+      }
+      return updateWhiteLabel(formData, id).then((response) => {
+        context.dispatch('callForData')
+      })
+    }
   }
 }
 
