@@ -469,6 +469,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'AddinSettings',
   components: { KFileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
@@ -541,6 +542,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' }),
     getAnalysisConfirmationMessageRules() {
       const validations = []
       if (this.formValues.isConfirmationBeforeAnalysis) {
@@ -644,8 +646,9 @@ export default {
         this.formValues.file = response.data
       })
     } else {
-      this.formValues.brandName =
-        localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
+      this.formValues.brandName = this.whiteLabelBrandName
+        ? this.whiteLabelBrandName
+        : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
       this.formValues.addInName = 'Suspicious E-Mail Reporter'
       this.formValues.msgBoxTitle = 'Phishing Reporter'
       this.formValues.msgBoxBtnCancelText = 'Cancel'

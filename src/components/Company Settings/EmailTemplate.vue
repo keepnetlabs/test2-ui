@@ -96,7 +96,11 @@
             "
           >
             <td>
-              <p style="margin: 0;">Logo Here</p>
+              <img
+                alt="logo"
+                style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
+                :src="emailTemplateLogo"
+              />
             </td>
           </tr>
           <tr>
@@ -192,6 +196,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
+import { mapGetters } from 'vuex'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -215,6 +220,9 @@ export default {
       grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
       Validations
     }
+  },
+  computed: {
+    ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' })
   },
   watch: {
     activeBlockManagerComponents() {

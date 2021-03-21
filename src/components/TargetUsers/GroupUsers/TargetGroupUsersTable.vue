@@ -517,7 +517,6 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-      //console.log('requestBody', requestBody)
       this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchTargetGroupUsers()
     },

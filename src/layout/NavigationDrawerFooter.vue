@@ -1,29 +1,38 @@
 <template>
   <div class="navigation-drawer-footer">
     <v-list dense>
-      <a href="#">
-        <v-list-item class="navigation-drawer-footer__item">
-          <v-list-item-icon>
-            <v-icon>mdi-crosshairs-question</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Documentation</v-list-item-title>
-        </v-list-item>
-      </a>
-      <a href="#">
-        <v-list-item class="navigation-drawer-footer__item">
-          <v-list-item-icon>
-            <v-icon>mdi-message-alert-outline</v-icon>
-          </v-list-item-icon>
-          <v-list-item-title>Give Feedback!</v-list-item-title>
-        </v-list-item>
-      </a>
+      <v-list-item class="navigation-drawer-footer__item" @click="handleDocumentationClick">
+        <v-list-item-icon>
+          <v-icon>mdi-crosshairs-question</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Documentation</v-list-item-title>
+      </v-list-item>
+      <v-list-item class="navigation-drawer-footer__item" @click="handleFeedbackClick">
+        <v-list-item-icon>
+          <v-icon>mdi-message-alert-outline</v-icon>
+        </v-list-item-icon>
+        <v-list-item-title>Give Feedback!</v-list-item-title>
+      </v-list-item>
     </v-list>
-    <div class="navigation-drawer-footer__bottom" :style="isMini && { marginLeft: '21px' }">
-      <span v-if="!isMini" class="navigation-drawer-footer__version">Version 2.8 -</span>
-      <span v-else class="navigation-drawer-footer__version">
-        2.8
+    <div
+      v-if="isRelaseInformation"
+      class="navigation-drawer-footer__bottom"
+      :style="isMini && { marginLeft: '21px' }"
+    >
+      <span v-if="isReleaseVersion" class="navigation-drawer-footer__version"
+        >Version {{ getReleaseVersion }} -</span
+      >
+      <span v-else-if="isMiniReleaseVersion" class="navigation-drawer-footer__version"
+        >{{ getReleaseVersion.substring(0, 3) }}
       </span>
-      <a v-if="!isMini" href="#" class="navigation-drawer-footer__release-notes"> Release Notes</a>
+      <a
+        v-if="!isMini"
+        :href="getReleaseNotesUrl"
+        class="navigation-drawer-footer__release-notes"
+        target="_blank"
+      >
+        Release Notes</a
+      >
     </div>
   </div>
 </template>
@@ -34,6 +43,45 @@ export default {
   props: {
     isMini: {
       type: Boolean
+    },
+    navigatorMenuProps: {
+      type: Object
+    }
+  },
+  computed: {
+    isRelaseInformation() {
+      const {
+        isShowReleaseNotes = false,
+        isShowReleaseVersionNumber = false
+      } = this.navigatorMenuProps
+      return isShowReleaseNotes || isShowReleaseVersionNumber
+    },
+    isReleaseVersion() {
+      const { isShowReleaseVersionNumber = false } = this.navigatorMenuProps
+      return isShowReleaseVersionNumber && !this.isMini
+    },
+    isMiniReleaseVersion() {
+      const { isShowReleaseVersionNumber = false } = this.navigatorMenuProps
+      return isShowReleaseVersionNumber && this.isMini
+    },
+    getReleaseVersion() {
+      const { systemVersion = '0' } = this.navigatorMenuProps
+      return systemVersion
+    },
+    getReleaseNotesUrl() {
+      const { releaseNotesUrl = '' } = this.navigatorMenuProps
+      return releaseNotesUrl
+    }
+  },
+  methods: {
+    handleDocumentationClick() {
+      const domElem = document.createElement('a')
+      domElem.href = 'https://doc.keepnetlabs.com'
+      domElem.target = '_blank'
+      domElem.click()
+    },
+    handleFeedbackClick() {
+      this.$store.dispatch('dashboard/changeFeedbackPopup', true)
     }
   }
 }
