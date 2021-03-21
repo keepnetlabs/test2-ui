@@ -76,7 +76,9 @@ const whitelabel = {
           const favIcon = document.querySelector('link[rel="icon"]')
           favIcon.href = payload[key]
         }
-        state[key] = payload[key]
+        if (key !== 'systemVersion') {
+          state[key] = payload[key]
+        }
       }
     },
     SET_SYSTEM_VERSION(state = {}, payload = {}) {
@@ -105,8 +107,9 @@ const whitelabel = {
       for (const [key, value] of formData.entries()) {
         console.log(`${key}:${value}`)
       }
-      return updateWhiteLabel(formData, id).then((response) => {
+      return updateWhiteLabel(formData, id).then(() => {
         context.dispatch('callForData')
+        context.dispatch('callForSystemVersion')
       })
     },
     callForSystemVersion(context = {}, payload = {}) {
