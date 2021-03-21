@@ -90,7 +90,7 @@ const whitelabel = {
         formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
       })
       for (const [key, value] of formData.entries()) {
-        console.log(`${key}:${value}`)
+        //console.log(`${key}:${value}`)
       }
       return updateWhiteLabel(formData, id).then((response) => {
         context.dispatch('callForData')

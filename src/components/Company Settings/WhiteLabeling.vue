@@ -339,7 +339,6 @@ export default {
       this.formValues.mainLogoFile = file
     },
     onMinimizedLogoChange(file) {
-      debugger
       this.formValues.minimizedMenuLogoFile = file
     },
     onFavIconChange(file) {
