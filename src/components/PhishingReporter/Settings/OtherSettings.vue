@@ -338,6 +338,7 @@ export default {
   }
 
   &__checkbox {
+    z-index: 6;
     .v-input__slot {
       margin-bottom: 0 !important;
       margin-top: -5px;

@@ -13,6 +13,7 @@ import datatable from '@/store/modules/datatable'
 import incidents from '@/store/modules/incidents'
 import communities from '@/store/modules/communities'
 import tableReload from '@/store/modules/tableReload'
+import whitelabel from '@/store/modules/whitelabel'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -28,7 +29,8 @@ let store = new Vuex.Store({
     datatable,
     incidents,
     communities,
-    tableReload
+    tableReload,
+    whitelabel
   }
 })
 

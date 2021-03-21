@@ -7,6 +7,9 @@ export function searchCompanies(payload) {
 export function searchGroupCompanies(id, payload) {
   return testRequest.post(`/company-groups/${id}/companies/search`, payload)
 }
+export function searchMyCompanies(payload) {
+  return testRequest.post(`/companies/my/search`, payload)
+}
 export function exportCompanies(payload) {
   return testRequest.post('/companies/search/export', payload, {
     responseType: 'blob'
