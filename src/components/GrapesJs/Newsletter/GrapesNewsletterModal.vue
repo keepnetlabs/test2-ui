@@ -15,6 +15,8 @@ import GrapesNewsletterModal from 'grapesjs'
 import 'grapesjs-blocks-basic'
 import 'grapesjs-preset-newsletter'
 import 'grapesjs-preset-webpage'
+import parserPostCSS from 'grapesjs-parser-postcss'
+import componentEditor from 'grapesjs-component-code-editor'
 import './assets/css/grapesjsstyle.scss'
 import 'grapesjs-plugin-forms'
 import exampleComponent from './components/exampleComponent'
@@ -36,6 +38,8 @@ import { uploadEmlOrMsg } from '../../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { setGrapesjsStyle } from './assets/css/grapesStyle'
+import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
+import 'grapesjs/dist/css/grapes.min.css'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -152,7 +156,7 @@ export default {
         container: '#gjsNewsletterModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage'],
+        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', parserPostCSS, componentEditor],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalTitleImport: 'Import Template',
@@ -161,7 +165,15 @@ export default {
             categoryLabel: 'Basic'
           }
         },
-        noticeOnUnload: false
+        noticeOnUnload: false,
+        styleManager: {
+          sectors: [
+            {
+              name: 'Dimension',
+              open: true
+            }
+          ]
+        }
       })
       this.editor.on('component:selected', () => {
         const selected = this.editor.getSelected()
@@ -199,6 +211,23 @@ export default {
               ).selectedIndex = 0
             }
           }, 50)
+        } else {
+          this.editor.StyleManager.getSectors().models[0].attributes.open = true
+          this.editor.StyleManager.getSectors().models[1].attributes.open = true
+          this.editor.StyleManager.getSectors().models[2].attributes.open = true
+          this.editor.StyleManager.render()
+          /*document.getElementById('gjs-sm-dimension').className =
+            'gjs-sm-sector gjs-sm-sector__dimension no-select gjs-sm-open'
+          document.querySelector('#gjs-sm-dimension #gjs-sm-caret').className = 'fa fa-caret-down'
+          document.querySelector('#gjs-sm-dimension .gjs-sm-properties').style.display = 'block'
+          document.getElementById('gjs-sm-typography').className =
+            'gjs-sm-sector gjs-sm-sector__typography no-select gjs-sm-open'
+          document.querySelector('#gjs-sm-typography #gjs-sm-caret').className = 'fa fa-caret-down'
+          document.querySelector('#gjs-sm-typography .gjs-sm-properties').style.display = 'block'
+          document.getElementById('gjs-sm-decorations').className =
+            'gjs-sm-sector gjs-sm-sector__decorations no-select gjs-sm-open'
+          document.querySelector('#gjs-sm-decorations #gjs-sm-caret').className = 'fa fa-caret-down'
+          document.querySelector('#gjs-sm-decorations .gjs-sm-properties').style.display = 'block'*/
         }
       })
       setTimeout(() => {
@@ -241,6 +270,20 @@ export default {
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }
+      const panelViews = pn.addPanel({
+        id: 'views'
+      })
+      panelViews.get('buttons').add([
+        {
+          attributes: {
+            title: 'Open Code'
+          },
+          className: 'fa fa-file-code-o',
+          command: 'open-code',
+          togglable: false, //do not close when button is clicked again
+          id: 'open-code'
+        }
+      ])
       //pn.getButton('options', 'gjs-open-import-template').set('active', 1)
     },
     uploadFile(e) {

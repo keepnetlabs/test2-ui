@@ -927,7 +927,7 @@ export default {
         this.getAllCommunitiesListData()
         this.getInvitationCount()
         this.setInitialCommunityValues()
-        this.isCommunity = false
+        this.$route.params.isCommunity = false
       }
       if (this.isTableReload) {
         this.page = 1
@@ -939,7 +939,7 @@ export default {
             this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
             break
           case 'tab-2':
             this.getInvitions()
@@ -954,7 +954,7 @@ export default {
       }, 100)
     }
 
-    if (this.isCommunity) {
+    if (this.$route.params.isCommunity) {
       let _this = this
       if (this.$route.params.communityName === 'empty') {
         _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
@@ -969,11 +969,11 @@ export default {
           .catch((error) => {
             error.response.data
           })
-        this.isCommunity = false
+        this.$route.params.isCommunity = false
       } else {
         this.filter = this.$route.params.communityName
         setTimeout(() => {
-          this.isCommunity = false
+          this.$route.params.isCommunity = false
         }, 2000)
       }
     }
@@ -991,7 +991,7 @@ export default {
             this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
             break
           default:
             return false
@@ -1005,7 +1005,7 @@ export default {
             this.getMyCommunitiesListData()
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData()
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
             break
         }
       }
@@ -1114,7 +1114,7 @@ export default {
             this.getMyCommunitiesListData()
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData()
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
             break
           case 'tab-2':
             this.getInvitions()
@@ -1304,7 +1304,7 @@ export default {
           if (isSearch) {
             this.page = 1
           }
-          if (this.isCommunity) {
+          if (this.$route.params.isCommunity) {
             this.listData = data.data.results.filter(
               (item) => item.communityResourceId === this.$route.params.communityId
             )
@@ -1440,14 +1440,14 @@ export default {
       }
     },
     updateCommunities(isSearch) {
-      this.isCommunity = false
+      this.$route.params.isCommunity = false
       if (!this.isLoadState) {
         switch (this.selectedTab) {
           case 'tab-0':
             this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
             break
           case 'tab-2':
             this.getInvitions()
@@ -1525,7 +1525,7 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     subTabSelected(name) {
-      this.isCommunity = false
+      this.$route.params.isCommunity = false
       if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.page = 1
