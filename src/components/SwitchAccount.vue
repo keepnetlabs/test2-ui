@@ -158,6 +158,11 @@ const sleep = (d) => new Promise((r) => setTimeout(r, d))
 let called = false
 export default {
   name: 'SwitchAccount',
+  props: {
+    navigatorMenuProps: {
+      type: Object
+    }
+  },
   data() {
     return {
       labels,
@@ -272,10 +277,7 @@ export default {
       if (this.$store.state.auth.user == undefined) {
         return ''
       }
-      let image =
-        localStorage.getItem('isSelectCompany') === 'true'
-          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl
+      let image = this.navigatorMenuProps.mainLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
 

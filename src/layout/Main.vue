@@ -28,7 +28,10 @@
         width="600"
         @click:outside="setSwitchDialog(!isSwitchDialogOpen)"
       >
-        <switch-account v-if="isSwitchDialogOpen"></switch-account>
+        <switch-account
+          v-if="isSwitchDialogOpen"
+          :navigatorMenuProps="navigatorMenuProps"
+        ></switch-account>
       </v-dialog>
     </v-row>
     <v-overlay :absolute="false" :opacity="0.46" :value="sessionCheck" :z-index="999">
@@ -69,11 +72,7 @@
             x-large
           ></v-app-bar-nav-icon>
           <div class="v-responsive">
-            <img
-              v-if="!mini && drawer"
-              class="page-nav__logo-wrapper__logo"
-              src="../assets/img/logo-full-color.png"
-            />
+            <img v-if="!mini && drawer" class="page-nav__logo-wrapper__logo" :src="getLogoImage" />
             <div v-else>
               <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
             </div>
@@ -192,7 +191,7 @@
 
         <div class="v-responsive">
           <div v-if="mini && drawer">
-            <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
+            <img v-if="!!getMiniLogo" :src="getMiniLogo" class="menu-mini-img" />
           </div>
         </div>
       </div>
@@ -441,7 +440,7 @@
             </v-list-item>
           </v-list-group>
         </v-list>
-        <navigation-drawer-footer :is-mini="getMini" />
+        <navigation-drawer-footer :is-mini="getMini" :navigatorMenuProps="navigatorMenuProps" />
       </v-navigation-drawer>
     </div>
 
@@ -956,7 +955,10 @@ export default {
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading',
-      sessionCheck: 'common/getSessionCheck'
+      sessionCheck: 'common/getSessionCheck',
+      navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
+      brandName: 'whitelabel/getBrandName',
+      supportEmailAddress: 'whitelabel/getSupportEmailAddress'
     }),
     getTargetGroupUsersRouterName() {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
@@ -1042,7 +1044,9 @@ export default {
       )
     },
     companyName() {
-      return localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
+      return this.brandName
+        ? this.brandName
+        : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
     },
     routerName() {
       return this.$route.name
@@ -1101,10 +1105,14 @@ export default {
       if (this.$store.state.auth.user == undefined) {
         return ''
       }
-      let image =
-        localStorage.getItem('isSelectCompany') === 'true'
-          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          : this.$store.state.auth.logoUrl
+      let image = this.navigatorMenuProps.mainLogoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
+    getMiniLogo() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
+      let image = this.navigatorMenuProps.minimizedMenuLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
     getFirstName() {
@@ -1122,10 +1130,7 @@ export default {
       )
     },
     getSelectedCompanyName() {
-      if (this.$store.state.auth.companyName == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.selectedCompanyName
+      return this.brandName || this.$store.state.auth.selectedCompanyName
     },
     getRolename() {
       if (this.$store.state.auth.userRoleName == undefined) {
@@ -1225,6 +1230,7 @@ export default {
   },
   created() {
     this.$store.dispatch('whitelabel/callForData')
+    this.$store.dispatch('whitelabel/callForSystemVersion')
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -1354,7 +1360,7 @@ export default {
           this.feedbackdialog = true
           break
         case 'Get Help':
-          domElem.href = 'mailto:support@keepnetlabs.com'
+          domElem.href = `mailto:${this.supportEmailAddress || 'support@keepnetlabs.com'}`
           domElem.click()
           break
         case 'Documentation':
