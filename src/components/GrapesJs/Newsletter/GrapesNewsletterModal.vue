@@ -39,7 +39,7 @@ import { setGrapesjsStyle } from './assets/css/grapesStyle'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
 import parserPostCSS from 'grapesjs-parser-postcss'
-//import componentEditor from 'grapesjs-component-code-editor'
+import componentEditor from '../../GrapesJs/ComponentEditor/index'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -156,7 +156,7 @@ export default {
         container: '#gjsNewsletterModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', parserPostCSS],
+        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', parserPostCSS, componentEditor],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalTitleImport: 'Import Template',
