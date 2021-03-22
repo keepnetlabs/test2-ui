@@ -1,6 +1,5 @@
-/*! grapesjs-component-code-editor - 1.0.13
+/*! grapesjs-component-code-editor - 1.0.13*/
 !(function (e, t) {
-  console.log('asd')
   'object' == typeof exports && 'object' == typeof module
     ? (module.exports = t())
     : 'function' == typeof define && define.amd
@@ -9,7 +8,6 @@
     ? (exports['grapesjs-component-code-editor'] = t())
     : (e['grapesjs-component-code-editor'] = t())
 })(window, function () {
-  console.log('asd')
   return (function (e) {
     var t = {}
     function n(i) {
@@ -619,7 +617,7 @@
                   var i = ''
                   this.cssCodeEditor
                     .getContent()
-                    .split(/(?<=}\n)/g)
+                    .split()
                     .forEach(function (e) {
                       ;/^#/.test(e) && (i += e)
                     }),
@@ -830,4 +828,3 @@
   ])
 })
 //# sourceMappingURL=grapesjs-component-code-editor.min.js.map
-*/
