@@ -15,8 +15,6 @@ import GrapesNewsletterModal from 'grapesjs'
 import 'grapesjs-blocks-basic'
 import 'grapesjs-preset-newsletter'
 import 'grapesjs-preset-webpage'
-import parserPostCSS from 'grapesjs-parser-postcss'
-import componentEditor from 'grapesjs-component-code-editor'
 import './assets/css/grapesjsstyle.scss'
 import 'grapesjs-plugin-forms'
 import exampleComponent from './components/exampleComponent'
@@ -40,6 +38,8 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { setGrapesjsStyle } from './assets/css/grapesStyle'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
+import parserPostCSS from 'grapesjs-parser-postcss'
+//import componentEditor from 'grapesjs-component-code-editor'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -156,7 +156,7 @@ export default {
         container: '#gjsNewsletterModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', parserPostCSS, componentEditor],
+        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', parserPostCSS],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalTitleImport: 'Import Template',
