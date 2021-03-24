@@ -19,8 +19,8 @@
         <template v-slot:app-dialog-body> This custom field will be deleted ! </template>
         <template v-slot:app-dialog-footer>
           <app-dialog-footer
-            cancel-button-id="btn-cancel--target-users-people-popup"
-            confirm-button-id="btn-delete--target-users-people-popup"
+            cancel-button-id="btn-cancel--custom-fields-overlay"
+            confirm-button-id="btn-delete--custom-fields-overlay"
             @handleClose="isWantToDelete = false"
             @handleConfirm="deleteCustomField"
             type="delete"
