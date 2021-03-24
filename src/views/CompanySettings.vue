@@ -21,9 +21,9 @@
           <el-tab-pane label="Rest API" name="custom-api" id="custom-api-content">
             <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
           /></el-tab-pane>
-          <el-tab-pane label="White Labeling" name="white-labeling" id="white-labeling-content">
+          <!--<el-tab-pane label="White Labeling" name="white-labeling" id="white-labeling-content">
             <white-labeling v-if="tab === 'white-labeling'" ref="refWhitelabeling"
-          /></el-tab-pane>
+          /></el-tab-pane>-->
         </el-tabs>
       </v-card>
     </v-layout>
@@ -42,8 +42,7 @@ export default {
   components: {
     SMTPSettings,
     NotificationTemplates,
-    CustomApi,
-    WhiteLabeling
+    CustomApi
   },
   data() {
     return {
