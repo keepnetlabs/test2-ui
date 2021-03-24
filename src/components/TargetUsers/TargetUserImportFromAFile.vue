@@ -517,6 +517,7 @@ export default {
   },
   data() {
     return {
+      allCustomColumns: null,
       stopMappingData: false,
       serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
@@ -765,6 +766,7 @@ export default {
     setQueryValuesToPayload({ page, size }) {
       //generic
       const parsedPage = parseInt(page)
+
       this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
       const parsedSize = parseInt(size)
       size = isNaN(parsedSize) ? 10 : parsedSize
@@ -773,6 +775,7 @@ export default {
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
+
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -783,6 +786,7 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
+
       this.bodyData.pageNumber = pageNumber
       this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForGetTargetUserCustomFieldsByCompanyId()
@@ -942,8 +946,9 @@ export default {
           this.responsNumbers = response.data.data
           _this.tableOptions.columns = JSON.parse(JSON.stringify(_this.tableOptions.backupColumns))
           let data = ({ data, status } = response.data.data.items.results)
+          let customFields
           if (data.length) {
-            let customFields = data[0].customFields.map((item) => {
+            customFields = data[0].customFields.map((item) => {
               let itemObj = {
                 property: item.name,
                 align: 'left',
@@ -960,43 +965,67 @@ export default {
                 filterable: true,
                 customFieldName: item.name,
                 filterableType: 'text',
-                FilterableItems: 'Yes'
+                FilterableItems: 'Yes',
+                isCustom: true
               }
               return itemObj
             })
-            data = data.map((item) => {
-              let fieldObj = item.customFields.map((i) => {
-                return { [i.name]: i.value }
-              })
-              fieldObj.map((iItem) => {
-                for (let key in iItem) {
-                  if (iItem.hasOwnProperty(key)) {
-                    item[key] = iItem[key]
-                  }
-                }
-              })
-              return item
-            })
-            _this.tableData = data || []
-            _this.tableOptions.columns.push(...customFields)
-            _this.tableOptions.columns.push({
-              property: PROPERTY_STORE.STATUS,
-              align: 'center',
-              label: getStoreValue(PROPERTY_STORE.STATUS),
-              fixed: false,
-              sortable: true,
-              show: true,
-              type: 'status',
-              isEditable: true,
-              hasTooltip: true,
-              fullWidth: true,
-              dbName: 'Status',
-              minWidth: 170,
-              emptyText: 'No Data'
-            })
           } else {
-            _this.tableData = data || []
+            customFields = this.mappingData.columns
+              .filter((item) => item.isCustom)
+              .map((item) => {
+                let itemObj = {
+                  property: item.name,
+                  align: 'left',
+                  editable: false,
+                  label: item.name,
+                  fixed: false,
+                  show: true,
+                  type: 'text',
+                  dbName: 'item.name',
+                  width: 250,
+                  emptyText: 'No Data',
+                  sortable: false,
+                  hideSort: true,
+                  filterable: true,
+                  customFieldName: item.name,
+                  filterableType: 'text',
+                  FilterableItems: 'Yes',
+                  isCustom: true
+                }
+                return itemObj
+              })
           }
+          data = data.map((item) => {
+            let fieldObj = item.customFields.map((i) => {
+              return { [i.name]: i.value }
+            })
+            fieldObj.map((iItem) => {
+              for (let key in iItem) {
+                if (iItem.hasOwnProperty(key)) {
+                  item[key] = iItem[key]
+                }
+              }
+            })
+            return item
+          })
+          _this.tableData = data || []
+          _this.tableOptions.columns.push(...customFields)
+          _this.tableOptions.columns.push({
+            property: PROPERTY_STORE.STATUS,
+            align: 'center',
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'status',
+            isEditable: true,
+            hasTooltip: true,
+            fullWidth: true,
+            dbName: 'Status',
+            minWidth: 170,
+            emptyText: 'No Data'
+          })
           _this.loading = false
           _this.showDatatable = true
         })
@@ -1260,6 +1289,36 @@ export default {
         this.resetDisabledValuesFromColumns()
       }
       if (this.activeStep === 2) {
+        this.resetBodyData()
+      }
+    },
+    resetBodyData() {
+      this.bodyData = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'Status',
+                  Operator: 'Include',
+                  Value: 'New,Exists,Error'
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     },
     save(label) {
@@ -1316,6 +1375,7 @@ export default {
           if (customColumns) {
             allColumns = allColumns.concat(customColumns)
           }
+          this.allCustomColumns = customColumns
           _this.mappingData.columns = allColumns
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
@@ -1324,6 +1384,7 @@ export default {
                   disabled: false,
                   selectedValue: null,
                   dbName: item.dbName,
+                  isCustom: !item.dbName,
                   required: item.dbName
                     ? item.dbName === 'Email'
                     : response.data.data.find((responseItem) => {

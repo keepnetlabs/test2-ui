@@ -114,7 +114,7 @@ const whitelabel = {
     },
     callForSystemVersion(context = {}, payload = {}) {
       getSystemVersion().then((response) => {
-        console.log(' response.data.data.version', response.data.data.version)
+        //console.log(' response.data.data.version', response.data.data.version)
         context.commit('SET_SYSTEM_VERSION', response.data.data.version)
       })
     }
