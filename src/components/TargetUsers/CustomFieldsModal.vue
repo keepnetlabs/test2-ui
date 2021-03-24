@@ -18,14 +18,13 @@
       >
         <template v-slot:app-dialog-body> This custom field will be deleted ! </template>
         <template v-slot:app-dialog-footer>
-          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-            <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false">{{
-              labels.Cancel
-            }}</v-btn>
-            <v-btn class="users__button" text color="#2196f3" @click="deleteCustomField">
-              DELETE</v-btn
-            >
-          </div>
+          <app-dialog-footer
+            cancel-button-id="btn-cancel--custom-fields-overlay"
+            confirm-button-id="btn-delete--custom-fields-overlay"
+            @handleClose="isWantToDelete = false"
+            @handleConfirm="deleteCustomField"
+            type="delete"
+          />
         </template>
       </app-dialog>
       <v-list-item class="mt-8 mb-6 custom-fields-overlay__list-item">
@@ -129,6 +128,7 @@
 <script>
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import TableField from './subcomponents/TableField'
 import Draggable from 'vuedraggable'
 import {
@@ -145,6 +145,7 @@ export default {
     CustomFieldsLoading,
     AppModal,
     AppDialog,
+    AppDialogFooter,
     TableField,
     Draggable
   },
