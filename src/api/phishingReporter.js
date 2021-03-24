@@ -42,7 +42,7 @@ export function exportPhishingReporterUserList(payload) {
 }
 
 export function exportPhishingReporterDownloadHistory(payload) {
-  return testRequest.post('/phishing-reporter/history/search', payload, {
+  return testRequest.post('/phishing-reporter/history/search/export', payload, {
     responseType: 'blob'
   })
 }
