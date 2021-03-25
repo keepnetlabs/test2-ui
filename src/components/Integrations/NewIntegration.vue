@@ -98,7 +98,7 @@
               hint="*Required"
               persistent-hint
               dense
-              item-text="userFriendlyName"
+              item-text="name"
               item-value="resourceId"
               outlined
               placeholder="Select integration type"
