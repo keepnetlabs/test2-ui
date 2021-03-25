@@ -358,3 +358,9 @@ export const INTEGRATION_TYPES = {
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IbmXforce'
 }
+export const INTEGRATION_LABELS = {
+  VMRAY: 'VMRay',
+  FORTINET: 'FortiSandbox',
+  VIRUSTOTAL: 'VirusTotal',
+  IBMXFORCE: 'IBM X-Force'
+}
