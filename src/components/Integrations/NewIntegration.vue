@@ -119,92 +119,6 @@
               @input="handleApiKeyChange"
             ></v-text-field>
           </form-group>
-          <form-group title="Username" has-hint v-if="isFortiNet">
-            <v-text-field
-              v-model.trim="formValues.userName"
-              hint="*Required"
-              persistent-hint
-              dense
-              height="40"
-              outlined
-              placeholder="Enter username"
-              required
-            ></v-text-field>
-          </form-group>
-          <form-group title="Password" has-hint v-if="isFortiNet || isIbmXForce">
-            <v-text-field
-              placeholder="Enter password"
-              outlined
-              dense
-              v-model.trim="formValues.password"
-              hint="*Required"
-              persistent-hint
-              :type="showPassword ? 'text' : 'password'"
-              :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-              class="username-field input-group--focused"
-              @click:append="showPassword = !showPassword"
-            ></v-text-field>
-            <div
-              v-if="isFortiNet"
-              :class="{
-                'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
-              }"
-              class="new-integration__api-key__text"
-              :style="[
-                {
-                  display: 'flex',
-                  justifyContent: 'flex-end',
-                  maxHeight: '23px'
-                },
-                isFortiNetConnectionDisabled && { cursor: 'default' }
-              ]"
-              @click="testFortiNetConnection(false)"
-            >
-              <div
-                v-if="isFortiNetTestingConnection"
-                class="test-connection new-integration__api-key__disabled-text"
-                style="cursor: default !important;"
-              >
-                <v-icon
-                  class="ml-1 loading-spin"
-                  color="#00bcd4"
-                  left
-                  medium
-                  disabled
-                  style="cursor: default !important; font-size: '2px';"
-                  >mdi-rotate-left
-                </v-icon>
-                TESTING CONNECTION
-              </div>
-              <div
-                v-else
-                :class="{
-                  'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
-                }"
-                class="test-connection"
-              >
-                <v-icon
-                  v-if="isFortiNetConnected && isFortiNetConnectionSended"
-                  color="#43a047"
-                  class="ml-1"
-                  style="margin-top: -2px; font-size: 22px;"
-                  left
-                  medium
-                  >mdi-check
-                </v-icon>
-                <v-icon
-                  v-if="!isFortiNetConnected && isFortiNetConnectionSended"
-                  class="ml-1"
-                  style="margin-top: -2px; font-size: 22px;"
-                  color="#f56c6c"
-                  left
-                  medium
-                  >mdi-close
-                </v-icon>
-                <span>TEST CONNECTION </span>
-              </div>
-            </div>
-          </form-group>
           <v-list-item class="px-0" v-if="isVmrayOrVirusTotal || isIbmXForce">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -347,6 +261,92 @@
               </div>
             </v-list-item-content>
           </v-list-item>
+          <form-group title="Username" has-hint v-if="isFortiNet">
+            <v-text-field
+              v-model.trim="formValues.userName"
+              hint="*Required"
+              persistent-hint
+              dense
+              height="40"
+              outlined
+              placeholder="Enter username"
+              required
+            ></v-text-field>
+          </form-group>
+          <form-group title="Password" has-hint v-if="isFortiNet || isIbmXForce">
+            <v-text-field
+              placeholder="Enter password"
+              outlined
+              dense
+              v-model.trim="formValues.password"
+              hint="*Required"
+              persistent-hint
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+              class="username-field input-group--focused"
+              @click:append="showPassword = !showPassword"
+            ></v-text-field>
+            <div
+              v-if="isFortiNet"
+              :class="{
+                'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
+              }"
+              class="new-integration__api-key__text"
+              :style="[
+                {
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  maxHeight: '23px'
+                },
+                isFortiNetConnectionDisabled && { cursor: 'default' }
+              ]"
+              @click="testFortiNetConnection(false)"
+            >
+              <div
+                v-if="isFortiNetTestingConnection"
+                class="test-connection new-integration__api-key__disabled-text"
+                style="cursor: default !important;"
+              >
+                <v-icon
+                  class="ml-1 loading-spin"
+                  color="#00bcd4"
+                  left
+                  medium
+                  disabled
+                  style="cursor: default !important; font-size: '2px';"
+                  >mdi-rotate-left
+                </v-icon>
+                TESTING CONNECTION
+              </div>
+              <div
+                v-else
+                :class="{
+                  'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
+                }"
+                class="test-connection"
+              >
+                <v-icon
+                  v-if="isFortiNetConnected && isFortiNetConnectionSended"
+                  color="#43a047"
+                  class="ml-1"
+                  style="margin-top: -2px; font-size: 22px;"
+                  left
+                  medium
+                  >mdi-check
+                </v-icon>
+                <v-icon
+                  v-if="!isFortiNetConnected && isFortiNetConnectionSended"
+                  class="ml-1"
+                  style="margin-top: -2px; font-size: 22px;"
+                  color="#f56c6c"
+                  left
+                  medium
+                  >mdi-close
+                </v-icon>
+                <span>TEST CONNECTION </span>
+              </div>
+            </div>
+          </form-group>
           <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -525,7 +525,7 @@ import {
   testAnalysis,
   updateIntegration
 } from '@/api/integrations'
-import { INTEGRATION_TYPES } from '@/model/constants/commonConstants'
+import { INTEGRATION_TYPES, INTEGRATION_LABELS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
@@ -645,7 +645,9 @@ export default {
         const {
           data: { data }
         } = response
-        this.integrationTypes = data
+        this.integrationTypes = data.map((item) => {
+          return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
+        })
       })
       .finally(() => {
         if (this.integrationId) this.updateVModel(this.integrationId)
@@ -653,6 +655,26 @@ export default {
     this.getFileTypes()
   },
   methods: {
+    getFriendlyName(name) {
+      let label
+      switch (name) {
+        case INTEGRATION_TYPES.FORTINET:
+          label = INTEGRATION_LABELS.FORTINET
+          break
+        case INTEGRATION_TYPES.VIRUSTOTAL:
+          label = INTEGRATION_LABELS.VIRUSTOTAL
+          break
+        case INTEGRATION_TYPES.VMRAY:
+          label = INTEGRATION_LABELS.VMRAY
+          break
+        case INTEGRATION_TYPES.IBMXFORCE:
+          label = INTEGRATION_LABELS.IBMXFORCE
+          break
+        default:
+          return
+      }
+      return label
+    },
     getErrorMessageOfApiKey(item) {
       const message = item.errorMessage || 'Error'
       return `${message.substring(0, 75)}...`
