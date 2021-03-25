@@ -853,7 +853,6 @@ export default {
       this.showConfirmModal = false
     },
     updateVModel(id) {
-      let _this = this
       getIntegrationDetails(id).then((response) => {
         this.selectedIntegrationType =
           this.integrationTypes.find(
@@ -873,7 +872,7 @@ export default {
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
             response.data.data.password = response['data'].data['apiCredentials'][0].password
           }
-        } else if (_this.selectedIntegrationType.name === 'FortiNet') {
+        } else if (this.selectedIntegrationType.name === 'FortiNet') {
           const { userName, password } = response['data'].data['apiCredentials'][0]
           response.data.data.userName = userName
           response.data.data.password = password
