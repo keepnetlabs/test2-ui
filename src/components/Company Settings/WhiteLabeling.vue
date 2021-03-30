@@ -289,16 +289,16 @@ export default {
       return this.$store.state['whitelabel'].loading
     },
     getMainLogo() {
-      return this.formValues.mainLogoUrl || this.formValues.mainLogoFile
+      return this.formValues.mainLogoFile || this.formValues.mainLogoUrl
     },
     getMinimizedLogo() {
-      return this.formValues.minimizedMenuLogoUrl || this.formValues.minimizedMenuLogoFile
+      return this.formValues.minimizedMenuLogoFile || this.formValues.minimizedMenuLogoUrl
     },
     getFavIcon() {
-      return this.formValues.faviconUrl || this.formValues.favIconFile
+      return this.formValues.favIconFile || this.formValues.faviconUrl
     },
     getEmailTemplateLogo() {
-      return this.formValues.emailTemplateLogoUrl || this.formValues.emailTemplateLogoFile
+      return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
     }
   },
   watch: {
