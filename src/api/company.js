@@ -8,7 +8,9 @@ export function searchGroupCompanies(id, payload) {
   return testRequest.post(`/company-groups/${id}/companies/search`, payload)
 }
 export function searchMyCompanies(payload) {
-  return testRequest.post(`/companies/my/search`, payload)
+  return testRequest.post(`/companies/my/search`, payload, {
+    isCompanySelect: true
+  })
 }
 export function exportCompanies(payload) {
   return testRequest.post('/companies/search/export', payload, {
