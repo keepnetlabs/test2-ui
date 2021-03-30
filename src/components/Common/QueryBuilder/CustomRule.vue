@@ -229,6 +229,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
+import * as Validations from '@/utils/validations'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -286,10 +287,17 @@ export default {
           case 'Email':
             const emailValidationArray = [
               (v) => this.validations.required(v, labels.Required),
-              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Email'))
+              (v) =>
+                this.validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress))
             ]
             if (operator !== 'Contains' && operator !== 'DoesNotContain') {
               emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
+              emailValidationArray.push((v) => {
+                if (this.validations.email(v)) {
+                  return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                }
+                return false
+              })
             }
             return emailValidationArray
           case 'Domain':
