@@ -79,7 +79,6 @@ export default {
         'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
       )
-      console.log('', this.PERMISSIONS.WHITE_LABEL_PERMISSIONS)
     }
   },
   created() {
