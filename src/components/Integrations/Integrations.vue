@@ -131,7 +131,8 @@ import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
-  DEFAULT_SEARCH_CONTAINER_KEYS
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  INTEGRATION_TYPES
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 
@@ -182,7 +183,12 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: ['FortiNet', 'VirusTotal', 'Vmray', 'IbmXforce']
+            filterableItems: [
+              INTEGRATION_TYPES.FORTINET,
+              INTEGRATION_TYPES.VIRUSTOTAL,
+              INTEGRATION_TYPES.VMRAY,
+              INTEGRATION_TYPES.IBMXFORCE
+            ]
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,
