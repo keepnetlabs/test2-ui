@@ -254,8 +254,15 @@ export default {
             const result = JSON.parse(
               JSON.stringify(accounts).replace(pattern, (m) => `"${swaps[m.slice(1, -2)]}":`)
             )
-            this.orderedAccounts = removeEmptyArrays(result)
+            if (result.length) {
+              this.orderedAccounts = removeEmptyArrays(result)
+            } else {
+              this.orderedAccounts = []
+            }
             callback(null, this.orderedAccounts) // notify vue-treeselect about data population completion
+          })
+          .catch(() => {
+            this.orderedAccounts = []
           })
           .finally(() => {
             this.companyLoading = false
