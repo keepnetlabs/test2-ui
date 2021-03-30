@@ -28,6 +28,10 @@ const login = {
     },
     SET_LOGIN_WHITELABEL(state, payload) {
       for (const key of Object.keys(state.loginWhiteLabel)) {
+        if (key === 'favIconUrl' && payload['faviconUrl']) {
+          const favIcon = document.querySelector('link[rel="icon"]')
+          favIcon.href = payload[key]
+        }
         state.loginWhiteLabel[key] = payload[key]
       }
     },
@@ -90,7 +94,7 @@ const login = {
     loginAction({ commit, dispatch }, payload) {},
     getWhiteLabelByUrl({ commit }) {
       const formData = new FormData()
-      formData.append('DomainUrl', 'https://dev-ui.devkeepnet.com')
+      formData.append('DomainUrl', window.location.origin)
       getWhiteLabelByUrl(formData).then((response) => {
         const {
           data: { data }
