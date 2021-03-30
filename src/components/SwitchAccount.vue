@@ -49,7 +49,7 @@
           </p>
           <treeselect
             :multiple="false"
-            :flat="false"
+            :flat="true"
             placeholder="Search for a company to manage"
             :options="orderedAccounts"
             v-model="value"
