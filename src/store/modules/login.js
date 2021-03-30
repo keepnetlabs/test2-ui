@@ -5,19 +5,31 @@ import store from '../index'
 import { getCompanyList } from '../../api/company'
 import jwt_decode from 'jwt-decode'
 import { setGlobalUserData } from '../../utils/functions'
+import { getWhiteLabelByUrl } from '@/api/whitelabel'
 
 const login = {
   namespaced: true,
   state: {
     pageNumber: 1,
-    wrongLoginAttempt: 0
+    wrongLoginAttempt: 0,
+    loginWhiteLabel: {
+      brandName: '',
+      favIconUrl: '',
+      mainLogoUrl: ''
+    }
   },
   getters: {
-    getPageNumber: (state) => state.pageNumber
+    getPageNumber: (state) => state.pageNumber,
+    loginWhiteLabel: (state) => state.loginWhiteLabel
   },
   mutations: {
     SET_PAGE_NUMBER(state, payload) {
       state.pageNumber = payload
+    },
+    SET_LOGIN_WHITELABEL(state, payload) {
+      for (const key of Object.keys(state.loginWhiteLabel)) {
+        state.loginWhiteLabel[key] = payload[key]
+      }
     },
     LOGIN_SUCCESS(state, payload) {
       AuthenticationService.setToken(payload.token, payload.expiredIn, payload.status)
@@ -75,7 +87,17 @@ const login = {
     setPageNumber({ commit }, payload) {
       commit('SET_PAGE_NUMBER', payload)
     },
-    loginAction({ commit, dispatch }, payload) {}
+    loginAction({ commit, dispatch }, payload) {},
+    getWhiteLabelByUrl({ commit }) {
+      const formData = new FormData()
+      formData.append('DomainUrl', 'https://dev-ui.devkeepnet.com')
+      getWhiteLabelByUrl(formData).then((response) => {
+        const {
+          data: { data }
+        } = response
+        commit('SET_LOGIN_WHITELABEL', data)
+      })
+    }
   }
 }
 

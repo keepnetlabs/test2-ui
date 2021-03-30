@@ -67,7 +67,14 @@ export default {
     const payload = JSON.parse(this.selectedVersionRow.argument)
     const formData = {}
     for (let key of Object.keys(payload)) {
-      formData[key.charAt(0).toLocaleLowerCase('en-US') + key.slice(1)] = payload[key]
+      let formKey = key.charAt(0).toLocaleLowerCase('en-US') + key.slice(1)
+      if (key === 'EmailFormatErrorMessage') {
+        formKey = 'badFormatEmailMessage'
+      }
+      if (key === 'CompanyId') {
+        formKey = 'companyKey'
+      }
+      formData[formKey] = payload[key]
     }
     this.formData = formData
   }
