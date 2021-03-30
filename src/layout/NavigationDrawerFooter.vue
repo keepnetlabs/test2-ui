@@ -3,7 +3,7 @@
     <v-list dense>
       <v-list-item class="navigation-drawer-footer__item" @click="handleDocumentationClick">
         <v-list-item-icon>
-          <v-icon>mdi-crosshairs-question</v-icon>
+          <v-icon>mdi-help-circle-outline</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Documentation</v-list-item-title>
       </v-list-item>
