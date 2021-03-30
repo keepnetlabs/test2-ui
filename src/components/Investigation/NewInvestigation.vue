@@ -158,7 +158,8 @@
                       :rules="[
                         list.option && generalRules[list.option].required,
                         list.option && generalRules[list.option].format,
-                        list.option && generalRules[list.option].maxLength
+                        list.option && generalRules[list.option].maxLength,
+                        list.option && generalRules[list.option].controlEmail
                       ]"
                       v-model.trim="list.text"
                       required
@@ -550,27 +551,51 @@ export default {
         },
         from: {
           required: (v) => Validations.required(v),
+          format: (v) => Validations.email(v),
           maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
+          controlEmail: (v) => {
+            if (Validations.email(v)) {
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          }
         },
         to: {
           required: (v) => Validations.required(v),
+          format: (v) => Validations.email(v),
           maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
+          controlEmail: (v) => {
+            if (Validations.email(v)) {
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          }
         },
         cc: {
           required: (v) => Validations.required(v),
+          format: (v) => Validations.email(v),
           maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
+          controlEmail: (v) => {
+            if (Validations.email(v)) {
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          }
         },
         bcc: {
           required: (v) => Validations.required(v),
+          format: (v) => Validations.email(v),
           maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => (v) => Validations.email(v)
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
+          controlEmail: (v) => {
+            if (Validations.email(v)) {
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          }
         },
         subject: {
           required: (v) => Validations.required(v),
