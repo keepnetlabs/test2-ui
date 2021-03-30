@@ -298,7 +298,10 @@ export default {
       if (this.$store.state.auth.user == undefined) {
         return ''
       }
-      let image = this.navigatorMenuProps.mainLogoUrl
+      let image =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
       return image || require('../assets/img/no-logo.png')
     },
 

@@ -5,6 +5,12 @@ export function getWhiteLabel() {
   return testRequest.get('/whitelabeling')
 }
 
+export function getWhiteLabelByUrl(payload = {}) {
+  return testRequest.post('/whitelabeling/by-url', payload, {
+    loading: true
+  })
+}
+
 export function updateWhiteLabel(payload = {}, id = '') {
   return testRequest.put(`/whitelabeling/${id}`, payload, {
     snackbar: COMMON_SNACKBAR
