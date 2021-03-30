@@ -57,13 +57,22 @@
               v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--1"
               v-model.trim="formValues.apiUrl"
-              :rules="showForm ? [(v) => validations.required(v, labels.Required)] : []"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.url(v, labels.InvalidURL),
+                      (v) =>
+                        validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+                    ]
+                  : []
+              "
               height="40"
               :readonly="!showForm"
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container mt-n3">
-            <label class="other-settings__list-item-header mt-n2">Api Key</label>
+            <label class="other-settings__list-item-header mt-n2">{{ labels.ApiKey }}</label>
             <v-text-field
               placeholder="Enter an api key"
               outlined
@@ -71,21 +80,47 @@
               v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--2"
               v-model.trim="formValues.apiKey"
-              :rules="showForm ? [(v) => validations.required(v, labels.Required)] : []"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.startsWithSpace(v),
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage(labels.ApiKey, 256)
+                        )
+                    ]
+                  : []
+              "
               height="40"
               :readonly="!showForm"
             ></v-text-field>
           </div>
           <div class="other-settings__api-settings-container">
-            <label class="other-settings__list-item-header mt-n5">Company ID</label>
+            <label class="other-settings__list-item-header mt-n5">{{ labels.CompanyId }}</label>
             <v-text-field
               placeholder="Enter a Company ID"
               outlined
               dense
               v-bind="getHintValues"
               class="mt-n1 ml-6"
-              v-model="formValues.companyKey"
-              :rules="showForm ? [(v) => validations.required(v, labels.Required)] : []"
+              v-model.trim="formValues.companyKey"
+              :rules="
+                showForm
+                  ? [
+                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.startsWithSpace(v),
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage(labels.CompanyId, 256)
+                        )
+                    ]
+                  : []
+              "
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -140,7 +175,7 @@
 </template>
 
 <script>
-import { required } from '@/utils/validations'
+import * as validations from '@/utils/validations'
 import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
@@ -210,9 +245,7 @@ export default {
         apiKey: ''
       },
       enterpriseVaultDisabled: true,
-      validations: {
-        required
-      }
+      validations
     }
   },
   computed: {

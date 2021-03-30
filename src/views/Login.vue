@@ -25,12 +25,18 @@
               <v-card-title
                 class="d-flex pa-0 align-center justify-center login-card-wrapper__logo"
               >
-                <img src="../assets/img/logo-kep.png" />
+                <div style="max-width: 180px; height: 60px;">
+                  <img style="width: 100%;" :src="loginWhiteLabel.mainLogoUrl" />
+                </div>
               </v-card-title>
               <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
                   <div class="login-title">
-                    {{ isSessionExpired ? 'Session Expired' : 'Welcome To Keepnet Labs' }}
+                    {{
+                      isSessionExpired
+                        ? 'Session Expired'
+                        : `Welcome To ${loginWhiteLabel.brandName}`
+                    }}
                   </div>
                   <div class="login-desc">
                     {{
@@ -449,6 +455,7 @@ import MFAWelcome from '@/components/MFA/MFAWelcome'
 import MFASetup from '@/components/MFA/MFASetup'
 import MFACantLogin from '@/components/MFA/MFACantLogin'
 import MFALogin from '@/components/MFA/MFALogin'
+import { getWhiteLabelByUrl } from '@/api/whitelabel'
 export default {
   name: 'Login',
   components: {
@@ -516,8 +523,8 @@ export default {
       validReset: false
     }
   },
+  beforeCreate() {},
   created() {
-    //AuthenticationService.removeToken()
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
     if (this.$route.query && this.$route.query.mfaRequired) {
       this.showMfaMessage = true
@@ -612,7 +619,8 @@ export default {
       getErrors: 'common/getErrors',
       getSnackStatus: 'common/getSnackStatus',
       getColor: 'common/getColor',
-      isErrorActive: 'common/getErrorStatus'
+      isErrorActive: 'common/getErrorStatus',
+      loginWhiteLabel: 'login/loginWhiteLabel'
     }),
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'

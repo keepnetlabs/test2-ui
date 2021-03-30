@@ -72,5 +72,22 @@ export default {
       hasPermission: false,
       method: 'POST'
     }
+  },
+  WHITE_LABEL_PERMISSIONS: {
+    GET: {
+      url: 'whitelabeling',
+      hasPermission: false,
+      method: 'GET'
+    },
+    UPDATE: {
+      url: 'whitelabeling/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    },
+    DELETE: {
+      url: 'whitelabeling/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    }
   }
 }

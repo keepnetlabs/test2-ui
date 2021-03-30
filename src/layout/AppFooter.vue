@@ -1,7 +1,7 @@
 <template>
   <v-footer class="k-footer d-flex">
     <div class="footer-item__primary">
-      Copyright Keepnet Labs &copy; {{ new Date().getFullYear() }}
+      Copyright {{ brandName }} &copy; {{ new Date().getFullYear() }}
     </div>
     <div class="footer-item__secondary footer-links">
       <a
@@ -26,7 +26,7 @@
       <div>&bull;</div>
       <a class="footer-item__third--2" target="_blank" :href="footerLinks.footerEulaUrl">EULA</a>
     </div>
-    <div class="footer-item__fourth">Designed by Keepnet Labs</div>
+    <div class="footer-item__fourth">Designed by {{ brandName }}</div>
   </v-footer>
 </template>
 
@@ -34,6 +34,12 @@
 import { mapGetters } from 'vuex'
 export default {
   name: 'AppFooter',
+  props: {
+    brandName: {
+      type: String,
+      default: 'Keepnet Labs'
+    }
+  },
   computed: {
     ...mapGetters({ footerLinks: 'whitelabel/getFooterLinks' })
   }

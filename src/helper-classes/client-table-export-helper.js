@@ -18,7 +18,8 @@ class ClientTableExportHelper {
       .filter((filterItem) =>
         columns.find(
           (col) =>
-            col.filterableType && col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+            (col.filterableType || col.exportSearchHelper) &&
+            col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
         )
       )
     this.filter.FilterGroups.push(this.searchFilter)

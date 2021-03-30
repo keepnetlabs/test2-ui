@@ -22,7 +22,10 @@
             <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
           /></el-tab-pane>
           <el-tab-pane label="White Labeling" name="white-labeling" id="white-labeling-content">
-            <white-labeling v-if="tab === 'white-labeling'" ref="refWhitelabeling"
+            <white-labeling
+              v-if="tab === 'white-labeling'"
+              ref="refWhitelabeling"
+              :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
           /></el-tab-pane>
         </el-tabs>
       </v-card>
@@ -55,7 +58,8 @@ export default {
       PERMISSIONS: {
         SMTP_SETTINGS_PERMISSIONS: {},
         NOTIFICATION_TEMPLATES_PERMISSIONS: {},
-        REST_API_PERMISSIONS: {}
+        REST_API_PERMISSIONS: {},
+        WHITE_LABEL_PERMISSIONS: {}
       }
     }
   },
@@ -64,12 +68,18 @@ export default {
       this.tab = status
     },
     getPermissions() {
-      const { SMTP_SETTINGS_PERMISSIONS } = PERMISSIONS
+      const { SMTP_SETTINGS_PERMISSIONS, WHITE_LABEL_PERMISSIONS } = PERMISSIONS
       this.$set(
         this.PERMISSIONS,
         'SMTP_SETTINGS_PERMISSIONS',
         getPermissionsOfAllItems(SMTP_SETTINGS_PERMISSIONS)
       )
+      this.$set(
+        this.PERMISSIONS,
+        'WHITE_LABEL_PERMISSIONS',
+        getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
+      )
+      console.log('', this.PERMISSIONS.WHITE_LABEL_PERMISSIONS)
     }
   },
   created() {

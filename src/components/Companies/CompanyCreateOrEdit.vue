@@ -481,40 +481,6 @@
                     </k-select>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label>Release Information</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Show version and release notes link at the bottom of the navigation menu
-                    </v-list-item-title>
-                    <div>
-                      <v-checkbox
-                        v-model="formData.IsVersionVisible"
-                        class="k-checkbox"
-                        color="#2196f3"
-                        :ripple="false"
-                        label="Show version"
-                        hide-details
-                      ></v-checkbox>
-                    </div>
-                    <div class="d-flex justify-space-between">
-                      <v-checkbox
-                        v-model="formData.IsReleaseNotesVisible"
-                        style="margin-top: 4px;"
-                        color="#2196f3"
-                        :ripple="false"
-                        label="Show release notes"
-                      ></v-checkbox>
-                      <template v-if="formData.IsReleaseNotesVisible">
-                        <label class="company-create-modal__side-label">URL</label>
-                        <InputUrl
-                          placeholder="https://doc.sitename.com/"
-                          v-model="formData.ReleaseNotesUrl"
-                        ></InputUrl>
-                      </template>
-                    </div>
-                  </v-list-item-content>
-                </v-list-item>
               </v-form>
             </v-stepper-content>
           </v-stepper-items>
