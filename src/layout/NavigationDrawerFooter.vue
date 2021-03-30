@@ -20,13 +20,13 @@
       :style="isMini && { marginLeft: '21px' }"
     >
       <span v-if="isReleaseVersion" class="navigation-drawer-footer__version"
-        >Version {{ getReleaseVersion }} -</span
+        >Version {{ getReleaseVersion }} {{ isReleaseNotes ? '-' : '' }}</span
       >
       <span v-else-if="isMiniReleaseVersion" class="navigation-drawer-footer__version"
         >{{ getReleaseVersion.substring(0, 3) }}
       </span>
       <a
-        v-if="!isMini"
+        v-if="isReleaseNotes"
         :href="getReleaseNotesUrl"
         class="navigation-drawer-footer__release-notes"
         target="_blank"
@@ -55,6 +55,10 @@ export default {
         isShowReleaseVersionNumber = false
       } = this.navigatorMenuProps
       return isShowReleaseNotes || isShowReleaseVersionNumber
+    },
+    isReleaseNotes() {
+      const { isShowReleaseNotes = false } = this.navigatorMenuProps
+      return !this.isMini && isShowReleaseNotes
     },
     isReleaseVersion() {
       const { isShowReleaseVersionNumber = false } = this.navigatorMenuProps
