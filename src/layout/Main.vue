@@ -430,7 +430,7 @@
               :class="[routerName === 'Audit' && 'active-link']"
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
-              <v-list-item-content class="menu-item-content">
+              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <router-link to="/audit" class="menu-link-default">
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Audit Log</span>
