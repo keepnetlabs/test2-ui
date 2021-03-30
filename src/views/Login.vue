@@ -26,7 +26,7 @@
                 class="d-flex pa-0 align-center justify-center login-card-wrapper__logo"
               >
                 <div style="max-width: 180px; height: 60px;">
-                  <img style="width: 100%;" :src="loginWhiteLabel.mainLogoUrl" />
+                  <img style="height: 100%;" :src="loginWhiteLabel.mainLogoUrl" />
                 </div>
               </v-card-title>
               <div v-if="pageNumber === 1">
