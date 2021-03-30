@@ -9,6 +9,7 @@ export const labels = {
   AddCompaniesToCompanyGroupSubtitle: 'Select companies to add',
   CompanyGroupNameSecondLower: 'Company group name',
   CommunityName: 'Community Name',
+  CompanyId: 'Company ID',
   CopyToClipboard: 'Copy to Clipboard',
   ConditionsSubHeader:
     'Define conditions to filter reported emails in order to take actions. Use conditional expressions “and” and “or” to create required criteria. You can add conditions sets for even more complicated conditions',
