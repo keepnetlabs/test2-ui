@@ -30,9 +30,11 @@ const login = {
       for (const key of Object.keys(state.loginWhiteLabel)) {
         if (key === 'favIconUrl' && payload['faviconUrl']) {
           const favIcon = document.querySelector('link[rel="icon"]')
-          favIcon.href = payload[key]
+          favIcon.href = payload['faviconUrl']
+          state.loginWhiteLabel[key] = payload['faviconUrl']
+        } else {
+          state.loginWhiteLabel[key] = payload[key]
         }
-        state.loginWhiteLabel[key] = payload[key]
       }
     },
     LOGIN_SUCCESS(state, payload) {
