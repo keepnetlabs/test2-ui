@@ -128,7 +128,7 @@
           <!-- Condition text input-->
           <InputIpAddress
             v-model.trim="query.value"
-            placeholder="Enter IP or a regular expression"
+            placeholder="Enter IP address"
             :rules="[
               (v) => validations.required(v, 'Required'),
               (v) => validations.startsWithSpace(v, 'Cannot start with space'),
