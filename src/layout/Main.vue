@@ -72,7 +72,7 @@
             x-large
           ></v-app-bar-nav-icon>
           <div class="v-responsive">
-            <img v-if="!mini && drawer" class="page-nav__logo-wrapper__logo" :src="getLogoImage" />
+            <img v-if="!mini && drawer" class="page-nav__logo-wrapper__logo" :src="getMainLogo" />
             <div v-else>
               <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
             </div>
@@ -482,7 +482,7 @@
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
-          <Breadcrumb :base-name="getSelectedCompanyName" />
+          <Breadcrumb :base-name="getBreadCrumbBaseName" />
         </div>
       </div>
       <div class="page-header__actions">
@@ -571,7 +571,7 @@
       >
         <router-view :key="getRouterKey" />
       </v-container>
-      <app-footer />
+      <app-footer :brand-name="getBreadCrumbBaseName" />
     </v-content>
     <v-tour
       class="main-v-tour"
@@ -960,6 +960,9 @@ export default {
       brandName: 'whitelabel/getBrandName',
       supportEmailAddress: 'whitelabel/getSupportEmailAddress'
     }),
+    getBreadCrumbBaseName() {
+      return this.brandName || this.$store.state.auth.selectedCompanyName
+    },
     getTargetGroupUsersRouterName() {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
     },
@@ -1105,6 +1108,16 @@ export default {
       if (this.$store.state.auth.user == undefined) {
         return ''
       }
+      let image =
+        localStorage.getItem('isSelectCompany') === 'true'
+          ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
+          : this.$store.state.auth.logoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
+    getMainLogo() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
       let image = this.navigatorMenuProps.mainLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
@@ -1130,7 +1143,10 @@ export default {
       )
     },
     getSelectedCompanyName() {
-      return this.brandName || this.$store.state.auth.selectedCompanyName
+      if (this.$store.state.auth.companyName == undefined) {
+        return ''
+      }
+      return this.$store.state.auth.selectedCompanyName
     },
     getRolename() {
       if (this.$store.state.auth.userRoleName == undefined) {

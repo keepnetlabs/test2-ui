@@ -224,7 +224,7 @@
           class="white--text btn-util btn-save-changes mb-6"
           color="#2196f3"
           rounded
-          :disabled="isActionButtonDisabled"
+          :disabled="getActionButtonDisabled"
           :style="formValues.isShowReleaseNotes ? { marginTop: '21px' } : { marginTop: '23px' }"
           @click="submit"
         >
@@ -254,6 +254,12 @@ export default {
     InputEmail,
     KFileUpload,
     FormGroup
+  },
+  props: {
+    PERMISSIONS: {
+      type: Object,
+      required: true
+    }
   },
   data() {
     return {
@@ -288,17 +294,20 @@ export default {
     isWhiteLabelLoading() {
       return this.$store.state['whitelabel'].loading
     },
+    getActionButtonDisabled() {
+      return this.isActionButtonDisabled || !this.PERMISSIONS['UPDATE'].hasPermission
+    },
     getMainLogo() {
-      return this.formValues.mainLogoUrl || this.formValues.mainLogoFile
+      return this.formValues.mainLogoFile || this.formValues.mainLogoUrl
     },
     getMinimizedLogo() {
-      return this.formValues.minimizedMenuLogoUrl || this.formValues.minimizedMenuLogoFile
+      return this.formValues.minimizedMenuLogoFile || this.formValues.minimizedMenuLogoUrl
     },
     getFavIcon() {
-      return this.formValues.faviconUrl || this.formValues.favIconFile
+      return this.formValues.favIconFile || this.formValues.faviconUrl
     },
     getEmailTemplateLogo() {
-      return this.formValues.emailTemplateLogoUrl || this.formValues.emailTemplateLogoFile
+      return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
     }
   },
   watch: {
@@ -307,7 +316,10 @@ export default {
     }
   },
   created() {
-    this.loadDatas(this.$store.state.whitelabel.loading)
+    const { GET } = this.PERMISSIONS
+    if (GET.hasPermission) {
+      this.loadDatas(this.$store.state.whitelabel.loading)
+    }
   },
   methods: {
     getFileUploadClasses(url = '') {
@@ -349,16 +361,19 @@ export default {
     },
     submit() {
       const { refForm } = this.$refs
-      if (refForm.validate()) {
-        this.isActionButtonDisabled = true
-        this.$store
-          .dispatch('whitelabel/updateData', this.formValues)
-          .finally(() => (this.isActionButtonDisabled = false))
-      } else {
-        return this.$nextTick(() => {
-          const el = refForm.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
+      const { UPDATE } = this.PERMISSIONS
+      if (UPDATE.hasPermission) {
+        if (refForm.validate()) {
+          this.isActionButtonDisabled = true
+          this.$store
+            .dispatch('whitelabel/updateData', this.formValues)
+            .finally(() => (this.isActionButtonDisabled = false))
+        } else {
+          return this.$nextTick(() => {
+            const el = refForm.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+        }
       }
     }
   }
