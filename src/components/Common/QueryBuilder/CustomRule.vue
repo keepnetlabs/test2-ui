@@ -365,7 +365,7 @@ export default {
     getAttachmentExtensionRules() {
       return [
         (v) => this.validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
-        (v) => this.validations.extension(v, 'Invalid extension'),
+        (v) => this.validations.extension(v, labels.InvalidExtension),
         (v) => this.validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
       ]
     },
