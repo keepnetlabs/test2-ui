@@ -272,6 +272,7 @@ export default {
             promises.push(createTargetUserCustomField(newItem))
           }
           this.loading = true
+          this.saveDisable = true
           Promise.all(promises)
             .then((responses) => {
               responses.forEach((response, index) => {
@@ -282,7 +283,10 @@ export default {
               this.isMakePost = true
               this.callForUpdateCustomFields(updatedFields)
             })
-            .catch(() => (this.loading = false))
+            .catch(() => {
+              this.loading = false
+              this.saveDisable = false
+            })
         } else if (updatedFields.length || this.copyOfCustomFields.length) {
           this.callForUpdateCustomFields(updatedFields)
         } else if (!updatedFields.length && !this.copyOfCustomFields.length) {
