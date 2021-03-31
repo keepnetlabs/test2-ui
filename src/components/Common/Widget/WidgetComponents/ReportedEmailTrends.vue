@@ -221,8 +221,6 @@ export default {
               Undetected: {
                 backgroundColor: 'white',
                 borderColor: '#00bcd4',
-                pointBorderColor: '#2e5bff',
-                pointBackgroundColor: 'white',
                 fill: false,
                 pointRadius: 3,
                 borderWidth: 2,
@@ -243,14 +241,6 @@ export default {
                 pointRadius: 3,
                 borderWidth: 2,
                 lineTension: 0
-              },
-              'N/A': {
-                backgroundColor: 'white',
-                borderColor: '#757575',
-                fill: false,
-                pointRadius: 3,
-                borderWidth: 2,
-                lineTension: 0
               }
             }
             for (let itemType of itemTypes) {
@@ -260,6 +250,7 @@ export default {
                 data: newData.filter((item) => item.result === itemType)
               })
             }
+            console.log('datasets', datasets)
             this.chartData = {
               datasets
             }
