@@ -768,7 +768,12 @@ export default {
               currentUserData.role &&
               currentUserData.role.name !== 'CompanyAdmin'
             ) {
-              this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
+              this.$store
+                .dispatch('dashboard/selectCompany', currentUserData, { root: true })
+                .finally(() => {
+                  this.$store.dispatch('whitelabel/callForData')
+                  this.$store.dispatch('whitelabel/callForSystemVersion')
+                })
             }
             let payload = {
               currentUserData: currentUserData,
