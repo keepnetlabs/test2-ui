@@ -515,7 +515,7 @@ export default {
           isDefaultExpanded: true,
           children: [
             { label: 'File Name', id: 'name' },
-            { label: 'File size', id: 'size' },
+            { label: 'File Size', id: 'size' },
             { label: 'File Extension', id: 'extension' },
             { label: 'SHA512', id: 'sha512' },
             { label: 'MD5', id: 'md5' }
