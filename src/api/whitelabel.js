@@ -17,6 +17,12 @@ export function updateWhiteLabel(payload = {}, id = '') {
   })
 }
 
+export function deleteWhiteLabel(resourceId = '') {
+  return testRequest.delete(`/whitelabeling/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function getSystemVersion() {
   return testRequest.get('/system-info/version')
 }

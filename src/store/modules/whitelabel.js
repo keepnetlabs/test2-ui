@@ -1,4 +1,9 @@
-import { getSystemVersion, getWhiteLabel, updateWhiteLabel } from '@/api/whitelabel'
+import {
+  deleteWhiteLabel,
+  getSystemVersion,
+  getWhiteLabel,
+  updateWhiteLabel
+} from '@/api/whitelabel'
 
 const whitelabel = {
   namespaced: true,
@@ -110,6 +115,11 @@ const whitelabel = {
       return updateWhiteLabel(formData, id).then(() => {
         context.dispatch('callForData')
         context.dispatch('callForSystemVersion')
+      })
+    },
+    resetToDefault(context = {}) {
+      return deleteWhiteLabel(context.state.resourceId).then((response) => {
+        context.dispatch('callForData')
       })
     },
     callForSystemVersion(context = {}, payload = {}) {
