@@ -49,7 +49,7 @@ testService.interceptors.response.use(
     //if there is global loader param
     error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
     if (error.code === 'ECONNABORTED') {
-      store.dispatch(
+      /*store.dispatch(
         'common/createSnackBar',
         {
           color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -57,7 +57,7 @@ testService.interceptors.response.use(
           icon: 'mdi-alert'
         },
         { root: true }
-      )
+      )*/
       return Promise.reject(error)
     } else if (!error.response) {
       return Promise.reject(error)
