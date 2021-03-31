@@ -1,5 +1,11 @@
 <template>
   <div class="white-labeling mt-6">
+    <ResetToDefaultWhiteLabelingDialog
+      :status="resetToDefaultWhiteLabelingDialogStatus"
+      :is-reset-to-default-action-button-disabled="isResetToDefaultActionButtonDisabled"
+      @handleCloseDialog="toggleWhiteLabelingDialog"
+      @handleConfirm="handleResetWhiteLabeling"
+    />
     <DatatableLoading class="mt-5" :loading="isWhiteLabelLoading" v-if="isWhiteLabelLoading" />
     <v-form v-show="!isWhiteLabelLoading" ref="refForm" lazy-validation>
       <form-group has-hint :title="labels.BrandName" :sub-title="labels.BrandNameSubTitle">
@@ -219,8 +225,9 @@
           </div>
         </div>
       </form-group>
-      <div>
+      <div class="white-labeling__footer">
         <v-btn
+          id="btn-save--whitelabeling"
           class="white--text btn-util btn-save-changes mb-6"
           color="#2196f3"
           rounded
@@ -230,6 +237,16 @@
         >
           {{ labels.SaveChanges }}
         </v-btn>
+        <v-btn
+          id="btn-reset-to-default--whitelabeling"
+          class="white-labeling__footer-reset-to-default"
+          text
+          color="#2196f3"
+          :disabled="!hasDeletePermission"
+          @click="toggleWhiteLabelingDialog"
+        >
+          RESET TO DEFAULT</v-btn
+        >
       </div>
     </v-form>
   </div>
@@ -245,9 +262,11 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { scrollToComponent } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
 export default {
   name: 'WhiteLabeling',
   components: {
+    ResetToDefaultWhiteLabelingDialog,
     DatatableLoading,
     KSelect,
     InputUrl,
@@ -264,6 +283,8 @@ export default {
   data() {
     return {
       isActionButtonDisabled: false,
+      isResetToDefaultActionButtonDisabled: false,
+      resetToDefaultWhiteLabelingDialogStatus: false,
       formValues: {
         brandName: '',
         mainDomainUrl: '',
@@ -308,6 +329,10 @@ export default {
     },
     getEmailTemplateLogo() {
       return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
+    },
+    hasDeletePermission() {
+      const { DELETE } = this.PERMISSIONS
+      return DELETE.hasPermission
     }
   },
   watch: {
@@ -375,6 +400,18 @@ export default {
           })
         }
       }
+    },
+    toggleWhiteLabelingDialog() {
+      this.resetToDefaultWhiteLabelingDialogStatus = !this.resetToDefaultWhiteLabelingDialogStatus
+    },
+    handleResetWhiteLabeling() {
+      if (this.hasDeletePermission) {
+        this.isResetToDefaultActionButtonDisabled = true
+        this.$store.dispatch('whitelabel/resetToDefault').finally(() => {
+          this.toggleWhiteLabelingDialog()
+          this.isResetToDefaultActionButtonDisabled = false
+        })
+      }
     }
   }
 }
@@ -392,6 +429,23 @@ export default {
       .v-select__selection {
         margin-right: 0 !important;
         overflow: visible !important;
+      }
+    }
+  }
+  &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    &-reset-to-default {
+      padding: 0 8px !important;
+      margin-right: -2px;
+      .v-btn__content {
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1.71;
+        letter-spacing: normal;
+        color: #2196f3;
       }
     }
   }
