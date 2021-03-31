@@ -480,11 +480,13 @@ export default {
         {
           name: 'Edit',
           icon: 'mdi-pencil',
+          id: 'btn-edit--playbook-rules-row-actions',
           action: 'editAction'
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
+          id: 'btn-delete--playbook-rules-row-actions',
           action: 'deleteAction'
         }
       ]
