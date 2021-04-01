@@ -348,7 +348,9 @@ export default {
           return data
         })
         this.formValues.roleResourceIdList =
-          availableRoles && availableRoles.length && availableRoles[0].resourceId
+          availableRoles &&
+          availableRoles.length &&
+          availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
       }
     })
   }

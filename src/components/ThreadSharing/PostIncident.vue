@@ -2678,8 +2678,24 @@ export default {
       searchNotifiedMail(payload)
         .then((response) => {
           const { data } = response
-          this.listData = data.data.results
-          this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+          if (this.searchIncident) {
+            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+            this.$nextTick(() => {
+              this.listData = this.backupListData.reduce((acc, item) => {
+                Object.values(item).find((i) => {
+                  if (
+                    typeof i === 'string' &&
+                    i.toLocaleLowerCase().includes(this.searchIncident.toLocaleLowerCase())
+                  )
+                    return acc.push(item)
+                })
+                return acc
+              }, [])
+            })
+          } else {
+            this.listData = data.data.results
+            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+          }
         })
         .finally(() => {
           this.isFindIncidentLoading = false

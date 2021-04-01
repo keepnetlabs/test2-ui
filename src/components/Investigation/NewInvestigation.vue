@@ -155,11 +155,7 @@
                       "
                       outlined
                       class="edit-name-textfield edit-select standard-height"
-                      :rules="[
-                        list.option && generalRules[list.option].required,
-                        list.option && generalRules[list.option].format,
-                        list.option && generalRules[list.option].maxLength
-                      ]"
+                      :rules="getSearchCriteriaItemRules(list.option)"
                       v-model.trim="list.text"
                       required
                     ></v-text-field>
@@ -519,7 +515,7 @@ export default {
           isDefaultExpanded: true,
           children: [
             { label: 'File Name', id: 'name' },
-            { label: 'File size', id: 'size' },
+            { label: 'File Size', id: 'size' },
             { label: 'File Extension', id: 'extension' },
             { label: 'SHA512', id: 'sha512' },
             { label: 'MD5', id: 'md5' }
@@ -540,85 +536,6 @@ export default {
         empty: (v) => Validations.startsWithSpace(v),
         maxLength: (v) =>
           Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Message, 64))
-      },
-      generalRules: {
-        ip: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.ip(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
-        },
-        from: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
-        },
-        to: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
-        },
-        cc: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
-        },
-        bcc: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => (v) => Validations.email(v)
-        },
-        subject: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject)),
-          format: (v) => Validations.startsWithSpace(v) // string kontrolü
-        },
-        from_name: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Sender name')),
-          format: (v) => Validations.startsWithSpace(v) // string kontrolü
-        },
-        url: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage('URL', 2000)),
-          format: (v) => Validations.url(v)
-        },
-        keyword: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Keyword')),
-          format: (v) => Validations.startsWithSpace(v) // format ekle
-        },
-        size: {
-          required: (v) => Validations.required(v),
-          format: (v) => /^\d+$/gi.test(v) || 'Numbers only',
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Size'))
-        },
-        name: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Name'))
-        },
-        sha512: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage('SHA512', 512))
-        },
-        md5: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage('MD5', 128))
-        },
-        extension: {
-          required: (v) => Validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
-        }
       },
       filterSelectRules: {
         required: (v) => Validations.required(v),
@@ -666,6 +583,104 @@ export default {
       this.$nextTick(() => {
         this.$refs.form.validate()
       })
+    },
+    getSearchCriteriaItemRules(option = '') {
+      const rules = []
+      if (!option) {
+        return rules
+      }
+      if (['from', 'to', 'cc', 'bcc'].includes(option)) {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.email(v),
+          (v) =>
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
+          (v) => {
+            if (Validations.email(v)) {
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          }
+        )
+        return rules
+      } else if (option === 'ip') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.ip(v),
+          (v) => Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
+        )
+        return rules
+      } else if (option === 'subject') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
+        )
+        return rules
+      } else if (option === 'from_name') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName))
+        )
+        return rules
+      } else if (option === 'url') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+          (v) => Validations.url(v)
+        )
+        return rules
+      } else if (option === 'keyword') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword))
+        )
+        return rules
+      } else if (option === 'size') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Size))
+        )
+        return rules
+      } else if (option === 'name') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name))
+        )
+        return rules
+      } else if (option === 'sha512') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512)),
+          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512))
+        )
+        return rules
+      } else if (option === 'md5') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 32, labels.getMaxLengthMessage(labels.MD5, 32)),
+          (v) => Validations.minLength(v, 32, labels.getMinLengthMessage(labels.MD5, 32))
+        )
+        return rules
+      } else if (option === 'extension') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.minLength(v, 3, labels.getMinLengthMessage(labels.Extension, 3)),
+          (v) => Validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Extension, 10)),
+          (v) => Validations.extension(v, labels.InvalidExtension)
+        )
+        return rules
+      }
+      return rules
     },
     callForGetTargetUsersItems(payload, isDefault = false) {
       getTargetUsersByEmail(payload).then((response) => {
