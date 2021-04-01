@@ -430,7 +430,7 @@
               :class="[routerName === 'Audit' && 'active-link']"
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
-              <v-list-item-content class="menu-item-content">
+              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <router-link to="/audit" class="menu-link-default">
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Audit Log</span>
@@ -1223,6 +1223,8 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
         this.getCurrentUser() //@iceman login
+        this.$store.dispatch('whitelabel/callForData')
+        this.$store.dispatch('whitelabel/callForSystemVersion')
         this.callForLicenseCheck()
         //this.getNotifications()
         this.interval = setInterval(() => {
@@ -1243,10 +1245,6 @@ export default {
           })
       }
     }, 500)
-  },
-  created() {
-    this.$store.dispatch('whitelabel/callForData')
-    this.$store.dispatch('whitelabel/callForSystemVersion')
   },
   beforeDestroy() {
     clearInterval(this.interval)

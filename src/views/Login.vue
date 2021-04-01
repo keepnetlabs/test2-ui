@@ -526,6 +526,7 @@ export default {
   beforeCreate() {},
   created() {
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
+    this.$store.dispatch('whitelabel/resetState')
     if (this.$route.query && this.$route.query.mfaRequired) {
       this.showMfaMessage = true
       this.$router.replace('/login')
@@ -736,6 +737,7 @@ export default {
     },
     loginAction(payload) {
       let _this = this
+
       loginAction(payload)
         .then((response) => {
           let isSessionExpired = payload.sessionExpired
@@ -768,12 +770,7 @@ export default {
               currentUserData.role &&
               currentUserData.role.name !== 'CompanyAdmin'
             ) {
-              this.$store
-                .dispatch('dashboard/selectCompany', currentUserData, { root: true })
-                .finally(() => {
-                  this.$store.dispatch('whitelabel/callForData')
-                  this.$store.dispatch('whitelabel/callForSystemVersion')
-                })
+              this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
             }
             let payload = {
               currentUserData: currentUserData,
@@ -985,6 +982,7 @@ export default {
     onLoginClicked() {
       const mainUrl = this.$router.currentRoute
       const _this = this
+
       this.isPasswordStep5Complete = false
       if (
         this.$refs.email.validate() &&

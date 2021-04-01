@@ -2232,11 +2232,30 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      this.criteriaChips = [
-        ...this.investigationDetailsData.headers,
-        ...this.investigationDetailsData.bodies,
-        ...this.investigationDetailsData.attachments
-      ]
+      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData.headers))
+      headers.forEach((header) => {
+        const ipAddress = header.ip
+        const senderName = header.senderName
+        delete header.ip
+        delete header.senderName
+        header['Ip Address'] = ipAddress
+        header['Sender Name'] = senderName
+      })
+      const attachments = JSON.parse(JSON.stringify(this.investigationDetailsData.attachments))
+
+      attachments.forEach((attachment) => {
+        const name = attachment.name
+        const extension = attachment.extension
+        const size = attachment.size
+        delete attachment.name
+        delete attachment.extension
+        delete attachment.size
+        attachment['Attachment Name'] = name
+        attachment['Attachment Extension'] = extension
+        attachment['Attachment Size'] = size
+      })
+
+      this.criteriaChips = [...headers, ...this.investigationDetailsData.bodies, ...attachments]
       this.leftMenuLoading = false
       this.contentMenuLoading = false
     },
