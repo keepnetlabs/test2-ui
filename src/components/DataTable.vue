@@ -90,10 +90,11 @@
               @keyup="searchChangedEvent"
             />
             <data-table-filter-options
+              v-if="showFilterOptions"
+              :is-active="isFiltered"
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
-              v-if="showFilterOptions"
             />
           </div>
           <div class="table-settings" v-if="options">
@@ -1207,6 +1208,9 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isFiltered() {
+      return Object.keys(this.filterValues).length
+    },
     isShowAllRecords() {
       return !this.isServerSide && this.showAllRecords
     },
