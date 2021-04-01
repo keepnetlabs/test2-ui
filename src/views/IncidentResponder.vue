@@ -599,7 +599,6 @@
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
-                  :disabled="selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
@@ -736,7 +735,6 @@
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
-                  :disabled="selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
