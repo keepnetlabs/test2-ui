@@ -1223,6 +1223,8 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
         this.getCurrentUser() //@iceman login
+        this.$store.dispatch('whitelabel/callForData')
+        this.$store.dispatch('whitelabel/callForSystemVersion')
         this.callForLicenseCheck()
         //this.getNotifications()
         this.interval = setInterval(() => {
@@ -1243,10 +1245,6 @@ export default {
           })
       }
     }, 500)
-  },
-  created() {
-    this.$store.dispatch('whitelabel/callForData')
-    this.$store.dispatch('whitelabel/callForSystemVersion')
   },
   beforeDestroy() {
     clearInterval(this.interval)
