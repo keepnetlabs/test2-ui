@@ -5,28 +5,30 @@ import {
   updateWhiteLabel
 } from '@/api/whitelabel'
 
+const initialState = {
+  resourceId: null,
+  loading: true,
+  brandName: '',
+  mainDomainProtocol: '',
+  mainDomainUrl: '',
+  mainLogoUrl: null,
+  minimizedMenuLogoUrl: null,
+  faviconUrl: null,
+  emailTemplateLogoUrl: null,
+  supportEmailAddress: null,
+  footerPrivacyPolicyUrl: '',
+  footerTermsAndConditionsUrl: '',
+  footerEulaUrl: '',
+  footerCookiePolicyUrl: '',
+  isShowReleaseVersionNumber: false,
+  isShowReleaseNotes: false,
+  releaseNotesUrl: '',
+  systemVersion: null
+}
+
 const whitelabel = {
   namespaced: true,
-  state: {
-    resourceId: null,
-    loading: true,
-    brandName: '',
-    mainDomainProtocol: '',
-    mainDomainUrl: '',
-    mainLogoUrl: null,
-    minimizedMenuLogoUrl: null,
-    faviconUrl: null,
-    emailTemplateLogoUrl: null,
-    supportEmailAddress: null,
-    footerPrivacyPolicyUrl: '',
-    footerTermsAndConditionsUrl: '',
-    footerEulaUrl: '',
-    footerCookiePolicyUrl: '',
-    isShowReleaseVersionNumber: false,
-    isShowReleaseNotes: false,
-    releaseNotesUrl: '',
-    systemVersion: null
-  },
+  state: JSON.parse(JSON.stringify(initialState)),
   getters: {
     getState(state) {
       return state
@@ -91,6 +93,11 @@ const whitelabel = {
     },
     TOGGLE_LOADING(state, payload) {
       state.loading = payload
+    },
+    RESET_STATE(state, payload) {
+      for (const key of Object.keys(state)) {
+        state[key] = payload[key]
+      }
     }
   },
   actions: {
@@ -127,6 +134,9 @@ const whitelabel = {
         //console.log(' response.data.data.version', response.data.data.version)
         context.commit('SET_SYSTEM_VERSION', response.data.data.version)
       })
+    },
+    resetState(context = {}) {
+      context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))
     }
   }
 }
