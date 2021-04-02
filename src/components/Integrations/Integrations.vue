@@ -49,12 +49,9 @@
       @addAction="changeModalStatus(true)"
       @downloadEvent="exportIntegrationList"
       @handleMultipleDelete="handleActionDelete"
-      @sortChangedEvent="sortChangedEvent($event)"
       @paginationChangedEvent="paginationChangedEvent($event)"
-      @searchChangedEvent="searchChangedEvent($event)"
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
-      :isServerSide="false"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
@@ -63,6 +60,14 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      is-server-side
+      :isServerSide="false"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: false, search: false, sort: false }"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -135,9 +140,9 @@ import {
   INTEGRATION_TYPES
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
-
 import labels from '@/model/constants/labels'
-
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'Integrations',
   components: {
@@ -285,6 +290,11 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
@@ -301,13 +311,63 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   methods: {
+    resetPageNumber() {
+      //generic
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.bodyData.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.getDatatableList()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.bodyData.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.bodyData.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.getDatatableList()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
+      this.getDatatableList()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.getDatatableList()
+    },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS)
@@ -432,7 +492,11 @@ export default {
             const {
               data: { data }
             } = response
-            const { results = [], totalNumberOfRecords = 0 } = data
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
             this.tableData = results
             this.totalNumberOfRecords = totalNumberOfRecords
 
@@ -513,6 +577,9 @@ export default {
     }
   },
   mounted() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getDefaultFilterAndSearch()
   }
 }

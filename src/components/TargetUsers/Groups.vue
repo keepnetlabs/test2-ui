@@ -61,6 +61,14 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      is-server-side
+      :isServerSide="false"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: false, search: false, sort: false }"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -113,6 +121,8 @@ import {
 import { required, maxLength } from '@/utils/validations'
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'Groups',
   components: {
@@ -301,6 +311,11 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
@@ -317,11 +332,17 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
       },
-      tableState: null
+      tableState: null,
+      serverSideProps: new ServerSideProps()
     }
   },
   computed: {
@@ -333,6 +354,50 @@ export default {
     }
   },
   methods: {
+    resetPageNumber() {
+      //generic
+      this.tableCredientials.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.tableCredientials.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForTargetGroups()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.tableCredientials.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.tableCredientials.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.tableCredientials.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForTargetGroups()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.tableCredientials.ascending = order === 'ascending'
+      this.tableCredientials.orderBy = prop
+      this.callForTargetGroups()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.tableCredientials.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForTargetGroups()
+    },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP)
@@ -430,7 +495,10 @@ export default {
           const {
             data: { data }
           } = response
-          const { totalNumberOfRecords = 0 } = data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
@@ -577,6 +645,9 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.controlRouteQuery()
+      this.setQueryValuesToPayload(this.$route.query)
       this.getDefaultFilterAndSearch()
     }
   },
