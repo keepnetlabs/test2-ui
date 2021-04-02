@@ -288,7 +288,11 @@ export default {
             const emailValidationArray = [
               (v) => this.validations.required(v, labels.Required),
               (v) =>
-                this.validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress))
+                this.validations.maxLength(
+                  v,
+                  320,
+                  labels.getMaxLengthMessage(labels.EmailAddress, 320)
+                )
             ]
             if (operator !== 'Contains' && operator !== 'DoesNotContain') {
               emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
