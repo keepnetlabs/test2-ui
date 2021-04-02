@@ -171,6 +171,8 @@
                 @change="getSelectedEmailPreview"
                 @focus="handleLoadingState"
                 @input="handleTagItemChange"
+                @click:append="handleTagItemChange"
+                @click:append-outer="handleTagItemChange"
                 :slots="{ selection: true, item: true, progress: true }"
                 autocomplete="off"
               >
@@ -2395,8 +2397,8 @@ export default {
       ).shadowRoot.innerHTML
     },
     handleTagItemChange(value) {
+      this.querySelections(this.searchIncident || '')
       if (this.isFindIncidentLoading) return false
-      value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox

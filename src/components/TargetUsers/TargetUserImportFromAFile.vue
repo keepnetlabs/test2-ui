@@ -79,11 +79,11 @@
                       v-if="!step1Loading && excelInfo"
                     >
                       {{
-                        `This xls/xlsx file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
+                        `This uploaded file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
                       }}
                     </p>
                     <p class="target-user-import-file__total-excel-score" v-if="step1Loading">
-                      {{ `The xls file is loading` }}
+                      {{ `The uploaded file is loading` }}
                       <v-icon
                         class="ml-1 loading-spin"
                         color="#2196f3"

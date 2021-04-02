@@ -1239,6 +1239,7 @@ export default {
           sortable: false,
           show: true,
           type: 'analysisSource',
+          filterableType: 'text',
           width: '200',
           fullWidth: true
         },
@@ -1576,6 +1577,7 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
+          filterableType: 'text',
           type: 'analysisSource',
           width: '200',
           fullWidth: true
