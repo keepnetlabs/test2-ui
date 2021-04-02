@@ -536,7 +536,7 @@
 
                 <data-table-filter
                   v-if="col.filterableType"
-                  v-model="filterValues[col.property]"
+                  v-model="filterValues[col.filterableCustomFieldName || col.property]"
                   :column="column"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
@@ -1209,7 +1209,9 @@ export default {
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
     isFiltered() {
-      return Object.keys(this.filterValues).length
+      console.log('keys', Object.keys(this.filterValues))
+      console.log('this.filterValues is filtered is ', Object.keys(this.filterValues).length > 0)
+      return Object.keys(this.filterValues).length > 0
     },
     isShowAllRecords() {
       return !this.isServerSide && this.showAllRecords
@@ -2685,6 +2687,7 @@ export default {
       this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {
+      this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
     }
   }

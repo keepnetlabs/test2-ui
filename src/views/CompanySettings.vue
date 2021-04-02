@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import SMTPSettings from '@/components/Company Settings/SMTPSettings'
+import SMTPSettings from '@/components/Company Settings/SmtpSettings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
