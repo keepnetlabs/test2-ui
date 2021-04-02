@@ -23,7 +23,7 @@
       />
       <test-email-error-dialog
         v-if="isTestEmailErrorDialogShowing"
-        :status="isTestEmailErrorDialogShowing"
+        :is-show-error-message="isTestEmailErrorDialogShowing"
         :error-message="testEmailErrorMessage"
         @closeDialog="toggleTestEmailErrorDialog"
       />
@@ -99,30 +99,31 @@
             ></v-text-field>
           </div>
         </form-group>
-        <form-group title="User Name or Email Address" has-hint>
+        <form-group
+          title="User Name or Email Address"
+          :has-hint="!!getUserNameAndPasswordCommonProps"
+        >
           <v-text-field
+            v-bind="getUserNameAndPasswordCommonProps"
             placeholder="Enter username"
             outlined
             dense
             v-model.trim="formValues.userName"
-            hint="*Required"
-            persistent-hint
-            :rules="[(v) => validations.required(v)]"
+            :rules="getUserNameRules"
           ></v-text-field>
         </form-group>
-        <form-group title="Password" has-hint>
+        <form-group title="Password" :has-hint="!!getUserNameAndPasswordCommonProps">
           <v-text-field
+            v-bind="getUserNameAndPasswordCommonProps"
             placeholder="Enter password"
             outlined
             dense
             v-model.trim="formValues.password"
-            hint="*Required"
-            persistent-hint
             :type="showPassword ? 'text' : 'password'"
             :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
-            :rules="[(v) => validations.required(v)]"
+            :rules="getPasswordRules"
           ></v-text-field>
         </form-group>
         <form-group>
@@ -294,6 +295,31 @@ export default {
     getTitle() {
       return this.isEdit && this.resourceId ? labels.EditSMTPSetting : labels.NewSMTPSetting
     },
+    getUserNameAndPasswordCommonProps() {
+      if (!this.formValues.useAuthentication) {
+        return null
+      }
+      return { hint: '*Required', persistentHint: true }
+    },
+    getUserNameRules() {
+      const rules = [
+        (v) =>
+          validations.maxLength(
+            v,
+            128,
+            labels.getMaxLengthMessage(labels.UserNameOrEmailAddress, 320)
+          )
+      ]
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
+      return rules
+    },
+    getPasswordRules() {
+      const rules = [
+        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128))
+      ]
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
+      return rules
+    },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
@@ -362,6 +388,7 @@ export default {
     },
     callForTestConnection(testEmailPayload = {}) {
       this.isTestEmailActionDisabled = true
+      this.saveDisable = true
       const payload = {
         ...testEmailPayload,
         serverAddress: this.formValues.serverAddress,
@@ -372,12 +399,17 @@ export default {
         useSsl: Number(this.formValues.useSSL)
       }
       testConnection(payload)
-        .then((response) => {})
+        .then(() => {
+          this.isTestEmailDialogShowing = false
+        })
         .catch((error) => {
+          const { response } = error
+          this.testEmailErrorMessage = response.data.message
           this.isTestEmailErrorDialogShowing = true
         })
         .finally(() => {
           this.isTestEmailActionDisabled = false
+          this.saveDisable = false
         })
     },
     callForCreateSmtpSettings(payload = {}) {
