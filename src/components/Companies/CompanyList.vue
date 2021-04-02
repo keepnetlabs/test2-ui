@@ -1,5 +1,12 @@
 <template>
   <div class="company-list">
+    <create-or-edit-system-user
+      v-if="showCreateOrEditSystemUserModal"
+      :status="showCreateOrEditSystemUserModal"
+      :created-company-resource-id="createdCompanyResourceIdForSystemUser"
+      @closeOverlayWithUpdate="toggleCreateOrEditSystemUser"
+      @closeOverlay="toggleCreateOrEditSystemUser"
+    />
     <app-modal
       :status="isShowCreateOrEditModal"
       v-if="isShowCreateOrEditModal"
@@ -9,10 +16,11 @@
     >
       <template v-slot:overlay-body>
         <CompanyCreateOrEdit
-          @cancelForm="cancelCreateOrEditForm"
           :selectedRow="selectedRow"
           :selectedExtend="selectedExtend"
           :edit="editModal"
+          @cancelForm="cancelCreateOrEditForm"
+          @closeFormAndOpenSystemUserModal="closeFormAndOpenSystemUserModal"
         />
       </template>
     </app-modal>
@@ -25,9 +33,9 @@
       @changeModalStatus="changeDeleteModalStatus"
     />
     <AddGroupToModal
+      v-if="showAddGroupToModal"
       :companyIdArray="companyIdArray"
       :status="showAddGroupToModal"
-      v-if="showAddGroupToModal"
       @changeStatus="handleStatusAddGroupToModal"
     />
     <create-item-modal
@@ -38,12 +46,12 @@
     />
 
     <datatable
-      :loading="loading"
-      :selectable="true"
-      :table="tableData"
       id="companies-data-table"
       ref="refDataList"
       is-server-side
+      :loading="loading"
+      :selectable="true"
+      :table="tableData"
       :server-side-props="serverSideProps"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
@@ -74,12 +82,16 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       v-bind="bindPropsIsSafari"
+      @switchCompany="handleSwitchCompany"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @handleChangeIsSettingsOpen="handleChangeIsSettingsOpen"
       @sortChangedEvent="sortChanged"
       @server-side-page-number-changed="serverSidePageNumberChanged"
       @server-side-size-changed="serverSideSizeChanged"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -127,7 +139,11 @@
 import Datatable from '../../components/DataTable'
 import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
@@ -137,6 +153,7 @@ import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 export default {
   name: 'CompanyList',
   components: {
@@ -146,11 +163,14 @@ export default {
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
+    CreateOrEditSystemUser,
     DeleteModal
   },
   data: () => ({
     loading: true,
     tableData: [],
+    createdCompanyResourceIdForSystemUser: '',
+    showCreateOrEditSystemUserModal: false,
     tableHeight: 0,
     extendTop: 0,
     bindPropsIsSafari: {},
@@ -212,6 +232,7 @@ export default {
           sortable: true,
           show: true,
           type: 'slot',
+          filterableType: 'text',
           width: 130
         },
         {
@@ -222,6 +243,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
+          filterableType: 'date',
           width: 180
         },
         {
@@ -248,10 +270,12 @@ export default {
       iEmpty: {
         message: 'No company defined',
         btn: 'ADD A COMPANY',
+        id: 'btn-empty--company',
         icon: 'mdi-account-plus'
       },
       addButton: {
         show: true,
+        id: 'btn-add--company',
         action: 'addButton',
         tooltip: 'Add Company',
         disabled: !checkPermission('companies', 'POST')
@@ -259,24 +283,35 @@ export default {
       rowActions: [
         {
           name: 'Edit this row',
+          id: 'btn-edit--company-row-actions',
           icon: 'mdi-pencil',
           action: 'editAction',
           isNotShow: true,
           disabled: !checkPermission('companies/{resourceId}', 'PUT')
         },
         {
+          id: 'btn-add--company-add-to-a-group-row-actions',
           name: 'Add to a company group',
           icon: 'mdi-account-multiple-plus',
           action: 'AddGroupToModal',
           disabled: !checkPermission('company-groups/search', 'POST')
         },
         {
+          id: 'btn-add--company-create-new-company-group-with-company-row-actions',
           name: 'Create a new company group with company',
           icon: 'mdi-account-multiple',
           action: 'createNewGroupWithCompany',
           disabled: !checkPermission('companies/search', 'POST')
         },
         {
+          id: 'btn-switch--company-switch-to-company-row-actions',
+          name: 'Switch to company',
+          icon: 'mdi-swap-horizontal',
+          action: 'switchCompany',
+          disabled: !checkPermission('companies/search', 'POST')
+        },
+        {
+          id: 'btn-delete--company-row-actions',
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'delete',
@@ -285,6 +320,27 @@ export default {
       ]
     },
     payload: {
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultPayload: {
       pageNumber: 1,
       pageSize: 10,
       orderBy: 'CreateTime',
@@ -317,6 +373,7 @@ export default {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
+    this.getDefaultFilterAndSearch()
     this.getLookUpDatas()
     if (handleIsSafari()) {
       this.bindPropsIsSafari['handleSetCellClass'] = (obj) => {
@@ -333,6 +390,61 @@ export default {
       size = isNaN(parsedSize) ? 10 : parsedSize
       this.payload.pageSize = size
       this.serverSideProps.pageSize = size
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
+      copyOfFilter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
+        JSON.stringify({
+          filter: copyOfFilter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.getLookUpDatas()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.payload.pageNumber = 1
+      this.$refs.refDataList.filterValues = {}
+      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST)
+      this.getLookUpDatas()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refDataList.filterValues = savedFilter.filterValues
+          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    },
+
+    toggleCreateOrEditSystemUser() {
+      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+      if (!this.showCreateOrEditSystemUserModal) {
+        this.createdCompanyResourceIdForSystemUser = ''
+      }
+    },
+    handleSwitchCompany(account = {}) {
+      this.$router.go(0)
+      localStorage.setItem('isSelectCompany', true)
+      localStorage.setItem('companyId', account.companyResourceId)
+      localStorage.setItem('companyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyName', account.companyName)
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
@@ -444,12 +556,14 @@ export default {
       this.isClustered = true
       this.resetPageNumber()
       this.resetTableFilters()
+      this.getDefaultFilterAndSearch()
       this.getTableData()
     },
     handleListBulletedClick() {
       this.isClustered = false
       this.resetPageNumber()
       this.resetTableFilters()
+      this.getDefaultFilterAndSearch()
       this.getTableData()
     },
     resetTableFilters() {
@@ -512,7 +626,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Companies.${item.toLocaleLowerCase()}`
+            link.download = `Companies.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})
@@ -541,6 +657,11 @@ export default {
       this.selectedExtend = {}
       this.selectedRow = {}
       this.getTableData({ orderBy: 'createTime', ascending: false })
+    },
+    closeFormAndOpenSystemUserModal(createdCompanyResourceId = '') {
+      this.createdCompanyResourceIdForSystemUser = createdCompanyResourceId
+      this.cancelCreateOrEditForm()
+      this.toggleCreateOrEditSystemUser()
     },
     closeExtend() {
       this.selectedExtend = {}
@@ -600,7 +721,6 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
       this.payload.filter.FilterGroups[0].FilterItems = requestBody
       this.getTableData()
     },

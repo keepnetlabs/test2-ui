@@ -21,7 +21,7 @@
         sub-title="Create API Key to your customers for integration"
       />
       <data-table
-        id="custom-api-data-table"
+        id="company-settings-rest-api-data-table"
         ref="refCustomApiList"
         :refName="'smtpSettingsList'"
         :loading="loading"
@@ -30,8 +30,9 @@
         :empty="tableOptions.empty"
         :filterable="true"
         :isServerSide="false"
+        :show-all-records="showAllRecords"
+        :total-number-of-records="totalNumberOfRecords"
         :options="true"
-        :download-button="{ show: false }"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
@@ -39,12 +40,17 @@
         :sizeable="true"
         :table="tableData"
         @editAction="handleEdit"
+        @downloadEvent="exportRestApi"
         @deleteAction="handleDelete"
         @onEmptyBtnClicked="toggleNewCustomApiStatus"
         @handleAddNewCustomApi="toggleNewCustomApiStatus"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearch"
+        @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       />
     </div>
   </div>
@@ -54,17 +60,37 @@
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
-import { PROPERTY_STORE } from '@/model/constants/commonConstants'
+import { DEFAULT_SEARCH_CONTAINER_KEYS, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { deleteRestApi, searchRestApi } from '@/api/restApi'
+import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'CustomApi',
   data() {
     return {
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
+      isRestoredOrClearedFilters: false,
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultAxiosPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -145,11 +171,13 @@ export default {
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
+            id: 'btn-edit--rest-api-row-actions',
             action: 'editAction'
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
+            id: 'btn-delete--rest-api-row-actions',
             action: 'deleteAction'
           }
         ],
@@ -157,12 +185,14 @@ export default {
           message: labels.EmptyCustomApiMessage,
           subMes: labels.SubMesCustomApiMessage,
           btn: labels.NewCustomApiBtnMessage,
-          icon: 'mdi-plus'
+          icon: 'mdi-plus',
+          id: 'btn-empty--rest-api'
         },
         addButton: {
           show: true,
           action: 'handleAddNewCustomApi',
-          tooltip: labels.NewCustomApiBtnTooltip
+          tooltip: labels.NewCustomApiBtnTooltip,
+          id: 'btn-add--rest-api'
         }
       }
     }
@@ -174,19 +204,67 @@ export default {
     NewCustomApi
   },
   created() {
-    this.callForSearch()
+    this.getDefaultFilterAndSearch()
   },
   methods: {
     callForSearch() {
       this.loading = true
       searchRestApi(this.axiosPayload)
         .then((response) => {
-          const { data: { data = {} } = {} } = response
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData = data.results || []
         })
         .finally(() => {
           this.loading = false
+          this.isRestoredOrClearedFilters = false
         })
+    },
+    exportRestApi({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
+        this.$refs.refCustomApiList,
+        'CreateTime'
+      )
+      if (this.$refs.refCustomApiList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'StatusId'
+      }
+      if (this.$refs.refCustomApiList.sortProps && this.$refs.refCustomApiList.sortProps.order) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+      exportTypes.map((exportType) => {
+        const payload = {
+          ...sortFilter,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
+        exportRestApi(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Rest Api.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     closeNewCustomApiWithUpdate() {
       this.callForSearch()
@@ -227,6 +305,10 @@ export default {
       this.callForSearch()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
+
       let items = []
       let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
 
@@ -243,9 +325,37 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.REST_API,
+        JSON.stringify({
+          filter: this.axiosPayload.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
     handleEdit(row = {}) {
       this.selectedRow = row
       this.toggleNewCustomApiStatus()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
+      this.$refs.refCustomApiList.filterValues = {}
+      this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.REST_API)
+      this.callForSearch()
+    },
+    handleAllRecordsClick() {
+      this.axiosPayload.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearch()
     },
     handleDelete(row = {}) {
       this.selectedRow = row
@@ -273,6 +383,20 @@ export default {
         this.selectedRow = null
       }
       this.showDeleteCustomApi = !this.showDeleteCustomApi
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REST_API))
+      if (savedFilter) {
+        this.axiosPayload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refCustomApiList.filterValues = savedFilter.filterValues
+          this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearch()
     }
   }
 }

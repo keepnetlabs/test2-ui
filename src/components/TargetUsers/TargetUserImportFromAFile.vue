@@ -70,7 +70,7 @@
                       :extensions="['.xlsx', '.xls', '.csv']"
                       :is-stand-alone="true"
                       @inputFile="onFileChanged"
-                      hint="Only XLS or CSV files. Max. file size 30MB"
+                      hint="Only XLS/XLSX or CSV files. Max. file size 30MB"
                       :on-upload-progress="onUploadProgress"
                       :is-loading="step1Loading"
                     />
@@ -79,11 +79,11 @@
                       v-if="!step1Loading && excelInfo"
                     >
                       {{
-                        `This xls file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
+                        `This uploaded file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
                       }}
                     </p>
                     <p class="target-user-import-file__total-excel-score" v-if="step1Loading">
-                      {{ `The xls file is loading` }}
+                      {{ `The uploaded file is loading` }}
                       <v-icon
                         class="ml-1 loading-spin"
                         color="#2196f3"
@@ -216,14 +216,19 @@
                     @searchChangedEvent="searchChangedEvent($event)"
                     :dataLength="tableData && tableData.totalNumberOfRecords"
                     :requestParams="bodyData"
-                    :isServerSide="false"
+                    is-server-side
+                    :server-side-props="serverSideProps"
+                    :server-side-events="{ pagination: true, search: true, sort: true }"
                     @columnFilterChanged="columnFilterChanged"
                     @columnFilterCleared="columnFilterCleared"
-                    :server-side-events="{ search: false, sort: false, pagination: false }"
                     :downloadButton="{
-                      show: false
+                      show: true
                     }"
+                    @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
+                    @server-side-page-number-changed="serverSidePageNumberChanged"
+                    @server-side-size-changed="serverSideSizeChanged"
                     @handleSelectionChange="handleSelectionChange"
+                    :show-filter-options="false"
                   >
                     <template v-slot:table-notification>
                       <div class="target-user-import-file__header-detail">
@@ -239,7 +244,7 @@
                     </template>
                   </data-table>
                   <div
-                    v-else-if="mappingStatus && !showDatatable"
+                    v-else-if="mappingStatus && !showDatatable && !showDatatableErrorState"
                     class="target-user-import-file__progression"
                   >
                     <div class="target-user-import-file__progression--text">
@@ -262,7 +267,10 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="false" class="target-user-import-file__error">
+                  <div
+                    v-if="showDatatableErrorState && mappingStatus.status === 'FinishedWithError'"
+                    class="target-user-import-file__error"
+                  >
                     <div class="target-user-import-file__error--text">
                       <v-icon class="target-user-import-file__error--text--icon" small color="error"
                         >mdi-alert-circle</v-icon
@@ -296,6 +304,7 @@
       <template v-slot:overlay-footer>
         <div class="text-left">
           <v-btn
+            id="btn-cancel--target-users-import-people-modal"
             class="target-user-import-file__button"
             outlined
             rounded
@@ -307,6 +316,7 @@
         <div>
           <v-btn
             v-if="canPrev"
+            id="btn-back--target-users-import-people-modal"
             class="target-user-import-file__button mr-4"
             outlined
             rounded
@@ -318,6 +328,7 @@
 
           <v-btn
             v-if="canNext"
+            id="btn-next--target-users-import-people-modal"
             class="target-user-import-file__button"
             style="color: white;"
             rounded
@@ -330,6 +341,7 @@
 
           <v-btn
             v-if="!canNext"
+            id="btn-import-selected--target-users-import-people-modal"
             class="target-user-import-file__button target-user-import-file__button--import-selected"
             rounded
             color="#2196f3"
@@ -340,6 +352,7 @@
           </v-btn>
           <v-btn
             v-if="!canNext"
+            id="btn-import-all--target-users-import-people-modal"
             class="target-user-import-file__button target-user-import-file__button--import-all"
             rounded
             color="#2196f3"
@@ -383,12 +396,18 @@
             <div>
               <v-list dense flat class="notification-wrapper__v-list">
                 <v-list-item-group color="primary">
-                  <v-list-item @click="showConfirmModal('onlyImportNewUsers')">
+                  <v-list-item
+                    id="btn-import-new-users--target-users-import-people-modal"
+                    @click="showConfirmModal('onlyImportNewUsers')"
+                  >
                     <v-list-item-content>
                       <v-list-item-title> Only Import New Users</v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
-                  <v-list-item @click="showConfirmModal('onlyUpdateExistingUsers')">
+                  <v-list-item
+                    id="btn-import-existing-users--target-users-import-people-modal"
+                    @click="showConfirmModal('onlyUpdateExistingUsers')"
+                  >
                     <v-list-item-content>
                       <v-list-item-title>Only Update Existing Users</v-list-item-title>
                     </v-list-item-content>
@@ -418,6 +437,7 @@ import {
   createMapping,
   createTargetUserCustomField,
   downloadExampleTargetUserFile,
+  exportTargetUserBulk,
   getMappingStatus,
   getTargetGroups,
   getTargetUserCustomFieldsByCompanyId,
@@ -430,11 +450,12 @@ import MapTable from '../TargetUsers/subcomponents/MapTable'
 import labels from '@/model/constants/labels'
 import DataTable from '../DataTable'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { scrollToComponent } from '@/utils/functions'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -496,6 +517,9 @@ export default {
   },
   data() {
     return {
+      allCustomColumns: null,
+      stopMappingData: false,
+      serverSideProps: new ServerSideProps(),
       step3InitialLoading: false,
       selectedActionName: null,
       showLicenseExceededDialog: false,
@@ -510,6 +534,7 @@ export default {
       responsNumbers: false,
       isShowInvalid: false,
       showDatatable: false,
+      showDatatableErrorState: false,
       mappingStatus: null,
       isExcelUploaded: false,
       closeTargetUserImport: false,
@@ -717,12 +742,12 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             },
             {
-              Condition: 'AND',
+              Condition: 'OR',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -738,6 +763,50 @@ export default {
     }
   },
   methods: {
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+
+      this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.bodyData.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+
+      this.bodyData.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDatatableList()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+
+      this.bodyData.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDatatableList()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.getDatatableList()
+    },
+    resetPageNumber() {
+      //generic
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
     getExcelName(item) {
       if (item.selectedValue === 'First Name') item.selectedValue.name = 'First Name'
       if (item.selectedValue === 'First Name') item.selectedValue.dbName = 'First Name'
@@ -828,12 +897,16 @@ export default {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
               icon: 'mdi-alert-circle'
             })
-            this.getDatatableList()
+            this.showDatatableErrorState = true
           } else if (_this.mappingStatus.status !== 'Finished' && _this.isExcelUploaded) {
-            setTimeout(() => {
-              this.getMappingStatus()
-            }, 2500)
+            this.showDatatableErrorState = false
+            if (this.activeStep === 3) {
+              setTimeout(() => {
+                this.getMappingStatus()
+              }, 2500)
+            }
           } else {
+            this.showDatatableErrorState = false
             this.getDatatableList()
           }
         })
@@ -854,63 +927,105 @@ export default {
     },
     getDatatableList() {
       let _this = this
-      this.bodyData.pageSize = this.mappingStatus.totalRowCount
+      //this.bodyData.pageSize = this.mappingStatus.totalRowCount
       this.step3Loading = true
+      let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
+      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
+        (acc, item) => {
+          if (!customFields.includes(item.FieldName)) acc.push(item)
+          return acc
+        },
+        []
+      )
       searchTmp(this.bodyData, this.excelInfo.transactionId)
         .then((response) => {
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data.items
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.responsNumbers = response.data.data
           _this.tableOptions.columns = JSON.parse(JSON.stringify(_this.tableOptions.backupColumns))
           let data = ({ data, status } = response.data.data.items.results)
+          let customFields
           if (data.length) {
-            let customFields = data[0].customFields.map((item) => {
+            customFields = data[0].customFields.map((item) => {
               let itemObj = {
                 property: item.name,
                 align: 'left',
                 editable: false,
                 label: item.name,
                 fixed: false,
-                sortable: false,
                 show: true,
                 type: 'text',
                 dbName: 'item.name',
                 width: 250,
-                emptyText: 'No Data'
+                emptyText: 'No Data',
+                sortable: false,
+                hideSort: true,
+                filterable: true,
+                customFieldName: item.name,
+                filterableType: 'text',
+                FilterableItems: 'Yes',
+                isCustom: true
               }
               return itemObj
             })
-            data = data.map((item) => {
-              let fieldObj = item.customFields.map((i) => {
-                return { [i.name]: i.value }
-              })
-              fieldObj.map((iItem) => {
-                for (let key in iItem) {
-                  if (iItem.hasOwnProperty(key)) {
-                    item[key] = iItem[key]
-                  }
-                }
-              })
-              return item
-            })
-            _this.tableData = data || []
-            _this.tableOptions.columns.push(...customFields)
-            _this.tableOptions.columns.push({
-              property: PROPERTY_STORE.STATUS,
-              align: 'center',
-              label: getStoreValue(PROPERTY_STORE.STATUS),
-              fixed: false,
-              sortable: true,
-              show: true,
-              type: 'status',
-              isEditable: true,
-              hasTooltip: true,
-              fullWidth: true,
-              dbName: 'Status',
-              minWidth: 170,
-              emptyText: 'No Data'
-            })
           } else {
-            _this.tableData = data || []
+            customFields = this.mappingData.columns
+              .filter((item) => item.isCustom)
+              .map((item) => {
+                let itemObj = {
+                  property: item.name,
+                  align: 'left',
+                  editable: false,
+                  label: item.name,
+                  fixed: false,
+                  show: true,
+                  type: 'text',
+                  dbName: 'item.name',
+                  width: 250,
+                  emptyText: 'No Data',
+                  sortable: false,
+                  hideSort: true,
+                  filterable: true,
+                  customFieldName: item.name,
+                  filterableType: 'text',
+                  FilterableItems: 'Yes',
+                  isCustom: true
+                }
+                return itemObj
+              })
           }
+          data = data.map((item) => {
+            let fieldObj = item.customFields.map((i) => {
+              return { [i.name]: i.value }
+            })
+            fieldObj.map((iItem) => {
+              for (let key in iItem) {
+                if (iItem.hasOwnProperty(key)) {
+                  item[key] = iItem[key]
+                }
+              }
+            })
+            return item
+          })
+          _this.tableData = data || []
+          _this.tableOptions.columns.push(...customFields)
+          _this.tableOptions.columns.push({
+            property: PROPERTY_STORE.STATUS,
+            align: 'center',
+            label: getStoreValue(PROPERTY_STORE.STATUS),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'status',
+            isEditable: true,
+            hasTooltip: true,
+            fullWidth: true,
+            dbName: 'Status',
+            minWidth: 170,
+            emptyText: 'No Data'
+          })
           _this.loading = false
           _this.showDatatable = true
         })
@@ -983,8 +1098,14 @@ export default {
       }
       this.getDatatableList()
     },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
+    searchChangedEvent(searchFilter = {}, filterActive = false) {
+      //generic
+      this.bodyData.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
@@ -1002,12 +1123,14 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportReportedEmails(payload)
+        exportTargetUserBulk(this.excelInfo.transactionId, payload)
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `integrations.${exportType.toLocaleLowerCase()}`
+            link.download = `target-users-import.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch((error) => {})
@@ -1045,10 +1168,9 @@ export default {
       })
         .then((response) => {
           this.excelInfo = response.data.data
-        })
-        .finally(() => {
           this.step1Loading = false
         })
+        .finally(() => {})
     },
     getUploadedExcelData() {
       this.step2Loading = true
@@ -1167,6 +1289,36 @@ export default {
         this.resetDisabledValuesFromColumns()
       }
       if (this.activeStep === 2) {
+        this.resetBodyData()
+      }
+    },
+    resetBodyData() {
+      this.bodyData = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'Status',
+                  Operator: 'Include',
+                  Value: 'New,Exists,Error'
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     },
     save(label) {
@@ -1223,6 +1375,7 @@ export default {
           if (customColumns) {
             allColumns = allColumns.concat(customColumns)
           }
+          this.allCustomColumns = customColumns
           _this.mappingData.columns = allColumns
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
@@ -1231,6 +1384,7 @@ export default {
                   disabled: false,
                   selectedValue: null,
                   dbName: item.dbName,
+                  isCustom: !item.dbName,
                   required: item.dbName
                     ? item.dbName === 'Email'
                     : response.data.data.find((responseItem) => {
@@ -1262,6 +1416,9 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getTargetUsers()
   },
   beforeRouteLeave(to, from, next) {
@@ -1270,6 +1427,9 @@ export default {
     } else if (this.isLeaveAccepted) {
       next()
     } else next()
+  },
+  beforeDestroy() {
+    this.activeStep = 1
   }
 }
 </script>
@@ -1321,6 +1481,9 @@ export default {
       color: #2196f3 !important;
       box-shadow: none !important;
       margin-right: 8px;
+      &.v-btn--disabled {
+        border: none !important;
+      }
     }
     &--import-all {
       border-radius: 18px;

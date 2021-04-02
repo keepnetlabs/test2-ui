@@ -39,13 +39,14 @@ export const COMMON_CONSTANTS = {
     (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
   ],
   OPERATION_ITEMS: [
-    'Create',
-    'Update',
-    'Delete',
-    { text: 'CreateMany', value: 'CreateMany' },
-    { text: 'UpdateMany', value: 'UpdateMany' },
-    { text: 'DeleteMany', value: 'DeleteMany' }
-  ]
+    { text: 'Create', value: 0 },
+    { text: 'Update', value: 1 },
+    { text: 'Delete', value: 2 },
+    { text: 'CreateMany', value: 3 },
+    { text: 'UpdateMany', value: 4 },
+    { text: 'DeleteMany', value: 5 }
+  ],
+  FILTER_OPTIONS: ['Set as default filter', 'Restore default filter', 'Clear filters']
 }
 
 export const LABEL_STORE = {
@@ -135,7 +136,10 @@ export const LABEL_STORE = {
   NEWVALUE: 'New Value',
   IP: 'IP',
   USERAGENT: 'Browser User Agent',
-  CHANGESET: 'Changed Set'
+  CHANGESET: 'Changed Set',
+  INVESTIGATIONNAME: 'Investigation Name',
+  TRIGGER: 'Trigger',
+  FILEUPLOADED: 'File Uploaded'
 }
 
 export const PROPERTY_STORE = {
@@ -145,6 +149,8 @@ export const PROPERTY_STORE = {
   DIRECTORYID: 'directoryId',
   APPLICATIONID: 'applicationId',
   APPLICATIONSECRET: 'applicationSecret',
+  ANALYSISENGINETYPE: 'analysisEngineType',
+  ANALYSISENGINENAME: 'analysisEngineName',
   NAME: 'name',
   PRIORITY: 'priority',
   USERNAME: 'userName',
@@ -222,7 +228,8 @@ export const PROPERTY_STORE = {
   NEWVALUE: 'newValue',
   IP: 'ip',
   USERAGENT: 'userAgent',
-  USERID: 'userId'
+  USERID: 'userId',
+  FILEUPLOADED: 'fileUploaded'
 }
 
 export function getStoreValue(key, type) {
@@ -320,4 +327,40 @@ export const COMMON_SNACKBAR = {
   show: true,
   color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
   icon: 'mdi-check-circle'
+}
+
+export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  PHISHING_REPORTER: 'PhishingReporter',
+  SMTP_SETTINGS: 'SmtpSettings',
+  NOTIFICATION_TEMPLATE: 'NotificationTemplate',
+  REST_API: 'RestApi',
+  REPORTED_EMAIL: 'ReportedEmail',
+  REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
+  INVESTIGATIONS: 'Investigations',
+  TARGETUSERS: 'TargetUsers',
+  TARGETUSERSGROUP: 'TargetUsersGroup',
+  TARGETGROUPUSERSTABLE: 'TargetGroupUsersTable',
+  SYSTEMUSERSPEOPLE: 'SystemUsersPeople',
+  AUDIT: 'Audit',
+  INTEGRATIONS: 'Integrations',
+  PLAYBOOKRULES: 'PlaybookRules',
+  MAILCONFIG: 'MailConfig',
+  COMPANY_LIST: 'CompanyList',
+  COMPANY_GROUP_LIST: 'CompanyGroupList',
+  COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
+  INVESTIGATIONSFOLDER: 'InvestigationsFolder',
+  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
+}
+
+export const INTEGRATION_TYPES = {
+  VMRAY: 'Vmray',
+  FORTINET: 'FortiNet',
+  VIRUSTOTAL: 'VirusTotal',
+  IBMXFORCE: 'IBM X-Force'
+}
+export const INTEGRATION_LABELS = {
+  VMRAY: 'VMRay',
+  FORTINET: 'FortiSandbox',
+  VIRUSTOTAL: 'VirusTotal',
+  IBMXFORCE: 'IBM X-Force'
 }

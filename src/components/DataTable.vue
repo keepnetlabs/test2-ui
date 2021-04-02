@@ -89,6 +89,13 @@
               ref="searchInput"
               @keyup="searchChangedEvent"
             />
+            <data-table-filter-options
+              v-if="showFilterOptions"
+              :is-active="isFiltered"
+              @set-default-search="$emit('set-default-search', search, filterValues)"
+              @restore-default-search="$emit('restore-default-search')"
+              @clear-filters="$emit('clear-filters')"
+            />
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
@@ -183,17 +190,15 @@
                   <v-btn
                     v-if="addButton && addButton.show && addButton.action"
                     v-on="on"
-                    :class="[
-                      'button-new mr-1',
-                      addButton && addButton.disabled && 'btn-add--disabled'
-                    ]"
+                    :id="addButton.id"
+                    :class="['button-new', addButton && addButton.disabled && 'btn-add--disabled']"
                     rounded
                     color="#2196f3"
-                    style="order: 3;"
+                    style="order: 3; margin-right: 10px;"
                     :disabled="addButton && addButton['disabled']"
                     @click="addButtonFunction(addButton.action)"
                   >
-                    <v-icon>mdi-plus</v-icon>
+                    <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
                     <span class="button-new__text">NEW</span>
                   </v-btn>
                 </template>
@@ -261,6 +266,11 @@
             </v-tooltip>
           </div>
         </div>
+        <data-table-load-all-records
+          v-if="isShowAllRecords"
+          :total-number-of-records="totalNumberOfRecords"
+          @on-all-records-button-click="$emit('on-all-records-button-click')"
+        />
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
           <v-checkbox
@@ -379,7 +389,6 @@
           <el-table
             v-row-color-handler
             v-if="!allHidden"
-            :key="tableKey"
             :border="border"
             :cell-class-name="setCellClass"
             :data="showfilteredData ? filteredData : tableData"
@@ -527,13 +536,15 @@
 
                 <data-table-filter
                   v-if="col.filterableType"
-                  v-model="filterValues[col.property]"
+                  v-model="filterValues[col.filterableCustomFieldName || col.property]"
                   :column="column"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
+                  :sortable="!col.hideSort"
+                  :is-settings-opened.sync="isSettingsOpened"
                   @handleFilterColumn="handleFilterColumn"
                   @handleClearColumnFilter="handleClearColumnFilter"
                 />
@@ -555,11 +566,12 @@
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
                         <v-btn
-                          @click="handleEdit(scope.row, scope.$index)"
+                          v-on="on"
                           class="btn-hover"
                           icon
-                          v-on="on"
                           :disabled="rowActions[0].disabled"
+                          :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                          @click="handleEdit(scope.row, scope.$index)"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -571,11 +583,12 @@
                     <v-tooltip bottom>
                       <template v-slot:activator="{ on }">
                         <v-btn
-                          @click="rowAct(rowActions[0].action, scope.row, scope)"
+                          v-on="on"
                           class="btn-hover"
                           icon
-                          v-on="on"
                           :disabled="rowActions[0].disabled"
+                          :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                          @click="rowAct(rowActions[0].action, scope.row, scope)"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
                         </v-btn>
@@ -605,10 +618,11 @@
                     </template>
                     <v-list class="v-cart-dropdown-list el-table__action-buttons">
                       <v-list-item
-                        :key="ind"
-                        class="sub-menu-el"
-                        v-for="(act, ind) of rowActions"
                         v-if="!act.subElements && !act.isNotShow"
+                        v-for="(act, ind) of rowActions"
+                        :key="ind"
+                        :id="`${rowActions[ind].id}-${Math.random().toString().substring(2)}`"
+                        class="sub-menu-el"
                       >
                         <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
                           <v-icon class="pr-3">{{ act.icon }}</v-icon>
@@ -657,10 +671,11 @@
                 <v-tooltip bottom right>
                   <template v-slot:activator="{ on }">
                     <v-btn
+                      v-on="on"
                       @click.native="rowAct(rowActions[0].action, scope.row, scope)"
+                      :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
                       class="btn-hover"
                       icon
-                      v-on="on"
                       :disabled="rowActions[0].disabled"
                     >
                       <v-icon :class="rowActions[0].className">{{ rowActions[0].icon }}</v-icon>
@@ -689,6 +704,7 @@
                             ? handleEdit(scope.row, scope.$index)
                             : rowAct(rowActions[0].action, scope.row)
                         "
+                        :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
                         :disabled="rowActions[0]['disabled']"
                         class="btn-hover mr-1"
                         icon
@@ -710,6 +726,7 @@
                           scope.row.status === 'NoMatch' ||
                           rowActions[1]['disabled']
                         "
+                        :id="`${rowActions[1].id}-${Math.random().toString().substring(2)}`"
                         @click.native="rowAct(rowActions[1].action, scope.row)"
                         class="btn-hover"
                         icon
@@ -751,6 +768,7 @@
               <p>{{ empty.subMes }}</p>
               <v-btn
                 :disabled="empty['disabled']"
+                :id="empty['id']"
                 @click="onEmptyBtnClicked"
                 class="empty-btn"
                 :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
@@ -764,7 +782,14 @@
           </div>
         </div>
       </div>
-      <div class="pagination block" v-if="pageSizes.length && tableData.length > 0 && isServerSide">
+      <div
+        class="pagination block"
+        v-if="
+          pageSizes.length &&
+          (tableData.length > 0 || isColumnFilterActive || search) &&
+          isServerSide
+        "
+      >
         <el-pagination
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
@@ -780,7 +805,9 @@
               {{
                 serverSideProps.pageNumber === 1
                   ? 1
-                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+                  : (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1 > 0
+                  ? (serverSideProps.pageNumber - 1) * serverSideProps.pageSize + 1
+                  : 0
               }}-{{
                 serverSideProps.pageNumber * serverSideProps.pageSize >
                 serverSideProps.totalNumberOfRecords
@@ -890,8 +917,12 @@ import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
+import DataTableLoadAllRecords from '@/components/DataTableComponents/DataTableLoadAllRecords'
 export default {
   components: {
+    DataTableLoadAllRecords,
+    DataTableFilterOptions,
     DataTableFilter,
     DataTableColorfulText,
     Badge,
@@ -916,13 +947,26 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    showFilterOptions: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     columns: {
       type: Array,
       required: true
     },
+    showAllRecords: {
+      type: Boolean,
+      default: false
+    },
     lazy: {
       type: Boolean,
       default: false
+    },
+    totalNumberOfRecords: {
+      type: Number,
+      default: 0
     },
     hideParentRowActions: {
       type: Boolean,
@@ -1164,6 +1208,14 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isFiltered() {
+      console.log('keys', Object.keys(this.filterValues))
+      console.log('this.filterValues is filtered is ', Object.keys(this.filterValues).length > 0)
+      return Object.keys(this.filterValues).length > 0
+    },
+    isShowAllRecords() {
+      return !this.isServerSide && this.showAllRecords
+    },
     getSelectionText() {
       return this.isSelectedAll
         ? 'All selected'
@@ -1255,7 +1307,7 @@ export default {
         csv: false,
         pdf: false
       },
-      tableKey: `table-key${Math.random().toString().substring(0, 8)}`,
+      cachedClusterIds: [],
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
@@ -1267,7 +1319,7 @@ export default {
     }
   },
   watch: {
-    table(table) {
+    table(table, oldTable) {
       this.columnStandardisation(this.columns)
       this.initialData = [...table]
       //This is for refresh button when clicked caching refresh
@@ -1278,23 +1330,6 @@ export default {
         }
       } else {
         //If there is clustered items selected table has reselect bug. It solves it
-        if (this.groupable && this.clusteredItems.length) {
-          if (this.$refs && this.$refs.elTableRef) {
-            const deletedIds = []
-            for (const child of this.clusteredItems) {
-              this.$refs.elTableRef.toggleRowSelection(child, false)
-              deletedIds.push(child[this.rowKey])
-            }
-
-            const allItems = this.getAllItems(this.initialData, [], false, false)
-            for (const id of deletedIds) {
-              this.clusteredItems = this.clusteredItems.filter((item) => item[this.rowKey] !== id)
-              const findedNewClusterItem = allItems.find((i) => i[this.rowKey] === id)
-              this.clusteredItems.push(findedNewClusterItem)
-              this.$refs.elTableRef.toggleRowSelection(findedNewClusterItem, true)
-            }
-          }
-        }
       }
       this.cacheChecks = false
 
@@ -1325,6 +1360,7 @@ export default {
             this.currentPage * pageSize
           )
         }
+
         setTimeout(() => {
           this.renderFixedItems()
         }, 500)
@@ -1332,6 +1368,37 @@ export default {
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
         }
+      }
+
+      if (
+        this.isServerSide &&
+        !oldTable.length &&
+        this.multipleSelection.length &&
+        !this.clusteredItems.length
+      ) {
+        this.$nextTick(() => {
+          this.getSelectedObjectAndSelectRows()
+        })
+      }
+
+      if (this.groupable && this.clusteredItems.length && this.isServerSide) {
+        this.$nextTick(() => {
+          const selections = JSON.parse(JSON.stringify(this.multipleSelection))
+          this.multipleSelection = []
+          this.$refs.elTableRef.clearSelection()
+          const allItems = this.getAllItems(this.tableData, [], false, false)
+          selections.forEach((selectedItem, index) => {
+            const thisTableItem = allItems.find((item) => {
+              return item[this.rowKey] === selectedItem[this.rowKey]
+            })
+
+            if (thisTableItem) {
+              this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+            } else {
+              this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+            }
+          })
+        })
       }
 
       if (this.groupable && this.lazy && this.selectedCluster) {
@@ -1462,6 +1529,25 @@ export default {
         selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate
       }
     },
+    //This is a element ui bug it doesnt cache it added to making caching
+    getSelectedObjectAndSelectRows(
+      selections = JSON.parse(JSON.stringify(this.multipleSelection))
+    ) {
+      this.$nextTick(() => {
+        this.multipleSelection = []
+        this.$refs.elTableRef.clearSelection()
+        selections.forEach((selectedItem) => {
+          const thisTableItem = this.tableData.find((item) => {
+            return JSON.stringify(item) === JSON.stringify(selectedItem)
+          })
+          if (thisTableItem) {
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+          } else {
+            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+          }
+        })
+      })
+    },
     setPersistentStateToDataValues() {
       const {
         renderedColumns = [],
@@ -1536,7 +1622,8 @@ export default {
           (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
         )
       })
-      if (this.isSelectedAll && this.multipleSelection.length === this.totalLength) {
+      const comparedSelectionObj = this.isServerSide ? selectedItems : this.multipleSelection
+      if (this.isSelectedAll && comparedSelectionObj.length === this.totalLength) {
         this.selectionCheckbox = true
         this.selectionRowCheckboxDeterminate = false
       } else if (selectedItems.length) {
@@ -1971,11 +2058,16 @@ export default {
         })
       } else {
         const collator = new Intl.Collator('tr')
-
         sortData = data.sort(function (a, b) {
           if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
-            const aProp = String(a[sortProps.prop])
-            const bProp = String(b[sortProps.prop])
+            let aProp = String(a[sortProps.prop])
+            let bProp = String(b[sortProps.prop])
+            if (aProp === 'null') {
+              aProp = ''
+            }
+            if (bProp === 'null') {
+              bProp = ''
+            }
             if (aProp === bProp) {
               return 0
             }
@@ -2079,12 +2171,13 @@ export default {
               this.renderedColumns.find((property) => property === filterItem.property) &&
               !filterItem.isCustomField
             ) {
-              acc.push({
+              const obj = {
                 FieldName:
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
                 Operator: 'Contains',
                 Value: this.search
-              })
+              }
+              acc.push(obj)
             }
             return acc
           }, [])
@@ -2325,6 +2418,7 @@ export default {
           this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
         this.tableData = temp.length === 0 ? [{}] : temp
       }
+      this.$emit('onSizeChanged')
       this.calculateAllSelected()
     },
     handleServerSideCurrentChange(pageNumber = 1) {
@@ -2339,6 +2433,8 @@ export default {
         (pageNum - 1) * this.rowCount,
         pageNum * this.rowCount
       )
+
+      this.$emit('onPageChanged')
       this.calculateAllSelected()
     },
 
@@ -2413,7 +2509,12 @@ export default {
 
           if (selectedItems.length) {
             for (let selectedItem of selectedItems) {
-              this.$refs.elTableRef.toggleRowSelection(selectedItem)
+              const thisTableItem = this.isServerSide
+                ? this.tableData.find((item) => {
+                    return JSON.stringify(item) === JSON.stringify(selectedItem)
+                  })
+                : selectedItem
+              this.$refs.elTableRef.toggleRowSelection(thisTableItem)
             }
           } else {
             this.$refs.elTableRef.clearSelection()
@@ -2586,6 +2687,7 @@ export default {
       this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {
+      this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
     }
   }

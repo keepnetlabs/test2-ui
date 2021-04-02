@@ -28,7 +28,7 @@
         icon="mdi-cog"
         :title="'ROI Summary Settings'"
         @changeStatus="isShowRoi = false"
-        subtitle="To calculate saving in time and money for autom ating the email analysis"
+        subtitle="To calculate saving in time and money for automating the email analysis"
         class-name="roi-modal"
       >
         <template v-slot:app-dialog-body>
@@ -70,6 +70,8 @@
         <template v-slot:app-dialog-footer>
           <div class="download-modal__footer justify-end">
             <app-dialog-footer
+              cancel-button-id="btn-cancel--incident-responder-roi-popup"
+              confirm-button-id="btn-save--incident-responder-roi-popup"
               :actionButtonText="labels.Save"
               :confirmButtonDisabled="isConfirmButtonDisabled"
               @handleClose="isShowRoi = false"
@@ -330,6 +332,7 @@
               </div>
               <div class="action">
                 <v-btn
+                  id="btn-link--incident-responder-playbook"
                   class="btn-action btn-playbook"
                   block
                   rounded
@@ -376,7 +379,7 @@
                     v-if="showMatchingModal"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
                     @changeStatus="showMatchingModal = false"
-                    size="maximum"
+                    size="ultraMaximum"
                     class-name="matching-modal"
                     maxHeightSize="665"
                   >
@@ -385,13 +388,15 @@
                         <v-list-item class="matching-modal__list-item">
                           <v-list-item-content>
                             <datatable
-                              :refName="'matchingInvestigation'"
+                              id="incident-responder-matching-investigations-data-table"
                               ref="refMatchingInvestigation"
+                              :refName="'matchingInvestigation'"
                               :count-row="5"
+                              :show-all-records="showAllRecordsMatchingPopup"
                               :table="matchingInvestigationData"
+                              :total-number-of-records="totalNumberOfRecordsMatchingPopup"
                               :loading="isMatchingInvestigationLoading"
                               :columns="matchingInvestigation.columns"
-                              id="incident-responder-matching-investigations-data-table"
                               :pageSizes="[5, 10, 25]"
                               :showHeader="true"
                               :defaultSort="'subject'"
@@ -402,6 +407,7 @@
                               :cell-padding="15"
                               :empty="matchingInvestigation.iEmpty"
                               @refreshAction="matchingPopupClick(selectedMatch)"
+                              @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
                             />
                           </v-list-item-content>
                         </v-list-item>
@@ -443,6 +449,7 @@
               </div>
               <div class="action">
                 <v-btn
+                  id="btn-link--incident-responder-investigation"
                   class="btn-action btn-investigations"
                   style="padding: 0 13px !important;"
                   block
@@ -538,6 +545,9 @@
             @server-side-size-changed="serverSideClusteredSizeChanged"
             @searchChangedEvent="handleClusteredSearchChange"
             @sortChangedEvent="sortClusteredChanged"
+            @set-default-search="handleSetDefaultSearchReportedEmailClustered"
+            @restore-default-search="handleRestoreDefaultSearchReportedEmailClustered"
+            @clear-filters="handleClearFiltersReportedEmailClustered"
           >
             <template #table-search-left-side>
               <v-btn text color="#2196f3" class="clustered-table-back-btn" @click="handleBackClick">
@@ -589,7 +599,6 @@
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
-                  :disabled="selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
@@ -622,22 +631,21 @@
           <datatable
             v-show="!isShowingClusteredTable"
             v-bind="dynamicReportedEmailProps"
+            is-server-side
+            ref="refReportedEmails"
+            id="incident-responder-reported-emails-data-table"
+            active-cluster=""
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
-            is-server-side
             :is-column-filter-active="emails.isColumnFilterActive"
             :extendedViewDisableChanger="extendedViewDisableChanger"
             :table="reportedEmailsData"
             :refName="'reportedEmails'"
-            ref="refReportedEmails"
-            id="incident-responder-reported-emails-data-table"
             :columns="emails.columns"
             :extended-view-loading="extendedViewLoading"
             :clusterItems="[{ name: 'Subject' }, { name: 'Reported By' }]"
-            active-cluster=""
             :changeFooterPosition="true"
             :is-custom-overflowed-column="isCustomOverflowedColumn"
-            @handleClusterLazyLoad="handleClusterLoad"
             :extended-view-options="emails.extendedViewOptions"
             :extendedViewValue="extendedViewValue"
             :pageSizes="emails.pageSizes"
@@ -667,6 +675,9 @@
             @server-side-size-changed="serverSideSizeChanged"
             @searchChangedEvent="handleSearchChange"
             @sortChangedEvent="sortChanged"
+            @set-default-search="handleSetDefaultSearchReportedEmail"
+            @restore-default-search="handleRestoreDefaultSearchReportedEmail"
+            @clear-filters="handleClearFiltersReportedEmail"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template
@@ -724,7 +735,6 @@
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
-                  :disabled="selectedRowsOfReportedEmailsLength > 1"
                 ></v-checkbox>
               </div>
               <div class="row-edit-div">
@@ -798,7 +808,12 @@ import Datatable from '../components/DataTable'
 import NewInvestigation from '../components/Investigation/NewInvestigation'
 import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { required, startsWith, maxLength } from '../utils/validations'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
@@ -832,6 +847,13 @@ export default {
   data: () => ({
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
+    matchingPopupPayload: {
+      pageNumber: 1,
+      pageSize: 1000,
+      orderBy: 'createDate',
+      ascending: true
+    },
+    totalNumberOfRecordsMatchingPopup: 0,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
     labels,
@@ -868,6 +890,7 @@ export default {
       startsWith,
       maxLength
     },
+    showAllRecordsMatchingPopup: false,
     extendedViewValue: [],
     topRules: {
       table: [],
@@ -911,7 +934,8 @@ export default {
       iEmpty: {
         message: labels.NoRulesConfigured,
         btn: labels.CreateNewRule,
-        icon: 'mdi-plus'
+        icon: 'mdi-plus',
+        id: 'btn-empty--incident-responder-rules'
       },
       addUsers: {
         show: false,
@@ -973,7 +997,8 @@ export default {
       iEmpty: {
         message: labels.NoInvestigation,
         btn: labels.StartNewInvestigation,
-        icon: 'mdi-plus'
+        icon: 'mdi-plus',
+        id: 'btn-empty--incident-responder-investigation'
       },
       selectEvent: {},
       chartOptions: {}
@@ -1214,6 +1239,7 @@ export default {
           sortable: false,
           show: true,
           type: 'analysisSource',
+          filterableType: 'text',
           width: '200',
           fullWidth: true
         },
@@ -1243,7 +1269,7 @@ export default {
           },
           props: {
             style: {
-              maxWidth: '110px'
+              maxWidth: '100px'
             }
           },
           width: '150'
@@ -1360,22 +1386,26 @@ export default {
       rowActions: [
         {
           name: labels.Edit,
+          id: 'btn-edit--incident-responder-emails-row-actions',
           icon: 'mdi-pencil',
           action: 'edit',
           isNotShow: true
         },
         {
           name: labels.PreviewEmail,
+          id: 'btn-preview-email--incident-responder-emails-row-actions',
           icon: 'mdi-eye',
           action: 'irPreview'
         },
         {
           name: labels.Details,
+          id: 'btn-details--incident-responder-emails-row-actions',
           icon: 'mdi-text-box-multiple',
           action: 'handleDetails'
         },
         {
           name: labels.Investigate,
+          id: 'btn-investigate--incident-responder-emails-row-actions',
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
         }
@@ -1388,7 +1418,8 @@ export default {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right'
+        icon: 'mdi-arrow-right',
+        id: 'btn-empty--incident-responder-phishing-reporter'
       },
       selectEvent: {
         clipboard: true,
@@ -1431,6 +1462,28 @@ export default {
     },
     hasMultipleNoteValue: false,
     requestBodyReportedEmails: {
+      clusteredBy: '',
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBodyReportedEmails: {
       clusteredBy: '',
       pageNumber: 1,
       pageSize: 10,
@@ -1524,6 +1577,7 @@ export default {
           fixed: false,
           sortable: false,
           show: true,
+          filterableType: 'text',
           type: 'analysisSource',
           width: '200',
           fullWidth: true
@@ -1599,7 +1653,8 @@ export default {
         message: labels.EmptyReportedEmailText,
         subMes: labels.EmptyReportedEmailSubText,
         btn: labels.PhishingReporterSettings,
-        icon: 'mdi-arrow-right'
+        icon: 'mdi-arrow-right',
+        id: 'btn-empty--incident-responder-cluster-phishing-reporter'
       },
       isColumnFilterActive: false,
       extendedViewOptions: {
@@ -1733,21 +1788,25 @@ export default {
         {
           name: labels.Edit,
           icon: 'mdi-pencil',
+          id: 'btn-edit--incident-responder-clustered-emails-row-actions',
           action: 'edit',
           isNotShow: true
         },
         {
           name: labels.PreviewEmail,
+          id: 'btn-preview-email--incident-responder-clustered-emails-row-actions',
           icon: 'mdi-eye',
           action: 'irPreview'
         },
         {
           name: labels.Details,
+          id: 'btn-details--incident-responder-clustered-emails-row-actions',
           icon: 'mdi-text-box-multiple',
           action: 'handleDetails'
         },
         {
           name: labels.Investigate,
+          id: 'btn-investigate--incident-responder-clustered-emails-row-actions',
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
         }
@@ -1755,6 +1814,28 @@ export default {
     },
     clusteredTableData: [],
     clusteredTableAxios: {
+      clusteredBy: '',
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    clusteredTableDefaultAxios: {
       clusteredBy: '',
       pageNumber: 1,
       pageSize: 10,
@@ -1869,6 +1950,44 @@ export default {
         this.initMethods()
       }
     },
+    getDefaultFilterAndSearchReportedEmail(callApi = true) {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL)
+      )
+      if (savedFilter) {
+        this.requestBodyReportedEmails.filter = savedFilter.filter
+        this.emails.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refReportedEmails.filterValues = savedFilter.filterValues
+          this.$refs.refReportedEmails.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      if (callApi) {
+        this.callForSearchNotifiedMail()
+      }
+    },
+    getDefaultFilterAndSearchReportedEmailClustered(callApi = true) {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED)
+      )
+      if (savedFilter) {
+        this.clusteredTableAxios.filter = savedFilter.filter
+        this.clusteredTable.isColumnFilterActive = true
+        this.$nextTick(() => {
+          if (callApi) {
+            this.$refs.refReportedEmailsClustered.filterValues = savedFilter.filterValues
+            this.$refs.refReportedEmailsClustered.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          }
+        })
+      }
+      if (callApi) {
+        this.callForClusteredTable()
+      }
+    },
     isPersistentState() {
       return (
         this.$store.state['datatable'].tables['Incident Responder'] &&
@@ -1905,7 +2024,6 @@ export default {
       this.isShowingClusteredTable = false
       this.clusteredRow = null
       this.clusteredTable.columns[0].fixed = 'left'
-
       this.resetClusteredTableParams()
     },
     resetClusteredTableParams() {
@@ -1982,10 +2100,15 @@ export default {
         }
       }
     },
+    handleAllRecordsMatchingPopupClick() {
+      this.matchingPopupPayload.pageSize = 75000
+      this.showAllRecordsMatchingPopup = false
+      this.matchingPopupClick(this.selectedMatch)
+    },
     clusterChanged(selectedCluster = '') {
       this.resetTableFilters()
       this.changeColumnsOrder(selectedCluster)
-
+      this.getDefaultFilterAndSearchReportedEmail(false)
       this.$nextTick(() => {
         this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
       })
@@ -2015,14 +2138,18 @@ export default {
     handleRecordButtonClick(row) {
       this.clusteredRow = row
       this.dynamicClusterProps = null
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = JSON.parse(
-        JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems)
-      )
-      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = JSON.parse(
-        JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems)
-      )
+      this.getDefaultFilterAndSearchReportedEmailClustered(false)
+      this.setClusteredTableFilters()
+
       const persistentStateContainer = this.$refs.refReportedEmails.getState()
-      const { filterValues = {}, search, sortProps } = persistentStateContainer
+      let { filterValues = {}, search, sortProps } = persistentStateContainer
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED)
+      )
+
+      if (savedFilter && savedFilter.filterValues) {
+        filterValues = { ...savedFilter.filterValues, ...filterValues }
+      }
       this.dynamicClusterProps = {
         persistentState: {
           currentPage: 1,
@@ -2049,6 +2176,21 @@ export default {
       }
       this.callForClusteredTable()
       this.toggleIsShowingClusteredTable()
+    },
+    setClusteredTableFilters() {
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = [
+        ...this.clusteredTableAxios.filter.FilterGroups[0].FilterItems,
+        ...JSON.parse(
+          JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems)
+        )
+      ]
+
+      this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [
+        ...this.clusteredTableAxios.filter.FilterGroups[1].FilterItems,
+        ...JSON.parse(
+          JSON.stringify(this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems)
+        )
+      ]
     },
     callForClusteredTable() {
       if (this.checkPermissions('notified-emails/search', 'POST')) {
@@ -2119,13 +2261,62 @@ export default {
         callback(data)
       })
     },
-
+    handleSetDefaultSearchReportedEmail(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL,
+        JSON.stringify({
+          filter: this.requestBodyReportedEmails.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearchReportedEmail() {
+      this.getDefaultFilterAndSearchReportedEmail()
+    },
+    handleClearFiltersReportedEmail() {
+      this.requestBodyReportedEmails = JSON.parse(
+        JSON.stringify(this.defaultRequestBodyReportedEmails)
+      )
+      if (this.selectedCluster) {
+        this.requestBodyReportedEmails.pageNumber = 1
+        this.requestBodyReportedEmails.clusteredBy = this.getClusteredField(this.selectedCluster)
+      }
+      this.$refs.refReportedEmails.filterValues = {}
+      this.$refs.refReportedEmails.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL)
+      this.callForSearchNotifiedMail()
+    },
+    handleSetDefaultSearchReportedEmailClustered(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED,
+        JSON.stringify({
+          filter: this.clusteredTableAxios.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearchReportedEmailClustered() {
+      this.getDefaultFilterAndSearchReportedEmailClustered()
+    },
+    handleClearFiltersReportedEmailClustered() {
+      this.clusteredTableAxios = JSON.parse(JSON.stringify(this.clusteredTableDefaultAxios))
+      this.$refs.refReportedEmailsClustered.filterValues = {}
+      this.$refs.refReportedEmailsClustered.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      this.setClusteredTableFilters()
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED)
+      this.callForClusteredTable()
+    },
     handleListBulletedClick() {
       this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 200
       this.requestBodyReportedEmails.clusteredBy = ''
       this.isCustomOverflowedColumn = false
       this.selectedCluster = ''
       this.resetTableFilters()
+      this.getDefaultFilterAndSearchReportedEmail(false)
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
@@ -2170,7 +2361,7 @@ export default {
       this.callForGetRunningInvestigations()
       this.callForGetTopRules()
       if (!isLoadState) {
-        this.callForSearchNotifiedMail()
+        this.getDefaultFilterAndSearchReportedEmail()
       }
       this.callForGetRoiSettings()
     },
@@ -2356,12 +2547,12 @@ export default {
         getRunningInvestigations()
           .then((response) => {
             const {
-              data: { data, status }
+              data: { data }
             } = response
             this.investigationListData = data
             this.investigationsData = data || []
           })
-          .catch((error) => {
+          .catch(() => {
             this.investigationsData = []
           })
           .finally(() => {
@@ -2380,7 +2571,7 @@ export default {
 
             this.topRules.table = data || []
           })
-          .catch((error) => {
+          .catch(() => {
             this.topRules.table = []
           })
           .finally(() => (this.topRulesLoading = false))
@@ -2404,39 +2595,38 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const tableData = results
             this.reportedEmailsData = tableData || []
+            if (this.selectedCluster) {
+              this.$nextTick(() => {
+                this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
+              })
+            }
           })
-          .catch(() => {
-            this.reportedEmailsData = []
+          .finally(() => {
+            this.reportedEmailsLoading = false
           })
-          .finally(() => (this.reportedEmailsLoading = false))
       }
-    },
-    getManipulatedTableData(data, isChild = false) {
-      if (this.requestBodyReportedEmails.isClustered) {
-        return data.map((item) => {
-          return {
-            ...item,
-            hasChildren: true
-          }
-        })
-      }
-
-      return data
     },
     matchingPopupClick(match) {
       this.selectedMatch = match
       this.showMatchingModal = true
       this.isMatchingInvestigationLoading = true
-      const payload = {
-        pageNumber: 1,
-        pageSize: 50000,
-        orderBy: 'createDate',
-        ascending: true
-      }
-      getMatchingIncidents(payload, match.resourceId)
+      getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
         .then((response) => {
-          const tableData = response.data.data
-          this.matchingInvestigationData = tableData.results
+          const {
+            data: { data }
+          } = response
+
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+
+          if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecordsMatchingPopup = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
+            this.showAllRecordsMatchingPopup = false
+          }
+
+          this.matchingInvestigationData = data.results
         })
         .finally(() => (this.isMatchingInvestigationLoading = false))
     },
@@ -2452,7 +2642,7 @@ export default {
     onEmptyReportedEmailsBtnClicked() {
       this.$router.push({
         name: 'Phishing Reporter',
-        params: { tab: 'second' }
+        params: { tab: 'phishing-reporter-settings' }
       })
     },
     irPreviewOnClick(row) {
@@ -2536,9 +2726,6 @@ export default {
     emptyPhishingButtonClick() {
       this.$router.push('/phishing-reporter')
     },
-    emptyNotifiedEmailButtonClick() {
-      //this.$router.push('/phishing-reporter')
-    },
     emptyInvestigationButtonClick() {
       this.$router.push('/investigations')
     },
@@ -2556,15 +2743,15 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter
         }
-        exportNotifiedEmails(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Reported Emails.${exportType.toLocaleLowerCase()}`
-            link.click()
-          })
-          .catch((error) => {})
+        exportNotifiedEmails(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Reported Emails.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     exportClusteredReportedListEmails({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -2586,7 +2773,7 @@ export default {
             link.href = window.URL.createObjectURL(data)
             link.download = `Reported Emails ${
               this.clusteredRow[this.getClusteredField(this.selectedCluster)]
-            }.${exportType.toLocaleLowerCase()}`
+            }.${exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()}`
             link.click()
           })
           .finally(() => {

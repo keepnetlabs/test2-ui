@@ -4,7 +4,13 @@
       {{ selectedRow.companyName }} will be permanently deleted.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="confirmDelete" />
+      <app-dialog-footer
+        cancel-button-id="btn-cancel--company-popup"
+        confirm-button-id="btn-delete--company-popup"
+        type="delete"
+        @handleClose="closeModal"
+        @handleConfirm="confirmDelete"
+      />
     </template>
   </app-dialog>
 </template>

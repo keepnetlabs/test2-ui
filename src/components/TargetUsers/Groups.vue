@@ -1,5 +1,13 @@
 <template>
   <div class="target-users-groups">
+    <TargetGroupUsersAddUsersModal
+      v-if="showAddUsersModal"
+      :status="showAddUsersModal"
+      :group-name="getGroupName"
+      :resource-id="getResourceId"
+      @closeOverlay="toggleAddUserModal"
+      @closeOverlayWithUpdate="closeAddOverlayWithUpdate"
+    />
     <create-new-user-group-modal
       v-if="showNewUserGroupModal"
       :status="showNewUserGroupModal"
@@ -25,9 +33,11 @@
       :table="tableData"
       titleKey="name"
       :columns="tableOptions.columns"
+      :show-all-records="showAllRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
+      :total-number-of-records="totalNumberOfRecords"
       :pageSizes="tableOptions.pageSizes"
       :rowActions="tableOptions.rowActions"
       :extended-view-options="tableOptions.extendedViewOptions"
@@ -43,22 +53,29 @@
       @onEditClick="onEditClick"
       @delete="handleDelete"
       @onEmptyBtnClicked="showNewUserGroupModal = true"
+      @add-group="handleAddGroup"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForTargetGroups"
+      @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
           <template v-slot:activator="{ on: tooltip }">
             <v-btn
-              class="btn-new mr-1"
+              class="btn-new"
+              id="btn-add--target-users-group"
               rounded
               color="#2196f3"
+              style="margin-right: 10px;"
               v-on="{ ...tooltip }"
               @click.native="showNewUserGroupModal = true"
               :disabled="!checkPermissions('target-groups', 'POST')"
             >
-              <v-icon color="white">mdi-plus</v-icon>
+              <v-icon color="white" style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
               <span class="button-new__text">NEW</span>
             </v-btn>
           </template>
@@ -85,8 +102,10 @@ import {
 } from '@/api/targetUsers'
 import CreateNewUserGroupModal from './CreateNewUserGroupModal'
 import DeleteGroupModal from './DeleteGroupModal'
+import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -99,6 +118,7 @@ export default {
   components: {
     DeleteGroupModal,
     CreateNewUserGroupModal,
+    TargetGroupUsersAddUsersModal,
     datatable: DataTable
   },
   props: {
@@ -108,9 +128,13 @@ export default {
   },
   data() {
     return {
+      showAddUsersModal: false,
       isCreateButtonDisabled: false,
       loading: false,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
+      selectedGroup: {},
       extendedViewLoading: true,
       tableOptions: {
         isColumnFilterActive: false,
@@ -182,20 +206,29 @@ export default {
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
           btn: 'ADD A GROUP',
+          id: 'btn-empty--target-users-group',
           icon: 'mdi-plus'
         },
         rowActions: [
           {
             name: 'Edit this row',
             icon: 'mdi-pencil',
+            id: 'btn-edit--target-users-group-row-actions',
             action: 'edit',
             isNotShow: true,
             disabled: !checkPermission('target-groups/{resourceId}', 'PUT')
           },
           {
+            name: 'Add users to group',
+            id: 'btn-add-users-to-group--target-users-group-row-actions',
+            icon: 'mdi-account-multiple-plus',
+            action: 'add-group'
+          },
+          {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',
+            id: 'btn-delete--target-users-people-row-actions',
             disabled: !checkPermission('target-groups/{resourceId}', 'DELETE')
           }
         ],
@@ -258,7 +291,23 @@ export default {
       extendedViewValue: [],
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 50000,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -275,11 +324,72 @@ export default {
       tableState: null
     }
   },
+  computed: {
+    getGroupName() {
+      return this.selectedGroup.name
+    },
+    getResourceId() {
+      return this.selectedGroup.resourceId
+    }
+  },
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP)
+      )
+      if (savedFilter) {
+        this.tableCredientials.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refGroupsTable.filterValues = savedFilter.filterValues
+          this.$refs.refGroupsTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForTargetGroups()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refGroupsTable.filterValues = {}
+      this.$refs.refGroupsTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP)
+      this.callForTargetGroups()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSGROUP,
+        JSON.stringify({
+          filter: this.tableCredientials.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
+    handleAllRecordsClick() {
+      this.tableCredientials.pageSize = 75000
+      this.showAllRecords = false
+      this.callForTargetGroups()
+    },
     handleSyncWithLDAP(row) {},
+    handleAddGroup(row = {}) {
+      this.selectedGroup = row
+      this.toggleAddUserModal()
+    },
+    toggleAddUserModal() {
+      this.showAddUsersModal = !this.showAddUsersModal
+    },
+    closeAddOverlayWithUpdate() {
+      this.toggleAddUserModal()
+      this.callForTargetGroups()
+    },
     handleGroupNameClick(row) {
       this.$router.push({
         name: 'Target Group Users',
@@ -317,7 +427,18 @@ export default {
       this.loading = true
       searchTargetGroups(this.tableCredientials)
         .then((response) => {
-          let data = response.data.data
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.tableCredientials.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+
           this.tableData = data.results.length ? data.results : []
         })
         .catch(() => {
@@ -349,7 +470,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Target Groups.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Groups.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -454,7 +577,7 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.callForTargetGroups()
+      this.getDefaultFilterAndSearch()
     }
   },
   beforeDestroy() {

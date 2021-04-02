@@ -37,3 +37,7 @@ export function deleteRestApi(resourceId = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function exportRestApi(payload = {}) {
+  return testRequest.post(`${API_URL}/search/export`, payload, { responseType: 'blob' })
+}

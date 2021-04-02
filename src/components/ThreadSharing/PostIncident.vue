@@ -7,6 +7,7 @@
       title="Edit Post Email"
       z-index="999999"
       :show-header="false"
+      id="threat-sharing-post-incident-create-edit-modal"
     >
       <template v-slot:overlay-body>
         <GrapesNewsletterModal
@@ -17,7 +18,12 @@
         ></GrapesNewsletterModal>
       </template>
       <template v-slot:overlay-footer>
-        <v-btn class="new-integration__footer-btn-cancel" rounded @click="closeGrapesJs()">
+        <v-btn
+          class="new-integration__footer-btn-cancel"
+          id="threat-sharing-grapesjs-modal-close-button"
+          rounded
+          @click="closeGrapesJs()"
+        >
           {{ labels.Cancel }}
         </v-btn>
         <div class="new-integration__footer__right-col">
@@ -25,6 +31,7 @@
             class="new-integration__footer-btn-save white--text"
             color="#2196f3"
             rounded
+            id="threat-sharing-grapesjs-modal-save-button"
             @click="saveGrapesJs()"
           >
             {{ labels.Save }}
@@ -146,7 +153,7 @@
               <input style="display: none;" type="text" name="fakeusernameremembered" />
               <k-select
                 type="autocomplete"
-                id="select-incident-autocomplete"
+                id="threat-sharing-select-incident-autocomplete"
                 v-model.trim="selectedEmail"
                 :search-input.sync="searchIncident"
                 :items="listData"
@@ -155,13 +162,18 @@
                 hide-selected
                 no-filter
                 label="Search for incident name or status"
-                class="first-select input-select mb-6"
+                class="first-select input-select mb-6 no-action-on-click"
                 solo
                 :rules="autocomplete"
                 required
+                :loading="isFindIncidentLoading"
+                :hide-no-data="isFindIncidentLoading"
                 @change="getSelectedEmailPreview"
+                @focus="handleLoadingState"
                 @input="handleTagItemChange"
-                :slots="{ selection: true, item: true }"
+                @click:append="handleTagItemChange"
+                @click:append-outer="handleTagItemChange"
+                :slots="{ selection: true, item: true, progress: true }"
                 autocomplete="off"
               >
                 <template v-slot:selection="{ attrs, item }">
@@ -204,6 +216,9 @@
                     </div>
                   </div>
                 </template>
+                <template v-slot:progress>
+                  <k-select-loading v-show="showLoader" />
+                </template>
               </k-select>
               <div class="input-header mb-6">- or -</div>
               <div class="input-header">Upload Email</div>
@@ -216,6 +231,7 @@
                   @inputFile="uploadFile"
                   @clear="clearUpload"
                   :on-upload-progress="onUploadProgress"
+                  id="threat-sharing-upload-post-incident"
                 />
                 <!-- <div
                   class="v-input up-btn v-input--dense theme--light v-text-field v-text-field--is-booted v-text-field--placeholder"
@@ -269,7 +285,7 @@
               >
                 <div class="mail-preview">
                   <v-icon
-                    id="post-first-preview-close"
+                    id="threat-sharing-post-first-preview-close"
                     v-if="!editItem"
                     class="close-incident"
                     @click="closePreview()"
@@ -337,6 +353,8 @@
                     titleRule.empty,
                     titleRule.minLength
                   ]"
+                  hint="*Required"
+                  persistent-hint
                 ></v-text-field>
               </v-form>
               <!--<span class="required">*Required</span>-->
@@ -357,6 +375,8 @@
                   validate-on-blur
                   :rules="[descRule.required, descRule.empty, descRule.default, descRule.minLength]"
                   v-model.trim="uploadRespond.Description"
+                  hint="*Required"
+                  persistent-hint
                 ></v-textarea>
               </v-form>
 
@@ -385,6 +405,8 @@
                       uploadRespond.CategoryResourceIdArray &&
                       uploadRespond.CategoryResourceIdArray.length < 1
                   }"
+                  hint="*Required"
+                  persistent-hint
                 >
                   <template v-slot:append-item></template>
                 </k-select>
@@ -413,6 +435,8 @@
                   class="tlp-select"
                   position="top"
                   :slots="{ selection: true, item: true }"
+                  hint="*Required"
+                  persistent-hint
                 >
                   <template v-slot:selection="{ attrs, item, select }">
                     <v-chip @click="select" :class="item.cssClass">
@@ -465,14 +489,17 @@
                   class="comment-input"
                   rows="5"
                   row-height="15"
-                  :rules="[
-                    explanationRules.default,
-                    explanationRules.required,
-                    explanationRules.empty,
-                    explanationRules.minLength
-                  ]"
-                  requied
                   solo
+                  @input="$forceUpdate()"
+                  :rules="
+                    uploadRespond.DiscoveryAndDetection
+                      ? [
+                          explanationRules.empty,
+                          explanationRules.minLength,
+                          explanationRules.required
+                        ]
+                      : []
+                  "
                 ></v-textarea>
               </v-form>
 
@@ -493,12 +520,10 @@
                   deletable-chips
                   class="affect-combobox affect-input"
                   @keyup.tab="updateTags"
-                  @paste="false"
                   solo
                   outlined
                   dense
                   validate-on-blur
-                  onPaste="return false"
                   @blur="validateAffectArea"
                   :rules="[affectRules.regex]"
                   @input="handleTagItemChange"
@@ -519,14 +544,17 @@
                   solo
                   validate-on-blur
                   ref="scopeTextField"
-                  required
-                  :rules="[
-                    scopeRules.default,
-                    scopeRules.regex,
-                    scopeRules.required,
-                    scopeRules.empty,
-                    scopeRules.minLength
-                  ]"
+                  @input="$forceUpdate()"
+                  :rules="
+                    uploadRespond.Scope
+                      ? [
+                          scopeRules.regex,
+                          scopeRules.empty,
+                          scopeRules.minLength,
+                          scopeRules.required
+                        ]
+                      : []
+                  "
                 ></v-text-field>
               </v-form>
             </div>
@@ -534,10 +562,10 @@
           <div id="post-step-four" v-if="step === 4">
             <!-- Step 4 Starts -->
             <div class="investigate-header">
-              <p>Attributes</p>
+              <p>Select Attributes To Share</p>
               <span>
-                Select the information you want to hide. Other attributes will be visible and
-                shared.
+                Hide the information you want to exclude when sharing. You must share at least 1
+                attribute. Mark harmful attributes to let others know about them.
               </span>
             </div>
             <div class="investigation-content">
@@ -551,6 +579,7 @@
                     Body
                   </h2>
                   <v-btn
+                    id="threat-sharing-post-incident-edit-html-button"
                     class="create-btn v-btn v-btn--flat v-btn--text theme--dark v-size--default edit-html-template-button"
                     @click="editHtmlTemplate"
                   >
@@ -640,6 +669,8 @@
                         v-model="uploadRespond.isSubjectHidden"
                         @change="subjectValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">Subject</label>
                     </div>
@@ -660,6 +691,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-subject-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isSubjectHidden }"
@@ -702,6 +734,8 @@
                         v-model="uploadRespond.isFromHidden"
                         @change="fromValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">From</label>
                     </div>
@@ -722,6 +756,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-from-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isFromHidden }"
@@ -767,6 +802,8 @@
                         v-model="uploadRespond.isToHidden"
                         @change="toValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">To</label>
                     </div>
@@ -786,6 +823,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-to-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isToHidden }"
@@ -831,6 +869,8 @@
                         v-model="uploadRespond.isCcHidden"
                         @change="ccValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">CC</label>
                     </div>
@@ -850,6 +890,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-cc-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isCcHidden }"
@@ -895,6 +936,8 @@
                         v-model="uploadRespond.isBccHidden"
                         @change="bccValChange"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <label v-if="filterOpened">BCC</label>
                     </div>
@@ -914,6 +957,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            id="threat-sharing-post-incident-bcc-hidden"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': uploadRespond.isBccHidden }"
@@ -991,6 +1035,8 @@
                         v-model="url.isHidden"
                         @change="urlSwitchChange(url, ind)"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <v-tooltip bottom opacity="1" z-index="9999">
                         <template v-slot:activator="{ on }">
@@ -1019,6 +1065,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            :id="`threat-sharing-post-incident-urls-${ind}`"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': url.isHidden }"
@@ -1097,6 +1144,8 @@
                         v-model="attachment.isHidden"
                         @change="checkAttachmentsChangeForAllLinksSwitch(attachment, ind)"
                         hide-details
+                        off-icon="mdi-eye"
+                        on-icon="mdi-eye-off"
                       ></v-checkbox>
                       <v-tooltip bottom opacity="1" z-index="9999">
                         <template v-slot:activator="{ on }">
@@ -1127,6 +1176,7 @@
                       >
                         <template v-slot:activator="{ on }">
                           <v-btn
+                            :id="`threat-sharing-post-incident-attachments-${ind}`"
                             class="chevron-btn-menu"
                             icon
                             :class="{ 'disabled-chevron': attachment.isHidden }"
@@ -1204,7 +1254,7 @@
                         >
                           <template v-slot:actions mandatory="true">
                             <v-btn
-                              id="last-preview-collapse"
+                              id="threat-sharing-post-incident-last-preview-collapse"
                               v-if="!toggle"
                               outlined
                               rounded
@@ -1213,7 +1263,7 @@
                               >COLLAPSE
                             </v-btn>
                             <v-btn
-                              id="last-preview-details"
+                              id="threat-sharing-post-incident-last-preview-details"
                               v-else
                               outlined
                               rounded
@@ -1259,19 +1309,38 @@
                     </div>
                     <div id="post-inc-preview-footer" class="ts-footer d-flex row wrap">
                       <div class="ts-like mt-1">
-                        <v-btn text x-small icon color="grey">
+                        <v-btn
+                          id="threat-sharing-post-incident-like-button"
+                          text
+                          x-small
+                          icon
+                          color="grey"
+                        >
                           <v-icon>mdi-thumb-up</v-icon>
                         </v-btn>
                         <span class="ts-action-counter">0</span>
                       </div>
                       <div class="ts-message mt-1">
-                        <v-btn text x-small icon color="grey">
+                        <v-btn
+                          id="threat-sharing-post-incident-reply-button"
+                          text
+                          x-small
+                          icon
+                          color="grey"
+                        >
                           <v-icon>mdi-message-reply-text</v-icon>
                         </v-btn>
                         <span class="ts-action-counter">0</span>
                       </div>
                       <div class="ts-harmful mt-1">
-                        <v-btn v-if="maliciousCount" text x-small icon color="red">
+                        <v-btn
+                          id="threat-sharing-post-incident-malicious-count"
+                          v-if="maliciousCount"
+                          text
+                          x-small
+                          icon
+                          color="red"
+                        >
                           <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
                         </v-btn>
                         <span class="ts-actions">{{ maliciousCount }} harmful item(s)</span>
@@ -1285,7 +1354,7 @@
                           rounded
                           outlined
                           class="tag-btn text-none"
-                          id="post-inc-last-prev-attach"
+                          id="threat-sharing-post-incident-last-prev-attach"
                         >
                           <span v-if="uploadRespond.attachments.length === 1">Attachment</span>
                           <span v-else-if="uploadRespond.attachments.length > 1">Attachments</span>
@@ -1300,7 +1369,7 @@
                           rounded
                           outlined
                           class="tag-btn ml-1 text-none"
-                          id="incident-badge"
+                          id="threat-sharing-post-incident-badge"
                           >{{ findCategory(uploadRespond.CategoryResourceIdArray[0]) }}
                         </v-btn>
                         <v-btn
@@ -1315,7 +1384,7 @@
                           rounded
                           outlined
                           class="tag-btn ml-1 text-none"
-                          id="incident-badge-attach"
+                          id="threat-sharing-post-incident-badge-attach"
                           >{{ findCategory(uploadRespond.CategoryResourceIdArray[1]) }}
                         </v-btn>
                         <div style="position: relative;">
@@ -1335,7 +1404,7 @@
                             class="tag-btn ml-1 text-none"
                             @mouseover="hoverTool = true"
                             @mouseleave="hoverTool = false"
-                            id="post-inc-last-prev-with-tooltip"
+                            id="threat-sharing-post-incident-last-prev-with-tooltip"
                           >
                             <span
                               v-if="uploadRespond.attachments && uploadRespond.attachments.length"
@@ -1779,7 +1848,7 @@
         </v-card>
         <div id="post-footer-actions" class="footer-actions">
           <v-btn
-            id="post-cancel-btn"
+            id="threat-sharing-post-incident-cancel-button"
             class="cancel-btn"
             text
             color="#f56c6c"
@@ -1789,16 +1858,16 @@
           <div>
             <v-btn
               v-if="step === 2 || step === 3 || step === 4 || step === 5"
-              id="post-previous-btn"
+              id="threat-sharing-post-incident-back-button"
               class="previous-btn mr-4"
               text
               color="#2196f3"
               @click="onPreviousButtonClick(step)"
-              >Previous
+              >BACK
             </v-btn>
             <v-btn
               v-if="step === 1"
-              id="post-next-btn"
+              id="threat-sharing-post-incident-next-button"
               :disabled="!selectedEmail && !uploadRespond.IsActive"
               :class="{ 'disabled-cursor': !selectedEmail && !uploadRespond.IsActive }"
               class="create-btn"
@@ -1809,7 +1878,7 @@
             </v-btn>
             <v-btn
               v-if="step === 2"
-              id="post-step-two-next-btn"
+              id="threat-sharing-post-incident-step-two-next-button"
               :class="{ 'disabled-cursor': !stepTwoDisabled() }"
               class="create-btn"
               text
@@ -1819,8 +1888,7 @@
             </v-btn>
             <v-btn
               v-if="step === 3"
-              :class="{ 'disabled-cursor': !stepThreeDisabled() }"
-              id="post-step-three-next-btn"
+              id="threat-sharing-post-incident-step-three-next-button"
               class="create-btn"
               text
               color="#2196f3"
@@ -1828,7 +1896,7 @@
               >Next
             </v-btn>
             <v-btn
-              id="post-step-four-next-btn"
+              id="threat-sharing-post-incident-step-four-next-button"
               v-if="step === 4"
               :class="{ 'disabled-cursor': allFiltersClosed() }"
               class="create-btn"
@@ -1838,7 +1906,7 @@
               >Next
             </v-btn>
             <v-btn
-              id="post-step-five-next-btn"
+              id="threat-sharing-post-incident-step-five-next-button"
               v-if="step === 5"
               class="create-btn"
               text
@@ -1877,6 +1945,7 @@ import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/fun
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
+import KSelectLoading from '@/components/KSelectLoading'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -1995,6 +2064,7 @@ a{position:relative}
 
 export default {
   components: {
+    KSelectLoading,
     KSelect,
     KFileUpload,
     VClamp,
@@ -2079,7 +2149,10 @@ export default {
     acceptCheckbox: false,
     editHtmlData: null,
     showNewsletterPageGrapes: false,
+    isFindIncidentLoading: true,
+    showLoader: false,
     value: 'wFlYRDMW946M',
+    isInit: true,
     items2: [
       {
         text: 'TLP: WHITE',
@@ -2291,6 +2364,11 @@ export default {
     document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
+    handleLoadingState() {
+      if (this.isInit) {
+        this.showLoader = true
+      }
+    },
     setVisibleBody() {
       let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden)
       for (let url of urls) {
@@ -2319,7 +2397,8 @@ export default {
       ).shadowRoot.innerHTML
     },
     handleTagItemChange(value) {
-      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      this.querySelections(this.searchIncident || '')
+      if (this.isFindIncidentLoading) return false
     },
     checkCheckboxValidation() {
       this.isCheckboxChecked = this.acceptCheckbox
@@ -2598,11 +2677,32 @@ export default {
         ascending: false,
         clusteredBy: ''
       }
-      searchNotifiedMail(payload).then((response) => {
-        const { data } = response
-        this.listData = data.data.results
-        this.backupListData = JSON.parse(JSON.stringify(data.data.results))
-      })
+      searchNotifiedMail(payload)
+        .then((response) => {
+          const { data } = response
+          if (this.searchIncident) {
+            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+            this.$nextTick(() => {
+              this.listData = this.backupListData.reduce((acc, item) => {
+                Object.values(item).find((i) => {
+                  if (
+                    typeof i === 'string' &&
+                    i.toLocaleLowerCase().includes(this.searchIncident.toLocaleLowerCase())
+                  )
+                    return acc.push(item)
+                })
+                return acc
+              }, [])
+            })
+          } else {
+            this.listData = data.data.results
+            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
+          }
+        })
+        .finally(() => {
+          this.isFindIncidentLoading = false
+          this.showLoader = false
+        })
     },
     getSelectedEmailPreview(selectedItem) {
       const _this = this
@@ -2677,15 +2777,27 @@ export default {
       }
     },
     onThirdStep() {
-      if (
-        !this.$refs.affectInput.validate() ||
-        !this.$refs.discoveryInput.validate() ||
-        !this.stepThreeDisabled()
-      ) {
-        this.$refs.scopeInput.validate()
-        this.$refs.discoveryInput.validate()
+      if (this.uploadRespond.AffectArea && !this.$refs.affectInput.validate()) {
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
+      }
+      if (this.uploadRespond.DiscoveryAndDetection && !this.$refs.discoveryInput.validate()) {
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
+      }
+      if (this.uploadRespond.Scope && !this.$refs.scopeInput.validate()) {
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
         return false
       } else {
+        if (!this.uploadRespond.DiscoveryAndDetection) this.uploadRespond.DiscoveryAndDetection = ''
+        if (!this.uploadRespond.Scope) this.uploadRespond.Scope = ''
+        if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = ''
         this.step++
         this.setShadowRootMalicousLink('last-preview-body-shadow-root')
       }

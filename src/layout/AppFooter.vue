@@ -1,46 +1,48 @@
 <template>
   <v-footer class="k-footer d-flex">
     <div class="footer-item__primary">
-      Copyright Keepnet Labs &copy; {{ new Date().getFullYear() }}
+      Copyright {{ brandName }} &copy; {{ new Date().getFullYear() }}
     </div>
     <div class="footer-item__secondary footer-links">
       <a
         class="footer-item__secondary--1"
-        href="https://www.keepnetlabs.com/privacy-policy/"
+        :href="footerLinks.footerPrivacyPolicyUrl"
         target="_blank"
         >Privacy Policy</a
       >
       <div>&bull;</div>
       <a
         class="footer-item__secondary--2"
-        href="https://www.keepnetlabs.com/terms-conditions/"
         target="_blank"
+        :href="footerLinks.footerTermsAndConditionsUrl"
         >Terms and Conditions</a
       >
       <div class="footer-item__secondary--3">&bull;</div>
     </div>
     <div class="footer-item__third footer-links">
-      <a
-        class="footer-item__third--1"
-        href="https://www.keepnetlabs.com/how-we-use-cookies/"
-        target="_blank"
+      <a class="footer-item__third--1" target="_blank" :href="footerLinks.footerCookiePolicyUrl"
         >Cookie Policy</a
       >
       <div>&bull;</div>
-      <a
-        class="footer-item__third--2"
-        target="_blank"
-        href="https://www.keepnetlabs.com/end-user-license-agreement-eula/"
-        >EULA</a
-      >
+      <a class="footer-item__third--2" target="_blank" :href="footerLinks.footerEulaUrl">EULA</a>
     </div>
-    <div class="footer-item__fourth">Designed by Keepnet Labs</div>
+    <div class="footer-item__fourth">Designed by {{ brandName }}</div>
   </v-footer>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
-  name: 'AppFooter'
+  name: 'AppFooter',
+  props: {
+    brandName: {
+      type: String,
+      default: 'Keepnet Labs'
+    }
+  },
+  computed: {
+    ...mapGetters({ footerLinks: 'whitelabel/getFooterLinks' })
+  }
 }
 </script>
 

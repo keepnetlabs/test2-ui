@@ -1,5 +1,28 @@
 <template>
   <div class="fullscreen-form company-create-modal">
+    <app-dialog
+      v-if="isAddTheFirstSystemUserShow"
+      icon="mdi-delete"
+      title="Add The First System User"
+      :status="isAddTheFirstSystemUserShow"
+      :subtitle="formData.Name"
+      @changeStatus="closeFirstSystemUserDialog"
+    >
+      <template v-slot:app-dialog-body>
+        {{ getAddTheFirstSystemUserBody }}
+      </template>
+      <template v-slot:app-dialog-footer>
+        <app-dialog-footer
+          cancel-button-id="btn-cancel--add-first-system-user-company-modal-popup"
+          confirm-button-id="btn-confirm--add-first-system-user-company-modal-popup"
+          cancel-button-text="I’ll Do it later"
+          cancel-button-color="#00bcd4"
+          action-button-text="YES, create a system user"
+          @handleClose="closeFirstSystemUserDialog"
+          @handleConfirm="confirmFirstSystemUserDialog"
+        />
+      </template>
+    </app-dialog>
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-cart-icon-wrapper">
@@ -458,40 +481,6 @@
                     </k-select>
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item>
-                  <v-list-item-content>
-                    <label>Release Information</label>
-                    <v-list-item-title class="v-card-sub-header bottom-margin">
-                      Show version and release notes link at the bottom of the navigation menu
-                    </v-list-item-title>
-                    <div>
-                      <v-checkbox
-                        v-model="formData.IsVersionVisible"
-                        class="k-checkbox"
-                        color="#2196f3"
-                        :ripple="false"
-                        label="Show version"
-                        hide-details
-                      ></v-checkbox>
-                    </div>
-                    <div class="d-flex justify-space-between">
-                      <v-checkbox
-                        v-model="formData.IsReleaseNotesVisible"
-                        style="margin-top: 4px;"
-                        color="#2196f3"
-                        :ripple="false"
-                        label="Show release notes"
-                      ></v-checkbox>
-                      <template v-if="formData.IsReleaseNotesVisible">
-                        <label class="company-create-modal__side-label">URL</label>
-                        <InputUrl
-                          placeholder="https://doc.sitename.com/"
-                          v-model="formData.ReleaseNotesUrl"
-                        ></InputUrl>
-                      </template>
-                    </div>
-                  </v-list-item-content>
-                </v-list-item>
               </v-form>
             </v-stepper-content>
           </v-stepper-items>
@@ -513,6 +502,7 @@
       <div>
         <v-btn
           v-if="canPrev"
+          id="btn-back--company-modal"
           class="playbook-rule-form__button mr-4"
           outlined
           rounded
@@ -524,6 +514,7 @@
 
         <v-btn
           v-if="canNext"
+          id="btn-next--company-modal"
           class="playbook-rule-form__button"
           style="color: white;"
           rounded
@@ -535,6 +526,7 @@
 
         <v-btn
           v-if="!canNext"
+          id="btn-save--company-modal"
           class="playbook-rule-form__button white--text"
           rounded
           color="#2196f3"
@@ -549,14 +541,11 @@
 </template>
 <script>
 import * as validations from '@/utils/validations'
-import {
-  createCompany,
-  searchCompanies,
-  searchCompanyGroups,
-  updateCompany
-} from '../../api/company'
+import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AppDialog from '@/components/AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { scrollToComponent } from '@/utils/functions'
 import { getLicences, getLookupListByTypeIdList } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -572,10 +561,20 @@ export default {
     selectedRow: { type: Object },
     selectedExtend: { type: Object }
   },
-  components: { KSelect, InputCompany, InputUrl, KFileUpload, InputDate },
+  components: {
+    KSelect,
+    InputCompany,
+    InputUrl,
+    KFileUpload,
+    InputDate,
+    AppDialog,
+    AppDialogFooter
+  },
   data() {
     return {
       saveDisable: false,
+      createdCompanyResourceId: null,
+      isAddTheFirstSystemUserShow: false,
       labels,
       stepLock: false,
       totalStep: 4,
@@ -644,6 +643,9 @@ export default {
     canNext() {
       return this.activeStep < this.totalStep
     },
+    getAddTheFirstSystemUserBody() {
+      return `Would you like to create the first system user for ${this.formData.Name}?`
+    },
     canPrev() {
       return this.activeStep > 1
     }
@@ -687,6 +689,12 @@ export default {
     }
   },
   methods: {
+    confirmFirstSystemUserDialog() {
+      this.formData = []
+      this.LicenseDates = null
+      this.activeStep = 1
+      this.$emit('closeFormAndOpenSystemUserModal', this.createdCompanyResourceId)
+    },
     getLookupContents() {
       Promise.all([
         getLookupListByTypeIdList({ typeidlist: [1, 2, 4, 5, 6, 7] }),
@@ -725,6 +733,10 @@ export default {
         })
         .catch((error) => {})
     },
+    closeFirstSystemUserDialog() {
+      this.isAddTheFirstSystemUserShow = false
+      this.cancelForm()
+    },
     handleSave() {
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
         this.saveDisable = true
@@ -744,9 +756,14 @@ export default {
             })
         } else {
           createCompany(this.formData)
-            .then(() => {
+            .then((response) => {
+              const {
+                data: { data }
+              } = response
+              this.createdCompanyResourceId = data.resourceId
               this.saveDisable = false
-              this.cancelForm()
+              this.isAddTheFirstSystemUserShow = true
+              //this.cancelForm()
             })
             .catch(() => {
               this.saveDisable = false
@@ -973,7 +990,7 @@ export default {
     padding: 32px 96px 0 96px;
     margin-bottom: 24px;
     flex-shrink: 0;
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       padding: 2rem 2rem;
     }
 
@@ -1083,7 +1100,7 @@ export default {
     height: 4rem;
     box-shadow: none;
     background-color: #f5f7fa;
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       padding: 0 3rem;
     }
 
@@ -1144,7 +1161,7 @@ export default {
 
   .v-stepper__content {
     padding: 32px 6rem;
-    @media (max-width: 768px) {
+    @media (max-width: 767px) {
       padding: 32px 1rem;
     }
 
@@ -1200,5 +1217,11 @@ export default {
   .k-checkbox:nth-child(2n) {
     margin-left: 120px;
   }
+}
+.my-dialog {
+  opacity: 1;
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.23);
 }
 </style>

@@ -4,9 +4,9 @@
       <create-or-edit-system-user
         v-if="showCreateOrEditSystemUserModal"
         :status="showCreateOrEditSystemUserModal"
+        :selectedRow="selectedRow"
         @closeOverlayWithUpdate="closeOverlayWithUpdate"
         @closeOverlay="toggleCreateOrEditSystemUser"
-        :selectedRow="selectedRow"
       />
       <delete-system-user-modal
         v-if="showDeleteSystemUserModal"
@@ -20,14 +20,16 @@
 
       <data-table
         v-if="checkPermissions('system-users/search', 'POST')"
+        id="system-users-people-data-table"
+        ref="refSystemUsersList"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :total-number-of-records="totalNumberOfRecords"
         :table="tableData"
-        ref="refSystemUsersList"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
-        id="system-users-people-data-table"
         :empty="tableOptions.empty"
+        :show-all-records="showAllRecords"
         :filterable="true"
         :isServerSide="false"
         :options="true"
@@ -46,18 +48,27 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForListSystemUsers"
+        @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
 import { deleteSystemUser, getSystemUsers, exportSystemUsers } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 import { checkPermission } from '@/utils/functions'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'People',
   components: {
@@ -69,6 +80,8 @@ export default {
     return {
       deleteButtonDisabled: false,
       loading: true,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       tableOptions: {
         downloadButton: {
@@ -160,7 +173,13 @@ export default {
             show: true,
             fixed: false,
             type: 'badge',
-            width: 150
+            width: 150,
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Active', value: '1' },
+              { text: 'Inactive', value: '0' }
+            ],
+            filterableCustomFieldName: 'StatusId'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -171,7 +190,8 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'date'
           }
         ],
         selectEvent: {
@@ -185,6 +205,7 @@ export default {
           {
             name: 'Edit',
             icon: 'mdi-pencil',
+            id: 'btn-edit--system-users-people-row-actions',
             action: 'editAction',
             disabled: !this.checkPermissions('system-users/{resourceId}', 'PUT')
           },
@@ -192,24 +213,43 @@ export default {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
+            id: 'btn-delete--system-users-people-row-actions',
             disabled: !this.checkPermissions('system-users/{resourceId}', 'DELETE')
           }
         ],
         empty: {
           message: 'You do not have any System Users',
           btn: 'Create a New System User',
+          id: 'btn-empty--system-users-people',
           icon: 'mdi-plus'
         },
         addButton: {
           show: true,
           action: 'handleAddNewSystemUsers',
+          id: 'btn-add--system-users-people',
           tooltip: 'Add a New System User',
           disabled: !this.checkPermissions('system-users', 'POST')
         }
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 50000,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -230,22 +270,82 @@ export default {
     }
   },
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
+      )
+      if (savedFilter) {
+        this.requestBody.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refSystemUsersList.filterValues = savedFilter.filterValues
+          this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForListSystemUsers()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refSystemUsersList.filterValues = {}
+      this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
+      this.callForListSystemUsers()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE,
+        JSON.stringify({
+          filter: this.requestBody.filter,
+          filterValues
+        })
+      )
+    },
     exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.requestBody.filter)),
+        this.$refs.refSystemUsersList,
+        'CreateTime'
+      )
+      if (this.$refs.refSystemUsersList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'StatusId'
+      }
+      if (
+        this.$refs.refSystemUsersList.sortProps &&
+        this.$refs.refSystemUsersList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
+          filter: filter
         }
         exportSystemUsers(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `System Users.${exportType.toLocaleLowerCase()}`
+          link.download = `System Users.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -260,6 +360,11 @@ export default {
         this.selectedRow = null
       }
     },
+    handleAllRecordsClick() {
+      this.requestBody.pageSize = 75000
+      this.showAllRecords = false
+      this.callForListSystemUsers()
+    },
     closeOverlayWithUpdate() {
       this.toggleCreateOrEditSystemUser()
       this.callForListSystemUsers()
@@ -269,7 +374,17 @@ export default {
       if (this.checkPermissions('system-users/search', 'POST')) {
         getSystemUsers(this.requestBody)
           .then((response) => {
-            const { data } = response.data
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecords = totalNumberOfRecords
+            if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+            if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
+              this.showAllRecords = false
+            }
             this.tableData = data.results || []
           })
           .catch(() => {
@@ -359,7 +474,7 @@ export default {
     }
   },
   created() {
-    this.callForListSystemUsers()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

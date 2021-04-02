@@ -11,6 +11,9 @@
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
         :confirm-button-disabled="confirmButtonDisabled"
+        cancel-button-id="btn-cancel--system-users-people-popup"
+        confirm-button-id="btn-delete--system-users-people-popup"
+        type="delete"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
       />

@@ -58,8 +58,8 @@
                         (v) =>
                           validations.maxLength(
                             v,
-                            1000,
-                            labels.getMaxLengthMessage(labels.Description, 1000)
+                            300,
+                            labels.getMaxLengthMessage(labels.Description, 300)
                           )
                       ]"
                       autocomplete="disabled"
@@ -134,8 +134,8 @@
                 <v-list-item-title class="v-card-form-title">
                   {{ labels.Conditions }}
                 </v-list-item-title>
-                <v-list-item-title class="v-card-sub-header">
-                  Define conditions to filter reported emails and take actions
+                <v-list-item-title class="v-card-sub-header" style="white-space: normal;">
+                  {{ labels.ConditionsSubHeader }}
                 </v-list-item-title>
               </v-list-item-content>
               <vue-query-builder

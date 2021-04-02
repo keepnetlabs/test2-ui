@@ -47,14 +47,16 @@
     />
 
     <datatable
+      id="company-groups-details-data-table"
+      ref="refDataList"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
-      ref="refDataList"
       :addButton="tableOptions.addButton"
+      :total-number-of-records="totalNumberOfRecords"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      id="company-groups-details-data-table"
+      :show-all-records="showAllRecords"
       :filterable="true"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
@@ -73,6 +75,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
+      @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     />
   </div>
 </template>
@@ -89,7 +95,11 @@ import {
 } from '@/api/company'
 import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
@@ -116,6 +126,8 @@ export default {
   data: () => ({
     showAddCompanyModal: false,
     loading: true,
+    showAllRecords: false,
+    totalNumberOfRecords: 0,
     editCreateGroup: false,
     forCompany: true,
     tableData: [],
@@ -213,33 +225,39 @@ export default {
         download: false
       },
       iEmpty: {
+        id: 'btn-empty--company-group-detail',
         message: 'No company defined',
         btn: 'ADD A COMPANY',
         icon: 'mdi-account-plus'
       },
       addButton: {
         show: true,
+        id: 'btn-add--company-group-detail',
         action: 'addButton',
         tooltip: 'Add Company to Company Group'
       },
       rowActions: [
         {
           name: 'Edit this row',
+          id: 'btn-edit--company-group-detail-row-actions',
           icon: 'mdi-pencil',
           action: 'editAction',
           isNotShow: true
         },
         {
           name: 'Add to a company group',
+          id: 'btn-add--company-group-detail-add-to-company-group-row-actions',
           icon: 'mdi-account-multiple-plus',
           action: 'AddGroupToModal'
         },
         {
           name: 'Create a new company group with company',
+          id: 'btn-add--company-group-detail-create-new-company-row-actions',
           icon: 'mdi-account-multiple',
           action: 'createNewGroupWithCompany'
         },
         {
+          id: 'btn-delete--company-group-detail-row-actions',
           name: 'Remove from group',
           icon: 'mdi-minus-circle',
           action: 'remove'
@@ -247,7 +265,22 @@ export default {
       ]
     },
     payload: {
-      pageSize: 3000,
+      pageSize: 1000,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultPayload: {
+      pageSize: 1000,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -273,9 +306,48 @@ export default {
     }
   },
   created() {
+    this.getDefaultFilterAndSearch()
     this.initMethods()
   },
   methods: {
+    handleAllRecordsClick() {
+      this.payload.pageSize = 75000
+      this.showAllRecords = false
+      this.getTableData()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS,
+        JSON.stringify({
+          filter: this.payload.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.initMethods()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.$refs.refDataList.filterValues = {}
+      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS)
+      this.initMethods()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refDataList.filterValues = savedFilter.filterValues
+          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
@@ -293,7 +365,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Company Group Details.${item.toLocaleLowerCase()}`
+            link.download = `Company Group Details.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})
@@ -315,6 +389,17 @@ export default {
       this.loading = true
       searchGroupCompanies(this.groupId, this.payload)
         .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? response.data.data.results

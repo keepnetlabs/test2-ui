@@ -4,6 +4,8 @@
       <file-upload
         ref="upload"
         v-model="files"
+        :input-id="`id-${Math.random().toString().substring(4)}`"
+        :id="`id-${Math.random().toString().substring(4)}`"
         :extensions="_extensions"
         :accept="accept"
         :multiple="false"

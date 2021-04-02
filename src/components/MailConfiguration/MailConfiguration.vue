@@ -226,11 +226,18 @@
         {{ deleteDialogName }} will be deleted and removed from all integrations.
       </template>
       <template v-slot:app-dialog-footer>
-        <app-dialog-footer @handleClose="closeDeleteDialog" @handleConfirm="handleDeleteDialog" />
+        <app-dialog-footer
+          @handleClose="closeDeleteDialog"
+          @handleConfirm="handleDeleteDialog"
+          type="delete"
+        />
       </template>
     </app-dialog>
     <div class="mail-configuration__content">
       <datatable
+        ref="refPeopleTable"
+        id="mail-configurations-data-table"
+        selectable
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
@@ -239,15 +246,15 @@
         :empty="tableOptions.iEmpty"
         :filterable="true"
         :options="true"
+        :show-all-records="showAllRecords"
         :pageSizes="tableOptions.pageSizes"
+        :total-number-of-records="totalNumberOfRecords"
         :refName="'peopleTable'"
-        id="mail-configurations-data-table"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
         :setClassName="setCellClassName"
         @syncUser="handleSyncUser"
         @delete="handleDelete"
-        ref="refPeopleTable"
         @editTargetUsers="handleEditTargetUsers"
         @onEmptyBtnClicked="status = true"
         :is-downloadable="true"
@@ -255,6 +262,10 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="getTableData"
+        @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -262,13 +273,16 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on: tooltip }">
                   <v-btn
-                    class="button-new mr-1"
+                    class="button-new"
                     rounded
+                    style="margin-right: 10px;"
                     color="#2196f3"
                     v-on="{ ...tooltip, ...menu }"
                     :disabled="!checkPermissions('mail-configurations/o365', 'POST')"
                   >
-                    <v-icon color="white">mdi-plus</v-icon>
+                    <v-icon color="white" style="font-size: 20px; margin-top: 1px;"
+                      >mdi-plus</v-icon
+                    >
                     <span class="button-new__text">NEW</span>
                   </v-btn>
                 </template>
@@ -317,7 +331,12 @@
 <script>
 import Datatable from '../../components/DataTable'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import {
@@ -353,6 +372,8 @@ export default {
   data: () => ({
     labels,
     delaySaveFunction: false,
+    showAllRecords: false,
+    totalNumberOfRecords: 0,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
     gsuite: {
@@ -487,7 +508,23 @@ export default {
     validations: validations,
     requestBody: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 1000,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBody: {
+      pageNumber: 1,
+      pageSize: 1000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -503,6 +540,41 @@ export default {
     }
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG))
+      if (savedFilter) {
+        this.requestBody.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
+          this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.getTableData()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refPeopleTable.filterValues = {}
+      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG)
+      this.getTableData()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG,
+        JSON.stringify({
+          filter: this.requestBody.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -515,6 +587,11 @@ export default {
           })
         }
       }
+    },
+    handleAllRecordsClick() {
+      this.requestBody.pageSize = 75000
+      this.showAllRecords = false
+      this.getTableData()
     },
     isValidate() {
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
@@ -544,7 +621,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Mail Configurations.${exportType.toLocaleLowerCase()}`
+          link.download = `Mail Configurations.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -564,6 +643,17 @@ export default {
       this.loading = true
       getMailConfigurationList(this.requestBody)
         .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.tableOptions.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData = response.data.data.results
         })
         .finally(() => {
@@ -750,7 +840,7 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
-      this.getTableData()
+      this.getDefaultFilterAndSearch()
     }
   }
 }

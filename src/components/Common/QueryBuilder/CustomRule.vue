@@ -128,7 +128,7 @@
           <!-- Condition text input-->
           <InputIpAddress
             v-model.trim="query.value"
-            placeholder="Enter IP or a regular expression"
+            placeholder="Enter IP address"
             :rules="[
               (v) => validations.required(v, 'Required'),
               (v) => validations.startsWithSpace(v, 'Cannot start with space'),
@@ -229,6 +229,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
+import * as Validations from '@/utils/validations'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -286,10 +287,21 @@ export default {
           case 'Email':
             const emailValidationArray = [
               (v) => this.validations.required(v, labels.Required),
-              (v) => this.validations.maxLength(v, 64, labels.getMaxLengthMessage('Email'))
+              (v) =>
+                this.validations.maxLength(
+                  v,
+                  320,
+                  labels.getMaxLengthMessage(labels.EmailAddress, 320)
+                )
             ]
             if (operator !== 'Contains' && operator !== 'DoesNotContain') {
               emailValidationArray.push((v) => this.validations.mail(v, labels.InvalidEmailAddress))
+              emailValidationArray.push((v) => {
+                if (this.validations.email(v)) {
+                  return this.validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                }
+                return false
+              })
             }
             return emailValidationArray
           case 'Domain':
@@ -357,7 +369,7 @@ export default {
     getAttachmentExtensionRules() {
       return [
         (v) => this.validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
-        (v) => this.validations.extension(v, 'Invalid extension'),
+        (v) => this.validations.extension(v, labels.InvalidExtension),
         (v) => this.validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
       ]
     },
@@ -365,7 +377,7 @@ export default {
       return [
         (v) => this.validations.required(v, labels.Required),
         (v) =>
-          this.validations.maxLength(v, 512, labels.getMaxLengthMessage('Attachment hash', 512))
+          this.validations.maxLength(v, 128, labels.getMaxLengthMessage('Attachment hash', 128))
       ]
     },
     handleOperandChange(value) {

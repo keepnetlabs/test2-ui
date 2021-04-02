@@ -25,15 +25,25 @@
               <v-card-title
                 class="d-flex pa-0 align-center justify-center login-card-wrapper__logo"
               >
-                <img src="../assets/img/logo-kep.png" />
+                <div style="max-width: 180px; height: 60px;">
+                  <img style="height: 100%;" :src="loginWhiteLabel.mainLogoUrl" />
+                </div>
               </v-card-title>
               <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
                   <div class="login-title">
-                    Welcome To Keepnet Labs
+                    {{
+                      isSessionExpired
+                        ? 'Session Expired'
+                        : `Welcome To ${loginWhiteLabel.brandName}`
+                    }}
                   </div>
                   <div class="login-desc">
-                    Please Login
+                    {{
+                      isSessionExpired
+                        ? 'Your session has been timed out. Please log in.'
+                        : 'Please Login'
+                    }}
                   </div>
                   <div v-if="isErrorActive" class="login-error-container">
                     <div v-if="isErrorActive" class="login-error-wrapper">
@@ -42,6 +52,16 @@
                       </div>
                       <div class="login-error-message pr-1">
                         {{ getErrors }}
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="showMfaMessage" class="login-error-container">
+                    <div class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div class="login-error-message pr-1">
+                        {{ 'Multifactor authentication is required' }}
                       </div>
                     </div>
                   </div>
@@ -113,7 +133,7 @@
                       </v-col>
                     </v-row>
                     <v-row align="center" justify="center">
-                      <v-col class="pl-0 pt-1 pr-5 pb-0" md="6" xs="12">
+                      <v-col class="pl-0 pt-1 pr-2 pb-0" md="6" xs="12">
                         <div class="login-remember d-flex">
                           <v-checkbox
                             v-model.trim="rememberMe"
@@ -176,7 +196,7 @@
                   <div class="reset-password-wrapper">
                     <v-row align="center" justify="center">
                       <v-col md="6" sm="12">
-                        <v-form v-model.trim="validReset" ref="resetEmail">
+                        <v-form ref="resetEmail">
                           <InputEmail
                             v-model.trim="resePasswordModel"
                             class="reset-pass-textfield"
@@ -228,49 +248,6 @@
                   </div>
                 </v-card-text>
               </div>
-              <div v-if="pageNumber == 4">
-                <v-card-text>
-                  <div class="login-title">
-                    2-Step Authentication
-                  </div>
-                  <div class="login-desc">
-                    Please enter your verification code
-                  </div>
-                  <div class="reset-password-wrapper">
-                    <v-row align="center" justify="center">
-                      <v-col md="6" sm="12">
-                        <v-text-field
-                          solo
-                          outlined
-                          v-model.trim="verificationCode"
-                          label="Verification Code"
-                          v-on:keyup.enter="onTwoStepLogin"
-                          autocomplete="disabled"
-                          validate-on-blur
-                        ></v-text-field>
-                      </v-col>
-                    </v-row>
-                  </div>
-                </v-card-text>
-                <v-card-actions class="justify-center">
-                  <v-btn
-                    color="blue"
-                    class="pr-4 mr-2 white--text"
-                    rounded
-                    @click="
-                      pageNumber = 1
-                      clearError()
-                    "
-                  >
-                    <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
-                    {{ labels.Back }}
-                  </v-btn>
-                  <v-btn color="blue" class="pl-4 white--text" rounded @click="onTwoStepLogin">
-                    LOGIN
-                    <v-icon right dark>mdi-arrow-right</v-icon>
-                  </v-btn>
-                </v-card-actions>
-              </div>
               <div v-if="pageNumber === 5">
                 <v-card-text>
                   <div class="login-title">
@@ -319,7 +296,7 @@
                               ]"
                               @click="newPasswordError = false"
                               outlined
-                              hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                              hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                               :class="{ 'input-error': isErrorActive }"
                               validate-on-blur
                               autocomplete="disabled"
@@ -349,7 +326,7 @@
                               :type="showReNewPassword ? '' : 'password'"
                               @click:append="showReNewPassword = !showReNewPassword"
                               autocomplete="disabled"
-                              hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
+                              hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -364,7 +341,79 @@
                   </v-btn>
                 </v-card-actions>
               </div>
-              <div v-if="pageNumber === 2 || pageNumber === 3 || pageNumber === 5">
+              <div v-if="pageNumber === 6">
+                <MFAWelcome
+                  :mfaDetails="mfaDetails"
+                  @withoutContinueMFA="withoutContinueMFA()"
+                  @setupMFA="setupMFA"
+                  :rules="rules"
+                  ref="refMfaWelcome"
+                />
+              </div>
+              <div v-if="pageNumber === 7">
+                <div v-if="isErrorActive" class="login-error-container">
+                  <div v-if="isErrorActive" class="login-error-wrapper">
+                    <div class="login-error-icon dark pr-2">
+                      <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                    </div>
+                    <div class="login-error-message pr-1">
+                      {{ getErrors ? getErrors : mfaSetupErrorText }}
+                    </div>
+                  </div>
+                </div>
+                <MFASetup
+                  :mfaCode="mfaCode"
+                  :mfaSetupDetails="mfaSetupDetails"
+                  @confirmSetupMFA="confirmSetupMFA"
+                  :rules="rules"
+                  ref="refMfaSetup"
+                  :isLogin="true"
+                />
+              </div>
+              <div v-if="pageNumber === 8">
+                <div v-if="isErrorActive" class="login-error-container">
+                  <div v-if="isErrorActive" class="login-error-wrapper">
+                    <div class="login-error-icon dark pr-2">
+                      <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                    </div>
+                    <div class="login-error-message pr-1">
+                      {{ getErrors }}
+                    </div>
+                  </div>
+                </div>
+                <MFALogin
+                  :validReset="validReset"
+                  :verificationCode="verificationCode"
+                  :rememberMeOnThisDevice="rememberMeOnThisDevice"
+                  @onCantLoginButtonClick="onCantLoginButtonClick"
+                  @verificationCodeLogin="verificationCodeLogin"
+                  :rules="rules"
+                  ref="refMfaLogin"
+                />
+              </div>
+              <div v-if="pageNumber === 9">
+                <div v-if="isErrorActive" class="login-error-container">
+                  <div v-if="isErrorActive" class="login-error-wrapper">
+                    <div class="login-error-icon dark pr-2">
+                      <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                    </div>
+                    <div class="login-error-message pr-1">
+                      {{ getErrors }}
+                    </div>
+                  </div>
+                </div>
+                <MFACantLogin
+                  :phoneNumber="phoneNumber"
+                  :validReset="validReset"
+                  :verificationCode="verificationCode"
+                  :rememberMeOnThisDevice="rememberMeOnThisDevice"
+                  @onCantLoginButtonClick="onCantLoginButtonClick"
+                  @verificationCodeLogin="verificationCodeLogin"
+                  :rules="rules"
+                  ref="refMfaCantLogin"
+                />
+              </div>
+              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber)">
                 <div class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
@@ -383,17 +432,50 @@ import VueRecaptcha from 'vue-recaptcha'
 import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
-import { createPasswordByToken, resetPassword, resetPasswordByToken } from '../api/auth'
+import {
+  cantLogin,
+  createPasswordByToken,
+  getMfaQRCode,
+  loginAction,
+  resetPassword,
+  resetPasswordByToken,
+  setMFA
+} from '../api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { getCompanyList } from '@/api/company'
+import jwt_decode from 'jwt-decode'
+import { setGlobalUserData } from '@/utils/functions'
+import store from '../store/index'
+import MFAWelcome from '@/components/MFA/MFAWelcome'
+import MFASetup from '@/components/MFA/MFASetup'
+import MFACantLogin from '@/components/MFA/MFACantLogin'
+import MFALogin from '@/components/MFA/MFALogin'
+import { getWhiteLabelByUrl } from '@/api/whitelabel'
 export default {
   name: 'Login',
-  components: { VueRecaptcha, PasswordChecker, InputEmail },
+  components: {
+    MFALogin,
+    MFACantLogin,
+    MFASetup,
+    MFAWelcome,
+    VueRecaptcha,
+    PasswordChecker,
+    InputEmail
+  },
   data() {
     return {
+      showMfaMessage: false,
+      mfaSetupErrorText: null,
+      phoneNumber: null,
+      recoveryCode: null,
+      mfaDetails: null,
+      mfaSetupDetails: null,
+      mfaCode: null,
       labels,
       showReNewPassword: false,
       isPasswordStep5Complete: false,
@@ -411,6 +493,7 @@ export default {
       verificationCode: '',
       resePasswordModel: '',
       rememberMe: '',
+      rememberMeOnThisDevice: false,
       show1: false,
       show2: false,
       show3: false,
@@ -440,12 +523,27 @@ export default {
       validReset: false
     }
   },
+  beforeCreate() {},
   created() {
-    //AuthenticationService.removeToken()
+    this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
+    this.$store.dispatch('whitelabel/resetState')
+    if (this.$route.query && this.$route.query.mfaRequired) {
+      this.showMfaMessage = true
+      this.$router.replace('/login')
+    }
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
-      this.email = localStorage.getItem('username')
-      this.password = localStorage.getItem('password')
+      this.$vlf.getItem('username', (err, username = '') => {
+        if (!err) {
+          this.email = username
+        }
+      })
+
+      this.$vlf.getItem('password', (err, password) => {
+        if (!err) {
+          this.password = password
+        }
+      })
     }
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
@@ -522,7 +620,8 @@ export default {
       getErrors: 'common/getErrors',
       getSnackStatus: 'common/getSnackStatus',
       getColor: 'common/getColor',
-      isErrorActive: 'common/getErrorStatus'
+      isErrorActive: 'common/getErrorStatus',
+      loginWhiteLabel: 'login/loginWhiteLabel'
     }),
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
@@ -561,9 +660,244 @@ export default {
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    onCantLoginButtonClick() {
+      let payload = {
+        email: this.email,
+        password: this.password
+      }
+      cantLogin(payload)
+        .then((response) => {
+          this.phoneNumber = response.data.data.phoneNumber
+          this.pageNumber = 9
+        })
+        .catch(() => {})
+    },
+    verificationCodeLogin(isCantLogin, verificationCode, rememberMeOnThisDevice) {
+      let payload = {
+        email: this.email,
+        password: this.password,
+        mfa: this.mfaDetails,
+        recovery_code: isCantLogin ? verificationCode : '',
+        code: isCantLogin ? '' : verificationCode,
+        rememberMeOnThisDevice: rememberMeOnThisDevice,
+        skipMfa: 'forced'
+      }
+      if (this.pageNumber === 8) {
+        if (this.$refs.refMfaLogin.$refs.refMfaLoginForm.validate()) {
+          this.loginAction(payload)
+        }
+      } else if (this.pageNumber === 9) {
+        if (this.$refs.refMfaCantLogin.$refs.refMfaCantLoginForm.validate()) {
+          this.loginAction(payload)
+        }
+      }
+    },
+    confirmSetupMFA(code) {
+      if (this.$refs.refMfaSetup.$refs.refMfaSetupForm.validate()) {
+        let payload = {
+          email: this.email,
+          password: this.password,
+          code: code
+        }
+        setMFA(payload)
+          .then(() => {
+            this.pageNumber = 1
+            this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+          })
+          .catch((error) => {
+            if (error.response && error.response.data) {
+              this.mfaSetupErrorText =
+                error.response.data.message || error.response.data.validationMessages[0]
+            }
+            this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          })
+      }
+    },
+    withoutContinueMFA() {
+      let payload = {
+        email: this.email,
+        password: this.password,
+        router: this.$router,
+        mfa: this.mfaDetails
+      }
+      this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+      this.loginAction(payload)
+    },
+    setupMFA() {
+      let payload = {
+        email: this.email,
+        password: this.password
+      }
+      getMfaQRCode(payload)
+        .then((response) => {
+          this.pageNumber = 7
+          this.mfaSetupDetails = response.data['data']
+        })
+        .catch(() => {})
+    },
+    loginAction(payload) {
+      let _this = this
+
+      loginAction(payload)
+        .then((response) => {
+          let isSessionExpired = payload.sessionExpired
+          this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+          AuthenticationService.setToken(
+            response.data.access_token,
+            response.data.expiredIn || 9999999999999,
+            response.data.status || 1
+          )
+          if (response.data.status === 3) {
+            this.$store.commit('SET_PAGE_NUMBER', 4)
+          } else {
+            this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
+          }
+          if (payload.sessionExpired) {
+            getCompanyList().then((response) => {
+              const result = response.data.data && response.data.data
+              this.$store.commit('SET_DROPDOWN_COMPANIES', result)
+            })
+          }
+          if (isSessionExpired) {
+            let token = JSON.parse(localStorage.getItem('auth-token')).token
+            let tokenData = jwt_decode(token)
+            let currentUserData = setGlobalUserData(tokenData)
+            localStorage.setItem('userData', JSON.stringify(currentUserData))
+            localStorage.setItem('selectedCompanyName', currentUserData.name)
+            localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+            if (
+              currentUserData &&
+              currentUserData.role &&
+              currentUserData.role.name !== 'CompanyAdmin'
+            ) {
+              this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
+            }
+            let payload = {
+              currentUserData: currentUserData,
+              isSelectCompany: false,
+              permissions: tokenData.Permission
+            }
+            this.$store.commit('SET_CURRENTUSER', payload)
+            this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+              location.reload()
+            })
+          }
+          if (
+            (_this.$route.query &&
+              !!_this.$route.query.communityResourceId &&
+              !!_this.$route.query.communityPostResourceId) ||
+            !!_this.$route.query['amp;communityPostResourceId']
+          ) {
+            this.pageNumber = 1
+            _this.$router.push(
+              `/community/${_this.$route.query.communityResourceId}?postId=${
+                _this.$route.query.communityPostResourceId ||
+                _this.$route.query['amp;communityPostResourceId']
+              }`
+            )
+          } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
+            this.pageNumber = 1
+            _this.$router.push(
+              `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
+            )
+          } else if (this.$route.query && !!this.$route.query.showInvitation) {
+            this.pageNumber = 1
+            this.$router.push({
+              path: `/threat-sharing`,
+              query: { showInvitation: this.$route.query.showInvitation }
+            })
+          } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
+            _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
+          } else if (_this.$route.query) {
+            if (_this.$route.query.cp) {
+              _this.pageNumber = 5
+              _this.token = _this.getToken('cp', window.location.href)
+              _this.resetType = 'createPassword'
+            } else if (_this.$route.query.rp) {
+              _this.pageNumber = 5
+              _this.token = _this.getToken('rp', window.location.href)
+              _this.resetType = 'resetPassword'
+            } else if (!indexStore.getters['common/getSessionCheck']) {
+              this.pageNumber = 1
+              _this.$router.push('/')
+            } else {
+              this.pageNumber = 1
+              _this.$router.push('/')
+            }
+          } else if (!indexStore.getters['common/getSessionCheck']) {
+            this.pageNumber = 1
+            _this.$router.push('/')
+          } else {
+            this.pageNumber = 1
+            _this.$router.push('/')
+          }
+
+          setTimeout(() => {
+            if (_this.rememberMe) {
+              this.$vlf.setItem('username', _this.email)
+              this.$vlf.setItem('password', _this.password)
+              localStorage.setItem('isRemember', _this.rememberMe)
+            } else {
+              localStorage.removeItem('username')
+              localStorage.removeItem('password')
+              localStorage.removeItem('isRemember')
+              this.$vlf.removeItem('username')
+              this.$vlf.removeItem('password')
+            }
+          }, 500)
+        })
+        .catch((error) => {
+          if (
+            error.response.data &&
+            error.response.data.mfa &&
+            error.response.data.mfa.StatusId === 1
+          ) {
+            this.pageNumber = 8
+          } else if (
+            error.response.data &&
+            error.response.data.mfa &&
+            error.response.data.mfa.StatusId === 0
+          ) {
+            this.mfaDetails = error.response.data.mfa
+            this.pageNumber = 6
+          } else {
+            this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
+            if (error.response && error.response.status === 401) {
+              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+              this.$store.commit(
+                'common/SET_ERROR_MESSAGE',
+                error.response.data.errors[0].message,
+                {
+                  root: true
+                }
+              )
+            } else {
+              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+              let content =
+                error.response.data && error.response.data.error_description
+                  ? error.response.data.error_description
+                  : error.response.data.Message
+                  ? error.response.data.Message
+                  : 'Unknown Error Occured !!!'
+              this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
+            }
+          }
+        })
+        .finally(() => {
+          this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+            root: true
+          })
+        })
+    },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false
-      this.pageNumber = 1
+      if (this.pageNumber === 7) {
+        this.pageNumber = 6
+      } else if (this.pageNumber === 9) {
+        this.pageNumber = 8
+      } else {
+        this.pageNumber = 1
+      }
       this.clearError()
     },
     onForgetPasswordButtonClick() {
@@ -648,6 +982,7 @@ export default {
     onLoginClicked() {
       const mainUrl = this.$router.currentRoute
       const _this = this
+
       this.isPasswordStep5Complete = false
       if (
         this.$refs.email.validate() &&
@@ -655,91 +990,22 @@ export default {
         this.wrongLoginAttempt < 3
       ) {
         // this.isLoading = true
-        this.$store
-          .dispatch('login/loginAction', {
-            email: this.email,
-            password: this.password,
-            router: this.$router
-          })
-          .then((response) => {
-            if (
-              (_this.$route.query &&
-                !!_this.$route.query.communityResourceId &&
-                !!_this.$route.query.communityPostResourceId) ||
-              !!_this.$route.query['amp;communityPostResourceId']
-            ) {
-              _this.$router.push(
-                `/community/${_this.$route.query.communityResourceId}?postId=${
-                  _this.$route.query.communityPostResourceId ||
-                  _this.$route.query['amp;communityPostResourceId']
-                }`
-              )
-            } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
-              _this.$router.push(
-                `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
-              )
-            } else if (this.$route.query && !!this.$route.query.showInvitation) {
-              this.$router.push({
-                path: `/threat-sharing`,
-                query: { showInvitation: this.$route.query.showInvitation }
-              })
-            } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
-              _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
-            } else if (_this.$route.query) {
-              if (_this.$route.query.cp) {
-                _this.pageNumber = 5
-                _this.token = _this.getToken('cp', window.location.href)
-                _this.resetType = 'createPassword'
-              } else if (_this.$route.query.rp) {
-                _this.pageNumber = 5
-                _this.token = _this.getToken('rp', window.location.href)
-                _this.resetType = 'resetPassword'
-              } else if (!indexStore.getters['common/getSessionCheck']) {
-                _this.$router.push('/')
-              } else {
-                _this.$router.push('/')
-              }
-            } else if (!indexStore.getters['common/getSessionCheck']) {
-              _this.$router.push('/')
-            } else {
-              _this.$router.push('/')
-            }
-
-            setTimeout(() => {
-              if (_this.rememberMe) {
-                localStorage.setItem('username', _this.email)
-                localStorage.setItem('password', _this.password)
-                localStorage.setItem('isRemember', _this.rememberMe)
-              } else {
-                localStorage.removeItem('username')
-                localStorage.removeItem('password')
-                localStorage.removeItem('isRemember')
-              }
-            }, 500)
-          })
-          .catch((error) => {})
+        let payload = { email: this.email, password: this.password, router: this.$router }
+        this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
+        this.loginAction(payload)
       } else if (
         this.$refs.email.validate() &&
         this.$refs.password.validate &&
         this.wrongLoginAttempt >= 3
       ) {
-        //this.isLoading = true
         if (window.grecaptcha.getResponse() == '') {
-          // Business decided no need for Robot error
-          /*
-              this.$store.commit('common/SET_SNACK_STATUS', true, { root: true })
-              this.$store.commit('common/SET_SNACKBAR_COLOR', 'red', { root: true })
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              this.$store.commit('common/SET_ERROR_MESSAGE', 'Prove you are not a robot', {
-                root: true
-              })
-            */
         } else {
-          this.$store.dispatch('login/loginAction', {
+          let payload = {
             email: this.email,
             password: this.password,
             router: this.$router
-          })
+          }
+          this.loginAction(payload)
           this.$refs.recaptcha.reset()
         }
       }
@@ -776,11 +1042,134 @@ export default {
           })
       }
     }
+  },
+
+  watch: {
+    pageNumber(oldVal, newVal) {
+      if (oldVal !== newVal) {
+        this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+        this.showMfaMessage = false
+      }
+    }
   }
 }
 </script>
 
 <style lang="scss">
+.verification-code-wrapper {
+  &--textfield {
+  }
+  &__cant-login {
+    font-size: 11px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.87);
+    height: 20px;
+    justify-content: center;
+    display: flex;
+    cursor: pointer;
+  }
+  &__remember {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 6px;
+    .v-input--checkbox {
+      .mdi-checkbox-blank-outline {
+        color: rgba(0, 0, 0, 0.26) !important;
+      }
+
+      label.v-label.theme--light {
+        font-size: 11px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.87) !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
+        font-size: 20px !important;
+      }
+
+      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
+        font-size: 20px !important;
+      }
+    }
+  }
+}
+.mfa-setup__content {
+  max-width: 540px;
+  margin: 0 auto;
+  &-textfield {
+    max-width: 350px;
+  }
+  &--header {
+    font-size: 20px;
+    font-weight: 600;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.2;
+    letter-spacing: normal;
+    color: #383b41;
+    margin-bottom: 1px !important;
+  }
+  &--text {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #383b41;
+    margin-bottom: 8px !important;
+  }
+  &--image {
+    border: solid 1px #e0e0e0;
+    background-color: #ffffff;
+    max-width: 128px;
+    margin-right: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    img {
+      width: 100%;
+    }
+  }
+  &--qr-details {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: #383b41;
+    &--code {
+      padding: 8px 14px 8px 12px;
+      background-color: #f1f8fe;
+    }
+  }
+}
+.v-card__actions {
+  .login {
+    &_without-continue-button {
+      box-shadow: none !important;
+      background-color: white !important;
+      color: #2196f3 !important;
+      border: 1px solid #2196f3;
+      padding: 0 16px !important;
+    }
+  }
+}
 .back-to-login {
   left: 16px;
   background-color: white;
@@ -865,7 +1254,8 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-
+    overflow: auto;
+    max-height: 100px;
     .login-error-icon {
       i {
         font-size: 24px !important;
@@ -1012,10 +1402,10 @@ export default {
 
   .v-card-login-wrapper {
     border-radius: 20px !important;
-    padding-top: 24px;
+    padding-top: 1px;
     padding-left: 24px;
     padding-right: 24px;
-    padding-bottom: 80px;
+    padding-bottom: 46px;
   }
 
   .background {

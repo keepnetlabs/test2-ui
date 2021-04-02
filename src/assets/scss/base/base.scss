@@ -275,7 +275,7 @@ html {
   font-style: normal;
   letter-spacing: normal;
   color: #383b41;
-  pointer-events: none;
+  //pointer-events: none;
 }
 .vue-treeselect__indent-level-1 {
   img{
@@ -455,4 +455,33 @@ html {
                     rgb(255 255 255/68%)
     );
   }
+}
+.max-width-228{
+  max-width: 228px;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.vue-treeselect__control-arrow,
+.vue-treeselect svg {
+  color: #757575 !important;
+  fill: #757575 !important;
+  path {
+    color: #757575 !important;
+    fill: #757575 !important;
+  }
+}
+.no-action-on-click{
+  .v-select__selections{
+    input{
+      pointer-events: none !important;
+    }
+  }
+}
+
+.v-navigation-drawer{
+  transition:none !important;
 }

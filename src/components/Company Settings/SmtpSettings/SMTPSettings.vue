@@ -20,32 +20,38 @@
     />
     <div class="smtp-settings__container">
       <data-table
-        :loading="loading"
+        id="company-settings-smtp-settings-data-table"
         ref="refSmtpSettingsList"
+        :loading="loading"
         :table="tableData"
         :refName="'smtpSettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
+        :total-number-of-records="totalNumberOfRecords"
         :columns="tableOptions.columns"
-        id="company-settings-smtp-settings-data-table"
         :empty="tableOptions.empty"
-        @addNewSmtpSetting="toggleSmtpModalStatus"
         :filterable="true"
+        :show-all-records="showAllRecords"
         :options="true"
         :download-button="tableOptions.downloadButton"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :is-downloadable="true"
-        @downloadEvent="exportSmtpSettingsList"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
         :resizable="true"
+        @addNewSmtpSetting="toggleSmtpModalStatus"
         @onEmptyBtnClicked="toggleSmtpModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearchSmtpSettings"
+        @downloadEvent="exportSmtpSettingsList"
+        @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -55,6 +61,7 @@
                 :disabled="getDisabledStatusOfEdit(scope.row)"
                 class="btn-hover mr-1"
                 icon
+                :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -69,6 +76,7 @@
                 @click.native="handleDeleteAction(scope.row)"
                 class="btn-hover"
                 icon
+                :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -83,12 +91,17 @@
 </template>
 
 <script>
-import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
-import NewSmtpSettings from '@/components/Company Settings/NewSmtpSettings'
+import NewSmtpSettings from '@/components/Company Settings/SmtpSettings/NewSmtpSettings'
 import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
-import DeleteSmtpSettings from '@/components/Company Settings/DeleteSmtpSettings'
+import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/DeleteSmtpSettings'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -108,9 +121,11 @@ export default {
       tableData: [],
       loading: false,
       selectedDeleteSmtpSettings: null,
+      isRestoredOrClearedFilters: false,
       selectedEditSmtpSettings: null,
-
       isEdit: false,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableOptions: {
         columns: [
           {
@@ -195,12 +210,14 @@ export default {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction',
+            id: 'btn-edit--smtp-settings-row-actions',
             disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
+            id: 'btn-delete--smtp-settings-row-actions',
             disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
@@ -208,12 +225,14 @@ export default {
           message: 'No SMTP Configurations',
           btn: 'Create SMTP Configuration',
           icon: 'mdi-plus',
+          id: 'btn-empty--smtp-settings',
           disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
           action: 'addNewSmtpSetting',
           tooltip: 'Add SMTP Setting',
+          id: 'btn-add--smtp-settings',
           disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },
@@ -221,7 +240,23 @@ export default {
       deleteSmtpModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -245,6 +280,11 @@ export default {
       }
       this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
+    handleAllRecordsClick() {
+      this.bodyOptions.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchSmtpSettings()
+    },
     getDisabledStatusOfEdit({ isOwner } = {}) {
       return this.tableOptions.rowActions[0].disabled || !isOwner
     },
@@ -254,21 +294,41 @@ export default {
     exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const { EXPORT } = this.PERMISSIONS
       if (EXPORT.hasPermission) {
+        const clientTableExportHelper = new ClientTableExportHelper(
+          JSON.parse(JSON.stringify(this.bodyOptions.filter)),
+          this.$refs.refSmtpSettingsList,
+          'CreateTime'
+        )
+        if (this.$refs.refSmtpSettingsList.search) {
+          clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+          clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+            (item) => item.FieldName === 'StatusName'
+          ).FieldName = 'Status'
+        }
+        if (
+          this.$refs.refSmtpSettingsList.sortProps &&
+          this.$refs.refSmtpSettingsList.sortProps.order
+        ) {
+          clientTableExportHelper.addSortItems()
+        }
+
+        const { filter, sortFilter } = clientTableExportHelper
         exportTypes.map((exportType) => {
           const payload = {
+            ...sortFilter,
             pageNumber: pageNumber,
             pageSize: pageSize,
-            orderBy: PROPERTY_STORE.CREATETIME,
-            ascending: false,
             reportAllPages,
             exportType: exportType === 'XLS' ? 'Excel' : exportType,
-            filter: this.bodyOptions.filter
+            filter
           }
           exportSmtpSettings(payload).then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Smtp Settings.${exportType.toLocaleLowerCase()}`
+            link.download = `Smtp Settings.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
             link.click()
           })
         })
@@ -283,10 +343,25 @@ export default {
         this.loading = true
         searchSmtpSettings(this.bodyOptions)
           .then((response) => {
-            const { data: { data: { results = [] } = {} } = {} } = response
-            this.tableData = results
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecords = totalNumberOfRecords
+            if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+
+            if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
+              this.showAllRecords = false
+            }
+
+            this.tableData = data.results
           })
-          .finally(() => (this.loading = false))
+          .finally(() => {
+            this.loading = false
+            this.isRestoredOrClearedFilters = false
+          })
       }
     },
     handleEditAction({ resourceId } = {}) {
@@ -361,6 +436,9 @@ export default {
       this.callForSearchSmtpSettings()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
       let items = []
       let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
 
@@ -376,6 +454,19 @@ export default {
         this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
       this.callForSearchSmtpSettings()
     },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS,
+        JSON.stringify({
+          filter: this.bodyOptions.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
     handleMultipleDelete(selections) {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
@@ -383,15 +474,41 @@ export default {
         this.toggleDeleteSmtpModalStatus()
       }
     },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refSmtpSettingsList.filterValues = {}
+      this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
+      this.callForSearchSmtpSettings()
+    },
     handleDeleteMultipleSmtpSettings(selections) {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         selections.forEach((item) => this.handleDeleteSmtpSettings(item))
       }
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
+      )
+      if (savedFilter) {
+        this.bodyOptions.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refSmtpSettingsList.filterValues = savedFilter.filterValues
+          this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearchSmtpSettings()
     }
   },
   created() {
-    this.callForSearchSmtpSettings()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

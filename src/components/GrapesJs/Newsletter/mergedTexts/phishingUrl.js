@@ -6,7 +6,8 @@ const phishingUrl = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    isUrl: true
   },
   content: {
     draggable: true,

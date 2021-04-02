@@ -7,6 +7,9 @@
     :title="getModalTitle"
     icon-name="mdi-email"
     class-name="new-smtp-setting"
+    :id="selectedItem ? 'edit-notification-template-modal' : 'new-notification-template-modal'"
+    confirm-button-id="btn-save--notification-template-modal"
+    cancel-button-id="btn-cancel--notification-template-modal"
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
@@ -52,7 +55,7 @@
           v-model="formValues.availableForRequests"
           :disabled="!showMakeAvailableFor"
         />
-        <form-group title="Email Template" class-name="email-template mt-2">
+        <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
           <email-template
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
@@ -135,6 +138,11 @@ import attachment from '@/components/GrapesJs/Newsletter/mergedTexts/attachment'
 import createDate from '@/components/GrapesJs/Newsletter/mergedTexts/createDate'
 import senderIP from '@/components/GrapesJs/Newsletter/mergedTexts/senderIP'
 import caseID from '@/components/GrapesJs/Newsletter/mergedTexts/caseID'
+import userEmail from '@/components/GrapesJs/Newsletter/mergedTexts/userEmail'
+import userAgent from '@/components/GrapesJs/Newsletter/mergedTexts/userAgent'
+import actionDate from '@/components/GrapesJs/Newsletter/mergedTexts/actionDate'
+import actionIP from '@/components/GrapesJs/Newsletter/mergedTexts/actionIP'
+import productName from '@/components/GrapesJs/Newsletter/mergedTexts/productName'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -387,6 +395,16 @@ export default {
           return senderIP
         case '{CASEID}':
           return caseID
+        case '{USEREMAIL}':
+          return userEmail
+        case '{USERAGENT}':
+          return userAgent
+        case '{ACTIONDATE}':
+          return actionDate
+        case '{ACTIONIP}':
+          return actionIP
+        case '{PRODUCTNAME}':
+          return productName
 
         default:
           break

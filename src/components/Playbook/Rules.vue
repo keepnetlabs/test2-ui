@@ -11,6 +11,7 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          type="delete"
           :confirm-button-disabled="deleteButtonDisabled"
           @handleClose="isWantToDelete = false"
           @handleConfirm="isWantToDeleteRuleConfirm(true)"
@@ -37,7 +38,9 @@
                 :table="matchingPlaybookData"
                 :columns="matchingInvestigationPlaybookRules.columns"
                 :pageSizes="[5, 10, 25]"
+                :show-all-records="showAllRecordsMatchingPopup"
                 :showHeader="true"
+                :total-number-of-records="totalNumberOfRecordsMatchingPopup"
                 :count-row="5"
                 :loading="isMatchingTableLoading"
                 :defaultSort="'subject'"
@@ -49,6 +52,11 @@
                 :cell-padding="15"
                 :empty="matchingInvestigationPlaybookRules.iEmpty"
                 @refreshAction="matchingPopupClick(selectedMatch, false)"
+                @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
+                @set-default-search="handleSetDefaultSearchForMatchingPlaybook"
+                @restore-default-search="handleRestoreDefaultSearchForMatchingPlaybook"
+                @clear-filters="handleClearFiltersForMatchingPlaybook"
+                :show-filter-options="false"
               />
             </v-list-item-content>
           </v-list-item>
@@ -66,9 +74,11 @@
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
+      :show-all-records="showAllRecords"
       ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :selectable="true"
       :filterable="true"
       :options="true"
@@ -89,6 +99,10 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
+      @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -125,6 +139,7 @@ import CreateOrEditRule from './CreateOrEditRule'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -157,10 +172,20 @@ export default {
     return {
       deleteButtonDisabled: false,
       tableData: [],
+      totalNumberOfRecords: 0,
+      showAllRecords: false,
+      showAllRecordsMatchingPopup: false,
+      totalNumberOfRecordsMatchingPopup: 0,
       labels,
       loading: false,
       matchingPlaybookData: [],
       showRuleModal: false,
+      matchingPopupPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'CreateDate',
+        ascending: true
+      },
       selectedMatch: null,
       showMatchingModal: false,
       isWantToDelete: false,
@@ -267,7 +292,23 @@ export default {
       },
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -339,6 +380,90 @@ export default {
     ...mapActions({
       getPlaybookList: 'playbook/getPlaybookList'
     }),
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      )
+      if (savedFilter) {
+        this.tableCredientials.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refRulesList.filterValues = savedFilter.filterValues
+          this.$refs.refRulesList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearchPlaybook()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refRulesList.filterValues = {}
+      this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      this.callForSearchPlaybook()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
+        JSON.stringify({
+          filter: this.tableCredientials.filter,
+          filterValues
+        })
+      )
+    },
+    getDefaultFilterAndSearchForMatchingPlaybook() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      )
+      if (savedFilter) {
+        this.tableCredientials.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refRulesList.filterValues = savedFilter.filterValues
+          this.$refs.refRulesList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForSearchPlaybook()
+    },
+    handleClearFiltersForMatchingPlaybook() {
+      this.isRestoredOrClearedFilters = true
+      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refRulesList.filterValues = {}
+      this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
+      this.callForSearchPlaybook()
+    },
+    handleRestoreDefaultSearchForMatchingPlaybook() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearchForMatchingPlaybook(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
+        JSON.stringify({
+          filter: this.tableCredientials.filter,
+          filterValues
+        })
+      )
+    },
+    handleAllRecordsMatchingPopupClick() {
+      this.matchingPopupPayload.pageSize = 75000
+      this.showAllRecordsMatchingPopup = false
+      this.matchingPopupClick(this.selectedMatch)
+    },
+    handleAllRecordsClick() {
+      this.tableCredientials.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchPlaybook()
+    },
     getTableEmptyStatus() {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
@@ -355,11 +480,13 @@ export default {
         {
           name: 'Edit',
           icon: 'mdi-pencil',
+          id: 'btn-edit--playbook-rules-row-actions',
           action: 'editAction'
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
+          id: 'btn-delete--playbook-rules-row-actions',
           action: 'deleteAction'
         }
       ]
@@ -411,15 +538,23 @@ export default {
           this.toggleMatchingModal()
         }
 
-        const payload = {
-          pageNumber: 1,
-          pageSize: 50000,
-          orderBy: 'CreateDate',
-          ascending: true
-        }
-        getMatchingIncidents(payload, match.resourceId)
+        getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
           .then((response) => {
-            const matchingPlaybookData = response.data.data
+            const {
+              data: { data }
+            } = response
+            const { totalNumberOfRecords = 0 } = data
+            this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
+
+            if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecordsMatchingPopup = true
+            }
+
+            if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
+              this.showAllRecordsMatchingPopup = false
+            }
+
+            const matchingPlaybookData = data
             this.matchingPlaybookData = matchingPlaybookData.results || []
           })
           .finally(() => (this.isMatchingTableLoading = false))
@@ -441,7 +576,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Playbook.${exportType.toLocaleLowerCase()}`
+            link.download = `Playbook.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})
@@ -557,7 +694,18 @@ export default {
     callForSearchPlaybook() {
       this.loading = true
       this.getPlaybookList(this.tableCredientials)
-        .then(() => {
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.tableCredientials.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData = this.playbookList.results
         })
         .finally(() => (this.loading = false))
@@ -574,7 +722,7 @@ export default {
   },
   mounted() {
     if (this.PERMISSIONS.SEARCH.hasPermission) {
-      this.callForSearchPlaybook()
+      this.getDefaultFilterAndSearch()
     }
     this.controlGetAndUpdatePermission(this.playbookId)
   },

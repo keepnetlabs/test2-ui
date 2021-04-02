@@ -26,6 +26,7 @@
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
           <div class="d-flex flex-row flex-end">
             <v-btn
+              id="threat-sharing-right-column-permission-modal-button"
               class="pa-0 k-dialog__button"
               text
               color="#2196f3"
@@ -156,6 +157,7 @@
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm"
           actionButtonText="DELETE"
+          type="delete"
         />
       </template>
     </app-dialog>
@@ -196,6 +198,7 @@
               text
               color="#f56c6c"
               class="k-dialog__button"
+              id="threat-sharing-right-column-invite-member-modal-cancel"
               @click="
                 openInviteModal = false
                 emailarray = []
@@ -204,6 +207,7 @@
             >
             <v-btn
               :disabled="inviteAllButtonDisabled"
+              id="threat-sharing-right-column-invite-member-modal-invite-all"
               text
               color="#2196f3"
               class="k-dialog__button"
@@ -220,7 +224,7 @@
         @click="createNewCommunity"
         block
         rounded
-        id="create-community-btn"
+        id="threat-sharing-right-column-create-a-new-community-button"
         >CREATE A NEW COMMUNITY
       </v-btn>
       <v-btn
@@ -229,7 +233,7 @@
         @click="postIncident"
         block
         rounded
-        id="post-inc-btn"
+        id="threat-sharing-right-column-post-incident-button"
         :disabled="!checkPermissions('community-posts', 'POST')"
         >POST INCIDENT
       </v-btn>
@@ -309,7 +313,7 @@
               </div>
             </v-menu>
           </div>
-          <div class="right-side-post-container pt-2 pb-9">
+          <div class="right-side-post-container pt-2 pb-8">
             <span class="about-community-statement">{{ communityDetails.description }}</span>
             <v-row>
               <v-col cols="12" sm="5" class="about-community-table-td pb-0">
@@ -332,6 +336,7 @@
                         (!!communityDetails && communityDetails.privacyStatusName === 'Public')) &&
                       checkPermissions('communities/{resourceId}/invite', 'POST')
                     "
+                    id="threat-sharing-right-column-invite-plus"
                     href="#"
                     class="pl-4"
                     @click="openInviteModal = true"
@@ -386,11 +391,19 @@
             <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
               <div class="pt-2">
                 <div class="right-side-sub-title pb-1">
-                  <a @click="goToPostDetails(post)">{{ post.title }}</a>
+                  <a
+                    id="threat-sharing-right-column-go-to-post-details-your-posts-button"
+                    @click="goToPostDetails(post)"
+                    >{{ post.title }}</a
+                  >
                 </div>
                 <div class="right-side-desc pb-1">
                   in
-                  <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
+                  <a
+                    id="threat-sharing-right-column-go-to-community-details-your-posts-button"
+                    @click="goToCommunityDetails(post)"
+                    >{{ post.communityName }}</a
+                  >
                 </div>
                 <div class="right-side-like-comment-wrapper">
                   <div class="right-side-like">
@@ -433,11 +446,19 @@
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
                 <div class="right-side-post-container pt-2">
                   <div class="right-side-sub-title pb-1">
-                    <a @click="goToPostDetails(post)">{{ post.postTitle }}</a>
+                    <a
+                      id="threat-sharing-right-column-go-to-post-details-top-posts-button"
+                      @click="goToPostDetails(post)"
+                      >{{ post.postTitle }}</a
+                    >
                   </div>
                   <div class="right-side-desc pb-1">
                     in
-                    <a @click="goToCommunityDetails(post)">{{ post.communityName }}</a>
+                    <a
+                      id="threat-sharing-right-column-go-to-community-details-top-posts-button"
+                      @click="goToCommunityDetails(post)"
+                      >{{ post.communityName }}</a
+                    >
                   </div>
                   <div class="right-side-like-comment-wrapper">
                     <div class="right-side-like">
@@ -496,21 +517,27 @@
                   </div>
                 </div>
                 <div class="suggested-right-action">
-                  <v-btn class="suggested-btn" rounded v-if="commun.isJoined">
+                  <v-btn
+                    id="threat-sharing-right-column-is-joined"
+                    class="suggested-btn"
+                    rounded
+                    v-if="commun.isJoined"
+                  >
                     <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
                     <span class="pr-2">Member</span>
                   </v-btn>
                   <v-btn
                     @click="joinCommunity(commun)"
                     class="suggested-btn"
+                    id="threat-sharing-right-column-join-button"
                     block
                     rounded
                     v-else
                     :disabled="commun.isJoined || isJoinCommunityButtonDisabled"
                     style="background-color: #2196f3 !important;"
                   >
-                    <v-icon v-if="!commun.isJoined" class="pr-2">mdi-account-circle </v-icon>
-                    <v-icon v-if="commun.isJoined" class="pr-2" style="color: #fff !important;"
+                    <v-icon v-if="!commun.isJoined" class="mr-2">mdi-account-circle </v-icon>
+                    <v-icon v-if="commun.isJoined" class="mr-2" style="color: #fff !important;"
                       >mdi-account-clock
                     </v-icon>
                     <div v-if="commun.privacyStatusName != 'Private'" :key="commun.resourceId">

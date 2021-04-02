@@ -4,7 +4,8 @@
     icon="mdi-delete"
     :title="getTitle"
     @changeStatus="closeModal"
-    :subtitle="labels.RestApi"
+    :subtitle="getSubtitle"
+    id="rest-api-delete-popup"
   >
     <template v-slot:app-dialog-body>
       {{ labels.DeleteRestApiBody }}
@@ -12,6 +13,9 @@
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
         :confirm-button-disabled="saveDisable"
+        type="delete"
+        cancel-button-id="btn-cancel--rest-api-popup"
+        confirm-button-id="btn-delete--rest-api-popup"
         action-button-text="DELETE"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
@@ -49,7 +53,10 @@ export default {
   },
   computed: {
     getTitle() {
-      return `${labels.Delete} ${this.selectedRow['clientName']}`
+      return `Delete Rest API`
+    },
+    getSubtitle() {
+      return `${this.selectedRow.clientName}`
     }
   },
   methods: {

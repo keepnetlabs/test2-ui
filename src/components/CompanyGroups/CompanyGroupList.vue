@@ -17,17 +17,19 @@
 
     <datatable
       v-bind="tableState"
+      id="company-groups-data-table"
+      ref="refGroupDataList"
+      :key="tableKey"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
-      ref="refGroupDataList"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-downloadable="true"
-      @downloadEvent="handleTableDownload"
-      id="company-groups-data-table"
+      :show-all-records="showAllRecords"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
@@ -35,12 +37,17 @@
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
       @addButton="addButton"
+      @downloadEvent="handleTableDownload"
       @delete="handleTableItemDelete"
       @editAction="editAction"
       @onEmptyBtnClicked="addButton"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
+      @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" class="datatable-link">
@@ -55,7 +62,10 @@
 import Datatable from '../../components/DataTable'
 import { deleteCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import {
+  COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS
+} from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission } from '@/utils/functions'
 
@@ -73,6 +83,7 @@ export default {
   },
   data() {
     return {
+      tableKey: 'key-table-company-group',
       loading: false,
       tableData: [],
       isShowDeleteModal: false,
@@ -125,18 +136,21 @@ export default {
           download: false
         },
         iEmpty: {
+          id: 'btn-empty--company-group',
           message: 'No company groups defined',
           btn: 'ADD A COMPANY GROUP',
           icon: 'mdi-account-plus'
         },
         addButton: {
           show: true,
+          id: 'btn-add--company-group',
           action: 'addButton',
           tooltip: 'Add Company Group',
           disabled: !this.checkPermissions('company-groups', 'POST')
         },
         rowActions: [
           {
+            id: 'btn-edit--company-group-row-actions',
             name: 'Edit this row',
             icon: 'mdi-pencil',
             action: 'editAction',
@@ -144,6 +158,7 @@ export default {
             disabled: !this.checkPermissions('company-groups/{resourceId}', 'PUT')
           },
           {
+            id: 'btn-delete--company-group-row-actions',
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',
@@ -151,8 +166,25 @@ export default {
           }
         ]
       },
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       payload: {
-        pageSize: 30000,
+        pageSize: 1000,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultPayload: {
+        pageSize: 1000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -199,13 +231,83 @@ export default {
             }
           }
         }
-        this.tableState = { persistentState: tableState }
+        this.loading = true
+        searchCompanyGroups(this.payload)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            tableState.initialData = data.results
+
+            let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
+            if (maxPage > tableState.currentPage) {
+              maxPage = tableState.currentPage
+            }
+            tableState.tableData = tableState.initialData.slice(
+              (maxPage - 1) * tableState.rowCount,
+              maxPage * tableState.rowCount
+            )
+            tableState.multipleSelection = tableState.initialData.filter((row) => {
+              return tableState.multipleSelection.find((selection) => {
+                return row.resourceId === selection.resourceId
+              })
+            })
+            if (tableState.search) {
+              tableState.filteredData = tableState.initialData.filter((row) => {
+                return tableState.filteredData.find((filteredRow) => {
+                  return filteredRow.resourceId === row.resourceId
+                })
+              })
+            }
+
+            this.tableState = { persistentState: tableState }
+            this.tableKey = Math.random().toString().substring(0, 5)
+          })
+          .finally(() => (this.loading = false))
       }
     } else {
+      this.getDefaultFilterAndSearch()
       this.getTableData()
     }
   },
   methods: {
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST,
+        JSON.stringify({
+          filter: this.payload.filter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.getTableData()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.$refs.refGroupDataList.filterValues = {}
+      this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST)
+      this.getTableData()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refGroupDataList.filterValues = savedFilter.filterValues
+          this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+    },
     handleTableDownload(downloadTypes) {
       const searchFilter = {
         Condition: 'OR',
@@ -234,11 +336,18 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Company Groups.${item.toLocaleLowerCase()}`
+            link.download = `Company Groups.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})
       })
+    },
+    handleAllRecordsClick() {
+      this.payload.pageSize = 75000
+      this.showAllRecords = false
+      this.getTableData()
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -247,7 +356,18 @@ export default {
       this.loading = true
       searchCompanyGroups(this.payload)
         .then((response) => {
-          this.tableData = response.data.data.results.length > 0 ? response.data.data.results : []
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+          this.tableData = data.results.length > 0 ? data.results : []
         })
         .catch((error) => {
           this.tableData = []

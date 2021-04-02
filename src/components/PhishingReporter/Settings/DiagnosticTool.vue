@@ -12,9 +12,9 @@
           Helper tool to check status of the add-in and diagnose problems
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content v-if="showHeaderLink">
+      <v-list-item-content v-if="showHeaderLink" style="text-align: right;">
         <a
-          href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+          href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
           class="other-settings__link"
           target="_blank"
         >
@@ -200,6 +200,7 @@ export default {
   }
 
   &__checkbox {
+    z-index: 5;
     @media (min-width: 768px) {
       margin-top: 8px !important;
     }

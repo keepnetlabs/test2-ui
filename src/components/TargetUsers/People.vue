@@ -76,6 +76,9 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -84,12 +87,14 @@
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn
                   :disabled="!checkPermissions('target-users/search', 'POST')"
-                  class="button-new mr-1"
+                  id="btn-add--target-users-people"
+                  class="button-new"
+                  style="margin-right: 10px;"
                   rounded
                   color="#2196f3"
                   v-on="{ ...tooltip, ...menu }"
                 >
-                  <v-icon>mdi-plus</v-icon>
+                  <v-icon style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
                   <span class="button-new__text">NEW</span>
                 </v-btn>
               </template>
@@ -97,8 +102,13 @@
             </v-tooltip>
           </template>
           <v-list>
-            <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
-              <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+            <v-list-item
+              v-for="item in addUsersItems"
+              :key="item.id"
+              :id="item.id"
+              @click="handleAddUsers(item.text)"
+            >
+              <v-list-item-title class="add-users__title">{{ item.text }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -158,6 +168,7 @@ import {
 } from '@/api/targetUsers'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -186,6 +197,27 @@ export default {
   emits: ['call-for-company-licenses'],
   data: () => ({
     payload: {
+      pageNumber: 1,
+      pageSize: 50000,
+      orderBy: 'CreateTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBody: {
       pageNumber: 1,
       pageSize: 50000,
       orderBy: 'CreateTime',
@@ -337,17 +369,20 @@ export default {
       iEmpty: {
         message: LABEL_STORE.NO_TARGET_USER_ADDED,
         btn: 'ADD A USER',
+        id: 'btn-empty--target-users-people',
         icon: 'mdi-account-plus'
       },
       addButton: {
         show: true,
-        action: 'addButton'
+        action: 'addButton',
+        id: 'btn-add--target-users-people'
       },
       rowActions: [
         {
           name: 'Edit this row',
           icon: 'mdi-pencil',
           action: 'editTargetUsers',
+          id: 'btn-edit--target-users-people-row-actions',
           isNotShow: true,
           disabled: !checkPermission('system-users/{resourceId}', 'PUT')
         },
@@ -355,14 +390,55 @@ export default {
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'deleteAction',
+          id: 'btn-delete--target-users-people-row-actions',
           disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
         }
       ]
     },
-    addUsersItems: ['Add users manually', 'Import from a file'],
+    addUsersItems: [
+      { text: 'Add users manually', id: 'btn-add-users-manually--target-users-people' },
+      { text: 'Import from a file', id: 'btn-add-users-import-from-file--target-users-people' }
+    ],
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
+          this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.payload = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refPeopleTable.filterValues = {}
+      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS)
+      this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS,
+        JSON.stringify({
+          filter: this.payload.filter,
+          filterValues
+        })
+      )
+    },
     setQueryValuesToPayload({ page, size }) {
       //generic
       const parsedPage = parseInt(page)
@@ -472,11 +548,11 @@ export default {
     },
     handleAddUsers(item) {
       switch (item) {
-        case this.addUsersItems[0]:
+        case this.addUsersItems[0].text:
           this.selectedRow = null
           this.isWantToShowAddUsersModal = true
           break
-        case this.addUsersItems[1]:
+        case this.addUsersItems[1].text:
           this.isWantToImportFile = true
           break
         default:
@@ -641,23 +717,66 @@ export default {
           })
 
           const columnsOfCustomFields = this.customFields.map((field) => {
+            const { name, fieldDataType } = field
+            const filterableProps = {}
+            switch (fieldDataType.toLowerCase()) {
+              case 'string':
+                filterableProps['filterableType'] = 'text'
+                break
+              case 'email':
+                filterableProps['filterableType'] = 'text'
+                break
+              case 'number':
+                filterableProps['filterableType'] = 'text'
+                break
+              case 'boolean':
+                filterableProps['filterableType'] = 'select'
+                filterableProps['filterableItems'] = [
+                  { text: 'Yes', value: 1 },
+                  { text: 'No', value: 0 }
+                ]
+                break
+              case 'date':
+                filterableProps['filterableType'] = 'date'
+                break
+              case 'datetime':
+                filterableProps['filterableType'] = 'date'
+                break
+              default:
+                break
+            }
             return {
-              property: field.name,
+              property: name,
               type: 'text',
-              sortable: true,
+              sortable: false,
               filterable: true,
-              label: field.name,
+              hideSort: true,
+              label: name,
               align: 'left',
               show: true,
-              width: 80 + field.name.length * 7,
-              isCustomField: true
+              width: 80 + name.length * 7,
+              ...filterableProps
             }
           })
-          this.tableOptions.columns = [
+
+          const newColumns = [
             ...this.tableOptions.defaultColumns,
             ...columnsOfCustomFields,
             ...this.tableOptions.lastColumns
           ]
+
+          if (this.tableOptions.columns.length) {
+            this.tableOptions.columns.forEach((column) => {
+              const findedColumn = newColumns.find(
+                (newColumn) => newColumn.property === column.property
+              )
+              if (!findedColumn) {
+                return
+              }
+              findedColumn.show = column.show
+            })
+          }
+          this.tableOptions.columns = newColumns
         })
         .catch(() => {
           this.tableOptions.columns = [
@@ -737,18 +856,19 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Target Users.${exportType.toLocaleLowerCase()}`
+          link.download = `Target Users.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
     }
   },
   created() {
-    // this.tableOptions.columns = [...this.tableOptions.columns, ...this.tableOptions.lastColumns]
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
-    this.callForGetTargetUserCustomFieldsByCompanyId()
+    this.getDefaultFilterAndSearch()
   },
   mounted() {}
 }

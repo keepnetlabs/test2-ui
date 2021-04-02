@@ -10,7 +10,8 @@ const auth = {
     user: {},
     companyName: '',
     userRoleName: '',
-    logoUrl: ''
+    logoUrl: '',
+    selectedCompanyName: ''
   },
   getters: {
     userGetter: (state) => state.user

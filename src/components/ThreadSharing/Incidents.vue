@@ -5,7 +5,7 @@
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
-      :z-index="9"
+      :z-index="22"
       color="white"
       v-if="showPostIncident"
     >
@@ -34,7 +34,7 @@
                   outlined
                   class="filter-field search-wrapper__search-filter"
                   v-model.trim="search"
-                  id="incidents-search-textfield"
+                  id="threat-sharing-incidents-search-textfield"
                   hide-details
                   prepend-inner-icon="mdi-magnify"
                   :disabled="incidentLoading"
@@ -55,6 +55,7 @@
                   item-value="resourceId"
                   @change="!isLoadState && getIncidentList('', '', true)"
                   :disabled="incidentLoading"
+                  id="threat-sharing-incidents-search-company"
                 />
               </div>
               <div class="d-flex">
@@ -72,6 +73,7 @@
                   @change="!isLoadState && getIncidentList('', '', true)"
                   :slots="{ selection: true }"
                   :disabled="incidentLoading"
+                  id="threat-sharing-incidents-search-threat"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -143,7 +145,7 @@
                     @click="showPostIncident = true"
                     block
                     rounded
-                    id="post-inc-btn"
+                    id="threat-sharing-post-incident-button"
                   >
                     Post The First Incident
                   </div>

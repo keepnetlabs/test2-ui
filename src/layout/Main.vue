@@ -1,105 +1,15 @@
 <template>
   <v-app class="layout-container">
     <app-snackbar />
-    <app-dialog
-      :status="openPasswordChange"
-      v-if="openPasswordChange"
-      icon="mdi-lock"
-      title="Change Password"
-      size="big"
-      @changeStatus="openPasswordChange = !openPasswordChange"
-    >
-      <template v-slot:app-dialog-body>
-        <v-card-text class="password-modal">
-          <div v-if="newPasswordError" class="login-error-container">
-            <div v-if="newPasswordError" class="login-error-wrapper">
-              <div class="login-error-icon dark pr-2">
-                <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
-              </div>
-              <div class="login-error-message pr-1">
-                {{ newPasswordErrorText }}
-              </div>
-            </div>
-          </div>
-          <div class="new-password-wrapper">
-            <v-row align="center" justify="center">
-              <v-col sm="12" class="p-0">
-                <v-form ref="newPasswordByMain">
-                  <div>
-                    <label class="new-password-wrapper__label mb-2">Current Password</label>
-                    <v-text-field
-                      v-model="currentPassword"
-                      label="Current password"
-                      class="reset-pass-textfield mb-6"
-                      :rules="[rules.required]"
-                      @click="newPasswordError = false"
-                      outlined
-                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                      :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                      :type="show1 ? '' : 'password'"
-                      @click:append="show1 = !show1"
-                      autocomplete="disabled"
-                    ></v-text-field>
-                  </div>
-                  <div>
-                    <label class="new-password-wrapper__label mb-2">New Password</label>
-                    <v-text-field
-                      v-model="newPassword"
-                      label="Enter new password"
-                      class="reset-pass-textfield mb-6"
-                      :rules="[rules.required, rules.minPassword, rules.equal]"
-                      @click="newPasswordError = false"
-                      outlined
-                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                      :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                      :type="show2 ? '' : 'password'"
-                      @click:append="show2 = !show2"
-                      autocomplete="false"
-                    ></v-text-field>
-                  </div>
-                  <div class="pl-2 pr-2">
-                    <PasswordChecker :password="newPassword" />
-                  </div>
-                  <div>
-                    <label class="new-password-wrapper__label mb-2">Confirm Password</label>
-                    <v-text-field
-                      v-model="reNewPassword"
-                      :rules="[rules.required, rules.minPassword, rules.equal]"
-                      label="Enter new password again"
-                      class="reset-pass-textfield"
-                      @click="newPasswordError = false"
-                      :append-icon="showNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                      :type="showNewPassword ? '' : 'password'"
-                      @click:append="showNewPassword = !showNewPassword"
-                      outlined
-                      hint="At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number"
-                      autocomplete="off"
-                    ></v-text-field>
-                  </div>
-                </v-form>
-              </v-col>
-            </v-row>
-          </div>
-        </v-card-text>
-      </template>
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-          <v-btn
-            text
-            color="#f56c6c"
-            class="k-dialog__button"
-            @click="openPasswordChange = false"
-            >{{ labels.Cancel }}</v-btn
-          >
-          <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword">{{
-            labels.Confirm
-          }}</v-btn>
-        </div>
-      </template>
-    </app-dialog>
     <v-dialog v-model="feedbackdialog" v-if="feedbackdialog" persistent :width="600">
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
+    <SecurityModal
+      :openPasswordChange="openPasswordChange"
+      @changePasswordChange="changePasswordChange"
+      v-if="openPasswordChange"
+      :rules="rules"
+    />
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate />
@@ -118,7 +28,10 @@
         width="600"
         @click:outside="setSwitchDialog(!isSwitchDialogOpen)"
       >
-        <switch-account v-if="isSwitchDialogOpen"></switch-account>
+        <switch-account
+          v-if="isSwitchDialogOpen"
+          :navigatorMenuProps="navigatorMenuProps"
+        ></switch-account>
       </v-dialog>
     </v-row>
     <v-overlay :absolute="false" :opacity="0.46" :value="sessionCheck" :z-index="999">
@@ -130,34 +43,8 @@
       </div>
     </v-overlay>
     <div class="layout-container__background"></div>
-
-    <v-navigation-drawer
-      color="rgba(255, 255, 255, 0.9)"
-      app
-      width="270"
-      v-model="getDrawer"
-      :mini-variant.sync="getMini"
-      transition="scale-transition"
-      :mobile-break-point="767"
-      permanent
-      touchless
-      class="page-nav"
-      :class="{ 'bg-blur': sessionCheck }"
-    >
-      <v-app-bar-nav-icon
-        class="page-nav__menu-toggle menu-icon-wrapper"
-        color="blue"
-        @click.stop="onNavigationClick()"
-        :style="getDrawerPadding2"
-        height="48"
-        width="48"
-        x-large
-      ></v-app-bar-nav-icon>
-      <v-overlay
-        :z-index="12"
-        :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
-      ></v-overlay>
-      <div>
+    <div class="page-nav__left-main">
+      <div class="page-nav__fixed-content" v-if="!mini && drawer">
         <div class="page-nav__logo-wrapper">
           <div
             v-show="isTourActive"
@@ -175,338 +62,388 @@
             <!-- Only renders when the device is offline -->
             <div slot="offline"></div>
           </offline>
+          <v-app-bar-nav-icon
+            class="page-nav__menu-toggle menu-icon-wrapper"
+            color="blue"
+            @click.stop="onNavigationClick()"
+            :style="getDrawerPadding2"
+            height="48"
+            width="48"
+            x-large
+          ></v-app-bar-nav-icon>
           <div class="v-responsive">
-            <img
-              v-if="!mini && drawer"
-              class="page-nav__logo-wrapper__logo"
-              src="../assets/img/logo-full-color.png"
-            />
+            <img v-if="!mini && drawer" class="page-nav__logo-wrapper__logo" :src="getMainLogo" />
             <div v-else>
               <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
             </div>
           </div>
         </div>
-      </div>
-      <div class="d-flex justify-center flex-wrap user-wrapper">
-        <div class="user-name-dropdown">
-          <div class="user-name-dropdown__menu">
-            <v-menu
-              class="user-name-dropdown__menu-item"
-              :disabled="false"
-              :absolute="false"
-              :open-on-hover="false"
-              :close-on-click="true"
-              :close-on-content-click="true"
-              :offset-x="true"
-              :offset-y="false"
-              :z-index="999"
-              :nudge-right="19"
-              :nudge-top="25"
-              max-width="226"
-              @click="removeTooltip"
-            >
-              <template #activator="{ on: onMenu }">
-                <div
-                  class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
-                  v-on="onMenu"
-                >
-                  <div class="user-name-dropdown-font__tooltip-wrapper">
-                    <div class="user-name-dropdown__logo">
-                      <img v-if="!!getLogoImage" :src="getLogoImage" />
-                    </div>
-                    <div class="user-name-dropdown__details">
-                      <v-tooltip
-                        bottom
-                        :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
-                        ref="accountTooltip"
-                      >
-                        <template #activator="{ on: onTooltip }">
-                          <span v-on="{ ...onTooltip }" class="user-name-dropdown__details-item">{{
-                            getSelectedCompanyName
-                          }}</span>
-                        </template>
-                        <span>{{ getSelectedCompanyName }}</span>
-                      </v-tooltip>
-                      <v-tooltip
-                        bottom
-                        :disabled="getFirstName && getFirstName.length < 15"
-                        ref="firstNameTooltip"
-                      >
-                        <template #activator="{ on: onTooltipFirstName }">
-                          <span
-                            v-on="{ ...onTooltipFirstName }"
-                            class="user-name-dropdown__details-item"
-                            >{{ getFirstName }}</span
-                          >
-                        </template>
-                        <span>{{ getFirstName }}</span>
-                      </v-tooltip>
-                      <v-tooltip
-                        bottom
-                        :disabled="getRolename && getRolename.length < 15"
-                        ref="roleTooltip"
-                      >
-                        <template #activator="{ on: onTooltipRoleName }">
-                          <span
-                            v-on="{ ...onTooltipRoleName }"
-                            class="user-name-dropdown__details--item"
-                            >{{ getRolename }}</span
-                          >
-                        </template>
-                        <span>{{ getRolename }}</span>
-                      </v-tooltip>
-                    </div>
-                    <div class="user-name-dropdown__icon">
-                      <v-icon class="user-name-dropdown-font__icon">mdi-chevron-right</v-icon>
+        <div :class="scroll()">
+          <div class="user-name-dropdown">
+            <div class="user-name-dropdown__menu">
+              <v-menu
+                class="user-name-dropdown__menu-item"
+                :disabled="false"
+                :absolute="false"
+                :open-on-hover="false"
+                :close-on-click="true"
+                :close-on-content-click="true"
+                :offset-x="true"
+                :offset-y="false"
+                :z-index="999"
+                :nudge-right="19"
+                :nudge-top="25"
+                max-width="226"
+                @click="removeTooltip"
+              >
+                <template #activator="{ on: onMenu }">
+                  <div
+                    class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
+                    v-on="onMenu"
+                  >
+                    <div class="user-name-dropdown-font__tooltip-wrapper">
+                      <div class="user-name-dropdown__logo">
+                        <img v-if="!!getLogoImage" :src="getLogoImage" />
+                      </div>
+                      <div class="user-name-dropdown__details">
+                        <v-tooltip
+                          bottom
+                          :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
+                          ref="accountTooltip"
+                        >
+                          <template #activator="{ on: onTooltip }">
+                            <span
+                              v-on="{ ...onTooltip }"
+                              class="user-name-dropdown__details-item"
+                              >{{ getSelectedCompanyName }}</span
+                            >
+                          </template>
+                          <span>{{ getSelectedCompanyName }}</span>
+                        </v-tooltip>
+                        <v-tooltip
+                          bottom
+                          :disabled="getFirstName && getFirstName.length < 15"
+                          ref="firstNameTooltip"
+                        >
+                          <template #activator="{ on: onTooltipFirstName }">
+                            <span
+                              v-on="{ ...onTooltipFirstName }"
+                              class="user-name-dropdown__details-item"
+                              >{{ getFirstName }}</span
+                            >
+                          </template>
+                          <span>{{ getFirstName }}</span>
+                        </v-tooltip>
+                        <v-tooltip
+                          bottom
+                          :disabled="getRolename && getRolename.length < 15"
+                          ref="roleTooltip"
+                        >
+                          <template #activator="{ on: onTooltipRoleName }">
+                            <span
+                              v-on="{ ...onTooltipRoleName }"
+                              class="user-name-dropdown__details--item"
+                              >{{ getRolename }}</span
+                            >
+                          </template>
+                          <span>{{ getRolename }}</span>
+                        </v-tooltip>
+                      </div>
+                      <div class="user-name-dropdown__icon">
+                        <v-icon class="user-name-dropdown-font__icon">mdi-chevron-right</v-icon>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
+                </template>
 
-              <v-list class="user-name-dropdown__content">
-                <v-list-item
-                  v-for="item in dropdownData"
-                  :key="item.key"
-                  @click="changeDropdownItem(item.value)"
-                  v-if="setDropdownVisibility(item)"
-                  :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
-                >
-                  <v-list-item-title>
-                    <v-icon>{{ item.icon }}</v-icon>
-                    {{ item.text }}
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-        </div>
-        <div class="user-role-wrapper"></div>
-      </div>
-      <v-list dense>
-        <div
-          v-show="isTourActive"
-          class="tour-btn-container tour-six"
-          :class="{ z_index_custom_1: getTourData['5'] }"
-        >
-          <div class="tour-btn-wrapper">
-            <div class="tour-btn-circle">
-              <div class="tour-btn-circle-inner"></div>
+                <v-list class="user-name-dropdown__content">
+                  <v-list-item
+                    v-for="item in dropdownData"
+                    :key="item.key"
+                    @click="changeDropdownItem(item.value)"
+                    v-if="setDropdownVisibility(item)"
+                    :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
+                  >
+                    <v-list-item-title>
+                      <v-icon>{{ item.icon }}</v-icon>
+                      {{ item.text }}
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
           </div>
+          <div class="user-role-wrapper"></div>
         </div>
+      </div>
+      <div class="page-nav__left-menu-mini" v-if="mini && drawer">
+        <v-app-bar-nav-icon
+          class="page-nav__menu-toggle menu-icon-wrapper"
+          color="blue"
+          @click.stop="onNavigationClick()"
+          :style="getDrawerPadding2"
+          height="48"
+          width="48"
+          id="mini-menu"
+          x-large
+          style="left: 22px !important;"
+        ></v-app-bar-nav-icon>
 
-        <router-link v-if="checkDashboardPermission()" to="/" class="menu-link-default">
-          <app-router-item icon="mdi-home" title="Dashboard" />
-        </router-link>
-        <router-link
-          to="/threat-sharing"
-          class="menu-link-default"
-          :class="[routerName === 'Community' && 'active-link']"
-          @click.native="deleteTSVuexData"
-          v-if="
-            !checkPermissionMultiple(
-              [
-                'communities/search/all|POST',
-                'communities/search/my|POST',
-                'community-posts/search|POST'
-              ],
-              false
-            )
-          "
-        >
-          <app-router-item icon="mdi-flag" title="Threat Sharing" />
-        </router-link>
-        <v-list-group
-          prepend-icon="mdi-flash"
-          no-action
-          :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
-          v-if="checkIncidentResponderPermissions()"
-        >
-          <template v-slot:activator>
-            <v-list-item-content class="menu-list-item">
-              <v-list-item-title>Incident Responder</v-list-item-title>
-            </v-list-item-content>
-          </template>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
+        <div class="v-responsive">
+          <div v-if="mini && drawer">
+            <img v-if="!!getMiniLogo" :src="getMiniLogo" class="menu-mini-img" />
+          </div>
+        </div>
+      </div>
+      <v-navigation-drawer
+        color="rgba(255, 255, 255, 0.9)"
+        app
+        width="285"
+        v-model="getDrawer"
+        :mini-variant.sync="getMini"
+        transition="scale-transition"
+        :mobile-break-point="767"
+        permanent
+        touchless
+        class="page-nav"
+        :class="{ 'bg-blur': sessionCheck }"
+      >
+        <v-overlay
+          :z-index="12"
+          :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
+        ></v-overlay>
+        <v-list dense class="page-nav__content" ref="pageNavContent">
+          <div
+            v-show="isTourActive"
+            class="tour-btn-container tour-six"
+            :class="{ z_index_custom_1: getTourData['5'] }"
+          >
+            <div class="tour-btn-wrapper">
+              <div class="tour-btn-circle">
+                <div class="tour-btn-circle-inner"></div>
+              </div>
+            </div>
+          </div>
+
+          <router-link v-if="checkDashboardPermission()" to="/" class="menu-link-default">
+            <app-router-item icon="mdi-home" title="Dashboard" />
+          </router-link>
+          <router-link
+            to="/threat-sharing"
+            class="menu-link-default"
+            :class="[routerName === 'Community' && 'active-link']"
+            @click.native="deleteTSVuexData"
             v-if="
-              checkPermissionMultiple([
-                'ir/dashboard/running-investigations|GET',
-                'companies/roi-settings|GET',
-                'ir/dashboard/top-rules|GET',
-                'notified-emails/search|POST'
-              ])
+              !checkPermissionMultiple(
+                [
+                  'communities/search/all|POST',
+                  'communities/search/my|POST',
+                  'community-posts/search|POST'
+                ],
+                false
+              )
             "
           >
-            <v-list-item-content class="menu-item-content">
-              <router-link
-                to="/incident-responder"
-                class="menu-link-default"
-                :class="[
-                  (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
-                    'active-link'
-                ]"
-              >
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Incident Responder</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['investigations/search|POST'])"
+            <app-router-item icon="mdi-flag" title="Threat Sharing" />
+          </router-link>
+          <v-list-group
+            prepend-icon="mdi-flash"
+            no-action
+            :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
+            v-if="checkIncidentResponderPermissions()"
           >
-            <v-list-item-content class="menu-item-content">
-              <router-link
-                to="/investigations"
-                class="menu-link-default"
-                :class="[routerName === 'Investigation Details' && 'active-link']"
-              >
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Investigations</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/integrations" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Integrations</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['playbooks/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/playbook" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Playbook</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/mailConfiguration" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Mail Configurations</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Incident Responder</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="
+                checkPermissionMultiple([
+                  'ir/dashboard/running-investigations|GET',
+                  'companies/roi-settings|GET',
+                  'ir/dashboard/top-rules|GET',
+                  'notified-emails/search|POST'
+                ])
+              "
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/incident-responder"
+                  class="menu-link-default"
+                  :class="[
+                    (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
+                      'active-link'
+                  ]"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Incident Responder</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['investigations/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/investigations"
+                  class="menu-link-default"
+                  :class="[routerName === 'Investigation Details' && 'active-link']"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Investigations</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link to="/integrations" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Integrations</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['playbooks/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link to="/playbook" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Playbook</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link to="/mailConfiguration" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Mail Configurations</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
 
-        <router-link
-          to="/phishing-reporter"
-          class="menu-link-default"
-          v-if="checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])"
-        >
-          <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
-        </router-link>
-        <v-list-group
-          prepend-icon="mdi-briefcase"
-          no-action
-          :class="['menu-with-item menu-link-default', getCompanyClasses]"
-        >
-          <template v-slot:activator>
-            <v-list-item-content class="menu-list-item">
-              <v-list-item-title>Company</v-list-item-title>
-            </v-list-item-content>
-          </template>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
+          <router-link
+            to="/phishing-reporter"
+            class="menu-link-default"
+            :class="[routerName === 'Phishing Reporter' && 'active-link']"
             v-if="
-              checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST'])
+              checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])
             "
           >
-            <v-list-item-content class="menu-item-content">
-              <router-link
-                to="/target-users"
-                class="menu-link-default"
-                :class="[
-                  (routerName === 'Target Group Users' || routerName === 'Target Users') &&
-                    'active-link'
-                ]"
-              >
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Target Users</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="
-              this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
-              checkPermissionMultiple(['company-groups|GET', 'companies/search|POST'])
-            "
+            <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
+          </router-link>
+          <v-list-group
+            prepend-icon="mdi-briefcase-variant"
+            no-action
+            :class="['menu-with-item menu-link-default', getCompanyClasses]"
           >
-            <v-list-item-content class="menu-item-content">
-              <router-link
-                to="/companies"
-                class="menu-link-default"
-                :class="[
-                  (routerName === 'Company Group Details' || routerName === 'Companies') &&
-                    'active-link'
-                ]"
-              >
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Companies</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Company</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="
+                checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST'])
+              "
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/target-users"
+                  class="menu-link-default"
+                  :class="[
+                    (routerName === 'Target Group Users' || routerName === 'Target Users') &&
+                      'active-link'
+                  ]"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Target Users</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="
+                this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
+                checkPermissionMultiple(['company-groups|GET', 'companies/search|POST'])
+              "
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/companies"
+                  class="menu-link-default"
+                  :class="[
+                    (routerName === 'Company Group Details' || routerName === 'Companies') &&
+                      'active-link'
+                  ]"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Companies</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
 
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/company-settings" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Company Settings</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['system-users/search|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/system-users" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">System Users</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item
-            style="padding-left: 0 !important; margin-left: -5px;"
-            v-if="checkPermissionMultiple(['audit-logs|POST'])"
-          >
-            <v-list-item-content class="menu-item-content">
-              <router-link to="/audit" class="menu-link-default">
-                <v-list-item-title class="menu-item-wrapper">
-                  <span class="menu-item-span">Audit Log</span>
-                </v-list-item-title>
-              </router-link>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-group>
-      </v-list>
-    </v-navigation-drawer>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link to="/company-settings" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Company Settings</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['system-users/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link to="/system-users" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">System Users</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              :class="[routerName === 'Audit' && 'active-link']"
+              v-if="checkPermissionMultiple(['audit-logs|POST'])"
+            >
+              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
+                <router-link to="/audit" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Audit Log</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+        </v-list>
+        <navigation-drawer-footer :is-mini="getMini" :navigatorMenuProps="navigatorMenuProps" />
+      </v-navigation-drawer>
+    </div>
+
     <!-- Header Begin -->
     <v-app-bar
       class="page-header elevation-0 transparent"
@@ -540,12 +477,12 @@
               {{ companyGroupName || $route.params.name }}
             </h1>
             <h1 v-else-if="routerName === 'Target Group Users'">
-              {{ $route.params.label }}
+              {{ getTargetGroupUsersRouterName }}
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
-          <Breadcrumb :base-name="getSelectedCompanyName" />
+          <Breadcrumb :base-name="getBreadCrumbBaseName" />
         </div>
       </div>
       <div class="page-header__actions">
@@ -624,7 +561,7 @@
     </v-app-bar>
     <!-- Header End -->
     <v-content
-      :style="getMini ? 'padding-left: 63px' : 'padding-left: 270px'"
+      :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'"
       :class="{ 'bg-blur': sessionCheck }"
     >
       <v-container
@@ -632,9 +569,9 @@
         style="height: 100%; padding-bottom: 47px !important;"
         class="app-container ml-0 pa-0 pt-2 mr-0 pb-12"
       >
-        <router-view :key="$route.fullPath" />
+        <router-view :key="getRouterKey" />
       </v-container>
-      <app-footer />
+      <app-footer :brand-name="getBreadCrumbBaseName" />
     </v-content>
     <v-tour
       class="main-v-tour"
@@ -676,10 +613,14 @@ import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
+import SecurityModal from '@/components/Security/SecurityModal'
+import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 
 export default {
   name: 'Main',
   components: {
+    NavigationDrawerFooter,
+    SecurityModal,
     AppRouterItem,
     FeedbackPopup,
     AppFooter,
@@ -688,14 +629,13 @@ export default {
     SwitchAccount,
     offline,
     AppSnackbar,
-    AppDialog,
-    PasswordChecker,
     Breadcrumb,
     TargetUsersCheckLicenseDialog,
     MainListItemLoading
   },
   data() {
     return {
+      isScroll: null,
       companyLicense: null,
       showLicenseExceededDialog: false,
       labels,
@@ -726,7 +666,7 @@ export default {
           const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
           return (
             pattern.test(value) ||
-            'At least 8 characters with 1 capital letter, 1 lowercase letter and 1 number'
+            'At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character'
           )
         },
         equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
@@ -783,7 +723,7 @@ export default {
           value: 'returnToMainAccount'
         },
         {
-          text: 'Change Password',
+          text: 'Security',
           icon: 'mdi-lock',
           url: '',
           value: 'changePassword'
@@ -1015,8 +955,24 @@ export default {
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading',
-      sessionCheck: 'common/getSessionCheck'
+      sessionCheck: 'common/getSessionCheck',
+      navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
+      brandName: 'whitelabel/getBrandName',
+      supportEmailAddress: 'whitelabel/getSupportEmailAddress'
     }),
+    getBreadCrumbBaseName() {
+      return this.brandName || this.$store.state.auth.selectedCompanyName
+    },
+    getTargetGroupUsersRouterName() {
+      return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+    },
+    getRouterKey() {
+      const { name } = this.$route
+      if (['Community', 'Threat Sharing'].includes(name)) {
+        return this.$route.fullPath
+      }
+      return ''
+    },
     getCompanyClasses() {
       const routerName = this.routerName
       return {
@@ -1091,7 +1047,9 @@ export default {
       )
     },
     companyName() {
-      return localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
+      return this.brandName
+        ? this.brandName
+        : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
     },
     routerName() {
       return this.$route.name
@@ -1156,6 +1114,20 @@ export default {
           : this.$store.state.auth.logoUrl
       return image || require('../assets/img/no-logo.png')
     },
+    getMainLogo() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
+      let image = this.navigatorMenuProps.mainLogoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
+    getMiniLogo() {
+      if (this.$store.state.auth.user == undefined) {
+        return ''
+      }
+      let image = this.navigatorMenuProps.minimizedMenuLogoUrl
+      return image || require('../assets/img/no-logo.png')
+    },
     getFirstName() {
       if (this.$store.state.auth.user == undefined) {
         return ''
@@ -1183,14 +1155,12 @@ export default {
       return this.$store.state.auth.userRoleName
     },
     getDrawerPadding2() {
-      if (window.outerWidth > 767) {
-        if (this.mini) {
-          return 'left: 5px !important;'
-        }
-        return 'left : 232px !important;'
+      if (this.mini) {
+        return 'left: 5px !important;'
       }
+      return 'left : 244px !important;'
       if (this.drawer) {
-        return 'left: 232px !important;'
+        return 'left: 244px !important;'
       }
       return 'left : 262px !important;'
     },
@@ -1253,6 +1223,8 @@ export default {
       if (AuthenticationService.isAuthenticated()) {
         //this.getMenus()
         this.getCurrentUser() //@iceman login
+        this.$store.dispatch('whitelabel/callForData')
+        this.$store.dispatch('whitelabel/callForSystemVersion')
         this.callForLicenseCheck()
         //this.getNotifications()
         this.interval = setInterval(() => {
@@ -1263,6 +1235,16 @@ export default {
         }, 20000)
       }
     })
+    setTimeout(() => {
+      let contentDom = document.getElementsByClassName('v-navigation-drawer__content')[0]
+      if (contentDom) {
+        document
+          .getElementsByClassName('v-navigation-drawer__content')[0]
+          .addEventListener('scroll', (event) => {
+            this.scroll()
+          })
+      }
+    }, 500)
   },
   beforeDestroy() {
     clearInterval(this.interval)
@@ -1274,6 +1256,24 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    changePasswordChange() {
+      this.openPasswordChange = !this.openPasswordChange
+    },
+    scroll() {
+      const main = 'd-flex justify-center flex-wrap user-wrapper'
+      const shadow = 'user-wrapper__scroll-on'
+      let content =
+        document.getElementsByClassName('page-nav__content') &&
+        document.getElementsByClassName('page-nav__content')[0]
+      let userContent =
+        document.getElementsByClassName('user-wrapper') &&
+        document.getElementsByClassName('user-wrapper')[0]
+      let isScroll = content && content.getBoundingClientRect().top < 200
+      let _class = main
+      if (isScroll) _class = _class + ' ' + shadow
+      if (userContent) userContent.className = _class
+      return _class
+    },
     checkDashboardPermission() {
       return checkPermissionMultiple([
         'dashboard/widgets|GET',
@@ -1351,18 +1351,6 @@ export default {
         return true
       }
     },
-    changePassword() {
-      if (this.$refs.newPasswordByMain.validate()) {
-        let payload = {
-          CurrentPassword: this.currentPassword,
-          NewPassword: this.newPassword,
-          ConfirmNewPassword: this.reNewPassword
-        }
-        updatePassword(payload).then(() => {
-          this.openPasswordChange = false
-        })
-      }
-    },
     getCompanyGroupName() {
       this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
       this.companyGroupName = localStorage.getItem('companyGroupName')
@@ -1386,7 +1374,7 @@ export default {
           this.feedbackdialog = true
           break
         case 'Get Help':
-          domElem.href = 'mailto:support@keepnetlabs.com'
+          domElem.href = `mailto:${this.supportEmailAddress || 'support@keepnetlabs.com'}`
           domElem.click()
           break
         case 'Documentation':
@@ -1562,11 +1550,10 @@ export default {
       //flex-direction: column;
       flex-flow: column;
       width: 100%;
-      padding-left: 8px;
+      padding-left: 16px;
       margin-bottom: 1px;
     }
     &__title {
-      margin-bottom: 6px;
       h1 {
         color: white;
         font-size: 34px;
@@ -1608,23 +1595,62 @@ export default {
   }
   .page-nav {
     overflow: visible;
+    background: white !important;
+    padding-top: 210px;
+    z-index: 7 !important;
+    &__left-menu-mini {
+      width: 56px;
+      height: 200px;
+      position: fixed;
+      z-index: 13;
+      #mini-menu {
+        margin-left: 3px;
+      }
+      .v-responsive {
+        top: 110px;
+      }
+    }
+    &__content {
+      padding-top: 2px;
+      flex-basis: 90%;
+    }
+    &__fixed-content {
+      position: fixed;
+      background: white;
+      width: 285px;
+      z-index: 8;
+    }
+    ::-webkit-scrollbar {
+      width: 16px; /* width of the entire scrollbar */
+      border: 1px solid rgba(0, 0, 0, 0.02);
+      box-shadow: inset -1.5px 0 0 0 rgba(0, 0, 0, 0.07), inset -2px 0 0 0 rgba(0, 0, 0, 0.02),
+        inset 1.5px 0 0 0 rgba(0, 0, 0, 0.02), inset 1px 0 0 0 rgba(0, 0, 0, 0.07);
+    }
+
+    //::-webkit-scrollbar-track {}
+
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0, 0, 0, 0.51);
+      border: 5px solid transparent;
+      border-radius: 22px;
+      background-clip: content-box;
+    }
+
     &__menu-toggle {
-      left: 232px;
+      left: 224px;
       top: 25px !important;
       position: fixed;
       z-index: 9;
       transition: all 0.2s ease-in-out;
-      box-shadow: 0 2px 10px 5px rgba(33, 150, 243, 0.2);
       background-color: #edf7fd;
       margin-left: -15px;
     }
     &__logo-wrapper {
-      width: 180px;
-      height: 60px;
-      margin: 25px 24px 15px;
+      max-width: 150px;
+      max-height: 48px;
+      margin: 24px 24px 16px;
       &__logo {
-        width: 139px;
-        height: 50px;
+        max-height: 48px;
       }
     }
     &.v-navigation-drawer--mini-variant {
@@ -1687,7 +1713,14 @@ export default {
     .v-list-group .v-list-group__header .v-list-item__icon.v-list-group__header__append-icon {
       margin-left: 6px !important;
       min-width: 24px !important;
-      margin-right: 1px !important;
+      margin-right: -4px !important;
+    }
+    .v-list-group__header__append-icon {
+      margin-left: 6px !important;
+      min-width: 24px !important;
+      margin-right: -4px !important;
+      margin-bottom: 0 !important;
+      margin-top: 0px !important;
     }
 
     .v-list-item__title {
@@ -1711,6 +1744,8 @@ export default {
 
     .v-list-group__header__prepend-icon {
       margin-right: 16px !important;
+      margin-bottom: 0 !important;
+      margin-top: 13px !important;
     }
   }
 }
@@ -1769,11 +1804,13 @@ export default {
     .v-list-item--active > .v-list-item__icon,
     .menu-list-item > .v-list-item__icon {
       margin-right: 16px !important;
-      margin-bottom: 12px !important;
-      margin-top: 12px !important;
-
+      margin-bottom: 0 !important;
+      margin-top: 13px !important;
+      &.v-list-group__header__append-icon {
+        margin-top: 0 !important;
+      }
       i {
-        font-size: 22px !important;
+        font-size: 24px !important;
       }
     }
   }
@@ -1927,7 +1964,9 @@ export default {
   .user-name-dropdown {
     display: flex;
     position: relative;
-    padding: 21px 16px;
+    padding: 16px 8px;
+    border-radius: 8px;
+    background-color: #fafafa;
     &__content--divider {
       border-bottom: 1px solid #e0e0e0;
     }
@@ -1949,7 +1988,6 @@ export default {
         max-width: 60px;
         max-height: 60px;
         border-radius: 40px;
-        margin-right: 8px;
       }
     }
     &__details {
@@ -1960,6 +1998,7 @@ export default {
       word-wrap: break-word;
       max-width: 150px;
       min-width: 150px;
+      margin-left: 8px;
       cursor: pointer;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -1973,24 +2012,27 @@ export default {
         max-width: 150px;
         text-align: left;
         font-size: 14px;
-        font-weight: normal;
         font-stretch: normal;
         font-style: normal;
-        line-height: normal;
+        line-height: 1.5;
         letter-spacing: normal;
-        color: #313131;
+        color: #383b41;
         &:first-child {
           font-weight: 600;
-          margin-bottom: 5px;
         }
         &:last-child {
-          opacity: 0.9;
           font-size: 12px;
           font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: 1;
+          height: 16px;
+          color: #757575;
         }
       }
     }
     &__icon {
+      padding-left: 10px;
       i {
         cursor: pointer;
         &:before {
@@ -2027,8 +2069,12 @@ export default {
   }
 
   .user-wrapper {
-    margin: 0 0 88px;
+    //margin: 0 0 88px;
     background: white;
+    padding: 8px;
+    &__scroll-on {
+      box-shadow: 0px 2px 3px 0 rgb(142 142 142 / 20%);
+    }
   }
 
   .logo-wrapper {
@@ -2045,8 +2091,18 @@ export default {
   }
 
   .v-navigation-drawer__content {
+    display: flex;
+    flex-direction: column;
     .v-list-item {
       border-left: 5px solid transparent;
+    }
+    .v-list--dense .v-list-item .v-list-item__content {
+      padding: 0 !important;
+    }
+    .menu-list-item,
+    .v-list-group__header {
+      max-height: 48px;
+      min-height: 48px;
     }
   }
 
@@ -2150,7 +2206,7 @@ export default {
   }
 
   .menu-icon-wrapper {
-    left: 232px;
+    left: 244px;
     top: 16px;
     position: fixed;
     z-index: 20;
@@ -2159,7 +2215,7 @@ export default {
 
   .v-navigation-drawer {
     overflow: visible !important;
-    z-index: 12;
+    z-index: 8;
 
     @media only screen and (max-width: 1025px) {
       position: fixed !important;
@@ -2170,9 +2226,6 @@ export default {
     // min-height: calc(100vh - 46px);
     height: 100%;
     margin-top: 16px;
-    @media only screen and (max-width: 1025px) {
-      padding: 160px 0 0 65px !important;
-    }
     @media only screen and (max-width: 769px) {
       padding: 160px 0 0 60px !important;
     }
@@ -2374,8 +2427,8 @@ export default {
   .menu-item-wrapper {
     line-height: 1.2 !important;
     border-radius: 23px;
-    padding-left: 70px;
-    height: 35px !important;
+    padding-left: 72px;
+    height: 36px !important;
     margin-right: 30px;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -2384,7 +2437,6 @@ export default {
     .menu-item-span {
       font-family: 'Open Sans', sans-serif !important;
       font-size: 13px;
-      font-weight: 600;
       font-stretch: normal;
       font-style: normal;
       line-height: 1.54;
@@ -2393,17 +2445,21 @@ export default {
     }
   }
 
-  .menu-with-item .v-list-item {
-    align-items: center;
-    display: flex;
-    min-height: 48px !important;
+  .v-list-group__items {
+    .v-list-item {
+      align-items: center;
+      display: flex;
+      max-height: 36px !important;
+      min-height: 36px !important;
+      margin: 2px 0 !important;
 
-    .v-list-item__icon:first-child {
-      margin-top: 12px;
-      margin-left: 0;
+      .v-list-item__icon:first-child {
+        margin-top: 12px;
+        margin-left: 0;
 
-      i {
-        font-size: 22px !important;
+        i {
+          font-size: 22px !important;
+        }
       }
     }
   }
@@ -2437,255 +2493,6 @@ export default {
     background-color: #fafafa !important;
   }
 }
-.password-modal {
-  .new-password-wrapper {
-    &__label {
-      font-size: 20px;
-      font-weight: 600;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: 1.2;
-      letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
-      padding: 0 15px;
-      margin-bottom: 8px;
-    }
-  }
-  .back-to-reset-password {
-    display: flex;
-    background-color: white;
-    position: absolute;
-    bottom: 24px;
-    right: 24px;
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: 1.71;
-    letter-spacing: normal;
-    color: #2196f3;
-    text-transform: uppercase;
-    i {
-      color: #2196f3;
-    }
-    cursor: pointer;
-  }
-  .reset-pass-textfield {
-    padding: 0 15px !important;
-  }
-  .login-error-container {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding-bottom: 15px;
-    width: 100%;
-  }
-
-  .login-error-wrapper {
-    width: 300px;
-    border-radius: 3px;
-    background-color: rgba(245, 108, 108, 0.2);
-    padding: 22px 16px;
-    display: flex;
-    flex-direction: row;
-
-    .login-error-icon {
-      i {
-        font-size: 24px !important;
-        margin-bottom: -1px;
-      }
-    }
-
-    .login-error-message {
-      align-self: center;
-      font-size: 14px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: normal;
-    }
-  }
-
-  .reset-password-wrapper {
-    .v-text-field.v-text-field--solo .v-input__control {
-      min-height: 20px !important;
-      padding: 0;
-    }
-    &__success {
-      min-height: 300px;
-    }
-  }
-
-  .forgot-password {
-    align-items: center;
-    text-decoration: none;
-    color: black;
-    cursor: pointer;
-    font-size: 11px;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: rgba(0, 0, 0, 0.87);
-  }
-
-  .login-remember {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    .v-input--checkbox {
-      label.v-label.theme--light {
-        font-size: 11px;
-        line-height: normal;
-        letter-spacing: normal;
-        text-align: center;
-        color: rgba(0, 0, 0, 0.87) !important;
-      }
-
-      i.v-icon.notranslate.mdi.mdi-checkbox-blank-outline.theme--light {
-        font-size: 20px !important;
-      }
-
-      i.v-icon.notranslate.mdi.mdi-checkbox-marked.theme--light.accent--text {
-        font-size: 20px !important;
-      }
-    }
-  }
-
-  .mdi-eye-off-outline::before {
-    color: rgba(0, 0, 0, 0.26);
-  }
-
-  .v-input {
-    height: 40px !important;
-  }
-
-  .v-input .v-label {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 12px;
-    height: 20px;
-    font-weight: 600;
-  }
-
-  .login-desc {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: normal;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: rgba(0, 0, 0, 0.54);
-    margin-bottom: 32px;
-  }
-
-  .login-title {
-    margin-top: 88px;
-    margin-bottom: 8px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 36px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    text-align: center;
-    color: #2196f3;
-  }
-
-  .v-sheet {
-    border-radius: 20px;
-  }
-
-  .v-card-login-wrapper {
-    border-radius: 20px !important;
-    padding-top: 24px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 80px;
-  }
-
-  .background {
-    height: 100%;
-    width: 100%;
-    background-image: url('../assets/img/login-bg.svg') !important;
-    background-position: left top; /* Center the image */
-    background-repeat: no-repeat; /* Do not repeat the image */
-    background-size: cover;
-    flex-flow: column !important;
-    position: absolute;
-  }
-
-  .v-input--selection-controls__ripple {
-    margin-right: 0 !important;
-    width: 20px !important;
-    height: 20px !important;
-    left: -5px !important;
-    top: calc(50% - 17px) !important;
-  }
-
-  .remember-me-check {
-    &.v-input--checkbox.v-input--selection-controls {
-      margin-top: 0;
-      padding-top: 0;
-      height: auto !important;
-    }
-    padding-left: 5px;
-
-    label {
-      color: rgba(0, 0, 0, 0.87) !important;
-      font-family: 'Open Sans', sans-serif !important;
-      font-weight: 400 !important;
-      font-size: 9px;
-      left: -8px !important;
-    }
-  }
-
-  .login-btn {
-    height: 36px !important;
-    min-width: 132px !important;
-  }
-
-  .captcha-wrapper {
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    padding-bottom: 30px;
-    width: 100%;
-    margin-top: 16px;
-
-    > div {
-      max-width: 300px;
-    }
-  }
-
-  .login-user-pass-wrapper > .row > div {
-    max-width: 300px;
-  }
-
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus,
-  input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
-    transition: background-color 5000s ease-in-out 0s;
-  }
-
-  .login-label {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-
-  @media only screen and (max-width: 769px) {
-    .login-card-wrapper {
-      padding: 10px !important;
-      padding-right: 16px !important;
-    }
-  }
-}
 .un-selected-list-item {
   color: rgba(0, 0, 0, 0.54);
   border-left: none !important;
@@ -2699,7 +2506,7 @@ export default {
     }
   }
   .v-list-item__title {
-    color: rgba(0, 0, 0, 0.87) !important;
+    color: #383b41 !important;
   }
 }
 .layout-container .active-link .menu-item-wrapper .menu-item-span {

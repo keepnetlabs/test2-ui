@@ -10,7 +10,13 @@
       {{ selectedRow.name && selectedRow.name }} will be permanently deleted.
     </template>
     <template v-slot:app-dialog-footer>
-      <app-dialog-footer @handleClose="closeModal" @handleConfirm="confirmDelete" />
+      <app-dialog-footer
+        cancel-button-id="btn-cancel--company-group-popup"
+        confirm-button-id="btn-delete--company-group-popup"
+        type="delete"
+        @handleClose="closeModal"
+        @handleConfirm="confirmDelete"
+      />
     </template>
   </app-dialog>
 </template>

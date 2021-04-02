@@ -397,6 +397,9 @@
                             </v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
+                        <p class="v-list-item__archived--title pt-4 pb-2">
+                          Folders
+                        </p>
                         <v-list-item
                           link
                           @click="menuClick('Inbox')"
@@ -616,7 +619,9 @@
                         <v-list-item>
                           <v-divider></v-divider>
                         </v-list-item>
-                        <p class="v-list-item__archived--title">Archived</p>
+                        <p class="v-list-item__archived--title">
+                          Archived
+                        </p>
                         <v-list-item
                           link
                           @click="menuClick('Stored')"
@@ -756,6 +761,8 @@
                 ref="refInvestigationListData"
                 :columns="columns"
                 :table="investigationDetailsList"
+                :show-all-records="showAllRecordsFolder"
+                :total-number-of-records="totalNumberOfRecordsFolder"
                 :pageSizes="pageSizes"
                 :selectable="true"
                 :filterable="true"
@@ -777,6 +784,11 @@
                 @columnFilterChanged="columnFilterChanged"
                 @columnFilterCleared="columnFilterCleared"
                 @refreshAction="refreshDatatable"
+                @on-all-records-button-click="handleAllRecordsInboxClick"
+                @set-default-search="handleSetDefaultSearch"
+                @restore-default-search="handleRestoreDefaultSearch"
+                @clear-filters="handleClearFilters"
+                :show-filter-options="false"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -836,6 +848,7 @@
                 :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
+                ref="investigationDetailsTargetUsersList"
                 :columns="columnsTargetUsers"
                 :table="
                   investigationDetailsTargetUsersListData &&
@@ -846,7 +859,9 @@
                 :selectable="false"
                 :filterable="true"
                 :options="true"
+                :total-number-of-records="totalNumberOfRecordsTargetUser"
                 :empty="iEmpty"
+                :show-all-records="showAllRecordsTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 :clusterItems="clusterItems"
@@ -860,6 +875,11 @@
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
                 @refreshAction="refreshDatatable"
+                @on-all-records-button-click="handleAllRecordsTargetUsersClick"
+                @set-default-search="handleSetDefaultSearchForTargetUsers"
+                @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
+                @clear-filters="handleClearFiltersForTargetUsers"
+                :show-filter-options="false"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -909,7 +929,11 @@ import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
-import { getStoreValue, PROPERTY_STORE } from '../model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
@@ -922,6 +946,7 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 
 export default {
   components: {
@@ -936,6 +961,10 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    showAllRecordsTargetUser: false,
+    totalNumberOfRecordsTargetUser: 0,
+    showAllRecordsFolder: false,
+    totalNumberOfRecordsFolder: 0,
     warningButtonDisabled: false,
     warnAndDeleteButtonDisabled: false,
     stopButtonDisabled: false,
@@ -970,7 +999,29 @@ export default {
     },
     investigationListBodyData: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 1000,
+      orderBy: 'ReceivedTime',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [
+              {
+                FieldName: 'Folder',
+                Operator: 'Include',
+                Value: 'Inbox'
+              }
+            ],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBody: {
+      pageNumber: 1,
+      pageSize: 1000,
       orderBy: 'ReceivedTime',
       ascending: true,
       filter: {
@@ -992,7 +1043,23 @@ export default {
     },
     investigationTargetUsersListBodyData: {
       pageNumber: 1,
-      pageSize: 500000,
+      pageSize: 1000,
+      orderBy: 'Email',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBodyForTargetUsers: {
+      pageNumber: 1,
+      pageSize: 1000,
       orderBy: 'Email',
       ascending: true,
       filter: {
@@ -1230,7 +1297,7 @@ export default {
     },
     bodyData: {
       pageNumber: 1,
-      pageSize: 5000,
+      pageSize: 1000,
       orderBy: 'ExpireDate',
       ascending: false,
       filter: {
@@ -1242,7 +1309,7 @@ export default {
               {
                 FieldName: 'Status',
                 Operator: 'Include',
-                Value: 'Cancelled,Running,Idle'
+                Value: 'Canceled,Running,Idle'
               }
             ],
             FilterGroups: []
@@ -1252,131 +1319,208 @@ export default {
     }
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
+      )
+      if (savedFilter) {
+        this.investigationListBodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refInvestigationListData.filterValues = savedFilter.filterValues
+          this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.refreshDatatable()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refInvestigationListData.filterValues = {}
+      this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
+      this.refreshDatatable()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER,
+        JSON.stringify({
+          filter: this.investigationListBodyData.filter,
+          filterValues
+        })
+      )
+    },
+    getDefaultFilterAndSearchForTargetUsers() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
+      )
+      if (savedFilter) {
+        this.investigationTargetUsersListBodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.investigationDetailsTargetUsersList.filterValues = savedFilter.filterValues
+          this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.refreshDatatable()
+    },
+    handleClearFiltersForTargetUsers() {
+      this.isRestoredOrClearedFilters = true
+      this.investigationTargetUsersListBodyData = JSON.parse(
+        JSON.stringify(this.defaultRequestBodyForTargetUsers)
+      )
+      this.$refs.investigationDetailsTargetUsersList.filterValues = {}
+      this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
+      this.refreshDatatable()
+    },
+    handleRestoreDefaultSearchForTargetUsers() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearchForTargetUsers()
+    },
+    handleSetDefaultSearchForTargetUsers(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS,
+        JSON.stringify({
+          filter: this.investigationTargetUsersListBodyData.filter,
+          filterValues
+        })
+      )
+    },
+    getUserFriendlyName(activeMenu) {
+      let name
+      switch (activeMenu) {
+        case 'SentItems':
+          name = 'Sent'
+          break
+        case 'DeletedItems':
+          name = 'Deleted Items'
+          break
+        case 'JunkEmail':
+          name = 'Junk'
+          break
+        case 'Drafts':
+          name = 'Draft'
+          break
+        case 'Others':
+          name = 'Others'
+          break
+        case 'Stored':
+          name = 'Stored'
+          break
+        default:
+          name = 'Inbox'
+          break
+      }
+      return name
+    },
+    handleAllRecordsTargetUsersClick() {
+      this.investigationTargetUsersListBodyData.pageSize = 75000
+      this.showAllRecordsTargetUser = false
+      this.refreshDatatable()
+    },
+    handleAllRecordsInboxClick() {
+      this.investigationListBodyData.pageSize = 75000
+      this.showAllRecordsFolder = false
+      this.refreshDatatable()
+    },
     getActionStatusOptions(
       actionStatusItem,
-      {
-        actionType,
-        status,
-        isPermanentDelete,
-        warningMessage,
-        actionResultErrorMessage
-      } = actionStatusItem
+      { actionType, status, isPermanentDelete, isTooltip, tooltipText, text } = actionStatusItem
     ) {
-      let returnValue = { isTooltip: null, color: null, icon: null, text: null, tooltipText: null }
+      let returnValue = {
+        isTooltip: isTooltip,
+        color: null,
+        icon: null,
+        tooltipText: tooltipText,
+        text: text
+      }
+      //exampple
       //status = 'CompletedWithError'
       //actionType = 'Warning'
       //isPermanentDelete = false
       switch (status) {
         case 'Idle':
-          returnValue.isTooltip = false
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleting...'
               returnValue.icon = null
               returnValue.color = '#fff'
             } else {
-              returnValue.text = 'Moving to trash…'
               returnValue.icon = null
               returnValue.color = '#fff'
             }
           } else if (actionType === 'DeleteAndNotify') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleting and sending message...'
               returnValue.icon = null
               returnValue.color = '#fff'
             } else {
-              returnValue.text = 'Moving to trash and sending message...'
               returnValue.icon = null
               returnValue.color = '#fff'
             }
           } else if (actionType === 'Warning') {
-            returnValue.text = 'Message sent'
             returnValue.icon = 'mdi-check-circle'
             returnValue.color = '#43a047'
-            returnValue.isTooltip = true
-            returnValue.tooltipText = `Message sent. \n\n“${warningMessage}”`
           }
           break
         case 'Completed':
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleted'
               returnValue.icon = 'mdi-close-circle'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = 'The email has been deleted permanently'
             } else {
-              returnValue.text = 'Moved to trash'
               returnValue.icon = 'mdi-delete'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = 'The email has been moved to trash folder'
             }
           } else if (actionType === 'DeleteAndNotify') {
             if (isPermanentDelete) {
-              returnValue.text = 'Deleted and message sent'
               returnValue.icon = 'mdi-close-circle'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Deleted and message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
             } else {
-              returnValue.text = 'Moved to trash and message sent'
               returnValue.icon = 'mdi-close-circle'
               returnValue.color = '#6d6d6d'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Deleted and message sent. \n\n“This malicious email has been found in your mailbox and has been deleted”`
             }
           } else if (actionType === 'Warning') {
-            returnValue.text = 'Message delivered'
             returnValue.icon = 'mdi-check-underline-circle'
             returnValue.color = '#43a047'
-            returnValue.isTooltip = true
-            returnValue.tooltipText = `Message delivered. \n\n“${warningMessage}”`
           }
           break
         case 'CompletedWithError':
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
-              returnValue.text = 'Could not move to trash '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not move email to trash! Click to try again. \n\n ${actionResultErrorMessage}`
             } else {
-              returnValue.text = 'Could not delete '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
             }
           } else if (actionType === 'DeleteAndNotify') {
             if (isPermanentDelete) {
-              returnValue.text = 'Could not delete '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
             } else {
-              returnValue.text = 'Could not delete '
               returnValue.icon = 'mdi-alert-circle'
               returnValue.color = '#f56c6c'
-              returnValue.isTooltip = true
-              returnValue.tooltipText = `Could not delete email! Click to try again.\n\n ${actionResultErrorMessage}`
             }
           } else if (actionType === 'Warning') {
-            returnValue.text = 'Could not send message'
             returnValue.icon = 'mdi-alert-circle'
             returnValue.color = '#f56c6c'
-            returnValue.isTooltip = true
-            returnValue.tooltipText = `Message sending error! Click to try again.\n\n ${actionResultErrorMessage}`
           }
           break
         case 'ItemNotFound':
-          returnValue.text = 'Item Not Found'
           returnValue.icon = 'mdi-alert-circle'
           returnValue.color = '#f56c6c'
-          returnValue.isTooltip = true
-          returnValue.tooltipText = `Item not found. Either it's moved or deleted.`
           break
         default:
           break
@@ -1471,42 +1615,79 @@ export default {
           fileName += 'Inbox'
           break
       }
+
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.investigationListBodyData.filter)),
+        this.$refs.refInvestigationListData,
+        'ReceivedTime'
+      )
+      if (this.$refs.refInvestigationListData.search) {
+        clientTableExportHelper.addSearchItems(this.columns)
+      }
+      if (
+        this.$refs.refInvestigationListData.sortProps &&
+        this.$refs.refInvestigationListData.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: reportAllPages ? this.investigationDetailsList.length + 25 : pageSize,
-          orderBy: 'ReceivedTime',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.investigationListBodyData.filter
+          filter
         }
         exportInvestigationEmailList(payload, this.$route.params.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `${fileName}.${exportType.toLocaleLowerCase()}`
+          link.download = `${fileName}.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
     },
     exportTargetUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.investigationTargetUsersListBodyData.filter)),
+        this.$refs.investigationDetailsTargetUsersList,
+        'Email'
+      )
+      if (this.$refs.investigationDetailsTargetUsersList.search) {
+        clientTableExportHelper.addSearchItems(this.columnsTargetUsers)
+      }
+      if (
+        this.$refs.investigationDetailsTargetUsersList.sortProps &&
+        this.$refs.investigationDetailsTargetUsersList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
+
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber,
           pageSize: reportAllPages ? 50000 : pageSize,
-          orderBy: 'CreateTime',
-          ascending: true,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.investigationTargetUsersListBodyData.filter
+          filter
         }
 
         exportInvestigationUserList(payload, this.$route.params.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Investigation Details Target Users.${exportType.toLocaleLowerCase()}`
+          link.download = `Investigation Details Target Users.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -1514,7 +1695,7 @@ export default {
     deleteMessage() {
       return `${this.totalSelectedItemsCount} ${
         this.totalSelectedItemsCount > 1 ? 'emails' : 'email'
-      } will be deleted from mailbox`
+      } will be deleted from ${this.getUserFriendlyName(this.activeMenu)}`
     },
     calculateProgressData() {
       let today = moment(new Date()).toDate()
@@ -1532,7 +1713,6 @@ export default {
         this.progressValue = progressValue
       }
     },
-    showRemainingDays() {},
     isWantToStopConfirm() {
       this.stopButtonDisabled = true
       this.$store
@@ -1569,7 +1749,7 @@ export default {
               return this.statsAndMenuData.estimatedTime
                 ? this.statsAndMenuData.estimatedTime
                 : 'Estimated time can not be calculated at the moment'
-            case 'Cancelled':
+            case 'Canceled':
               return this.investigationDetailsData.endDate
             case 'Expired':
               return this.investigationDetailsData.expireDate
@@ -1583,7 +1763,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `${val} User(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `${val} User(s)`
             case 'Expired':
               return `${val} User(s)`
@@ -1597,7 +1777,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `Could not be scanned`
-            case 'Cancelled':
+            case 'Canceled':
               return `Could not be scanned`
             case 'Expired':
               return `Could not be scanned`
@@ -1611,7 +1791,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `${val} Scanned User(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `${val} Scanned User(s)`
             case 'Expired':
               return `${val} Scanned User(s)`
@@ -1625,7 +1805,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `of total ${val} user(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `of total ${val} user(s)`
             case 'Expired':
               return `of total ${val} user(s)`
@@ -1639,7 +1819,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `${val} Email(s) Scanned`
-            case 'Cancelled':
+            case 'Canceled':
               return `${val} Email(s) Scanned`
             case 'Expired':
               return `${val} Email(s) Scanned`
@@ -1653,7 +1833,7 @@ export default {
           switch (this.statsAndMenuData.status) {
             case 'Running':
               return `of total ${val} email(s)`
-            case 'Cancelled':
+            case 'Canceled':
               return `of total ${val} email(s)`
             case 'Expired':
               return `of total ${val} email(s)`
@@ -1672,16 +1852,17 @@ export default {
       this.activeMenu = menu
       this.showTargetUsersDetails = false
       this.showEmails = false
-      this.loading = true
       this.investigationDetailsList = []
 
       if (menu != 'targetUsers') {
+        this.loading = true
         let dataBody = this.investigationListBodyData
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
         }
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
-        this.$store
+        this.refreshDatatable()
+        /*this.$store
           .dispatch('investigations/getInvestigationDetailsListData', {
             data: dataBody,
             id: this.$route.params.id
@@ -1690,18 +1871,62 @@ export default {
             this.loading = false
             this.showEmails = true
             //vm.$forceUpdate()
-          })
+          })*/
       } else {
+        //this.getDefaultFilterAndSearchForTargetUsers()
         this.$store
           .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
             data: this.investigationTargetUsersListBodyData,
             id: this.$route.params.id
+          })
+          .then((response) => {
+            this.adjustTargetUserShowRecords(response)
           })
           .finally(() => {
             this.showTargetUsersDetails = true
             this.loading = false
             vm.$forceUpdate()
           })
+      }
+    },
+    adjustTargetUserShowRecords(response = {}) {
+      const {
+        data: { data }
+      } = response
+      const { totalNumberOfRecords = 0 } = data
+      this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
+      if (
+        this.investigationTargetUsersListBodyData.pageSize === 1000 &&
+        this.totalNumberOfRecordsTargetUser > 1000
+      ) {
+        this.showAllRecordsTargetUser = true
+      }
+      if (
+        this.totalNumberOfRecordsTargetUser <= 1000 &&
+        this.investigationTargetUsersListBodyData.pageSize === 1000
+      ) {
+        this.showAllRecordsTargetUser = false
+      }
+    },
+    adjustInboxShowRecords(response = {}) {
+      if (response.data) {
+        const {
+          data: { data }
+        } = response
+        const { totalNumberOfRecords = 0 } = data
+        this.totalNumberOfRecordsFolder = totalNumberOfRecords
+        if (
+          this.investigationListBodyData.pageSize === 1000 &&
+          this.totalNumberOfRecordsFolder > 1000
+        ) {
+          this.showAllRecordsFolder = true
+        }
+        if (
+          this.totalNumberOfRecordsFolder <= 1000 &&
+          this.investigationListBodyData.pageSize === 1000
+        ) {
+          this.showAllRecordsFolder = false
+        }
       }
     },
     restartStopInvestigationData() {
@@ -1725,31 +1950,6 @@ export default {
             })
         })
     },
-    restartAllData() {
-      this.showEmails = false
-      this.showTargetUsersDetails = false
-      if (this.activeMenu == 'targetUsers') {
-        this.$store
-          .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.investigationTargetUsersListBodyData,
-            id: this.$route.params.id
-          })
-          .finally(() => {
-            this.showTargetUsersDetails = true
-            vm.$forceUpdate()
-          })
-      } else {
-        this.$store
-          .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.investigationTargetUsersListBodyData,
-            id: this.$route.params.id
-          })
-          .finally(() => {
-            vm.$forceUpdate()
-            this.showEmails = true
-          })
-      }
-    },
     refreshDatatable() {
       this.leftMenuLoading = true
       this.topMenuLoading = true
@@ -1764,6 +1964,9 @@ export default {
                 .dispatch('investigations/getInvestigationDetailsListData', {
                   data: this.investigationListBodyData,
                   id: this.$route.params.id
+                })
+                .then((response) => {
+                  this.adjustInboxShowRecords(response)
                 })
                 .finally(() => {
                   this.calculateProgressData()
@@ -1783,9 +1986,8 @@ export default {
           data: this.investigationTargetUsersListBodyData,
           id: this.$route.params.id
         })
-        .finally(() => {
-          //this.showTargetUsersDetails = true;
-          //vm.$forceUpdate();
+        .then((response) => {
+          this.adjustTargetUserShowRecords(response)
         })
     },
     onAddClose(resp) {
@@ -2030,11 +2232,30 @@ export default {
         }
       }
       this.targetUserChips = tempArr
-      this.criteriaChips = [
-        ...this.investigationDetailsData.headers,
-        ...this.investigationDetailsData.bodies,
-        ...this.investigationDetailsData.attachments
-      ]
+      const headers = JSON.parse(JSON.stringify(this.investigationDetailsData.headers))
+      headers.forEach((header) => {
+        const ipAddress = header.ip
+        const senderName = header.senderName
+        delete header.ip
+        delete header.senderName
+        header['Ip Address'] = ipAddress
+        header['Sender Name'] = senderName
+      })
+      const attachments = JSON.parse(JSON.stringify(this.investigationDetailsData.attachments))
+
+      attachments.forEach((attachment) => {
+        const name = attachment.name
+        const extension = attachment.extension
+        const size = attachment.size
+        delete attachment.name
+        delete attachment.extension
+        delete attachment.size
+        attachment['Attachment Name'] = name
+        attachment['Attachment Extension'] = extension
+        attachment['Attachment Size'] = size
+      })
+
+      this.criteriaChips = [...headers, ...this.investigationDetailsData.bodies, ...attachments]
       this.leftMenuLoading = false
       this.contentMenuLoading = false
     },
@@ -2058,6 +2279,32 @@ export default {
 </script>
 <style lang="scss">
 .investigation-details-wrapper {
+  .table-wrapper {
+    .table-search {
+      @media (max-width: 1150px) {
+        min-width: 250px !important;
+      }
+      @media (min-width: 1151px) and (max-width: 1250px) {
+        min-width: 400px !important;
+      }
+    }
+  }
+
+  .el-pagination {
+    @media (max-width: 896px) {
+      padding: 2px 0 !important;
+    }
+    &__sizes {
+      @media (max-width: 896px) {
+        margin-right: 4px !important;
+      }
+    }
+    &__text {
+      @media (max-width: 896px) {
+        margin-right: 4px !important;
+      }
+    }
+  }
   min-height: 90vh;
   .v-navigation-drawer__border {
     display: none;
@@ -2359,14 +2606,17 @@ export default {
                       }
 
                       &--title {
-                        font-size: 12px;
-                        font-weight: 600;
-                        letter-spacing: normal;
-                        color: rgba(0, 0, 0, 0.87);
                         margin-bottom: 0;
                         background: #fafafa;
                         padding-left: 16px;
                         padding-bottom: 5px;
+                        font-size: 12px;
+                        font-weight: 600;
+                        font-stretch: normal;
+                        font-style: normal;
+                        line-height: normal;
+                        letter-spacing: normal;
+                        color: #383b41 !important;
                       }
 
                       &--link {
@@ -2468,6 +2718,8 @@ export default {
                 color: rgba(0, 0, 0, 0.87);
                 font-weight: normal;
                 text-transform: capitalize;
+                overflow: hidden;
+                text-overflow: ellipsis;
               }
 
               &--action-button {

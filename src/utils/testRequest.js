@@ -18,7 +18,9 @@ testService.interceptors.request.use(
     if (config.url !== 'account/token') {
       config.headers.authorization = `Bearer ${AuthenticationService.getToken()}`
       config.headers['X-IR-API-KEY'] = APP_CONFIG.VUE_APP_API_KEY
-      config.headers['X-IR-COMPANY-ID'] = localStorage.getItem('companyRequestId')
+      config.headers['X-IR-COMPANY-ID'] = config.isCompanySelect
+        ? localStorage.getItem('companyResourceId')
+        : localStorage.getItem('companyRequestId')
     }
     return config
   },
@@ -46,12 +48,22 @@ testService.interceptors.response.use(
   (error) => {
     //if there is global loader param
     error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
-
-    if (!error.response) {
+    if (error.code === 'ECONNABORTED') {
+      /*store.dispatch(
+        'common/createSnackBar',
+        {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: error.message,
+          icon: 'mdi-alert'
+        },
+        { root: true }
+      )*/
+      return Promise.reject(error)
+    } else if (!error.response) {
       return Promise.reject(error)
     } else if (error.response.status === 401 || error.response.status === 306) {
       AuthenticationService.removeToken()
-      store.dispatch('common/changeSessionExpiredStatus', true)
+      router.push({ name: 'login', params: { isSessionExpired: 'true' } })
     } else if (error.response && error.response.status !== 404) {
       store.dispatch(
         'common/createSnackBar',
@@ -75,7 +87,7 @@ testService.interceptors.response.use(
     ) {
       if (error.response.status === 401 || error.response.status === '401_UNAUTHORIZED') {
         AuthenticationService.removeToken()
-        store.dispatch('common/changeSessionExpiredStatus', true)
+        router.push({ name: 'login', params: { isSessionExpired: 'true' } })
       } else {
         router.push('/login')
       }

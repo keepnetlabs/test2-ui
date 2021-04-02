@@ -15,6 +15,7 @@
               text
               color="#f56c6c"
               @click="showAppointANewOwnerModal = false"
+              id="threat-sharing-members-new-owner-modal-cancel-button"
               >{{ labels.Cancel }}
             </v-btn>
           </div>
@@ -24,6 +25,7 @@
               text
               color="#2196f3"
               :disabled="isAssignOwnerButtonDisabled"
+              id="threat-sharing-members-new-owner-modal-accept-button"
               @click="appointANewOwnerConfirm"
               >ACCEPT
             </v-btn>
@@ -47,6 +49,7 @@
               text
               color="#f56c6c"
               @click="showRemoveFromCommunityModal = false"
+              id="threat-sharing-members-remove-community-cancel-button"
               >{{ labels.Cancel }}
             </v-btn>
           </div>
@@ -56,6 +59,7 @@
               text
               color="#2196f3"
               :disabled="isRemoveFromCommunityButtonDisabled"
+              id="threat-sharing-members-remove-community-remove-button"
               @click="removeFromCommunityConfirm"
               >REMOVE
             </v-btn>
@@ -65,9 +69,10 @@
     </app-dialog>
     <v-card-text class="pt-2">
       <v-tabs v-model="tab" class="community-selector">
-        <v-tab @click="getMembers()">Members</v-tab>
+        <v-tab id="threat-sharing-members-tab-button" @click="getMembers()">Members</v-tab>
         <v-tab
           @click="getRequestMembers()"
+          id="threat-sharing-requests-tab-button"
           v-if="
             communityDetails &&
             communityDetails.myMembershipStatusId &&
@@ -156,7 +161,10 @@
                           <div class="notification-wrapper notification-wrapper__override">
                             <v-list dense flat class="notification-wrapper__v-list">
                               <v-list-item-group color="primary">
-                                <v-list-item @click="seePostedIncidentsClick(member)">
+                                <v-list-item
+                                  id="threat-sharing-members-see-incidents-list-button"
+                                  @click="seePostedIncidentsClick(member)"
+                                >
                                   <v-list-item-icon>
                                     <v-icon>mdi-magnify</v-icon>
                                   </v-list-item-icon>
@@ -166,6 +174,7 @@
                                 </v-list-item>
                                 <v-list-item
                                   @click="appointANewOwner(member)"
+                                  id="threat-sharing-members-appoint-a-new-owner-button"
                                   v-if="!isOwnCompany(member) && isCommunityOwner()"
                                 >
                                   <v-list-item-icon>
@@ -177,6 +186,7 @@
                                 </v-list-item>
                                 <v-list-item
                                   @click="removeFromCommunity(member)"
+                                  id="threat-sharing-members-remove-from-community-button"
                                   v-if="!isOwnCompany(member) && isCommunityOwner()"
                                 >
                                   <v-list-item-icon>
@@ -329,6 +339,7 @@
                           block
                           rounded
                           medium
+                          id="threat-sharing-members-refuse-request-button"
                           @click="refuseRequest(req.communityRequestResourceId)"
                         >
                           Refuse
@@ -338,6 +349,7 @@
                           block
                           rounded
                           medium
+                          id="threat-sharing-members-accept-request-button"
                           @click="acceptRequest(req.communityRequestResourceId)"
                         >
                           Accept

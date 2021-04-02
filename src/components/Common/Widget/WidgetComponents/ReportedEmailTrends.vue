@@ -198,10 +198,20 @@ export default {
                 display: true,
                 labels: {
                   usePointStyle: true,
-                  lineDashOffset: 0,
                   fontColor: '#757575',
+                  generateLabels(chart = {}) {
+                    const { data } = chart
+                    return data.datasets.map((item) => {
+                      return {
+                        text: item.label,
+                        fillStyle: item.borderColor,
+                        lineWidth: 0
+                      }
+                    })
+                  },
                   fontFamily: 'Open-sans,sans-serif',
-                  padding: 12
+                  padding: 16,
+                  fontSize: 12
                 }
               }
             }
@@ -210,9 +220,7 @@ export default {
             const colors = {
               Undetected: {
                 backgroundColor: 'white',
-                borderColor: '#2e5bff',
-                pointBorderColor: '#2e5bff',
-                pointBackgroundColor: 'white',
+                borderColor: '#00bcd4',
                 fill: false,
                 pointRadius: 3,
                 borderWidth: 2,
@@ -220,7 +228,7 @@ export default {
               },
               Phishing: {
                 backgroundColor: 'white',
-                borderColor: '#ff6167',
+                borderColor: '#f56c6c',
                 fill: false,
                 pointRadius: 3,
                 borderWidth: 2,
@@ -228,15 +236,7 @@ export default {
               },
               Malicious: {
                 backgroundColor: 'white',
-                borderColor: '#f19f10',
-                fill: false,
-                pointRadius: 3,
-                borderWidth: 2,
-                lineTension: 0
-              },
-              'N/A': {
-                backgroundColor: 'white',
-                borderColor: '#757575',
+                borderColor: '#b83a3a',
                 fill: false,
                 pointRadius: 3,
                 borderWidth: 2,
@@ -250,6 +250,7 @@ export default {
                 data: newData.filter((item) => item.result === itemType)
               })
             }
+            console.log('datasets', datasets)
             this.chartData = {
               datasets
             }

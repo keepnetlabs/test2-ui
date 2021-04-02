@@ -31,11 +31,13 @@
         <datatable
           v-bind="tableState"
           :loading="loading"
+          :show-all-records="showAllRecords"
           :is-column-filter-active="isColumnFilterActive"
           id="investigations-data-table"
           ref="investigationTable"
           :refName="'investigationTable'"
           :columns="columns"
+          :totalNumberOfRecords="totalNumberOfRecords"
           :table="tableData.data"
           :pageSizes="pageSizes"
           :defaultSort="'date'"
@@ -62,6 +64,10 @@
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @refreshAction="getInvestigationList"
+          @on-all-records-button-click="handleAllRecordsClick"
+          @set-default-search="handleSetDefaultSearch"
+          @restore-default-search="handleRestoreDefaultSearch"
+          @clear-filters="handleClearFilters"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -109,7 +115,7 @@ import newInvestigation from '../components/Investigation/NewInvestigation'
 import AppDialog from '../components/AppDialog'
 import { mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
-import { getStoreValue } from '@/model/constants/commonConstants'
+import { DEFAULT_SEARCH_CONTAINER_KEYS, getStoreValue } from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -138,6 +144,8 @@ export default {
   },
   data: () => ({
     tableState: false,
+    showAllRecords: false,
+    totalNumberOfRecords: 0,
     stopInvestigateButtonDisabled: false,
     loading: false,
     showPlaybookModal: false,
@@ -153,7 +161,7 @@ export default {
         property: 'incident',
         align: 'left',
         editable: false,
-        label: getStoreValue('incident'),
+        label: getStoreValue('investigationName'),
         fixed: 'left',
         sortable: true,
         show: true,
@@ -167,7 +175,7 @@ export default {
         property: 'source',
         align: 'left',
         editable: false,
-        label: getStoreValue('source'),
+        label: getStoreValue('trigger'),
         fixed: false,
         sortable: true,
         show: true,
@@ -280,7 +288,23 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 1000,
+      orderBy: 'createTime',
+      ascending: false,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultRequestBody: {
+      pageNumber: 1,
+      pageSize: 1000,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -296,8 +320,52 @@ export default {
     }
   }),
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
+      )
+      if (savedFilter) {
+        this.bodyData.filter = savedFilter.filter
+        this.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.investigationTable.filterValues = savedFilter.filterValues
+          this.$refs.investigationTable.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.getInvestigationList()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.investigationTable.filterValues = {}
+      this.$refs.investigationTable.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
+      this.getInvestigationList()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS,
+        JSON.stringify({
+          filter: this.bodyData.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
+    },
+    handleAllRecordsClick() {
+      this.bodyData.pageSize = 75000
+      this.showAllRecords = false
+      this.getInvestigationList()
     },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
@@ -443,7 +511,9 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Investigations.${exportType.toLocaleLowerCase()}`
+          link.download = `Investigations.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -472,10 +542,28 @@ export default {
     getInvestigationList() {
       this.loading = true
 
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.loading = false
-        this.tableData.data = this.tableData.data || []
-      })
+      this.$store
+        .dispatch('investigations/getInvestigationList', this.bodyData)
+        .finally(() => {
+          this.loading = false
+          this.tableData.data = this.tableData.data || []
+        })
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords = 0 } = data
+
+          this.totalNumberOfRecords = totalNumberOfRecords
+
+          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+
+          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+        })
     }
   },
   computed: {
@@ -545,7 +633,7 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.getInvestigationList()
+      this.getDefaultFilterAndSearch()
     }
 
     if (this.$route.query.openPopup) {

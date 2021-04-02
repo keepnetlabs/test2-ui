@@ -41,6 +41,12 @@ export function exportPhishingReporterUserList(payload) {
   })
 }
 
+export function exportPhishingReporterDownloadHistory(payload) {
+  return testRequest.post('/phishing-reporter/history/search/export', payload, {
+    responseType: 'blob'
+  })
+}
+
 export function generateOutlookAddIn() {
   return testRequest.get('/phishing-reporter/generate/outlook-addin')
 }

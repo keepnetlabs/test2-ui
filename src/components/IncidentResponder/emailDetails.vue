@@ -1,11 +1,21 @@
 <template>
   <div class="single-wrapper">
     <div class="single-post">
-      <span class="single-post-header">Email Details - File Format Exploit</span>
+      <span class="single-post-header"
+        >Email Details -
+        {{
+          mailDetails && mailDetails.subject
+            ? mailDetails.subject
+            : "File Format Exploit"
+        }}</span
+      >
       <div class="single-post__container">
         <el-tabs v-model="tab" class="email-details__tabs">
           <el-tab-pane label="Details" name="first">
-            <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
+            <DatatableLoading
+              :loading="isLoading"
+              v-if="isLoading && !mailDetails"
+            >
             </DatatableLoading>
             <template v-else>
               <download-modal
@@ -24,10 +34,13 @@
             <template v-if="mailDetails">
               <div class="email-details__header">
                 <v-card light class="email-details__header-card">
-                  <v-card-title class="email-details__header-title">Relay Information</v-card-title>
-                  <div style="margin-top: 40px;">
+                  <v-card-title class="email-details__header-title"
+                    >Relay Information</v-card-title
+                  >
+                  <div style="margin-top: 40px">
                     <datatable
                       ref="refRelayTable"
+                      id="relay-data-table"
                       :loading="isLoading"
                       :table="relayTable.data"
                       :refName="'relayTable'"
@@ -43,11 +56,18 @@
                     />
                   </div>
                 </v-card>
-                <v-card light class="email-details__header-card">
-                  <v-card-title class="email-details__header-title">Headers Found</v-card-title>
+                <v-card
+                  light
+                  class="email-details__header-card"
+                  id="email-details--header"
+                >
+                  <v-card-title class="email-details__header-title"
+                    >Headers Found</v-card-title
+                  >
                   <div class="email-details__datatable-container">
                     <datatable
                       ref="refHeadersTable"
+                      id="headers-data-table"
                       :loading="isLoading"
                       :table="headersTable.data"
                       :refName="'headersTable'"
@@ -62,14 +82,21 @@
                       :sizeable="true"
                       :download-button="{ show: false }"
                       @refreshAction="getPostDetails"
+                      @onPageChanged="adjustScroll"
+                      @onSizeChanged="adjustScroll"
                     />
                   </div>
                 </v-card>
 
                 <v-card light class="email-details__header-card">
-                  <v-card-title class="email-details__header-title">Received Header</v-card-title>
+                  <v-card-title class="email-details__header-title"
+                    >Received Header</v-card-title
+                  >
                   <div class="email-details__received-header">
-                    <div :key="JSON.stringify(item)" v-for="item in headersTable.data">
+                    <div
+                      :key="JSON.stringify(item)"
+                      v-for="item in headersTable.data"
+                    >
                       {{
                         item.key.substring(0, 1).toUpperCase() +
                         item.key.substring(1, item.key.length)
@@ -82,12 +109,22 @@
             </template>
           </el-tab-pane>
           <el-tab-pane label="Email Preview" name="third">
-            <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
+            <DatatableLoading
+              :loading="isLoading"
+              v-if="isLoading && !mailDetails"
+            >
             </DatatableLoading>
             <template v-else>
-              <PreviewHeaderForSinglePost :uploadRespond="mailDetails" />
+              <PreviewHeaderForSinglePost
+                style="word-break: break-all"
+                :uploadRespond="mailDetails"
+              />
               <div class="border-for-header"></div>
-              <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
+              <k-shadow-frame
+                style="word-break: break-all"
+                id="sframe"
+                v-bind:content="mailDetails.htmlBody"
+              />
               <div class="border-for-header mt-8 mb-3"></div>
               <email-details-preview-footer
                 v-if="!!mailDetails.attachments.length"
@@ -114,39 +151,62 @@
                   :key="attachment.resourceId"
                   :id="attachment.sha512"
                 >
-                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                    "
+                  >
                     <div class="ed-title">
-                      <div class="d-flex" style="align-items: center;">
+                      <div class="d-flex" style="align-items: center">
                         <div class="left-side d-flex align-center">
                           <p class="attachment-name">{{ attachment.name }}</p>
                           <p
                             class="ml-6 not-found"
-                            v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
+                            v-if="
+                              isFileUploaded(
+                                mailDetails.attachments[index].analysisList
+                              )
+                            "
                           >
                             *This file was not uploaded to any integration
                           </p>
                         </div>
                       </div>
                     </div>
-                    <div class="ed-header-btn-1 collapse-details d-flex align-center">
+                    <div
+                      class="ed-header-btn-1 collapse-details d-flex align-center"
+                    >
                       <badge
-                        :text="getTextOfType(mailDetails.attachments[index].analysisList)"
-                        :color="getColorOfType(mailDetails.attachments[index].analysisList)"
+                        :text="
+                          getTextOfType(
+                            mailDetails.attachments[index].analysisList
+                          )
+                        "
+                        :color="
+                          getColorOfType(
+                            mailDetails.attachments[index].analysisList
+                          )
+                        "
                         size="small"
+                        :outline="false"
                         class-name="mr-4 badge"
                       />
                       <div
                         @click="handleDownloadAttachment(attachment)"
                         class="cursor-pointer download"
-                        style="min-width: 167px;"
+                        style="min-width: 167px"
                       >
-                        <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
+                        <v-icon color="#2196f3" class="selection-icons"
+                          >mdi-download</v-icon
+                        >
                         DOWNLOAD FILE
                       </div>
 
                       <v-expansion-panel-header
                         class="pa-0"
-                        style="min-height: 36px;"
+                        style="min-height: 36px"
                         disable-icon-rotate
                       >
                         <template v-slot:actions>
@@ -158,9 +218,11 @@
                             medium
                             color="blue"
                             >{{
-                              showSecondCollapse.findIndex((item) => item === index) > -1
-                                ? 'COLLAPSE'
-                                : 'DETAILS'
+                              showSecondCollapse.findIndex(
+                                (item) => item === index
+                              ) > -1
+                                ? "COLLAPSE"
+                                : "DETAILS"
                             }}
                           </v-btn>
                         </template>
@@ -168,7 +230,10 @@
                     </div>
                   </div>
                   <v-expansion-panel-content
-                    v-if="showSecondCollapse.findIndex((item) => item === index) > -1"
+                    v-if="
+                      showSecondCollapse.findIndex((item) => item === index) >
+                      -1
+                    "
                     transition="scale-transition"
                     class="pa-0 no-shadow"
                   >
@@ -218,18 +283,24 @@
                     </div>
                     <div class="attachments-table">
                       <datatable
+                        id="attachmentsTable"
                         ref="refAttachmentsTable"
                         :loading="isLoading"
                         :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
-                        :table="attachmentTableOptions.tableData[index].analysisList"
+                        :table="
+                          attachmentTableOptions.tableData[index].analysisList
+                        "
                         :options="false"
                         :empty="attachmentTableOptions.iEmpty"
                         :download-button="{ show: false }"
                         @refreshAction="getPostDetails"
                       >
                         <template v-slot:datatable-custom-column="{ scope }">
-                          <span @click="showPopupModal = true" style="cursor: pointer;">
+                          <span
+                            @click="showPopupModal = true"
+                            style="cursor: pointer"
+                          >
                             <a
                               :href="scope.row.analysisEnginePermalink"
                               target="_blank"
@@ -243,7 +314,10 @@
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
-              <div class="empty-attachment" v-if="!mailDetails.attachments.length">
+              <div
+                class="empty-attachment"
+                v-if="!mailDetails.attachments.length"
+              >
                 <h2>No Attachment to display</h2>
               </div>
             </template>
@@ -255,9 +329,9 @@
 </template>
 
 <script>
-import KShadowFrame from '../KShadowFrame'
-import Badge from '@/components/Badge'
-Vue.customElement('k-shadow-frame', KShadowFrame, {
+import KShadowFrame from "../KShadowFrame";
+import Badge from "@/components/Badge";
+Vue.customElement("k-shadow-frame", KShadowFrame, {
   shadow: true,
   shadowCss: `
  @import url('https://fonts.googleapis.com/css?family=Material+Icons');
@@ -371,19 +445,22 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     line-height: 1.2 !important;
 }
 a{position:relative}
- `
-})
+ `,
+});
 
-import Datatable from '../../components/DataTable'
-import DownloadModal from './DownloadModal'
-import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
-import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
-import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
-import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
-import { scrollToComponent } from '@/utils/functions'
-import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
+import Datatable from "../../components/DataTable";
+import DownloadModal from "./DownloadModal";
+import { getNotifiedEmail, downloadAttachment } from "@/api/notifiedEmail";
+import {
+  getStoreValue,
+  PROPERTY_STORE,
+} from "@/model/constants/commonConstants";
+import PreviewHeaderForSinglePost from "../ThreadSharing/PreviewHeaderForSinglePost";
+import DatatableLoading from "@/components/SkeletonLoading/DatatableLoading";
+import EmailDetailsContentDetails from "@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails";
+import EmailDetailsPreviewFooter from "@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter";
+import { scrollToComponent } from "@/utils/functions";
+import EmailDetailsUrl from "@/components/IncidentResponder/EmailDetails/EmailDetailsUrl";
 
 export default {
   components: {
@@ -394,7 +471,7 @@ export default {
     PreviewHeaderForSinglePost,
     Datatable,
     DownloadModal,
-    Badge
+    Badge,
   },
   props: {},
   data: () => ({
@@ -405,364 +482,397 @@ export default {
     isCopiedMd5Clipboard: [],
     attachmentTableOptions: {
       iEmpty: {
-        message: 'The attachment is not analyzed'
+        message: "The attachment is not analyzed",
       },
       tableData: [],
       columns: [
         {
           property: PROPERTY_STORE.ANALYSISENGINE,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.ANALYSISENGINE),
           show: true,
-          fixed: 'left',
-          type: 'text',
-          width: 200
+          fixed: "left",
+          type: "text",
+          width: 200,
         },
         {
           property: PROPERTY_STORE.RESULT,
-          align: 'center',
+          align: "center",
           label: getStoreValue(PROPERTY_STORE.RESULT),
           show: true,
           fixed: false,
-          type: 'badge',
-          width: 170
+          type: "badge",
+          props: {
+            style: {
+              maxWidth: "100px",
+            },
+          },
+          width: 170,
         },
         {
           property: PROPERTY_STORE.ISSENDFILEHASH,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.ISSENDFILEHASH),
           show: true,
           fixed: false,
-          type: 'text',
-          width: 130
+          type: "text",
+          width: 130,
         },
         {
           property: PROPERTY_STORE.ISSENDFILE,
-          align: 'left',
-          label: getStoreValue(PROPERTY_STORE.ISSENDFILE),
+          align: "left",
+          label: getStoreValue(PROPERTY_STORE.FILEUPLOADED),
           show: true,
-          type: 'text',
+          type: "text",
           fixed: false,
-          emptyText: 'false',
-          width: 130
+          emptyText: "false",
+          width: 150,
         },
         {
           property: PROPERTY_STORE.DETAILS,
-          align: 'left',
+          align: "left",
           label: getStoreValue(PROPERTY_STORE.DETAILS),
           show: true,
           fixed: false,
-          type: 'slot',
-          hideSort: true
-        }
-      ]
+          type: "slot",
+          hideSort: true,
+        },
+      ],
     },
     downloadModalStatus: false,
     headersTable: {
       data: [],
       iEmpty: {
-        message: 'No Header to display'
+        message: "No Header to display",
       },
       columns: [
         {
-          property: 'key',
-          align: 'left',
+          property: "key",
+          align: "left",
           editable: false,
-          label: 'Header Key',
+          label: "Header Key",
           sortable: true,
           show: true,
-          type: 'text',
-          width: 400
+          type: "text",
+          width: 400,
         },
         {
-          property: 'value',
-          align: 'left',
+          property: "value",
+          align: "left",
           editable: false,
-          label: 'Header Value',
+          label: "Header Value",
           sortable: true,
           show: true,
-          type: 'text'
-        }
-      ]
+          type: "text",
+        },
+      ],
     },
     relayTable: {
       data: [],
       iEmpty: {
-        message: 'No Relay Information to display'
+        message: "No Relay Information to display",
       },
       columns: [
         {
-          property: 'hop',
-          align: 'left',
+          property: "hop",
+          align: "left",
           editable: false,
-          fixed: 'left',
-          label: 'Hop',
+          fixed: "left",
+          label: "Hop",
           sortable: true,
           show: true,
-          type: 'text',
-          width: 120
+          type: "text",
+          width: 120,
         },
         {
-          property: 'delay',
-          align: 'left',
+          property: "delay",
+          align: "left",
           editable: false,
-          label: 'Delay',
+          label: "Delay",
           sortable: true,
           show: true,
-          type: 'text',
-          width: 150
+          type: "text",
+          width: 150,
         },
         {
-          property: 'from',
-          align: 'left',
+          property: "from",
+          align: "left",
           editable: false,
-          label: 'From',
+          label: "From",
           sortable: true,
           show: true,
-          type: 'text',
-          width: 375
+          type: "text",
+          width: 375,
         },
         {
-          property: 'by',
-          align: 'left',
+          property: "by",
+          align: "left",
           editable: false,
-          label: 'By',
+          label: "By",
           sortable: true,
           show: true,
-          type: 'text',
-          width: 375
+          type: "text",
+          width: 375,
         },
         {
-          property: 'utcTime',
-          align: 'left',
+          property: "utcTime",
+          align: "left",
           editable: false,
-          label: 'Time',
+          label: "Time",
           sortable: true,
           show: true,
-          type: 'text',
-          width: 200
+          type: "text",
+          width: 200,
         },
         {
-          property: 'with',
-          align: 'left',
+          property: "with",
+          align: "left",
           editable: false,
           fixed: false,
-          label: 'With',
+          label: "With",
           sortable: true,
           show: true,
-          type: 'text',
-          minWidth: 150
-        }
-      ]
+          type: "text",
+          minWidth: 150,
+        },
+      ],
     },
     mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: [],
-    tab: 'first',
+    tab: "first",
     details: {},
     columns: [
       // Should be defined to show the table
       {
-        property: 'url',
-        align: 'left',
+        property: "url",
+        align: "left",
         editable: false,
-        label: 'Url',
-        fixed: 'left',
+        label: "Url",
+        fixed: "left",
         sortable: true,
         show: true,
-        type: 'text',
-        width: 400
+        type: "text",
+        width: 400,
       },
       {
-        property: 'status',
-        align: 'center',
+        property: "status",
+        align: "center",
         editable: false,
-        label: 'Status',
+        label: "Status",
         fixed: false,
         sortable: false,
         show: true,
         maxWidth: 170,
-        type: 'badge',
-        hasTooltip: true
-      }
+        type: "badge",
+        props: {
+          style: {
+            maxWidth: "100px",
+          },
+        },
+        hasTooltip: true,
+      },
     ],
     title: {
-      icon: 'mdi-tab-unselected',
-      title: 'Url Analysis',
-      subTitle: ''
+      icon: "mdi-tab-unselected",
+      title: "Url Analysis",
+      subTitle: "",
     },
     selectEvent: {
       clipboard: true,
-      download: false
-    }
+      download: false,
+    },
   }),
   mounted() {
-    this.getPostDetails()
+    this.getPostDetails();
   },
   methods: {
+    adjustScroll() {
+      this.$nextTick(() => {
+        scrollToComponent(document.getElementById("email-details--header"), {
+          behavior: "auto",
+          block: "start",
+          inline: "start",
+        });
+      });
+    },
     isFileUploaded(attachments) {
       if (attachments) {
-        const data = attachments.filter((item) => item.isSendFile || item.isSendFileHash)
-        return !!data.length
+        const data = attachments.filter((item) => item.isSendFile);
+        return !data.length;
       }
     },
     handleIsSha512Copied(index, attachment) {
       this.isCopiedShaClipboard.findIndex((item) => item === index) === -1 &&
-        this.writeToNavigator(attachment.sha512, index, 'sha')
+        this.writeToNavigator(attachment.sha512, index, "sha");
     },
     handleIsMd5Copied(index, attachment) {
       this.isCopiedMd5Clipboard.findIndex((item) => item === index) === -1 &&
-        this.writeToNavigator(attachment.md5, index, 'md5')
+        this.writeToNavigator(attachment.md5, index, "md5");
     },
     getTextOfType(list) {
-      return this.getResultOfAttachmentList(list)
+      return this.getResultOfAttachmentList(list);
     },
     getColorOfType(list) {
-      let result = this.getResultOfAttachmentList(list)
+      let result = this.getResultOfAttachmentList(list);
       switch (result) {
-        case 'Undetected':
-          return '#00bcd4'
-        case 'Malicious':
-          return '#e6a23c'
-        case 'Phishing':
-          return '#f56c6c'
+        case "Undetected":
+          return "#00bcd4";
+        case "Malicious":
+          return "#e6a23c";
+        case "Phishing":
+          return "#f56c6c";
         default:
-          return '#00bcd4'
+          return "#00bcd4";
       }
-      return result
+      return result;
     },
     handleAttachmentClick(index, id) {
-      this.tab = 'fifth'
-      this.panel.push(index)
-      this.showSecondCollapse.push(index)
+      this.tab = "fifth";
+      this.panel.push(index);
+      this.showSecondCollapse.push(index);
       this.$nextTick(() => {
-        scrollToComponent(document.getElementById(id))
-      })
+        scrollToComponent(document.getElementById(id));
+      });
     },
     getResultOfAttachmentList(list) {
-      let result = 'N/A'
+      let result = "N/A";
       for (let item of list) {
-        if (item.result === 'Malicious') {
-          result = 'Malicious'
-          break
+        if (item.result === "Malicious") {
+          result = "Malicious";
+          break;
         }
-        if (item.result === 'Phishing') {
-          result = 'Phishing'
-          continue
+        if (item.result === "Phishing") {
+          result = "Phishing";
+          continue;
         }
-        if (item.result === 'Undetected' && result !== 'Phishing' && result !== 'Malicious') {
-          result = 'Undetected'
+        if (
+          item.result === "Undetected" &&
+          result !== "Phishing" &&
+          result !== "Malicious"
+        ) {
+          result = "Undetected";
         }
       }
-      return result
+      return result;
     },
     writeToNavigator(value, index, type) {
-      if (type === 'sha') {
-        const pushedIndex = this.isCopiedShaClipboard.push(index) - 1
+      if (type === "sha") {
+        const pushedIndex = this.isCopiedShaClipboard.push(index) - 1;
         setTimeout(() => {
-          this.isCopiedShaClipboard.splice(pushedIndex, 1)
-        }, 5000)
-      } else if (type === 'md5') {
-        const pushedIndex = this.isCopiedMd5Clipboard.push(index) - 1
+          this.isCopiedShaClipboard.splice(pushedIndex, 1);
+        }, 5000);
+      } else if (type === "md5") {
+        const pushedIndex = this.isCopiedMd5Clipboard.push(index) - 1;
         setTimeout(() => {
-          this.isCopiedMd5Clipboard.splice(pushedIndex, 1)
-        }, 5000)
+          this.isCopiedMd5Clipboard.splice(pushedIndex, 1);
+        }, 5000);
       }
-      navigator.clipboard.writeText(value)
+      navigator.clipboard.writeText(value);
     },
     handleDownloadEmail() {
-      this.downloadModalStatus = true
+      this.downloadModalStatus = true;
     },
     getHeaderRow(key, value) {
-      let outputValue = ''
-      if (value.includes(',')) {
-        outputValue = value.split(',')
+      let outputValue = "";
+      if (value.includes(",")) {
+        outputValue = value.split(",");
       }
     },
 
     setSecondCollapse(event, index) {
-      if (event.target.textContent.startsWith('COLLAPSE')) {
+      if (event.target.textContent.startsWith("COLLAPSE")) {
         this.showSecondCollapse.splice(
           this.showSecondCollapse.findIndex((item) => item === index),
           1
-        )
-        const shaIndex = this.isCopiedShaClipboard.findIndex((item) => item === index)
+        );
+        const shaIndex = this.isCopiedShaClipboard.findIndex(
+          (item) => item === index
+        );
         if (shaIndex > -1) {
-          this.isCopiedShaClipboard.splice(shaIndex, 1)
+          this.isCopiedShaClipboard.splice(shaIndex, 1);
         }
-        const md5Index = this.isCopiedMd5Clipboard.findIndex((item) => item === index)
+        const md5Index = this.isCopiedMd5Clipboard.findIndex(
+          (item) => item === index
+        );
         if (md5Index > -1) {
-          this.isCopiedMd5Clipboard.splice(md5Index, 1)
+          this.isCopiedMd5Clipboard.splice(md5Index, 1);
         }
       } else {
-        this.showSecondCollapse.push(index)
+        this.showSecondCollapse.push(index);
       }
     },
     handleDownloadAttachment(attachment) {
       downloadAttachment(attachment.resourceId).then((response) => {
-        const { data } = response
-        const link = document.createElement('a')
-        link.href = window.URL.createObjectURL(data)
-        link.download = attachment.name
-        link.click()
-      })
+        const { data } = response;
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(data);
+        link.download = attachment.name;
+        link.click();
+      });
     },
     getPostDetails() {
-      this.isLoading = true
+      let _this = this;
+      this.isLoading = true;
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
-          this.mailDetails = response.data.data
-          this.attachmentTableOptions.tableData = this.mailDetails.attachments
-          this.headersTable.data = this.mailDetails.headers
-          this.relayTable.data = this.mailDetails.emailRelays
+          this.mailDetails = response.data.data;
+          this.attachmentTableOptions.tableData = this.mailDetails.attachments;
+          this.headersTable.data = this.mailDetails.headers;
+          this.relayTable.data = this.mailDetails.emailRelays;
         })
-        .finally(() => (this.isLoading = false))
+        .finally(() => (this.isLoading = false));
     },
     getMd5Text(index) {
       return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1
-        ? 'COPIED!'
-        : 'COPY TO CLIPBOARD'
+        ? "COPIED!"
+        : "COPY TO CLIPBOARD";
     },
     getSha512Text(index) {
       return this.isCopiedShaClipboard.findIndex((item) => item === index) > -1
-        ? 'COPIED!'
-        : 'COPY TO CLIPBOARD'
+        ? "COPIED!"
+        : "COPY TO CLIPBOARD";
     },
     setEmailPreview() {
-      let _this = this
+      let _this = this;
       if (!this.isPreviewRender) {
-        this.isPreviewRender = true
+        this.isPreviewRender = true;
         setTimeout(function () {
           for (let a of _this.mailDetails.urls) {
             const els = document
-              .getElementById('sframe')
-              .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
+              .getElementById("sframe")
+              .shadowRoot.querySelectorAll('[href="' + a.url + '"]');
             for (let i = 0, l = els.length; i < l; i++) {
-              const el = els[i]
-              el.setAttribute('target', '_blank')
-              el.setAttribute('data-title', 'This link has been reported as a phishing')
-              el.style.backgroundColor = '#f3e1e5'
-              el.style.color = '#bb2a45'
-              el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+              const el = els[i];
+              el.setAttribute("target", "_blank");
+              el.setAttribute(
+                "data-title",
+                "This link has been reported as a phishing"
+              );
+              el.style.backgroundColor = "#f3e1e5";
+              el.style.color = "#bb2a45";
+              el.innerHTML =
+                el.innerHTML +
+                `<span class="malicious-link mdi mdi-alert"></span>`;
               // }
             }
           }
-        }, 400)
+        }, 400);
       }
-    }
+    },
   },
   created() {
     if (this.$route.params && this.$route.params.tab) {
-      this.tab = this.$route.params.tab
+      this.tab = this.$route.params.tab;
     }
   },
   watch: {
     panel(val) {},
     tab(val) {
-      val === 2 && this.setEmailPreview()
-    }
-  }
-}
+      val === 2 && this.setEmailPreview();
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -805,7 +915,8 @@ export default {
     &__container {
       margin-top: 40px;
       border-radius: 20px;
-      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
+        0 2px 2px 0 rgba(80, 80, 80, 0.14),
         0 3px 1px -2px rgba(80, 80, 80, 0.12);
       padding: 10px 24px 24px;
     }
@@ -818,6 +929,7 @@ export default {
     letter-spacing: normal;
     color: #2196f3;
     display: block;
+    overflow-wrap: break-word;
   }
   .tab-bar {
     width: 100%;
@@ -859,8 +971,8 @@ export default {
   }
   .attachment-analysis-item {
     border-radius: 20px;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
+      0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #ffffff;
     padding: 24px 24px 24px 24px;
     position: relative;
@@ -895,7 +1007,7 @@ export default {
   }
 
   .wrf {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -906,7 +1018,7 @@ export default {
   }
 
   .not-found {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -998,7 +1110,7 @@ export default {
 
   // Threat sharing Content
   .v-slide-group__content.v-tabs-bar__content:after {
-    content: '';
+    content: "";
     height: 2px;
     width: 100%;
     background-color: #e4e7ed;
@@ -1034,7 +1146,7 @@ export default {
   }
 
   .ts-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 24px;
     font-weight: normal;
     font-style: normal;
@@ -1161,7 +1273,7 @@ export default {
       border-radius: 18px;
       border: solid 1.5px #c0c4cc;
       background-color: #fff;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -1180,7 +1292,7 @@ export default {
     margin-top: 22px;
     margin-left: 0;
     margin-right: 0;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: bold;
     font-style: normal;
@@ -1245,7 +1357,7 @@ export default {
 
   .ts-body {
     margin-top: 10px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-style: normal;
@@ -1256,7 +1368,7 @@ export default {
   }
 
   .ts-user-comp {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -1283,7 +1395,7 @@ export default {
     }
 
     .ts-user-date {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 12px;
       font-weight: normal;
       font-stretch: normal;
@@ -1295,7 +1407,7 @@ export default {
   }
 
   .ts-action-counter {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -1306,7 +1418,7 @@ export default {
   }
 
   .ts-actions {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -1319,8 +1431,8 @@ export default {
 
   .v-expansion-panel {
     border-radius: 20px !important;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
+      0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #fff;
     border: unset !important;
     .k-table__wrapper {
@@ -1344,7 +1456,7 @@ export default {
   .v-expansion-panel-content {
     border-radius: 20px !important;
     display: block !important;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
   }
 
   .v-expansion-panel-content__wrap {
@@ -1366,7 +1478,7 @@ export default {
     margin-top: 32px;
 
     h2 {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -1378,7 +1490,7 @@ export default {
     }
 
     .header-info {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -1391,7 +1503,7 @@ export default {
 
   .preview-body {
     margin-top: 4px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -1433,7 +1545,7 @@ export default {
       width: auto !important;
 
       h2 {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         font-weight: 600;
         font-stretch: normal;
@@ -1445,7 +1557,7 @@ export default {
       }
 
       .file-name {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         font-weight: 600;
         font-stretch: normal;
@@ -1468,7 +1580,7 @@ export default {
     }
 
     h2 {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -1517,7 +1629,7 @@ export default {
         span {
           width: 100%;
           text-align: center;
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 12px;
           font-weight: normal;
           font-stretch: normal;
@@ -1560,7 +1672,7 @@ export default {
       box-shadow: unset !important;
       background-color: #fff !important;
       margin-right: 16px;
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -1606,7 +1718,7 @@ export default {
     margin-top: 24px;
 
     .disc-header {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -1618,7 +1730,7 @@ export default {
     }
 
     .discovery-p {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -1633,7 +1745,7 @@ export default {
     display: flex;
     flex-direction: row;
     padding-bottom: 8px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -1712,7 +1824,7 @@ export default {
         margin-right: 16px;
 
         .v-input__slot {
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 13px;
           font-weight: 600;
           font-stretch: normal;
@@ -1744,7 +1856,8 @@ export default {
 
       .send-btn {
         border-radius: 18px !important;
-        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1),
+          0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
         background-color: #2196f3 !important;
         color: #fff !important;
         height: 36px !important;
@@ -1770,7 +1883,7 @@ export default {
 
         .username,
         .company-name {
-          font-family: 'Open Sans', sans-serif !important;
+          font-family: "Open Sans", sans-serif !important;
           font-size: 14px;
           font-weight: 600;
           font-stretch: normal;
@@ -1790,7 +1903,7 @@ export default {
       .the-comment {
         margin-bottom: 0 !important;
         padding-top: 8px !important;
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
@@ -1812,7 +1925,7 @@ export default {
 
       span {
         text-decoration: none;
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         font-weight: 600;
         font-stretch: normal;
@@ -1896,7 +2009,8 @@ export default {
 
     .send-btn {
       border-radius: 18px !important;
-      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1),
+        0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
       background-color: #2196f3 !important;
       color: #fff !important;
       height: 36px !important;
@@ -1913,7 +2027,7 @@ export default {
   }
 
   .detected-items {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -1991,8 +2105,8 @@ export default {
     &:last-child {
       padding-bottom: 24px;
     }
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
-      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
+      0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #ffffff !important;
     border-radius: 12px !important;
   }
@@ -2076,8 +2190,8 @@ export default {
   align-items: center;
   &-menu {
     border-radius: 20px !important;
-    box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
-      0 3px 14px 2px rgba(80, 80, 80, 0.12) !important;
+    box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14),
+      0 2px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(80, 80, 80, 0.12) !important;
     span {
       font-size: 14px;
     }
@@ -2102,6 +2216,13 @@ export default {
 #urlAnalysisTable.k-table__wrapper {
   padding-bottom: 0;
 }
+
+.single-wrapper #urlAnalysisTable .v-btn:not(.v-btn--round).v-size--default,
+.single-wrapper #attachmentsTable .v-btn:not(.v-btn--round).v-size--default {
+  border-radius: 4px !important;
+  height: 24px !important;
+}
+
 .email-details__tabs {
   .el-tabs__content {
     margin-top: 24px;

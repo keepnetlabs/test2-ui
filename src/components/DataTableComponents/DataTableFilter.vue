@@ -12,7 +12,11 @@
     z-index="999"
   >
     <template v-slot:activator="{ on }">
-      <v-icon v-on="on" class="filter__icon" :color="isFilterActive === true ? '#409eff' : ''"
+      <v-icon
+        v-on="on"
+        class="filter__icon"
+        :style="!sortable && { marginTop: '1px' }"
+        :color="isFilterActive === true ? '#409eff' : ''"
         >mdi-filter-variant</v-icon
       >
     </template>
@@ -145,9 +149,17 @@ export default {
       type: Array,
       default: () => []
     },
+    isSettingsOpened: {
+      type: Boolean,
+      default: false
+    },
     filterableCustomFieldName: {
       type: String,
       default: null
+    },
+    sortable: {
+      type: Boolean,
+      default: true
     },
     index: {
       type: Number
@@ -214,7 +226,13 @@ export default {
       convertedFilterableItems: []
     }
   },
-  mounted() {},
+  watch: {
+    menu(newVal) {
+      if (newVal) {
+        this.$emit('update:isSettingsOpened', false)
+      }
+    }
+  },
   created() {
     if (this.filterableType === 'select') {
       this.filterableItems.forEach((x) => {
@@ -226,7 +244,7 @@ export default {
   },
   beforeDestroy() {
     if (this.isFilterActive) {
-      this.clearFilter(false)
+      this.clearDataParams()
     }
   },
   methods: {
@@ -237,6 +255,13 @@ export default {
       }
     },
     clearFilter(isEmit = true) {
+      this.clearDataParams()
+      if (isEmit) {
+        this.emitValue()
+      }
+      this.$emit('handleClearColumnFilter', this.fieldName)
+    },
+    clearDataParams() {
       this.menu = false
       this.isFilterActive = false
       this.filterValue = ''
@@ -244,10 +269,6 @@ export default {
       this.filterChecked = []
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
-      this.$emit('handleClearColumnFilter', this.fieldName)
-      if (isEmit) {
-        this.emitValue()
-      }
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })

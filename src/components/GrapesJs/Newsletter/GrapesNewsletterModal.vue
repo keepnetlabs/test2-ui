@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 70px !important;">
+  <div style="margin-bottom: 70px !important;" id="threat-sharing-post-incident-grapesjs-modal">
     <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
@@ -36,6 +36,10 @@ import { uploadEmlOrMsg } from '../../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { setGrapesjsStyle } from './assets/css/grapesStyle'
+import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
+import 'grapesjs/dist/css/grapes.min.css'
+import parserPostCSS from 'grapesjs-parser-postcss'
+import componentEditor from '../../GrapesJs/ComponentEditor/index'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -76,22 +80,83 @@ export default {
           /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/gi.test(
             v
           ) || 'invalid url'
-      }
+      },
+      urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
     }
   },
   mounted() {
+    this.setMergedTextsForLinks()
+    this.setTraits()
     this.setGrapesEditor()
     window.addEventListener('popstate', function (event) {
       // Log the state data to the console
     })
   },
   methods: {
+    asd(a, b, c) {
+      let _this = this
+      const component = this.editor.getSelected()
+      setTimeout(() => {
+        let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
+        if (
+          component.getTrait('href').props().value === '' ||
+          !mergedTextsNames.includes(component.getTrait('href').props().value)
+        ) {
+          document.querySelector(
+            '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+          ).selectedIndex = 0
+        }
+        //component.getTrait('href').props()
+      }, 10)
+    },
+    setMergedTextsForLinks() {
+      Object.keys(this.blockManagerComponents).forEach((key) => {
+        if (this.blockManagerComponents[key].attributes.isUrl)
+          this.urlMergedTexts.push({
+            value: key,
+            name: this.blockManagerComponents[key].label
+          })
+      })
+    },
+    setTraits() {
+      this.traits = [
+        {
+          type: 'text',
+          label: 'Title',
+          name: 'title'
+        },
+        {
+          type: 'text',
+          label: 'Href',
+          name: 'href'
+        },
+        {
+          type: 'select',
+          label: 'Target',
+          name: 'target',
+          options: [
+            { value: '', name: 'This Window' },
+            { value: '_blank', name: 'New Window' }
+          ]
+        },
+        {
+          type: 'select',
+          label: 'Merged Texts',
+          name: 'href',
+          options: this.urlMergedTexts
+        }
+      ]
+      /*if (this.urlMergedTexts.length > 1) {
+        this.traits.push()
+      }*/
+    },
     setGrapesEditor() {
+      let _this = this
       this.editor = GrapesNewsletterModal.init({
         container: '#gjsNewsletterModal',
         fromElement: 1,
         storageManager: { type: 0 },
-        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage'],
+        plugins: ['gjs-preset-newsletter', 'gjs-preset-webpage', parserPostCSS, componentEditor],
         pluginsOpts: {
           'gjs-preset-newsletter': {
             modalTitleImport: 'Import Template',
@@ -100,38 +165,90 @@ export default {
             categoryLabel: 'Basic'
           }
         },
-        noticeOnUnload: false
-      })
-      setTimeout(()=> {
-        if(!document.getElementsByClassName('gjs-btn-prim').length){
-          document.getElementsByClassName("gjs-pn-btn fa fa-code")[0].addEventListener('click', () => {
-            setTimeout(()=>{
-            document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type','button')
-            },100)
-          })
+        noticeOnUnload: false,
+        styleManager: {
+          sectors: [
+            {
+              name: 'Dimension',
+              open: true
+            }
+          ]
         }
-      },500)
-      /*let dType = this.editor.DomComponents.getType('link')
+      })
+      this.editor.on('component:selected', () => {
+        const selected = this.editor.getSelected()
+        if (selected && selected.is('link')) {
+          document.getElementsByClassName('gjs-pn-btn fa fa-cog')[0].click()
+          setTimeout(() => {
+            document
+              .querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+              )
+              .addEventListener('change', (a, b, c) => {
+                this.asd(a, b, c)
+              })
+            document
+              .querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+              )
+              .addEventListener('change', (a, b, c) => {
+                this.asd(a, b, c)
+              })
+            if (selected.getTrait('href').props().value === '') {
+              document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
+              ).value = ''
+            }
+            let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
+            if (
+              !mergedTextsNames.includes(selected.getTrait('href').props().value) &&
+              document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+              )
+            ) {
+              document.querySelector(
+                '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+              ).selectedIndex = 0
+            }
+          }, 50)
+        } else {
+          this.editor.StyleManager.getSectors().models[0].attributes.open = true
+          this.editor.StyleManager.getSectors().models[1].attributes.open = true
+          this.editor.StyleManager.getSectors().models[2].attributes.open = true
+          this.editor.StyleManager.render()
+          /*document.getElementById('gjs-sm-dimension').className =
+            'gjs-sm-sector gjs-sm-sector__dimension no-select gjs-sm-open'
+          document.querySelector('#gjs-sm-dimension #gjs-sm-caret').className = 'fa fa-caret-down'
+          document.querySelector('#gjs-sm-dimension .gjs-sm-properties').style.display = 'block'
+          document.getElementById('gjs-sm-typography').className =
+            'gjs-sm-sector gjs-sm-sector__typography no-select gjs-sm-open'
+          document.querySelector('#gjs-sm-typography #gjs-sm-caret').className = 'fa fa-caret-down'
+          document.querySelector('#gjs-sm-typography .gjs-sm-properties').style.display = 'block'
+          document.getElementById('gjs-sm-decorations').className =
+            'gjs-sm-sector gjs-sm-sector__decorations no-select gjs-sm-open'
+          document.querySelector('#gjs-sm-decorations #gjs-sm-caret').className = 'fa fa-caret-down'
+          document.querySelector('#gjs-sm-decorations .gjs-sm-properties').style.display = 'block'*/
+        }
+      })
+      setTimeout(() => {
+        if (!document.getElementsByClassName('gjs-btn-prim').length) {
+          document
+            .getElementsByClassName('gjs-pn-btn fa fa-code')[0]
+            .addEventListener('click', () => {
+              setTimeout(() => {
+                document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type', 'button')
+              }, 100)
+            })
+        }
+      }, 500)
+      let dType = this.editor.DomComponents.getType('link')
       let dModel = dType.model
       let dView = dType.view
       this.editor.DomComponents.addType('link', {
         model: dModel.extend(
           {
             defaults: Object.assign({}, dModel.prototype.defaults, {
-              traits: [
-                // strings are automatically converted to text types
-                {
-                  type: 'select',
-                  label: 'Href',
-                  name: 'href',
-                  options: [
-                    { value: 'index.html', name: 'Home' },
-                    { value: 'index2.html', name: 'Home2' },
-                    { value: 'index3.html', name: 'Home3' },
-                    { value: 'index4.html', name: 'Home4' }
-                  ]
-                }
-              ]
+              traits: this.traits
             })
           },
           {
@@ -142,11 +259,9 @@ export default {
             }
           }
         ),
-
         view: dView
-      })*/
+      })
       let blockManager = this.editor.BlockManager
-
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         blockManager.add(key, value)
       }
@@ -155,6 +270,20 @@ export default {
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }
+      const panelViews = pn.addPanel({
+        id: 'views'
+      })
+      panelViews.get('buttons').add([
+        {
+          attributes: {
+            title: 'Open Code'
+          },
+          className: 'fa fa-file-code-o',
+          command: 'open-code',
+          togglable: false, //do not close when button is clicked again
+          id: 'open-code'
+        }
+      ])
       //pn.getButton('options', 'gjs-open-import-template').set('active', 1)
     },
     uploadFile(e) {
@@ -183,7 +312,7 @@ export default {
       let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
       return htmlContent
     }
-  },
+  }
 }
 </script>
 

@@ -117,21 +117,38 @@
                 >
                 <div class="filter-item" v-for="(list, index) in filterList" :key="index">
                   <div class="filter-item__selectbox">
-                    <k-select
-                      :items="filterListOption"
-                      item-text="name"
-                      item-value="val"
-                      v-model.trim="list.option"
-                      placeholder="Select filter"
-                      outlined
-                      class="edit-select standard-height"
-                      required
-                      @change="handleChangeFilterListItem"
-                      :rules="[filterSelectRules.required]"
-                    ></k-select>
+                    <Treeselect
+                      v-model="list.option"
+                      disable-branch-nodes
+                      open-direction="below"
+                      :class="[
+                        'filter-list-select',
+                        'k-treeselect',
+                        { 'k-treeselect--error': isSubmitted && !list.option }
+                      ]"
+                      :clearable="false"
+                      :options="filterListOption"
+                      :max-height="320"
+                    />
+                    <div
+                      v-if="isSubmitted && !list.option"
+                      class="v-text-field__details checkbox-error"
+                      style="left: 2px !important; bottom: -17px !important;"
+                    >
+                      <transition appear name="bounce">
+                        <div class="v-messages theme--light error--text" role="alert">
+                          <div class="v-messages__wrapper">
+                            <div class="v-messages__message" style="padding-left: 10px;">
+                              Required
+                            </div>
+                          </div>
+                        </div>
+                      </transition>
+                    </div>
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
+                      :key="index + list.option"
                       :placeholder="
                         placeholders[list.option]
                           ? placeholders[list.option]
@@ -139,11 +156,7 @@
                       "
                       outlined
                       class="edit-name-textfield edit-select standard-height"
-                      :rules="[
-                        list.option && generalRules[list.option].required,
-                        list.option && generalRules[list.option].format,
-                        list.option && generalRules[list.option].maxLength
-                      ]"
+                      :rules="getSearchCriteriaItemRules(list.option)"
                       v-model.trim="list.text"
                       required
                     ></v-text-field>
@@ -281,11 +294,16 @@
     </template>
     <template v-slot:overlay-footer>
       <div class="new-investigation-footer">
-        <v-btn class="k-overlay__btn-cancel" rounded @click="onCancelClicked">{{
-          labels.Cancel
-        }}</v-btn>
+        <v-btn
+          class="k-overlay__btn-cancel"
+          id="btn-cancel--investigation-modal"
+          rounded
+          @click="onCancelClicked"
+          >{{ labels.Cancel }}</v-btn
+        >
         <v-btn
           :disabled="saveDisable"
+          id="btn-save--investigation-modal"
           class="k-overlay__btn-save white--text"
           style="width: auto;"
           rounded
@@ -298,6 +316,7 @@
   </app-modal>
 </template>
 <script>
+import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
 import {
   getTargetGroups,
@@ -316,7 +335,8 @@ export default {
     KSelect,
     AppModalBodyHeader,
     AppModal,
-    InputDate
+    InputDate,
+    Treeselect
   },
   watch: {
     date(val) {
@@ -369,6 +389,7 @@ export default {
     return {
       warningMessage: null,
       saveDisable: false,
+      isSubmitted: false,
       labels,
       timeout: null,
       defaultUserGroupItems: [],
@@ -441,7 +462,7 @@ export default {
       startDate: '',
       endDate: '',
       selectedDuration: 3,
-      selectedAction: 'Delete',
+      selectedAction: 'NoAction',
       name: '',
       description: '',
       privacy: false,
@@ -463,23 +484,44 @@ export default {
         },
         { actionLabel: 'Notify user only', actionValue: 'Warning' }
       ],
-      filterList: [{ option: '', text: '' }],
+      filterList: [{}],
       sources: [],
       filterListOption: [
-        { name: 'IP', val: 'ip' },
-        { name: 'From', val: 'from' },
-        { name: 'To', val: 'to' },
-        { name: 'CC', val: 'cc' },
-        { name: 'BCC', val: 'bcc' },
-        { name: 'Subject', val: 'subject' },
-        { name: 'Sender Name', val: 'from_name' },
-        { name: 'Url', val: 'url' },
-        { name: 'Keyword', val: 'keyword' },
-        { name: 'Size', val: 'size' },
-        { name: 'File Name', val: 'name' },
-        { name: 'SHA512', val: 'sha512' },
-        { name: 'MD5', val: 'md5' },
-        { name: 'File Extension', val: 'extension' }
+        {
+          label: 'Header',
+          id: 'header',
+          isDefaultExpanded: true,
+          children: [
+            { label: 'Subject', id: 'subject' },
+            { label: 'From', id: 'from' },
+            { label: 'To', id: 'to' },
+            { label: 'CC', id: 'cc' },
+            { label: 'BCC', id: 'bcc' },
+            { label: 'IP Address', id: 'ip' },
+            { label: 'Sender Name', id: 'from_name' }
+          ]
+        },
+        {
+          label: 'Body',
+          id: 'body',
+          isDefaultExpanded: true,
+          children: [
+            { label: 'URL', id: 'url' },
+            { label: 'Keyword', id: 'keyword' }
+          ]
+        },
+        {
+          label: 'Attachment',
+          id: 'attachment',
+          isDefaultExpanded: true,
+          children: [
+            { label: 'File Name', id: 'name' },
+            { label: 'File Size', id: 'size' },
+            { label: 'File Extension', id: 'extension' },
+            { label: 'SHA512', id: 'sha512' },
+            { label: 'MD5', id: 'md5' }
+          ]
+        }
       ],
       valid: false,
       menu1: '',
@@ -495,85 +537,6 @@ export default {
         empty: (v) => Validations.startsWithSpace(v),
         maxLength: (v) =>
           Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Message, 64))
-      },
-      generalRules: {
-        ip: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.ip(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
-        },
-        from: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
-        },
-        to: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
-        },
-        cc: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => Validations.email(v)
-        },
-        bcc: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.EmailAddress)),
-          format: (v) => (v) => Validations.email(v)
-        },
-        subject: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject)),
-          format: (v) => Validations.startsWithSpace(v) // string kontrolü
-        },
-        from_name: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Sender name')),
-          format: (v) => Validations.startsWithSpace(v) // string kontrolü
-        },
-        url: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage('URL', 2000)),
-          format: (v) => Validations.url(v)
-        },
-        keyword: {
-          required: (v) => Validations.required(v),
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Keyword')),
-          format: (v) => Validations.startsWithSpace(v) // format ekle
-        },
-        size: {
-          required: (v) => Validations.required(v),
-          format: (v) => /^\d+$/gi.test(v) || 'Numbers only',
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Size'))
-        },
-        name: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Name'))
-        },
-        sha512: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) => Validations.maxLength(v, 512, labels.getMaxLengthMessage('SHA512', 512))
-        },
-        md5: {
-          required: (v) => Validations.required(v),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage('MD5', 128))
-        },
-        extension: {
-          required: (v) => Validations.minLength(v, 3, labels.getMinLengthMessage('Extension', 3)),
-          format: (v) => Validations.startsWithSpace(v),
-          maxLength: (v) =>
-            Validations.maxLength(v, 10, labels.getMaxLengthMessage('Extension', 10))
-        }
       },
       filterSelectRules: {
         required: (v) => Validations.required(v),
@@ -622,6 +585,104 @@ export default {
         this.$refs.form.validate()
       })
     },
+    getSearchCriteriaItemRules(option = '') {
+      const rules = []
+      if (!option) {
+        return rules
+      }
+      if (['from', 'to', 'cc', 'bcc'].includes(option)) {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.email(v),
+          (v) =>
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
+          (v) => {
+            if (Validations.email(v)) {
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
+            }
+            return false
+          }
+        )
+        return rules
+      } else if (option === 'ip') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.ip(v),
+          (v) => Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
+        )
+        return rules
+      } else if (option === 'subject') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
+        )
+        return rules
+      } else if (option === 'from_name') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName))
+        )
+        return rules
+      } else if (option === 'url') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+          (v) => Validations.url(v)
+        )
+        return rules
+      } else if (option === 'keyword') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword))
+        )
+        return rules
+      } else if (option === 'size') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Size, 320))
+        )
+        return rules
+      } else if (option === 'name') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name))
+        )
+        return rules
+      } else if (option === 'sha512') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.minLength(v, 128, labels.getMinLengthMessage(labels.SHA512, 128)),
+          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512, 128))
+        )
+        return rules
+      } else if (option === 'md5') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v),
+          (v) => Validations.maxLength(v, 32, labels.getMaxLengthMessage(labels.MD5, 32)),
+          (v) => Validations.minLength(v, 32, labels.getMinLengthMessage(labels.MD5, 32))
+        )
+        return rules
+      } else if (option === 'extension') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.minLength(v, 3, labels.getMinLengthMessage(labels.Extension, 3)),
+          (v) => Validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Extension, 10)),
+          (v) => Validations.extension(v, labels.InvalidExtension)
+        )
+        return rules
+      }
+      return rules
+    },
     callForGetTargetUsersItems(payload, isDefault = false) {
       getTargetUsersByEmail(payload).then((response) => {
         const {
@@ -657,7 +718,7 @@ export default {
       }, delay)
     },
     addNewFilterListOption() {
-      this.filterList.push({ option: '', text: '' })
+      this.filterList.push({})
     },
     onCancelClicked() {
       this.$emit('closeAdd')
@@ -665,7 +726,7 @@ export default {
     onCreateClicked() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
-
+      this.isSubmitted = true
       if (this.date.length < 1) {
         this.isDateValid = false
       }
@@ -681,9 +742,18 @@ export default {
         } else {
           this.checkboxError = false
         }
+
         if (!this.isDateValid) {
           this.$nextTick(() => {
             const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
+          return false
+        }
+
+        if (!this.filterList.every((filter) => filter.text && filter.option)) {
+          this.$nextTick(() => {
+            const el = this.$refs.form.$el.querySelector('.error--text')
             scrollToComponent(el)
           })
           return false
@@ -1410,7 +1480,7 @@ export default {
       &__button {
         font-size: 14px;
         font-weight: 600;
-        margin-top: 8px;
+        margin-top: 12px;
         line-height: 1.71;
         letter-spacing: normal;
         color: #2196f3 !important;
@@ -3142,6 +3212,26 @@ export default {
 .select-specific-users {
   .v-chip {
     margin: 4px !important;
+  }
+}
+.filter-list-select {
+  .vue-treeselect__indent-level-0:not(:first-child) {
+    border-top: 1px solid #e0e0e0;
+  }
+  &.k-treeselect .vue-treeselect__input-container input {
+    height: 40px;
+  }
+
+  .vue-treeselect__indent-level-1 .vue-treeselect__option.vue-treeselect__option--selected {
+    border-left: solid 5px !important;
+    border-color: #2196f3 !important;
+    padding-left: 11px !important;
+    .vue-treeselect__label {
+      color: #1976d2 !important;
+    }
+  }
+  .vue-treeselect__indent-level-1 .vue-treeselect__option {
+    padding-left: 16px !important;
   }
 }
 </style>

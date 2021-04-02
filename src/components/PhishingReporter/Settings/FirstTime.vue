@@ -1,10 +1,10 @@
 <template>
   <div>
     <add-in-configuration
-      @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
-      @getPhishingReport="getReport"
       v-if="showAddInConfiguration"
       :status="showAddInConfiguration"
+      @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
+      @getPhishingReport="getReport"
       @closeOverlay="showAddInConfiguration = false"
     />
 
@@ -30,6 +30,7 @@
             <v-btn
               @click="changeAddInConfigurationStatus(true)"
               rounded
+              id="btn--phishing-reporter-settings-configure-add-in"
               class="white--text first-time__btn-util"
               color="#2196f3"
             >
@@ -43,7 +44,7 @@
         <v-list-item-content>
           <div class="first-time__guide-container">
             <a
-              href="https://doc.keepnetlabs.com/technical-guide/phishing-reporter-add-in/generating-add-in"
+              href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
               target="_blank"
             >
               Installation and configuration guide

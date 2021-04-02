@@ -3,7 +3,7 @@
     <v-form
       lazy-validation
       ref="refSessionExpiredForm"
-      @submit="onLoginClicked"
+      @submit="loginAction"
       autocomplete="disabled"
     >
       <v-card light class="pb-5">
@@ -48,7 +48,6 @@
                 placeholder="Username"
                 autocomplete="disabled"
                 outlined
-                @keyup.enter="onLoginClicked"
                 autofocus
               ></v-text-field>
             </div>
@@ -65,7 +64,6 @@
                 outlined
                 @click:append="show1 = !show1"
                 autocomplete="disabled"
-                @keyup.enter="onLoginClicked"
               ></v-text-field>
             </div>
             <div>
@@ -75,7 +73,7 @@
                   dense
                   v-model="rememberMe"
                   color="#2196f3"
-                  :label="`Remember me`"
+                  :label="`Remember`"
                 ></v-checkbox>
                 <div class="flex-grow-1"></div>
                 <span
@@ -93,7 +91,7 @@
         </div>
 
         <v-card-actions class="justify-center mt-0 pt-8 mb-10">
-          <v-btn color="blue" class="pl-4 white--text" rounded @click="onLoginClicked">
+          <v-btn color="blue" class="pl-4 white--text" rounded @click="loginAction">
             CONTINUE
             <v-icon right dark>mdi-arrow-right</v-icon>
           </v-btn>
@@ -106,6 +104,13 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import AuthenticationService from '../services/authentication'
+import { loginAction } from '@/api/auth'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { getCompanyList } from '@/api/company'
+import jwt_decode from 'jwt-decode'
+import { setGlobalUserData } from '@/utils/functions'
+import indexStore from '@/store'
+import store from '@/store'
 
 export default {
   name: 'SessionExpired',
@@ -136,35 +141,174 @@ export default {
   created() {
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
-      this.email = localStorage.getItem('username')
-      this.password = localStorage.getItem('password')
+      this.$vlf.getItem('username', (err, username = '') => {
+        if (!err) {
+          this.email = username
+        }
+      })
+
+      this.$vlf.getItem('password', (err, password) => {
+        if (!err) {
+          this.password = password
+        }
+      })
     }
     setTimeout(() => {
       this.$refs.email.focus()
     }, 100)
   },
   methods: {
-    ...mapActions({
-      loginAction2: 'login/loginAction'
-    }),
     handleForgetPasswordClick() {
       AuthenticationService.removeToken()
       this.$store.dispatch('common/changeSessionExpiredStatus', false)
       this.$router.push('/login')
     },
-    onLoginClicked() {
-      if (this.$refs.refSessionExpiredForm.validate()) {
-        this.$store
-          .dispatch('login/loginAction', {
-            email: this.userName,
-            password: this.password,
-            router: this.$router,
-            sessionExpired: true
-          })
-          .then((resp) => {
-            this.$emit('closeSessionExpired')
-          })
+    loginAction() {
+      let _this = this
+      let payload = {
+        email: this.userName,
+        password: this.password,
+        router: this.$router
       }
+      loginAction(payload)
+        .then((response) => {
+          let isSessionExpired = payload.sessionExpired
+          this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+          AuthenticationService.setToken(
+            response.data.access_token,
+            response.data.expiredIn || 9999999999999,
+            response.data.status || 1
+          )
+          if (response.data.status === 3) {
+            this.$store.commit('SET_PAGE_NUMBER', 4)
+            this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+              root: true
+            })
+          } else {
+            this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
+              root: true
+            })
+            this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
+          }
+          if (payload.sessionExpired) {
+            getCompanyList().then((response) => {
+              const result = response.data.data && response.data.data
+              this.$store.commit('SET_DROPDOWN_COMPANIES', result)
+            })
+          }
+          if (isSessionExpired) {
+            let token = JSON.parse(localStorage.getItem('auth-token')).token
+            let tokenData = jwt_decode(token)
+            let currentUserData = setGlobalUserData(tokenData)
+            localStorage.setItem('userData', JSON.stringify(currentUserData))
+            localStorage.setItem('selectedCompanyName', currentUserData.name)
+            localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+            if (
+              currentUserData &&
+              currentUserData.role &&
+              currentUserData.role.name !== 'CompanyAdmin'
+            ) {
+              this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
+            }
+            let payload = {
+              currentUserData: currentUserData,
+              isSelectCompany: false,
+              permissions: tokenData.Permission
+            }
+            this.$store.commit('SET_CURRENTUSER', payload)
+            this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+              location.reload()
+            })
+          }
+          if (
+            (_this.$route.query &&
+              !!_this.$route.query.communityResourceId &&
+              !!_this.$route.query.communityPostResourceId) ||
+            !!_this.$route.query['amp;communityPostResourceId']
+          ) {
+            this.pageNumber = 1
+            _this.$router.push(
+              `/community/${_this.$route.query.communityResourceId}?postId=${
+                _this.$route.query.communityPostResourceId ||
+                _this.$route.query['amp;communityPostResourceId']
+              }`
+            )
+          } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
+            this.pageNumber = 1
+            _this.$router.push(
+              `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
+            )
+          } else if (this.$route.query && !!this.$route.query.showInvitation) {
+            this.pageNumber = 1
+            this.$router.push({
+              path: `/threat-sharing`,
+              query: { showInvitation: this.$route.query.showInvitation }
+            })
+          } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
+            _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
+          } else if (_this.$route.query) {
+            if (_this.$route.query.cp) {
+              _this.pageNumber = 5
+              _this.token = _this.getToken('cp', window.location.href)
+              _this.resetType = 'createPassword'
+            } else if (_this.$route.query.rp) {
+              _this.pageNumber = 5
+              _this.token = _this.getToken('rp', window.location.href)
+              _this.resetType = 'resetPassword'
+            } else if (!indexStore.getters['common/getSessionCheck']) {
+              this.pageNumber = 1
+              _this.$router.push('/')
+            } else {
+              this.pageNumber = 1
+              _this.$router.push('/')
+            }
+          } else if (!indexStore.getters['common/getSessionCheck']) {
+            this.pageNumber = 1
+            _this.$router.push('/')
+          } else {
+            this.pageNumber = 1
+            _this.$router.push('/')
+          }
+
+          setTimeout(() => {
+            if (_this.rememberMe) {
+              this.$vlf.setItem('username', _this.email)
+              this.$vlf.setItem('password', _this.password)
+              localStorage.setItem('isRemember', _this.rememberMe)
+            } else {
+              localStorage.removeItem('username')
+              localStorage.removeItem('password')
+              localStorage.removeItem('isRemember')
+              this.$vlf.removeItem('username')
+              this.$vlf.removeItem('password')
+            }
+          }, 500)
+        })
+        .catch((error) => {
+          if (
+            error.response.data &&
+            error.response.data.mfa &&
+            error.response.data.mfa.StatusId === 1
+          ) {
+            AuthenticationService.removeToken()
+            this.$store.dispatch('common/changeSessionExpiredStatus', false)
+            this.$router.push('/login?mfaRequired=show')
+          } else if (
+            error.response.data &&
+            error.response.data.mfa &&
+            error.response.data.mfa.StatusId === 0
+          ) {
+            AuthenticationService.removeToken()
+            this.$store.dispatch('common/changeSessionExpiredStatus', false)
+            this.$router.push('/login?mfaRequired=show')
+          } else {
+            this.$store.dispatch('common/createSnackBar', {
+              message: error.response.data.error_description,
+              color: 'red'
+            })
+          }
+        })
+        .finally(() => {})
     }
   },
   mounted() {

@@ -8,33 +8,33 @@ export function getBtnStatusColor(type) {
     case 'clean':
       return '#00bcd4'
     case 'active':
-      return '#00bcd4'
+      return '#2196f3'
     case 'inactive':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'warning':
-      return '#e6a23c'
+      return '#b6791d'
     case 'malicious':
-      return '#e6a23c'
+      return '#b83a3a'
     case 'nonmalicious':
       return '#00bcd4'
     case 'offline':
-      return '#e6a23c'
+      return '#b6791d'
     case 'expired':
-      return '#e6a23c'
+      return '#b6791d'
     case 'passive':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'cancelled':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'canceled':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'phishing':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'idle':
       return '#757575'
     case 'disabled':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'network error':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'quedued':
       return '#00bcd4'
     case 'none':
@@ -62,17 +62,19 @@ export function getBtnStatusColor(type) {
     case 'itemnotfound':
       return '#fafafa'
     case 'failed':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'n/a':
       return '#00bcd4'
     case 'stopped':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'error':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'exist':
       return '#2196f3'
     case 'new':
       return '#43a047'
+    case 'undetected':
+      return '#2196f3'
     default:
       return '#00bcd4'
   }
@@ -83,7 +85,7 @@ export function getBtnPriorityColor(type) {
     case 'active':
       return '#00bcd4'
     case 'inactive':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'low':
       return '#00bcd4'
     case 'very low':
@@ -93,15 +95,15 @@ export function getBtnPriorityColor(type) {
     case 'medium':
       return '#2196f3'
     case 'high':
-      return '#e6a23c'
+      return '#b6791d'
     case 'very high':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'veryhigh':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'n/a':
       return '#00bcd4'
     case 'error':
-      return '#f56c6c'
+      return '#b83a3a'
     case 'exist':
       return '#2196f3'
     case 'new':
@@ -677,11 +679,14 @@ export function passwordComplexity(pwd) {
   }
 }
 
-export function scrollToComponent(el) {
+export function scrollToComponent(
+  el,
+  options = { behavior: 'smooth', block: 'center', inline: 'center' }
+) {
   if (window.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView()
   } else {
-    el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' })
+    el.scrollIntoView(options)
   }
 }
 
@@ -866,4 +871,9 @@ export function getPermissionsOfAllItems(PERMISSIONS = {}) {
     permission.hasPermission = checkPermission(url, method)
   }
   return COPY_OF_PERMISSIONS
+}
+export function datePrettier(date) {
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  const newDate = new Date(date)
+  return newDate.toLocaleDateString('en-US', options)
 }

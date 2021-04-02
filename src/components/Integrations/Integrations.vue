@@ -23,13 +23,16 @@
     />
 
     <data-table
+      v-if="checkPermissions('analysis-engines/search', 'POST')"
+      id="integrations-data-table"
+      ref="refIntegrationsList"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      id="integrations-data-table"
-      ref="refIntegrationsList"
+      :show-all-records="showAllRecords"
       :refName="'integrationsList'"
       :columns="tableOptions.columns"
+      :total-number-of-records="totalNumberOfRecords"
       :selectable="true"
       :filterable="true"
       :options="true"
@@ -55,8 +58,11 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
-      v-if="checkPermissions('analysis-engines/search', 'POST')"
       @refreshAction="getDatatableList"
+      @on-all-records-button-click="handleAllRecordsClick"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -124,7 +130,9 @@ import {
   COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
-  LABEL_STORE
+  LABEL_STORE,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  INTEGRATION_TYPES
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 
@@ -142,6 +150,8 @@ export default {
       loading: true,
       integrationId: null,
       labels,
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       selectedIntegration: {},
@@ -160,6 +170,25 @@ export default {
             width: 240,
             filterableType: 'text',
             filterableCustomFieldName: 'Name'
+          },
+          {
+            property: PROPERTY_STORE.ANALYSISENGINENAME,
+            align: 'left',
+            editable: false,
+            label: labels.AnalysisEngineType,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 240,
+            filterableType: 'select',
+            filterableCustomFieldName: 'analysisEngineTypeId',
+            filterableItems: [
+              INTEGRATION_TYPES.FORTINET,
+              INTEGRATION_TYPES.VIRUSTOTAL,
+              INTEGRATION_TYPES.VMRAY,
+              INTEGRATION_TYPES.IBMXFORCE
+            ]
           },
           {
             property: PROPERTY_STORE.DESCRIPTION,
@@ -246,7 +275,23 @@ export default {
       modalStatus: false,
       bodyData: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 1000,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -263,8 +308,52 @@ export default {
     }
   },
   methods: {
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS)
+      )
+      if (savedFilter) {
+        this.bodyData.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refIntegrationsList.filterValues = savedFilter.filterValues
+          this.$refs.refIntegrationsList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.getDatatableList()
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refIntegrationsList.filterValues = {}
+      this.$refs.refIntegrationsList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS)
+      this.getDatatableList()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS,
+        JSON.stringify({
+          filter: this.bodyData.filter,
+          filterValues
+        })
+      )
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
+    },
+    handleAllRecordsClick() {
+      this.bodyData.pageSize = 75000
+      this.showAllRecords = false
+      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -327,7 +416,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Integrations.${exportType.toLocaleLowerCase()}`
+            link.download = `Integrations.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch((error) => {})
@@ -339,14 +430,19 @@ export default {
         getIntegrationList(this.bodyData)
           .then((response) => {
             const {
-              data: { data, status }
+              data: { data }
             } = response
-            this.tableData = data.results || []
-            /*
-                  this.bodyData.pageNumber = data.pageNumber
-                  this.bodyData.pageSize = data.pageSize
-                  this.tableData.totalNumberOfRecords = data.totalNumberOfRecords
-                   */
+            const { results = [], totalNumberOfRecords = 0 } = data
+            this.tableData = results
+            this.totalNumberOfRecords = totalNumberOfRecords
+
+            if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+              this.showAllRecords = true
+            }
+
+            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+              this.showAllRecords = false
+            }
           })
           .catch(() => {
             this.tableData = []
@@ -417,7 +513,7 @@ export default {
     }
   },
   mounted() {
-    this.getDatatableList()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

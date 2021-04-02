@@ -9,11 +9,20 @@
     >
       <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>
       <template v-slot:app-dialog-footer>
-        <app-dialog-footer @handleClose="isWantToDelete = false" @handleConfirm="deleteUser" />
+        <app-dialog-footer
+          @handleClose="isWantToDelete = false"
+          @handleConfirm="deleteUser"
+          type="delete"
+          cancel-button-id="btn-cancel--phishing-reporter-users-popup"
+          confirm-button-id="btn-delete--phishing-reporter-users-popup"
+        />
       </template>
     </app-dialog>
 
     <data-table
+      id="phishing-reporter-data-table"
+      ref="refUsersList"
+      is-server-side
       :loading="isLoading"
       :select-event="tableOptions.selectEvent"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -22,30 +31,37 @@
       :empty="tableOptions.empty"
       :filterable="true"
       :options="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       :pageSizes="tableOptions.pageSizes"
       :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
       :selectable="true"
       :resizable="resizable"
       :sizeable="true"
-      @deleteAction="handleDelete"
       :table="tableOptions.table"
       @handleEdit="handleEdit"
+      @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
-      id="phishing-reporter-data-table"
-      ref="refUsersList"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForPhishingReporterUser"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
     >
-      <template #datatable-custom-column="{scope,col}">
+      <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
         <v-tooltip
           bottom
           content-class="users__tooltip"
           v-if="col.property === PROPERTY_STORE.ADDINSTATUSNAME"
         >
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <badge
               :listeners="on"
               :color="getBtnStatusColor(scope.row[col.property])"
@@ -78,7 +94,11 @@
 
 <script>
 import DataTable from '../DataTable'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE
+} from '@/model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
   exportPhishingReporterUserList,
@@ -89,6 +109,8 @@ import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
 import Badge from '@/components/Badge'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'Users',
   components: {
@@ -107,6 +129,7 @@ export default {
     return {
       PROPERTY_STORE,
       isLoading: true,
+      isRestoredOrClearedFilters: false,
       tableOptions: {
         isColumnFilterActive: false,
         table: [],
@@ -128,6 +151,7 @@ export default {
             type: 'text',
             width: 150,
             isEditable: true,
+            filterableType: 'text',
             editComponent: 'textfield'
           },
           {
@@ -138,6 +162,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            filterableType: 'text',
             width: 150,
             isEditable: true,
             editComponent: 'textfield'
@@ -167,7 +192,12 @@ export default {
             show: true,
             type: 'slot',
             width: 150,
-            isEditable: false
+            isEditable: false,
+            props: {
+              style: {
+                maxWidth: '110px'
+              }
+            }
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -208,6 +238,7 @@ export default {
             type: 'fiber',
             isEditable: true,
             editComponent: 'textfield',
+            filterableType: 'text',
             width: 200
           },
           {
@@ -221,17 +252,20 @@ export default {
             type: 'text',
             isEditable: true,
             editComponent: 'textfield',
-            width: 140
+            width: 140,
+            filterableType: 'text'
             //minWidth: 80
           }
         ],
         empty: {
-          message: 'No Users'
+          message: 'No Users',
+          id: 'btn-empty--phishing-reporter-users'
         },
         rowActions: [
           {
             name: 'Delete',
             icon: 'mdi-delete',
+            id: 'btn-delete--phishing-reporter-users-row-actions',
             action: 'deleteAction'
           }
         ],
@@ -247,7 +281,7 @@ export default {
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 10,
         orderBy: 'LastSeen',
         ascending: false,
         filter: {
@@ -257,10 +291,37 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      defaultRequestBody: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'LastSeen',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   computed: {
@@ -315,9 +376,36 @@ export default {
       }
       return text
     },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refUsersList.filterValues = {}
+      this.$refs.refUsersList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER)
+      this.callForPhishingReporterUser()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
     handleDelete(row) {
       this.selectedRow = row
       this.isWantToDelete = true
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfFilter = JSON.parse(JSON.stringify(this.requestBody.filter))
+      copyOfFilter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER,
+        JSON.stringify({
+          filter: copyOfFilter,
+          filterValues
+        })
+      )
     },
     getDateValue(value) {
       value = typeof value == 'string' ? value : value.toString()
@@ -331,9 +419,12 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results }
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.tableOptions.table =
             results.map((item) => {
               const { lastSeen, diagnosticToolStatus, diagnosticToolLastSeen } = item
@@ -353,6 +444,11 @@ export default {
         })
         .catch(() => {
           this.isLoading = false
+        })
+        .finally(() => {
+          if (this.isRestoredOrClearedFilters) {
+            this.isRestoredOrClearedFilters = false
+          }
         })
     },
     getUtcToNowDate(strDate) {
@@ -385,10 +481,10 @@ export default {
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
+          orderBy: this.requestBody.orderBy,
+          ascending: this.requestBody.ascending,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'LastSeen',
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.requestBody.filter
@@ -398,7 +494,9 @@ export default {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `Phishing Reporter Users.${exportType.toLocaleLowerCase()}`
+            link.download = `Phishing Reporter Users.${
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
             link.click()
           })
           .catch(() => {})
@@ -420,6 +518,7 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
@@ -464,25 +563,84 @@ export default {
       this.callForPhishingReporterUser()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
       let items = []
       let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }
       })
-
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForPhishingReporterUser()
 
       this.tableOptions.isColumnFilterActive =
         this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER)
+      )
+      if (savedFilter) {
+        this.requestBody.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refUsersList.filterValues = savedFilter.filterValues
+          this.$refs.refUsersList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForPhishingReporterUser()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.requestBody.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForPhishingReporterUser()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.requestBody.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForPhishingReporterUser()
+    },
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.tableOptions.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.callForPhishingReporterUser()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.requestBody.ascending = order === 'ascending'
+      this.requestBody.orderBy = prop
+      this.callForPhishingReporterUser()
+    },
+    resetPageNumber() {
+      this.requestBody.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
     }
   },
   created() {
-    this.callForPhishingReporterUser()
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.requestBody.pageSize = size
+    this.serverSideProps.pageSize = size
+    this.requestBody.pageNumber = page
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

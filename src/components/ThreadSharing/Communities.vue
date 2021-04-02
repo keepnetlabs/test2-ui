@@ -27,6 +27,9 @@
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm()"
           actionButtonText="DELETE"
+          type="delete"
+          cancel-button-id="threat-sharing-communities-delete-modal-cancel-button"
+          confirm-button-id="threat-sharing-communities-delete-modal-confirm-button"
         />
       </template>
     </app-dialog>
@@ -44,6 +47,8 @@
           @handleClose="isWantToToLeaveFromCommunity = false"
           @handleConfirm="leaveFromCommunityConfirm"
           actionButtonText="LEAVE"
+          cancel-button-id="threat-sharing-communities-leave-modal-cancel-button"
+          confirm-button-id="threat-sharing-communities-leave-modal-confirm-button"
         />
       </template>
     </app-dialog>
@@ -63,6 +68,7 @@
               text
               color="#2196f3"
               @click="showNeedPermissionModal = false"
+              id="threat-sharing-communities-need-petmission-modal-i-undestand-button"
               >I UNDERSTAND
             </v-btn>
           </div>
@@ -160,6 +166,8 @@
           :confirm-button-disabled="isNotificationSettingButtonDisabled"
           @handleClose="openNotificationModal = false"
           @handleConfirm="saveNotificationSetting"
+          cancel-button-id="threat-sharing-communities-notification-setting-modal-cancel-button"
+          confirm-button-id="threat-sharing-communities-notification-setting-modal-confirm-button"
         />
       </template>
     </app-dialog>
@@ -179,11 +187,17 @@
               text
               color="#f56c6c"
               @click="isCancelRequestModal = false"
+              id="threat-sharing-communities-cancel-request-modal-cancel-button"
               >{{ labels.Cancel }}
             </v-btn>
           </div>
           <div class="d-flex flex-row flex-end">
-            <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="cancelRequestConfirm"
+            <v-btn
+              id="threat-sharing-communities-cancel-request-modal-confirm-button"
+              class="pa-0 k-dialog__button"
+              text
+              color="#2196f3"
+              @click="cancelRequestConfirm"
               >Confirm
             </v-btn>
           </div>
@@ -209,6 +223,7 @@
                 :href="`#tab-${ind}`"
                 class="text-decoration-none sub-tab__content"
                 :disabled="communityLoading"
+                :id="`threat-sharing-communities-tab-${ind}`"
               >
                 <template v-if="ind === 2">
                   {{ tab }}
@@ -314,6 +329,7 @@
                 <div class="ts-header">
                   <div
                     class="ts-title"
+                    id="threat-sharing-communities-ts-title-button"
                     @click="communityDetails(item)"
                     :style="{ cursor: isOwnerOrMember(item) ? 'pointer' : 'text' }"
                   >
@@ -321,7 +337,14 @@
                   </div>
                   <div class="flex-grow-1"></div>
                   <div class="ts-header-btn-1">
-                    <v-btn v-if="item.membershipStatusId == 1" outlined rounded medium color="blue">
+                    <v-btn
+                      class="ts-header-btn-1__status"
+                      v-if="item.membershipStatusId == 1"
+                      outlined
+                      rounded
+                      medium
+                      color="blue"
+                    >
                       OWNER
                     </v-btn>
                     <v-btn
@@ -339,6 +362,7 @@
                       rounded
                       medium
                       color="blue"
+                      class="ts-header-btn-1__status"
                     >
                       MEMBER
                     </v-btn>
@@ -353,6 +377,7 @@
                       medium
                       :disabled="isRequestToJoinDisabled"
                       class="join-button"
+                      id="threat-sharing-communities-request-to-join-button"
                       @click="
                         requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
                       "
@@ -371,6 +396,7 @@
                       :disabled="isRequestToJoinDisabled"
                       medium
                       class="join-button"
+                      id="threat-sharing-communities-join-button"
                       @click="requestJoin(item.communityResourceId, item.communityName, 'join')"
                     >
                       <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
@@ -404,6 +430,7 @@
                       rounded
                       medium
                       color="blue"
+                      id="threat-sharing-communities-invited-button"
                       @click="subTabSelected"
                     >
                       INVITED
@@ -415,7 +442,15 @@
                     v-if="isOwnerOrMember(item) || item.membershipStatusId == 3"
                   >
                     <template v-slot:activator="{ on }">
-                      <v-btn icon color="blue" v-on="on">
+                      <v-btn
+                        icon
+                        :color="
+                          item.membershipStatusId == 1 || item.membershipStatusId == 2
+                            ? '#757575'
+                            : 'blue'
+                        "
+                        v-on="on"
+                      >
                         <v-icon>mdi-dots-vertical</v-icon>
                       </v-btn>
                     </template>
@@ -423,6 +458,7 @@
                       <v-list dense flat class="notification-wrapper__v-list">
                         <v-list-item-group color="primary">
                           <v-list-item
+                            id="threat-sharing-communities-edit-community-button"
                             @click="editCommunity(item)"
                             v-if="
                               checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
@@ -436,6 +472,7 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item
+                            id="threat-sharing-communities-notification-setting-button"
                             @click="setNotificationModal(item.communityResourceId)"
                             v-if="isOwnerOrMember(item)"
                           >
@@ -448,6 +485,7 @@
                           </v-list-item>
                           <v-list-item
                             @click="leaveFromCommunity(item)"
+                            id="threat-sharing-communities-leave-from-community-button"
                             v-if="
                               checkPermissions('communities/{resourceId}/leave', 'POST') &&
                               isOwnerOrMember(item)
@@ -461,6 +499,7 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item
+                            id="threat-sharing-communities-delete-community-button"
                             @click="deleteCommunity(item)"
                             v-if="
                               checkPermissions('communities/{resourceId}', 'DELETE') &&
@@ -475,6 +514,7 @@
                             </v-list-item-content>
                           </v-list-item>
                           <v-list-item
+                            id="threat-sharing-communities-cancel-request-button"
                             @click="cancelRequest(item)"
                             v-if="item.membershipStatusId == 3"
                           >
@@ -527,13 +567,24 @@
             >
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
                 <div class="ts-header">
-                  <div class="ts-title" @click="community(item)">
+                  <div
+                    id="threat-sharing-communities-ts-title-community-button"
+                    class="ts-title"
+                    @click="community(item)"
+                  >
                     {{ item.name }}
                   </div>
                   <div class="flex-grow-1"></div>
                   <div class="ts-header-btn-1">
                     <div class="request-btns flex-grow-1">
-                      <v-btn class="refuse-btn" block rounded medium @click="refuseRequest(item)">
+                      <v-btn
+                        id="threat-sharing-communities-refuse-button"
+                        class="refuse-btn"
+                        block
+                        rounded
+                        medium
+                        @click="refuseRequest(item)"
+                      >
                         {{ labels.Cancel }}
                       </v-btn>
                       <v-btn
@@ -542,6 +593,7 @@
                         block
                         rounded
                         medium
+                        id="threat-sharing-communities-accept-join-request"
                         @click="acceptRequest(item)"
                       >
                         JOIN
@@ -604,7 +656,12 @@
                 <span class="no-community">
                   You don't have any invitations from communities
                 </span>
-                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                <v-btn
+                  id="threat-sharing-communities-browse-communities-button"
+                  class="create-com-btn mb-11"
+                  @click="subTabSelected('All')"
+                  rounded
+                >
                   Browse Communities
                 </v-btn>
               </div>
@@ -619,7 +676,12 @@
                 <span class="no-community">
                   No community has been created
                 </span>
-                <v-btn class="create-com-btn mb-11" @click="createNewCommunity()" rounded>
+                <v-btn
+                  id="threat-sharing-communities-create-community-button"
+                  class="create-com-btn mb-11"
+                  @click="createNewCommunity()"
+                  rounded
+                >
                   Create Community
                 </v-btn>
               </div>
@@ -629,7 +691,12 @@
                 <span class="no-community">
                   You haven’t joined any communities
                 </span>
-                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                <v-btn
+                  id="threat-sharing-communities-browse-community-button"
+                  class="create-com-btn mb-11"
+                  @click="subTabSelected('All')"
+                  rounded
+                >
                   Browse Communities
                 </v-btn>
               </div>
@@ -639,7 +706,12 @@
                 <span class="no-community">
                   You don't have any invitations from communities
                 </span>
-                <v-btn class="create-com-btn mb-11" @click="subTabSelected('All')" rounded>
+                <v-btn
+                  id="threat-sharing-communities-browse-community-button"
+                  class="create-com-btn mb-11"
+                  @click="subTabSelected('All')"
+                  rounded
+                >
                   Browse Communities
                 </v-btn>
               </div>
@@ -855,7 +927,7 @@ export default {
         this.getAllCommunitiesListData()
         this.getInvitationCount()
         this.setInitialCommunityValues()
-        this.isCommunity = false
+        this.$route.params.isCommunity = false
       }
       if (this.isTableReload) {
         this.page = 1
@@ -867,7 +939,7 @@ export default {
             this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
             break
           case 'tab-2':
             this.getInvitions()
@@ -882,7 +954,7 @@ export default {
       }, 100)
     }
 
-    if (this.isCommunity) {
+    if (this.$route.params.isCommunity) {
       let _this = this
       if (this.$route.params.communityName === 'empty') {
         _this.$parent.$parent.$parent.$parent.communityName = 'Loading...'
@@ -897,11 +969,11 @@ export default {
           .catch((error) => {
             error.response.data
           })
-        this.isCommunity = false
+        this.$route.params.isCommunity = false
       } else {
         this.filter = this.$route.params.communityName
         setTimeout(() => {
-          this.isCommunity = false
+          this.$route.params.isCommunity = false
         }, 2000)
       }
     }
@@ -919,7 +991,7 @@ export default {
             this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
             break
           default:
             return false
@@ -933,7 +1005,7 @@ export default {
             this.getMyCommunitiesListData()
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData()
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
             break
         }
       }
@@ -1042,7 +1114,7 @@ export default {
             this.getMyCommunitiesListData()
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData()
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData()
             break
           case 'tab-2':
             this.getInvitions()
@@ -1232,7 +1304,7 @@ export default {
           if (isSearch) {
             this.page = 1
           }
-          if (this.isCommunity) {
+          if (this.$route.params.isCommunity) {
             this.listData = data.data.results.filter(
               (item) => item.communityResourceId === this.$route.params.communityId
             )
@@ -1368,14 +1440,14 @@ export default {
       }
     },
     updateCommunities(isSearch) {
-      this.isCommunity = false
+      this.$route.params.isCommunity = false
       if (!this.isLoadState) {
         switch (this.selectedTab) {
           case 'tab-0':
             this.getMyCommunitiesListData(true)
             break
           case 'tab-1':
-            if (!this.isCommunity) this.getAllCommunitiesListData(true)
+            if (!this.$route.params.isCommunity) this.getAllCommunitiesListData(true)
             break
           case 'tab-2':
             this.getInvitions()
@@ -1453,7 +1525,7 @@ export default {
       this.isWantToAddNewCommunity = true
     },
     subTabSelected(name) {
-      this.isCommunity = false
+      this.$route.params.isCommunity = false
       if (name == 'Your Communities' && !this.isLoadState) {
         this.selectedTab = 'tab-0'
         this.page = 1

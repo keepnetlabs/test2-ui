@@ -37,15 +37,26 @@
           <div class="switch-account__content--current-user__section-header">
             Switch to
           </div>
+          <p class="switch-account__content--info-text">
+            Search and select the company you wish to manage. To see all companies as a list
+          </p>
+          <p
+            class="switch-account__content--info-text mb-2"
+            style="color: #1173c1; cursor: pointer;"
+            @click="companiesRouterClick"
+          >
+            go to Companies page
+          </p>
           <treeselect
             :multiple="false"
-            :flat="false"
-            placeholder="Select company to manage"
+            :flat="true"
+            placeholder="Search for a company to manage"
             :options="orderedAccounts"
             v-model="value"
             value-format="object"
             :load-options="loadOptions"
             :auto-load-root-options="false"
+            :async="true"
           >
             <label slot="option-label" slot-scope="{ node }">
               <img
@@ -148,16 +159,23 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { getCompanyList } from '../api/company'
+import { getCompanyList, searchMyCompanies } from '../api/company'
 import PostCardLoading from './SkeletonLoading/PostCardLoading'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import labels from '@/model/constants/labels'
 import { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect'
+
 const sleep = (d) => new Promise((r) => setTimeout(r, d))
 let called = false
 export default {
   name: 'SwitchAccount',
+  props: {
+    navigatorMenuProps: {
+      type: Object
+    }
+  },
   data() {
     return {
       labels,
@@ -167,7 +185,7 @@ export default {
       itemsPerPage: 4,
       search: '',
       companies: [],
-      orderedAccounts: null,
+      orderedAccounts: [],
       companyLoading: false,
       isSwitchAccountDisabled: false
     }
@@ -188,53 +206,68 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog',
       setSwitchDialog: 'dashboard/setSwitchDialog'
     }),
+    companiesRouterClick() {
+      this.setSwitchDialog(false)
+      this.$router.push('/companies')
+    },
     sort(items, value) {
       return value
         ? items.filter((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) >= 0)
         : items
     },
-    loadOptions({ callback }) {
-      let vm = this
-      this.companyLoading = true
-      getCompanyList()
-        .then((response) => {
-          let accounts = response.data.data
-          function removeEmptyArrays(data) {
-            for (var key in data) {
-              var item = data[key]
-              // see if this item is an array
-              if (Array.isArray(item)) {
-                // see if the array is empty
-                if (item.length == 0) {
-                  // remove this item from the parent object
-                  delete data[key]
-                } else {
+    loadOptions({ action, searchQuery, callback }) {
+      //if (searchQuery.length < 3) return false
+      if (action === ASYNC_SEARCH) {
+        this.companyLoading = true
+        searchMyCompanies({ Text: searchQuery })
+          .then((response) => {
+            let accounts = response.data.data
+
+            function removeEmptyArrays(data) {
+              for (var key in data) {
+                var item = data[key]
+                // see if this item is an array
+                if (Array.isArray(item)) {
+                  // see if the array is empty
+                  if (item.length == 0) {
+                    // remove this item from the parent object
+                    delete data[key]
+                  } else {
+                    removeEmptyArrays(item)
+                  }
+                  // if this item is an object, then recurse into it
+                  // to remove empty arrays in it too
+                } else if (typeof item == 'object') {
                   removeEmptyArrays(item)
                 }
-                // if this item is an object, then recurse into it
-                // to remove empty arrays in it too
-              } else if (typeof item == 'object') {
-                removeEmptyArrays(item)
               }
+              return data
             }
-            return data
-          }
-          const swaps = { name: 'label', resourceId: 'id' }
-          const pattern = new RegExp(
-            Object.keys(swaps)
-              .map((e) => `(?:"(${e})":)`)
-              .join('|'),
-            'g'
-          )
-          const result = JSON.parse(
-            JSON.stringify(accounts).replace(pattern, (m) => `"${swaps[m.slice(1, -2)]}":`)
-          )
-          this.orderedAccounts = removeEmptyArrays(result)
-          callback() // notify vue-treeselect about data population completion
-        })
-        .finally(() => {
-          this.companyLoading = false
-        })
+
+            const swaps = { name: 'label', resourceId: 'id' }
+            const pattern = new RegExp(
+              Object.keys(swaps)
+                .map((e) => `(?:"(${e})":)`)
+                .join('|'),
+              'g'
+            )
+            const result = JSON.parse(
+              JSON.stringify(accounts).replace(pattern, (m) => `"${swaps[m.slice(1, -2)]}":`)
+            )
+            if (result.length) {
+              this.orderedAccounts = removeEmptyArrays(result)
+            } else {
+              this.orderedAccounts = []
+            }
+            callback(null, this.orderedAccounts) // notify vue-treeselect about data population completion
+          })
+          .catch(() => {
+            this.orderedAccounts = []
+          })
+          .finally(() => {
+            this.companyLoading = false
+          })
+      }
     },
     getSelectedCompanyDetails(account) {
       this.$router.go(0)
@@ -382,14 +415,13 @@ export default {
 }
 
 .v-card-headline {
-  font-family: 'Open Sans', sans-serif !important;
   font-size: 20px;
   font-weight: 600;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: 1.4;
+  line-height: 1.15;
   letter-spacing: normal;
-  color: var(--black-87);
+  color: #2196f3 !important;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .v-cart-icon-wrapper {
@@ -452,6 +484,17 @@ export default {
   }
   &__content {
     padding: 24px;
+    &--info-text {
+      font-size: 14px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.5;
+      letter-spacing: normal;
+      color: #383b41;
+      text-decoration: none;
+      margin-bottom: 0;
+    }
     &--current-user {
       &__section-header {
         font-size: 18px;

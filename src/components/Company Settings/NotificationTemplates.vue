@@ -22,15 +22,16 @@
     />
     <div class="notification-templates__container">
       <data-table
-        :is-column-filter-active="tableOptions.isColumnFilterActive"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
+        :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
+        :total-number-of-records="totalNumberOfRecords"
         :loading="loading"
         :filterable="true"
-        :row-key="'name'"
+        :row-key="'resourceId'"
         :is-downloadable="false"
         :options="true"
         :addButton="tableOptions.addButton"
@@ -38,6 +39,7 @@
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :selectable="true"
+        :show-all-records="showAllRecords"
         :select-event="tableOptions.selectEvent"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -45,6 +47,10 @@
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
         @refreshAction="callForDatas"
+        @on-all-records-button-click="handleAllRecordsClick"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -54,6 +60,7 @@
                 :disabled="getDisabledStatusOfEdit(scope.row)"
                 class="btn-hover mr-1"
                 icon
+                :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -68,6 +75,7 @@
                 @click.native="handleDelete(scope.row)"
                 class="btn-hover"
                 icon
+                :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -86,6 +94,7 @@ import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import {
   COMMON_CONSTANTS,
+  DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE
@@ -99,6 +108,7 @@ import {
   exportEmailTemplate
 } from '@/api/company'
 import labels from '@/model/constants/labels'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 
 export default {
   name: 'NotificationTemplates',
@@ -113,6 +123,8 @@ export default {
       categories: [],
       loading: false,
       tableData: [],
+      showAllRecords: false,
+      totalNumberOfRecords: 0,
       editItemsDisabled: false,
       tableOptions: {
         columns: [
@@ -176,7 +188,8 @@ export default {
         addButton: {
           show: true,
           action: 'handleAddNotificationTemplates',
-          tooltip: 'Add a Notification Template'
+          tooltip: 'Add a Notification Template',
+          id: 'btn-add--notification-template'
         },
         pageSizes: [5, 10, 25],
         isColumnFilterActive: false,
@@ -184,17 +197,20 @@ export default {
           message: LABEL_STORE.NO_NOTIFICATION_TEMPLATE_DEFINED,
           subMes: 'Create a new user directory integration',
           btn: 'Create Notification Template',
+          id: 'btn-empty--notification-template',
           icon: 'mdi-plus'
         },
         rowActions: [
           {
             name: 'Edit',
             icon: 'mdi-pencil',
+            id: 'btn-edit--notification-template-row-actions',
             action: 'handleEdit'
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
+            id: 'btn-delete--notification-template-row-actions',
             action: 'handleDelete'
           }
         ],
@@ -205,13 +221,30 @@ export default {
           download: false
         }
       },
+      isRestoredOrClearedFilters: false,
       isDeleteButtonDisabled: false,
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
       selectedItem: null,
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 50000,
+        pageSize: 1000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
+      defaultAxiosPayload: {
+        pageNumber: 1,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -267,6 +300,9 @@ export default {
       this.callForDatas()
     },
     columnFilterCleared(fieldName) {
+      if (this.isRestoredOrClearedFilters) {
+        return
+      }
       let items = []
       let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
 
@@ -283,22 +319,62 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE,
+        JSON.stringify({
+          filter: this.axiosPayload.filter,
+          filterValues
+        })
+      )
+    },
+    handleClearFilters() {
+      this.isRestoredOrClearedFilters = true
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
+      this.$refs.refNotificationList.filterValues = {}
+      this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE)
+      this.callForDatas()
+    },
+    handleRestoreDefaultSearch() {
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
+    },
     exportNotificationTemplate({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
+        this.$refs.refNotificationList,
+        'CreateTime'
+      )
+      if (this.$refs.refNotificationList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+      }
+      if (
+        this.$refs.refNotificationList.sortProps &&
+        this.$refs.refNotificationList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
+
+      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
+          ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: PROPERTY_STORE.CREATETIME,
-          ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.axiosPayload.filter
+          filter
         }
         exportEmailTemplate(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Notification Templates.${exportType.toLocaleLowerCase()}`
+          link.download = `Notification Templates.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
           link.click()
         })
       })
@@ -354,6 +430,14 @@ export default {
             data: { data: categoriesData }
           } = categories
 
+          const { totalNumberOfRecords = 0 } = templateData
+          this.totalNumberOfRecords = totalNumberOfRecords
+          if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
+            this.showAllRecords = false
+          }
           this.tableData = templateData.results
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
@@ -363,7 +447,15 @@ export default {
             filterableItems: this.categories
           })
         })
-        .finally(() => (this.loading = false))
+        .finally(() => {
+          this.loading = false
+          this.isRestoredOrClearedFilters = false
+        })
+    },
+    handleAllRecordsClick() {
+      this.axiosPayload.pageSize = 75000
+      this.showAllRecords = false
+      this.callForDatas()
     },
     handleEdit(row) {
       if (!row.isOwner) {
@@ -371,10 +463,26 @@ export default {
       }
       this.selectedItem = row
       this.toggleNewNotificationTemplate()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.NOTIFICATION_TEMPLATE)
+      )
+      if (savedFilter) {
+        this.axiosPayload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refNotificationList.filterValues = savedFilter.filterValues
+          this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        })
+      }
+      this.callForDatas()
     }
   },
   created() {
-    this.callForDatas()
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

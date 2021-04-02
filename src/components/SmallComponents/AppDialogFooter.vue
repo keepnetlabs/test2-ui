@@ -3,7 +3,8 @@
     <v-btn
       type="but"
       text
-      :color="cancelButtonColor"
+      :color="getCancelButtonColor"
+      :id="cancelButtonId"
       class="k-dialog__button mr-4"
       @click="closeButtonClick"
     >
@@ -11,12 +12,13 @@
     </v-btn>
     <v-btn
       text
-      :color="actionButtonColor"
+      :color="getActionButtonColor"
+      :id="confirmButtonId"
       class="k-dialog__button"
       @click="confirmButtonClick"
       :disabled="confirmButtonDisabled"
     >
-      {{ actionButtonText }}
+      {{ getActionButtonText }}
     </v-btn>
   </div>
 </template>
@@ -35,6 +37,12 @@ export default {
       type: String,
       default: '#2196f3'
     },
+    confirmButtonId: {
+      type: String
+    },
+    cancelButtonId: {
+      type: String
+    },
     cancelButtonText: {
       type: String,
       default: labels.Cancel
@@ -46,11 +54,52 @@ export default {
     confirmButtonDisabled: {
       type: Boolean,
       default: false
+    },
+    type: {
+      type: String
     }
   },
   emits: ['handleClose', 'handleConfirm'],
   data() {
     return { labels }
+  },
+  computed: {
+    getActionButtonColor() {
+      let actionButtonColor
+      switch (this.type) {
+        case 'delete':
+          actionButtonColor = '#f56c6c'
+          break
+        default:
+          actionButtonColor = this.actionButtonColor
+          break
+      }
+      return actionButtonColor
+    },
+    getCancelButtonColor() {
+      let cancelButtonColor
+      switch (this.type) {
+        case 'delete':
+          cancelButtonColor = '#383b41'
+          break
+        default:
+          cancelButtonColor = this.cancelButtonColor
+          break
+      }
+      return cancelButtonColor
+    },
+    getActionButtonText() {
+      let actionButtonText
+      switch (this.type) {
+        case 'delete':
+          actionButtonText = 'DELETE'
+          break
+        default:
+          actionButtonText = this.actionButtonText
+          break
+      }
+      return actionButtonText
+    }
   },
   methods: {
     closeButtonClick() {

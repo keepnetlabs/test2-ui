@@ -1,9 +1,12 @@
 <template>
-  <router-view :key="$router.fullPath" />
+  <router-view />
 </template>
 <script>
 export default {
-  name: 'App'
+  name: 'App',
+  created() {
+    this.$store.dispatch('login/getWhiteLabelByUrl')
+  }
 }
 </script>
 

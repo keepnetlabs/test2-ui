@@ -18,14 +18,13 @@
       >
         <template v-slot:app-dialog-body> This custom field will be deleted ! </template>
         <template v-slot:app-dialog-footer>
-          <div class="d-flex download-buttons flex-row flex-wrap justify-end">
-            <v-btn class="users__button" text color="#f56c6c" @click="isWantToDelete = false">{{
-              labels.Cancel
-            }}</v-btn>
-            <v-btn class="users__button" text color="#2196f3" @click="deleteCustomField">
-              DELETE</v-btn
-            >
-          </div>
+          <app-dialog-footer
+            cancel-button-id="btn-cancel--custom-fields-overlay"
+            confirm-button-id="btn-delete--custom-fields-overlay"
+            @handleClose="isWantToDelete = false"
+            @handleConfirm="deleteCustomField"
+            type="delete"
+          />
         </template>
       </app-dialog>
       <v-list-item class="mt-8 mb-6 custom-fields-overlay__list-item">
@@ -102,12 +101,18 @@
       </template>
     </template>
     <template v-slot:overlay-footer>
-      <v-btn @click="closeOverlay" class="new-integration__footer-btn-cancel" rounded>
+      <v-btn
+        @click="closeOverlay"
+        id="btn-cancel--target-users-custom-fields-people-modal"
+        class="new-integration__footer-btn-cancel"
+        rounded
+      >
         {{ labels.Cancel }}
       </v-btn>
       <div class="new-integration__footer__right-col">
         <v-btn
           @click="submit"
+          id="btn-save--target-users-custom-fields-people-modal"
           class="new-integration__footer-btn-save white--text"
           color="#2196f3"
           rounded
@@ -123,6 +128,7 @@
 <script>
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import TableField from './subcomponents/TableField'
 import Draggable from 'vuedraggable'
 import {
@@ -139,6 +145,7 @@ export default {
     CustomFieldsLoading,
     AppModal,
     AppDialog,
+    AppDialogFooter,
     TableField,
     Draggable
   },
@@ -265,6 +272,7 @@ export default {
             promises.push(createTargetUserCustomField(newItem))
           }
           this.loading = true
+          this.saveDisable = true
           Promise.all(promises)
             .then((responses) => {
               responses.forEach((response, index) => {
@@ -275,7 +283,10 @@ export default {
               this.isMakePost = true
               this.callForUpdateCustomFields(updatedFields)
             })
-            .catch(() => (this.loading = false))
+            .catch(() => {
+              this.loading = false
+              this.saveDisable = false
+            })
         } else if (updatedFields.length || this.copyOfCustomFields.length) {
           this.callForUpdateCustomFields(updatedFields)
         } else if (!updatedFields.length && !this.copyOfCustomFields.length) {

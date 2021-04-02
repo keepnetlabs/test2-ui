@@ -3,6 +3,7 @@
     :content-class="className"
     :opacity="0.23"
     :value="status"
+    :id="id"
     :width="dialogWidth"
     @click:outside="changeStatus(false)"
     @input="changeStatus"
@@ -43,7 +44,7 @@
         </div>
         <v-card-actions
           class="k-dialog__footer"
-          :class="[maxHeightSize && 'k-dialog__footer-max-height']"
+          :class="[maxHeight && maxHeightSize && 'k-dialog__footer-max-height']"
         >
           <slot name="app-dialog-footer"></slot>
         </v-card-actions>
@@ -112,6 +113,9 @@ export default {
     },
     className: {
       type: String
+    },
+    id: {
+      type: String
     }
   },
   computed: {
@@ -126,6 +130,9 @@ export default {
           break
         case 'maximum':
           retValue = '650'
+          break
+        case 'ultraMaximum':
+          retValue = '700'
           break
         default:
           break

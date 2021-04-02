@@ -127,10 +127,16 @@
       </v-form>
     </template>
     <template v-slot:overlay-footer>
-      <v-btn class="add-user-overlay__footer-btn-cancel" rounded @click="closeOverlay">
+      <v-btn
+        id="btn-cancel--target-users-add-user-to-people-modal"
+        class="add-user-overlay__footer-btn-cancel"
+        rounded
+        @click="closeOverlay"
+      >
         {{ labels.Cancel }}
       </v-btn>
       <v-btn
+        id="btn-save--target-users-add-user-to-people-modal"
         class="add-user-overlay__footer-btn-save white--text"
         color="#2196f3"
         rounded
@@ -267,7 +273,10 @@ export default {
           this.callForUpdateTargetUser()
         } else {
           const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
-          if (isLimited && (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit )) {
+          if (
+            isLimited &&
+            (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
+          ) {
             this.toggleShowLicenseExceededDialog()
           } else {
             this.callForCreateTargetUser()
@@ -323,7 +332,10 @@ export default {
     },
     callForCreateTargetUser() {
       const { activeUserCount, licenseLimit, isLimited } = this.companyLicense
-      if (isLimited && (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)) {
+      if (
+        isLimited &&
+        (this.companyLicense['isLicenseExceeded'] || activeUserCount === licenseLimit)
+      ) {
         this.toggleShowLicenseExceededDialog()
       }
       const payload = this.getCustomFieldsPayload()

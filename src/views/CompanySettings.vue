@@ -2,18 +2,30 @@
   <div class="company-settings" id="company-settings">
     <v-layout wrap class="company-settings__container">
       <v-card class="company-settings__container-card">
-        <el-tabs v-model="tab">
-          <el-tab-pane label="SMTP Settings" name="first">
+        <el-tabs v-model="tab" ref="refTabContainer">
+          <el-tab-pane label="SMTP Settings" name="smtp-settings" id="smtp-settings-content">
             <s-m-t-p-settings
               :PERMISSIONS="PERMISSIONS['SMTP_SETTINGS_PERMISSIONS']"
-              v-if="tab === 'first'"
+              v-if="tab === 'smtp-settings'"
               ref="refSmtpSettings"
           /></el-tab-pane>
-          <el-tab-pane label="Notification Templates" name="second">
-            <notification-templates v-if="tab === 'second'" ref="refNotificationTemplates"
+          <el-tab-pane
+            label="Notification Templates"
+            name="notification-template"
+            id="notification-template-content"
+          >
+            <notification-templates
+              v-if="tab === 'notification-template'"
+              ref="refNotificationTemplates"
           /></el-tab-pane>
-          <el-tab-pane label="Rest API" name="third">
-            <custom-api v-if="tab === 'third'" ref="refCustomApi"
+          <el-tab-pane label="Rest API" name="custom-api" id="custom-api-content">
+            <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
+          /></el-tab-pane>
+          <el-tab-pane label="White Labeling" name="white-labeling" id="white-labeling-content">
+            <white-labeling
+              v-if="tab === 'white-labeling'"
+              ref="refWhitelabeling"
+              :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
           /></el-tab-pane>
         </el-tabs>
       </v-card>
@@ -22,9 +34,10 @@
 </template>
 
 <script>
-import SMTPSettings from '@/components/Company Settings/SMTPSettings'
+import SMTPSettings from '@/components/Company Settings/SmtpSettings/SMTPSettings'
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
+import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
 export default {
@@ -32,11 +45,12 @@ export default {
   components: {
     SMTPSettings,
     NotificationTemplates,
-    CustomApi
+    CustomApi,
+    WhiteLabeling
   },
   data() {
     return {
-      tab: 'first',
+      tab: 'smtp-settings',
       tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
@@ -44,7 +58,8 @@ export default {
       PERMISSIONS: {
         SMTP_SETTINGS_PERMISSIONS: {},
         NOTIFICATION_TEMPLATES_PERMISSIONS: {},
-        REST_API_PERMISSIONS: {}
+        REST_API_PERMISSIONS: {},
+        WHITE_LABEL_PERMISSIONS: {}
       }
     }
   },
@@ -53,11 +68,16 @@ export default {
       this.tab = status
     },
     getPermissions() {
-      const { SMTP_SETTINGS_PERMISSIONS } = PERMISSIONS
+      const { SMTP_SETTINGS_PERMISSIONS, WHITE_LABEL_PERMISSIONS } = PERMISSIONS
       this.$set(
         this.PERMISSIONS,
         'SMTP_SETTINGS_PERMISSIONS',
         getPermissionsOfAllItems(SMTP_SETTINGS_PERMISSIONS)
+      )
+      this.$set(
+        this.PERMISSIONS,
+        'WHITE_LABEL_PERMISSIONS',
+        getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
       )
     }
   },

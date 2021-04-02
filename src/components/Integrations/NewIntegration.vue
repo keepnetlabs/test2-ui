@@ -30,6 +30,28 @@
         </div>
       </v-card>
     </v-overlay>
+    <app-dialog
+      v-if="isShowErrorMessage"
+      title="Error Occurred"
+      icon="mdi-alert"
+      className="integration-error-message-popup"
+      :status="isShowErrorMessage"
+      :body="errorMessageOfApiKey"
+      @changeStatus="isShowErrorMessage = false"
+    >
+      <template v-slot:app-dialog-footer>
+        <div class="d-flex" style="justify-content: flex-end;">
+          <v-btn
+            id="btn-close--phishing-reporter-settings-download-history-modal"
+            class="pa-0 k-dialog__button"
+            text
+            color="#2196f3"
+            @click="isShowErrorMessage = false"
+            >CLOSE
+          </v-btn>
+        </div>
+      </template>
+    </app-dialog>
     <app-modal
       v-if="showModal"
       :status="showModal"
@@ -56,14 +78,17 @@
             ></v-text-field>
           </form-group>
           <form-group title="Description">
-            <v-text-field
+            <v-textarea
               id="description"
+              rows="2"
+              no-resize
+              height="80"
               v-model.trim="formValues.description"
               :rules="[descriptionValidation.empty, descriptionValidation.maxLength]"
               dense
               outlined
               placeholder="Enter description"
-            ></v-text-field>
+            ></v-textarea>
           </form-group>
           <form-group title="Integration Type" has-hint>
             <k-select
@@ -88,14 +113,13 @@
               hint="*Required"
               persistent-hint
               dense
-              height="40"
               outlined
               placeholder="Enter API URL"
               required
               @input="handleApiKeyChange"
             ></v-text-field>
           </form-group>
-          <v-list-item class="px-0">
+          <v-list-item class="px-0" v-if="isVmrayOrVirusTotal || isIbmXForce">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 API Key
@@ -127,7 +151,13 @@
                     v-if="item.status === 'failed' && item.value.length > 0"
                     class="connection-error-state"
                   >
-                    {{ item.errorMessage || 'Error' }}
+                    <span>{{ getErrorMessageOfApiKey(item) }}</span>
+                    <span
+                      v-if="isShowSeeMore(item)"
+                      style="cursor: pointer;"
+                      @click="showErrorMessage(item)"
+                      >See error message</span
+                    >
                   </div>
                   <div v-if="!!item.status" class="new-integration__api-keys__connection-status">
                     <v-icon
@@ -182,8 +212,15 @@
                 </div>
               </div>
               <div></div>
-              <div class="new-integration__api-key__footer">
-                <div class="new-integration__api-key__footer-left-side" @click="addApiKey">
+              <div
+                class="new-integration__api-key__footer"
+                :style="[isIbmXForce && { justifyContent: 'flex-end' }]"
+              >
+                <div
+                  v-if="!isIbmXForce"
+                  class="new-integration__api-key__footer-left-side"
+                  @click="addApiKey"
+                >
                   <v-icon color="#2196f3" style="cursor: pointer !important;">mdi-plus</v-icon>
                   <div class="ml-2 new-integration__api-key__text">ADD API KEY</div>
                 </div>
@@ -224,7 +261,93 @@
               </div>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item class="px-0 mt-3">
+          <form-group title="Username" has-hint v-if="isFortiNet">
+            <v-text-field
+              v-model.trim="formValues.userName"
+              hint="*Required"
+              persistent-hint
+              dense
+              height="40"
+              outlined
+              placeholder="Enter username"
+              required
+            ></v-text-field>
+          </form-group>
+          <form-group title="Password" has-hint v-if="isFortiNet || isIbmXForce">
+            <v-text-field
+              placeholder="Enter password"
+              outlined
+              dense
+              v-model.trim="formValues.password"
+              hint="*Required"
+              persistent-hint
+              :type="showPassword ? 'text' : 'password'"
+              :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+              class="username-field input-group--focused"
+              @click:append="showPassword = !showPassword"
+            ></v-text-field>
+            <div
+              v-if="isFortiNet"
+              :class="{
+                'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
+              }"
+              class="new-integration__api-key__text"
+              :style="[
+                {
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  maxHeight: '23px'
+                },
+                isFortiNetConnectionDisabled && { cursor: 'default' }
+              ]"
+              @click="testFortiNetConnection(false)"
+            >
+              <div
+                v-if="isFortiNetTestingConnection"
+                class="test-connection new-integration__api-key__disabled-text"
+                style="cursor: default !important;"
+              >
+                <v-icon
+                  class="ml-1 loading-spin"
+                  color="#00bcd4"
+                  left
+                  medium
+                  disabled
+                  style="cursor: default !important; font-size: '2px';"
+                  >mdi-rotate-left
+                </v-icon>
+                TESTING CONNECTION
+              </div>
+              <div
+                v-else
+                :class="{
+                  'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
+                }"
+                class="test-connection"
+              >
+                <v-icon
+                  v-if="isFortiNetConnected && isFortiNetConnectionSended"
+                  color="#43a047"
+                  class="ml-1"
+                  style="margin-top: -2px; font-size: 22px;"
+                  left
+                  medium
+                  >mdi-check
+                </v-icon>
+                <v-icon
+                  v-if="!isFortiNetConnected && isFortiNetConnectionSended"
+                  class="ml-1"
+                  style="margin-top: -2px; font-size: 22px;"
+                  color="#f56c6c"
+                  left
+                  medium
+                  >mdi-close
+                </v-icon>
+                <span>TEST CONNECTION </span>
+              </div>
+            </div>
+          </form-group>
+          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 Tags
@@ -309,7 +432,7 @@
               ></v-checkbox>
               <div v-if="selectedIntegrationType.isSendFile">
                 <v-checkbox
-                  v-model="formValues.isSendFile"
+                  v-model="formValues.isUploadExecutableFile"
                   :label="`Upload PE files`"
                   color="#2196f3"
                 ></v-checkbox>
@@ -402,7 +525,7 @@ import {
   testAnalysis,
   updateIntegration
 } from '@/api/integrations'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { INTEGRATION_TYPES, INTEGRATION_LABELS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
@@ -410,9 +533,11 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import AppDialog from '@/components/AppDialog'
 export default {
   name: 'NewIntegration',
   components: {
+    AppDialog,
     KSelect,
     FormGroup,
     AppModal,
@@ -430,9 +555,15 @@ export default {
   data() {
     return {
       saveDisable: false,
+      showPassword: false,
+      errorMessageOfApiKey: '',
+      isShowErrorMessage: false,
       labels,
+      isFortiNetTestingConnection: false,
       loadingState: [],
       formValues: {
+        userName: '',
+        password: '',
         description: null,
         analysisEngineTypeResourceId: null,
         tags: [],
@@ -452,6 +583,8 @@ export default {
         isSendFileHash: false,
         isSendFile: false
       },
+      isFortiNetConnected: false,
+      isFortiNetConnectionSended: false,
       integrationTypes: [],
       uploadFileTypes: [],
       isTestConnectionDisabled: true,
@@ -473,7 +606,13 @@ export default {
       },
       apiUrlRules: {
         required: (v) => Validations.required(v),
-        format: (v) => Validations.url(v),
+        format: (v) => {
+          const isValid =
+            /[(http(s)?):  \/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+              v
+            ) || 'Invalid URL'
+          return isValid
+        },
         maxLength: (v) => Validations.maxLength(v, 1000, labels.getMaxLengthMessage('URL', 1000))
       },
       apiKeyRules: {
@@ -483,25 +622,105 @@ export default {
       }
     }
   },
+  computed: {
+    isFortiNet() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET
+    },
+    isVmrayOrVirusTotal() {
+      return [INTEGRATION_TYPES.VIRUSTOTAL, INTEGRATION_TYPES.VMRAY].includes(
+        this.selectedIntegrationType.name
+      )
+    },
+    isIbmXForce() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE
+    },
+    isFortiNetConnectionDisabled() {
+      const { userName, password, apiUrl } = this.formValues
+      return !(userName && password && apiUrl)
+    }
+  },
   created() {
-    if (this.integrationId) this.updateVModel(this.integrationId)
-    getIntegrationTypes().then((response) => {
-      const {
-        data: { data }
-      } = response
-
-      this.integrationTypes = data
-      this.selectedIntegrationType =
-        this.integrationTypes.find(
-          (item) => item.resourceId === this.formValues.analysisEngineTypeResourceId
-        ) || {}
-    })
+    getIntegrationTypes()
+      .then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.integrationTypes = data.map((item) => {
+          return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
+        })
+      })
+      .finally(() => {
+        if (this.integrationId) this.updateVModel(this.integrationId)
+      })
     this.getFileTypes()
   },
   methods: {
+    getFriendlyName(name) {
+      let label
+      switch (name) {
+        case INTEGRATION_TYPES.FORTINET:
+          label = INTEGRATION_LABELS.FORTINET
+          break
+        case INTEGRATION_TYPES.VIRUSTOTAL:
+          label = INTEGRATION_LABELS.VIRUSTOTAL
+          break
+        case INTEGRATION_TYPES.VMRAY:
+          label = INTEGRATION_LABELS.VMRAY
+          break
+        case INTEGRATION_TYPES.IBMXFORCE:
+          label = INTEGRATION_LABELS.IBMXFORCE
+          break
+        default:
+          return
+      }
+      return label
+    },
+    getErrorMessageOfApiKey(item) {
+      const message = item.errorMessage || 'Error'
+      return `${message.substring(0, 75)}...`
+    },
+    isShowSeeMore(item) {
+      const message = item.errorMessage || 'Error'
+      return message.length > 75
+    },
+    showErrorMessage(item) {
+      this.isShowErrorMessage = true
+      this.errorMessageOfApiKey = item.errorMessage || 'Error'
+    },
     saveIntegration() {
       const data = { ...this.formValues }
-      data.apiKeys = data.apiKeys.map((i) => i.value)
+
+      if (
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE
+        ].includes(this.selectedIntegrationType.name)
+      ) {
+        data.apiKeys = data.apiKeys.map((i) => i.value)
+        data.apiCredentials = data.apiKeys.map((i) => {
+          const obj = {
+            apiKey: i
+          }
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+            obj['password'] = this.formValues.password
+          }
+          return obj
+        })
+      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+        data.apiCredentials = [
+          {
+            userName: this.formValues.userName,
+            password: this.formValues.password
+          }
+        ]
+      }
+
+      delete data.apiKeys
+      delete data.userName
+      delete data.password
+      //console.log('data', data)
+      //console.log('this.formValues', this.formValues)
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then(() => {
@@ -522,6 +741,32 @@ export default {
             this.saveDisable = false
           })
       }
+    },
+    testFortiNetConnection(callApi = false) {
+      this.isFortiNetTestingConnection = true
+      const payload = {
+        apiUrl: this.formValues.apiUrl,
+        apiCredential: {
+          userName: this.formValues.userName,
+          password: this.formValues.password
+        }
+      }
+      testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
+        .then(() => {
+          if (callApi) {
+            this.saveIntegration()
+          }
+          this.isFortiNetConnected = true
+          this.saveDisable = false
+        })
+        .catch(() => {
+          this.saveDisable = false
+          this.isFortiNetConnected = false
+        })
+        .finally(() => {
+          this.isFortiNetTestingConnection = false
+          this.isFortiNetConnectionSended = true
+        })
     },
     handleTagItemChange(value) {
       value[value.length - 1] = value[value.length - 1].substring(0, 20)
@@ -544,7 +789,14 @@ export default {
     },
     getTestConnectionDisableStatus() {
       if (
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE
+        ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
+        this.formValues.apiKeys[0] &&
+        this.formValues.apiKeys[0].value &&
         this.formValues.apiKeys[0].value.length > 0 &&
         typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
       ) {
@@ -560,7 +812,7 @@ export default {
     getFileTypes() {
       getFileTypes().then((response) => {
         const {
-          data: { data, status }
+          data: { data }
         } = response
         this.uploadFileTypes = data.map((item) => {
           switch (item.name) {
@@ -600,16 +852,33 @@ export default {
       this.formValues.isUploadOtherFileType = false
       this.showConfirmModal = false
     },
-    updateIntegration() {
-      updateIntegration().then((response) => {})
-    },
     updateVModel(id) {
       getIntegrationDetails(id).then((response) => {
-        response['data'].data.apiKeys = response['data'].data.apiKeys.map((item) => {
-          return { value: item, status: null }
-        })
-        const integrationData = response['data'].data
-        this.formValues = integrationData
+        this.selectedIntegrationType =
+          this.integrationTypes.find(
+            (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
+          ) || {}
+
+        if (
+          [
+            INTEGRATION_TYPES.VIRUSTOTAL,
+            INTEGRATION_TYPES.VMRAY,
+            INTEGRATION_TYPES.IBMXFORCE
+          ].includes(this.selectedIntegrationType.name)
+        ) {
+          response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
+            return { value: item.apiKey, status: null }
+          })
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+            response.data.data.password = response['data'].data['apiCredentials'][0].password
+          }
+        } else if (this.selectedIntegrationType.name === 'FortiNet') {
+          const { userName, password } = response['data'].data['apiCredentials'][0]
+          response.data.data.userName = userName
+          response.data.data.password = password
+        }
+        delete response['data'].data['apiCredentials']
+        this.formValues = response['data'].data
       })
     },
     resetValues() {
@@ -632,7 +901,16 @@ export default {
     retryTestConnection(item) {
       item.status = 'loading'
       this.loadingState.push('loading')
-      testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
+      const payload = {
+        apiUrl: this.formValues.apiUrl,
+        apiCredential: {
+          apiKey: item.value
+        }
+      }
+      if (this.isIbmXForce) {
+        payload['apiCredential']['password'] = this.formValues.password
+      }
+      testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
         .then((response) => {
           if (response.data.status === 'FAILED') {
             item.status = 'failed'
@@ -653,47 +931,100 @@ export default {
         .finally(() => this.loadingState.shift('loading'))
     },
     testConnection(isSave) {
-      for (let i = 0; i < this.formValues.apiKeys.length; i++) {
-        const item = this.formValues.apiKeys[i]
-        this.formValues.apiKeys[i].status = 'loading'
-        this.loadingState.push('loading')
-        testAnalysis(this.formValues.analysisEngineTypeResourceId, item.value)
-          .then((response) => {
-            if (response.data.status === 'FAILED') {
+      if (
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE
+        ].includes(this.selectedIntegrationType.name)
+      ) {
+        for (let i = 0; i < this.formValues.apiKeys.length; i++) {
+          const item = this.formValues.apiKeys[i]
+          this.formValues.apiKeys[i].status = 'loading'
+          this.loadingState.push('loading')
+          const payload = {
+            apiUrl: this.formValues.apiUrl,
+            apiCredential: {
+              apiKey: item.value
+            }
+          }
+          if (this.isIbmXForce) {
+            payload['apiCredential']['password'] = this.formValues.password
+          }
+          testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
+            .then((response) => {
+              if (response.data.status === 'FAILED') {
+                this.formValues.apiKeys[i].status = 'failed'
+                this.formValues.apiKeys[i].errorMessage = response.data.message
+              } else {
+                this.formValues.apiKeys[i].status = 'success'
+              }
+              this.saveDisable = false
+            })
+            .catch((error) => {
+              this.saveDisable = false
               this.formValues.apiKeys[i].status = 'failed'
-              this.formValues.apiKeys[i].errorMessage = response.data.message
-            } else {
-              this.formValues.apiKeys[i].status = 'success'
-            }
-            this.saveDisable = false
-          })
-          .catch((error) => {
-            this.saveDisable = false
-            this.formValues.apiKeys[i].status = 'failed'
-            if (error.response.data.Message === 'Internal server error') {
-              this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
-            } else {
-              this.formValues.apiKeys[i].errorMessage =
-                error.response.data.message || error.response.data.Message
-            }
-          })
-          .finally(() => {
-            this.loadingState.shift('loading')
-            if (
-              isSave &&
-              !this.loadingState.length &&
-              !this.formValues.apiKeys.find((item) => item.status === 'failed')
-            )
-              this.saveIntegration()
-          })
+              if (error.response.data.Message === 'Internal server error') {
+                this.formValues.apiKeys[i].errorMessage = 'Error when testing connections!'
+              } else {
+                this.formValues.apiKeys[i].errorMessage =
+                  error.response.data.message || error.response.data.Message
+              }
+            })
+            .finally(() => {
+              this.loadingState.shift('loading')
+              if (
+                isSave &&
+                !this.loadingState.length &&
+                !this.formValues.apiKeys.find((item) => item.status === 'failed')
+              )
+                this.saveIntegration()
+            })
+        }
+      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+        this.testFortiNetConnection(true)
       }
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
-      if (this.selectedIntegrationType.name === 'VirusTotal') {
-        this.formValues.isSendUrl = true
-        this.formValues.isSendFileHash = true
+      const { name, isSendFile, isSendFileHash, isSendUrl } = this.selectedIntegrationType
+
+      this.formValues.isSendUrl = isSendUrl
+      this.formValues.isSendFileHash = isSendFileHash
+      this.formValues.isSendFile = isSendFile
+
+      if (!isSendFile) {
+        this.formValues.isUploadExecutableFile = false
+        this.formValues.isUploadOtherFileType = false
+        this.formValues.uploadFileTypes = []
+      }
+
+      if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
         this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
+        if (!this.formValues.apiKeys) {
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+        }
+        this.formValues.userName = ''
+        this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.VMRAY) {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+        }
+        if (!this.formValues.apiKeys) {
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+        }
+        this.formValues.userName = ''
+        this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+          this.formValues.userName = ''
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+        }
+      } else {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+        }
       }
     }
   },
@@ -1077,6 +1408,18 @@ export default {
     letter-spacing: normal;
     text-align: center;
     color: #f56c6c;
+  }
+}
+.integration-error-message-popup {
+  .k-dialog__header {
+    padding: 12px 24px !important;
+    .v-cart-icon-wrapper {
+      display: none;
+    }
+  }
+
+  .k-dialog__title {
+    color: #f56c6c !important;
   }
 }
 </style>

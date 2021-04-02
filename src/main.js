@@ -14,6 +14,12 @@ import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
+import Vlf from 'vlf'
+import localforage from 'localforage'
+localforage.config({
+  name: 'keepnet'
+})
+Vue.use(Vlf, localforage)
 
 require('vue-tour/dist/vue-tour.css')
 
@@ -28,53 +34,74 @@ Vue.component(
   'phishing-settings',
   require('./components/PhishingReporter/Settings/Settings').default
 )
-if (APP_CONFIG.VUE_APP_IS_CLOUD) {
-  Sentry.init({
-    dsn: 'https://d33f2fcc4295420588d442dfde43d2c5@o466336.ingest.sentry.io/5480520',
-    integrations: [
-      new VueIntegration({
-        Vue,
-        tracing: true
-      }),
-      new Integrations.BrowserTracing()
-    ],
 
-    // We recommend adjusting this value in production, or using tracesSampler
-    // for finer control
-    tracesSampleRate: 1.0
-  })
+const hotjarID = APP_CONFIG.VUE_APP_HOTJAR_ID
+const gtmID = APP_CONFIG.VUE_APP_GTM_ID
+const gtmPreviewEnv = APP_CONFIG.VUE_APP_GTM_ENV
+const gtmAuth = APP_CONFIG.VUE_APP_GTM_AUTH
+const fullstoryID = APP_CONFIG.VUE_APP_FULLSTORY_ID
+const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
+const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
+const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
+const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
+const fullstoryStatus = APP_CONFIG.VUE_APP_FULLSTORY_STATUS
+const hotjarStatus = APP_CONFIG.VUE_APP_HOTJAR_STATUS
 
-  // const VueAnalytics = require('vue-analytics').default
-  // Vue.use(VueAnalytics, {
-  //   id: APP_CONFIG.VUE_APP_ANALYTICS_ID
-  // })
+if (isCloud) {
+  //Sentry
+  sentryStatus &&
+    Sentry.init({
+      dsn: sentryDSN,
+      integrations: [
+        new VueIntegration({
+          Vue,
+          tracing: true
+        }),
+        new Integrations.BrowserTracing()
+      ],
 
+      // We recommend adjusting this value in production, or using tracesSampler
+      // for finer control
+      tracesSampleRate: 1.0
+    })
+
+  //Analytics
+  /* const VueAnalytics = require('vue-analytics').default
+   Vue.use(VueAnalytics, {
+     id: APP_CONFIG.VUE_APP_ANALYTICS_ID
+   })*/
+
+  //Hotjar
   const Hotjar = require('vue-hotjar').default
-  Vue.use(Hotjar, {
-    id: APP_CONFIG.VUE_APP_HOTJAR_ID // Hotjar Site ID
-  })
 
-  Vue.use(VueTagManager, {
-    gtmId: APP_CONFIG.VUE_APP_GTM_ID // GTM ID
-  })
+  hotjarStatus &&
+    Vue.use(Hotjar, {
+      id: hotjarID // Hotjar Site ID
+    })
 
-  //Vue.gtm.push({ event: 'some-event' })
+  //Google Tag Manager
+  !!gtmStatus &&
+    Vue.use(VueTagManager, {
+      gtmId: gtmID, // GTM ID
+      queryParams: {
+        gtm_preview: gtmPreviewEnv,
+        gtm_auth: gtmAuth
+      }
+    })
 
+  //FullSTORY
   const FullStory = require('@fullstory/browser')
-
-  FullStory.init({ orgId: APP_CONFIG.VUE_APP_FULLSTORY_ID })
-  Vue.prototype.$FullStory = FullStory
-
-  APP_CONFIG.VUE_APP_NEW_RELIC()
+  if (!!fullstoryStatus) {
+    FullStory.init({ orgId: fullstoryID })
+    Vue.prototype.$FullStory = FullStory
+  }
 }
+
 Vue.use(VueTour)
-
 Vue.use(require('vue-moment'))
-
 Vue.use(VueMask)
 Vue.directive('mask', VueMaskDirective)
 Vue.config.productionTip = false
-
 Vue.filter('formatSize', function (size) {
   if (size > 1024 * 1024 * 1024 * 1024) {
     return (size / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'
@@ -87,12 +114,10 @@ Vue.filter('formatSize', function (size) {
   }
   return size.toString() + ' B'
 })
-
 const vm = new Vue({
   router,
   store,
   vuetify,
   render: (h) => h(App)
 }).$mount('#app')
-
 global.vm = vm

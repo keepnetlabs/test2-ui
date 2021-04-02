@@ -32,7 +32,18 @@ service.interceptors.response.use(
   },
   (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
-    if (!error.response) {
+    if (error.code === 'ECONNABORTED') {
+      /*store.dispatch(
+        'common/createSnackBar',
+        {
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          message: error.message,
+          icon: 'mdi-alert'
+        },
+        { root: true }
+      )*/
+      return Promise.reject(error)
+    } else if (!error.response) {
       return Promise.reject(error)
     }
     if (
@@ -41,7 +52,7 @@ service.interceptors.response.use(
       error.response.status === 306
     ) {
       AuthenticationService.removeToken()
-      store.dispatch('common/changeSessionExpiredStatus', true)
+      router.push({ name: 'login', params: { isSessionExpired: 'true' } })
       //router.push('/login')
     }
     return Promise.reject(error)
