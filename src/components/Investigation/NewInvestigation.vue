@@ -148,6 +148,7 @@
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
+                      :key="index + list.option"
                       :placeholder="
                         placeholders[list.option]
                           ? placeholders[list.option]
@@ -645,7 +646,7 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Size))
+          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Size, 320))
         )
         return rules
       } else if (option === 'name') {
@@ -659,8 +660,8 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512)),
-          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512))
+          (v) => Validations.minLength(v, 128, labels.getMinLengthMessage(labels.SHA512, 128)),
+          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512, 128))
         )
         return rules
       } else if (option === 'md5') {
