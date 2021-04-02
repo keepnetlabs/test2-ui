@@ -179,6 +179,19 @@
             v-model.trim="formValues.customHeader"
           ></v-textarea>
         </form-group>
+        <form-group title="Test Email" sub-title="Send an email to test SMTP settings">
+          <v-btn
+            id="btn-save--whitelabeling"
+            class="white--text btn-util btn-save-changes mb-6"
+            color="#2196f3"
+            rounded
+            :disabled="getTestConnectionDisableStatus"
+            @click="handleTestConnection"
+          >
+            <span>Send Test email</span>
+            <v-icon class="ml-2">mdi-send</v-icon>
+          </v-btn>
+        </form-group>
       </v-form>
     </template>
   </app-modal>
@@ -225,6 +238,7 @@ export default {
   data() {
     return {
       labels,
+      getTestConnectionDisableStatus: false,
       saveDisable: false,
       formValues: {
         name: '',
@@ -328,7 +342,6 @@ export default {
           this.saveDisable = false
         })
     },
-
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
         .then(() => {
@@ -348,6 +361,7 @@ export default {
         this.formValues.serverPort = ''
       }
     },
+    handleTestConnection() {},
     closeOverlay() {
       this.$emit('closeOverlay')
     },
