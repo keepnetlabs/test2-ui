@@ -59,7 +59,7 @@
                           validations.maxLength(
                             v,
                             300,
-                            labels.getMaxLengthMessage(labels.Description, 1000)
+                            labels.getMaxLengthMessage(labels.Description, 300)
                           )
                       ]"
                       autocomplete="disabled"
