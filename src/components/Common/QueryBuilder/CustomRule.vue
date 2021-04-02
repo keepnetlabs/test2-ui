@@ -373,7 +373,7 @@ export default {
       return [
         (v) => this.validations.required(v, labels.Required),
         (v) =>
-          this.validations.maxLength(v, 128, labels.getMaxLengthMessage('Attachment hash', 512))
+          this.validations.maxLength(v, 128, labels.getMaxLengthMessage('Attachment hash', 128))
       ]
     },
     handleOperandChange(value) {
