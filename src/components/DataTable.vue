@@ -90,10 +90,11 @@
               @keyup="searchChangedEvent"
             />
             <data-table-filter-options
+              v-if="showFilterOptions"
+              :is-active="isFiltered"
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
-              v-if="showFilterOptions"
             />
           </div>
           <div class="table-settings" v-if="options">
@@ -535,7 +536,7 @@
 
                 <data-table-filter
                   v-if="col.filterableType"
-                  v-model="filterValues[col.property]"
+                  v-model="filterValues[col.filterableCustomFieldName || col.property]"
                   :column="column"
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
@@ -1207,6 +1208,11 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    isFiltered() {
+      console.log('keys', Object.keys(this.filterValues))
+      console.log('this.filterValues is filtered is ', Object.keys(this.filterValues).length > 0)
+      return Object.keys(this.filterValues).length > 0
+    },
     isShowAllRecords() {
       return !this.isServerSide && this.showAllRecords
     },
@@ -2681,6 +2687,7 @@ export default {
       this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {
+      this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
     }
   }

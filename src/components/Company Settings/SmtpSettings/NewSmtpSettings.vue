@@ -13,6 +13,20 @@
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
+      <test-email-dialog
+        v-if="isTestEmailDialogShowing"
+        ref="refTestEmailDialog"
+        :status="isTestEmailDialogShowing"
+        :is-action-button-disabled="isTestEmailActionDisabled"
+        @closeDialog="toggleTestConnectionDialog"
+        @confirm="callForTestConnection"
+      />
+      <test-email-error-dialog
+        v-if="isTestEmailErrorDialogShowing"
+        :is-show-error-message="isTestEmailErrorDialogShowing"
+        :error-message="testEmailErrorMessage"
+        @closeDialog="toggleTestEmailErrorDialog"
+      />
       <app-modal-body-header
         title="SMTP Server Settings"
         sub-title="Fill information and credentials"
@@ -85,30 +99,31 @@
             ></v-text-field>
           </div>
         </form-group>
-        <form-group title="User Name or Email Address" has-hint>
+        <form-group
+          title="User Name or Email Address"
+          :has-hint="!!getUserNameAndPasswordCommonProps"
+        >
           <v-text-field
+            v-bind="getUserNameAndPasswordCommonProps"
             placeholder="Enter username"
             outlined
             dense
             v-model.trim="formValues.userName"
-            hint="*Required"
-            persistent-hint
-            :rules="[(v) => validations.required(v)]"
+            :rules="getUserNameRules"
           ></v-text-field>
         </form-group>
-        <form-group title="Password" has-hint>
+        <form-group title="Password" :has-hint="!!getUserNameAndPasswordCommonProps">
           <v-text-field
+            v-bind="getUserNameAndPasswordCommonProps"
             placeholder="Enter password"
             outlined
             dense
             v-model.trim="formValues.password"
-            hint="*Required"
-            persistent-hint
             :type="showPassword ? 'text' : 'password'"
             :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
-            :rules="[(v) => validations.required(v)]"
+            :rules="getPasswordRules"
           ></v-text-field>
         </form-group>
         <form-group>
@@ -179,6 +194,19 @@
             v-model.trim="formValues.customHeader"
           ></v-textarea>
         </form-group>
+        <form-group title="Test Email" sub-title="Send an email to test SMTP settings">
+          <v-btn
+            id="btn-test-connection--smtp-settings"
+            class="white--text btn-util btn-save-changes mb-6"
+            color="#2196f3"
+            rounded
+            :disabled="getTestConnectionDisableStatus"
+            @click="handleTestConnection"
+          >
+            <span>Send Test email</span>
+            <v-icon class="ml-2">mdi-send</v-icon>
+          </v-btn>
+        </form-group>
       </v-form>
     </template>
   </app-modal>
@@ -191,16 +219,25 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
 import { getLookupListByTypeId } from '@/api/common'
-import { createSMTPSettings, getSmtpSettings, updateSmtpSettings } from '@/api/smtpSettings'
+import {
+  createSMTPSettings,
+  getSmtpSettings,
+  testConnection,
+  updateSmtpSettings
+} from '@/api/smtpSettings'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import labels from '@/model/constants/labels'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmailDialog'
+import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 export default {
   name: 'NewSmtpSettings',
   components: {
+    TestEmailErrorDialog,
+    TestEmailDialog,
     MakeAvailableFor,
     KSelect,
     AppModal,
@@ -225,6 +262,10 @@ export default {
   data() {
     return {
       labels,
+      isTestEmailDialogShowing: false,
+      isTestEmailActionDisabled: false,
+      isTestEmailErrorDialogShowing: false,
+      getTestConnectionDisableStatus: false,
       saveDisable: false,
       formValues: {
         name: '',
@@ -244,6 +285,7 @@ export default {
         customHeader: ''
       },
       showPassword: false,
+      testEmailErrorMessage: '',
       nonEditableAvailableForRequests: [],
       serviceProviderItems: [],
       validations: validations
@@ -252,6 +294,31 @@ export default {
   computed: {
     getTitle() {
       return this.isEdit && this.resourceId ? labels.EditSMTPSetting : labels.NewSMTPSetting
+    },
+    getUserNameAndPasswordCommonProps() {
+      if (!this.formValues.useAuthentication) {
+        return null
+      }
+      return { hint: '*Required', persistentHint: true }
+    },
+    getUserNameRules() {
+      const rules = [
+        (v) =>
+          validations.maxLength(
+            v,
+            128,
+            labels.getMaxLengthMessage(labels.UserNameOrEmailAddress, 320)
+          )
+      ]
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
+      return rules
+    },
+    getPasswordRules() {
+      const rules = [
+        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128))
+      ]
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
+      return rules
     },
     showMakeAvailableFor() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
@@ -319,6 +386,32 @@ export default {
         })
       }
     },
+    callForTestConnection(testEmailPayload = {}) {
+      this.isTestEmailActionDisabled = true
+      this.saveDisable = true
+      const payload = {
+        ...testEmailPayload,
+        serverAddress: this.formValues.serverAddress,
+        port: this.formValues.port,
+        username: this.formValues.username,
+        password: this.formValues.password,
+        useAuthentication: Number(this.formValues.useAuthentication),
+        useSsl: Number(this.formValues.useSSL)
+      }
+      testConnection(payload)
+        .then(() => {
+          this.isTestEmailDialogShowing = false
+        })
+        .catch((error) => {
+          const { response } = error
+          this.testEmailErrorMessage = response.data.message
+          this.isTestEmailErrorDialogShowing = true
+        })
+        .finally(() => {
+          this.isTestEmailActionDisabled = false
+          this.saveDisable = false
+        })
+    },
     callForCreateSmtpSettings(payload = {}) {
       createSMTPSettings(payload)
         .then(() => {
@@ -328,7 +421,6 @@ export default {
           this.saveDisable = false
         })
     },
-
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
         .then(() => {
@@ -347,6 +439,18 @@ export default {
         this.formValues.serverAddress = ''
         this.formValues.serverPort = ''
       }
+    },
+    handleTestConnection() {
+      this.toggleTestConnectionDialog()
+      this.$nextTick(() => {
+        this.$refs.refTestEmailDialog.formValues.message = `This is a test email by ${this.formValues.name}`
+      })
+    },
+    toggleTestConnectionDialog() {
+      this.isTestEmailDialogShowing = !this.isTestEmailDialogShowing
+    },
+    toggleTestEmailErrorDialog() {
+      this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing
     },
     closeOverlay() {
       this.$emit('closeOverlay')
