@@ -1,7 +1,7 @@
 <template>
   <app-dialog :status="isShow" icon="mdi-delete" title="Warning!" @changeStatus="closeModal">
     <template v-slot:app-dialog-body>
-      {{ selectedRow.companyName }} will be permanently deleted.
+      {{ selectedRow.companyName }} will be deleted and all data will be lost
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer

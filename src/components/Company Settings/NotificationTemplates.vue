@@ -46,11 +46,19 @@
         @downloadEvent="exportNotificationTemplate"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
-        @refreshAction="callForDatas"
         @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
+        @refreshAction="callForDatas"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
+        @searchChangedEvent="handleSearchChange"
+        is-server-side
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -109,7 +117,8 @@ import {
 } from '@/api/company'
 import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
-
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -228,7 +237,7 @@ export default {
       selectedItem: null,
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -236,6 +245,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -244,7 +258,7 @@ export default {
       },
       defaultAxiosPayload: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -254,13 +268,63 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   methods: {
+    resetPageNumber() {
+      //generic
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForDatas()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.axiosPayload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.axiosPayload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.axiosPayload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForDatas()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.axiosPayload.ascending = order === 'ascending'
+      this.axiosPayload.orderBy = prop
+      this.callForDatas()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForDatas()
+    },
     closeNotificationTemplateWithUpdate() {
       this.callForDatas()
       this.toggleNewNotificationTemplate()
@@ -430,7 +494,10 @@ export default {
             data: { data: categoriesData }
           } = categories
 
-          const { totalNumberOfRecords = 0 } = templateData
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = templateData
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
@@ -482,6 +549,9 @@ export default {
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getDefaultFilterAndSearch()
   }
 }

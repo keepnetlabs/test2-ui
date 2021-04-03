@@ -7,7 +7,7 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedRow.name && selectedRow.name }} will be permanently deleted.
+      {{ selectedRow.name && selectedRow.name }} will be deleted and all data will be lost.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer

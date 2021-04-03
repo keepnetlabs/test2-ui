@@ -31,7 +31,6 @@
         :empty="tableOptions.empty"
         :show-all-records="showAllRecords"
         :filterable="true"
-        :isServerSide="false"
         :options="true"
         :select-event="tableOptions.selectEvent"
         :addButton="tableOptions.addButton"
@@ -47,11 +46,19 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForListSystemUsers"
         @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
+        @refreshAction="callForListSystemUsers"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
+        @searchChangedEvent="handleSearchChange"
+        is-server-side
+        :isServerSide="false"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: false, search: false, sort: false }"
       />
     </div>
   </div>
@@ -69,6 +76,8 @@ import { deleteSystemUser, getSystemUsers, exportSystemUsers } from '@/api/syste
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 import { checkPermission } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'People',
   components: {
@@ -243,6 +252,11 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
@@ -259,6 +273,11 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
@@ -266,10 +285,55 @@ export default {
       showCreateOrEditSystemUserModal: false,
       selectedRow: null,
       showDeleteSystemUserModal: false,
-      selectedDeleteRow: null
+      selectedDeleteRow: null,
+      serverSideProps: new ServerSideProps()
     }
   },
   methods: {
+    resetPageNumber() {
+      //generic
+      this.requestBody.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.requestBody.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForListSystemUsers()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.requestBody.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.requestBody.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.requestBody.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForListSystemUsers()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.requestBody.ascending = order === 'ascending'
+      this.requestBody.orderBy = prop
+      this.callForListSystemUsers()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.requestBody.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForListSystemUsers()
+    },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
@@ -377,7 +441,10 @@ export default {
             const {
               data: { data }
             } = response
-            const { totalNumberOfRecords = 0 } = data
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
             this.totalNumberOfRecords = totalNumberOfRecords
             if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
               this.showAllRecords = true
@@ -474,6 +541,9 @@ export default {
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
     this.getDefaultFilterAndSearch()
   }
 }
