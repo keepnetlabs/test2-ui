@@ -266,6 +266,14 @@
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
+        @searchChangedEvent="handleSearchChange"
+        is-server-side
+        :isServerSide="false"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: false, search: false, sort: false }"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -352,7 +360,8 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import { checkPermission, scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
-
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -518,6 +527,11 @@ export default {
             Condition: 'AND',
             FilterItems: [],
             FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
           }
         ]
       }
@@ -534,12 +548,62 @@ export default {
             Condition: 'AND',
             FilterItems: [],
             FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
           }
         ]
       }
-    }
+    },
+    serverSideProps: new ServerSideProps()
   }),
   methods: {
+    resetPageNumber() {
+      //generic
+      this.requestBody.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.requestBody.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.getTableData()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.requestBody.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.requestBody.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.requestBody.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.getTableData()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.requestBody.ascending = order === 'ascending'
+      this.requestBody.orderBy = prop
+      this.getTableData()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.requestBody.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.getTableData()
+    },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG))
       if (savedFilter) {
@@ -646,7 +710,10 @@ export default {
           const {
             data: { data }
           } = response
-          const { totalNumberOfRecords = 0 } = data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.tableOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true
@@ -840,6 +907,9 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.controlRouteQuery()
+      this.setQueryValuesToPayload(this.$route.query)
       this.getDefaultFilterAndSearch()
     }
   }

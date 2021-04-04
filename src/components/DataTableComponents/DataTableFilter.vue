@@ -256,10 +256,10 @@ export default {
     },
     clearFilter(isEmit = true) {
       this.clearDataParams()
-      this.$emit('handleClearColumnFilter', this.fieldName)
       if (isEmit) {
         this.emitValue()
       }
+      this.$emit('handleClearColumnFilter', this.fieldName)
     },
     clearDataParams() {
       this.menu = false

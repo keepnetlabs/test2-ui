@@ -44,7 +44,7 @@
         </div>
         <v-card-actions
           class="k-dialog__footer"
-          :class="[maxHeightSize && 'k-dialog__footer-max-height']"
+          :class="[maxHeight && maxHeightSize && 'k-dialog__footer-max-height']"
         >
           <slot name="app-dialog-footer"></slot>
         </v-card-actions>

@@ -34,3 +34,9 @@ export function exportSmtpSettings(payload) {
 export function searchAvailableFor(payload = {}) {
   return testRequest.post('/available-for/search', payload)
 }
+
+export function testConnection(payload = {}) {
+  return testRequest.post('/companies/smtp-settings/test', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

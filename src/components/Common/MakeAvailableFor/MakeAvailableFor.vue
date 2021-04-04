@@ -6,7 +6,11 @@
   >
     <Treeselect
       v-bind="isAvailableForProps"
-      :class="['k-treeselect', { 'k-treeselect--error': !isAvailableForValid }]"
+      :class="[
+        'k-treeselect',
+        'make-available-for',
+        { 'k-treeselect--error': !isAvailableForValid }
+      ]"
       :value="value"
       @input="handleInputChange"
       :options="treeSelectOptions"
@@ -194,6 +198,16 @@ export default {
 [data-id='MyCompanyOnly'] {
   .vue-treeselect__checkbox-container {
     display: none;
+  }
+}
+.make-available-for.vue-treeselect {
+  svg {
+    color: #e0e0e0 !important;
+    fill: #e0e0e0 !important;
+    path {
+      color: #e0e0e0 !important;
+      fill: #e0e0e0 !important;
+    }
   }
 }
 </style>
