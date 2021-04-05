@@ -11,7 +11,7 @@
           <div class="ed-title">
             <div class="d-flex" style="align-items: center;">
               <div class="left-side d-flex align-center">
-                <p class="attachment-name">{{ url.url }}</p>
+                <p class="attachment-name mr-2" style="word-break: break-word;">{{ url.url }}</p>
                 <p class="ml-6 not-found" v-if="isFileUploaded(url['analysisList'])">
                   *This file was not uploaded to any integration
                 </p>
@@ -178,11 +178,11 @@ export default {
       let result = this.getResultOfAttachmentList(list)
       switch (result) {
         case 'Undetected':
-          return '#00bcd4'
+          return '#2196f3'
         case 'Malicious':
-          return '#e6a23c'
+          return '#b83a3a'
         case 'Phishing':
-          return '#f56c6c'
+          return '#b83a3a'
         default:
           return '#00bcd4'
       }
