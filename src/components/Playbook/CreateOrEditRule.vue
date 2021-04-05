@@ -187,7 +187,7 @@
     <div class="wizard__footer">
       <div class="text-left">
         <v-btn
-          id="btn-save--playbook-rules-modal"
+          id="btn-cancel--playbook-rules-modal"
           class="playbook-rule-form__button"
           outlined
           rounded
