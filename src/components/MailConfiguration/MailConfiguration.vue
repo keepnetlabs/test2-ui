@@ -118,6 +118,7 @@
       <template v-slot:overlay-footer>
         <div class="text-left">
           <v-btn
+            id="btn-cancel--mail-configurations-modal"
             class="playbook-rule-form__button"
             outlined
             rounded
@@ -128,6 +129,7 @@
         </div>
         <div>
           <v-btn
+            id="btn-save--mail-configurations-modal"
             class="playbook-rule-form__button white--text"
             rounded
             color="#2196f3"
@@ -200,6 +202,7 @@
       <template v-slot:overlay-footer>
         <div class="text-left">
           <v-btn
+            id="btn-cancel--mail-configurations-g-suite-modal"
             class="playbook-rule-form__button"
             outlined
             rounded
@@ -209,7 +212,12 @@
           >
         </div>
         <div>
-          <v-btn class="playbook-rule-form__button white--text" rounded color="#2196f3">
+          <v-btn
+            id="btn-save--mail-configurations-g-suite-modal"
+            class="playbook-rule-form__button white--text"
+            rounded
+            color="#2196f3"
+          >
             {{ labels.Save }}
           </v-btn>
         </div>
@@ -227,9 +235,11 @@
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          cancel-button-id="btn-cancel--mail-configurations-popup"
+          confirm-button-id="btn-delete--mail-configurations-popup"
+          type="delete"
           @handleClose="closeDeleteDialog"
           @handleConfirm="handleDeleteDialog"
-          type="delete"
         />
       </template>
     </app-dialog>
@@ -281,6 +291,7 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on: tooltip }">
                   <v-btn
+                    id=" btn-add--mail-configurations"
                     class="button-new"
                     rounded
                     style="margin-right: 10px;"
@@ -305,7 +316,11 @@
           </v-menu>
         </template>
         <template v-slot:settings-popup-body>
-          <div class="edit-fields" @click="handleEditFieldsClick">
+          <div
+            id="btn-edit--mail-configurations-custom-field"
+            class="edit-fields"
+            @click="handleEditFieldsClick"
+          >
             EDIT FIELDS
           </div>
         </template>
@@ -324,7 +339,11 @@
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon
                 ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
               </div>
-              <div class="mail-configuration__no-data__buttons--button" @click="status = true">
+              <div
+                id="btn-empty--mail-configurations-office-365"
+                class="mail-configuration__no-data__buttons--button"
+                @click="status = true"
+              >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
                 <img alt="outlook" src="../../assets/img/office-365-logo.png" />
               </div>
@@ -501,12 +520,14 @@ export default {
         {
           name: 'Edit this row',
           icon: 'mdi-pencil',
+          id: 'btn-empty--mail-configurations',
           action: 'editTargetUsers',
           isNotShow: true,
           disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'PUT')
         },
         {
           name: 'Delete',
+          id: 'btn-delete--mail-configurations',
           icon: 'mdi-delete',
           action: 'delete',
           disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'DELETE')
