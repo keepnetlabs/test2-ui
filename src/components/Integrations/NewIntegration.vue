@@ -494,6 +494,7 @@
       </template>
       <template v-slot:overlay-footer>
         <v-btn
+          id="btn-save--integrations-modal"
           class="new-integration__footer-btn-cancel"
           rounded
           @click="$emit('closeOverlay', false, false)"
@@ -502,6 +503,7 @@
         </v-btn>
         <div class="new-integration__footer__right-col">
           <v-btn
+            id="btn-cancel--integrations-modal"
             class="new-integration__footer-btn-save white--text"
             color="#2196f3"
             rounded
