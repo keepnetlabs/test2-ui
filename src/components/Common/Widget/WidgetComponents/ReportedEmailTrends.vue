@@ -3,6 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
+          button-id="btn-link--reported-email-trends"
           :title="getTitle"
           :link="{ href: '/incident-responder', text: 'Incident Responder' }"
           :edit-mode="editMode"
