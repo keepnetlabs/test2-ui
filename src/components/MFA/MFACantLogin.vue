@@ -47,11 +47,9 @@
               >
               </v-checkbox>
 
-              <div
-                @click="$emit('onCantLoginButtonClick')"
-                class="verification-code-wrapper__cant-login"
-              >
-                Resend message
+              <div @click="resendMessageButtonClick" class="verification-code-wrapper__cant-login">
+                <span v-if="!showCount">Resend message</span>
+                <Countdown v-else @changeButtonStatus="changeButtonStatus" />
               </div>
             </div>
           </v-col>
@@ -74,9 +72,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import Countdown from '@/components/Common/Countdown/Countdown'
 
 export default {
   name: 'MFACantLogin',
+  components: { Countdown },
   computed: {
     ...mapGetters({
       getErrors: 'common/getErrors',
@@ -104,6 +104,19 @@ export default {
     },
     rules: {
       required: false
+    }
+  },
+  data() {
+    return {
+      showCount: false
+    }
+  },
+  methods: {
+    resendMessageButtonClick() {
+      if (!this.showCount) this.$emit('onCantLoginButtonClick')
+    },
+    changeButtonStatus() {
+      this.showCount = false
     }
   }
 }

@@ -1399,6 +1399,14 @@ export default {
               }
             })
             .filter((filteredItem) => !!filteredItem)
+          _this.mappingData.columns.unshift({
+            name: PROPERTY_STORE.NONE_SELECTED,
+            disabled: false,
+            selectedValue: null,
+            dbName: PROPERTY_STORE.NONE_SELECTED,
+            isCustom: true,
+            required: false
+          })
         })
         .finally(() => (this.loading = false))
     },

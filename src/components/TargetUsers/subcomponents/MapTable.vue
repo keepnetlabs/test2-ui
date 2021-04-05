@@ -46,6 +46,7 @@
 
 <script>
 import { scrollToComponent } from '@/utils/functions'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 export default {
   name: 'MapTable',
@@ -77,16 +78,22 @@ export default {
       })
     },
     setSelectDisableItems(item) {
-      item.disabled = true
-      let _this = this
-      item.selectedValue = item.name
-      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
-        let isDisabled = _this.mapTableData.headers.find((x) => {
-          return x.selectedValue && x.selectedValue.name === i.name
+      if (item.name !== PROPERTY_STORE.NONE_SELECTED) {
+        item.disabled = true
+        let _this = this
+        item.selectedValue = item.name
+        this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+          let isDisabled = _this.mapTableData.headers.find((x) => {
+            return (
+              x.selectedValue &&
+              x.selectedValue.name === i.name &&
+              x.selectedValue.name !== PROPERTY_STORE.NONE_SELECTED
+            )
+          })
+          let obj = { ...i, disabled: isDisabled }
+          return obj
         })
-        let obj = { ...i, disabled: isDisabled }
-        return obj
-      })
+      }
     },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {
