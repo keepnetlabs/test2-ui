@@ -68,76 +68,10 @@
             </label>
           </treeselect>
         </div>
-        <!--<v-container fluid v-if="!companyLoading">
-          <v-data-iterator
-            :items="orderedAccounts"
-            :search="search"
-            :items-per-page="9999"
-            hide-default-footer
-            :custom-filter="sort"
-            class="container-iterator"
-          >
-            <template v-slot:no-results>
-              <div class="container-iterator__no-results">
-                {{ "Sorry, we couldn't find any results matching your criteria" }}
-              </div>
-            </template>
-            <template v-slot:header>
-              <v-text-field
-                label="Search"
-                outlined
-                dense
-                :items="keys"
-                v-model="search"
-                class="search-field"
-              ></v-text-field>
-            </template>
-            <template v-slot:default="props">
-              <v-row class="switch-ac-row">
-                <v-col
-                  v-for="(item, index) in props.items"
-                  :class="{ 'not-reseller': index === 0 }"
-                  :key="index"
-                  cols="12"
-                  sm="12"
-                  md="12"
-                  lg="12"
-                  class="mt-0 pt-0"
-                >
-                  <v-card style="border-radius: 20px;">
-                    <div
-                      class="switch-account-wrapper d-flex flex-wrap flex-row"
-                      @click="onClickSelectedAccount(item)"
-                    >
-                      <div class="switch-account-logo">
-                        <v-img
-                          src="https://picsum.photos/id/11/500/300"
-                          lazy-src="https://picsum.photos/id/11/10/6"
-                          aspect-ratio="1"
-                          class="grey lighten-2"
-                          max-width="45"
-                          max-height="45"
-                        ></v-img>
-                      </div>
-                      <div class="switch-right-wrapper">
-                        <div class="swith-account-title">{{ item.name }}</div>
-                        <div v-if="index === 0" class="switch-account-description">
-                          Manage all Companies as reseller
-                        </div>
-                        <div v-else class="switch-account-description">
-                          Company admin. Manage this company’s activities
-                        </div>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </template>
-          </v-data-iterator>
-        </v-container>-->
       </div>
       <div class="switch-account__footer">
         <v-btn
+          id="btn-cancel--switch-company-dashboard-popup"
           color="#f56c6c"
           class="delete-user__footer-button"
           @click="setSwitchDialog(false)"
@@ -146,6 +80,7 @@
         >
         <v-btn
           text
+          id="btn-confirm--switch-company-dashboard-popup"
           color="#2196f3"
           class="k-dialog__button"
           :disabled="isSwitchAccountDisabled"
