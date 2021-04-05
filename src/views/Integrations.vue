@@ -4,7 +4,7 @@
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Integrations" name="integrations" id="target-users--people-content"
+            <el-tab-pane label="Integrations" name="integrations" id="integrations-content"
               ><integration
             /></el-tab-pane>
           </el-tabs>
