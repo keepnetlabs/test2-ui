@@ -139,7 +139,9 @@ export const LABEL_STORE = {
   CHANGESET: 'Changed Set',
   INVESTIGATIONNAME: 'Investigation Name',
   TRIGGER: 'Trigger',
-  FILEUPLOADED: 'File Uploaded'
+  FILEUPLOADED: 'File Uploaded',
+  SENDERNAME: 'Sender Name',
+  SENDERADDRESS: 'Sender Address'
 }
 
 export const PROPERTY_STORE = {
@@ -229,7 +231,10 @@ export const PROPERTY_STORE = {
   IP: 'ip',
   USERAGENT: 'userAgent',
   USERID: 'userId',
-  FILEUPLOADED: 'fileUploaded'
+  FILEUPLOADED: 'fileUploaded',
+  NONE_SELECTED: 'None Selected',
+  SENDERNAME: 'senderName',
+  SENDERADDRESS: 'from'
 }
 
 export function getStoreValue(key, type) {
