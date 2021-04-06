@@ -37,104 +37,26 @@
           <div class="switch-account__content--current-user__section-header">
             Switch to
           </div>
-          <p class="switch-account__content--info-text">
-            Search and select the company you wish to manage. To see all companies as a list
-          </p>
-          <p
-            class="switch-account__content--info-text mb-2"
-            style="color: #1173c1; cursor: pointer;"
-            @click="companiesRouterClick"
-          >
-            go to Companies page
-          </p>
-          <treeselect
-            :multiple="false"
-            :flat="true"
-            placeholder="Search for a company to manage"
-            :options="orderedAccounts"
-            v-model="value"
-            value-format="object"
-            :load-options="loadOptions"
-            :auto-load-root-options="false"
-            :async="true"
-          >
-            <label slot="option-label" slot-scope="{ node }">
-              <img
-                :src="node.raw.logoUrl || require('../assets/img/no-logo.png')"
-                alt=""
-                style="width: 32px; height: 32px;"
-              />
-              <span>{{ node.label }}</span>
-            </label>
-          </treeselect>
+          <div style="position: relative;" v-click-outside="handleSearchCompanyFocusOut">
+            <v-text-field
+              v-model="searchedCompanyText"
+              outlined
+              hide-details
+              autocomplete="off"
+              placeholder="Search for a company to manage"
+              :append-icon="searchCompanyIcon"
+              @input="handleSearchText"
+              @focus="handleSearchCompanyFocus"
+            ></v-text-field>
+            <switch-account-tree-view
+              v-show="isShowingSwitchAccountTreeView"
+              :items="orderedAccounts"
+              :loading="isCompaniesLoading"
+              :search="searchedText"
+              @on-selected-account="handleOnSelectedAccount"
+            />
+          </div>
         </div>
-        <!--<v-container fluid v-if="!companyLoading">
-          <v-data-iterator
-            :items="orderedAccounts"
-            :search="search"
-            :items-per-page="9999"
-            hide-default-footer
-            :custom-filter="sort"
-            class="container-iterator"
-          >
-            <template v-slot:no-results>
-              <div class="container-iterator__no-results">
-                {{ "Sorry, we couldn't find any results matching your criteria" }}
-              </div>
-            </template>
-            <template v-slot:header>
-              <v-text-field
-                label="Search"
-                outlined
-                dense
-                :items="keys"
-                v-model="search"
-                class="search-field"
-              ></v-text-field>
-            </template>
-            <template v-slot:default="props">
-              <v-row class="switch-ac-row">
-                <v-col
-                  v-for="(item, index) in props.items"
-                  :class="{ 'not-reseller': index === 0 }"
-                  :key="index"
-                  cols="12"
-                  sm="12"
-                  md="12"
-                  lg="12"
-                  class="mt-0 pt-0"
-                >
-                  <v-card style="border-radius: 20px;">
-                    <div
-                      class="switch-account-wrapper d-flex flex-wrap flex-row"
-                      @click="onClickSelectedAccount(item)"
-                    >
-                      <div class="switch-account-logo">
-                        <v-img
-                          src="https://picsum.photos/id/11/500/300"
-                          lazy-src="https://picsum.photos/id/11/10/6"
-                          aspect-ratio="1"
-                          class="grey lighten-2"
-                          max-width="45"
-                          max-height="45"
-                        ></v-img>
-                      </div>
-                      <div class="switch-right-wrapper">
-                        <div class="swith-account-title">{{ item.name }}</div>
-                        <div v-if="index === 0" class="switch-account-description">
-                          Manage all Companies as reseller
-                        </div>
-                        <div v-else class="switch-account-description">
-                          Company admin. Manage this company’s activities
-                        </div>
-                      </div>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </template>
-          </v-data-iterator>
-        </v-container>-->
       </div>
       <div class="switch-account__footer">
         <v-btn
@@ -149,7 +71,7 @@
           color="#2196f3"
           class="k-dialog__button"
           :disabled="isSwitchAccountDisabled"
-          @click="onClickSelectedAccount(value)"
+          @click="onClickSelectedAccount(selectedAccount)"
           >{{ labels.Confirm }}</v-btn
         >
       </div>
@@ -159,18 +81,15 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { getCompanyList, searchMyCompanies } from '../api/company'
-import PostCardLoading from './SkeletonLoading/PostCardLoading'
-import Treeselect from '@riophae/vue-treeselect'
+import { searchMyCompanies } from '../api/company'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import labels from '@/model/constants/labels'
-import { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
-import { ASYNC_SEARCH } from '@riophae/vue-treeselect'
-
+import SwitchAccountTreeView from '@/components/SwitchAccountTreeView'
 const sleep = (d) => new Promise((r) => setTimeout(r, d))
 let called = false
 export default {
   name: 'SwitchAccount',
+  components: { SwitchAccountTreeView },
   props: {
     navigatorMenuProps: {
       type: Object
@@ -179,19 +98,26 @@ export default {
   data() {
     return {
       labels,
+      defaultOrderedItems: [],
       value: null,
+      isMenuOpen: false,
       keys: ['name'],
+      searchCompanyIcon: 'mdi-menu-down',
       itemsPerPageOptions: [4, 8, 12],
       itemsPerPage: 4,
       search: '',
       companies: [],
       orderedAccounts: [],
       companyLoading: false,
-      isSwitchAccountDisabled: false
+      treeViewModel: [],
+      openedArrays: [],
+      searchedCompanyText: '',
+      isCompaniesLoading: false,
+      isSwitchAccountDisabled: false,
+      timeout: null,
+      searchedText: '',
+      selectedAccount: ''
     }
-  },
-  components: {
-    Treeselect
   },
   created() {
     this.isSwitchAccountDisabled = false
@@ -199,6 +125,16 @@ export default {
       if (state.dashboard.isSwitchDialogOpen) {
       }
     })
+    this.isCompaniesLoading = true
+    searchMyCompanies({ Text: '' })
+      .then((response) => {
+        this.defaultOrderedItems = JSON.parse(JSON.stringify(response.data.data))
+        this.orderedAccounts = response.data.data
+      })
+      .finally(() => {
+        this.companyLoading = false
+        this.isCompaniesLoading = false
+      })
   },
   methods: {
     ...mapActions({
@@ -206,6 +142,23 @@ export default {
       setDialogBar: 'dashboard/setSwitchDialog',
       setSwitchDialog: 'dashboard/setSwitchDialog'
     }),
+    handleSearchCompanyFocus() {
+      this.searchCompanyIcon = 'mdi-menu-up'
+      this.isMenuOpen = true
+      this.searchedCompanyText = ''
+      this.orderedAccounts = this.defaultOrderedItems
+    },
+    handleOnSelectedAccount(item) {
+      this.selectedAccount = item
+      this.searchedCompanyText = item.label
+      this.isMenuOpen = false
+      this.searchCompanyIcon = 'mdi-menu-down'
+    },
+    handleSearchCompanyFocusOut() {
+      this.searchCompanyIcon = 'mdi-menu-down'
+      this.isMenuOpen = false
+      this.searchedCompanyText = this.selectedAccount.label
+    },
     companiesRouterClick() {
       this.setSwitchDialog(false)
       this.$router.push('/companies')
@@ -214,60 +167,6 @@ export default {
       return value
         ? items.filter((item) => item.name.toLowerCase().indexOf(value.toLowerCase()) >= 0)
         : items
-    },
-    loadOptions({ action, searchQuery, callback }) {
-      //if (searchQuery.length < 3) return false
-      if (action === ASYNC_SEARCH) {
-        this.companyLoading = true
-        searchMyCompanies({ Text: searchQuery })
-          .then((response) => {
-            let accounts = response.data.data
-
-            function removeEmptyArrays(data) {
-              for (var key in data) {
-                var item = data[key]
-                // see if this item is an array
-                if (Array.isArray(item)) {
-                  // see if the array is empty
-                  if (item.length == 0) {
-                    // remove this item from the parent object
-                    delete data[key]
-                  } else {
-                    removeEmptyArrays(item)
-                  }
-                  // if this item is an object, then recurse into it
-                  // to remove empty arrays in it too
-                } else if (typeof item == 'object') {
-                  removeEmptyArrays(item)
-                }
-              }
-              return data
-            }
-
-            const swaps = { name: 'label', resourceId: 'id' }
-            const pattern = new RegExp(
-              Object.keys(swaps)
-                .map((e) => `(?:"(${e})":)`)
-                .join('|'),
-              'g'
-            )
-            const result = JSON.parse(
-              JSON.stringify(accounts).replace(pattern, (m) => `"${swaps[m.slice(1, -2)]}":`)
-            )
-            if (result.length) {
-              this.orderedAccounts = removeEmptyArrays(result)
-            } else {
-              this.orderedAccounts = []
-            }
-            callback(null, this.orderedAccounts) // notify vue-treeselect about data population completion
-          })
-          .catch(() => {
-            this.orderedAccounts = []
-          })
-          .finally(() => {
-            this.companyLoading = false
-          })
-      }
     },
     getSelectedCompanyDetails(account) {
       this.$router.go(0)
@@ -278,10 +177,99 @@ export default {
       localStorage.setItem('selectedCompanyName', account.name)
     },
     onClickSelectedAccount({ label, id }) {
-      this.isSwitchAccountDisabled = true
-      this.getSelectedCompanyDetails({ name: label, resourceId: id })
-      this.setDialogBar(false)
-      this.search = ''
+      debugger
+      if (id && label) {
+        this.isSwitchAccountDisabled = true
+        this.getSelectedCompanyDetails({ name: label, resourceId: id })
+        this.setDialogBar(false)
+        this.search = ''
+      }
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
+    handleSearchText() {
+      this.debounce(() => {
+        const excluded = new Set()
+
+        function getObjectValueByPath(obj, path, fallback) {
+          // credit: http://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key#comment55278413_6491621
+          if (obj == null || !path || typeof path !== 'string') return fallback
+          if (obj[path] !== undefined) return obj[path]
+          path = path.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
+          path = path.replace(/^\./, '') // strip a leading dot
+          return getNestedValue(obj, path.split('.'), fallback)
+        }
+
+        function getNestedValue(obj, path, fallback) {
+          const last = path.length - 1
+
+          if (last < 0) return obj === undefined ? fallback : obj
+
+          for (let i = 0; i < last; i++) {
+            if (obj == null) {
+              return fallback
+            }
+            obj = obj[path[i]]
+          }
+
+          if (obj == null) return fallback
+
+          return obj[path[last]] === undefined ? fallback : obj[path[last]]
+        }
+
+        function filterTreeItem(item, search, textKey) {
+          const text = getObjectValueByPath(item, textKey)
+          return text.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) > -1
+        }
+        function filterTreeItems(filter, item, search, idKey, textKey, childrenKey, excluded) {
+          if (filter(item, search, textKey)) {
+            return true
+          }
+
+          const children = getObjectValueByPath(item, childrenKey)
+
+          if (children) {
+            let match = false
+            for (let i = 0; i < children.length; i++) {
+              if (
+                filterTreeItems(filter, children[i], search, idKey, textKey, childrenKey, excluded)
+              ) {
+                match = true
+              }
+            }
+
+            if (match) return true
+          }
+
+          excluded.add(getObjectValueByPath(item, idKey))
+
+          return false
+        }
+        console.log('defaultOrderedItems', this.defaultOrderedItems)
+        for (let i = 0; i < this.defaultOrderedItems.length; i++) {
+          filterTreeItems(
+            filterTreeItem,
+            this.defaultOrderedItems[i],
+            this.searchedCompanyText,
+            'resourceId',
+            'name',
+            'children',
+            excluded
+          )
+        }
+        const isExcluded = (key) => {
+          return !!this.searchedCompanyText && excluded.has(key)
+        }
+        this.orderedAccounts = this.defaultOrderedItems.filter((item) => {
+          return !isExcluded(getObjectValueByPath(item, 'resourceId'))
+        })
+      }, 750)
     }
   },
   computed: {
@@ -293,6 +281,9 @@ export default {
     ...mapState({
       currentCompany: (state) => state.dashboard.selectedCompany
     }),
+    isShowingSwitchAccountTreeView() {
+      return this.isMenuOpen && !this.isCompaniesLoading
+    },
     switchDialog: {
       get() {
         return this.isSwitchDialogOpen
@@ -342,7 +333,8 @@ export default {
     isSwitchDialogOpen(newVal, oldVal) {
       if (newVal) {
       }
-    }
+    },
+    searchedCompanyText(val) {}
   }
 }
 </script>
