@@ -719,8 +719,6 @@ export default {
       delete data.apiKeys
       delete data.userName
       delete data.password
-      //console.log('data', data)
-      //console.log('this.formValues', this.formValues)
       if (this.integrationId) {
         updateIntegration(this.integrationId, data)
           .then(() => {

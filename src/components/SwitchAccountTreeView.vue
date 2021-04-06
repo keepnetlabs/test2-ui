@@ -64,11 +64,6 @@ export default {
       type: String
     }
   },
-  watch: {
-    items(val) {
-      debugger
-    }
-  },
   methods: {
     handleTreeViewChange(item) {
       this.$emit('on-selected-account', { label: item.name, id: item.resourceId })

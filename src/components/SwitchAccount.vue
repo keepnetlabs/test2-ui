@@ -177,7 +177,6 @@ export default {
       localStorage.setItem('selectedCompanyName', account.name)
     },
     onClickSelectedAccount({ label, id }) {
-      debugger
       if (id && label) {
         this.isSwitchAccountDisabled = true
         this.getSelectedCompanyDetails({ name: label, resourceId: id })
@@ -251,7 +250,7 @@ export default {
 
           return false
         }
-        console.log('defaultOrderedItems', this.defaultOrderedItems)
+
         for (let i = 0; i < this.defaultOrderedItems.length; i++) {
           filterTreeItems(
             filterTreeItem,
