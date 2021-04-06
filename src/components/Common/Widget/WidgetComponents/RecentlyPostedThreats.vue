@@ -3,6 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
+          button-id="btn-link--recently-posted-threats"
           :title="getTitle"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"

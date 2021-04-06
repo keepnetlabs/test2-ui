@@ -19,15 +19,27 @@
               <v-col sm="12" class="p-0">
                 <div class="password-modal__list-header">
                   <label class="new-password-wrapper__label mb-0">{{ labels.LoginPassword }}</label>
-                  <v-btn outlined rounded medium color="blue" @click="step = 2">{{
-                    labels.Change
-                  }}</v-btn>
+                  <v-btn
+                    id="btn-change--security-login-password-dashboard-popup"
+                    outlined
+                    rounded
+                    medium
+                    color="blue"
+                    @click="step = 2"
+                    >{{ labels.Change }}</v-btn
+                  >
                 </div>
                 <div class="password-modal__list-header mt-6">
                   <label class="new-password-wrapper__label mb-0">{{ labels.Mfa }}</label>
-                  <v-btn outlined rounded medium color="blue" @click="onMfaStatusChangeButton">{{
-                    mfaStatus ? labels.Resync : labels.Enable
-                  }}</v-btn>
+                  <v-btn
+                    id="btn-status--security-mfa-dashboard-popup"
+                    outlined
+                    rounded
+                    medium
+                    color="blue"
+                    @click="onMfaStatusChangeButton"
+                    >{{ mfaStatus ? labels.Resync : labels.Enable }}</v-btn
+                  >
                 </div>
               </v-col>
             </v-row>
@@ -150,6 +162,7 @@
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 1">
         <v-btn
           text
+          id="btn-close--security-dashboard-popup"
           color="#2196f3"
           class="k-dialog__button"
           @click="$emit('changePasswordChange')"

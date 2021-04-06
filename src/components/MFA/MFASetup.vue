@@ -71,6 +71,7 @@
     </v-card-text>
     <v-card-actions class="justify-center" v-if="isLogin">
       <v-btn
+        id="btn-setup--mfa-dashboard-popup"
         color="blue"
         class="pl-4 white--text login_setup-mfa-button"
         rounded
