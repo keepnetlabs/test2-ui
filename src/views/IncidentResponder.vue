@@ -812,6 +812,7 @@ import {
   COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
+  LABEL_STORE,
   PROPERTY_STORE
 } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
@@ -1330,6 +1331,30 @@ export default {
           },
           width: '230',
           filterableType: 'date'
+        },
+        {
+          property: PROPERTY_STORE.SENDERNAME,
+          isEditable: false,
+          align: 'left',
+          label: LABEL_STORE.SENDERNAME,
+          fixed: false,
+          sortable: false,
+          show: false,
+          type: 'text',
+          width: '200',
+          fullWidth: true
+        },
+        {
+          property: PROPERTY_STORE.SENDERADDRESS,
+          isEditable: false,
+          align: 'left',
+          label: LABEL_STORE.SENDERADDRESS,
+          fixed: false,
+          sortable: false,
+          show: false,
+          type: 'text',
+          width: '200',
+          fullWidth: true
         },
         {
           property: 'tags',

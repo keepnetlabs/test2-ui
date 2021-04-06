@@ -669,6 +669,7 @@ export default {
         .then((response) => {
           this.phoneNumber = response.data.data.phoneNumber
           this.pageNumber = 9
+          this.$refs.refMfaCantLogin.showCount = true
         })
         .catch(() => {})
     },
@@ -1434,7 +1435,8 @@ export default {
       height: auto !important;
     }
     padding-left: 5px;
-
+    height: 24px !important;
+    margin-bottom: 4px;
     label {
       color: rgba(0, 0, 0, 0.87) !important;
       font-family: 'Open Sans', sans-serif !important;

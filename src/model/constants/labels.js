@@ -249,6 +249,8 @@ export const labels = {
   Message: 'Message',
   EnterIpAdress: 'Enter IP address',
   Retry: 'RETRY',
+  NoUrlToDisplay: 'No URL to display',
+  EmptyUrl: 'This url is not analyzed',
   AnalysisEngineType: 'Analysis Engine Type',
   Change: 'CHANGE',
   LoginPassword: 'Login Password',
