@@ -404,6 +404,11 @@ export default {
             disabled: false
           },
           {
+            name: 'Status',
+            val: 'status',
+            disabled: false
+          },
+          {
             name: 'Tag',
             val: 'tag',
             disabled: false
