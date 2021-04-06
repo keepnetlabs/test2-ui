@@ -28,7 +28,10 @@
           className="investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-footer>
-            <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
+            <div
+              id="btn-cancel--investigation-details-delete-emails-popup"
+              class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row"
+            >
               <div>
                 <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToDelete = false"
                   >{{ labels.Cancel }}
@@ -36,6 +39,7 @@
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
+                  id="btn-move-to-trash--investigation-details-delete-emails-popup"
                   class="k-dialog__button"
                   text
                   :disabled="warnAndDeleteButtonDisabled"
@@ -44,6 +48,7 @@
                   >Move to trash
                 </v-btn>
                 <v-btn
+                  id="btn-delete--investigation-delete-emails-details-popup"
                   class="k-dialog__button"
                   text
                   color="#2196f3"
@@ -90,6 +95,8 @@
           </template>
           <template v-slot:app-dialog-footer>
             <app-dialog-footer
+              cancel-button-id="btn-cancel--investigation-details-warning-message-popup"
+              confirm-button-id="btn-save--investigation-details-warning-message-popup"
               :confirm-button-disabled="warningButtonDisabled"
               @handleClose="isWantToWarn = false"
               @handleConfirm="isWantToWarnConfirm"
@@ -108,10 +115,12 @@
         >
           <template v-slot:app-dialog-footer>
             <app-dialog-footer
-              @handleClose="isWantToStop = false"
+              cancel-button-id="btn-cancel--investigation-details-warning-message-popup"
+              confirm-button-id="btn-save--investigation-details-warning-message-popup"
+              action-button-text="STOP"
               :confirm-button-disabled="stopButtonDisabled"
               @handleConfirm="isWantToStopConfirm"
-              action-button-text="STOP"
+              @handleClose="isWantToStop = false"
             />
           </template>
         </app-dialog>
@@ -153,6 +162,7 @@
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
                 <v-btn
+                  id="btn-cancel--investigation-details-delete-emails-and-notify-user-popup"
                   class="k-dialog__button"
                   text
                   color="#f56c6c"
@@ -163,6 +173,7 @@
               </div>
               <div class="d-flex flex-row flex-end">
                 <v-btn
+                  id="btn-move-to-trash--investigation-details-delete-emails-and-notify-user-popup"
                   class="k-dialog__button"
                   text
                   color="#00bcd4"
@@ -171,6 +182,7 @@
                   >Move to trash
                 </v-btn>
                 <v-btn
+                  id="btn-delete-permanently--investigation-details-delete-emails-and-notify-user-popup"
                   class="k-dialog__button"
                   text
                   :disabled="warnAndDeleteButtonDisabled"
@@ -372,6 +384,7 @@
                     <v-navigation-drawer permanent>
                       <v-list dense nav>
                         <v-list-item
+                          id="btn--investigation-details-target-users"
                           link
                           @click="menuClick('targetUsers')"
                           :class="{ 'v-list-item--active': activeMenu == 'targetUsers' }"
@@ -401,6 +414,7 @@
                           Folders
                         </p>
                         <v-list-item
+                          id="btn--investigation-details-inbox"
                           link
                           @click="menuClick('Inbox')"
                           :class="{ 'v-list-item--active': activeMenu == 'Inbox' }"
@@ -437,6 +451,7 @@
                           </v-list-item-content>
                         </v-list-item>
                         <v-list-item
+                          id="btn--investigation-details-junk"
                           link
                           @click="menuClick('JunkEmail')"
                           :class="{ 'v-list-item--active': activeMenu == 'JunkEmail' }"
@@ -474,6 +489,7 @@
                         </v-list-item>
                         <v-list-item
                           link
+                          id="btn--investigation-details-draft"
                           @click="menuClick('Drafts')"
                           :class="{ 'v-list-item--active': activeMenu == 'Drafts' }"
                         >
@@ -509,6 +525,7 @@
                           </v-list-item-content>
                         </v-list-item>
                         <v-list-item
+                          id="btn--investigation-details-sent"
                           link
                           @click="menuClick('SentItems')"
                           :class="{ 'v-list-item--active': activeMenu == 'SentItems' }"
@@ -545,6 +562,7 @@
                           </v-list-item-content>
                         </v-list-item>
                         <v-list-item
+                          id="btn--investigation-details-deleted-items"
                           link
                           @click="menuClick('DeletedItems')"
                           :class="{ 'v-list-item--active': activeMenu == 'DeletedItems' }"
@@ -581,6 +599,7 @@
                           </v-list-item-content>
                         </v-list-item>
                         <v-list-item
+                          id="btn--investigation-details-others"
                           link
                           @click="menuClick('Others')"
                           :class="{ 'v-list-item--active': activeMenu == 'Others' }"
@@ -623,6 +642,7 @@
                           Archived
                         </p>
                         <v-list-item
+                          id="btn--investigation-details-stored"
                           link
                           @click="menuClick('Stored')"
                           class="v-list-item__archived--main"
@@ -1242,17 +1262,20 @@ export default {
     pageSizes: [5, 10, 25],
     rowActions: [
       {
+        id: 'btn-delete--investigation-details-row-actions',
         name: 'Delete',
         icon: 'mdi-delete',
         action: 'deleteInvestigationDetails',
         isNotShow: true
       },
       {
+        id: 'btn-send-warning-message--investigation-details-row-actions',
         name: 'Send user a warning message',
         icon: 'mdi-alert',
         action: 'sendWarningMessage'
       },
       {
+        id: 'btn-delete-and-notify--investigation-details-row-actions',
         name: 'Delete and notify user',
         icon: 'mdi-delete',
         action: 'deleteAndNotifyInvestigationDetails'

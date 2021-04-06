@@ -4,7 +4,7 @@
       <v-col class="p-0" cols="12">
         <v-card class="pr-card">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Rules" name="first"
+            <el-tab-pane label="Rules" name="rules" id="playbook--rules-content"
               ><rules :PERMISSIONS="PERMISSIONS"
             /></el-tab-pane>
           </el-tabs>
@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      tab: 'first',
+      tab: 'rules',
       PERMISSIONS: []
     }
   },

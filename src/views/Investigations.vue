@@ -21,6 +21,8 @@
       >
         <template v-slot:app-dialog-footer>
           <app-dialog-footer
+            cancel-button-id="btn-cancel--investigations-popup"
+            confirm-button-id="btn-stop--investigations-popup"
             :confirm-button-disabled="stopInvestigateButtonDisabled"
             @handleClose="isWantToStopInvestigation = false"
             @handleConfirm="stopInvestigation"
@@ -254,11 +256,13 @@ export default {
         name: labels.Details,
         icon: 'mdi-text-box-multiple',
         action: 'investigationDetails',
+        id: 'btn-details--investigations-row-actions',
         disabled: !checkPermission('investigations/{resourceId}', 'GET')
       },
       {
         name: labels.StopAction,
         icon: 'mdi-stop',
+        id: 'btn-stop--investigations-row-actions',
         action: 'stopInvestigationFunc',
         disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT')
       }
@@ -267,11 +271,13 @@ export default {
       show: true,
       tooltip: labels.StartAnInvestigation,
       action: 'createCommunityFromMobileInfo',
+      id: 'btn-add--investigations',
       disabled: !checkPermission('investigations', 'POST')
     },
     iEmpty: {
       message: labels.NoInvestigationStarted,
       btn: labels.StartNewInvestigation,
+      id: 'btn-empty--investigations',
       icon: 'mdi-plus'
     },
     selectEvent: {

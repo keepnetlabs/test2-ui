@@ -26,7 +26,12 @@
         <div class="logos-buttons__container">
           <logos wrapperClasses="mt-10 logos" />
           <div class="buttons__container">
-            <v-btn class="white--text btn-util btn-download-add-in" color="#2196f3" rounded>
+            <v-btn
+              id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+              class="white--text btn-util btn-download-add-in"
+              color="#2196f3"
+              rounded
+            >
               <v-icon left>mdi-download</v-icon>
               Download
             </v-btn>
@@ -92,6 +97,7 @@
       <v-list-item class="px-0 add-in-configuration__list-item mt-5">
         <v-btn
           @click="callForGenerateDiagnosticTool"
+          id="btn-download-diagnostic-tool--phishing-reporter-settings-add-in-modal"
           class="white--text btn-util btn-download-add-in ml-n1"
           color="#2196f3"
           :loading="diagnosticToolSpinnerStatus"

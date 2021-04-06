@@ -187,6 +187,7 @@
     <div class="wizard__footer">
       <div class="text-left">
         <v-btn
+          id="btn-cancel--playbook-rules-modal"
           class="playbook-rule-form__button"
           outlined
           rounded
@@ -199,6 +200,7 @@
       <div>
         <v-btn
           v-if="canPrev"
+          id="btn-back--playbook-rules-modal"
           class="playbook-rule-form__button mr-4"
           outlined
           rounded
@@ -210,6 +212,7 @@
 
         <v-btn
           v-if="canNext"
+          id="btn-next--playbook-rules-modal"
           class="playbook-rule-form__button"
           style="color: white;"
           rounded
@@ -221,6 +224,7 @@
 
         <v-btn
           v-if="!canNext"
+          id="btn-save--playbook-rules-modal"
           class="playbook-rule-form__button white--text"
           rounded
           color="#2196f3"

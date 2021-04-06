@@ -4,6 +4,7 @@
       <v-btn style="display: none;" />
       <widget-container>
         <widget-header
+          button-id="btn-link--recently-reported-incidents"
           :title="getTitle"
           :link="{ href: '/incident-responder', text: 'All' }"
           :edit-mode="editMode"
