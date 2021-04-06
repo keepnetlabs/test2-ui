@@ -1209,8 +1209,8 @@ export default {
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
     isFiltered() {
-      console.log('keys', Object.keys(this.filterValues))
-      console.log('this.filterValues is filtered is ', Object.keys(this.filterValues).length > 0)
+      //console.log('keys', Object.keys(this.filterValues))
+      //console.log('this.filterValues is filtered is ', Object.keys(this.filterValues).length > 0)
       return Object.keys(this.filterValues).length > 0
     },
     isShowAllRecords() {
