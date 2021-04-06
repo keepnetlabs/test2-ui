@@ -17,108 +17,10 @@
                 @changeDownloadModalStatus="downloadModalStatus = $event"
                 :id="$attrs.id"
               />
-              <div class="details-content">
-                <div class="details-content--item mb-6" style="justify-content: space-between;">
-                  <div style="display: flex; align-items: center;">
-                    <div class="details-content--item--key">
-                      Analysis Date
-                    </div>
-                    <div class="details-content--item--value">
-                      {{ mailDetails.analysisDate }}
-                    </div>
-                  </div>
-                  <div>
-                    <div @click="handleDownloadEmail()" class="cursor-pointer download">
-                      <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
-                      DOWNLOAD EMAIL
-                    </div>
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    From
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.from }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    From Name
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.senderName }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    To
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.to && mailDetails.to.toString() }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    CC
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.to && mailDetails.cc.toString() }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    BCC
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.to && mailDetails.bcc.toString() }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Date Received
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.receivedDate }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Sender IP
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.senderIp }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Folder Name
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails.folderName }}
-                  </div>
-                </div>
-
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Attachment Count
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.attachments.length }}
-                  </div>
-                </div>
-                <div class="details-content--item">
-                  <div class="details-content--item--key">
-                    Url Count
-                  </div>
-                  <div class="details-content--item--value">
-                    {{ mailDetails && mailDetails.urls.length }}
-                  </div>
-                </div>
-              </div>
+              <email-details-content-details
+                :mail-details="mailDetails"
+                @handleDownloadEmail="handleDownloadEmail"
+              />
             </template>
           </el-tab-pane>
           <el-tab-pane label="Header" name="second">
@@ -134,7 +36,6 @@
                       :table="relayTable.data"
                       :refName="'relayTable'"
                       :columns="relayTable.columns"
-                      :pageSizes="pageSizes"
                       :selectable="false"
                       :filterable="true"
                       :options="true"
@@ -157,7 +58,6 @@
                       :refName="'headersTable'"
                       :columns="headersTable.columns"
                       :countRow="25"
-                      :pageSizes="pageSizes"
                       :defaultSort="'date'"
                       :selectable="false"
                       :filterable="true"
@@ -203,77 +103,20 @@
                 v-bind:content="mailDetails.htmlBody"
               />
               <div class="border-for-header mt-8 mb-3"></div>
-              <div
-                id="preview-footer-container"
-                class="preview-footer"
+              <email-details-preview-footer
                 v-if="!!mailDetails.attachments.length"
-              >
-                <h2>Attachments</h2>
-                <div class="attachment-wrapper">
-                  <div
-                    v-for="(att, ind) of mailDetails.attachments"
-                    :key="att.resourceId"
-                    :id="'attachment-' + att.name"
-                    class="attachment red-attach"
-                    :class="[
-                      att.isFlagged ? 'red-attach' : '',
-                      !att.isFlagged ? 'blue-attach' : '',
-                      !att.isHidden ? 'clean-attach' : ''
-                    ]"
-                  >
-                    <div v-if="att.isFlagged" class="attach-icon red-icon">
-                      <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
-                    </div>
-                    <div v-else class="attach-icon blue-icon">
-                      <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
-                    </div>
-                    <v-menu
-                      content-class="email-preview__attachment-container-menu"
-                      bottom
-                      right
-                      offset-y
-                      transition="scale-transition"
-                    >
-                      <template v-slot:activator="{ on }">
-                        <div v-on="on" class="pl-2 email-preview__attachment-container">
-                          <span> {{ att.name }} </span>
-                          <v-icon style="padding-left: 6px;">mdi-chevron-down</v-icon>
-                        </div>
-                      </template>
-                      <v-list class="v-cart-dropdown-list el-table__action-buttons">
-                        <v-list-item @click="handleAttachmentClick(ind, att.sha512)">
-                          <v-icon>mdi-text-box-multiple</v-icon>
-                          <span class="ml-4"> Attachment Details</span>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-                </div>
-              </div>
+                :mail-details="mailDetails"
+                @on-attachment-click="handleAttachmentClick"
+              />
             </template>
           </el-tab-pane>
           <el-tab-pane label="URLs" name="fourth">
             <template v-if="mailDetails">
-              <div>
-                <datatable
-                  id="urlAnalysisTable"
-                  ref="refUrlAnalysisTable"
-                  :loading="isLoading"
-                  :table="tableData"
-                  :refName="'urlAnalysisTable'"
-                  :columns="columns"
-                  :pageSizes="pageSizes"
-                  :defaultSort="'date'"
-                  :selectable="false"
-                  :filterable="true"
-                  :options="true"
-                  :empty="iEmpty"
-                  :selectEvent="selectEvent"
-                  :sizeable="true"
-                  :download-button="{ show: false, disabled: false }"
-                  @refreshAction="getPostDetails"
-                />
-              </div>
+              <email-details-url
+                :mailDetails="mailDetails"
+                :is-loading="isLoading"
+                @get-post-details="getPostDetails"
+              />
             </template>
           </el-tab-pane>
           <el-tab-pane label="Attachments" name="fifth">
@@ -396,7 +239,6 @@
                         :refName="'attachmentsTable'"
                         :columns="attachmentTableOptions.columns"
                         :table="attachmentTableOptions.tableData[index].analysisList"
-                        :pageSizes="pageSizes"
                         :options="false"
                         :empty="attachmentTableOptions.iEmpty"
                         :download-button="{ show: false }"
@@ -550,22 +392,20 @@ a{position:relative}
 
 import Datatable from '../../components/DataTable'
 import DownloadModal from './DownloadModal'
-import {
-  getNotifiedEmail,
-  getAnalysisEngineTypes,
-  downloadAttachment
-} from '../../api/notifiedEmail'
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  PROPERTY_STORE
-} from '../../model/constants/commonConstants'
+import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
+import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
+import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
+import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
 import { scrollToComponent } from '@/utils/functions'
+import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 
 export default {
   components: {
+    EmailDetailsUrl,
+    EmailDetailsPreviewFooter,
+    EmailDetailsContentDetails,
     DatatableLoading,
     PreviewHeaderForSinglePost,
     Datatable,
@@ -739,32 +579,8 @@ export default {
     mailDetails: null,
     showFirstCollapse: false,
     showSecondCollapse: [],
-    expanded: false,
-    commentOpened: false,
-    isWantToShareIncident: false,
-    isWantToInvestigate: false,
-    isWantToPostIncident: false,
     tab: 'first',
-    showAllTags: false,
-    seeComments: false,
-    rules: {
-      required: (v) =>
-        (!!v && v.length >= 5 && v.length <= 300) || 'Minimum 5 characters - Maximum 300 character',
-      regex: (v) =>
-        /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        'Only use letters, digits, period, comma, underline and hyphen'
-    },
-    likeCount: 15,
-    userLiked: false,
-    hasPermission: false,
-    valid: false,
-    userComment: '',
-    comments: [],
-    hoverTool: false,
     details: {},
-    shareSettings: {},
-    addCommentValue: '',
-    showDatatable: true,
     columns: [
       // Should be defined to show the table
       {
@@ -801,18 +617,12 @@ export default {
       title: 'Url Analysis',
       subTitle: ''
     },
-    pageSizes: [5, 10, 25],
-    iEmpty: {
-      message: 'No URL to display'
-    },
     selectEvent: {
       clipboard: true,
       download: false
-    },
-    tableData: []
+    }
   }),
   mounted() {
-    this.getEngineDetails()
     this.getPostDetails()
   },
   methods: {
@@ -860,11 +670,9 @@ export default {
       this.tab = 'fifth'
       this.panel.push(index)
       this.showSecondCollapse.push(index)
-      setTimeout(() => {
-        const anchor = document.createElement('a')
-        anchor.href = `#${id}`
-        anchor.click()
-      }, 800)
+      this.$nextTick(() => {
+        scrollToComponent(document.getElementById(id))
+      })
     },
     getResultOfAttachmentList(list) {
       let result = 'N/A'
@@ -940,79 +748,11 @@ export default {
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {
           this.mailDetails = response.data.data
-          const urlTableColumns = new Set()
-          const tableData = this.mailDetails.urls.map((item, index) => {
-            const returnObj = {}
-            let result
-
-            for (let engine of item.analysisList) {
-              returnObj[engine.analysisEngine] = engine.result
-              urlTableColumns.add(engine.analysisEngine)
-              if (result !== 'Malicious') {
-                if (
-                  (result === 'Phishing' || result === 'Undetected') &&
-                  engine.result === 'Malicious'
-                ) {
-                  result = 'Malicious'
-                } else if (result === 'Phishing' && engine.result === 'Undetected') {
-                  result = 'Phishing'
-                } else {
-                  result = engine.result
-                }
-              }
-            }
-            returnObj['status'] = result
-            returnObj['url'] = item.url
-            return returnObj
-          })
-          let colObj = []
-          urlTableColumns.forEach((item) => {
-            if (this.columns.find((col) => col.property === item)) {
-              return
-            }
-            colObj.push({
-              property: item,
-              align: 'left',
-              editable: false,
-              label: item,
-              sortable: true,
-              show: true,
-              minWidth: 60 + item.length * 7,
-              type: 'text',
-              emptyText: 'None'
-            })
-          })
-          if (colObj.length) {
-            this.columns[1]['width'] = 170
-          }
-          this.columns = [...this.columns, ...colObj]
-          this.tableData = tableData
-          _this.attachmentTableOptions.tableData = _this.mailDetails.attachments
-          const urls = this.mailDetails.urls
+          this.attachmentTableOptions.tableData = this.mailDetails.attachments
           this.headersTable.data = this.mailDetails.headers
           this.relayTable.data = this.mailDetails.emailRelays
         })
         .finally(() => (this.isLoading = false))
-    },
-    getEngineDetails() {
-      getAnalysisEngineTypes().then((response) => {
-        const engineTypes = response.data.data
-        /*
-          engineTypes.map((item) => {
-            this.columns.push({
-              property: 'analysisEngine',
-              align: 'left',
-              editable: false,
-              label: item.name,
-              fixed: false,
-              sortable: true,
-              show: true,
-              type: 'text'
-            })
-          })
-
-           */
-      })
     },
     getMd5Text(index) {
       return this.isCopiedMd5Clipboard.findIndex((item) => item === index) > -1
@@ -2256,12 +1996,13 @@ export default {
   margin-top: 24px;
 
   &__link {
-    text-decoration: none;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    line-height: 1.29;
-    letter-spacing: normal;
-    color: #2196f3;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    text-decoration: none;
+    color: #2196f3 !important;
   }
 }
 .details-content--item--value {

@@ -5,6 +5,7 @@
       <div class="available-widget__header-right">
         <v-btn
           v-if="!editMode"
+          id="btn-edit--dashboard-widgets"
           class="widget-button"
           rounded
           color="transparent"
@@ -18,6 +19,7 @@
             <template v-slot:activator="{ on }">
               <div v-on="on" style="display: inline-block;">
                 <v-btn
+                  id="btn-add--dashboard-widgets"
                   :class="[
                     'widget-button mr-2',
                     { 'widget-button--disabled': !availableWidgets.length }
@@ -40,7 +42,12 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <v-btn class="widget-button" rounded color="transparent" @click="handleEdit"
+          <v-btn
+            id="btn-save--dashboard-widgets"
+            class="widget-button"
+            rounded
+            color="transparent"
+            @click="handleEdit"
             ><v-icon class="mr-2" style="font-size: 22px;">mdi-content-save</v-icon>Save
             Changes</v-btn
           >

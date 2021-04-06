@@ -12,6 +12,8 @@
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
           type="delete"
+          cancel-button-id="btn-cancel--rules-popup"
+          confirm-button-id="btn-delete--rules-popup"
           :confirm-button-disabled="deleteButtonDisabled"
           @handleClose="isWantToDelete = false"
           @handleConfirm="isWantToDeleteRuleConfirm(true)"
@@ -64,7 +66,12 @@
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="toggleMatchingModal"
+          <v-btn
+            id="btn-close--playbook-show-matching-incidents-popup"
+            class="pa-0 k-dialog__button"
+            text
+            color="#2196f3"
+            @click="toggleMatchingModal"
             >{{ labels.Close.toUpperCase() }}
           </v-btn>
         </div>
@@ -468,7 +475,8 @@ export default {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
         icon: 'mdi-plus',
-        btn: 'Add a Rule'
+        btn: 'Add a Rule',
+        id: 'btn-empty--playbook-rules'
       }
       if (!this.PERMISSIONS.CREATE.hasPermission) {
         emptyObj['disabled'] = true
@@ -503,7 +511,8 @@ export default {
       const obj = {
         show: true,
         action: 'addAction',
-        tooltip: 'Add a Rule'
+        tooltip: 'Add a Rule',
+        id: 'btn-add--playbook-rules'
       }
       return this.PERMISSIONS.CREATE.hasPermission ? obj : { ...obj, disabled: true }
     },

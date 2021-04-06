@@ -3,6 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <matching-incident-modal
+          button-id="btn-link--top-rules"
           :status="showMatchingModal"
           :selectedMatch="selectedMatch"
           v-if="showMatchingModal"

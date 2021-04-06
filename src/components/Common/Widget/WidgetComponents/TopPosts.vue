@@ -3,6 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container v-resize="onResize">
         <widget-header
+          button-id="btn-link--top-posts"
           :title="getTitle"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"

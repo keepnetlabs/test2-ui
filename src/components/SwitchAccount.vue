@@ -60,6 +60,7 @@
       </div>
       <div class="switch-account__footer">
         <v-btn
+          id="btn-cancel--switch-company-dashboard-popup"
           color="#f56c6c"
           class="delete-user__footer-button"
           @click="setSwitchDialog(false)"
@@ -68,6 +69,7 @@
         >
         <v-btn
           text
+          id="btn-confirm--switch-company-dashboard-popup"
           color="#2196f3"
           class="k-dialog__button"
           :disabled="isSwitchAccountDisabled"

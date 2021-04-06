@@ -9,7 +9,7 @@
       >mdi-close-circle</v-icon
     >
     <div class="k-widget-header__title">{{ title }}</div>
-    <router-link class="k-widget-header__link" v-if="link" :to="link['href']"
+    <router-link class="k-widget-header__link" v-if="link" :id="buttonId" :to="link['href']"
       ><span>{{ link['text'] }}</span> <v-icon color="#2196f3" small>mdi-arrow-right</v-icon>
     </router-link>
   </div>
@@ -19,6 +19,9 @@
 export default {
   name: 'WidgetHeader',
   props: {
+    buttonId: {
+      type: String
+    },
     title: {
       type: String,
       default: ''

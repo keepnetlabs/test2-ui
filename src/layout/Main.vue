@@ -159,6 +159,7 @@
                 <v-list class="user-name-dropdown__content">
                   <v-list-item
                     v-for="item in dropdownData"
+                    :id="item.id"
                     :key="item.key"
                     @click="changeDropdownItem(item.value)"
                     v-if="setDropdownVisibility(item)"
@@ -702,42 +703,30 @@ export default {
         }
       ],
       dropdownData: [
-        /*
-        {
-          text: 'Edit Profile',
-          icon: 'mdi-account',
-          url: ''
-        },
-
-         */
         {
           text: 'Switch Company',
+          id: 'btn-switch-company--dashboard',
           icon: 'mdi-swap-horizontal',
           url: '',
           value: 'switchCompany'
         },
         {
           text: 'Return to Main Account',
+          id: 'btn-return-to-main-account--dashboard',
           icon: 'mdi-rotate-left',
           url: '',
           value: 'returnToMainAccount'
         },
         {
           text: 'Security',
+          id: 'btn-security--dashboard',
           icon: 'mdi-lock',
           url: '',
           value: 'changePassword'
         },
-        /*
-{
-  text: 'Login History',
-  icon: 'mdi-history',
-  url: ''
-},
-
- */
         {
           text: 'Logout',
+          id: 'btn-logout--dashboard',
           icon: 'mdi-login-variant',
           url: '',
           value: 'logout'

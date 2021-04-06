@@ -3,6 +3,7 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <widget-header
+          button-id="btn-link--reporters"
           :editMode="editMode"
           :title="getTitle"
           @deleteWidget="$emit('deleteWidget')"

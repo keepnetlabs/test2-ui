@@ -74,6 +74,7 @@
           <template v-slot:activator="{ on }">
             <v-btn
               @click="handleEdit(scope.row)"
+              :id="`btn-edit--smtp-settings-row-action-${Math.random().toString().substring(2)}`"
               class="btn-hover"
               icon
               v-on="on"
@@ -91,7 +92,11 @@
             </v-btn>
           </template>
           <v-list class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions">
-            <v-list-item class="sub-menu-el" :disabled="tableOptions.rowActions[1].disabled">
+            <v-list-item
+              :id="`btn-status--smtp-settings-row-action-${Math.random().toString().substring(2)}`"
+              class="sub-menu-el"
+              :disabled="tableOptions.rowActions[1].disabled"
+            >
               <v-list-item-title
                 @click="
                   scope.row.status === 'Active' ? handleDisable(scope.row) : handleEnable(scope.row)
@@ -107,7 +112,11 @@
                 }}</span>
               </v-list-item-title>
             </v-list-item>
-            <v-list-item class="sub-menu-el" :disabled="tableOptions.rowActions[2].disabled">
+            <v-list-item
+              :id="`btn-delete--smtp-settings-row-action-${Math.random().toString().substring(2)}`"
+              class="sub-menu-el"
+              :disabled="tableOptions.rowActions[2].disabled"
+            >
               <v-list-item-title @click="handleActionDelete(scope.row)">
                 <v-icon class="pr-3">mdi-delete</v-icon>
                 <span>{{ labels.Delete }}</span>
@@ -268,12 +277,14 @@ export default {
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,
           btn: labels.AddAnIntegration,
-          icon: 'mdi-account-plus'
+          icon: 'mdi-account-plus',
+          id: 'btn-empty--integrations'
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add an integration',
+          id: 'btn-add--integrations',
           disabled: !this.checkPermissions('analysis-engines', 'POST')
         }
       },
