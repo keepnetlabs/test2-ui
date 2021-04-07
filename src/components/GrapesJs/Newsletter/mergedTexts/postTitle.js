@@ -6,7 +6,8 @@ const postTitle = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Title of the post'
   },
   content: {
     tagName: 'span',

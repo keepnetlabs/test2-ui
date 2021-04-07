@@ -6,7 +6,8 @@ const to = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Recipient email address'
   },
   content: {
     tagName: 'span',

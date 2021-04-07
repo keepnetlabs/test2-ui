@@ -7,7 +7,8 @@ const link = {
     title: 'To',
     class: 'merged-text',
     icon: 'fa fa-text',
-    isUrl: true
+    isUrl: true,
+    'data-title': 'Link to the post'
   },
   content: {
     tagName: 'span',

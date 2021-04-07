@@ -6,7 +6,8 @@ const category = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Category'
   },
   content: {
     tagName: 'span',

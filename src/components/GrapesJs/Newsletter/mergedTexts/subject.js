@@ -6,7 +6,8 @@ const subject = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Subject of email'
   },
   content: {
     tagName: 'span',

@@ -6,7 +6,8 @@ const userEmail = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "User's email address"
   },
   content: {
     tagName: 'span',

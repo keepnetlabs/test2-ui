@@ -6,7 +6,8 @@ const reportBy = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'User who reported the email'
   },
   content: {
     tagName: 'span',

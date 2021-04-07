@@ -7,7 +7,8 @@ const webUrl = {
     title: 'To',
     class: 'merged-text',
     icon: 'fa fa-text',
-    isUrl: true
+    isUrl: true,
+    'data-title': 'Platform URL'
   },
   content: {
     tagName: 'span',

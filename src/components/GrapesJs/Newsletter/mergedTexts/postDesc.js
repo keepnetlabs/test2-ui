@@ -6,7 +6,8 @@ const postDesc = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Description of the post'
   },
   content: {
     tagName: 'span',

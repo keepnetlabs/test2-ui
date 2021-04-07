@@ -7,7 +7,8 @@ const macroUrl = {
     title: 'To',
     class: 'merged-text',
     icon: 'fa fa-text',
-    isUrl: true
+    isUrl: true,
+    'data-title': 'Macro Url'
   },
   content: {
     tagName: 'span',
