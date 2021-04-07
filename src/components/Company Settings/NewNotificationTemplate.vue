@@ -82,9 +82,9 @@ import EmailTemplate from '@/components/Company Settings/EmailTemplate'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import {
   createEmailTemplate,
-  getCategories,
   getEmailTemplate,
   getMergedTags,
+  getTemplateTypes,
   updateEmailTemplate
 } from '@/api/company'
 import { searchSmtpSettings } from '@/api/smtpSettings'
@@ -289,7 +289,7 @@ export default {
       })
     },
     callForCategories() {
-      return getCategories()
+      return getTemplateTypes()
     },
     callForSmtpSettings() {
       return searchSmtpSettings(this.smtpAxiosPayload)
