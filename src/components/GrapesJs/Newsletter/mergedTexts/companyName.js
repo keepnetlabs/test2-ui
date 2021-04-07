@@ -6,7 +6,8 @@ const companyName = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Company name of the user who shared the post'
   },
   content: {
     tagName: 'span',

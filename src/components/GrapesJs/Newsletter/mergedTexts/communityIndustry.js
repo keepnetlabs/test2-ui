@@ -6,7 +6,8 @@ const communityIndustry = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "Community's industry category"
   },
   content: {
     tagName: 'span',

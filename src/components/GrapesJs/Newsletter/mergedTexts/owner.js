@@ -6,7 +6,8 @@ const owner = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "Recipient's first and last name"
   },
   content: {
     tagName: 'span',

@@ -6,7 +6,8 @@ const foundEmailCount = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Number of found emails fitting the criteria'
   },
   content: {
     tagName: 'span',

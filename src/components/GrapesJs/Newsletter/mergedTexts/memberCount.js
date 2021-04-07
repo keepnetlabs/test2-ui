@@ -6,7 +6,8 @@ const memberCount = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Number of members of the community'
   },
   content: {
     tagName: 'span',

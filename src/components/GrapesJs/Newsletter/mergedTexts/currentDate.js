@@ -6,7 +6,8 @@ const currentDate = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Post date'
   },
   content: {
     tagName: 'span',

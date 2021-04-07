@@ -6,7 +6,8 @@ const customMacroAttachment = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Custom Macro Attachment'
   },
   content: {
     tagName: 'span',

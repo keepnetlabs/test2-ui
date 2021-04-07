@@ -6,7 +6,8 @@ const analysisEmail = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Number of analysed emails'
   },
   content: {
     tagName: 'span',
