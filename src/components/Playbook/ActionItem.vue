@@ -128,6 +128,15 @@
             height="40"
           />
         </v-col>
+        <v-col v-if="actionsValues[index].val === 'status'" md="2">
+          <k-select
+            v-model="playbookActionStatus.actionStatusType"
+            :items="act.statusOpts"
+            outlined
+            hide-details
+            height="40"
+          />
+        </v-col>
         <v-col
           v-if="actionsValues[index].val === 'analyze'"
           md="auto"
@@ -311,7 +320,6 @@ import { searchEmailTemplate } from '@/api/company'
 
 export default {
   components: { AppDialogFooter, KSelect, AppDialog, Investigate },
-
   name: 'ActionItem',
   props: {
     id: Number,
@@ -381,6 +389,7 @@ export default {
       investigateActionNotificationTemplate: '18',
       investigateActionMessage: null,
       playbookActionInvestigations: [],
+      playbookActionStatus: { actionStatusType: '' },
       act: {
         actionTypes: [
           {
@@ -416,6 +425,12 @@ export default {
         ],
         notifyTypes: ['Reporter', 'Users', 'Groups'],
         markAsOpts: ['Undetected', 'Phishing', 'Malicious'],
+        statusOpts: [
+          'Open',
+          'Closed',
+          { text: 'In Progress', value: 'InProgress' },
+          { text: 'False Positive', value: 'FalsePositive' }
+        ],
         notifyTemplates: [
           { label: 'IR User Notification', value: '18' },
           { label: 'IR Delete Action Notification', value: '41' },
@@ -746,16 +761,14 @@ export default {
           }
         })
       })
-      /*
+
       if (oldValue.val === 'notify') {
         this.targetUserType[index] = null
         this.tarUsers[index] = null
       }
 
-     */
-      if (oldValue.val === 'notify') {
-        this.targetUserType[index] = null
-        this.tarUsers[index] = null
+      if (value.val === 'status') {
+        this.playbookActionStatus.actionStatusType = 'Open'
       }
       if (value.val === 'investigate') {
         this.playbookActionInvestigations[index] = {
@@ -844,6 +857,10 @@ export default {
       if (actionVal === 'markAs') {
         this.playbookAction.markType = ''
       }
+      if (actionVal === 'status') {
+        this.playbookActionStatus.actionStatusType = ''
+      }
+
       if (actionVal === 'notify') {
         this.targetUserType.splice(index, 1)
         this.tarUsers.splice(index, 1)
@@ -957,11 +974,7 @@ export default {
     }
 
     this.callForSearchEmailTemplate()
-    /*
-    this.callForGetTargetGroupItems(
-      { pageNumber: 1, pageSize: 10, orderBy: 'Name', ascending: false, groupName: '' },
-      true
-    ) */
+
     getTargetGroups().then((response) => {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data

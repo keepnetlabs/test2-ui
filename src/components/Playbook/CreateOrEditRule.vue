@@ -523,6 +523,7 @@ export default {
           index++
         }
       }
+      const playbookActionStatus = ref.playbookActionStatus
       const payload = {
         name: this.name,
         description: this.description,
@@ -533,7 +534,12 @@ export default {
         playbookActionAnalyzers,
         playbookActionNotifications,
         playbookActionInvestigations,
+        playbookActionStatus,
         condition: this.condition
+      }
+
+      if (!playbookActionStatus.actionStatusType) {
+        delete payload.playbookActionStatus
       }
 
       if (ref.$refs.refForm.validate()) {
@@ -595,6 +601,8 @@ export default {
       const targetUsers = ref.tarUsers
       const playbookActionNotifications = []
       let index = 0
+      const playbookActionStatus = ref.playbookActionStatus
+
       for (let i = 0; i < targetUserType.length; i++) {
         if ((targetUsers[i] && targetUsers[i] !== null) || targetUserType[i] === 'Reporter') {
           playbookActionNotifications[index] = {
@@ -613,11 +621,17 @@ export default {
         isActive: this.isActive,
         resourceId: this.playbookId,
         playbookAction,
+        playbookActionStatus,
         playbookActionNotifications,
         playbookActionAnalyzers,
         playbookActionInvestigations,
         condition: this.condition
       }
+
+      if (!playbookActionStatus.actionStatusType) {
+        delete payload.playbookActionStatus
+      }
+
       if (ref.$refs.refForm.validate()) {
         this.saveDisable = true
         updatePlaybook(payload)
@@ -834,6 +848,11 @@ export default {
             if (this.playbookActionAnalyzers.length > 0) {
               this.$refs.refActionItem.addAction('analyze')
             }
+          }
+          if (data.playbookActionStatus && data.playbookActionStatus.actionStatusType) {
+            this.$refs.refActionItem.playbookActionStatus.actionStatusType =
+              data.playbookActionStatus.actionStatusType
+            this.$refs.refActionItem.addAction('status')
           }
         })
         .catch((error) => {})
