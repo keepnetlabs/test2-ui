@@ -6,7 +6,8 @@ const userAgent = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "Browser's user agent details"
   },
   content: {
     tagName: 'span',

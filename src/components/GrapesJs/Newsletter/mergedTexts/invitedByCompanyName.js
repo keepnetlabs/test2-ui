@@ -6,7 +6,8 @@ const invitedByCompanyName = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Company name of the user who sent the invitation'
   },
   content: {
     tagName: 'span',

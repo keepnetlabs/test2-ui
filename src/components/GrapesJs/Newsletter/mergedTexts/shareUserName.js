@@ -6,7 +6,8 @@ const shareUserName = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "Post owner's name"
   },
   content: {
     tagName: 'span',

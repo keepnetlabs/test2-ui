@@ -6,7 +6,8 @@ const toName = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'To Name'
   },
   content: {
     tagName: 'span',

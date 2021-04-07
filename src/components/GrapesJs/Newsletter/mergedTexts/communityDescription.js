@@ -6,7 +6,8 @@ const communityDescription = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "Community's description"
   },
   content: {
     tagName: 'span',

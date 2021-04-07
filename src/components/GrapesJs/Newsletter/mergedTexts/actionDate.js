@@ -6,7 +6,8 @@ const actionDate = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Date and time of activation / deactivation'
   },
   content: {
     tagName: 'span',

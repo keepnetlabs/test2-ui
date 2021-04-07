@@ -6,7 +6,8 @@ const productName = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Name of the platform'
   },
   content: {
     tagName: 'span',
