@@ -613,5 +613,38 @@ export default {
   .gjs-label {
     color: white !important;
   }
+  .gjs-pn-panel.gjs-pn-commands.gjs-one-bg.gjs-two-color.gjs-hidden,
+  .gjs-pn-panel.gjs-pn-devices-c.gjs-one-bg.gjs-two-color.gjs-hidden {
+    display: block !important;
+  }
+  .gjs-pn-panel.gjs-pn-views.gjs-one-bg.gjs-two-color.gjs-hidden {
+    display: block !important;
+    height: 40px;
+    .gjs-pn-buttons {
+      display: none !important;
+    }
+  }
+  .gjs-off-prv.fa.fa-eye-slash {
+    display: flex;
+    position: absolute;
+    right: 24px;
+    top: 6px;
+    background: white;
+    color: #2196f3;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.22);
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    letter-spacing: normal;
+    &:after {
+      content: 'Preview';
+      margin-left: 4px;
+      font-size: 14px;
+    }
+  }
+  .gjs-cv-canvas {
+    top: 40px !important;
+  }
 }
 </style>
