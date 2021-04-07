@@ -41,6 +41,12 @@ export function updateNotifiedEmail(id, payload) {
   })
 }
 
+export function updateNotifiedEmailBulk(payload) {
+  return testRequest.put(`/notified-emails/bulk-update`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function getRoiSettings() {
   return testRequest.get('/companies/roi-settings')
 }

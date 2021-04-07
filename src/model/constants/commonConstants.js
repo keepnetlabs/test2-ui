@@ -159,6 +159,8 @@ export const PROPERTY_STORE = {
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
   CATEGORYNAME: 'categoryName',
+  TYPNAME: 'typeName',
+  TEMPLATETYPE: 'templateType',
   LASTNAME: 'lastName',
   RELIABILITY: 'reliability',
   THREATS: 'threats',

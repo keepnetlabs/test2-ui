@@ -113,7 +113,8 @@ import {
   deleteEmailTemplate,
   getCategories,
   searchEmailTemplate,
-  exportEmailTemplate
+  exportEmailTemplate,
+  getTemplateTypes
 } from '@/api/company'
 import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
@@ -151,6 +152,19 @@ export default {
           {
             property: PROPERTY_STORE.CATEGORYNAME,
             align: 'left',
+            label: labels.Category,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'CategoryResourceId'
+          },
+          {
+            property: PROPERTY_STORE.TYPENAME,
+            align: 'left',
             label: labels.TemplateType,
             fixed: false,
             sortable: true,
@@ -158,8 +172,8 @@ export default {
             type: 'text',
             width: 180,
             filterableType: 'select',
-            filterableCustomFieldName: 'categoryResourceId',
-            filterableItems: []
+            filterableItems: [],
+            filterableCustomFieldName: 'TypeResourceId'
           },
           {
             property: PROPERTY_STORE.SUBJECT,
@@ -482,17 +496,27 @@ export default {
     callForCategories() {
       return getCategories()
     },
+    callForTemplateTypes() {
+      return getTemplateTypes()
+    },
     callForDatas() {
       this.loading = true
-      Promise.all([this.callForCategories(), this.callForSearchEmailTemplate()])
+      Promise.all([
+        this.callForCategories(),
+        this.callForSearchEmailTemplate(),
+        this.callForTemplateTypes()
+      ])
         .then((response) => {
-          const [categories, emailTemplates] = response
+          const [categories, emailTemplates, templateTypes] = response
           const {
             data: { data: templateData }
           } = emailTemplates
           const {
             data: { data: categoriesData }
           } = categories
+          const {
+            data: { data: templateTypesData }
+          } = templateTypes
 
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = templateData
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -509,9 +533,16 @@ export default {
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
           })
+          this.templateTypeItems = templateTypesData.map((type) => {
+            return { text: type.name, value: type.resourceId }
+          })
           this.$set(this.tableOptions.columns, 1, {
             ...this.tableOptions.columns[1],
             filterableItems: this.categories
+          })
+          this.$set(this.tableOptions.columns, 2, {
+            ...this.tableOptions.columns[2],
+            filterableItems: this.templateTypeItems
           })
         })
         .finally(() => {
