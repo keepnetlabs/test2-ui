@@ -531,20 +531,19 @@ export default {
     border-top: none !important;
   }
   .gjs-blocks-c {
-    justify-content: space-around !important;
+    justify-content: space-between !important;
   }
   .gjs-block-categories {
     margin-top: 50px;
     .gjs-block {
-      margin: 4px 0 4px 2% !important;
+      margin: 4px 4px 4px 2% !important;
     }
   }
   .gjs-block-categories:before {
     content: 'Add Elements';
-    background: #6f7176 !important;
     position: absolute;
     top: 16px;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
@@ -565,6 +564,7 @@ export default {
         border-right: 1px solid #383b41 !important;
         box-shadow: 0 5px 12px 2px rgba(91, 91, 91, 0.29), 0 3px 18px 2px rgba(56, 59, 65, 0) !important;
         background-image: linear-gradient(to top, #5b5b5b 67%, #827d7d) !important;
+        font-size: 16px;
         &.gjs-rte-active {
           background-image: linear-gradient(to top, #383b41 100%, #383b41) !important;
         }
@@ -584,11 +584,12 @@ export default {
     }
   }
   .gjs-pn-panel.gjs-pn-options.gjs-one-bg.gjs-two-color {
-    padding-right: 95px;
+    padding-right: 125px;
+    width: 550px;
   }
   .gjs-pn-btn.fa.fa-eye {
     position: absolute;
-    right: 0;
+    right: 30px;
     &:after {
       content: 'Preview';
       margin-left: 5px;
@@ -599,6 +600,18 @@ export default {
     .gjs-pn-btn {
       margin: 0 8px !important;
     }
+  }
+  .gjs-radio-item-label {
+    border: 1px solid transparent;
+  }
+  .gjs-radio-item input:checked + .gjs-radio-item-label {
+    border: 1px solid #434343;
+  }
+  .gjs-trt-trait.gjs-trt-trait--text {
+    background: #757575 !important;
+  }
+  .gjs-label {
+    color: white !important;
   }
 }
 </style>
