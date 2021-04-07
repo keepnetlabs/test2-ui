@@ -6,7 +6,8 @@ const startedBy = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'First and last name of the user who started investigation'
   },
   content: {
     tagName: 'span',

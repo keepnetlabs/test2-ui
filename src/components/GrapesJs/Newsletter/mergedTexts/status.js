@@ -6,7 +6,8 @@ const status = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Status of investigation'
   },
   content: {
     tagName: 'span',

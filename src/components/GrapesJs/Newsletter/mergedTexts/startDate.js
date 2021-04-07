@@ -6,7 +6,8 @@ const startDate = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Start date and time of the investigation'
   },
   content: {
     tagName: 'span',

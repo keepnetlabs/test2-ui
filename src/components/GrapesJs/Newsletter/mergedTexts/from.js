@@ -6,7 +6,8 @@ const mergedFrom = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': 'Sender email address '
   },
   content: {
     tagName: 'span',

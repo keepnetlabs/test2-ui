@@ -6,7 +6,8 @@ const userName = {
   attributes: {
     title: 'To',
     class: 'merged-text',
-    icon: 'fa fa-text'
+    icon: 'fa fa-text',
+    'data-title': "Recipient user's username"
   },
   content: {
     tagName: 'span',
