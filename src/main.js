@@ -101,7 +101,10 @@ if (isCloud) {
   //MixinPanel
   mixPanelStatus &&
     Vue.use(VueMixpanel, {
-      token: mixPanelToken
+      token: mixPanelToken,
+      config: {
+        api_host: 'https://api-eu.mixpanel.com'
+      }
     })
 }
 
