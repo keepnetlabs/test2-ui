@@ -137,7 +137,11 @@ export function deleteEmailTemplate(resourceId = '') {
 }
 
 export function getCategories() {
-  return testRequest.get('/lookups/10')
+  return testRequest.get('/companies/email-templates/categorylookup')
+}
+
+export function getTemplateTypes() {
+  return testRequest.get('/companies/email-templates/typelookup')
 }
 
 export function getCheckCompanyLicense(resourceId = '') {
