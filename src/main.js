@@ -10,6 +10,7 @@ import './assets/scss/main.scss'
 import { SmartWidget, SmartWidgetGrid } from 'vue-smart-widget'
 import VueMask, { VueMaskDirective } from 'v-mask'
 import * as Sentry from '@sentry/browser'
+import VueMixpanel from 'vue-mixpanel'
 import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
@@ -46,6 +47,8 @@ const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
 const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
 const fullstoryStatus = APP_CONFIG.VUE_APP_FULLSTORY_STATUS
 const hotjarStatus = APP_CONFIG.VUE_APP_HOTJAR_STATUS
+const mixPanelStatus = APP_CONFIG.VUE_APP_MIX_PANEL_STATUS
+const mixPanelToken = APP_CONFIG.VUE_APP_MIX_PANEL_TOKEN
 
 if (isCloud) {
   //Sentry
@@ -95,6 +98,14 @@ if (isCloud) {
     FullStory.init({ orgId: fullstoryID })
     Vue.prototype.$FullStory = FullStory
   }
+  //MixinPanel
+  mixPanelStatus &&
+    Vue.use(VueMixpanel, {
+      token: mixPanelToken,
+      config: {
+        api_host: 'https://api-eu.mixpanel.com'
+      }
+    })
 }
 
 Vue.use(VueTour)
