@@ -181,6 +181,8 @@ export default {
           ]
         }
       })
+      debugger
+      const copyEditor = Object.assign({}, this.editor)
       this.editor.on('component:selected', () => {
         const selected = this.editor.getSelected()
         if (selected && selected.is('link')) {
@@ -431,8 +433,28 @@ export default {
         }
         document.querySelector('.fa-download').classList.add('fa-upload')
         document.querySelector('.fa-download').classList.remove('fa-download')
-      }, 500)
+      }, 1000)
       const rte = this.editor.RichTextEditor
+      /*rte.remove('link')
+      rte.add('link', {
+        icon: 'fa fa-link',
+        attributes: { title: 'Link' },
+        // Example on it's easy to wrap a selected content
+
+      })*/
+      rte.get('link').result = (rte) => {
+        copyEditor.select(copyEditor.DomComponents.getWrapper().find('body')[0])
+        setTimeout(() => {
+          copyEditor.DomComponents.render()
+          //copyEditor.DomComponents.load()
+        }, 400)
+        setTimeout(() => {
+          copyEditor.select(copyEditor.DomComponents.getWrapper().find('a#Reset')[0])
+        }, 500)
+        return rte.insertHTML(
+          `<a href="" data-gjs-type="link" id="${rte.selection()}">${rte.selection()}</a>`
+        )
+      }
       rte.get('link').btn.innerHTML =
         "<img height='19' width='20' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAdNJREFUWAntlj1LA0EQhu+M2AgWVhaCf0AIqI2FNha2aVL7GxQt09hG9J/Y29qkEdKIhWAhpLCwEkQQND4v3B6TdTe5iOIpOzDszOx8vDe3X1mWKHUgdSB1IHUgdeBfdyCv8nXD4XAev1V4CZ6LxPTyPB9oDv9lhs2I3yv2B/ga/+eITzUzhZrwOfwCT6K2y4pje5Iz88qp3E0XN9VIYAd+g6vStABdXtXoxMDNhiYI6GI/DMzdY4v9lifjL/nG6FbUclkxhhnkY2ou8MuPjD0s4tiCLT2i7MGL4YjprcpV5FRuS62x2fBswLcm4g5ZG+NHSLlh1XCk2o1oMSa3nSfju/So8zdNFDVVy9FITX8N7pi6fdbEpdFLkUz7KLFjpPTzBB1DZ54tUw3y9bGvFXPCUNb1Aer8cnTlhMAocOWuDczHTJ8AFo6q5QBaDJl2UB0oemH4HRwYtBtG9sWeb6igj4tZN/EWgzEjshbqsEm2RlEZDYD1PmaEFZC1OqiDixOQX7nqDjgyLoqP3GU8lRwg/6pzLifET77qnDcgO7Au8qpUHjsEVHnNuLyqEX0sODzBkcBff24Ff7GPFqD6LfV7sPpAk546kDqQOpA6kDrw9zrwAQ55zcgJtHvUAAAAAElFTkSuQmCC'>"
     },
@@ -607,7 +629,8 @@ export default {
   .gjs-radio-item input:checked + .gjs-radio-item-label {
     border: 1px solid #434343;
   }
-  .gjs-trt-trait.gjs-trt-trait--text {
+  .gjs-trt-trait.gjs-trt-trait--text,
+  .gjs-trt-trait.gjs-trt-trait--select {
     background: #757575 !important;
   }
   .gjs-label {
