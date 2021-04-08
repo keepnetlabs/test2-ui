@@ -574,7 +574,7 @@ export default {
         isSendFileHash: false,
         isUploadExecutableFile: false,
         isUploadOtherFileType: false,
-        apiKeys: [{ value: '', status: null }],
+        apiKeys: [{ value: '', status: null, resourceId: null }],
         isHideUrlParameter: false,
         uploadFileTypes: [],
         name: null,
@@ -691,7 +691,6 @@ export default {
     },
     saveIntegration() {
       const data = { ...this.formValues }
-
       if (
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
@@ -713,7 +712,8 @@ export default {
         data.apiCredentials = [
           {
             userName: this.formValues.userName,
-            password: this.formValues.password
+            password: this.formValues.password,
+            resourceId: this.formValues.resourceId
           }
         ]
       }
@@ -835,7 +835,7 @@ export default {
     },
     addApiKey() {
       this.isTestConnectionDisabled = true
-      this.formValues.apiKeys.push({ value: '', status: null })
+      this.formValues.apiKeys.push({ value: '', status: null, resourceId: null })
     },
     handleApiKeyChange() {
       if (!this.formValues.apiUrl) return true
@@ -867,15 +867,16 @@ export default {
           ].includes(this.selectedIntegrationType.name)
         ) {
           response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
-            return { value: item.apiKey, status: null }
+            return { value: item.apiKey, status: null, resourceId: item.resourceId }
           })
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
             response.data.data.password = response['data'].data['apiCredentials'][0].password
           }
         } else if (this.selectedIntegrationType.name === 'FortiNet') {
-          const { userName, password } = response['data'].data['apiCredentials'][0]
+          const { userName, password, resourceId } = response['data'].data['apiCredentials'][0]
           response.data.data.userName = userName
           response.data.data.password = password
+          response.data.data.resourceId = resourceId
         }
         delete response['data'].data['apiCredentials']
         this.formValues = response['data'].data
@@ -891,7 +892,7 @@ export default {
         isSendFileHash: true,
         isUploadExecutableFile: true,
         isUploadOtherFileType: false,
-        apiKeys: [{ value: '', status: null }],
+        apiKeys: [{ value: '', status: null, resourceId: null }],
         isHideUrlParameter: false,
         uploadFileTypes: [],
         name: null,
@@ -945,7 +946,8 @@ export default {
           const payload = {
             apiUrl: this.formValues.apiUrl,
             apiCredential: {
-              apiKey: item.value
+              apiKey: item.value,
+              resourceId: item.resourceId
             }
           }
           if (this.isIbmXForce) {
@@ -1002,7 +1004,7 @@ export default {
       if (name === INTEGRATION_TYPES.VIRUSTOTAL) {
         this.formValues.apiUrl = 'https://www.virustotal.com/vtapi/v2'
         if (!this.formValues.apiKeys) {
-          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
         this.formValues.userName = ''
         this.formValues.password = ''
@@ -1011,7 +1013,7 @@ export default {
           this.formValues.apiUrl = ''
         }
         if (!this.formValues.apiKeys) {
-          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
         this.formValues.userName = ''
         this.formValues.password = ''
@@ -1019,7 +1021,7 @@ export default {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''
           this.formValues.userName = ''
-          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null }])
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
       } else {
         if (this.formValues.apiUrl) {

@@ -1362,7 +1362,8 @@ export default {
           show: false,
           type: 'text',
           width: '200',
-          fullWidth: true
+          fullWidth: true,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.SENDERADDRESS,
@@ -1374,7 +1375,8 @@ export default {
           show: false,
           type: 'text',
           width: '200',
-          fullWidth: true
+          fullWidth: true,
+          filterableType: 'text'
         },
         {
           property: 'tags',

@@ -14,7 +14,8 @@
               class="input-select standard-height mt-4 target-users-map__header-select"
               placeholder="- None Selected -"
               item-text="name"
-              @change="setSelectDisableItems"
+              @input="setSelectDisableItems"
+              @change="setSelectDisableItemsChange"
               v-model="mapTableData.headers[index].selectedValue"
               hide-details
               return-object
@@ -57,7 +58,8 @@ export default {
   },
   data() {
     return {
-      select: []
+      select: [],
+      changeItemName: null
     }
   },
   props: { mapTableData: { required: true } },
@@ -77,23 +79,27 @@ export default {
         return item
       })
     },
-    setSelectDisableItems(item) {
-      if (item.name !== PROPERTY_STORE.NONE_SELECTED) {
-        item.disabled = true
-        let _this = this
-        item.selectedValue = item.name
-        this.mapTableData.columns = this.mapTableData.columns.map((i) => {
-          let isDisabled = _this.mapTableData.headers.find((x) => {
-            return (
-              x.selectedValue &&
-              x.selectedValue.name === i.name &&
-              x.selectedValue.name !== PROPERTY_STORE.NONE_SELECTED
-            )
-          })
-          let obj = { ...i, disabled: isDisabled }
-          return obj
+    setSelectDisableItems(item, asd, sd) {
+      this.changeItemName = item.name
+    },
+    setSelectDisableItemsChange(item, asd, sd) {
+      item.disabled = true
+      let _this = this
+      item.selectedValue = item.name
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        let isDisabled = _this.mapTableData.headers.find((x) => {
+          return (
+            x.selectedValue &&
+            x.selectedValue.name === i.name &&
+            x.selectedValue.name !== PROPERTY_STORE.NONE_SELECTED
+          )
         })
-      }
+        let obj = {
+          ...i,
+          disabled: item.name !== PROPERTY_STORE.NONE_SELECTED ? isDisabled : false
+        }
+        return obj
+      })
     },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {
