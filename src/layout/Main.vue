@@ -538,7 +538,7 @@
         </v-menu>
         <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
-            <v-btn icon color="white" v-on="on">
+            <v-btn id="btn--dashboard-header-help-menu" icon color="white" v-on="on">
               <v-icon>mdi-help-circle</v-icon>
             </v-btn>
           </template>
@@ -546,6 +546,7 @@
             <v-list-item
               v-for="(item, index) in rightDropdownData"
               :key="index"
+              :id="item.id"
               :disabled="item.disabled"
               @click="handleClickRightDropdown(item)"
             >
@@ -681,23 +682,27 @@ export default {
           text: 'Tour',
           icon: 'mdi-reminder',
           url: '',
+          id: 'btn--dashboard-header-menu-tour',
           disabled: false
         },
         {
           text: 'Documentation',
           icon: 'mdi-file-document',
           url: '',
+          id: 'btn--dashboard-header-menu-documentation',
           disabled: false
         },
         {
           text: 'Get Help',
           icon: 'mdi-help-circle',
+          id: 'btn--dashboard-header-menu-get-help',
           url: '',
           disabled: false
         },
         {
           text: 'Feedback',
           icon: 'mdi-message-alert',
+          id: 'btn--dashboard-header-menu-feedback',
           url: '',
           disabled: false
         }

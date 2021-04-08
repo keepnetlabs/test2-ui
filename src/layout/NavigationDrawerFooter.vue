@@ -1,13 +1,21 @@
 <template>
   <div class="navigation-drawer-footer">
     <v-list dense>
-      <v-list-item class="navigation-drawer-footer__item" @click="handleDocumentationClick">
+      <v-list-item
+        id="btn--navigation-drawer-documentation"
+        class="navigation-drawer-footer__item"
+        @click="handleDocumentationClick"
+      >
         <v-list-item-icon>
           <v-icon>mdi-help-circle-outline</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Documentation</v-list-item-title>
       </v-list-item>
-      <v-list-item class="navigation-drawer-footer__item" @click="handleFeedbackClick">
+      <v-list-item
+        id="btn--navigation-drawer-feedback"
+        class="navigation-drawer-footer__item"
+        @click="handleFeedbackClick"
+      >
         <v-list-item-icon>
           <v-icon>mdi-message-alert-outline</v-icon>
         </v-list-item-icon>
@@ -27,9 +35,10 @@
       </span>
       <a
         v-if="isReleaseNotes"
-        :href="getReleaseNotesUrl"
+        id="btn--navigation-drawer-release-notes"
         class="navigation-drawer-footer__release-notes"
         target="_blank"
+        :href="getReleaseNotesUrl"
       >
         Release Notes</a
       >

@@ -5,6 +5,7 @@
     </div>
     <div class="footer-item__secondary footer-links">
       <a
+        id="btn--dashboard-footer-privacy-policy"
         class="footer-item__secondary--1"
         :href="footerLinks.footerPrivacyPolicyUrl"
         target="_blank"
@@ -12,6 +13,7 @@
       >
       <div>&bull;</div>
       <a
+        id="btn--dashboard-footer-terms-and-conditions"
         class="footer-item__secondary--2"
         target="_blank"
         :href="footerLinks.footerTermsAndConditionsUrl"
@@ -20,11 +22,21 @@
       <div class="footer-item__secondary--3">&bull;</div>
     </div>
     <div class="footer-item__third footer-links">
-      <a class="footer-item__third--1" target="_blank" :href="footerLinks.footerCookiePolicyUrl"
+      <a
+        id="btn--dashboard-footer-cookie-policy"
+        class="footer-item__third--1"
+        target="_blank"
+        :href="footerLinks.footerCookiePolicyUrl"
         >Cookie Policy</a
       >
       <div>&bull;</div>
-      <a class="footer-item__third--2" target="_blank" :href="footerLinks.footerEulaUrl">EULA</a>
+      <a
+        id="btn--dashboard-footer-eula"
+        class="footer-item__third--2"
+        target="_blank"
+        :href="footerLinks.footerEulaUrl"
+        >EULA</a
+      >
     </div>
     <div class="footer-item__fourth">Designed by {{ brandName }}</div>
   </v-footer>
