@@ -108,7 +108,7 @@ export default {
   },
   data() {
     return {
-      showCount: false
+      showCount: true
     }
   },
   methods: {
