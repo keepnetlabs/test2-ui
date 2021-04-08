@@ -49,6 +49,7 @@
     "vue-custom-element": "^3.2.14",
     "vue-grid-layout": "^2.3.9",
     "vue-hotjar": "^1.2.0",
+    "vue-mixpanel": "^1.0.7",
     "vue-moment": "^4.1.0",
     "vue-query-builder": "^0.8.2",
     "vue-recaptcha": "^1.2.0",
