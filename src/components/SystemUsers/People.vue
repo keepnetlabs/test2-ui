@@ -55,10 +55,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        is-server-side
         :isServerSide="false"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: false, search: false, sort: false }"
       />
     </div>
   </div>
@@ -242,7 +239,7 @@ export default {
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 75000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -263,7 +260,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 75000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -541,9 +538,12 @@ export default {
     }
   },
   created() {
+    /*
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
+
+     */
     this.getDefaultFilterAndSearch()
   }
 }
