@@ -53,9 +53,10 @@
         </form-group>
         <make-available-for
           v-if="showMakeAvailableFor"
-          ref="refMakeAvailableFor"
+          ref="refMakeAvailableForNewPermissions"
           v-model="formValues.availableForRequests"
           class="mb-2"
+          :key="availableForKey"
         />
         <form-group :title="'Privileges'" has-hint class-name="mt-8">
           <v-text-field
@@ -77,7 +78,6 @@
             :items="permissions"
             item-key="permissionResourceId"
             selectable
-            return-object
             :open.sync="open"
             item-disabled="editable"
             :search="search"
@@ -136,6 +136,9 @@ export default {
     },
     permissions: {
       required: false
+    },
+    permissionEditData: {
+      type: Object
     }
   },
   data() {
@@ -152,7 +155,8 @@ export default {
         permissionResourceIdList: []
       },
       validations: validations,
-      caseSensitive: false
+      caseSensitive: false,
+      availableForKey: 'initialKey'
     }
   },
   computed: {
@@ -197,11 +201,11 @@ export default {
   },
   methods: {
     submit() {
-      const { refForm, refMakeAvailableFor } = this.$refs
+      const { refForm, refMakeAvailableForNewPermissions } = this.$refs
       let isValid = true
-      if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
-        isValid = refMakeAvailableFor.isAvailableForValid
+      if (refMakeAvailableForNewPermissions) {
+        refMakeAvailableForNewPermissions.validateAvailableFor(this.formValues.availableForRequests)
+        isValid = refMakeAvailableForNewPermissions.isAvailableForValid
       }
       if (refForm.validate() && isValid) {
         this.saveDisable = true
@@ -211,11 +215,8 @@ export default {
           AvailableForRequests: this.formValues.availableForRequests.map((item) => {
             return { Type: item.type, ResourceId: item.id }
           }),
-          PermissionResourceIdList: this.formValues.permissionResourceIdList.map(
-            (item) => item.permissionResourceId
-          )
+          PermissionResourceIdList: this.formValues.permissionResourceIdList
         }
-
         if (this.isEdit) {
           this.updatePermissionRoles(payload)
         } else {
@@ -267,9 +268,16 @@ export default {
       this.$emit('closeOverlay')
     }
   },
-  created() {
+  mounted() {
     if (this.isEdit && this.resourceId) {
-    } else {
+      this.formValues = this.permissionEditData
+      let _this = this
+      this.$nextTick(() => {
+        _this.formValues.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+          _this.permissionEditData.availableForList
+        )
+        this.availableForKey = 'updatedKey'
+      })
     }
   }
 }

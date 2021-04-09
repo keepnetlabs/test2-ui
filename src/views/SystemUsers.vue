@@ -6,6 +6,10 @@
           <el-tab-pane label="People" name="system-users--people" id="system-users--people-content"
             ><people ref="refPeople"
           /></el-tab-pane>
+
+          <el-tab-pane label="Roles" name="system-users--roles" id="system-users--roles-content">
+            <Permissions ref="refPermissions" />
+          </el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -14,10 +18,12 @@
 
 <script>
 import People from '@/components/SystemUsers/People'
+import Permissions from '../views/Permissions'
 export default {
   name: 'SystemUsers',
   components: {
-    People
+    People,
+    Permissions
   },
   data() {
     return {
