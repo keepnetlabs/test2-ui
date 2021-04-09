@@ -280,10 +280,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        is-server-side
         :isServerSide="false"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: false, search: false, sort: false }"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -538,7 +535,7 @@ export default {
     validations: validations,
     requestBody: {
       pageNumber: 1,
-      pageSize: 1000,
+      pageSize: 75000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -559,7 +556,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 1000,
+      pageSize: 75000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -928,9 +925,12 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
+      /*
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
       this.setQueryValuesToPayload(this.$route.query)
+
+       */
       this.getDefaultFilterAndSearch()
     }
   }
