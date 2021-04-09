@@ -49,7 +49,7 @@
               @focus="handleSearchCompanyFocus"
             ></v-text-field>
             <switch-account-tree-view
-              v-show="isShowingSwitchAccountTreeView"
+              :is-showing-menu="isMenuOpen"
               :items="orderedAccounts"
               :loading="isCompaniesLoading"
               :search="searchedText"
@@ -147,6 +147,7 @@ export default {
     handleSearchCompanyFocus() {
       this.searchCompanyIcon = 'mdi-menu-up'
       this.isMenuOpen = true
+      document.querySelector('.switch-account__container').style.opacity = 1
       this.searchedCompanyText = ''
       this.orderedAccounts = this.defaultOrderedItems
     },
@@ -154,11 +155,14 @@ export default {
       this.selectedAccount = item
       this.searchedCompanyText = item.label
       this.isMenuOpen = false
+      document.querySelector('.switch-account__container').style.opacity = 0
       this.searchCompanyIcon = 'mdi-menu-down'
     },
     handleSearchCompanyFocusOut() {
       this.searchCompanyIcon = 'mdi-menu-down'
       this.isMenuOpen = false
+      document.querySelector('.switch-account__container').style.opacity = 0
+
       this.searchedCompanyText = this.selectedAccount.label
     },
     companiesRouterClick() {
