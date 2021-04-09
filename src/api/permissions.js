@@ -7,9 +7,13 @@ export function getPermissionLogs(payload) {
 export function getPermissionAll(payload) {
   return testRequest.get('/permissions/all')
 }
+export function getPermissionData(id) {
+  return testRequest.get(`/roles/${id}`)
+}
 export function deletePermission(id) {
   return testRequest.delete(`/roles/${id}`, {
-    snackbar: COMMON_SNACKBAR
+    snackbar: COMMON_SNACKBAR,
+    loading
   })
 }
 export function createPermissionRoles(payload) {

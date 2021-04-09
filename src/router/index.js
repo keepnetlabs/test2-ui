@@ -29,7 +29,6 @@ import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
-import Permissions from '../views/Permissions'
 
 Vue.use(Router)
 
@@ -391,27 +390,6 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
-          },
-          props: true,
-          params: true
-        },
-        {
-          path: '/permissions',
-          name: 'Permissions',
-          component: Permissions,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          meta: {
-            isAuthenticated: true,
-            parentName: 'Company'
           },
           props: true,
           params: true
