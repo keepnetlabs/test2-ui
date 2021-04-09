@@ -268,6 +268,7 @@ export default {
       deletePermission(this.deletePermissionId)
         .then(() => {
           this.deleteDialog = false
+          this.getDefaultFilterAndSearch()
         })
         .catch(() => {
           this.$store.dispatch(
