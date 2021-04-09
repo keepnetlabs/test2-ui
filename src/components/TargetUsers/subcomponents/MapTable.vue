@@ -79,27 +79,24 @@ export default {
         return item
       })
     },
-    setSelectDisableItems(item, asd, sd) {
+    setSelectDisableItems(item) {
       this.changeItemName = item.name
     },
-    setSelectDisableItemsChange(item, asd, sd) {
+    setSelectDisableItemsChange(item) {
       item.disabled = true
       let _this = this
       item.selectedValue = item.name
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
         let isDisabled = _this.mapTableData.headers.find((x) => {
-          return (
-            x.selectedValue &&
-            x.selectedValue.name === i.name &&
-            x.selectedValue.name !== PROPERTY_STORE.NONE_SELECTED
-          )
+          return x.selectedValue && x.selectedValue.name === i.name
         })
         let obj = {
           ...i,
-          disabled: item.name !== PROPERTY_STORE.NONE_SELECTED ? isDisabled : false
+          disabled: isDisabled
         }
         return obj
       })
+      this.mapTableData.columns[0].disabled = false
     },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {

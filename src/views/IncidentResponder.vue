@@ -2576,7 +2576,6 @@ export default {
                     sets.customMessage.add(item.customMessage)
                   })
                   if (sets.isNotifyUser.size === 1) {
-                    debugger
                     this.extendedView.isNotify = sets.isNotifyUser.has(true)
                   } else {
                     this.extendedView.isNotify = true
