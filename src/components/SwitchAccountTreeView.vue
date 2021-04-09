@@ -88,8 +88,8 @@ export default {
   z-index: 99;
   background: white;
   width: 100%;
-  will-change: opacity;
-  opacity: 0;
+  will-change: visibility;
+  visibility: hidden;
 }
 .switch-account__select-footer {
   span {

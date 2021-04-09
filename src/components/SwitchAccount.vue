@@ -147,7 +147,7 @@ export default {
     handleSearchCompanyFocus() {
       this.searchCompanyIcon = 'mdi-menu-up'
       this.isMenuOpen = true
-      document.querySelector('.switch-account__container').style.opacity = 1
+      document.querySelector('.switch-account__container').style.visibility = 'visible'
       this.searchedCompanyText = ''
       this.orderedAccounts = this.defaultOrderedItems
     },
@@ -155,13 +155,13 @@ export default {
       this.selectedAccount = item
       this.searchedCompanyText = item.label
       this.isMenuOpen = false
-      document.querySelector('.switch-account__container').style.opacity = 0
+      document.querySelector('.switch-account__container').style.visibility = 'hidden'
       this.searchCompanyIcon = 'mdi-menu-down'
     },
     handleSearchCompanyFocusOut() {
       this.searchCompanyIcon = 'mdi-menu-down'
       this.isMenuOpen = false
-      document.querySelector('.switch-account__container').style.opacity = 0
+      document.querySelector('.switch-account__container').style.visibility = 'hidden'
 
       this.searchedCompanyText = this.selectedAccount.label
     },
