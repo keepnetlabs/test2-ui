@@ -677,6 +677,7 @@
             @handleDetails="irDetailsOnClick"
             @onEditClick="onEditClick"
             @handleEdit="handleEdit"
+            @handleReAnalyze="handleReAnalyze"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
             @refreshAction="callForSearchNotifiedMail"
@@ -1453,6 +1454,15 @@ export default {
           id: 'btn-investigate--incident-responder-emails-row-actions',
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
+        },
+        {
+          name: labels.ReAnalyze,
+          id: 'btn-re-analyze--incident-responder-emails-row-actions',
+          icon: 'mdi-refresh',
+          action: 'handleReAnalyze',
+          disabled: (row) => {
+            return row.status === 'BeingAnalyzed'
+          }
         }
       ],
       addMenu: {
@@ -2069,6 +2079,9 @@ export default {
       this.clusteredRow = clusteredRow
       this.dynamicClusterProps = { persistentState: clusteredTableState }
       this.isShowingClusteredTable = isShowingClusteredTable
+    },
+    handleReAnalyze(row = {}) {
+      debugger
     },
     handleBackClick() {
       this.isShowingClusteredTable = false
