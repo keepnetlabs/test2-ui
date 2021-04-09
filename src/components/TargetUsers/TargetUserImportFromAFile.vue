@@ -61,7 +61,7 @@
               <v-stepper-content step="1">
                 <div class="stepper__title">Upload File</div>
                 <div class="stepper__subtitle">
-                  Select and upload an XLS or CSV file with user list
+                  Select and upload an XLS, XLSX or CSV file with user list
                 </div>
                 <v-list-item>
                   <v-list-item-content>
