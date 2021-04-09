@@ -80,7 +80,7 @@ export const labels = {
   User: 'User',
   Users: 'Users',
   Open: 'Open',
-  Matches: 'Match(es)',
+  Matches: 'match(es)',
   IpAddress: 'Ip Address',
   InvalidDomainName: 'Invalid domain name',
   EmailAddress: 'Email Address',
