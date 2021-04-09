@@ -282,7 +282,9 @@
               hint="*Required"
               persistent-hint
               :type="showPassword ? 'text' : 'password'"
-              :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+              :append-icon="
+                integrationId ? '' : showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
+              "
               class="username-field input-group--focused"
               @click:append="showPassword = !showPassword"
             ></v-text-field>
@@ -748,7 +750,8 @@ export default {
         apiUrl: this.formValues.apiUrl,
         apiCredential: {
           userName: this.formValues.userName,
-          password: this.formValues.password
+          password: this.formValues.password,
+          resourceId: this.formValues.resourceId
         }
       }
       testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)

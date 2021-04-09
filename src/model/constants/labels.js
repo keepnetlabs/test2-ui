@@ -259,7 +259,8 @@ export const labels = {
   Enable: 'ENABLE',
   DisableMfa: 'Disable virtual MFA device?',
   EnableMfa: 'Setup Multi-factor Authentication',
-  Resync: 'RESYNC'
+  Resync: 'RESYNC',
+  Permissions: 'Permissions'
 }
 
 export default labels
