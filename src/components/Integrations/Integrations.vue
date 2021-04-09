@@ -64,10 +64,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      is-server-side
       :isServerSide="false"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: false, search: false, sort: false }"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -291,7 +288,7 @@ export default {
       modalStatus: false,
       bodyData: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 75000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -312,7 +309,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 75000,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -588,9 +585,11 @@ export default {
     }
   },
   mounted() {
+    /*
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
+    */
     this.getDefaultFilterAndSearch()
   }
 }

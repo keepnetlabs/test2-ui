@@ -538,12 +538,6 @@ export default {
           this.email = username
         }
       })
-
-      this.$vlf.getItem('password', (err, password) => {
-        if (!err) {
-          this.password = password
-        }
-      })
     }
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
@@ -836,7 +830,6 @@ export default {
           setTimeout(() => {
             if (_this.rememberMe) {
               this.$vlf.setItem('username', _this.email)
-              this.$vlf.setItem('password', _this.password)
               localStorage.setItem('isRemember', _this.rememberMe)
             } else {
               localStorage.removeItem('username')
