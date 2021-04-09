@@ -89,7 +89,7 @@ export default {
   background: white;
   width: 100%;
   will-change: opacity;
-  opacity: 1;
+  opacity: 0;
 }
 .switch-account__select-footer {
   span {
