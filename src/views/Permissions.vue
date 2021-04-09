@@ -8,6 +8,7 @@
       :resourceId="resourceId"
       :isEdit="isEdit"
       :permissions="permissions"
+      :permissionEditData="permissionEditData"
     />
     <app-dialog
       :status="deleteDialog"
@@ -89,7 +90,12 @@ import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { checkPermission } from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
-import { deletePermission, getPermissionLogs, getPermissionAll } from '@/api/permissions'
+import {
+  deletePermission,
+  getPermissionLogs,
+  getPermissionAll,
+  getPermissionData
+} from '@/api/permissions'
 import AppDialog from '../components/AppDialog'
 
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -116,18 +122,6 @@ export default {
         isColumnFilterActive: false,
         columns: [
           {
-            property: PROPERTY_STORE.COMPANYNAME,
-            align: 'left',
-            editable: false,
-            label: LABEL_STORE.COMPANYNAME,
-            sortable: true,
-            show: true,
-            type: 'text',
-            fixed: 'left',
-            width: 160,
-            filterableType: 'text'
-          },
-          {
             property: PROPERTY_STORE.ROLENAME,
             align: 'left',
             editable: false,
@@ -135,31 +129,32 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 140,
-            filterableType: 'text'
-          },
-          {
-            property: PROPERTY_STORE.ROLEDESCRIPTION,
-            align: 'left',
-            editable: false,
-            label: LABEL_STORE.ROLEDESCRIPTION,
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 200,
+            width: 240,
             filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.USERCOUNT,
-            align: 'left',
+            align: 'center',
             editable: false,
             label: LABEL_STORE.USERCOUNT,
             fixed: false,
             sortable: true,
             show: true,
             type: 'text',
-            width: 185,
+            width: 120,
+            filterableType: 'text',
+            filterProps: { items: ['Include'] }
+          },
+          {
+            property: PROPERTY_STORE.TYPE,
+            align: 'center',
+            editable: false,
+            label: LABEL_STORE.TYPE,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'badge',
+            width: 150,
             filterableType: 'text',
             filterProps: { items: ['Include'] }
           },
@@ -213,7 +208,7 @@ export default {
       bodyData: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'RoleName',
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
           Condition: 'AND',
@@ -257,7 +252,8 @@ export default {
       selectedPermissionId: null,
       isEdit: false,
       resourceId: null,
-      permissions: []
+      permissions: [],
+      permissionEditData: null
     }
   },
   methods: {
@@ -295,7 +291,10 @@ export default {
     editPermissions(item) {
       this.resourceId = item.resourceId
       this.isEdit = true
-      this.togglePermissionModalStatus()
+      getPermissionData(this.resourceId).then((response) => {
+        this.permissionEditData = response.data.data
+        this.togglePermissionModalStatus()
+      })
     },
     getPermissions() {
       getPermissionAll().then((response) => {
@@ -533,7 +532,7 @@ export default {
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
-  created() {
+  mounted() {
     this.getPermissions()
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
@@ -548,16 +547,14 @@ export default {
 
 <style lang="scss">
 .permission-logs {
-  padding: 0 16px 24px 16px !important;
   width: 100%;
   min-height: 90vh;
-  margin-top: 10px;
   &__container {
     border-radius: 20px !important;
     background: white;
   }
   &__datatable {
-    padding: 16px 24px 0 24px;
+    padding: 0;
   }
   .mdi-checkbox-marked::before {
     color: #2196f3 !important;
