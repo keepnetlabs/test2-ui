@@ -420,6 +420,7 @@ export default {
     },
     handleClearFilters() {
       this.isRestoredOrClearedFilters = true
+      this.tableOptions.isColumnFilterActive = false
       this.payload = JSON.parse(JSON.stringify(this.defaultRequestBody))
       this.$refs.refPeopleTable.filterValues = {}
       this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
