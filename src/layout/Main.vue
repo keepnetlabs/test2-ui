@@ -305,7 +305,10 @@
               v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link to="/integrations" class="menu-link-default">
+                <router-link
+                  to="/integrations"
+                  :class="['menu-link-default', routerName === 'Integrations' && 'active-link']"
+                >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Integrations</span>
                   </v-list-item-title>
@@ -329,7 +332,13 @@
               v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link to="/mailConfiguration" class="menu-link-default">
+                <router-link
+                  to="/mailConfiguration"
+                  :class="[
+                    'menu-link-default',
+                    routerName === 'Mail Configurations' && 'active-link'
+                  ]"
+                >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Mail Configurations</span>
                   </v-list-item-title>
@@ -407,7 +416,10 @@
               v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link to="/company-settings" class="menu-link-default">
+                <router-link
+                  to="/company-settings"
+                  :class="['menu-link-default', routerName === 'Company Settings' && 'active-link']"
+                >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Company Settings</span>
                   </v-list-item-title>
