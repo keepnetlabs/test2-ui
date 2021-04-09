@@ -20,12 +20,15 @@
                 {{ value }}
               </span>
               <span v-else class="k-widget-list__no-match">{{ '' }}</span>
-              <div class="k-widget-list__sub-item" v-if="row['harmfulItemCount']">
+              <div class="k-widget-list__sub-item" v-if="row['harmfulItemCount'] > 0">
                 {{
                   row['harmfulItemCount'] > 1
                     ? `${row['harmfulItemCount']} harmful items`
                     : `${row['harmfulItemCount']} harmful item`
                 }}
+              </div>
+              <div class="k-widget-list__sub-item" v-else>
+                No harmful items
               </div>
             </template>
             <template v-slot:communityName="{ value, row }">
