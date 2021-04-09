@@ -113,12 +113,11 @@ const whitelabel = {
       const formData = new FormData()
       const id = payload['resourceId']
       delete payload.id
+
       Object.keys(payload).map((key) => {
         formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
       })
-      for (const [key, value] of formData.entries()) {
-        //console.log(`${key}:${value}`)
-      }
+
       return updateWhiteLabel(formData, id).then(() => {
         context.dispatch('callForData')
         context.dispatch('callForSystemVersion')
@@ -131,7 +130,6 @@ const whitelabel = {
     },
     callForSystemVersion(context = {}, payload = {}) {
       getSystemVersion().then((response) => {
-        //console.log(' response.data.data.version', response.data.data.version)
         context.commit('SET_SYSTEM_VERSION', response.data.data.version)
       })
     },

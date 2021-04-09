@@ -439,6 +439,18 @@
                 </router-link>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              :class="[routerName === 'Permissions' && 'active-link']"
+            >
+              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
+                <router-link to="/permissions" class="menu-link-default">
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Permissions</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
         </v-list>
         <navigation-drawer-footer :is-mini="getMini" :navigatorMenuProps="navigatorMenuProps" />
@@ -538,7 +550,7 @@
         </v-menu>
         <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
-            <v-btn icon color="white" v-on="on">
+            <v-btn id="btn--dashboard-header-help-menu" icon color="white" v-on="on">
               <v-icon>mdi-help-circle</v-icon>
             </v-btn>
           </template>
@@ -546,6 +558,7 @@
             <v-list-item
               v-for="(item, index) in rightDropdownData"
               :key="index"
+              :id="item.id"
               :disabled="item.disabled"
               @click="handleClickRightDropdown(item)"
             >
@@ -681,23 +694,27 @@ export default {
           text: 'Tour',
           icon: 'mdi-reminder',
           url: '',
+          id: 'btn--dashboard-header-menu-tour',
           disabled: false
         },
         {
           text: 'Documentation',
           icon: 'mdi-file-document',
           url: '',
+          id: 'btn--dashboard-header-menu-documentation',
           disabled: false
         },
         {
           text: 'Get Help',
           icon: 'mdi-help-circle',
+          id: 'btn--dashboard-header-menu-get-help',
           url: '',
           disabled: false
         },
         {
           text: 'Feedback',
           icon: 'mdi-message-alert',
+          id: 'btn--dashboard-header-menu-feedback',
           url: '',
           disabled: false
         }

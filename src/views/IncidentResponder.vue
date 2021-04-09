@@ -603,28 +603,37 @@
               </div>
               <div class="row-edit-div">
                 <v-checkbox
+                  v-model="extendedView.isMessage"
                   color="#2196f3"
                   label="Add Custom Message"
-                  v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                  :disabled="!extendedView.isNotify"
+                  @change="handleMessageChange"
                 ></v-checkbox>
               </div>
-              <div
-                class="row-edit-div"
-                v-if="
-                  extendedView.isMessage &&
-                  extendedView.isNotify &&
-                  selectedRowsOfReportedEmailsLength <= 1
-                "
-              >
+              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
                 <v-textarea
                   outlined
                   dense
                   v-model="extendedView.customMessage"
                   rows="3"
-                  placeholder="Write custom messages for recipients"
+                  :placeholder="
+                    isCustomMessageMultiple
+                      ? 'Multiple Values'
+                      : 'Write custom messages for recipients'
+                  "
+                  :readonly="isCustomMessageMultiple"
                   row-height="30"
-                ></v-textarea>
+                >
+                  <template v-slot:append v-if="isCustomMessageMultiple">
+                    <v-btn
+                      text
+                      @click.native="isCustomMessageMultiple = false"
+                      class="edit-popup__edit-component"
+                    >
+                      EDIT
+                    </v-btn>
+                  </template>
+                </v-textarea>
               </div>
             </template>
           </datatable>
@@ -739,28 +748,37 @@
               </div>
               <div class="row-edit-div">
                 <v-checkbox
+                  v-model="extendedView.isMessage"
                   color="#2196f3"
                   label="Add Custom Message"
-                  v-model="extendedView.isMessage"
-                  :disabled="!extendedView.isNotify || selectedRowsOfReportedEmailsLength > 1"
+                  :disabled="!extendedView.isNotify"
+                  @change="handleMessageChange"
                 ></v-checkbox>
               </div>
-              <div
-                class="row-edit-div"
-                v-if="
-                  extendedView.isMessage &&
-                  extendedView.isNotify &&
-                  selectedRowsOfReportedEmailsLength <= 1
-                "
-              >
+              <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
                 <v-textarea
                   outlined
                   dense
                   v-model="extendedView.customMessage"
                   rows="3"
-                  placeholder="Write custom messages for recipients"
+                  :placeholder="
+                    isCustomMessageMultiple
+                      ? 'Multiple Values'
+                      : 'Write custom messages for recipients'
+                  "
+                  :readonly="isCustomMessageMultiple"
                   row-height="30"
-                ></v-textarea>
+                >
+                  <template v-slot:append v-if="isCustomMessageMultiple">
+                    <v-btn
+                      text
+                      @click.native="isCustomMessageMultiple = false"
+                      class="edit-popup__edit-component"
+                    >
+                      EDIT
+                    </v-btn>
+                  </template>
+                </v-textarea>
               </div>
             </template>
           </datatable>
@@ -794,6 +812,7 @@ import {
   getTopRules,
   searchNotifiedMail,
   updateNotifiedEmail,
+  updateNotifiedEmailBulk,
   updateRoiSettings
 } from '../api/incidentResponder'
 import {
@@ -861,6 +880,7 @@ export default {
     clusteredRow: null,
     isConfirmButtonDisabled: false,
     topRulesLoading: true,
+    isCustomMessageMultiple: false,
     investigationsLoading: true,
     investigationsData: [],
     reportedEmailsData: [],
@@ -1342,7 +1362,8 @@ export default {
           show: false,
           type: 'text',
           width: '200',
-          fullWidth: true
+          fullWidth: true,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.SENDERADDRESS,
@@ -1354,7 +1375,8 @@ export default {
           show: false,
           type: 'text',
           width: '200',
-          fullWidth: true
+          fullWidth: true,
+          filterableType: 'text'
         },
         {
           property: 'tags',
@@ -2019,6 +2041,11 @@ export default {
         this.$store.state['datatable'].tables['Incident Responder'].payload
       )
     },
+    handleMessageChange(val) {
+      if (!val) {
+        this.extendedView.customMessage = ''
+      }
+    },
     getClusteredEmailPersistentStateAndLoad() {
       if (!this.isLoadState) {
         return
@@ -2515,13 +2542,16 @@ export default {
         } else if (selections.length > 1) {
           const rows = []
           let index = 0
-          this.extendedView.isNotify = true
-          this.extendedView.isMessage = false
-          this.extendedView.customMessage = ''
+
           this.extendedViewLoading = true
-          selections.map((a, ind) => {
-            getNotifiedEmail(selections[index].resourceId)
-              .then((response) => {
+          const promises = []
+          selections.map(() => {
+            promises.push(getNotifiedEmail(selections[index].resourceId))
+            index++
+          })
+          Promise.all(promises)
+            .then((responses) => {
+              responses.forEach((response, ind) => {
                 const selectedItem = response.data.data
                 rows.push({
                   ...selectedItem,
@@ -2532,21 +2562,52 @@ export default {
                 })
                 if (index === selections.length) {
                   const note = rows[0].note
-                  rows.map((item, i) => {
+                  rows.map((item) => {
                     if (item.note !== note) {
                       this.hasMultipleNoteValue = true
                     }
                   })
+                  const sets = {
+                    isNotifyUser: new Set(),
+                    customMessage: new Set()
+                  }
+                  rows.forEach((item) => {
+                    sets.isNotifyUser.add(item.isNotifyUser)
+                    sets.customMessage.add(item.customMessage)
+                  })
+                  if (sets.isNotifyUser.size === 1) {
+                    this.extendedView.isNotify = sets.isNotifyUser.has(true)
+                  } else {
+                    this.extendedView.isNotify = true
+                  }
+                  if (this.extendedView.isNotify) {
+                    if (sets.customMessage.size === 1) {
+                      if (sets.customMessage.has('')) {
+                        this.extendedView.isMessage = false
+                        this.extendedView.customMessage = ''
+                      } else {
+                        this.extendedView.isMessage = true
+                        this.extendedView.customMessage = [...sets.customMessage][0]
+                      }
+                    } else {
+                      this.extendedView.isMessage = true
+                      this.extendedView.customMessage = ''
+                      this.isCustomMessageMultiple = true
+                    }
+                  } else {
+                    this.extendedView.isMessage = false
+                    this.extendedView.customMessage = ''
+                  }
+                  this.defaultExtendedViewValues.isNotify = this.extendedView.isNotify
+                  this.defaultExtendedViewValues.customMessage = this.extendedView.customMessage
+                  this.defaultExtendedViewValues.isMessage = this.extendedView.isMessage
                   this.extendedViewValue = rows
                 }
               })
-              .finally(() => {
-                if (ind === selections.length - 1) {
-                  this.extendedViewLoading = false
-                }
-              })
-            index++
-          })
+            })
+            .finally(() => {
+              this.extendedViewLoading = false
+            })
         } else {
           this.extendedView.customMessage = ''
           this.extendedView.isMessage = false
@@ -2679,10 +2740,55 @@ export default {
     handleIsNotify(value) {
       if (!value) {
         this.extendedView.isMessage = false
+        this.extendedView.customMessage = ''
       }
     },
-    handleEdit(selectedRow) {
-      selectedRow.map((item) => {
+    handleEdit(selectedRows = []) {
+      if (selectedRows.length > 1) {
+        const payload = {
+          resourceIdList: []
+        }
+        const sets = {
+          result: new Set(),
+          status: new Set(),
+          tag: new Set(),
+          note: new Set(),
+          isNotifyUser: new Set(),
+          customMessage: new Set()
+        }
+        selectedRows.forEach((row) => {
+          payload.resourceIdList.push(row.resourceId)
+          sets.result.add(row.result)
+          sets.status.add(row.status)
+          const tags = typeof row.tags === 'string' ? row.tags : row.tags.join(',') || ''
+          sets.tag.add(tags)
+          sets.note.add(row.note)
+          sets.isNotifyUser.add(row.isNotifyUser)
+          sets.customMessage.add(row.customMessage)
+        })
+        for (const key of Object.keys(sets)) {
+          if (sets[key].size === 1) {
+            payload[key] = [...sets[key]][0]
+          }
+          if (key === 'isNotifyUser') {
+            payload[key] = this.extendedView.isNotify
+          }
+          if (key === 'customMessage') {
+            payload[key] = this.extendedView.customMessage
+          }
+        }
+
+        updateNotifiedEmailBulk(payload).then(() => {
+          this.callForGetRunningInvestigations()
+          this.callForGetTopRules()
+          this.callForSearchNotifiedMail()
+          if (this.clusteredRow) {
+            this.callForClusteredTable()
+          }
+          this.$store.dispatch('investigations/getIrSummary')
+        })
+      } else {
+        const [item] = selectedRows
         const tag = typeof item.tags === 'string' ? item.tags : item.tags.join(',')
         const payload = {
           result: item.result,
@@ -2690,11 +2796,7 @@ export default {
           tag: tag || '',
           note: item.note || '',
           isNotifyUser: this.extendedView.isNotify,
-          customMessage: this.extendedView.isMessage
-            ? this.extendedView.customMessage
-            : selectedRow.length > 1
-            ? item.customMessage
-            : ''
+          customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : ''
         }
         updateNotifiedEmail(item.resourceId, payload).then(() => {
           this.callForGetRunningInvestigations()
@@ -2703,10 +2805,9 @@ export default {
           if (this.clusteredRow) {
             this.callForClusteredTable()
           }
-          //this.$refs.refClusteredModal.callForTableData(true)
           this.$store.dispatch('investigations/getIrSummary')
         })
-      })
+      }
     },
     irDetailsOnClick(row) {
       this.$router.push({

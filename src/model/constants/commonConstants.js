@@ -141,7 +141,10 @@ export const LABEL_STORE = {
   TRIGGER: 'Trigger',
   FILEUPLOADED: 'File Uploaded',
   SENDERNAME: 'Sender Name',
-  SENDERADDRESS: 'Sender Address'
+  SENDERADDRESS: 'Sender Address',
+  PERMISSIONS: 'There is no Permissions',
+  ROLENAMEPERMISSION: 'Role Name',
+  ROLEDESCRIPTION: 'Role Description'
 }
 
 export const PROPERTY_STORE = {
@@ -159,6 +162,8 @@ export const PROPERTY_STORE = {
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
   CATEGORYNAME: 'categoryName',
+  TYPNAME: 'typeName',
+  TEMPLATETYPE: 'templateType',
   LASTNAME: 'lastName',
   RELIABILITY: 'reliability',
   THREATS: 'threats',
@@ -234,7 +239,8 @@ export const PROPERTY_STORE = {
   FILEUPLOADED: 'fileUploaded',
   NONE_SELECTED: 'None Selected',
   SENDERNAME: 'senderName',
-  SENDERADDRESS: 'from'
+  SENDERADDRESS: 'from',
+  ROLEDESCRIPTION: 'roleDescription'
 }
 
 export function getStoreValue(key, type) {
