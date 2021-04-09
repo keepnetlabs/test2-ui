@@ -4,6 +4,7 @@
       v-if="newPermissionsModalStatus"
       :status="newPermissionsModalStatus"
       @closeOverlay="togglePermissionModalStatus"
+      @closeOverlayWithUpdate="closeOverlayWithUpdate"
       :resourceId="resourceId"
       :isEdit="isEdit"
       :permissions="permissions"
@@ -123,7 +124,8 @@ export default {
             show: true,
             type: 'text',
             fixed: 'left',
-            width: 160
+            width: 160,
+            filterableType: 'text'
           },
           {
             property: PROPERTY_STORE.ROLENAME,
@@ -170,14 +172,12 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            minWidth: 200,
-            overrideWidth: true,
             filterableType: 'date'
           }
         ],
         addButton: {
           show: true,
-          tooltip: labels.Permissions,
+          tooltip: labels.ADDAPERMISSION,
           action: 'openPermissionModal',
           id: 'btn-add--permissions',
           disabled: false && !checkPermission('', 'POST')
@@ -318,6 +318,14 @@ export default {
           this.permissions[i] = search_and_delete(this.permissions[i], 'children')
         }
       })
+    },
+    closeOverlayWithUpdate() {
+      if (this.newPermissionsModalStatus) {
+        this.resourceId = null
+        this.isEdit = false
+      }
+      this.newPermissionsModalStatus = !this.newPermissionsModalStatus
+      this.getDefaultFilterAndSearch()
     },
     togglePermissionModalStatus() {
       if (this.newPermissionsModalStatus) {

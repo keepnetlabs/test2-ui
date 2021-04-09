@@ -144,6 +144,7 @@ export default {
       search: null,
       saveDisable: false,
       open: [],
+      showNoData: false,
       formValues: {
         name: null,
         description: null,
@@ -151,7 +152,7 @@ export default {
         permissionResourceIdList: []
       },
       validations: validations,
-      caseSensitive: true
+      caseSensitive: false
     }
   },
   computed: {
@@ -159,12 +160,6 @@ export default {
       return (item, search, textKey = '') => {
         if (item && item.permissionDescription && item.permissionDescription.indexOf(search) > -1) {
           return item.permissionDescription.indexOf(search) > -1
-        } else if (item && item.parentGroupName && item.parentGroupName.indexOf(search) > -1) {
-          return item.parentGroupName.indexOf(search) > -1
-        } else if (item && item.groupName && item.groupName.indexOf(search) > -1) {
-          return item.groupName.indexOf(search) > -1
-        } else if (item && item.moduleName && item.moduleName.indexOf(search) > -1) {
-          return item.moduleName.indexOf(search) > -1
         }
       }
     },
@@ -208,14 +203,13 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
-
       if (refForm.validate() && isValid) {
         this.saveDisable = true
         const payload = {
           Name: this.formValues.name,
           Description: this.formValues.description,
           AvailableForRequests: this.formValues.availableForRequests.map((item) => {
-            return { Type: item.type, ResourceId: item.resourceId }
+            return { Type: item.type, ResourceId: item.id }
           }),
           PermissionResourceIdList: this.formValues.permissionResourceIdList.map(
             (item) => item.permissionResourceId
@@ -238,7 +232,7 @@ export default {
     updatePermissionRoles(payload) {
       updatePermissionRoles(payload, this.resourceId)
         .then(() => {
-          this.$emit('closeOverlay')
+          this.$emit('closeOverlayWithUpdate')
         })
         .finally(() => {
           this.saveDisable = false
@@ -247,7 +241,7 @@ export default {
     createPermissionRoles(payload) {
       createPermissionRoles(payload)
         .then(() => {
-          this.$emit('closeOverlay')
+          this.$emit('closeOverlayWithUpdate')
         })
         .catch((error) => {
           this.$store.dispatch(

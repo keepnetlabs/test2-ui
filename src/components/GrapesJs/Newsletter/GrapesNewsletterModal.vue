@@ -181,7 +181,6 @@ export default {
           ]
         }
       })
-      debugger
       const copyEditor = Object.assign({}, this.editor)
       this.editor.on('component:selected', () => {
         const selected = this.editor.getSelected()
