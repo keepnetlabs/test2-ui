@@ -158,7 +158,8 @@ export default {
             filterableItems: [
               { text: 'System', value: '1' },
               { text: 'Custom', value: '2' }
-            ]
+            ],
+            filterableCustomFieldName: 'Type'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
