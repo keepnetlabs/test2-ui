@@ -29,6 +29,7 @@ import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
+
 Vue.use(Router)
 
 const router = new Router({

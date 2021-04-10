@@ -17,10 +17,12 @@
             item-text="name"
             item-key="resourceId"
             :items="[item]"
+            :id="`switch-account-item-container-${item.name}`"
             @input="handleTreeViewChange"
           >
             <template #prepend="{ item }">
               <img
+                :id="`switch-account-item-logo-${item.name}`"
                 :src="item.logoUrl || require('../assets/img/no-logo.png')"
                 alt=""
                 style="
@@ -34,9 +36,12 @@
               />
             </template>
             <template #label="{item}">
-              <span style="cursor: pointer;" @click="handleTreeViewChange(item)">{{
-                item.name
-              }}</span>
+              <span
+                :id="`switch-account-item-label-${item.name}`"
+                style="cursor: pointer;"
+                @click="handleTreeViewChange(item)"
+                >{{ item.name }}</span
+              >
             </template>
           </v-treeview>
         </v-lazy>
@@ -88,8 +93,8 @@ export default {
   z-index: 99;
   background: white;
   width: 100%;
-  will-change: opacity;
-  opacity: 0;
+  will-change: visibility;
+  visibility: hidden;
 }
 .switch-account__select-footer {
   span {

@@ -36,6 +36,7 @@
           <div>
             <v-checkbox
               v-model="formValues.isEnableProxy"
+              id="input--phishing-reporter-is-enable-proxy"
               class="other-settings__checkbox k-checkbox mt-n3"
               color="#2196f3"
               label="Detect and use the proxy settings on your computer"
@@ -56,6 +57,7 @@
               dense
               v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--1"
+              id="input--phishing-reporter-api-settings"
               v-model.trim="formValues.apiUrl"
               :rules="
                 showForm
@@ -77,6 +79,7 @@
               placeholder="Enter an api key"
               outlined
               dense
+              id="input--phishing-reporter-api-key"
               v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--2"
               v-model.trim="formValues.apiKey"
@@ -106,6 +109,7 @@
               dense
               v-bind="getHintValues"
               class="mt-n1 ml-6"
+              id="input--phishing-reporter-company-id"
               v-model.trim="formValues.companyKey"
               :rules="
                 showForm
@@ -137,6 +141,7 @@
         <v-list-item-content class="enterprise-vault-url">
           <v-checkbox
             v-model.trim="formValues.enableEnterpriseVault"
+            id="input--phishing-reporter-is-enable-enterprise-vault"
             class="other-settings__checkbox k-checkbox mt-n1"
             @change="handleEnterpriseVaultChange"
             color="#2196f3"
@@ -149,6 +154,7 @@
                 <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
                 <v-text-field
                   placeholder="Enter enterprise vault url"
+                  id="input--phishing-reporter-enterprise-vault-url"
                   outlined
                   :disabled="enterpriseVaultDisabled"
                   dense

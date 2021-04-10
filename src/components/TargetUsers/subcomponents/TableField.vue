@@ -3,8 +3,9 @@
     <div class="table-field__container">
       <v-icon left medium color="#757575" class="handle" style="cursor: move;">mdi-menu</v-icon>
       <v-text-field
-        class="table-field__input"
         v-model="item.name"
+        :id="`input--target-user-custom-field-value-${item.fieldDataType}-${index}`"
+        class="table-field__input"
         autofocus
         outlined
         dense
@@ -14,19 +15,27 @@
         ]"
       ></v-text-field>
       <k-select
-        class="mx-2 table-field__input"
         v-model="item.fieldDataType"
+        class="mx-2 table-field__input"
+        :id="`input--target-user-custom-field-type-${item.fieldDataType}-${index}`"
         :items="fieldItems"
         dense
         outlined
       />
       <v-checkbox
         v-model="item.isRequired"
+        :id="`input--target-user-custom-field-required-${item.fieldDataType}-${index}`"
         color="#2196f3"
         class="ml-1"
         label="Required"
       ></v-checkbox>
-      <v-btn icon v-if="isDeleteable" class="ml-4" @click="handleDelete">
+      <v-btn
+        v-if="isDeleteable"
+        icon
+        :id="`btn-delete--target-user-custom-field-${item.fieldDataType}-${index}`"
+        class="ml-4"
+        @click="handleDelete"
+      >
         <v-icon color="#757575">mdi-close-circle</v-icon>
       </v-btn>
     </div>
@@ -47,6 +56,9 @@ export default {
     },
     item: {
       type: Object
+    },
+    index: {
+      type: Number
     }
   },
   data() {
@@ -88,8 +100,7 @@ export default {
     handleDelete() {
       this.$emit('deleteTableField', this.values)
     }
-  },
-  created() {}
+  }
 }
 </script>
 

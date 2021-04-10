@@ -14,7 +14,8 @@
               class="input-select standard-height mt-4 target-users-map__header-select"
               placeholder="- None Selected -"
               item-text="name"
-              @change="setSelectDisableItems"
+              @input="setSelectDisableItems"
+              @change="setSelectDisableItemsChange"
               v-model="mapTableData.headers[index].selectedValue"
               hide-details
               return-object
@@ -57,7 +58,8 @@ export default {
   },
   data() {
     return {
-      select: []
+      select: [],
+      changeItemName: null
     }
   },
   props: { mapTableData: { required: true } },
@@ -78,22 +80,23 @@ export default {
       })
     },
     setSelectDisableItems(item) {
-      if (item.name !== PROPERTY_STORE.NONE_SELECTED) {
-        item.disabled = true
-        let _this = this
-        item.selectedValue = item.name
-        this.mapTableData.columns = this.mapTableData.columns.map((i) => {
-          let isDisabled = _this.mapTableData.headers.find((x) => {
-            return (
-              x.selectedValue &&
-              x.selectedValue.name === i.name &&
-              x.selectedValue.name !== PROPERTY_STORE.NONE_SELECTED
-            )
-          })
-          let obj = { ...i, disabled: isDisabled }
-          return obj
+      this.changeItemName = item.name
+    },
+    setSelectDisableItemsChange(item) {
+      item.disabled = true
+      let _this = this
+      item.selectedValue = item.name
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        let isDisabled = _this.mapTableData.headers.find((x) => {
+          return x.selectedValue && x.selectedValue.name === i.name
         })
-      }
+        let obj = {
+          ...i,
+          disabled: isDisabled
+        }
+        return obj
+      })
+      this.mapTableData.columns[0].disabled = false
     },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {

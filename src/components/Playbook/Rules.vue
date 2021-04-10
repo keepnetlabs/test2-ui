@@ -36,6 +36,7 @@
           <v-list-item class="matching-modal__list-item">
             <v-list-item-content>
               <datatable
+                id="playbook-rules-matching-investigation-data-table"
                 :refName="'matchingInvestigationPlaybookRules'"
                 :table="matchingPlaybookData"
                 :columns="matchingInvestigationPlaybookRules.columns"

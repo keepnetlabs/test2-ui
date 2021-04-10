@@ -6,8 +6,8 @@
         {{ mailDetails && mailDetails.subject ? mailDetails.subject : 'File Format Exploit' }}</span
       >
       <div class="single-post__container">
-        <el-tabs v-model="tab" class="email-details__tabs">
-          <el-tab-pane label="Details" name="first">
+        <el-tabs v-model="tab" class="email-details__tabs" id="email-details-tabs">
+          <el-tab-pane label="Details" name="first" id="email-details-summary-content">
             <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
             </DatatableLoading>
             <template v-else>
@@ -23,7 +23,7 @@
               />
             </template>
           </el-tab-pane>
-          <el-tab-pane label="Header" name="second">
+          <el-tab-pane label="Header" name="second" id="email-details-header-content">
             <template v-if="mailDetails">
               <div class="email-details__header">
                 <v-card light class="email-details__header-card">
@@ -88,7 +88,7 @@
               </div>
             </template>
           </el-tab-pane>
-          <el-tab-pane label="Email Preview" name="third">
+          <el-tab-pane label="Email Preview" name="third" id="email-details-preview-content">
             <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
             </DatatableLoading>
             <template v-else>
@@ -110,7 +110,7 @@
               />
             </template>
           </el-tab-pane>
-          <el-tab-pane label="URLs" name="fourth">
+          <el-tab-pane label="URLs" name="fourth" id="email-details-urls-content">
             <template v-if="mailDetails">
               <email-details-url
                 :mailDetails="mailDetails"
@@ -119,18 +119,22 @@
               />
             </template>
           </el-tab-pane>
-          <el-tab-pane label="Attachments" name="fifth">
+          <el-tab-pane label="Attachments" name="fifth" id="email-details-attachment-content">
             <template v-if="mailDetails">
               <v-expansion-panels :multiple="true" v-model="panel">
                 <v-expansion-panel
-                  class="attachment-analysis-item"
                   v-for="(attachment, index) in mailDetails.attachments"
                   :key="attachment.resourceId"
-                  :id="attachment.sha512"
+                  :id="`email-details-attachment-expansion-panel-${index}`"
+                  class="attachment-analysis-item"
                 >
                   <div style="display: flex; justify-content: space-between; align-items: center;">
                     <div class="ed-title">
-                      <div class="d-flex" style="align-items: center;">
+                      <div
+                        :id="`text--incident-responder-email-details-attachment-${index}`"
+                        class="d-flex"
+                        style="align-items: center;"
+                      >
                         <div class="left-side d-flex align-center">
                           <p class="attachment-name">{{ attachment.name }}</p>
                           <p
@@ -151,9 +155,10 @@
                         class-name="mr-4 badge"
                       />
                       <div
-                        @click="handleDownloadAttachment(attachment)"
+                        :id="`btn-download--incident-responder-email-details-attachment-${index}`"
                         class="cursor-pointer download"
                         style="min-width: 167px;"
+                        @click="handleDownloadAttachment(attachment)"
                       >
                         <v-icon color="#2196f3" class="selection-icons">mdi-download</v-icon>
                         DOWNLOAD FILE
@@ -166,6 +171,7 @@
                       >
                         <template v-slot:actions>
                           <v-btn
+                            :id="`btn-details--email-details-attachment-${index}`"
                             @click.native="setSecondCollapse($event, index)"
                             outlined
                             rounded
@@ -184,11 +190,15 @@
                   </div>
                   <v-expansion-panel-content
                     v-if="showSecondCollapse.findIndex((item) => item === index) > -1"
+                    :id="`expansion-panel-content-email-details-attachment-${index}`"
                     transition="scale-transition"
                     class="pa-0 no-shadow"
                   >
                     <div class="details-content">
-                      <div class="details-content--item mt-4">
+                      <div
+                        :id="`email-details-attachment-item-sha512-${index}`"
+                        class="details-content--item mt-4"
+                      >
                         <div class="details-content--item--key attachment-item">
                           SHA512
                         </div>
@@ -204,7 +214,10 @@
                           {{ getSha512Text(index) }}
                         </v-btn>
                       </div>
-                      <div class="details-content--item">
+                      <div
+                        :id="`email-details-attachment-item-md5-${index}`"
+                        class="details-content--item"
+                      >
                         <div
                           class="details-content--item--key details-content--item--key--md5 attachment-item"
                         >
@@ -222,7 +235,10 @@
                           {{ getMd5Text(index) }}
                         </v-btn>
                       </div>
-                      <div class="details-content--item">
+                      <div
+                        :id="`email-details-attachment-item-content-type-${index}`"
+                        class="details-content--item"
+                      >
                         <div class="details-content--item--key attachment-item">
                           Content Type
                         </div>
@@ -247,6 +263,7 @@
                         <template v-slot:datatable-custom-column="{ scope }">
                           <span @click="showPopupModal = true" style="cursor: pointer;">
                             <a
+                              :id="`btn-see-details--email-details-attachment-${index}`"
                               :href="scope.row.analysisEnginePermalink"
                               target="_blank"
                               class="attachments-table__link"

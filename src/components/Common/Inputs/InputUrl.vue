@@ -35,7 +35,7 @@ export default {
   },
   watch: {
     value(newVal, oldVal) {
-      if (newVal.includes(' ') || newVal.includes(',')) {
+      if (newVal && (newVal.includes(' ') || newVal.includes(','))) {
         this.$emit('input', oldVal)
       }
     }

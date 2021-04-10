@@ -17,6 +17,7 @@
           <form-group title="Name" has-hint>
             <v-text-field
               placeholder="Enter name"
+              id="input--mail-configuration-name"
               outlined
               dense
               v-model.trim="formValues.name"
@@ -26,13 +27,13 @@
               ]"
               hint="*Required"
               persistent-hint
-              id="name"
               height="40"
             ></v-text-field>
           </form-group>
           <form-group title="Application (client) ID" has-hint>
             <v-text-field
               placeholder="Enter Application ID"
+              id="input--mail-configuration-application-id"
               outlined
               dense
               v-model.trim="formValues.applicationId"
@@ -43,7 +44,6 @@
               ]"
               hint="*Required"
               persistent-hint
-              id="appClientId"
               autocomplete="disabled"
               height="40"
             ></v-text-field>
@@ -51,6 +51,7 @@
           <form-group title="Application Secret" has-hint>
             <v-text-field
               placeholder="Enter an application secret"
+              id="input--mail-configuration-application-secret"
               outlined
               dense
               v-model.trim="formValues.applicationSecret"
@@ -61,7 +62,6 @@
                 (v) =>
                   validations.maxLength(v, 64, labels.getMaxLengthMessage('Application secret', 64))
               ]"
-              id="applicationSecret"
               autocomplete="disabled"
               height="40"
             ></v-text-field>
@@ -69,6 +69,7 @@
           <form-group title="Directory (tenant) ID" has-hint>
             <v-text-field
               placeholder="Enter a directory ID"
+              id="input--mail-configuration-directory-id"
               outlined
               dense
               v-model.trim="formValues.directoryId"
@@ -78,7 +79,6 @@
               ]"
               hint="*Required"
               persistent-hint
-              id="directoryId"
               autocomplete="disabled"
               height="40"
             ></v-text-field>
@@ -86,6 +86,7 @@
           <form-group title="Test Email Address" has-hint>
             <v-text-field
               placeholder="Enter an email address"
+              id="input--mail-configuration-test-email-address"
               outlined
               dense
               hint="*Required"
@@ -96,7 +97,6 @@
                 (v) => validations.mail(v, labels.InvalidEmailAddress),
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
               ]"
-              id="emailAddress"
               height="40"
             ></v-text-field>
           </form-group>
@@ -280,10 +280,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        is-server-side
         :isServerSide="false"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: false, search: false, sort: false }"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -538,7 +535,7 @@ export default {
     validations: validations,
     requestBody: {
       pageNumber: 1,
-      pageSize: 1000,
+      pageSize: 75000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -559,7 +556,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 1000,
+      pageSize: 75000,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -928,9 +925,12 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
+      /*
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
       this.setQueryValuesToPayload(this.$route.query)
+
+       */
       this.getDefaultFilterAndSearch()
     }
   }

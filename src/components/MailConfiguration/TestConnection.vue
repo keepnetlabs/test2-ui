@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="test-connection__testing-content" v-if="isLoadingStarted">
-      <div class="test-connection__testing-content__item">
+      <div class="test-connection__testing-content__item" id="test-connection-item-authenticating">
         <div class="test-connection__testing-content__item--label">Authenticating</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus
@@ -26,13 +26,16 @@
           />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div
+        class="test-connection__testing-content__item"
+        id="test-connection-item-checking-permissions"
+      >
         <div class="test-connection__testing-content__item--label">Checking permissions</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus :state="checkPrivileges" :message="checkPrivilegesMessage" />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div class="test-connection__testing-content__item" id="test-connection-item-fetching-users">
         <div class="test-connection__testing-content__item--label">Fetching users</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus
@@ -41,13 +44,19 @@
           />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div
+        class="test-connection__testing-content__item"
+        id="test-connection-item-fetching-email-body"
+      >
         <div class="test-connection__testing-content__item--label">Fetching email body</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus :state="checkEmailAccess" :message="checkEmailAccessMessage" />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div
+        class="test-connection__testing-content__item"
+        id="test-connection-item-creating-category"
+      >
         <div class="test-connection__testing-content__item--label">
           Testing: Create a new category
         </div>
@@ -58,7 +67,7 @@
           />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div class="test-connection__testing-content__item" id="test-connection-item-update-category">
         <div class="test-connection__testing-content__item--label">Testing: Update a category</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus
@@ -67,13 +76,16 @@
           />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div class="test-connection__testing-content__item" id="test-connection-item-deleting-email">
         <div class="test-connection__testing-content__item--label">Testing: Delete an email</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus :state="checkDeleteEmail" :message="checkInboxAccessMessage" />
         </div>
       </div>
-      <div class="test-connection__testing-content__item">
+      <div
+        class="test-connection__testing-content__item"
+        id="test-connection-item-accessing-user-inbox"
+      >
         <div class="test-connection__testing-content__item--label">Accessing user inbox</div>
         <div class="test-connection__testing-content__item--value">
           <TestConnectivityStatus :state="checkInboxAccess" :message="checkInboxAccessMessage" />

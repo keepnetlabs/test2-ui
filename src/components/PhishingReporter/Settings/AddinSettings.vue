@@ -48,6 +48,7 @@
                   ]
                 : []
             "
+            id="input--phishing-reporter-settings-add-in-name"
             class="k-textfield mt-2"
             dense
             outlined
@@ -71,8 +72,8 @@
                 : []
             "
             class="k-textfield mt-2"
+            id="input--phishing-reporter-settings-brand-name"
             dense
-            id="company-text"
             outlined
             placeholder="Enter a Company Name"
             :readonly="!showForm"
@@ -89,10 +90,11 @@
           </div>
 
           <k-file-upload
+            id="input--phishing-reporter-settings-logo"
             hint="Only jpg, png, gif, bmp files. Max. file size 3MB"
             ref="refFileUpload"
-            @inputFile="onFileChanged"
             :readonly="!showForm"
+            @inputFile="onFileChanged"
           />
         </v-list-item-content>
       </v-list-item>
@@ -130,10 +132,10 @@
                     ]
                   : []
               "
+              id="input--phishing-reporter-message-box-title"
               :readonly="!showForm"
               class="k-textfield"
               dense
-              id="alertbox-text"
               outlined
               placeholder="Enter a dialog box name"
               required
@@ -157,6 +159,7 @@
                   : []
               "
               :readonly="!showForm"
+              id="input--phishing-reporter-message-button-yes-text"
               class="k-textfield"
               dense
               outlined
@@ -178,6 +181,7 @@
                   : []
               "
               :readonly="!showForm"
+              id="input--phishing-reporter-message-button-no-text"
               class="k-textfield"
               dense
               outlined
@@ -203,6 +207,7 @@
                   : []
               "
               :readonly="!showForm"
+              id="input--phishing-reporter-message-button-cancel-text"
               class="k-textfield"
               dense
               outlined
@@ -231,6 +236,7 @@
               class="k-textfield"
               dense
               outlined
+              id="input--phishing-reporter-message-button-ok-text"
               placeholder="Enter okay button label"
               required
               v-model.trim="formValues.msgBoxBtnOkText"
@@ -247,6 +253,7 @@
               rows="2"
               no-resize
               height="80"
+              id="input--phishing-reporter-analysis-thank-you-message"
               v-model.trim="formValues.analysisThankYouMessage"
               :rules="
                 showForm
@@ -275,6 +282,7 @@
               rows="2"
               no-resize
               height="80"
+              id="input--phishing-reporter-no-internet-connection-message"
               v-model.trim="formValues.noInternetConnectionMessage"
               :rules="
                 showForm
@@ -303,6 +311,7 @@
               rows="2"
               no-resize
               height="80"
+              id="input--phishing-reporter-email-sending-error-message"
               v-model.trim="formValues.emailSendingErrorMessage"
               :rules="
                 showForm
@@ -331,6 +340,7 @@
               rows="2"
               no-resize
               height="80"
+              id="input--phishing-reporter-email-selection-error-message"
               v-model.trim="formValues.emailSelectionErrorMessage"
               :rules="
                 showForm
@@ -359,6 +369,7 @@
               rows="2"
               no-resize
               height="80"
+              id="input--phishing-reporter-bad-format-email-message"
               v-model.trim="formValues.badFormatEmailMessage"
               :rules="
                 showForm
@@ -381,11 +392,13 @@
               color="#2196f3"
               label="Show confirmation messsage when reporting email"
               class="k-checkbox add-in-settings__list-item-checkbox"
+              id="input--phishing-reporter-is-confirmation-before-analysis"
               v-model="formValues.isConfirmationBeforeAnalysis"
               :readonly="!showForm"
             ></v-checkbox>
             <v-textarea
               placeholder="Enter a confirmation message when reporting email"
+              id="input--phishing-reporter-analysis-confirmation-message-rules"
               outlined
               dense
               rows="2"
@@ -402,11 +415,13 @@
               color="#2196f3"
               label="Show confirmation message to delete email"
               class="k-checkbox add-in-settings__list-item-checkbox"
+              id="input--phishing-reporter-is-delete-email-before-analysis"
               v-model="formValues.isDeleteEmailBeforeAnalysis"
               :readonly="!showForm"
             ></v-checkbox>
             <v-textarea
               placeholder="Enter a confirmation message to delete email"
+              id="input--phishing-reporter-analysis-email-delete-message"
               outlined
               dense
               rows="2"
@@ -438,6 +453,7 @@
                 : []
             "
             class="k-textfield mt-2"
+            id="input--phishing-reporter-warning-label"
             dense
             outlined
             placeholder="Enter a warning label"

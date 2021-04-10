@@ -37,6 +37,7 @@
               <v-list-item-content>
                 <label class="roi-modal__label">{{ labels.RoiSummarySavedTimeLabel }}</label>
                 <v-text-field
+                  id="input--incident-responder-roi-popup-saved-time"
                   placeholder="Enter saved time"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -53,6 +54,7 @@
               <v-list-item-content>
                 <label class="roi-modal__label">{{ labels.RoiSummaryHourlyLabel }}</label>
                 <v-text-field
+                  id="input--incident-responder-roi-popup-hourly-rate"
                   placeholder="Enter hourly rate"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -96,6 +98,7 @@
         >
           <template v-slot:skeleton-content>
             <div
+              id="card--incident-responder-phishing-reporter"
               class="dashboard-cards phishing-reporter mr-2"
               :class="{
                 'no-data__opacity-blue': isPhishingEmpty(irSummary)
@@ -103,7 +106,10 @@
             >
               <div class="card-header">
                 <span class="head">Phishing Reporter</span>
-                <router-link to="/phishing-reporter">
+                <router-link
+                  to="/phishing-reporter"
+                  id="btn-link--incident-responder-to-phishing-reporter"
+                >
                   <v-icon :color="'white'">mdi-open-in-new</v-icon>
                 </router-link>
               </div>
@@ -160,6 +166,7 @@
         >
           <template v-slot:skeleton-content>
             <div
+              id="card--incident-responder-incident-analysis"
               class="dashboard-cards incident-analysis mr-2"
               :class="{
                 'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
@@ -213,6 +220,7 @@
         >
           <template v-slot:skeleton-content>
             <div
+              id="card--incident-responder-investigations"
               class="dashboard-cards investigations mr-2"
               :class="{
                 'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
@@ -220,7 +228,10 @@
             >
               <div class="card-header">
                 <span class="head">Investigations</span>
-                <router-link :to="'/investigations'">
+                <router-link
+                  :to="'/investigations'"
+                  id="btn-link--incident-responder-to-investigations"
+                >
                   <v-icon :color="'white'">mdi-open-in-new</v-icon>
                 </router-link>
               </div>
@@ -289,6 +300,7 @@
         >
           <template v-slot:skeleton-content>
             <div
+              id="card--incident-responder-roi-summary"
               class="dashboard-cards roi-summary"
               :class="{
                 'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
@@ -296,7 +308,12 @@
             >
               <div class="card-header">
                 <span class="head">{{ labels.RoiSummary }}</span>
-                <v-icon color="#fff" @click="isShowRoi = true">mdi-cog</v-icon>
+                <v-icon
+                  id="btn-show--incident-responder-roi-summary"
+                  color="#fff"
+                  @click="isShowRoi = true"
+                  >mdi-cog</v-icon
+                >
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
@@ -550,7 +567,13 @@
             @clear-filters="handleClearFiltersReportedEmailClustered"
           >
             <template #table-search-left-side>
-              <v-btn text color="#2196f3" class="clustered-table-back-btn" @click="handleBackClick">
+              <v-btn
+                id="btn-back--incident-responder-clustered-table"
+                text
+                color="#2196f3"
+                class="clustered-table-back-btn"
+                @click="handleBackClick"
+              >
                 <v-icon left>mdi-arrow-left</v-icon> BACK</v-btn
               >
             </template>
@@ -567,7 +590,8 @@
                 </span>
                 <span
                   v-else
-                  v-for="item in scope.row.matchingPlaybooks"
+                  v-for="(item, index) in scope.row.matchingPlaybooks"
+                  :id="`btn--incident-responder-matching-playbooks-${item.name}-${index}`"
                   :key="item.resourceId"
                   class="incident-responder-parent__link"
                   @click="togglePlaybookModalWithSelected(item.resourceId)"
@@ -595,6 +619,7 @@
             <template v-slot:extended-view-slot>
               <div class="row-edit-div">
                 <v-checkbox
+                  id="input--incident-responder-extended-view-is-notify"
                   color="#2196f3"
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
@@ -604,6 +629,7 @@
               <div class="row-edit-div">
                 <v-checkbox
                   v-model="extendedView.isMessage"
+                  id="input--incident-responder-extended-view-is-message"
                   color="#2196f3"
                   label="Add Custom Message"
                   :disabled="!extendedView.isNotify"
@@ -612,6 +638,7 @@
               </div>
               <div class="row-edit-div" v-if="extendedView.isMessage && extendedView.isNotify">
                 <v-textarea
+                  id="input--incident-responder-custom-message"
                   outlined
                   dense
                   v-model="extendedView.customMessage"
@@ -626,6 +653,7 @@
                 >
                   <template v-slot:append v-if="isCustomMessageMultiple">
                     <v-btn
+                      id="btn-edit--incident-responder-custom-message"
                       text
                       @click.native="isCustomMessageMultiple = false"
                       class="edit-popup__edit-component"
@@ -698,7 +726,11 @@
                   <div class="reported-email-subject">
                     <span> {{ scope.row[col.property] }}</span>
                   </div>
-                  <the-records-button :row="scope.row" @on-click="handleRecordButtonClick" />
+                  <the-records-button
+                    :index="scope.$index"
+                    :row="scope.row"
+                    @on-click="handleRecordButtonClick"
+                  />
                 </div>
               </template>
               <template v-if="scope.column.property === 'source'">
@@ -713,7 +745,8 @@
                 </span>
                 <span
                   v-else
-                  v-for="item in scope.row.matchingPlaybooks"
+                  v-for="(item, index) in scope.row.matchingPlaybooks"
+                  :id="`btn--incident-responder-matching-playbooks-${item.name}-${index}`"
                   :key="item.resourceId"
                   class="incident-responder-parent__link"
                   @click="togglePlaybookModalWithSelected(item.resourceId)"
@@ -741,6 +774,7 @@
             <template v-slot:extended-view-slot>
               <div class="row-edit-div">
                 <v-checkbox
+                  id="input--incident-responder-extended-view-is-notify"
                   color="#2196f3"
                   label="Notify reporting user about this update"
                   v-model="extendedView.isNotify"
@@ -750,6 +784,7 @@
               <div class="row-edit-div">
                 <v-checkbox
                   v-model="extendedView.isMessage"
+                  id="input--incident-responder-extended-view-is-message"
                   color="#2196f3"
                   label="Add Custom Message"
                   :disabled="!extendedView.isNotify"
@@ -761,6 +796,7 @@
                   outlined
                   dense
                   v-model="extendedView.customMessage"
+                  id="input--incident-responder-extended-view-custom-message"
                   rows="3"
                   :placeholder="
                     isCustomMessageMultiple
@@ -772,6 +808,7 @@
                 >
                   <template v-slot:append v-if="isCustomMessageMultiple">
                     <v-btn
+                      id="btn-edit--incident-responder-custom-message"
                       text
                       @click.native="isCustomMessageMultiple = false"
                       class="edit-popup__edit-component"
@@ -1363,7 +1400,8 @@ export default {
           show: false,
           type: 'text',
           width: '200',
-          fullWidth: true
+          fullWidth: true,
+          filterableType: 'text'
         },
         {
           property: PROPERTY_STORE.SENDERADDRESS,
@@ -1375,7 +1413,8 @@ export default {
           show: false,
           type: 'text',
           width: '200',
-          fullWidth: true
+          fullWidth: true,
+          filterableType: 'text'
         },
         {
           property: 'tags',
@@ -2587,7 +2626,6 @@ export default {
                     sets.customMessage.add(item.customMessage)
                   })
                   if (sets.isNotifyUser.size === 1) {
-                    debugger
                     this.extendedView.isNotify = sets.isNotifyUser.has(true)
                   } else {
                     this.extendedView.isNotify = true

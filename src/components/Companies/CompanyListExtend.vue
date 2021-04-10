@@ -7,12 +7,18 @@
             {{ selectedRow.companyName }}
           </div>
           <div class="company-list-extend__header-icon">
-            <v-btn icon small text @click="$emit('editAction', selectedRow)">
+            <v-btn
+              id="btn--edit--company-extended-view"
+              icon
+              small
+              text
+              @click="$emit('editAction', selectedRow)"
+            >
               <v-icon size="24">mdi-pencil</v-icon>
             </v-btn>
           </div>
           <div class="company-list-extend__header-icon">
-            <v-btn icon small text @click="clickClose">
+            <v-btn id="btn--close--company-extended-view" icon small text @click="clickClose">
               <v-icon size="24">mdi-close</v-icon>
             </v-btn>
           </div>
@@ -89,18 +95,6 @@
               {{ selectedExtend.smtpConfigurationTypeName }}
             </div>
           </div>
-          <!-- <div class="company-list-extend__body-item">
-        <div class="company-list-extend__body-key d-flex align-center">Phishing</div>
-        <div class="company-list-extend__body-value" style="width: 44px; margin-top: -4px;">
-          <pie :data="series" :chart-options="chartOptions" />
-        </div>
-      </div>
-      <div class="company-list-extend__body-item">
-        <div class="company-list-extend__body-key d-flex align-center">Training</div>
-        <div class="company-list-extend__body-value" style="width: 44px; margin-top: -4px;">
-          <pie :data="series" :chart-options="chartOptions" />
-        </div>
-      </div> -->
           <div class="company-list-extend__body-item">
             <div class="company-list-extend__body-key d-flex align-center">Status</div>
             <div class="company-list-extend__body-value">
