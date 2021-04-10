@@ -14,7 +14,7 @@
             <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
           </template>
           <template v-else>
-            <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-cards" id="card--phishing-reporter-header-add-in">
               <div class="phishing-reporter__stats-card">
                 <div class="phishing-reporter__stats-card-left">
                   <div
@@ -34,7 +34,7 @@
                 </div>
               </div>
             </div>
-            <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-cards" id="card--phishing-reporter-header-online">
               <div class="phishing-reporter__stats-card">
                 <div class="phishing-reporter__stats-card-left">
                   <div
@@ -62,7 +62,7 @@
             <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
           </template>
           <template v-else>
-            <div class="phishing-reporter__stats-cards">
+            <div class="phishing-reporter__stats-cards" id="card--phishing-reporter-header-offline">
               <div class="phishing-reporter__stats-card">
                 <div class="phishing-reporter__stats-card-left">
                   <div
@@ -82,7 +82,10 @@
                 </div>
               </div>
             </div>
-            <div class="phishing-reporter__stats-cards">
+            <div
+              class="phishing-reporter__stats-cards"
+              id="card--phishing-reporter-header-latest-release"
+            >
               <div class="phishing-reporter__stats-card">
                 <div class="phishing-reporter__stats-card-left">
                   <div
@@ -114,8 +117,12 @@
             </div>
           </template>
           <v-list>
-            <v-list-item @click="handleListItemClick(item)" :key="item" v-for="item in listItems">
-              <v-list-item-title>{{ item }}</v-list-item-title>
+            <v-list-item
+              v-for="(item, index) in listItems"
+              :key="item"
+              @click="handleListItemClick(item)"
+            >
+              <v-list-item-title :id="listItemsId[index]">{{ item }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -199,6 +206,14 @@ export default {
         'Last 30 days',
         'This month',
         'Previous month'
+      ],
+      listItemsId: [
+        'last-four-items',
+        'last-twenty-four-hours',
+        'last-seven-days',
+        'last-thirty-days',
+        'this-month',
+        'previous-month'
       ]
     }
   },

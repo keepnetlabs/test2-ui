@@ -114,7 +114,11 @@
         </v-menu>
       </template>
       <template v-slot:settings-popup-body>
-        <div class="edit-fields" @click="handleEditFieldsClick">
+        <div
+          id="btn-edit--target-user-custom-fields"
+          class="edit-fields"
+          @click="handleEditFieldsClick"
+        >
           EDIT FIELDS
         </div>
       </template>
