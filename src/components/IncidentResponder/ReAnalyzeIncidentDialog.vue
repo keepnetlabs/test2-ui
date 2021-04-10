@@ -24,6 +24,7 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { reAnalyzeEmail } from '@/api/incidentResponder'
 export default {
   name: 'ReAnalyzeIncidentDialog',
   components: { AppDialogFooter, AppDialog },
@@ -32,6 +33,9 @@ export default {
       type: Boolean
     },
     name: {
+      type: String
+    },
+    resourceId: {
       type: String
     }
   },
@@ -44,7 +48,15 @@ export default {
     closeDialog() {
       this.$emit('on-close-dialog')
     },
-    confirm() {}
+    confirm() {
+      this.saveDisable = true
+      reAnalyzeEmail(this.resourceId)
+        .then((response) => {})
+        .finally(() => {
+          this.closeDialog()
+          this.saveDisable = false
+        })
+    }
   }
 }
 </script>

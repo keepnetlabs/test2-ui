@@ -1,6 +1,13 @@
 <template>
   <div class="incident-responder-parent">
     <div class="incident-responder">
+      <ReAnalyzeIncidentDialog
+        v-if="showReAnalyzeIncidentDialog"
+        :status="showReAnalyzeIncidentDialog"
+        :name="mailDetails.name"
+        :resourceId="mailDetails.resourceId"
+        @on-close-dialog="toggleShowReAnalyzeDialog"
+      />
       <the-clustered-modal
         v-if="false"
         ref="refClusteredModal"
@@ -883,8 +890,10 @@ import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import TheClusteredModal from '@/components/IncidentResponder/TheClusteredModal'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 export default {
   components: {
+    ReAnalyzeIncidentDialog,
     TheClusteredModal,
     TheRecordsButton,
     AppDialogFooter,
@@ -911,6 +920,11 @@ export default {
       orderBy: 'createDate',
       ascending: true
     },
+    mailDetails: {
+      name: '',
+      resourceId: ''
+    },
+    showReAnalyzeIncidentDialog: false,
     totalNumberOfRecordsMatchingPopup: 0,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
@@ -2082,6 +2096,9 @@ export default {
         this.callForClusteredTable()
       }
     },
+    toggleShowReAnalyzeDialog() {
+      this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
+    },
     isPersistentState() {
       return (
         this.$store.state['datatable'].tables['Incident Responder'] &&
@@ -2120,7 +2137,9 @@ export default {
       this.isShowingClusteredTable = isShowingClusteredTable
     },
     handleReAnalyze(row = {}) {
-      debugger
+      this.mailDetails.name = row.subject
+      this.mailDetails.resourceId = row.resourceId
+      this.toggleShowReAnalyzeDialog()
     },
     handleBackClick() {
       this.isShowingClusteredTable = false
