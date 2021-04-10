@@ -1,6 +1,13 @@
 <template>
   <div class="incident-responder-parent">
     <div class="incident-responder">
+      <ReAnalyzeIncidentDialog
+        v-if="showReAnalyzeIncidentDialog"
+        :status="showReAnalyzeIncidentDialog"
+        :name="mailDetails.name"
+        :resourceId="mailDetails.resourceId"
+        @on-close-dialog="toggleShowReAnalyzeDialog"
+      />
       <the-clustered-modal
         v-if="false"
         ref="refClusteredModal"
@@ -705,6 +712,7 @@
             @handleDetails="irDetailsOnClick"
             @onEditClick="onEditClick"
             @handleEdit="handleEdit"
+            @handleReAnalyze="handleReAnalyze"
             @columnFilterChanged="columnFilterChanged"
             @columnFilterCleared="columnFilterCleared"
             @refreshAction="callForSearchNotifiedMail"
@@ -882,8 +890,10 @@ import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import TheClusteredModal from '@/components/IncidentResponder/TheClusteredModal'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 export default {
   components: {
+    ReAnalyzeIncidentDialog,
     TheClusteredModal,
     TheRecordsButton,
     AppDialogFooter,
@@ -910,6 +920,11 @@ export default {
       orderBy: 'createDate',
       ascending: true
     },
+    mailDetails: {
+      name: '',
+      resourceId: ''
+    },
+    showReAnalyzeIncidentDialog: false,
     totalNumberOfRecordsMatchingPopup: 0,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
@@ -1492,6 +1507,15 @@ export default {
           id: 'btn-investigate--incident-responder-emails-row-actions',
           icon: 'mdi-magnify',
           action: 'handleInvestigate'
+        },
+        {
+          name: labels.ReAnalyze,
+          id: 'btn-re-analyze--incident-responder-emails-row-actions',
+          icon: 'mdi-refresh',
+          action: 'handleReAnalyze',
+          disabled: (row) => {
+            return row.status === 'BeingAnalyzed'
+          }
         }
       ],
       addMenu: {
@@ -2072,6 +2096,9 @@ export default {
         this.callForClusteredTable()
       }
     },
+    toggleShowReAnalyzeDialog() {
+      this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
+    },
     isPersistentState() {
       return (
         this.$store.state['datatable'].tables['Incident Responder'] &&
@@ -2108,6 +2135,11 @@ export default {
       this.clusteredRow = clusteredRow
       this.dynamicClusterProps = { persistentState: clusteredTableState }
       this.isShowingClusteredTable = isShowingClusteredTable
+    },
+    handleReAnalyze(row = {}) {
+      this.mailDetails.name = row.subject
+      this.mailDetails.resourceId = row.resourceId
+      this.toggleShowReAnalyzeDialog()
     },
     handleBackClick() {
       this.isShowingClusteredTable = false
