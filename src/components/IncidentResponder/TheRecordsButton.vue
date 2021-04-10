@@ -1,7 +1,8 @@
 <template>
   <v-btn
-    :class="['the-records-button', { 'the-records-button--disabled': this.row.total === 1 }]"
     rounded
+    :id="`btn-records--incident-responder-clustered-table-${index}`"
+    :class="['the-records-button', { 'the-records-button--disabled': this.row.total === 1 }]"
     :color="getColor"
     :style="getStyle"
     :disabled="isDisabled"
@@ -17,6 +18,9 @@ export default {
   props: {
     row: {
       type: Object
+    },
+    index: {
+      type: Number
     }
   },
   watch: {

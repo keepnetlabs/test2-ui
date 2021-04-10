@@ -2,15 +2,18 @@
   <section>
     <v-expansion-panels multiple v-model="panel">
       <v-expansion-panel
-        class="attachment-analysis-item"
         v-for="(url, index) in mailDetails.urls"
         :key="url.resourceId"
-        :id="url.url"
+        :id="`email-details-url-expansion-panel-${index}`"
+        class="attachment-analysis-item"
       >
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <div class="ed-title">
             <div class="d-flex" style="align-items: center;">
-              <div class="left-side d-flex align-center">
+              <div
+                :id="`text--incident-responder-email-details-url-${index}`"
+                class="left-side d-flex align-center"
+              >
                 <p class="attachment-name mr-2" style="word-break: break-word;">{{ url.url }}</p>
                 <p class="ml-6 not-found" v-if="isFileUploaded(url['analysisList'])">
                   *This file was not uploaded to any integration
@@ -27,6 +30,7 @@
             />
             <div
               @click="handleCopyUrl(url.url)"
+              :id="`btn-copy--email-details-url-${index}`"
               class="cursor-pointer download"
               style="min-width: 120px; text-transform: uppercase; line-height: 1.2;"
             >
@@ -37,6 +41,7 @@
             <v-expansion-panel-header class="pa-0" style="min-height: 36px;" disable-icon-rotate>
               <template v-slot:actions>
                 <v-btn
+                  :id="`btn-details--email-details-url-${index}`"
                   @click.native="setSecondCollapse($event, index)"
                   outlined
                   rounded
@@ -55,6 +60,7 @@
         </div>
         <v-expansion-panel-content
           v-if="showSecondCollapse.findIndex((item) => item === index) > -1"
+          :id="`expansion-panel-content-email-details-url-${index}`"
           transition="scale-transition"
           class="pa-0 no-shadow"
         >
@@ -77,6 +83,7 @@
               <template v-slot:datatable-custom-column="{ scope, col }">
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">
                   <a
+                    :id="`btn-see-details--email-details-url-${index}`"
                     :href="scope.row.analysisEnginePermalink"
                     target="_blank"
                     class="attachments-table__link"
