@@ -7,7 +7,7 @@
     @changeStatus="closeDialog"
   >
     <template v-slot:app-dialog-body>
-      {{ name }} will be analyzed again with integrated services
+      Email will be analyzed again with integrated services
     </template>
     <template v-slot:app-dialog-footer>
       <AppDialogFooter
@@ -51,7 +51,9 @@ export default {
     confirm() {
       this.saveDisable = true
       reAnalyzeEmail(this.resourceId)
-        .then((response) => {})
+        .then((response) => {
+          this.$emit('on-confirm')
+        })
         .finally(() => {
           this.closeDialog()
           this.saveDisable = false

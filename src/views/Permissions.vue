@@ -146,7 +146,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.TYPENAME,
-            align: 'left',
+            align: 'center',
             editable: false,
             label: LABEL_STORE.TYPENAME,
             fixed: false,
@@ -178,7 +178,7 @@ export default {
           tooltip: labels.ADDAPERMISSION,
           action: 'openPermissionModal',
           id: 'btn-add--permissions',
-          disabled: false && !checkPermission('', 'POST')
+          disabled: !checkPermission('roles', 'POST')
         },
         selectEvent: {
           clipboard: true,
@@ -197,14 +197,14 @@ export default {
             id: 'btn-empty--permissions',
             action: 'editPermissions',
             isNotShow: true,
-            disabled: false && !checkPermission('', 'PUT')
+            disabled: !checkPermission('roles/{resourceId}', 'PUT')
           },
           {
             name: 'Delete',
             id: 'btn-delete--permissions',
             icon: 'mdi-delete',
             action: 'delete',
-            disabled: false && !checkPermission('', 'DELETE')
+            disabled: !checkPermission('roles/{resourceId}', 'DELETE')
           }
         ]
       },
@@ -380,6 +380,13 @@ export default {
         )
         return column.filterableType
       })
+      filterItems.forEach(myFunction)
+
+      function myFunction(item) {
+        if (item.FieldName === 'TypeName') {
+          item.FieldName = 'Type'
+        }
+      }
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive

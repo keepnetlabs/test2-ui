@@ -7,6 +7,7 @@
         :name="mailDetails.name"
         :resourceId="mailDetails.resourceId"
         @on-close-dialog="toggleShowReAnalyzeDialog"
+        @on-confirm="initDatas"
       />
       <the-clustered-modal
         v-if="false"
@@ -2057,6 +2058,15 @@ export default {
       } else {
         this.initMethods()
       }
+    },
+    initDatas() {
+      this.callForGetRunningInvestigations()
+      this.callForGetTopRules()
+      this.callForSearchNotifiedMail()
+      if (this.clusteredRow) {
+        this.callForClusteredTable()
+      }
+      this.$store.dispatch('investigations/getIrSummary')
     },
     getDefaultFilterAndSearchReportedEmail(callApi = true) {
       const savedFilter = JSON.parse(
