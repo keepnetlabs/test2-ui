@@ -37,9 +37,24 @@
                     @change="handleTargetUserTypeChange"
                     row
                   >
-                    <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
-                    <v-radio value="Groups" label="User Groups" color="#2196f3"></v-radio>
-                    <v-radio value="SpecificUsers" label="Specific Users" color="#2196f3"></v-radio>
+                    <v-radio
+                      id="input--investigation-target-user-type-all-users"
+                      value="AllUsers"
+                      label="All Users"
+                      color="#2196f3"
+                    ></v-radio>
+                    <v-radio
+                      id="input--investigation-target-user-type-user-groups"
+                      value="Groups"
+                      label="User Groups"
+                      color="#2196f3"
+                    ></v-radio>
+                    <v-radio
+                      id="input--investigation-target-user-type-specific-users"
+                      value="SpecificUsers"
+                      label="Specific Users"
+                      color="#2196f3"
+                    ></v-radio>
                   </v-radio-group>
                 </div>
                 <div class="target-users-select__input-area">
@@ -124,7 +139,7 @@
                   <div class="filter-item__selectbox">
                     <Treeselect
                       v-model="list.option"
-                      :id="`input--investigation-search-criteria-${index}`"
+                      :id="`input--investigation-search-criteria-${list.option}-${index}`"
                       disable-branch-nodes
                       open-direction="below"
                       :class="[
@@ -155,7 +170,7 @@
                   <div class="filter-item__input">
                     <v-text-field
                       :key="index + list.option"
-                      :id="`input--investigation-search-criteria-value-${index}`"
+                      :id="`input--investigation-search-criteria-value-${list.option}-${index}`"
                       :placeholder="
                         placeholders[list.option]
                           ? placeholders[list.option]
@@ -170,7 +185,7 @@
                   </div>
                   <div class="filter-item__delete-button">
                     <v-icon
-                      :id="`btn-close--investigation-search-criteria-${index}`"
+                      :id="`btn-close--investigation-search-criteria-${list.option}-${index}`"
                       medium
                       left
                       class="ml-2"

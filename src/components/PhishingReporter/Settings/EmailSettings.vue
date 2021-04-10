@@ -28,6 +28,7 @@
         <v-list-item-content>
           <v-checkbox
             v-model="formValues.isSendInformationEmail"
+            id="input--phishing-reporter-is-send-email"
             class="other-settings__checkbox k-checkbox"
             color="#2196f3"
             label="Send information email for reported incidents"
@@ -42,6 +43,7 @@
           <InputEmail
             class="k-textfield mt-2"
             v-model.trim="formValues.to"
+            id="input--phishing-reporter-recipient-email-address"
             :required="showForm ? !!formValues.isSendInformationEmail : false"
             :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
             :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
@@ -80,6 +82,7 @@
           <label class="email-settings__list-item--header">CC</label>
           <InputEmail
             class="k-textfield mt-2"
+            id="input--phishing-reporter-cc-email-address"
             v-model.trim="formValues.cc"
             :persistent-hint="false"
             :required="false"
@@ -103,6 +106,7 @@
           <label class="email-settings__list-item--header">BCC</label>
           <InputEmail
             class="k-textfield mt-2"
+            id="input--phishing-reporter-bcc-email-address"
             v-model.trim="formValues.bcc"
             :readonly="!showForm"
             :persistent-hint="false"
@@ -127,6 +131,7 @@
           <InputEmail
             placeholder="Suspicious Email"
             class="k-textfield mt-2"
+            id="input--phishing-reporter-email-subject"
             v-model.trim="formValues.subject"
             :required="showForm ? !!formValues.isSendInformationEmail : false"
             :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
@@ -162,6 +167,7 @@
           <label class="email-settings__list-item--header">Email Message</label>
           <v-textarea
             placeholder="Please investigate the attached email"
+            id="input--phishing-reporter-recipient-email-message"
             outlined
             dense
             no-resize

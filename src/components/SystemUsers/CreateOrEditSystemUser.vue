@@ -21,36 +21,42 @@
       <app-modal-body-header :title="getBodyTitle" sub-title="Fill information below" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="First Name" has-hint>
-          <InputFirstName v-model.trim="formValues.firstName" />
+          <InputFirstName v-model.trim="formValues.firstName" id="input--system-user-first-name" />
         </form-group>
         <form-group title="Last Name" has-hint>
-          <InputLastName v-model.trim="formValues.lastName" />
+          <InputLastName v-model.trim="formValues.lastName" id="input--system-user-last-name" />
         </form-group>
         <form-group title="Email Address" has-hint>
-          <InputEmail v-model.trim="formValues.email" />
+          <InputEmail v-model.trim="formValues.email" id="input--system-user-email" />
         </form-group>
         <form-group title="Phone Number">
-          <InputPhone v-model.trim="formValues.phoneNumber" ref="refPhone" />
+          <InputPhone
+            v-model.trim="formValues.phoneNumber"
+            ref="refPhone"
+            id="input--system-user-phone-number"
+          />
         </form-group>
         <form-group title="Status">
           <k-select
+            v-model.trim="formValues.statusId"
+            id="input--sytem-user-status"
             placeholder="Select Option"
             outlined
             dense
             :items="statusItems"
             item-text="name"
             item-value="val"
-            v-model.trim="formValues.statusId"
             @change="handleChangeStatus"
           />
         </form-group>
         <form-group title="Role">
           <k-select
+            v-model.trim="formValues.roleResourceIdList"
+            id="input--sytem-user-role"
             placeholder="Select Option"
             outlined
             dense
             :items="roleItems"
-            v-model.trim="formValues.roleResourceIdList"
             hint="*Required"
             persistent-hint
             item-text="name"
