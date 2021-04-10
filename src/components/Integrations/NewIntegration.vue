@@ -66,7 +66,7 @@
         <v-form ref="form" lazy-validation>
           <form-group title="Integration Name" has-hint>
             <v-text-field
-              id="integration-name"
+              id="input--integration-name"
               v-model.trim="formValues.name"
               :rules="[nameValidation.required, nameValidation.empty, nameValidation.maxLength]"
               dense
@@ -79,7 +79,7 @@
           </form-group>
           <form-group title="Description">
             <v-textarea
-              id="description"
+              id="input--integration-description"
               rows="2"
               no-resize
               height="80"
@@ -93,6 +93,7 @@
           <form-group title="Integration Type" has-hint>
             <k-select
               v-model.trim="formValues.analysisEngineTypeResourceId"
+              id="input--integration-type"
               :items="integrationTypes"
               :rules="[integrationTypeRules.required]"
               hint="*Required"
@@ -107,7 +108,7 @@
           </form-group>
           <form-group title="API URL" has-hint>
             <v-text-field
-              id="api-url"
+              id="input--integration-api-url"
               v-model.trim="formValues.apiUrl"
               :rules="[apiUrlRules.required, apiUrlRules.format, apiUrlRules.maxLength]"
               hint="*Required"
@@ -130,11 +131,13 @@
               <div
                 v-for="(item, index) in formValues.apiKeys"
                 :key="item.status"
+                :id="`integration-api-key-container-${index}`"
                 class="position-relative new-integration__api-keys"
               >
                 <div class="max-width__form">
                   <v-text-field
                     v-model.trim="item.value"
+                    :id="`input--integration-api-key-${index}`"
                     :class="item.status === 'failed' ? 'connection-error-state__border' : ''"
                     :rules="[apiKeyRules.required, apiKeyRules.format, apiKeyRules.maxLength]"
                     class="new-integration__textfield new-integration__api-key__textfield mt-2"
@@ -149,6 +152,7 @@
                   ></v-text-field>
                   <div
                     v-if="item.status === 'failed' && item.value.length > 0"
+                    :id="`btn--integration-api-key-see-error-message-${index}`"
                     class="connection-error-state"
                   >
                     <span>{{ getErrorMessageOfApiKey(item) }}</span>
@@ -162,6 +166,7 @@
                   <div v-if="!!item.status" class="new-integration__api-keys__connection-status">
                     <v-icon
                       v-if="item.status === 'loading'"
+                      :id="`btn--integration-api-key-loading-${index}`"
                       class="ml-1 loading-spin"
                       color="#00bcd4"
                       left
@@ -170,6 +175,7 @@
                     </v-icon>
                     <v-icon
                       v-if="item.status === 'success'"
+                      :id="`btn--integration-api-key-check-${index}`"
                       class="ml-1"
                       color="#43a047"
                       left
@@ -178,6 +184,7 @@
                     </v-icon>
                     <v-icon
                       v-if="item.status === 'failed' && loadingState.length"
+                      :id="`btn--integration-api-key-close-${index}`"
                       class="ml-1"
                       color="#f56c6c"
                       left
@@ -186,6 +193,7 @@
                     </v-icon>
                     <div v-if="item.status === 'failed' && !loadingState.length">
                       <button
+                        :id="`btn--integration-api-key-retry-${index}`"
                         :class="{
                           'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                         }"
@@ -197,6 +205,7 @@
                     </div>
                   </div>
                   <div
+                    :id="`btn--integration-api-key-delete-${index}`"
                     :style="{ right: item.status ? '-100px' : '-40px' }"
                     class="new-integration__api-keys__delete"
                   >
@@ -213,11 +222,13 @@
               </div>
               <div></div>
               <div
+                id="integration-api-key-footer"
                 class="new-integration__api-key__footer"
                 :style="[isIbmXForce && { justifyContent: 'flex-end' }]"
               >
                 <div
                   v-if="!isIbmXForce"
+                  id="integration-api-key-footer-add-api-key"
                   class="new-integration__api-key__footer-left-side"
                   @click="addApiKey"
                 >
@@ -233,6 +244,7 @@
                   @click="testConnection(false)"
                 >
                   <div
+                    id="integration-api-key-footer-testing-connection"
                     v-if="loadingState.length"
                     class="test-connection new-integration__api-key__disabled-text"
                     style="cursor: default !important;"
@@ -250,6 +262,7 @@
                   </div>
                   <div
                     v-else
+                    id="integration-api-key-footer-test-connection"
                     :class="{
                       'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                     }"
@@ -264,6 +277,7 @@
           <form-group title="Username" has-hint v-if="isFortiNet">
             <v-text-field
               v-model.trim="formValues.userName"
+              id="input--integration-username"
               hint="*Required"
               persistent-hint
               dense
@@ -275,6 +289,7 @@
           </form-group>
           <form-group title="Password" has-hint v-if="isFortiNet || isIbmXForce">
             <v-text-field
+              id="input--integration-password"
               placeholder="Enter password"
               outlined
               dense
@@ -290,6 +305,7 @@
             ></v-text-field>
             <div
               v-if="isFortiNet"
+              id="integration-forti-net-container"
               :class="{
                 'new-integration__api-key__disabled-text': isFortiNetConnectionDisabled
               }"
@@ -306,6 +322,7 @@
             >
               <div
                 v-if="isFortiNetTestingConnection"
+                id="integration-forti-net-testing-connection"
                 class="test-connection new-integration__api-key__disabled-text"
                 style="cursor: default !important;"
               >
@@ -329,6 +346,7 @@
               >
                 <v-icon
                   v-if="isFortiNetConnected && isFortiNetConnectionSended"
+                  id="integration-forti-net-check"
                   color="#43a047"
                   class="ml-1"
                   style="margin-top: -2px; font-size: 22px;"
@@ -338,6 +356,7 @@
                 </v-icon>
                 <v-icon
                   v-if="!isFortiNetConnected && isFortiNetConnectionSended"
+                  id="integration-forti-net-close"
                   class="ml-1"
                   style="margin-top: -2px; font-size: 22px;"
                   color="#f56c6c"
@@ -359,8 +378,9 @@
               </v-list-item-subtitle>
               <div class="max-width__form new-integration__api-key__combobox">
                 <k-select
-                  type="combobox"
                   v-model.trim="formValues.tags"
+                  type="combobox"
+                  id="input--integration-tags"
                   :items="[]"
                   :return-object="false"
                   class="edit-select standard-height mt-2"
@@ -384,6 +404,7 @@
               <div class="mt-1">
                 <v-checkbox
                   v-model="formValues.isSendUrl"
+                  id="input--integration-is-send-url"
                   :label="`Share URLs in emails with integrated service`"
                   color="#2196f3"
                 />
@@ -394,6 +415,7 @@
               >
                 <v-checkbox
                   v-model="formValues.isHideUrlParameter"
+                  id="input--integration-is-hide-url-parameter"
                   :label="`Hide URL Parameters`"
                   class="black--text"
                   color="#2196f3"
@@ -427,6 +449,7 @@
               </v-list-item-subtitle>
               <v-checkbox
                 v-model="formValues.isSendFileHash"
+                id="input--integration-is-send-file-hash"
                 :label="`Share file hashes (MD5, SHA256 and SHA512)`"
                 style="margin-top: 10px;"
                 color="#2196f3"
@@ -435,6 +458,7 @@
               <div v-if="selectedIntegrationType.isSendFile">
                 <v-checkbox
                   v-model="formValues.isUploadExecutableFile"
+                  id="input--integration-is-upload-executable-file"
                   :label="`Upload PE files`"
                   color="#2196f3"
                 ></v-checkbox>
@@ -447,6 +471,7 @@
                 <div>
                   <v-checkbox
                     v-model="formValues.isUploadOtherFileType"
+                    id="input--integration-is-upload-other-file-type"
                     :label="`Upload other file types`"
                     color="#2196f3"
                   />
@@ -460,6 +485,7 @@
                       <span class="mr-4 type-text">File Types</span>
                       <k-select
                         v-model.trim="formValues.uploadFileTypes"
+                        id="input--integration-upload-file-types"
                         :items="uploadFileTypes"
                         class="new-integration__select"
                         dense
@@ -485,6 +511,7 @@
                 Activate and deactivate integration
               </v-list-item-subtitle>
               <v-switch
+                id="input--switch-integration-status"
                 class="playbook-rule-form__switch mt-4"
                 v-model="formValues.isActive"
                 :label="formValues.isActive ? 'Active' : 'Inactive'"
