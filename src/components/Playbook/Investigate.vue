@@ -15,6 +15,7 @@
         <div class="target-users-select__radio-group mb-2">
           <v-radio-group
             v-model="investigateData.targetUserType"
+            :id="`input--action-investigate-target-user-type${getParentIndex}`"
             :mandatory="false"
             @change="handleRadioGroup"
             row
@@ -28,6 +29,7 @@
         <div class="target-users-select__input-area">
           <k-select
             type="combobox"
+            :id="`input--action-investigate-target-users${getParentIndex}`"
             :items="[]"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -53,6 +55,7 @@
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
             "
             outlined
+            :id="`input--action-investigate-target-user-type${getParentIndex}`"
             v-model="investigateData.targetUsers"
             :search-input.sync="searchUserGroup"
             class="edit-select target-users-select-multi"
@@ -91,6 +94,7 @@
           <k-select
             type="combobox"
             :items="specificUserItems"
+            :id="`input--action-investigate-target-user-type${getParentIndex}`"
             v-if="investigateData.targetUserType === 'SpecificUsers'"
             placeholder="Enter Email Addresses"
             item-text="email"
@@ -128,6 +132,7 @@
       <v-col md="3">
         <k-select
           v-model="investigateData.filters"
+          :id="`input--action-investigate-filters-${getParentIndex}`"
           :items="act.investigateFilters"
           placeholder="Select Filters"
           outlined
@@ -153,6 +158,7 @@
       <v-col md="3">
         <k-select
           v-model="investigateData.emailDateRangeType"
+          :id="`input--action-investigate-ranges-${getParentIndex}`"
           :items="act.investigateRanges"
           outlined
           :menu-props="{ offsetY: true }"
@@ -175,6 +181,7 @@
         <div class="select-sources d-flex" style="flex-wrap: wrap;">
           <v-checkbox
             v-for="(item, index) in sources"
+            :id="`input--action-investigate-sources-${getParentIndex}-${index}`"
             :key="index"
             v-model="scanTypes"
             class="v-input--checkbox mr-4"
@@ -199,6 +206,7 @@
       <v-col md="3">
         <k-select
           v-model="investigateData.durationType"
+          :id="`input--action-investigate-sources-${getParentIndex}-${index}`"
           :items="act.investigateDurations"
           outlined
           :menu-props="{ offsetY: true }"
@@ -222,6 +230,7 @@
           <v-col>
             <k-select
               v-model="investigateData.autoAction.type"
+              :id="`input--action-investigate-auto-action-type-${getParentIndex}`"
               :items="act.investigateActions"
               outlined
               hide-details
@@ -236,6 +245,7 @@
           <v-col v-if="investigateData.autoAction.type === 'Warning'">
             <v-text-field
               placeholder="Message"
+              :id="`input--action-investigate-auto-action-warning-${getParentIndex}`"
               outlined
               dense
               no-resize
@@ -322,7 +332,10 @@ export default {
   computed: {
     ...mapGetters({
       targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
-    })
+    }),
+    getParentIndex() {
+      return this.index
+    }
   },
   watch: {
     'investigateData.autoAction.type'(newValue, oldValue) {

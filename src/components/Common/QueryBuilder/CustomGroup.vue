@@ -4,6 +4,7 @@
   <div
     class="vqb-group pa-6 mb-2"
     style="padding-bottom: 18px !important;"
+    :id="`playbook-query-builder-group-${index}`"
     :class="[
       depth === 1 && query.children.length <= 1 && 'vqb-disable',
       'elevation-' + (depth - 1).toString()
@@ -12,6 +13,7 @@
     <div
       v-if="getCustomBadgeRender"
       class="custom-group-badge"
+      :id="`playbook-query-builder-group-logical-operator-custom-group-badge-${index}`"
       :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
     >
       {{ $parent.query.logicalOperator }}
@@ -20,6 +22,7 @@
       <div class="match-type-container d-flex">
         <div
           class="match-type-container__buttons"
+          :id="`playbook-query-builder-group-logical-operator-${index}`"
           :class="{
             'match-type-container__buttons--first-depth': depth <= 1
           }"
@@ -72,6 +75,7 @@
 
         <v-btn
           v-if="depth > 1 && $parent.$parent.query.children.length > 1"
+          :id="`playbook-query-builder-group-close-${index}`"
           icon
           class="ml-auto"
           @click="deleteGroup"
@@ -83,12 +87,20 @@
     <query-builder-children v-bind="$props" />
     <div class="vqb-group-body card-body">
       <div class="rule-actions">
-        <v-btn v-if="depth !== 1" text color="#2196f3" class="mr-2" @click="addRule">
+        <v-btn
+          v-if="depth !== 1"
+          :id="`playbook-query-builder-group-add-rule-${index}`"
+          text
+          color="#2196f3"
+          class="mr-2"
+          @click="addRule"
+        >
           <v-icon>mdi-plus</v-icon> {{ labels.addRule }}
         </v-btn>
       </div>
     </div>
     <v-btn
+      :id="`playbook-query-builder-group-add-group-${index}`"
       class="query__button"
       style="margin-left: 104px; margin-top: 6px;"
       v-if="depth < maxDepth && depth === 1"
