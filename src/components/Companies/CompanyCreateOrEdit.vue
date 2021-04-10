@@ -64,7 +64,7 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.CompanyName }}</label>
-                    <InputCompany v-model.trim="formData.Name" />
+                    <InputCompany v-model.trim="formData.Name" id="input--company-name" />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -75,6 +75,7 @@
                     </v-list-item-title>
                     <v-textarea
                       placeholder="Describe the rule"
+                      id="input--company-description"
                       outlined
                       dense
                       no-resize
@@ -100,6 +101,7 @@
                     <k-select
                       type="autocomplete"
                       :items="industries"
+                      id="input--company-industry"
                       v-model="formData.IndustryResourceId"
                       item-text="name"
                       item-value="resourceId"
@@ -118,6 +120,7 @@
                     <k-select
                       type="autocomplete"
                       v-model="formData.CountryResourceId"
+                      id="input--company-country"
                       :items="countries"
                       item-text="name"
                       item-value="resourceId"
@@ -138,6 +141,7 @@
                       outlined
                       dense
                       no-resize
+                      id="input--company-address"
                       v-model="formData.Address"
                       :rules="[
                         (v) =>
@@ -155,10 +159,11 @@
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.WebsiteUrl }}</label>
                     <InputUrl
+                      v-model="formData.WebsiteUrl"
                       :required="false"
                       :persistent-hint="false"
                       :hint="null"
-                      v-model="formData.WebsiteUrl"
+                      id="input--company-website-url"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -166,8 +171,9 @@
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
                     <k-file-upload
-                      @inputFile="onFileChanged"
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
+                      id="input--company-logo"
+                      @inputFile="onFileChanged"
                     />
                     <div>
                       <img
@@ -181,8 +187,9 @@
                 <v-list-item>
                   <v-list-item-content>
                     <v-switch
-                      :ripple="false"
                       v-model="formData.statusId"
+                      id="input--company-status"
+                      :ripple="false"
                       dense
                       :label="formData.statusId == '1' ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
@@ -205,6 +212,7 @@
                     Define licence settings
                     <a
                       v-if="edit && stepLock"
+                      id="btn-edit--company-form-step-2"
                       @click.prevent="editStepLock"
                       class="company-create-modal__edit-link"
                       >Click here to edit</a
@@ -219,6 +227,7 @@
                     <k-select
                       :items="licenceTypes"
                       v-model="formData.LicenseTypeResourceId"
+                      id="input--company--license-type"
                       item-text="name"
                       item-value="resourceId"
                       outlined
@@ -235,7 +244,8 @@
                 <v-list-item>
                   <v-list-item-content class="mb-6 company-checkbox__container">
                     <v-checkbox
-                      v-for="item in allModuleLicences"
+                      v-for="(item, index) in allModuleLicences"
+                      :id="`input--company-module-license-${index}`"
                       :key="item.resourceId"
                       v-model="formData.LicenseModuleResourceIdArray"
                       :disabled="stepLock"
@@ -254,6 +264,7 @@
                     <k-select
                       :items="expiryPeriods"
                       v-model="formData.LicensePeriodTypeResourceId"
+                      id="input--company-expiry-period"
                       item-text="name"
                       item-value="resourceId"
                       outlined
@@ -292,6 +303,7 @@
                       >
                         <InputDate
                           v-model="LicenseDates"
+                          id="input--company-license-dates"
                           type="daterange"
                           :picker-options="datePickerOptions"
                           :rules="[(v) => !!v || 'Required']"
@@ -316,6 +328,7 @@
                         :placeholder="
                           formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
                         "
+                        id="input--company-numbers-limited"
                         outlined
                         dense
                         type="text"
@@ -337,6 +350,7 @@
                       <v-btn
                         height="40"
                         class="company-create-modal__btn-unlimited"
+                        id="btn-unlimited--company"
                         color="#2196f3"
                         text
                         @click="clickUnlimited"
@@ -370,6 +384,7 @@
                       type="autocomplete"
                       :items="companyGroupList"
                       v-model="formData.CompanyGroupResourceIdArray"
+                      id="input--company-group-groups"
                       chips
                       clearable
                       item-text="name"
@@ -405,6 +420,7 @@
                       :items="notificationTemplates"
                       :return-object="false"
                       class="tlp-select"
+                      id="input--company-notification-templates"
                       :rules="[(v) => !!v || 'Required']"
                       outlined
                       hint="*Required"
@@ -433,6 +449,7 @@
                       :items="trainingContents"
                       :return-object="false"
                       class="tlp-select"
+                      id="input--company-training-content"
                       :rules="[(v) => !!v || 'Required']"
                       outlined
                       hint="*Required"
@@ -461,6 +478,7 @@
                       :items="smtpConfigurations"
                       :return-object="false"
                       class="tlp-select"
+                      id="input--company-smtp-configurations"
                       :rules="[(v) => !!v || 'Required']"
                       outlined
                       hint="*Required"
@@ -490,6 +508,7 @@
     <div class="wizard__footer">
       <div class="text-left">
         <v-btn
+          id="btn-cancel--company-modal"
           class="playbook-rule-form__button"
           outlined
           rounded

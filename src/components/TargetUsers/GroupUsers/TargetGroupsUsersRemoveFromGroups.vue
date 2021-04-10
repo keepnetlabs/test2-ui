@@ -10,6 +10,9 @@
   >
     <template #app-dialog-footer>
       <AppDialogFooter
+        type="delete"
+        confirm-button-id="btn-delete--target-group-users-remove-from-groups"
+        cancel-button-id="btn-cancel--target-group-users-remove-from-groups"
         :confirmButtonDisabled="confirmButtonDisabled"
         @handleClose="handleClose"
         @handleConfirm="handleConfirm"

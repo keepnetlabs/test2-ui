@@ -20,6 +20,7 @@
             <label class="create-company-group__label">Company Group Name</label>
             <v-text-field
               v-model.trim="groupName"
+              id="input--company-group-name"
               placeholder="Enter name"
               dense
               outlined
@@ -49,6 +50,7 @@
             </v-list-item-title>
             <v-autocomplete
               v-model.trim="selectedCompanies"
+              id="input--company-group-add-members"
               :items="companies"
               no-data-text="No companies displayed"
               :return-object="true"
