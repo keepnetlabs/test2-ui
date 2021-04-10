@@ -120,7 +120,7 @@
             dense
             v-model.trim="formValues.password"
             :type="showPassword ? 'text' : 'password'"
-            :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+            :append-icon="isEdit ? '' : showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
             :rules="getPasswordRules"
