@@ -6,6 +6,7 @@
       :name="mailDetails.subject"
       :resourceId="getResourceId"
       @on-close-dialog="toggleShowReAnalyzeDialog"
+      @on-confirm="$emit('on-re-analyze-click')"
     />
     <div class="details-content--item mb-6" style="justify-content: space-between;">
       <div style="display: flex; align-items: center;">
@@ -136,7 +137,7 @@ export default {
     },
     isReAnalyzeDisabled() {
       const mailDetails = this.mailDetails
-      return mailDetails.status === 'BeingAnalyzed'
+      return mailDetails.status === 'BeingAnalyzed' || mailDetails.status === 'InProgress'
     }
   },
   methods: {

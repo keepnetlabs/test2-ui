@@ -20,6 +20,7 @@
               <email-details-content-details
                 :mail-details="mailDetails"
                 @handleDownloadEmail="handleDownloadEmail"
+                @on-re-analyze-click="getPostDetails"
               />
             </template>
           </el-tab-pane>
