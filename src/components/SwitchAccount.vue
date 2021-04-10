@@ -40,6 +40,7 @@
           <div style="position: relative;" v-click-outside="handleSearchCompanyFocusOut">
             <v-text-field
               v-model="searchedCompanyText"
+              id="input--switch-account-search-company"
               outlined
               hide-details
               autocomplete="off"

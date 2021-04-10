@@ -16,6 +16,8 @@
       >
         <template #footer>
           <app-dialog-footer
+            confirm-button-id="btn-confirm--target-users-check-license-dialog"
+            cancel-button-id="btn-cancel--target-users-check-license-dialog"
             @handleClose="toggleShowLicenseExceededDialog"
             @handleConfirm="callForCreateTargetUser"
           />
@@ -27,16 +29,19 @@
           sub-title="Define user properties"
         />
         <form-group :title="labels.FirstName" has-hint>
-          <InputFirstName v-model.trim="formValues.firstName" id="firstName" />
+          <InputFirstName v-model.trim="formValues.firstName" id="input--target-user-first-name" />
         </form-group>
         <form-group :title="labels.LastName" has-hint>
-          <InputLastName v-model.trim="formValues.lastName" id="lastName" />
+          <InputLastName v-model.trim="formValues.lastName" id="input--target-user-last-name" />
         </form-group>
         <form-group has-hint title="Email">
-          <InputEmail v-model.trim="formValues.email" />
+          <InputEmail v-model.trim="formValues.email" id="input--target-user-email" />
         </form-group>
         <form-group title="Department">
-          <InputDepartment v-model.trim="formValues.department" />
+          <InputDepartment
+            v-model.trim="formValues.department"
+            id="input--target-user-department"
+          />
         </form-group>
         <form-group
           :title="item.name"
@@ -45,9 +50,10 @@
           v-for="(item, index) in customFields"
         >
           <v-text-field
+            v-model.trim="customFieldsModels[item.resourceId]"
+            :id="`input--target-user-custom-field-${item.name}`"
             outlined
             dense
-            v-model.trim="customFieldsModels[item.resourceId]"
             :placeholder="`Enter ${item.name}`"
             height="40"
             :key="item.name"
@@ -69,6 +75,7 @@
           >
             <InputDate
               v-model.trim="customFieldsModels[item.resourceId]"
+              :id="`input--target-user-custom-field-${item.name}`"
               popper-class="filter__date-picker"
               :key="item.name"
               v-bind="getDatePickerProps(item)"
@@ -100,6 +107,7 @@
 
           <k-checkbox
             v-model.trim="customFieldsModels[item.resourceId]"
+            :id="`input--target-user-custom-field-${item.name}`"
             :label="item.name"
             color="#2196f3"
             class="mb-2 mt-n1"
@@ -109,17 +117,17 @@
         </form-group>
         <form-group title="Priority">
           <k-select
+            v-model.trim="formValues.priority"
+            id="input--target-user-priority"
             :items="priorityItems"
             outlined
             dense
-            v-model.trim="formValues.priority"
-            id="department"
           />
         </form-group>
         <form-group title="Active">
           <v-switch
-            id="isActive"
             v-model="formValues.isActive"
+            id="input--target-user-is-active"
             color="#2196f3"
             :label="formValues.isActive ? 'Yes' : 'No'"
           />

@@ -52,11 +52,16 @@
           handle=".handle"
           @change="handleChangeOfList"
         >
-          <v-list-item :key="item.name" v-for="item in customFields" style="max-width: 650px;">
+          <v-list-item
+            :key="item.name"
+            v-for="(item, index) in customFields"
+            style="max-width: 650px;"
+          >
             <v-list-item-content>
               <table-field
                 isDeleteable
                 :item="item"
+                :index="index"
                 @deleteTableField="handleDeleteTableField(item)"
               />
             </v-list-item-content>
@@ -86,13 +91,14 @@
         >
           <v-list-item
             :key="item.name"
-            v-for="item in unActiveCustomFields"
+            v-for="(item, index) in unActiveCustomFields"
             style="max-width: 650px;"
           >
             <v-list-item-content>
               <table-field
                 isDeleteable
                 :item="item"
+                :index="index"
                 @deleteTableField="handleDeleteTableField(item)"
               />
             </v-list-item-content>
