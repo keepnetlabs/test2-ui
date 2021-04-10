@@ -162,8 +162,11 @@ export default {
   computed: {
     filter() {
       return (item, search, textKey = '') => {
-        if (item && item.permissionDescription && item.permissionDescription.indexOf(search) > -1) {
-          return item.permissionDescription.indexOf(search) > -1
+        if (item) {
+          if (item.permissionDescription) {
+            let text = item.permissionDescription.toLowerCase()
+            return text.indexOf(search.toLowerCase()) > -1
+          }
         }
       }
     },
