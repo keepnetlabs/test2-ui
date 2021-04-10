@@ -30,6 +30,7 @@
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.RuleName }}</label>
                     <v-text-field
+                      id="input--playbook-rule-name"
                       placeholder="Enter rule name"
                       outlined
                       dense
@@ -50,6 +51,7 @@
                     <label class="bottom-margin">{{ labels.Description }}</label>
                     <v-textarea
                       placeholder="Enter description"
+                      id="input--playbook-description"
                       outlined
                       dense
                       no-resize
@@ -73,7 +75,13 @@
                       Rules with higher priority override lower priority rules
                     </v-list-item-title>
                     <div class="playbook-rule-form__radio-group mb-6">
-                      <v-radio-group v-model.trim="priority" row hide-details dense>
+                      <v-radio-group
+                        v-model.trim="priority"
+                        id="input--playbook-priority"
+                        row
+                        hide-details
+                        dense
+                      >
                         <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
                         <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
@@ -95,8 +103,9 @@
                       {{ labels.DefineTags }}
                     </v-list-item-title>
                     <k-select
-                      type="combobox"
                       v-model.trim="tags"
+                      id="input--playbook-tags"
+                      type="combobox"
                       :items="[]"
                       chips
                       deletable-chips
@@ -120,6 +129,7 @@
                   <v-list-item-content>
                     <v-switch
                       v-model="isActive"
+                      id="input--playbook-status"
                       :label="isActive ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
@@ -139,11 +149,12 @@
                 </v-list-item-title>
               </v-list-item-content>
               <vue-query-builder
-                :max-depth="4"
+                v-model="query"
+                id="playbook-query-builder"
                 class="w-100"
+                :max-depth="4"
                 :labels="label"
                 :rules="rules"
-                v-model="query"
               >
                 <template v-slot:default="slotProps">
                   <v-form ref="refStep2Form" lazy-validation>
