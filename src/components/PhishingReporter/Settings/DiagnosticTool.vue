@@ -28,6 +28,7 @@
           <div class="diagnostic-tool__list-item-header">Optional Features</div>
           <v-checkbox
             class="diagnostic-tool__checkbox k-checkbox"
+            id="input--phishing-reporter-is-enable-add-in"
             color="#2196f3"
             label="Check and enable all disabled add-ins automatically"
             v-model="formValues.isEnableAddIn"
