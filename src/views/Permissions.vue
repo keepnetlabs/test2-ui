@@ -142,21 +142,24 @@ export default {
             show: true,
             type: 'text',
             width: 120,
-            filterableType: 'text',
-            filterProps: { items: ['Include'] }
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.TYPE,
-            align: 'center',
+            property: PROPERTY_STORE.TYPENAME,
+            align: 'left',
             editable: false,
-            label: LABEL_STORE.TYPE,
+            label: LABEL_STORE.TYPENAME,
             fixed: false,
             sortable: true,
             show: true,
             type: 'badge',
             width: 150,
-            filterableType: 'text',
-            filterProps: { items: ['Include'] }
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'System', value: '1' },
+              { text: 'Custom', value: '2' }
+            ],
+            filterableCustomFieldName: 'Type'
           },
           {
             property: PROPERTY_STORE.CREATETIME,
