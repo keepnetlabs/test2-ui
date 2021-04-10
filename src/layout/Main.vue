@@ -413,7 +413,12 @@
 
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
+              v-if="
+                checkPermissionMultiple([
+                  'companies/smtp-settings/search|POST',
+                  'roles/search|POST'
+                ])
+              "
             >
               <v-list-item-content class="menu-item-content">
                 <router-link

@@ -85,6 +85,12 @@
             open-on-click
           >
             <template v-slot:prepend="{ item }">
+              <p
+                class="new-permissions__permission-name"
+                v-if="item.permissionDescription && item.permissionName"
+              >
+                {{ item.permissionDescription && item.permissionName }}
+              </p>
               {{
                 item.permissionDescription ||
                 item.parentGroupName ||
@@ -288,6 +294,16 @@ export default {
 
 <style lang="scss">
 .new-permissions {
+  &__permission-name {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 0 !important;
+  }
   &__treeview-title {
     display: flex;
     justify-content: space-between;
@@ -311,7 +327,7 @@ export default {
   }
   .v-treeview-node__root {
     border-bottom: 1px solid #f2f2f2;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
@@ -321,13 +337,14 @@ export default {
   }
   .v-treeview-node--leaf {
     .v-treeview-node__content {
-      font-size: 14px;
+      font-family: OpenSans;
+      font-size: 9px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.5;
+      line-height: normal;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
+      color: #474747;
       position: relative;
       &:after {
         content: '';
@@ -337,7 +354,7 @@ export default {
         position: absolute;
         left: -16px;
         border-radius: 36px;
-        top: 7px;
+        top: 45%;
       }
     }
   }
