@@ -87,7 +87,7 @@ export const labels = {
   EmailAddress: 'Email Address',
   StopOngoingInvestigation: 'Stop Ongoing Investigation',
   DoYouWantToStopInvestigation: 'Do you want to stop this investigation?',
-  OnceYouStoppedInvestigation: 'Once you stopped, you cannot resume this investigation.',
+  OnceYouStoppedInvestigation: 'Once stopped, you cannot resume this investigation',
   Setting: 'Setting',
   Settings: 'Settings',
   Latest: 'Latest',

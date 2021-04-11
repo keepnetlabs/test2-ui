@@ -117,7 +117,6 @@
             <app-dialog-footer
               cancel-button-id="btn-cancel--investigation-details-warning-message-popup"
               confirm-button-id="btn-save--investigation-details-warning-message-popup"
-              action-button-text="STOP"
               :confirm-button-disabled="stopButtonDisabled"
               @handleConfirm="isWantToStopConfirm"
               @handleClose="isWantToStop = false"
