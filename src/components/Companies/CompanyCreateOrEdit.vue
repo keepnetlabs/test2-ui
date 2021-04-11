@@ -376,7 +376,7 @@
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-form ref="refStep3Form" lazy-validation>
+              <v-form ref="refStep3Form" lazy-validation onSubmit="return false;">
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">Company Groups</label>

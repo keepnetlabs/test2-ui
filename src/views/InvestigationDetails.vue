@@ -117,7 +117,6 @@
             <app-dialog-footer
               cancel-button-id="btn-cancel--investigation-details-warning-message-popup"
               confirm-button-id="btn-save--investigation-details-warning-message-popup"
-              action-button-text="STOP"
               :confirm-button-disabled="stopButtonDisabled"
               @handleConfirm="isWantToStopConfirm"
               @handleClose="isWantToStop = false"
@@ -703,9 +702,8 @@
                     >
                       Investigation Name:<span
                         class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
-                        >{{ investigationDetailsData.name }} -
-                        {{ investigationDetailsData.startDate }}</span
-                      >
+                        >{{ investigationDetailsData.name }}
+                      </span>
                     </div>
                     <div
                       class="investigation-details__container__content--right-menu__summary__item mt-2"
