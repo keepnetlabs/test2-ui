@@ -702,9 +702,8 @@
                     >
                       Investigation Name:<span
                         class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
-                        >{{ investigationDetailsData.name }} -
-                        {{ investigationDetailsData.startDate }}</span
-                      >
+                        >{{ investigationDetailsData.name }}
+                      </span>
                     </div>
                     <div
                       class="investigation-details__container__content--right-menu__summary__item mt-2"
