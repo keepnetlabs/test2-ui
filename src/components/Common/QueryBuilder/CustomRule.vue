@@ -1,8 +1,9 @@
 <template>
   <!-- eslint-disable vue/no-v-html -->
-  <div class="vqb-rule">
+  <div class="vqb-rule" :id="`query-builder-rule-${getParentIndex}-${index}`">
     <div
       v-if="getBadgeRender"
+      :id="`playbook-query-builder-rule-logical-operator-custom-group-badge-${getParentIndex}-${index}`"
       class="custom-rule-badge"
       :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
     >
@@ -14,6 +15,7 @@
         <!-- List of operands (optional) -->
         <k-select
           v-model.trim="query.operand"
+          :id="`input--query-builder-rule-operand-${getParentIndex}-${index}`"
           :items="rule.operands"
           outlined
           min-width-type="small"
@@ -33,6 +35,7 @@
         <!-- List of operators (e.g. =, !=, >, <) -->
         <k-select
           v-model="query.operator"
+          :id="`input--query-builder-rule-operator-${getParentIndex}-${index}`"
           :items="rule.operators"
           outlined
           item-value="value"
@@ -44,6 +47,7 @@
         <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
+          :id="`input--query-builder-rule-operand-${getParentIndex}-${index}`"
           :items="rule.operandsAttachmentHash"
           outlined
           min-width-type="small"
@@ -53,6 +57,7 @@
         <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
+          :id="`input--query-builder-rule-operator-${getParentIndex}-${index}`"
           :items="rule.operandsSenderIP"
           outlined
           min-width-type="small"
@@ -63,6 +68,7 @@
           <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
+            :id="`input--query-builder-rule-format-${getParentIndex}-${index}`"
             v-model.trim="query.format"
             :items="rule.operandsFrom"
             outlined
@@ -74,6 +80,7 @@
           <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
+            :id="`input--query-builder-rule-format-${getParentIndex}-${index}`"
             v-model.trim="query.format"
             :items="rule.operandsTo"
             outlined
@@ -84,6 +91,7 @@
           <!-- List of "From" operands-->
           <k-select
             min-width-type="small"
+            :id="`input--query-builder-rule-format-${getParentIndex}-${index}`"
             v-model.trim="query.format"
             :items="rule.operandsCC"
             outlined
@@ -94,6 +102,7 @@
           <!-- List of "Analysis result" operands-->
           <k-select
             min-width-type="small"
+            :id="`input--query-builder-rule-operand-${getParentIndex}-${index}`"
             v-model="query.value"
             :items="rule.operandsAnalysisResult"
             outlined
@@ -116,6 +125,7 @@
           <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             :placeholder="getPlaceholder()"
             outlined
             persistent-hint
@@ -128,6 +138,7 @@
           <!-- Condition text input-->
           <InputIpAddress
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             placeholder="Enter IP address"
             :rules="[
               (v) => validations.required(v, 'Required'),
@@ -142,6 +153,7 @@
           <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             placeholder="Enter subject or a regular expression"
             outlined
             persistent-hint
@@ -156,6 +168,7 @@
           <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             placeholder="Enter keywords or a regular expression to search in email body"
             outlined
             persistent-hint
@@ -170,6 +183,7 @@
           <!-- Condition text input-->
           <v-text-field
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             placeholder="Enter file name or a regular expression"
             outlined
             persistent-hint
@@ -183,6 +197,7 @@
         <v-col v-if="query.operand === 'AttachmentExtension'">
           <v-text-field
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             placeholder="Enter file extension (tar.gz) without the starting dot"
             outlined
             persistent-hint
@@ -194,6 +209,7 @@
         <v-col v-if="query.operand === 'AttachmentHash'">
           <v-text-field
             v-model.trim="query.value"
+            :id="`input--query-builder-value-${getParentIndex}-${index}`"
             placeholder="Enter SHA512 or MD5 hash"
             outlined
             :rules="getAttachmentHashRules()"
@@ -215,7 +231,12 @@
         "
       >
         <!-- Remove rule button -->
-        <v-btn icon v-if="isDeleteRuleButton()" @click="removeRule">
+        <v-btn
+          icon
+          v-if="isDeleteRuleButton()"
+          :id="`btn--query-builder-close-${getParentIndex}-${index}`"
+          @click="removeRule"
+        >
           <v-icon>mdi-close-circle</v-icon>
         </v-btn>
       </v-col>
@@ -273,6 +294,13 @@ export default {
   computed: {
     isOperatorExists() {
       return this.query.operator !== 'Exists' && this.query.operator !== 'DoesNotExist'
+    },
+    getParentIndex() {
+      if (this.$parent && this.$parent.$parent && this.$parent.$parent.index) {
+        return this.$parent.$parent.index
+      } else {
+        return `${Math.floor(Math.random() * 10000).toString()}`
+      }
     }
   },
   methods: {

@@ -3,9 +3,23 @@
     <v-layout wrap class="system-users__container">
       <v-card class="system-users__container-card">
         <el-tabs v-model="tab">
-          <el-tab-pane label="People" name="system-users--people" id="system-users--people-content"
-            ><people ref="refPeople"
+          <el-tab-pane
+            v-if="checkPermissions('system-users/search', 'POST')"
+            label="People"
+            name="system-users--people"
+            id="system-users--people-content"
+          >
+            <people v-if="tab === 'system-users--people'" ref="refPeople"
           /></el-tab-pane>
+
+          <el-tab-pane
+            v-if="checkPermissions('roles/search', 'POST')"
+            label="Roles"
+            name="system-users--roles"
+            id="system-users--roles-content"
+          >
+            <Permissions v-if="tab === 'system-users--roles'" ref="refPermissions" />
+          </el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -14,10 +28,13 @@
 
 <script>
 import People from '@/components/SystemUsers/People'
+import Permissions from '../views/Permissions'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'SystemUsers',
   components: {
-    People
+    People,
+    Permissions
   },
   data() {
     return {
@@ -27,8 +44,12 @@ export default {
   methods: {
     changeTabStatus(index) {
       this.tab = index
+    },
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
     }
   },
+
   beforeRouteLeave(to, from, next) {
     const { refPeople } = this.$refs
     if (refPeople && refPeople.showCreateOrEditSystemUserModal) {
@@ -36,6 +57,11 @@ export default {
       next(false)
     } else {
       next()
+    }
+  },
+  created() {
+    if (!this.checkPermissions('system-users/search', 'POST')) {
+      this.tab = 'system-users--roles'
     }
   }
 }

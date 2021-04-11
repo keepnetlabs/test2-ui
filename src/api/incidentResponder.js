@@ -56,3 +56,9 @@ export function updateRoiSettings(payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function reAnalyzeEmail(resourceId = '') {
+  return testRequest.get(`/analysis-engines/${resourceId}/reanalyze`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

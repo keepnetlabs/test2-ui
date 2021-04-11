@@ -53,9 +53,10 @@
         </form-group>
         <make-available-for
           v-if="showMakeAvailableFor"
-          ref="refMakeAvailableFor"
+          ref="refMakeAvailableForNewPermissions"
           v-model="formValues.availableForRequests"
           class="mb-2"
+          :key="availableForKey"
         />
         <form-group :title="'Privileges'" has-hint class-name="mt-8">
           <v-text-field
@@ -77,7 +78,6 @@
             :items="permissions"
             item-key="permissionResourceId"
             selectable
-            return-object
             :open.sync="open"
             item-disabled="editable"
             :search="search"
@@ -85,6 +85,12 @@
             open-on-click
           >
             <template v-slot:prepend="{ item }">
+              <p
+                class="new-permissions__permission-name"
+                v-if="item.permissionDescription && item.permissionName"
+              >
+                {{ item.permissionDescription && item.permissionName }}
+              </p>
               {{
                 item.permissionDescription ||
                 item.parentGroupName ||
@@ -136,6 +142,9 @@ export default {
     },
     permissions: {
       required: false
+    },
+    permissionEditData: {
+      type: Object
     }
   },
   data() {
@@ -152,14 +161,18 @@ export default {
         permissionResourceIdList: []
       },
       validations: validations,
-      caseSensitive: false
+      caseSensitive: false,
+      availableForKey: 'initialKey'
     }
   },
   computed: {
     filter() {
       return (item, search, textKey = '') => {
-        if (item && item.permissionDescription && item.permissionDescription.indexOf(search) > -1) {
-          return item.permissionDescription.indexOf(search) > -1
+        if (item) {
+          if (item.permissionDescription) {
+            let text = item.permissionDescription.toLowerCase()
+            return text.indexOf(search.toLowerCase()) > -1
+          }
         }
       }
     },
@@ -197,11 +210,11 @@ export default {
   },
   methods: {
     submit() {
-      const { refForm, refMakeAvailableFor } = this.$refs
+      const { refForm, refMakeAvailableForNewPermissions } = this.$refs
       let isValid = true
-      if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
-        isValid = refMakeAvailableFor.isAvailableForValid
+      if (refMakeAvailableForNewPermissions) {
+        refMakeAvailableForNewPermissions.validateAvailableFor(this.formValues.availableForRequests)
+        isValid = refMakeAvailableForNewPermissions.isAvailableForValid
       }
       if (refForm.validate() && isValid) {
         this.saveDisable = true
@@ -211,11 +224,8 @@ export default {
           AvailableForRequests: this.formValues.availableForRequests.map((item) => {
             return { Type: item.type, ResourceId: item.id }
           }),
-          PermissionResourceIdList: this.formValues.permissionResourceIdList.map(
-            (item) => item.permissionResourceId
-          )
+          PermissionResourceIdList: this.formValues.permissionResourceIdList
         }
-
         if (this.isEdit) {
           this.updatePermissionRoles(payload)
         } else {
@@ -267,9 +277,16 @@ export default {
       this.$emit('closeOverlay')
     }
   },
-  created() {
+  mounted() {
     if (this.isEdit && this.resourceId) {
-    } else {
+      this.formValues = this.permissionEditData
+      let _this = this
+      this.$nextTick(() => {
+        _this.formValues.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+          _this.permissionEditData.availableForList
+        )
+        this.availableForKey = 'updatedKey'
+      })
     }
   }
 }
@@ -277,6 +294,16 @@ export default {
 
 <style lang="scss">
 .new-permissions {
+  &__permission-name {
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: 1.5;
+    letter-spacing: normal;
+    color: rgba(0, 0, 0, 0.87);
+    margin-bottom: 0 !important;
+  }
   &__treeview-title {
     display: flex;
     justify-content: space-between;
@@ -300,7 +327,7 @@ export default {
   }
   .v-treeview-node__root {
     border-bottom: 1px solid #f2f2f2;
-    font-size: 18px;
+    font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
     font-style: normal;
@@ -310,13 +337,14 @@ export default {
   }
   .v-treeview-node--leaf {
     .v-treeview-node__content {
-      font-size: 14px;
+      font-family: OpenSans;
+      font-size: 9px;
       font-weight: normal;
       font-stretch: normal;
       font-style: normal;
-      line-height: 1.5;
+      line-height: normal;
       letter-spacing: normal;
-      color: rgba(0, 0, 0, 0.87);
+      color: #474747;
       position: relative;
       &:after {
         content: '';
@@ -326,7 +354,7 @@ export default {
         position: absolute;
         left: -16px;
         border-radius: 36px;
-        top: 7px;
+        top: 45%;
       }
     }
   }

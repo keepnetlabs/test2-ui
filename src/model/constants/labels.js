@@ -25,6 +25,7 @@ export const labels = {
   CompanyNameSecondLower: 'Company name',
   SenderName: 'Sender name',
   Title: 'Title',
+  ReAnalyze: 'Re-analyze',
   SHA512: 'SHA512',
   Extension: 'Extension',
   MD5: 'MD5',

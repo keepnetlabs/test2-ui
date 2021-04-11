@@ -21,10 +21,11 @@
       <v-list-item class="new-user-group__list-item mt-2">
         <v-list-item-content>
           <v-text-field
+            v-model.trim="groupName"
+            id="input--target-group-name"
             dense
             outlined
             placeholder="Enter user group name"
-            v-model.trim="groupName"
             :rules="[
               (v) => validations.required(v, labels.Required),
               (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.UserGroupName))
@@ -42,12 +43,37 @@
       </v-list-item>
       <v-list-item class="new-user-group__list-item mt-n2">
         <v-list-item-content>
-          <v-radio-group v-model="priority" row>
-            <v-radio value="VeryLow" label="Very Low" color="#2196f3"></v-radio>
-            <v-radio value="Low" label="Low" color="#2196f3"></v-radio>
-            <v-radio value="Medium" label="Medium" color="#2196f3"></v-radio>
-            <v-radio value="High" label="High" color="#2196f3"></v-radio>
-            <v-radio value="VeryHigh" label="Very High" color="#2196f3"></v-radio>
+          <v-radio-group v-model="priority" id="input--target-group-priority" row>
+            <v-radio
+              value="VeryLow"
+              id="input--target-group-priority-very-low"
+              label="Very Low"
+              color="#2196f3"
+            ></v-radio>
+            <v-radio
+              value="Low"
+              id="input--target-group-priority-low"
+              label="Low"
+              color="#2196f3"
+            ></v-radio>
+            <v-radio
+              value="Medium"
+              id="input--target-group-priority-medium"
+              label="Medium"
+              color="#2196f3"
+            ></v-radio>
+            <v-radio
+              value="High"
+              id="input--target-group-priority-high"
+              label="High"
+              color="#2196f3"
+            ></v-radio>
+            <v-radio
+              value="VeryHigh"
+              id="input--target-group-priority-very-high"
+              label="Very High"
+              color="#2196f3"
+            ></v-radio>
           </v-radio-group>
         </v-list-item-content>
       </v-list-item>

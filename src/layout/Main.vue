@@ -413,7 +413,12 @@
 
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['companies/smtp-settings/search|POST'])"
+              v-if="
+                checkPermissionMultiple([
+                  'companies/smtp-settings/search|POST',
+                  'roles/search|POST'
+                ])
+              "
             >
               <v-list-item-content class="menu-item-content">
                 <router-link
@@ -431,7 +436,10 @@
               v-if="checkPermissionMultiple(['system-users/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link to="/system-users" class="menu-link-default">
+                <router-link
+                  to="/system-users"
+                  :class="['menu-link-default', routerName === 'System Users' && 'active-link']"
+                >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">System Users</span>
                   </v-list-item-title>
@@ -447,18 +455,6 @@
                 <router-link to="/audit" class="menu-link-default">
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Audit Log</span>
-                  </v-list-item-title>
-                </router-link>
-              </v-list-item-content>
-            </v-list-item>
-            <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
-              :class="[routerName === 'Permissions' && 'active-link']"
-            >
-              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
-                <router-link to="/permissions" class="menu-link-default">
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Permissions</span>
                   </v-list-item-title>
                 </router-link>
               </v-list-item-content>

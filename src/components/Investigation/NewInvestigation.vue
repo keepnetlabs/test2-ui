@@ -12,6 +12,7 @@
               <v-list-item-content class>
                 <label class="pb-2 edit-labels">{{ labels.InvestigationName }}</label>
                 <v-text-field
+                  id="input--investigation-name"
                   placeholder="Enter an investigation name"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -31,18 +32,35 @@
                 <div class="target-users-select__radio-group">
                   <v-radio-group
                     v-model="targetUserType"
+                    id="input--investigation-target-user-type"
                     :mandatory="false"
                     @change="handleTargetUserTypeChange"
                     row
                   >
-                    <v-radio value="AllUsers" label="All Users" color="#2196f3"></v-radio>
-                    <v-radio value="Groups" label="User Groups" color="#2196f3"></v-radio>
-                    <v-radio value="SpecificUsers" label="Specific Users" color="#2196f3"></v-radio>
+                    <v-radio
+                      id="input--investigation-target-user-type-all-users"
+                      value="AllUsers"
+                      label="All Users"
+                      color="#2196f3"
+                    ></v-radio>
+                    <v-radio
+                      id="input--investigation-target-user-type-user-groups"
+                      value="Groups"
+                      label="User Groups"
+                      color="#2196f3"
+                    ></v-radio>
+                    <v-radio
+                      id="input--investigation-target-user-type-specific-users"
+                      value="SpecificUsers"
+                      label="Specific Users"
+                      color="#2196f3"
+                    ></v-radio>
                   </v-radio-group>
                 </div>
                 <div class="target-users-select__input-area">
                   <k-select
                     type="combobox"
+                    id="input--investigation-target-user-all-users"
                     :items="[]"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -63,6 +81,7 @@
                   />
                   <k-select
                     type="combobox"
+                    id="input--investigation-target-user-groups"
                     :items="userGroupsItems"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -85,6 +104,7 @@
                   />
                   <k-select
                     type="combobox"
+                    id="input--investigation-target-user-specific-users"
                     :items="specificUserItems"
                     v-if="targetUserType === 'SpecificUsers'"
                     placeholder="Select specific users"
@@ -119,6 +139,7 @@
                   <div class="filter-item__selectbox">
                     <Treeselect
                       v-model="list.option"
+                      :id="`input--investigation-search-criteria-${list.option}-${index}`"
                       disable-branch-nodes
                       open-direction="below"
                       :class="[
@@ -149,6 +170,7 @@
                   <div class="filter-item__input">
                     <v-text-field
                       :key="index + list.option"
+                      :id="`input--investigation-search-criteria-value-${list.option}-${index}`"
                       :placeholder="
                         placeholders[list.option]
                           ? placeholders[list.option]
@@ -163,6 +185,7 @@
                   </div>
                   <div class="filter-item__delete-button">
                     <v-icon
+                      :id="`btn-close--investigation-search-criteria-${list.option}-${index}`"
                       medium
                       left
                       class="ml-2"
@@ -172,7 +195,12 @@
                     >
                   </div>
                 </div>
-                <button class="filter-item__button" type="button" @click="addNewFilterListOption()">
+                <button
+                  id="btn-add--investigation-search-criteria"
+                  class="filter-item__button"
+                  type="button"
+                  @click="addNewFilterListOption()"
+                >
                   <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD CRITERIA
                 </button>
               </v-list-item-content>
@@ -184,6 +212,7 @@
                 <div class="date-row" :class="[!isDateValid && 'date-picker-container']">
                   <InputDate
                     v-model="date"
+                    id="input--investigation-email-date-range"
                     type="datetimerange"
                     ref="refPicker"
                     :picker-options="pickerOptions"
@@ -212,6 +241,7 @@
                 <div class="select-sources flex">
                   <v-checkbox
                     v-for="(item, index) in sources"
+                    :id="`input--investigation-sources-${item['mailConfigurationName']}-${index}`"
                     :key="index"
                     class="v-input--checkbox"
                     v-model="scanTypes"
@@ -241,6 +271,7 @@
                   >Select how many days the investigation will run</label
                 >
                 <k-select
+                  id="input--investigation-duration"
                   :items="durations"
                   outlined
                   class="input-select standard-height"
@@ -259,6 +290,7 @@
                   >Select action to be executed if email is found</label
                 >
                 <k-select
+                  id="input--investigation-action"
                   :items="actions"
                   outlined
                   class="input-select standard-height"
@@ -280,6 +312,7 @@
                 <label class="edit-labels">Message</label>
                 <v-text-field
                   v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
+                  id="input--investigation-message"
                   placeholder="Enter a message"
                   outlined
                   class="edit-name-textfield edit-select standard-height warning-message"
