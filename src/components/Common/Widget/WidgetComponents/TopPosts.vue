@@ -4,6 +4,7 @@
       <widget-container v-resize="onResize">
         <widget-header
           button-id="btn-link--top-posts"
+          close-button-id="btn-close--recently-top-posts"
           :title="getTitle"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"
@@ -16,26 +17,35 @@
             :data="tableData"
             :empty="empty"
           >
-            <template v-slot:postTitle="{ value, row }">
+            <template v-slot:postTitle="{ value, row, rowIndex }">
               <span
                 class="k-widget-list__item cursor-pointer"
+                :id="`text--top-posts-post-title-${rowIndex}`"
                 @click="handlePostTitleSelection(row)"
               >
                 {{ value }}
               </span>
-              <div class="k-widget-list__sub-item" v-if="row['communityName']">
+              <div
+                v-if="row['communityName']"
+                :id="`text--top-posts-community-${rowIndex}`"
+                class="k-widget-list__sub-item"
+              >
                 {{ row['communityName'] }}
               </div>
             </template>
-            <template v-slot:commentCount="{ row }">
+            <template v-slot:commentCount="{ row, rowIndex }">
               <div class="right-side-like-comment-wrapper">
                 <div class="right-side-like">
                   <v-icon style="opacity: 0.7;" small>mdi-thumb-up</v-icon>
-                  <span class="like-count">{{ row.likeCount }}</span>
+                  <span :id="`text--top-posts-like-count-${rowIndex}`" class="like-count">{{
+                    row.likeCount
+                  }}</span>
                 </div>
                 <div class="right-side-message pl-2">
                   <v-icon style="opacity: 0.7;" small>mdi-message-reply-text</v-icon>
-                  <span class="comment-count">{{ row.commentCount }}</span>
+                  <span :id="`text--top-posts-comment-count-${rowIndex}`" class="comment-count">{{
+                    row.commentCount
+                  }}</span>
                 </div>
               </div>
             </template>

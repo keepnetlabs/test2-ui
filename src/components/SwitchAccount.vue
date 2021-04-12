@@ -20,15 +20,19 @@
             </div>
             <div class="d-flex">
               <div class="switch-account__content--current-user__logo">
-                <img v-if="!!getLogoImage" :src="getLogoImage" />
+                <img v-if="!!getLogoImage" :src="getLogoImage" id="img--switch-account-logo" />
               </div>
               <div class="switch-account__content--current-user__details">
-                <span class="switch-account__content--current-user__details--companyName">{{
-                  getSelectedCompanyName
-                }}</span>
-                <span class="switch-account__content--current-user__details--role">{{
-                  getRolename
-                }}</span>
+                <span
+                  id="text--switch-account-company-name"
+                  class="switch-account__content--current-user__details--companyName"
+                  >{{ getSelectedCompanyName }}</span
+                >
+                <span
+                  id="text--switch-account-user-role-name"
+                  class="switch-account__content--current-user__details--role"
+                  >{{ getRolename }}</span
+                >
               </div>
             </div>
           </div>
@@ -148,7 +152,7 @@ export default {
     handleSearchCompanyFocus() {
       this.searchCompanyIcon = 'mdi-menu-up'
       this.isMenuOpen = true
-      document.querySelector('.switch-account__container').style.visibility = 'visible'
+      this.changeMenuStatus('visible')
       this.searchedCompanyText = ''
       this.orderedAccounts = this.defaultOrderedItems
     },
@@ -156,15 +160,21 @@ export default {
       this.selectedAccount = item
       this.searchedCompanyText = item.label
       this.isMenuOpen = false
-      document.querySelector('.switch-account__container').style.visibility = 'hidden'
+      this.changeMenuStatus()
       this.searchCompanyIcon = 'mdi-menu-down'
     },
     handleSearchCompanyFocusOut() {
       this.searchCompanyIcon = 'mdi-menu-down'
       this.isMenuOpen = false
-      document.querySelector('.switch-account__container').style.visibility = 'hidden'
+      this.changeMenuStatus()
 
       this.searchedCompanyText = this.selectedAccount.label
+    },
+    changeMenuStatus(status = 'hidden') {
+      const menu = document.querySelector('.switch-account__container')
+      if (menu) {
+        menu.style.visibility = status
+      }
     },
     companiesRouterClick() {
       this.setSwitchDialog(false)

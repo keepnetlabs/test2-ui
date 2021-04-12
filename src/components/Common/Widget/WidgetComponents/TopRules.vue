@@ -3,34 +3,43 @@
     <template v-slot:skeleton-content>
       <widget-container>
         <matching-incident-modal
-          button-id="btn-link--top-rules"
           :status="showMatchingModal"
           :selectedMatch="selectedMatch"
           v-if="showMatchingModal"
           @closeOverlay="toggleMatchingIncidentModal"
         />
         <widget-header
+          button-id="btn-link--top-rules"
+          close-button-id="btn-close--top-rules"
           :editMode="editMode"
           :title="getTitle"
-          @deleteWidget="$emit('deleteWidget')"
           :link="{ href: '/playbook', text: 'Playbook' }"
+          @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:ruleName="{ value, row }">
-              <span class="k-widget-list__item cursor-pointer" @click="handleRuleNameClick(row)"
+            <template v-slot:ruleName="{ value, row, rowIndex }">
+              <span
+                class="k-widget-list__item cursor-pointer"
+                :id="`text--top-rules-rule-name${rowIndex}`"
+                @click="handleRuleNameClick(row)"
                 >{{ value }}
               </span>
             </template>
 
-            <template v-slot:matchCount="{ value, row }">
-              <span class="k-widget-list__no-match" v-if="value === 0">
+            <template v-slot:matchCount="{ value, row, rowIndex }">
+              <span
+                :id="`text--top-rules-match-count-${rowIndex}`"
+                class="k-widget-list__no-match"
+                v-if="value === 0"
+              >
                 No Match
               </span>
               <span
-                @click="handleSelectMatch(row)"
                 v-else
                 class="k-widget-list__item cursor-pointer"
+                :id="`text--top-rules-match-count-${rowIndex}`"
+                @click="handleSelectMatch(row)"
               >
                 {{ getValue(value) }}
               </span>

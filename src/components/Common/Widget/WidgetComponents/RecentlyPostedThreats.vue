@@ -4,6 +4,7 @@
       <widget-container>
         <widget-header
           button-id="btn-link--recently-posted-threats"
+          close-button-id="btn-close--recently-posted-threats"
           :title="getTitle"
           :link="{ href: '/threat-sharing', text: 'All' }"
           :edit-mode="editMode"
@@ -11,29 +12,39 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:title="{ value, row }">
+            <template v-slot:title="{ value, row, rowIndex }">
               <span
-                class="k-widget-list__item cursor-pointer"
-                @click="handleTitleSelection(row)"
                 v-if="value"
+                class="k-widget-list__item cursor-pointer"
+                :id="`text--recently-posted-threats-subject-${rowIndex}`"
+                @click="handleTitleSelection(row)"
               >
                 {{ value }}
               </span>
               <span v-else class="k-widget-list__no-match">{{ '' }}</span>
-              <div class="k-widget-list__sub-item" v-if="row['harmfulItemCount'] > 0">
+              <div
+                :id="`text--recently-posted-threats-subject-harmful-item-${rowIndex}`"
+                class="k-widget-list__sub-item"
+                v-if="row['harmfulItemCount'] > 0"
+              >
                 {{
                   row['harmfulItemCount'] > 1
                     ? `${row['harmfulItemCount']} harmful items`
                     : `${row['harmfulItemCount']} harmful item`
                 }}
               </div>
-              <div class="k-widget-list__sub-item" v-else>
+              <div
+                :id="`text--recently-posted-threats-subject-harmful-item-${rowIndex}`"
+                class="k-widget-list__sub-item"
+                v-else
+              >
                 No harmful items
               </div>
             </template>
-            <template v-slot:communityName="{ value, row }">
+            <template v-slot:communityName="{ value, row, rowIndex }">
               <span class="k-widget-list__item cursor-pointer">
                 <span
+                  :id="`text--recently-posted-threats-community-${rowIndex}`"
                   class="k-widget-list__item cursor-pointer"
                   @click="handleCommunitySelection(row)"
                 >

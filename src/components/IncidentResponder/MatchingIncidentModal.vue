@@ -38,7 +38,12 @@
     </template>
     <template v-slot:app-dialog-footer>
       <div class="d-flex justify-end">
-        <v-btn class="pa-0 k-dialog__button" text color="#2196f3" @click="closeOverlay"
+        <v-btn
+          id="btn-close--matching-incident-dialog"
+          class="pa-0 k-dialog__button"
+          text
+          color="#2196f3"
+          @click="closeOverlay"
           >CLOSE
         </v-btn>
       </div>
