@@ -101,17 +101,26 @@
         {{ mailDetails && mailDetails.urls.length }}
       </div>
     </div>
+    <email-details-sender-ip-blacklist-check
+      :mail-details="mailDetails"
+      :loading="loading"
+      @on-refresh-click="$emit('on-re-analyze-click')"
+    />
   </div>
 </template>
 
 <script>
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
+import EmailDetailsSenderIpBlacklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlacklistCheck'
 export default {
   name: 'EmailDetailsContentDetails',
-  components: { ReAnalyzeIncidentDialog },
+  components: { EmailDetailsSenderIpBlacklistCheck, ReAnalyzeIncidentDialog },
   props: {
     mailDetails: {
       type: Object
+    },
+    loading: {
+      type: Boolean
     }
   },
   data() {

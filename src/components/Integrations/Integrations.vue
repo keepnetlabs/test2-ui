@@ -71,7 +71,9 @@
           <template v-slot:activator="{ on }">
             <v-btn
               @click="handleEdit(scope.row)"
-              :id="`btn-edit--smtp-settings-row-action-${Math.random().toString().substring(2)}`"
+              :id="`btn-edit--smtp-settings-row-action-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
               class="btn-hover"
               icon
               v-on="on"
@@ -90,7 +92,9 @@
           </template>
           <v-list class="v-cart-dropdown-list el-table__action-buttons integrations__row-actions">
             <v-list-item
-              :id="`btn-status--smtp-settings-row-action-${Math.random().toString().substring(2)}`"
+              :id="`btn-status--smtp-settings-row-action-${
+                scope.$index
+              }-0-${Math.random().toString().substring(2)}`"
               class="sub-menu-el"
               :disabled="tableOptions.rowActions[1].disabled"
             >
@@ -110,7 +114,9 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
-              :id="`btn-delete--smtp-settings-row-action-${Math.random().toString().substring(2)}`"
+              :id="`btn-delete--smtp-settings-row-action-${
+                scope.$index
+              }-1-${Math.random().toString().substring(2)}`"
               class="sub-menu-el"
               :disabled="tableOptions.rowActions[2].disabled"
             >

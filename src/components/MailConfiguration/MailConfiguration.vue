@@ -307,7 +307,11 @@
             </template>
             <v-list>
               <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
-                <v-list-item-title class="add-users__title">{{ item }}</v-list-item-title>
+                <v-list-item-title
+                  class="add-users__title"
+                  :id="`item--mail-configuration-${item}`"
+                  >{{ item }}</v-list-item-title
+                >
               </v-list-item>
             </v-list>
           </v-menu>

@@ -68,7 +68,9 @@
                 :disabled="getDisabledStatusOfEdit(scope.row)"
                 class="btn-hover mr-1"
                 icon
-                :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                :id="`${tableOptions.rowActions[0].id}-${
+                  scope.$index
+                }-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -83,7 +85,9 @@
                 @click.native="handleDelete(scope.row)"
                 class="btn-hover"
                 icon
-                :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
+                :id="`${tableOptions.rowActions[1].id}-${
+                  scope.$index
+                }-${Math.random().toString().substring(2)}`"
                 v-on="on"
               >
                 <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>

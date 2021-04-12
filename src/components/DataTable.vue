@@ -570,7 +570,9 @@
                           class="btn-hover"
                           icon
                           :disabled="rowActions[0].disabled"
-                          :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                          :id="`${rowActions[0].id}-${
+                            scope.$index
+                          }-${Math.random().toString().substring(2)}`"
                           @click="handleEdit(scope.row, scope.$index)"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
@@ -587,7 +589,9 @@
                           class="btn-hover"
                           icon
                           :disabled="rowActions[0].disabled"
-                          :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                          :id="`${rowActions[0].id}-${
+                            scope.$index
+                          }-${Math.random().toString().substring(2)}`"
                           @click="rowAct(rowActions[0].action, scope.row, scope)"
                         >
                           <v-icon>{{ rowActions[0].icon }}</v-icon>
@@ -626,7 +630,9 @@
                             : act.disabled
                         "
                         :key="ind"
-                        :id="`${rowActions[ind].id}-${Math.random().toString().substring(2)}`"
+                        :id="`${rowActions[ind].id}-${
+                          scope.$index
+                        }-${ind}-${Math.random().toString().substring(2)}`"
                         class="sub-menu-el"
                       >
                         <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
@@ -678,7 +684,9 @@
                     <v-btn
                       v-on="on"
                       @click.native="rowAct(rowActions[0].action, scope.row, scope)"
-                      :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                      :id="`${rowActions[0].id}-${
+                        scope.$index
+                      }-${Math.random().toString().substring(2)}`"
                       class="btn-hover"
                       icon
                       :disabled="rowActions[0].disabled"
@@ -709,7 +717,9 @@
                             ? handleEdit(scope.row, scope.$index)
                             : rowAct(rowActions[0].action, scope.row)
                         "
-                        :id="`${rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                        :id="`${rowActions[0].id}-${
+                          scope.$index
+                        }-${Math.random().toString().substring(2)}`"
                         :disabled="rowActions[0]['disabled']"
                         class="btn-hover mr-1"
                         icon
@@ -731,7 +741,9 @@
                           scope.row.status === 'NoMatch' ||
                           rowActions[1]['disabled']
                         "
-                        :id="`${rowActions[1].id}-${Math.random().toString().substring(2)}`"
+                        :id="`${rowActions[1].id}-${
+                          scope.$index
+                        }-${Math.random().toString().substring(2)}`"
                         @click.native="rowAct(rowActions[1].action, scope.row)"
                         class="btn-hover"
                         icon
