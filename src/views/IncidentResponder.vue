@@ -1536,7 +1536,7 @@ export default {
           icon: 'mdi-refresh',
           action: 'handleReAnalyze',
           disabled: (row) => {
-            return row.status === 'BeingAnalyzed'
+            return row.status === 'BeingAnalyzed' || row.status === 'InProgress'
           }
         }
       ],
