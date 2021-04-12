@@ -432,8 +432,8 @@
                     >
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
-                          <v-list-item-title>{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle class="tlp_subtitle">{{
+                          <v-list-item-title :id="item.titleId">{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
                             item.description
                           }}</v-list-item-subtitle>
                         </v-list-item-content>
@@ -461,8 +461,8 @@
                     >
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
-                          <v-list-item-title>{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle class="tlp_subtitle">{{
+                          <v-list-item-title :id="item.titleId"> {{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
                             item.description
                           }}</v-list-item-subtitle>
                         </v-list-item-content>
@@ -490,8 +490,8 @@
                     >
                       <template v-slot:item="{ item }">
                         <v-list-item-content>
-                          <v-list-item-title>{{ item.name }}</v-list-item-title>
-                          <v-list-item-subtitle class="tlp_subtitle">{{
+                          <v-list-item-title :id="item.titleId">{{ item.name }}</v-list-item-title>
+                          <v-list-item-subtitle :id="item.descriptionId" class="tlp_subtitle">{{
                             item.description
                           }}</v-list-item-subtitle>
                         </v-list-item-content>
@@ -723,9 +723,33 @@ export default {
         this.countries = res.filter((item) => item.genericCodeTypeId === 1)
         this.industries = res.filter((item) => item.genericCodeTypeId === 2)
         this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
-        this.notificationTemplates = res.filter((item) => item.genericCodeTypeId === 5)
-        this.trainingContents = res.filter((item) => item.genericCodeTypeId === 6)
-        this.smtpConfigurations = res.filter((item) => item.genericCodeTypeId === 7)
+        this.notificationTemplates = res
+          .filter((item) => item.genericCodeTypeId === 5)
+          .map((notificationTemplate, ind) => {
+            return {
+              ...notificationTemplate,
+              titleId: `item--notification-template-title-${ind}`,
+              descriptionId: `item--notification-template-description-${ind}`
+            }
+          })
+        this.trainingContents = res
+          .filter((item) => item.genericCodeTypeId === 6)
+          .map((trainingContent, ind) => {
+            return {
+              ...trainingContent,
+              titleId: `item--training-content-title-${ind}`,
+              descriptionId: `item--training-content-description-${ind}`
+            }
+          })
+        this.smtpConfigurations = res
+          .filter((item) => item.genericCodeTypeId === 7)
+          .map((smtpConfiguration, ind) => {
+            return {
+              ...smtpConfiguration,
+              titleId: `item--smtp-configuration-title-${ind}`,
+              descriptionId: `item--smtp-configuration-description-${ind}`
+            }
+          })
         this.licenceTypes = responses[1].data.data.licenses
         this.allModuleLicences = responses[1].data.data.allLicenseModules
         if (this.edit) {

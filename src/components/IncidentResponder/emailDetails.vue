@@ -8,8 +8,7 @@
       <div class="single-post__container">
         <el-tabs v-model="tab" class="email-details__tabs" id="email-details-tabs">
           <el-tab-pane label="Details" name="first" id="email-details-summary-content">
-            <DatatableLoading :loading="isLoading" v-if="isLoading && !mailDetails">
-            </DatatableLoading>
+            <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
             <template v-else>
               <download-modal
                 :status="downloadModalStatus"
@@ -19,6 +18,7 @@
               />
               <email-details-content-details
                 :mail-details="mailDetails"
+                :loading="isLoading"
                 @handleDownloadEmail="handleDownloadEmail"
                 @on-re-analyze-click="getPostDetails"
               />
