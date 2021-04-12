@@ -29,7 +29,7 @@
         <div class="target-users-select__input-area">
           <k-select
             type="combobox"
-            :id="`input--action-investigate-target-users${getParentIndex}`"
+            :id="`input--action-investigate-target-users-${getParentIndex}`"
             :items="[]"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'

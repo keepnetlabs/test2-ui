@@ -860,7 +860,11 @@ export default {
               this.$refs.refActionItem.addAction('analyze')
             }
           }
-          if (data.playbookActionStatus && data.playbookActionStatus.actionStatusType) {
+          if (
+            data.playbookActionStatus &&
+            data.playbookActionStatus.actionStatusType &&
+            data.playbookActionStatus.actionStatusType !== 'Unknown'
+          ) {
             this.$refs.refActionItem.playbookActionStatus.actionStatusType =
               data.playbookActionStatus.actionStatusType
             this.$refs.refActionItem.addAction('status')
