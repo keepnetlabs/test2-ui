@@ -1,9 +1,10 @@
 <template functional>
   <v-btn
     v-bind="$options.getDynamicProps(props)"
-    :ripple="false"
-    style="cursor: default;"
     v-on="props.listeners"
+    style="cursor: default;"
+    :id="props.id"
+    :ripple="false"
     :class="[
       'k-badge',
       props.fullWidth ? 'full-width' : '',
@@ -21,6 +22,9 @@ export default {
   functional: true,
   name: 'Badge',
   props: {
+    id: {
+      type: String
+    },
     color: {
       type: String,
       default: ''

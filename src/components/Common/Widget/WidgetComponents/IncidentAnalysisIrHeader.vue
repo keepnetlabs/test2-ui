@@ -6,6 +6,7 @@
   >
     <template v-slot:skeleton-content>
       <div
+        id="card--incident-responder-incident-analysis"
         class="dashboard-cards incident-analysis"
         :class="{
           'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
@@ -15,6 +16,7 @@
           <span class="head">{{ labels.IncidentAnalysis }}</span>
           <v-icon
             v-if="editMode"
+            id="btn-close--dashboard-widgets-incident-analysis-reporter-card"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
             small
             @click="$emit('deleteWidget')"
@@ -24,7 +26,10 @@
         </div>
         <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
           <div class="card-body">
-            <div class="biggest">
+            <div
+              class="biggest"
+              id="card--incident-responder-incident-analysis-notified-harmful-count"
+            >
               {{
                 (irSummary &&
                   irSummary.notifiedEmailResultCount &&
@@ -33,7 +38,10 @@
               }}
             </div>
           </div>
-          <div class="card-footer">
+          <div
+            class="card-footer"
+            id="card--incident-responder-incident-analysis-reported-mail-count"
+          >
             of
             {{
               (irSummary &&

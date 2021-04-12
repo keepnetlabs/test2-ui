@@ -6,6 +6,7 @@
   >
     <template v-slot:skeleton-content>
       <div
+        id="card--incident-responder-investigations"
         class="dashboard-cards investigations"
         :class="{
           'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
@@ -15,20 +16,24 @@
           <span class="head">{{ labels.Investigations }}</span>
           <v-icon
             v-if="editMode"
+            id="btn-close--dashboard-widgets-investigations-card"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
             small
             @click="$emit('deleteWidget')"
             class="widget__header-icon ml-1"
             >mdi-close-circle</v-icon
           >
-          <router-link :to="'/investigations'">
+          <router-link :to="'/investigations'" id="btn-link--dashboard-to-investigations">
             <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
         </div>
         <div class="columns-row__body" style="margin-top: 13px;" v-if="true">
           <div class="card-body d-flex">
             <div class="body-row">
-              <span class="body-row__number">
+              <span
+                class="body-row__number"
+                id="card--incident-responder-investigations-automatic-investigation-count"
+              >
                 {{
                   (irSummary &&
                     irSummary.investigationTypeCount &&
@@ -40,7 +45,9 @@
               <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
             </div>
             <div class="body-row" style="margin-left: 81px;">
-              <span class="body-row__number"
+              <span
+                id="card--incident-responder-investigations-manual-investigation-count"
+                class="body-row__number"
                 >{{
                   (irSummary &&
                     irSummary.investigationTypeCount &&

@@ -2,10 +2,11 @@
   <div class="k-widget-header">
     <v-icon
       v-if="editMode"
+      class="widget__header-icon ml-1"
       style="position: absolute; font-size: 16px;"
       small
+      :id="closeButtonId"
       @click="$emit('deleteWidget')"
-      class="widget__header-icon ml-1"
       >mdi-close-circle</v-icon
     >
     <div class="k-widget-header__title">{{ title }}</div>
@@ -20,6 +21,9 @@ export default {
   name: 'WidgetHeader',
   props: {
     buttonId: {
+      type: String
+    },
+    closeButtonId: {
       type: String
     },
     title: {

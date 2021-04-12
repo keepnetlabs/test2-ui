@@ -123,7 +123,10 @@
               </div>
               <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
                 <div class="card-body">
-                  <div class="biggest">
+                  <div
+                    class="biggest"
+                    id="card--incident-responder-phishing-reporter-online-users-count"
+                  >
                     {{
                       (irSummary &&
                         irSummary.phishingReporterUserStatusCount &&
@@ -132,7 +135,10 @@
                     }}
                   </div>
                 </div>
-                <div class="card-footer">
+                <div
+                  class="card-footer"
+                  id="card--incident-responder-phishing-reporter-total-users-count"
+                >
                   of
                   {{
                     (irSummary &&
@@ -185,7 +191,10 @@
               </div>
               <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
                 <div class="card-body">
-                  <div class="biggest">
+                  <div
+                    class="biggest"
+                    id="card--incident-responder-incident-analysis-notified-harmful-count"
+                  >
                     {{
                       (irSummary &&
                         irSummary.notifiedEmailResultCount &&
@@ -194,7 +203,10 @@
                     }}
                   </div>
                 </div>
-                <div class="card-footer">
+                <div
+                  class="card-footer"
+                  id="card--incident-responder-incident-analysis-reported-mail-count"
+                >
                   of
                   {{
                     (irSummary &&
@@ -250,7 +262,10 @@
               >
                 <div class="card-body d-flex">
                   <div class="body-row">
-                    <span class="body-row__number">
+                    <span
+                      class="body-row__number"
+                      id="card--incident-responder-investigations-automatic-investigation-count"
+                    >
                       {{
                         (irSummary &&
                           irSummary.investigationTypeCount &&
@@ -262,7 +277,9 @@
                     <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
                   </div>
                   <div class="body-row" style="margin-left: 81px;">
-                    <span class="body-row__number"
+                    <span
+                      class="body-row__number"
+                      id="card--incident-responder-investigations-manual-investigation-count"
                       >{{
                         (irSummary &&
                           irSummary.investigationTypeCount &&
@@ -325,14 +342,18 @@
               </div>
               <div class="card-body d-flex roi-summary__body-container">
                 <div class="body-row">
-                  <span class="body-row__number" style="white-space: nowrap;">
+                  <span
+                    id="card--incident-responder-roi-summary-time"
+                    class="body-row__number"
+                    style="white-space: nowrap;"
+                  >
                     {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || '0' }}
                   </span>
 
                   <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
                 </div>
                 <div class="body-row">
-                  <span class="body-row__number">
+                  <span class="body-row__number" id="card--incident-responder-roi-summary-revenue">
                     ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
                   </span>
 

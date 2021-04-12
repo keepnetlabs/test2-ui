@@ -288,7 +288,7 @@
               <v-tooltip bottom opacity="1">
                 <template v-slot:activator="{ on: tooltip }">
                   <v-btn
-                    id=" btn-add--mail-configurations"
+                    id="btn-add--mail-configurations"
                     class="button-new"
                     rounded
                     style="margin-right: 10px;"

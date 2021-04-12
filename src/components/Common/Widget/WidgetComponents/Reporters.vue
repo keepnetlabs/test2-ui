@@ -4,32 +4,35 @@
       <widget-container>
         <widget-header
           button-id="btn-link--reporters"
+          close-button-id="btn-close--reporters"
           :editMode="editMode"
           :title="getTitle"
-          @deleteWidget="$emit('deleteWidget')"
           :link="{ href: '/phishing-reporter', text: 'All' }"
+          @deleteWidget="$emit('deleteWidget')"
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:reporterEmail="{ row, value }">
+            <template v-slot:reporterEmail="{ row, value, rowIndex }">
               <span
-                class="k-widget-list__item"
                 v-if="value"
+                class="k-widget-list__item"
                 style="color: #212121 !important; opacity: 0.7;"
+                :id="`text--reporters-name-${rowIndex}`"
               >
                 {{ value }}
               </span>
             </template>
-            <template v-slot:reliabilityPoint="{ row, value }">
+            <template v-slot:reliabilityPoint="{ row, value, rowIndex }">
               <span
-                class="k-widget-list__item"
                 v-if="value"
+                class="k-widget-list__item"
                 style="color: #212121 !important; opacity: 0.7;"
+                :id="`text--reporters-reliability-point-${rowIndex}`"
               >
                 {{ value }}
               </span>
             </template>
-            <template v-slot:reliability="{ value }">
+            <template v-slot:reliability="{ value, rowIndex }">
               <div
                 class="k-widget-list__item"
                 :style="{
@@ -37,6 +40,7 @@
                   overflow: 'hidden',
                   textOverflow: 'hidden'
                 }"
+                :id="`text--reporters-reliability-${rowIndex}`"
               >
                 {{ value }}
               </div>
