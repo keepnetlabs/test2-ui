@@ -6,6 +6,7 @@ export const labels = {
     return `${val} must have at least ${length} characters`
   },
   ApiKey: 'API Key',
+  AnalysisDate: 'Analysis Date',
   AddCompaniesToCompanyGroupSubtitle: 'Select companies to add',
   CompanyGroupNameSecondLower: 'Company group name',
   CommunityName: 'Community Name',
@@ -39,6 +40,7 @@ export const labels = {
   Delete: 'Delete',
   Next: 'NEXT',
   RestApi: 'Rest Api',
+  Reason: 'Reason',
   OK: 'OK',
   Prev: 'PREV',
   Back: 'BACK',

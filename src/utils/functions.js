@@ -75,6 +75,8 @@ export function getBtnStatusColor(type) {
       return '#43a047'
     case 'undetected':
       return '#2196f3'
+    case 'listed':
+      return '#b83a3a'
     case 'custom':
       return '#f56c6c'
     case 'system':

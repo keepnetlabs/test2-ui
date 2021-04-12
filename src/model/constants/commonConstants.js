@@ -149,6 +149,7 @@ export const LABEL_STORE = {
 
 export const PROPERTY_STORE = {
   ADDINSTATUSNAME: 'addInStatusName',
+  ANALYSISENGINEPERMALINK: 'analysisEnginePermalink',
   CLIENTID: 'clientId',
   COMPANYID: 'companyId',
   DIRECTORYID: 'directoryId',
@@ -157,11 +158,13 @@ export const PROPERTY_STORE = {
   ANALYSISENGINETYPE: 'analysisEngineType',
   ANALYSISENGINENAME: 'analysisEngineName',
   NAME: 'name',
+  REASON: 'reason',
   PRIORITY: 'priority',
   USERNAME: 'userName',
   CREATEDATE: 'createDate',
   FIRSTNAME: 'firstName',
   CATEGORYNAME: 'categoryName',
+  SCANTIME: 'scanTime',
   TYPNAME: 'typeName',
   TEMPLATETYPE: 'templateType',
   LASTNAME: 'lastName',
