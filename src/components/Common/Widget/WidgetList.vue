@@ -27,20 +27,23 @@
       <tbody>
         <tr :key="JSON.stringify(row + rowIndex)" v-for="(row, rowIndex) in data">
           <td
+            v-for="(value, key, index) in row"
             v-if="columns[index]"
+            class="safari-hide-tooltip"
+            :id="row.id"
             :key="JSON.stringify(value + key + index)"
             :style="columns[index]['tdStyle'] && columns[index]['tdStyle']"
-            v-for="(value, key, index) in row"
             @mouseenter="handleMouseEnterTd($event, row[columns[index].property], rowIndex)"
             @mouseup="handleMouseEnterTd($event, row[columns[index].property], rowIndex)"
             @mouseleave="handleMouseLeaveTd($event, row[columns[index].property], rowIndex)"
-            class="safari-hide-tooltip"
           >
             <slot
               :name="columns[index].property"
               :row="row"
               :value="row[columns[index].property]"
               :prop="columns[index].property"
+              :index="index"
+              :rowIndex="rowIndex"
             >
               <span class="k-widget-list__item" v-if="row[columns[index].property]">
                 {{ row[columns[index].property] }}

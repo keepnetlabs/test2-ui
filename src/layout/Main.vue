@@ -72,9 +72,19 @@
             x-large
           ></v-app-bar-nav-icon>
           <div class="v-responsive">
-            <img v-if="!mini && drawer" class="page-nav__logo-wrapper__logo" :src="getMainLogo" />
+            <img
+              v-if="!mini && drawer"
+              class="page-nav__logo-wrapper__logo"
+              :src="getMainLogo"
+              id="img--main-logo"
+            />
             <div v-else>
-              <img v-if="!!getLogoImage" :src="getLogoImage" class="menu-mini-img" />
+              <img
+                v-if="!!getLogoImage"
+                :src="getLogoImage"
+                class="menu-mini-img"
+                id="img--main-mini-logo"
+              />
             </div>
           </div>
         </div>
@@ -103,7 +113,7 @@
                   >
                     <div class="user-name-dropdown-font__tooltip-wrapper">
                       <div class="user-name-dropdown__logo">
-                        <img v-if="!!getLogoImage" :src="getLogoImage" />
+                        <img v-if="!!getLogoImage" id="img--company-logo" :src="getLogoImage" />
                       </div>
                       <div class="user-name-dropdown__details">
                         <v-tooltip
@@ -114,6 +124,7 @@
                           <template #activator="{ on: onTooltip }">
                             <span
                               v-on="{ ...onTooltip }"
+                              id="text--company-name"
                               class="user-name-dropdown__details-item"
                               >{{ getSelectedCompanyName }}</span
                             >
@@ -128,6 +139,7 @@
                           <template #activator="{ on: onTooltipFirstName }">
                             <span
                               v-on="{ ...onTooltipFirstName }"
+                              id="text--user-first-name"
                               class="user-name-dropdown__details-item"
                               >{{ getFirstName }}</span
                             >
@@ -142,6 +154,7 @@
                           <template #activator="{ on: onTooltipRoleName }">
                             <span
                               v-on="{ ...onTooltipRoleName }"
+                              id="text--user-role-name"
                               class="user-name-dropdown__details--item"
                               >{{ getRolename }}</span
                             >
@@ -226,11 +239,17 @@
             </div>
           </div>
 
-          <router-link v-if="checkDashboardPermission()" to="/" class="menu-link-default">
+          <router-link
+            v-if="checkDashboardPermission()"
+            id="btn--link-navigator-menu-dashboard"
+            to="/"
+            class="menu-link-default"
+          >
             <app-router-item icon="mdi-home" title="Dashboard" />
           </router-link>
           <router-link
             to="/threat-sharing"
+            id="btn--link-navigator-menu-threat-sharing"
             class="menu-link-default"
             :class="[routerName === 'Community' && 'active-link']"
             @click.native="deleteTSVuexData"
@@ -255,7 +274,9 @@
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title>Incident Responder</v-list-item-title>
+                <v-list-item-title id="btn--link-navigator-menu-incident-responder-list-group"
+                  >Incident Responder</v-list-item-title
+                >
               </v-list-item-content>
             </template>
             <v-list-item
@@ -272,6 +293,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/incident-responder"
+                  id="btn--link-navigator-menu-incident-responder"
                   class="menu-link-default"
                   :class="[
                     (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
@@ -292,6 +314,7 @@
                 <router-link
                   to="/investigations"
                   class="menu-link-default"
+                  id="btn--link-navigator-menu-investigations"
                   :class="[routerName === 'Investigation Details' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
@@ -307,6 +330,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/integrations"
+                  id="btn--link-navigator-menu-integrations"
                   :class="['menu-link-default', routerName === 'Integrations' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
@@ -320,7 +344,11 @@
               v-if="checkPermissionMultiple(['playbooks/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link to="/playbook" class="menu-link-default">
+                <router-link
+                  to="/playbook"
+                  id="btn--link-navigator-menu-playbook"
+                  class="menu-link-default"
+                >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Playbook</span>
                   </v-list-item-title>
@@ -334,6 +362,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/mailConfiguration"
+                  id="btn--link-navigator-menu-mail-configuration"
                   :class="[
                     'menu-link-default',
                     routerName === 'Mail Configurations' && 'active-link'
@@ -349,6 +378,7 @@
 
           <router-link
             to="/phishing-reporter"
+            id="btn--link-navigator-phishing-reporter"
             class="menu-link-default"
             :class="[routerName === 'Phishing Reporter' && 'active-link']"
             v-if="
@@ -364,7 +394,7 @@
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title>Company</v-list-item-title>
+                <v-list-item-title id="btn--link-navigator-menu-company">Company</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item
@@ -376,6 +406,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/target-users"
+                  id="btn--link-navigator-menu-target-users"
                   class="menu-link-default"
                   :class="[
                     (routerName === 'Target Group Users' || routerName === 'Target Users') &&
@@ -398,6 +429,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/companies"
+                  id="btn--link-navigator-menu-companies"
                   class="menu-link-default"
                   :class="[
                     (routerName === 'Company Group Details' || routerName === 'Companies') &&
@@ -423,6 +455,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/company-settings"
+                  id="btn--link-navigator-menu-company-settings"
                   :class="['menu-link-default', routerName === 'Company Settings' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
@@ -438,6 +471,7 @@
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/system-users"
+                  id="btn--link-navigator-menu-system-users"
                   :class="['menu-link-default', routerName === 'System Users' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
@@ -452,7 +486,11 @@
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
-                <router-link to="/audit" class="menu-link-default">
+                <router-link
+                  to="/audit"
+                  id="btn--link-navigator-menu-audit-log"
+                  class="menu-link-default"
+                >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Audit Log</span>
                   </v-list-item-title>
@@ -1759,7 +1797,7 @@ export default {
     .v-list-group__header__prepend-icon {
       margin-right: 16px !important;
       margin-bottom: 0 !important;
-      margin-top: 13px !important;
+      margin-top: 12px !important;
     }
   }
 }

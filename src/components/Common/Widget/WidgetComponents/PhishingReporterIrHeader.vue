@@ -6,6 +6,7 @@
   >
     <template v-slot:skeleton-content>
       <div
+        id="card--incident-responder-phishing-reporter"
         class="dashboard-cards phishing-reporter"
         :class="{
           'no-data__opacity-blue': isPhishingEmpty(irSummary)
@@ -13,11 +14,12 @@
       >
         <div class="card-header">
           <span class="head">{{ labels.PhishingReporter }}</span>
-          <router-link to="/phishing-reporter">
+          <router-link to="/phishing-reporter" id="btn-link--dashboard-to-phishing-reporter">
             <v-icon :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
           <v-icon
             v-if="editMode"
+            id="btn-close--dashboard-widgets-phishing-reporter-card"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
             small
             @click="$emit('deleteWidget')"
@@ -27,7 +29,7 @@
         </div>
         <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
           <div class="card-body">
-            <div class="biggest">
+            <div class="biggest" id="card--incident-responder-phishing-reporter-online-users-count">
               {{
                 (irSummary &&
                   irSummary.phishingReporterUserStatusCount &&
@@ -36,7 +38,10 @@
               }}
             </div>
           </div>
-          <div class="card-footer">
+          <div
+            class="card-footer"
+            id="card--incident-responder-phishing-reporter-total-users-count"
+          >
             of
             {{
               (irSummary &&

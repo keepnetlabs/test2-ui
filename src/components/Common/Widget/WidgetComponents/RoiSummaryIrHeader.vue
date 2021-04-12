@@ -6,6 +6,7 @@
   >
     <template v-slot:skeleton-content>
       <div
+        id="card--incident-responder-roi-summary"
         class="dashboard-cards roi-summary"
         :class="{
           'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
@@ -15,6 +16,7 @@
           <span class="head">{{ labels.RoiSummary }}</span>
           <v-icon
             v-if="editMode"
+            id="btn-close--dashboard-widgets-roi-summary-card"
             style="position: absolute; font-size: 16px; top: 5px; right: 5px;"
             small
             @click="$emit('deleteWidget')"
@@ -24,14 +26,18 @@
         </div>
         <div class="card-body d-flex roi-summary__body-container">
           <div class="body-row">
-            <span class="body-row__number" style="white-space: nowrap;">
+            <span
+              id="card--incident-responder-roi-summary-time"
+              class="body-row__number"
+              style="white-space: nowrap;"
+            >
               {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || 0 }}
             </span>
 
             <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
           </div>
           <div class="body-row">
-            <span class="body-row__number">
+            <span id="card--incident-responder-roi-summary-revenue" class="body-row__number">
               ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
             </span>
 

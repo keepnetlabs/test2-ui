@@ -4,6 +4,7 @@
       <widget-container>
         <widget-header
           button-id="btn-link--recently-investigations"
+          close-button-id="btn-close--recently-investigations"
           :title="getTitle"
           :link="{ href: '/investigations', text: 'All' }"
           :edit-mode="editMode"
@@ -11,18 +12,25 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:name="{ value, row }">
+            <template v-slot:name="{ value, row, rowIndex }">
               <router-link
                 class="k-widget-list__item"
+                :id="`btn-link--recent-investigations-name-${rowIndex}`"
                 :to="`/investigation-details/${row['resourceId']}`"
                 >{{ value }}</router-link
               >
-              <div class="k-widget-list__sub-item">
+              <div
+                class="k-widget-list__sub-item"
+                :id="`text--recent-investigations-status--${rowIndex}`"
+              >
                 {{ row['status'] }}
               </div>
             </template>
-            <template v-slot:progress="{ value }">
-              <div class="datatable-progress">
+            <template v-slot:progress="{ value, rowIndex }">
+              <div
+                class="datatable-progress"
+                :id="`text--recent-investigations-progress--${rowIndex}`"
+              >
                 <template v-if="parseInt(value) >= 0">
                   <span :class="[value !== 100 && 'ml-1']" class="datatable-progress__per">{{
                     value === 100 ? 'Completed' : value + '%'

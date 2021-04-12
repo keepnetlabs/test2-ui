@@ -5,6 +5,7 @@
       <widget-container>
         <widget-header
           button-id="btn-link--recently-reported-incidents"
+          close-button-id="btn-close--recently-reported-incidents"
           :title="getTitle"
           :link="{ href: '/incident-responder', text: 'All' }"
           :edit-mode="editMode"
@@ -12,18 +13,23 @@
         />
         <widget-body>
           <widget-list :columns="columns" :data="tableData" :empty="empty">
-            <template v-slot:subject="{ value, row }">
+            <template v-slot:subject="{ value, row, rowIndex }">
               <router-link
+                :id="`btn-link--recently-reported-incidents-${rowIndex}`"
                 class="k-widget-list__item"
                 :to="`/incident-responder/${row['resourceId']}`"
                 >{{ value }}</router-link
               >
-              <div class="k-widget-list__sub-item">
+              <div
+                :id="`text--recently-reported-incidents-status-${rowIndex}`"
+                class="k-widget-list__sub-item"
+              >
                 {{ getDataTableFieldLabel(row['status']) }}
               </div>
             </template>
-            <template v-slot:result="{ value }">
+            <template v-slot:result="{ value, rowIndex }">
               <badge
+                :id="`badge--recently-reported-incidents-result-${rowIndex}`"
                 size="small"
                 class-name="widget-badge"
                 :color="getBtnStatusColor(value)"
