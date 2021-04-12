@@ -1,9 +1,9 @@
 <template>
   <!-- eslint-disable vue/no-v-html -->
-  <div class="vqb-rule" :id="`query-builder-rule-${getParentIndex}-${index}`">
+  <div class="vqb-rule" :id="`query-builder-rule-${index}-${getParentIndex}`">
     <div
       v-if="getBadgeRender"
-      :id="`playbook-query-builder-rule-logical-operator-custom-group-badge-${getParentIndex}-${index}`"
+      :id="`playbook-query-builder-rule-logical-operator-custom-group-badge-${index}-${getParentIndex}`"
       class="custom-rule-badge"
       :style="{ left: $parent.query.logicalOperator === 'AND' ? '-60px' : '-57px' }"
     >
@@ -47,7 +47,7 @@
         <!-- List of "From" operands-->
         <k-select
           v-model.trim="query.operator"
-          :id="`input--query-builder-rule-operand-${index}-${getParentIndex}`"
+          :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
           :items="rule.operandsAttachmentHash"
           outlined
           min-width-type="small"

@@ -851,8 +851,8 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
-          ascending: false,
+          orderBy: this.payload.orderBy,
+          ascending: this.payload.ascending,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.payload.filter
@@ -874,8 +874,7 @@ export default {
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
     this.getDefaultFilterAndSearch()
-  },
-  mounted() {}
+  }
 }
 </script>
 
