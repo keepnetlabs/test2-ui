@@ -435,13 +435,6 @@ export default {
         document.querySelector('.fa-download').classList.remove('fa-download')
       }, 1000)
       const rte = this.editor.RichTextEditor
-      /*rte.remove('link')
-      rte.add('link', {
-        icon: 'fa fa-link',
-        attributes: { title: 'Link' },
-        // Example on it's easy to wrap a selected content
-
-      })*/
       rte.get('link').result = (rte) => {
         rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
         const sel = this.editor.getSelected()
