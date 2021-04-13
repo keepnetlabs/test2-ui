@@ -36,6 +36,7 @@
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
+        :stored-table-settings="storedTableSettings"
         :selectable="true"
         :sizeable="true"
         :table="tableData"
@@ -51,6 +52,7 @@
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
+        @on-table-settings-change="handleSetRenderedColumns"
       />
     </div>
   </div>
@@ -60,7 +62,11 @@
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
-import { DEFAULT_SEARCH_CONTAINER_KEYS, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
@@ -70,6 +76,7 @@ export default {
   data() {
     return {
       showAllRecords: false,
+      storedTableSettings: null,
       totalNumberOfRecords: 0,
       isRestoredOrClearedFilters: false,
       axiosPayload: {
@@ -204,6 +211,7 @@ export default {
     NewCustomApi
   },
   created() {
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.REST_API))
     this.getDefaultFilterAndSearch()
   },
   methods: {
@@ -228,6 +236,9 @@ export default {
           this.loading = false
           this.isRestoredOrClearedFilters = false
         })
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.REST_API, JSON.stringify(tableSettings))
     },
     exportRestApi({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(

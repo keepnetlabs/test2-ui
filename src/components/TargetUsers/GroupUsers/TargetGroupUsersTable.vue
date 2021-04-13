@@ -15,6 +15,7 @@
     :add-button="tableOptions.addButton"
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
+    :stored-table-settings="storedTableSettings"
     is-server-side
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -35,6 +36,7 @@
     @set-default-search="handleSetDefaultSearch"
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
+    @on-table-settings-change="handleSetRenderedColumns"
   >
     <template #selection-all-slot v-if="hasSelectionSlot">
       <v-tooltip bottom opacity="1">
@@ -73,7 +75,8 @@ import {
   COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import {
@@ -292,6 +295,7 @@ export default {
       tableData: [],
       customFields: [],
       selections: [],
+      storedTableSettings: null,
       serverSideProps: new ServerSideProps()
     }
   },
@@ -302,6 +306,9 @@ export default {
   },
 
   created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS)
+    )
     if (this.resourceId) {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
@@ -311,6 +318,12 @@ export default {
   },
 
   methods: {
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(
+        TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS,
+        JSON.stringify(tableSettings)
+      )
+    },
     setQueryValuesToPayload({ page, size }) {
       //generic
       const parsedPage = parseInt(page)
@@ -438,13 +451,23 @@ export default {
         }
       })
       if (!columnsOfCustomFields.length) {
-        this.tableOptions.columns = [...this.defaultColumns, ...this.lastColumns]
+        const newColumns = [...this.defaultColumns, ...this.lastColumns]
+        this.setStoredTableSettings(newColumns)
+        this.tableOptions.columns = newColumns
       } else {
-        this.tableOptions.columns = [
-          ...this.defaultColumns,
-          ...columnsOfCustomFields,
-          ...this.lastColumns
-        ]
+        const newColumns = [...this.defaultColumns, ...columnsOfCustomFields, ...this.lastColumns]
+        this.setStoredTableSettings(newColumns)
+        this.tableOptions.columns = newColumns
+      }
+    },
+    setStoredTableSettings(newColumns = []) {
+      if (this.storedTableSettings && this.storedTableSettings.renderedColumns.length) {
+        newColumns.forEach((column) => {
+          const item = this.storedTableSettings.renderedColumns.find(
+            (renderedColumnProp) => renderedColumnProp === column.property
+          )
+          column.show = !!item
+        })
       }
     },
     callForGetTargetUserCustomFieldsByCompanyId() {

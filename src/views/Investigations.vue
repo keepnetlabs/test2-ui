@@ -47,6 +47,7 @@
           :filterable="true"
           :options="true"
           :rowActions="rowActions"
+          :stored-table-settings="storedTableSettings"
           :addButton="addUsers"
           :empty="iEmpty"
           :selectEvent="selectEvent"
@@ -70,6 +71,7 @@
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
+          @on-table-settings-change="handleSetRenderedColumns"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -117,7 +119,11 @@ import newInvestigation from '../components/Investigation/NewInvestigation'
 import AppDialog from '../components/AppDialog'
 import { mapGetters } from 'vuex'
 import { exportInvestigationList } from '@/api/incidentResponder'
-import { DEFAULT_SEARCH_CONTAINER_KEYS, getStoreValue } from '@/model/constants/commonConstants'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
 import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -157,6 +163,7 @@ export default {
     init: true,
     labels,
     investigationListDataLength: 0,
+    storedTableSettings: null,
     columns: [
       // Should be defined to show the table
       {
@@ -355,6 +362,9 @@ export default {
     handleRestoreDefaultSearch() {
       this.isRestoredOrClearedFilters = true
       this.getDefaultFilterAndSearch()
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS, JSON.stringify(tableSettings))
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
@@ -596,6 +606,7 @@ export default {
     if (!this.checkPermissions('investigations/search', 'POST')) {
       this.$router.push('/incident-responder')
     }
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
     if (this.$route.params && this.$route.params.selectedEmail) {
       this.isWantToAddNewCommunity = true
     }

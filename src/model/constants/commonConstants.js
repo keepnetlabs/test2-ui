@@ -246,6 +246,30 @@ export const PROPERTY_STORE = {
   ROLEDESCRIPTION: 'roleDescription'
 }
 
+export const TABLE_SETTINGS_KEYS = {
+  REPORTED_EMAIL: 'ReportedEmailTableSettings',
+  CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
+  INVESTIGATIONS: 'InvestigationsTableSettings',
+  INVESTIGATION_DETAILS_TARGET_USER: 'InvestigationDetailsTargetUserTableSettings',
+  INVESTIGATION_DETAILS_LIST: 'InvestigationDetailsListTableSettings',
+  INTEGRATION: 'IntegrationTableSettings',
+  PLAYBOOK: 'PlaybookTableSettings',
+  MAILCONFIGURATION: 'MailConfigurationTableSettings',
+  PHISHINGREPORTER: 'PhishingReporterTableSettings',
+  TARGET_USERS_PEOPLE: 'TargetUsersPeopleTableSettings',
+  COMPANY_LIST: 'CompanyListTableSettings',
+  COMPANY_GROUP_LIST: 'CompanyGroupListTableSettings',
+  COMPANY_GROUP_DETAILS: 'CompanyGroupDetailsTableSettings',
+  SMTP_SETTINGS: 'SmtpSettingsTableSettings',
+  NOTIFICATION_TEMPLATE: 'NotificationTemplateTableSettings',
+  REST_API: 'RestApiTableSettings',
+  SYSTEM_USERS_PEOPLE: 'SystemUsersPeopleTableSettings',
+  SYSTEM_USERS_ROLES: 'SystemUsersRolesSettings',
+  AUDIT: 'AuditTableSettings',
+  TARGET_USERS_GROUPS: 'TargetUsersGroupsTableSettings',
+  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings'
+}
+
 export function getStoreValue(key, type) {
   key = key.trim().toUpperCase()
   let value = LABEL_STORE[key]

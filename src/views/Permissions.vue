@@ -39,6 +39,7 @@
           :table="tableData"
           :refName="'permissionList'"
           :columns="tableOptions.columns"
+          :stored-table-settings="storedTableSettings"
           :total-number-of-records="totalNumberOfRecords"
           :selectable="true"
           :filterable="true"
@@ -68,6 +69,7 @@
           @sortChangedEvent="sortChanged"
           @delete="handleDelete"
           @editPermissions="editPermissions"
+          @on-table-settings-change="handleSetRenderedColumns"
           :download-button="{ show: false }"
         ></data-table>
       </div>
@@ -82,7 +84,8 @@ import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
-  DEFAULT_SEARCH_CONTAINER_KEYS
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
@@ -113,6 +116,7 @@ export default {
       deleteDialog: false,
       deletePermissionName: null,
       deletePermissionId: null,
+      storedTableSettings: null,
       loading: true,
       labels,
       showAllRecords: false,
@@ -262,6 +266,9 @@ export default {
   methods: {
     closeDeleteDialog() {
       this.deleteDialog = false
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES, JSON.stringify(tableSettings))
     },
     handleDeleteDialog() {
       deletePermission(this.deletePermissionId)
@@ -541,6 +548,11 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
+  },
+  created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_ROLES)
+    )
   },
   mounted() {
     this.getPermissions()

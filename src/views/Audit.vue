@@ -12,6 +12,7 @@
           :refName="'auditList'"
           :columns="tableOptions.columns"
           :total-number-of-records="totalNumberOfRecords"
+          :stored-table-settings="storedTableSettings"
           :selectable="true"
           :filterable="true"
           :options="true"
@@ -37,6 +38,7 @@
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
           @sortChangedEvent="sortChanged"
+          @on-table-settings-change="handleSetRenderedColumns"
         ></data-table>
       </div>
     </div>
@@ -50,7 +52,8 @@ import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
-  DEFAULT_SEARCH_CONTAINER_KEYS
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
@@ -70,6 +73,7 @@ export default {
       labels,
       showAllRecords: false,
       totalNumberOfRecords: 0,
+      storedTableSettings: null,
       tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
@@ -265,6 +269,9 @@ export default {
       }
       this.getDatatableList()
     },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.AUDIT, JSON.stringify(tableSettings))
+    },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.bodyData.pageNumber = pageNumber
       this.queryHelper.setRouterQuery('page', pageNumber)
@@ -444,6 +451,7 @@ export default {
     }
   },
   created() {
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()

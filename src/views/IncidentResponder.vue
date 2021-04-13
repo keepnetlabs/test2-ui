@@ -572,6 +572,7 @@
             :extended-view-options="clusteredTable.extendedViewOptions"
             :columns="clusteredTable.columns"
             :empty="clusteredTable.iEmpty"
+            :stored-table-settings="storedReportedEmailClusteredSettings"
             :loading="isReportedEmailsClusteredLoading"
             :row-actions="clusteredTable.rowActions"
             :extendedViewValue="extendedViewValue"
@@ -594,6 +595,7 @@
             @set-default-search="handleSetDefaultSearchReportedEmailClustered"
             @restore-default-search="handleRestoreDefaultSearchReportedEmailClustered"
             @clear-filters="handleClearFiltersReportedEmailClustered"
+            @on-table-settings-change="handleSetRenderedColumnsClusteredReportedEmail"
           >
             <template #table-search-left-side>
               <v-btn
@@ -726,6 +728,7 @@
             :selectEvent="emails.selectEvent"
             :disableExtendedViewTransition="true"
             :server-side-props="serverSideProps"
+            :stored-table-settings="storedReportedEmailTableSettings"
             @downloadEvent="exportReportedListEmails"
             @onEmptyBtnClicked="onEmptyReportedEmailsBtnClicked"
             @irPreview="irPreviewOnClick"
@@ -745,6 +748,7 @@
             @set-default-search="handleSetDefaultSearchReportedEmail"
             @restore-default-search="handleRestoreDefaultSearchReportedEmail"
             @clear-filters="handleClearFiltersReportedEmail"
+            @on-table-settings-change="handleSetRenderedColumnsReportedEmail"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template
@@ -899,7 +903,8 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { required, startsWith, maxLength } from '../utils/validations'
@@ -952,6 +957,8 @@ export default {
     selectedCluster: '',
     labels,
     clusteredRow: null,
+    storedReportedEmailTableSettings: null,
+    storedReportedEmailClusteredSettings: null,
     isConfirmButtonDisabled: false,
     topRulesLoading: true,
     isCustomMessageMultiple: false,
@@ -2018,6 +2025,7 @@ export default {
     this.requestBodyReportedEmails.pageSize = size
     this.serverSideProps.pageSize = size
     this.requestBodyReportedEmails.pageNumber = page
+    this.setStoredTableSettings()
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
     if (handleIsSafari()) {
@@ -2106,6 +2114,14 @@ export default {
       if (callApi) {
         this.callForSearchNotifiedMail()
       }
+    },
+    setStoredTableSettings() {
+      this.storedReportedEmailTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.REPORTED_EMAIL)
+      )
+      this.storedReportedEmailClusteredSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL)
+      )
     },
     getDefaultFilterAndSearchReportedEmailClustered(callApi = true) {
       const savedFilter = JSON.parse(
@@ -2486,6 +2502,15 @@ export default {
       this.resetPageNumber()
       this.emails.isColumnFilterActive = columnFilterActive
       this.callForSearchNotifiedMail()
+    },
+    handleSetRenderedColumnsReportedEmail(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.REPORTED_EMAIL, JSON.stringify(tableSettings))
+    },
+    handleSetRenderedColumnsClusteredReportedEmail(tableSettings = {}) {
+      localStorage.setItem(
+        TABLE_SETTINGS_KEYS.CLUSTERED_REPORTED_EMAIL,
+        JSON.stringify(tableSettings)
+      )
     },
     handleClusteredSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.clusteredTable.isColumnFilterActive = columnFilterActive

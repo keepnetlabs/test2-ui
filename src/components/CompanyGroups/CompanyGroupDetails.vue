@@ -57,6 +57,7 @@
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
       :show-all-records="showAllRecords"
+      :stored-table-settings="storedTableSettings"
       :filterable="true"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
@@ -79,6 +80,7 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
     />
   </div>
 </template>
@@ -98,7 +100,8 @@ import RemoveModal from './RemoveModal'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
@@ -131,6 +134,7 @@ export default {
     editCreateGroup: false,
     forCompany: true,
     tableData: [],
+    storedTableSettings: null,
     editModal: false,
     isShowRemoveModal: false,
     isShowExtended: false,
@@ -306,6 +310,9 @@ export default {
     }
   },
   created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS)
+    )
     this.getDefaultFilterAndSearch()
     this.initMethods()
   },
@@ -314,6 +321,9 @@ export default {
       this.payload.pageSize = 75000
       this.showAllRecords = false
       this.getTableData()
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS, JSON.stringify(tableSettings))
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(

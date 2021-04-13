@@ -95,6 +95,7 @@
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
+      :stored-table-settings="storedTableSettings"
       :selectEvent="tableOptions.selectEvent"
       @deleteFunction="deleteRule($event)"
       @addAction="toggleRuleModal"
@@ -111,6 +112,7 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:datatable-column-popup="{ scope, col }">
         <span v-if="scope.row[col.property] === 0">
@@ -150,7 +152,8 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { getMatchingIncidents } from '@/api/incidentResponder'
 import AppDialog from '../AppDialog'
@@ -186,6 +189,7 @@ export default {
       totalNumberOfRecordsMatchingPopup: 0,
       labels,
       loading: false,
+      storedTableSettings: null,
       matchingPlaybookData: [],
       showRuleModal: false,
       matchingPopupPayload: {
@@ -403,6 +407,9 @@ export default {
         })
       }
       this.callForSearchPlaybook()
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.PLAYBOOK, JSON.stringify(tableSettings))
     },
     handleClearFilters() {
       this.isRestoredOrClearedFilters = true
@@ -737,6 +744,7 @@ export default {
     this.controlGetAndUpdatePermission(this.playbookId)
   },
   created() {
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PLAYBOOK))
     if (this.$route.params && this.$route.params.playbookId) {
       this.controlGetAndUpdatePermission(this.$route.params.playbookId)
     }

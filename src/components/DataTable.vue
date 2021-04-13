@@ -1039,6 +1039,10 @@ export default {
       type: String,
       default: 'resourceId'
     },
+    storedTableSettings: {
+      type: Object,
+      default: null
+    },
     isExtendedViewCreateMode: {
       type: Boolean,
       default: false
@@ -1571,17 +1575,19 @@ export default {
         lastColFixed
       } = this.persistentState
 
-      //setting fixed values
-      if (!firstColFixed) this.columns[0].fixed = false
-      if (!lastColFixed) this.actionFixed = false
-
-      //setting rendered columns
-      if (!renderedColumns.length) {
-        this.setRenderedColumns()
+      if (this.storedTableSettings) {
+        this.setStoredTableSettings()
       } else {
-        this.columns.forEach((col) => {
-          if (!renderedColumns.find((property) => property === col.property)) col.show = false
-        })
+        if (!firstColFixed) this.columns[0].fixed = false
+        if (!lastColFixed) this.actionFixed = false
+        //setting rendered columns
+        if (!renderedColumns.length) {
+          this.setRenderedColumns()
+        } else {
+          this.columns.forEach((col) => {
+            if (!renderedColumns.find((property) => property === col.property)) col.show = false
+          })
+        }
       }
 
       // setting selections
@@ -1796,6 +1802,11 @@ export default {
     handleChangeVisibilityOfColumn() {
       this.setRenderedColumns()
       this.$forceUpdate()
+      this.$emit('on-table-settings-change', {
+        renderedColumns: this.renderedColumns,
+        firstColFixed: this.firstColFixed,
+        lastColFixed: this.lastColFixed
+      })
     },
     /**
      * This function sets rendered columns on table
@@ -1894,6 +1905,23 @@ export default {
             selection.push(child)
           }
         }
+      }
+    },
+    setStoredTableSettings() {
+      const { firstColFixed, lastColFixed, renderedColumns } = this.storedTableSettings
+      if (!firstColFixed) this.columns[0].fixed = false
+      if (!lastColFixed) this.actionFixed = false
+
+      if (!renderedColumns.length) {
+        this.setRenderedColumns()
+      } else {
+        this.columns.forEach((col) => {
+          if (!renderedColumns.find((property) => property === col.property)) {
+            col.show = false
+          } else {
+            col.show = true
+          }
+        })
       }
     },
     addItemToClusteredItems(item = {}) {

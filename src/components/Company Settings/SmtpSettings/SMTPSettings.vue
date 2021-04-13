@@ -33,6 +33,7 @@
         :show-all-records="showAllRecords"
         :options="true"
         :download-button="tableOptions.downloadButton"
+        :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :is-downloadable="true"
@@ -52,6 +53,7 @@
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
+        @on-table-settings-change="handleSetRenderedColumns"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -98,7 +100,8 @@
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
@@ -127,6 +130,7 @@ export default {
       selectedDeleteSmtpSettings: null,
       isRestoredOrClearedFilters: false,
       selectedEditSmtpSettings: null,
+      storedTableSettings: null,
       isEdit: false,
       showAllRecords: false,
       totalNumberOfRecords: 0,
@@ -283,6 +287,9 @@ export default {
         this.isEdit = false
       }
       this.newSmtpModalStatus = !this.newSmtpModalStatus
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS, JSON.stringify(tableSettings))
     },
     handleAllRecordsClick() {
       this.bodyOptions.pageSize = 75000
@@ -512,6 +519,7 @@ export default {
     }
   },
   created() {
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS))
     this.getDefaultFilterAndSearch()
   }
 }
