@@ -66,10 +66,41 @@
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
           @sortChangedEvent="sortChanged"
-          @delete="handleDelete"
-          @editPermissions="editPermissions"
           :download-button="{ show: false }"
-        ></data-table>
+        >
+          <template #datatable-row-actions="{scope}">
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  @click.native="editPermissions(scope.row)"
+                  :disabled="getDisabledStatusOfEdit(scope.row)"
+                  class="btn-hover mr-1"
+                  icon
+                  :id="`${tableOptions.rowActions[0].id}-${Math.random().toString().substring(2)}`"
+                  v-on="on"
+                >
+                  <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ tableOptions.rowActions[0].name }}</span>
+            </v-tooltip>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  :disabled="getDisabledStatusOfDelete(scope.row)"
+                  @click.native="handleDelete(scope.row)"
+                  class="btn-hover"
+                  icon
+                  :id="`${tableOptions.rowActions[1].id}-${Math.random().toString().substring(2)}`"
+                  v-on="on"
+                >
+                  <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
+                </v-btn>
+              </template>
+              <span>{{ tableOptions.rowActions[1].name }}</span>
+            </v-tooltip>
+          </template>
+        </data-table>
       </div>
     </div>
   </div>
@@ -260,6 +291,20 @@ export default {
     }
   },
   methods: {
+    getDisabledStatusOfEdit({ isOwner } = {}) {
+      return this.tableOptions.rowActions[0].disabled || !isOwner
+    },
+    getDisabledStatusOfDelete({ isOwner } = {}) {
+      return this.tableOptions.rowActions[1].disabled || !isOwner
+    },
+    handleEditAction({ resourceId } = {}) {
+      const { UPDATE, GET } = this.PERMISSIONS
+      if (UPDATE.hasPermission && GET.hasPermission) {
+        this.isEdit = true
+        this.selectedEditSmtpSettings = resourceId
+        this.toggleSmtpModalStatus()
+      }
+    },
     closeDeleteDialog() {
       this.deleteDialog = false
     },
