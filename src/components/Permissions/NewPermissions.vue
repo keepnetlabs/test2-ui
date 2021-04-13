@@ -79,7 +79,7 @@
             item-key="permissionResourceId"
             selectable
             :open.sync="open"
-            item-disabled="editable"
+            item-disabled="isDisabled"
             :search="search"
             :filter="filter"
             open-on-click
@@ -212,7 +212,7 @@ export default {
     submit() {
       const { refForm, refMakeAvailableForNewPermissions } = this.$refs
       let isValid = true
-      if (refMakeAvailableForNewPermissions) {
+      if (this.showMakeAvailableFor && refMakeAvailableForNewPermissions) {
         refMakeAvailableForNewPermissions.validateAvailableFor(this.formValues.availableForRequests)
         isValid = refMakeAvailableForNewPermissions.isAvailableForValid
       }
@@ -221,9 +221,11 @@ export default {
         const payload = {
           Name: this.formValues.name,
           Description: this.formValues.description,
-          AvailableForRequests: this.formValues.availableForRequests.map((item) => {
-            return { Type: item.type, ResourceId: item.id }
-          }),
+          AvailableForRequests: !this.showMakeAvailableFor
+            ? []
+            : this.formValues.availableForRequests.map((item) => {
+                return { Type: item.type, ResourceId: item.id }
+              }),
           PermissionResourceIdList: this.formValues.permissionResourceIdList
         }
         if (this.isEdit) {
@@ -282,10 +284,12 @@ export default {
       this.formValues = this.permissionEditData
       let _this = this
       this.$nextTick(() => {
-        _this.formValues.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
-          _this.permissionEditData.availableForList
-        )
-        this.availableForKey = 'updatedKey'
+        if (this.showMakeAvailableFor) {
+          _this.formValues.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+            _this.permissionEditData.availableForList
+          )
+          this.availableForKey = 'updatedKey'
+        }
       })
     }
   }
@@ -337,7 +341,6 @@ export default {
   }
   .v-treeview-node--leaf {
     .v-treeview-node__content {
-      font-family: OpenSans;
       font-size: 9px;
       font-weight: normal;
       font-stretch: normal;
@@ -355,6 +358,23 @@ export default {
         left: -16px;
         border-radius: 36px;
         top: 45%;
+      }
+    }
+  }
+
+  .mdi-checkbox-marked::before {
+    color: #2196f3 !important;
+  }
+  .mdi-minus-box::before {
+    color: #757575 !important;
+  }
+  .v-treeview-node__checkbox {
+    &.v-icon--disabled {
+      &.mdi-checkbox-blank-outline {
+        color: #d6d5d5 !important;
+      }
+      &.mdi-checkbox-marked::before {
+        color: #d6d5d5 !important;
       }
     }
   }

@@ -286,15 +286,7 @@ export default {
     getSystemUsersRole(payload).then((response) => {
       allRoles = response.data.data
       availableRoles = []
-      if (_this.role === 'CompanyAdmin') {
-        availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
-      } else if (this.role === 'Reseller') {
-        availableRoles = allRoles.filter(
-          (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
-        )
-      } else if (this.role === 'Root') {
-        availableRoles = allRoles
-      }
+      availableRoles = allRoles
 
       if (this.selectedRow) {
         const {
@@ -323,21 +315,7 @@ export default {
           allRoles.find((item) => {
             return item.name === roles
           }).resourceId
-        if (_this.role === 'CompanyAdmin') {
-          availableRoles = allRoles.filter((item) => item.name === 'CompanyAdmin')
-          if (roles === 'Reseller') {
-            availableRoles = allRoles.filter((item) => item.name === 'Reseller')
-          } else if (roles === 'Root') {
-            availableRoles = allRoles.filter((item) => item.name === 'Root')
-          }
-        } else if (this.role === 'Reseller') {
-          availableRoles = allRoles.filter(
-            (item) => item.name === 'Reseller' || item.name === 'CompanyAdmin'
-          )
-          if (roles === 'Root') {
-            availableRoles = allRoles.filter((item) => item.name === 'Root')
-          }
-        }
+        availableRoles = allRoles
         this.roleItems = availableRoles.map((item) => {
           let data = {
             name: item.name,
