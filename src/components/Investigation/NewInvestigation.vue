@@ -1262,8 +1262,6 @@ export default {
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
-      debugger
-
       const isTs = this.isTs
       const isIR = this.isIr
       if (isIR) {
