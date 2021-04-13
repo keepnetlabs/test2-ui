@@ -177,10 +177,14 @@
                           : 'Select filter for investigation'
                       "
                       outlined
-                      class="edit-name-textfield edit-select standard-height"
+                      :class="[
+                        'edit-name-textfield edit-select standard-height',
+                        { 'edit-name-textfield__flagged': list.isFlagged }
+                      ]"
                       :rules="getSearchCriteriaItemRules(list.option)"
                       v-model.trim="list.text"
                       required
+                      :label="list.isFlagged ? list.label : ''"
                     ></v-text-field>
                   </div>
                   <div class="filter-item__delete-button">
@@ -590,7 +594,8 @@ export default {
     'investigationDetailsData',
     'status',
     'selectedMail',
-    'isTs'
+    'isTs',
+    'isIr'
   ],
   methods: {
     actionChanged() {
@@ -1258,23 +1263,50 @@ export default {
     if (this.selectedMail) {
       this.filterList = []
       const isTs = this.isTs
+      const isIR = this.isIr
+      if (isIR) {
+        this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
+        this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
+      }
       this.selectedMail.attachments &&
         this.selectedMail.attachments.map((item) => {
           const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true
-          if (attachmentCase) this.filterList.push({ option: 'md5', text: item.md5 })
-          if (attachmentCase) this.filterList.push({ option: 'sha512', text: item.sha512 })
+          if (attachmentCase)
+            this.filterList.push({
+              option: 'md5',
+              text: item.md5,
+              isFlagged: item.isFlagged,
+              label: 'Malicious'
+            })
+          if (attachmentCase)
+            this.filterList.push({
+              option: 'sha512',
+              text: item.sha512,
+              isFlagged: item.isFlagged,
+              label: 'Malicious'
+            })
         })
       const bccCase = isTs ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged : true
       this.selectedMail.bcc &&
         bccCase &&
         this.selectedMail.bcc.map((item) => {
-          this.filterList.push({ option: 'bcc', text: item })
+          this.filterList.push({
+            option: 'bcc',
+            text: item,
+            isFlagged: this.selectedMail.isBccFlagged,
+            label: 'Harmful sender'
+          })
         })
       const ccCase = isTs ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged : true
       this.selectedMail.cc &&
         ccCase &&
         this.selectedMail.cc.map((item) => {
-          this.filterList.push({ option: 'cc', text: item })
+          this.filterList.push({
+            option: 'cc',
+            text: item,
+            isFlagged: this.selectedMail.isCcFlagged,
+            label: 'Harmful sender'
+          })
         })
       const fromCase = isTs
         ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
@@ -1283,7 +1315,9 @@ export default {
         fromCase &&
         this.filterList.push({
           option: 'from',
-          text: this.selectedMail.from
+          text: this.selectedMail.from,
+          isFlagged: this.selectedMail.isFromFlagged,
+          label: 'Harmful sender'
         })
       const subjectCase = isTs
         ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
@@ -1292,18 +1326,31 @@ export default {
         subjectCase &&
         this.filterList.push({
           option: 'subject',
-          text: this.selectedMail.subject
+          text: this.selectedMail.subject,
+          isFlagged: this.selectedMail.isSubjectFlagged,
+          label: 'Harmful sender'
         })
       const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
       this.selectedMail.to &&
         toCase &&
         this.selectedMail.to.map((item) => {
-          this.filterList.push({ option: 'to', text: item })
+          this.filterList.push({
+            option: 'to',
+            text: item,
+            isFlagged: this.selectedMail.isToFlagged,
+            label: 'Harmful sender'
+          })
         })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
           const urlCase = isTs ? !item.isHidden && item.isFlagged : true
-          if (urlCase) this.filterList.push({ option: 'url', text: item.url })
+          if (urlCase)
+            this.filterList.push({
+              option: 'url',
+              text: item.url,
+              isFlagged: item.isFlagged,
+              label: 'Phishing'
+            })
         })
       this.investgationName = `Manual Investigation - ${new Date().getDate()}.${
         new Date().getMonth() + 1
@@ -1319,6 +1366,16 @@ export default {
 </script>
 <style lang="scss">
 .new-investigation-wrapper {
+  .edit-name-textfield__flagged {
+    label {
+      color: #e6a23c !important;
+    }
+    fieldset {
+      border-radius: 8px !important;
+      border: solid 1px #e6a23c !important;
+      background-color: rgba(230, 162, 60, 0.05) !important;
+    }
+  }
   &__header {
     font-size: 24px;
     font-weight: normal;
