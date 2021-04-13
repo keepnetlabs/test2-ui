@@ -38,6 +38,7 @@
         :pageSizes="tableOptions.pageSizes"
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
+        :stored-table-settings="storedTableSettings"
         :selectable="true"
         :show-all-records="showAllRecords"
         :select-event="tableOptions.selectEvent"
@@ -55,6 +56,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
+        @on-table-settings-change="handleSetRenderedColumns"
         is-server-side
         :isServerSide="true"
         :server-side-props="serverSideProps"
@@ -109,7 +111,8 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import DeleteNotificationTemplateModal from '@/components/Company Settings/DeleteNotificationTemplateModal'
 import NewNotificationTemplate from '@/components/Company Settings/NewNotificationTemplate'
@@ -136,6 +139,7 @@ export default {
     return {
       categories: [],
       loading: false,
+      storedTableSettings: null,
       tableData: [],
       showAllRecords: false,
       totalNumberOfRecords: 0,
@@ -303,6 +307,9 @@ export default {
       //generic
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.NOTIFICATION_TEMPLATE, JSON.stringify(tableSettings))
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
@@ -584,6 +591,9 @@ export default {
     }
   },
   created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.NOTIFICATION_TEMPLATE)
+    )
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)

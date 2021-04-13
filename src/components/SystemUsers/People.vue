@@ -33,6 +33,7 @@
         :filterable="true"
         :options="true"
         :select-event="tableOptions.selectEvent"
+        :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :download-button="tableOptions.downloadButton"
@@ -55,6 +56,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
+        @on-table-settings-change="handleSetRenderedColumns"
         :isServerSide="false"
       />
     </div>
@@ -65,7 +67,8 @@
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
@@ -86,6 +89,7 @@ export default {
     return {
       deleteButtonDisabled: false,
       loading: true,
+      storedTableSettings: null,
       showAllRecords: false,
       totalNumberOfRecords: 0,
       tableData: [],
@@ -291,6 +295,9 @@ export default {
       //generic
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE, JSON.stringify(tableSettings))
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
@@ -538,12 +545,9 @@ export default {
     }
   },
   created() {
-    /*
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    this.setQueryValuesToPayload(this.$route.query)
-
-     */
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE)
+    )
     this.getDefaultFilterAndSearch()
   }
 }

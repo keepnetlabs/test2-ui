@@ -25,6 +25,7 @@
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
+      :stored-table-settings="storedTableSettings"
       :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
@@ -48,6 +49,7 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" class="datatable-link">
@@ -64,7 +66,8 @@ import { deleteCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '../
 import DeleteModal from './DeleteModal'
 import {
   COMMON_CONSTANTS,
-  DEFAULT_SEARCH_CONTAINER_KEYS
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  TABLE_SETTINGS_KEYS
 } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission } from '@/utils/functions'
@@ -86,6 +89,7 @@ export default {
       tableKey: 'key-table-company-group',
       loading: false,
       tableData: [],
+      storedTableSettings: null,
       isShowDeleteModal: false,
       isShowAddModal: false,
       editAddModal: false,
@@ -266,6 +270,9 @@ export default {
           .finally(() => (this.loading = false))
       }
     } else {
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_LIST)
+      )
       this.getDefaultFilterAndSearch()
       this.getTableData()
     }
@@ -279,6 +286,9 @@ export default {
           filterValues
         })
       )
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_LIST, JSON.stringify(tableSettings))
     },
     handleRestoreDefaultSearch() {
       this.getDefaultFilterAndSearch()

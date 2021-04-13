@@ -31,6 +31,7 @@
       :empty="tableOptions.empty"
       :filterable="true"
       :options="true"
+      :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       :pageSizes="tableOptions.pageSizes"
@@ -53,6 +54,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @searchChangedEvent="handleSearchChange"
       @sortChangedEvent="sortChanged"
+      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template #datatable-custom-column="{ scope, col }">
         <v-btn style="display: none;" />
@@ -97,7 +99,8 @@ import DataTable from '../DataTable'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import {
   searchPhishingReporterUser,
@@ -273,6 +276,7 @@ export default {
       },
       isWantToDelete: false,
       selectedRow: null,
+      storedTableSettings: null,
       selectEvent: {
         clipboard: true,
         edit: false,
@@ -334,6 +338,9 @@ export default {
   methods: {
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.PHISHINGREPORTER, JSON.stringify(tableSettings))
     },
     getDataTableFieldLabel(field) {
       return getDataTableFieldLabel(field)
@@ -634,6 +641,9 @@ export default {
     }
   },
   created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.PHISHINGREPORTER)
+    )
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()

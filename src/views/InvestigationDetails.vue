@@ -788,6 +788,7 @@
                 :rowActions="rowActions"
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
+                :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
                 :clusterItems="clusterItems"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
@@ -806,6 +807,7 @@
                 @set-default-search="handleSetDefaultSearch"
                 @restore-default-search="handleRestoreDefaultSearch"
                 @clear-filters="handleClearFilters"
+                @on-table-settings-change="handleSetRenderedColumnsDetailsList"
                 :show-filter-options="false"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
@@ -880,6 +882,7 @@
                 :total-number-of-records="totalNumberOfRecordsTargetUser"
                 :empty="iEmpty"
                 :show-all-records="showAllRecordsTargetUser"
+                :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 :clusterItems="clusterItems"
@@ -897,6 +900,7 @@
                 @set-default-search="handleSetDefaultSearchForTargetUsers"
                 @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
                 @clear-filters="handleClearFiltersForTargetUsers"
+                @on-table-settings-change="handleSetRenderedColumnsTargetUser"
                 :show-filter-options="false"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
@@ -950,7 +954,8 @@ import moment from 'moment'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '../model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
@@ -982,6 +987,8 @@ export default {
     showAllRecordsTargetUser: false,
     totalNumberOfRecordsTargetUser: 0,
     showAllRecordsFolder: false,
+    storedTableDetailsList: null,
+    storedTableTargetUser: null,
     totalNumberOfRecordsFolder: 0,
     warningButtonDisabled: false,
     warnAndDeleteButtonDisabled: false,
@@ -1377,6 +1384,18 @@ export default {
           filter: this.investigationListBodyData.filter,
           filterValues
         })
+      )
+    },
+    handleSetRenderedColumnsTargetUser(tableSettings = {}) {
+      localStorage.setItem(
+        TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_TARGET_USER,
+        JSON.stringify(tableSettings)
+      )
+    },
+    handleSetRenderedColumnsDetailsList(tableSettings = {}) {
+      localStorage.setItem(
+        TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_LIST,
+        JSON.stringify(tableSettings)
       )
     },
     getDefaultFilterAndSearchForTargetUsers() {
@@ -2223,6 +2242,14 @@ export default {
       filterPayload = [...items]
       this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
       this.refreshDatatable()
+    },
+    setStoredTableSettings() {
+      this.storedTableDetailsList = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_LIST)
+      )
+      this.storedTableTargetUser = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATION_DETAILS_TARGET_USER)
+      )
     }
   },
   computed: {
@@ -2289,7 +2316,9 @@ export default {
       }
     }
   },
-  created() {},
+  created() {
+    this.setStoredTableSettings()
+  },
   mounted() {
     // triggered to relevant action at investigations.js
     //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);

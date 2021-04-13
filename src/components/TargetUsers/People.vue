@@ -56,6 +56,7 @@
       :refName="'peopleTable'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
+      :stored-table-settings="storedTableSettings"
       :selectable="true"
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
@@ -79,6 +80,7 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -175,7 +177,8 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
@@ -221,6 +224,7 @@ export default {
         ]
       }
     },
+    storedTableSettings: null,
     defaultRequestBody: {
       pageNumber: 1,
       pageSize: 50000,
@@ -421,6 +425,9 @@ export default {
         })
       }
       this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE, JSON.stringify(tableSettings))
     },
     handleClearFilters() {
       this.isRestoredOrClearedFilters = true
@@ -781,6 +788,14 @@ export default {
               findedColumn.show = column.show
             })
           }
+          if (this.storedTableSettings && this.storedTableSettings.renderedColumns.length) {
+            newColumns.forEach((column) => {
+              const item = this.storedTableSettings.renderedColumns.find(
+                (renderedColumnProp) => renderedColumnProp === column.property
+              )
+              column.show = !!item
+            })
+          }
           this.tableOptions.columns = newColumns
         })
         .catch(() => {
@@ -793,59 +808,7 @@ export default {
           this.callForTargetUsers()
         })
     },
-    /*columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
 
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForTargetUsers()
-    },
-    columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForTargetUsers()
-
-      this.tableOptions.isColumnFilterActive =
-        this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
-    },
-
-     */
     exportTargetUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
@@ -870,6 +833,9 @@ export default {
     }
   },
   created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE)
+    )
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
