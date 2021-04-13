@@ -93,7 +93,7 @@ export default {
     })
   },
   methods: {
-    setMergeTextNames(a, b, c) {
+    setMergeTextNames() {
       let _this = this
       const component = this.editor.getSelected()
       setTimeout(() => {
@@ -192,15 +192,15 @@ export default {
               .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
               )
-              .addEventListener('change', (a, b, c) => {
-                this.setMergeTextNames(a, b, c)
+              .addEventListener('change', () => {
+                this.setMergeTextNames()
               })
             document
               .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
-              .addEventListener('change', (a, b, c) => {
-                this.setMergeTextNames(a, b, c)
+              .addEventListener('change', () => {
+                this.setMergeTextNames()
               })
             if (selected.getTrait('href').props().value === '') {
               document.querySelector(
