@@ -39,6 +39,7 @@ import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.c
 import 'grapesjs/dist/css/grapes.min.css'
 import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
+import { eventFire } from '@/utils/functions'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -92,7 +93,7 @@ export default {
     })
   },
   methods: {
-    asd(a, b, c) {
+    setMergeTextNames(a, b, c) {
       let _this = this
       const component = this.editor.getSelected()
       setTimeout(() => {
@@ -114,7 +115,7 @@ export default {
           this.urlMergedTexts.push({
             value: key,
             name: this.blockManagerComponents[key].label,
-            title: 'asdasd'
+            title: 'Title'
           })
       })
     },
@@ -192,14 +193,14 @@ export default {
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
               )
               .addEventListener('change', (a, b, c) => {
-                this.asd(a, b, c)
+                this.setMergeTextNames(a, b, c)
               })
             document
               .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
               .addEventListener('change', (a, b, c) => {
-                this.asd(a, b, c)
+                this.setMergeTextNames(a, b, c)
               })
             if (selected.getTrait('href').props().value === '') {
               document.querySelector(
@@ -223,18 +224,6 @@ export default {
           this.editor.StyleManager.getSectors().models[1].attributes.open = true
           this.editor.StyleManager.getSectors().models[2].attributes.open = true
           this.editor.StyleManager.render()
-          /*document.getElementById('gjs-sm-dimension').className =
-            'gjs-sm-sector gjs-sm-sector__dimension no-select gjs-sm-open'
-          document.querySelector('#gjs-sm-dimension #gjs-sm-caret').className = 'fa fa-caret-down'
-          document.querySelector('#gjs-sm-dimension .gjs-sm-properties').style.display = 'block'
-          document.getElementById('gjs-sm-typography').className =
-            'gjs-sm-sector gjs-sm-sector__typography no-select gjs-sm-open'
-          document.querySelector('#gjs-sm-typography #gjs-sm-caret').className = 'fa fa-caret-down'
-          document.querySelector('#gjs-sm-typography .gjs-sm-properties').style.display = 'block'
-          document.getElementById('gjs-sm-decorations').className =
-            'gjs-sm-sector gjs-sm-sector__decorations no-select gjs-sm-open'
-          document.querySelector('#gjs-sm-decorations #gjs-sm-caret').className = 'fa fa-caret-down'
-          document.querySelector('#gjs-sm-decorations .gjs-sm-properties').style.display = 'block'*/
         }
       })
       setTimeout(() => {
@@ -434,24 +423,17 @@ export default {
         document.querySelector('.fa-download').classList.remove('fa-download')
       }, 1000)
       const rte = this.editor.RichTextEditor
-      /*rte.remove('link')
-      rte.add('link', {
-        icon: 'fa fa-link',
-        attributes: { title: 'Link' },
-        // Example on it's easy to wrap a selected content
-
-      })*/
-      /*rte.get('link').result = (rte) => {
-        //copyEditor.select(copyEditor.DomComponents.getWrapper().find('body')[0])
-        setTimeout(() => {
-          //copyEditor.DomComponents.render()
-          //copyEditor.DomComponents.load()
-        }, 400)
-        setTimeout(() => {
-          //copyEditor.select(copyEditor.DomComponents.getWrapper().find('a#Reset')[0])
-        }, 500)
-        return rte.insertHTML(`<a href="">${rte.selection()}</a>`)
-      }*/
+      rte.get('link').result = (rte) => {
+        rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
+        const sel = this.editor.getSelected()
+        sel.trigger('disable')
+        const toSel = sel.find('[data-selectme]')[0]
+        const attr = toSel.getAttributes()
+        delete attr['data-selectme']
+        toSel.setAttributes(attr)
+        toSel.set('selectable', true)
+        this.editor.select(toSel)
+      }
       rte.get('link').btn.innerHTML =
         "<img height='19' width='20' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAdNJREFUWAntlj1LA0EQhu+M2AgWVhaCf0AIqI2FNha2aVL7GxQt09hG9J/Y29qkEdKIhWAhpLCwEkQQND4v3B6TdTe5iOIpOzDszOx8vDe3X1mWKHUgdSB1IHUgdeBfdyCv8nXD4XAev1V4CZ6LxPTyPB9oDv9lhs2I3yv2B/ga/+eITzUzhZrwOfwCT6K2y4pje5Iz88qp3E0XN9VIYAd+g6vStABdXtXoxMDNhiYI6GI/DMzdY4v9lifjL/nG6FbUclkxhhnkY2ou8MuPjD0s4tiCLT2i7MGL4YjprcpV5FRuS62x2fBswLcm4g5ZG+NHSLlh1XCk2o1oMSa3nSfju/So8zdNFDVVy9FITX8N7pi6fdbEpdFLkUz7KLFjpPTzBB1DZ54tUw3y9bGvFXPCUNb1Aer8cnTlhMAocOWuDczHTJ8AFo6q5QBaDJl2UB0oemH4HRwYtBtG9sWeb6igj4tZN/EWgzEjshbqsEm2RlEZDYD1PmaEFZC1OqiDixOQX7nqDjgyLoqP3GU8lRwg/6pzLifET77qnDcgO7Au8qpUHjsEVHnNuLyqEX0sODzBkcBff24Ff7GPFqD6LfV7sPpAk546kDqQOpA6kDrw9zrwAQ55zcgJtHvUAAAAAElFTkSuQmCC'>"
     },
