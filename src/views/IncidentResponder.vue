@@ -97,6 +97,7 @@
         :status="isWantToAddNewInvestigation"
         v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
+        :is-ir="true"
       />
       <div class="columns-row" v-if="checkPermissions('ir/dashboard/summary', 'GET')">
         <CardLoading
