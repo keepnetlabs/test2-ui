@@ -212,7 +212,7 @@
                           <span>{{ item.result }}</span>
                         </div>
                       </div>
-                      <div id="email-time" class="email-time">{{ item.createDate }}</div>
+                      <div id="email-time" class="email-time">{{ item.createTime }}</div>
                     </div>
                   </div>
                 </template>
