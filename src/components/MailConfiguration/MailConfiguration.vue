@@ -262,6 +262,7 @@
         :refName="'peopleTable'"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
+        :stored-table-settings="storedTableSettings"
         :setClassName="setCellClassName"
         @syncUser="handleSyncUser"
         @delete="handleDelete"
@@ -280,6 +281,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
+        @on-table-settings-change="handleSetRenderedColumns"
         :isServerSide="false"
       >
         <template v-slot:addUsers>
@@ -363,7 +365,8 @@ import {
   COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
@@ -415,6 +418,7 @@ export default {
     deleteDialog: null,
     deleteDialogName: null,
     editData: null,
+    storedTableSettings: null,
     formValues: {
       name: null,
       applicationId: null,
@@ -582,6 +586,9 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION, JSON.stringify(tableSettings))
+    },
     resetPageNumber() {
       //generic
       this.requestBody.pageNumber = 1
@@ -924,7 +931,11 @@ export default {
       this.selectedSyncIndex = null
     }
   },
-  created() {},
+  created() {
+    this.storedTableSettings = JSON.parse(
+      localStorage.getItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION)
+    )
+  },
   mounted() {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')

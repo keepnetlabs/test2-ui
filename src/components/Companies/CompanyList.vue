@@ -63,6 +63,7 @@
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
+      :stored-table-settings="storedTableSettings"
       :refName="'companyList'"
       :clusterItems="[{ name: 'Company Name' }]"
       @clusterChanged="clusterChanged"
@@ -92,6 +93,7 @@
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span
@@ -142,7 +144,8 @@ import DeleteModal from './DeleteModal'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import CompanyListExtend from '@/components/Companies/CompanyListExtend'
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
@@ -184,6 +187,7 @@ export default {
     showCreateNewGroupWithCompany: false,
     selectedExtend: {},
     selectedRow: {},
+    storedTableSettings: null,
     tableOptions: {
       columns: [
         {
@@ -370,6 +374,7 @@ export default {
   },
   created() {
     //generic
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
@@ -390,6 +395,9 @@ export default {
       size = isNaN(parsedSize) ? 10 : parsedSize
       this.payload.pageSize = size
       this.serverSideProps.pageSize = size
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_LIST, JSON.stringify(tableSettings))
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))

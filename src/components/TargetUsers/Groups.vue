@@ -39,6 +39,7 @@
       :options="true"
       :total-number-of-records="totalNumberOfRecords"
       :pageSizes="tableOptions.pageSizes"
+      :stored-table-settings="storedTableSettings"
       :rowActions="tableOptions.rowActions"
       :extended-view-options="tableOptions.extendedViewOptions"
       :disableExtendedViewTransition="true"
@@ -65,6 +66,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
+      @on-table-settings-change="handleSetRenderedColumns"
       :isServerSide="false"
     >
       <template v-slot:addUsers>
@@ -113,7 +115,8 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
-  PROPERTY_STORE
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { required, maxLength } from '@/utils/validations'
 import { checkPermission } from '@/utils/functions'
@@ -140,6 +143,7 @@ export default {
       loading: false,
       showAllRecords: false,
       totalNumberOfRecords: 0,
+      storedTableSettings: null,
       tableData: [],
       selectedGroup: {},
       extendedViewLoading: true,
@@ -351,6 +355,9 @@ export default {
     }
   },
   methods: {
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS, JSON.stringify(tableSettings))
+    },
     resetPageNumber() {
       //generic
       this.tableCredientials.pageNumber = 1
@@ -642,12 +649,9 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      /*
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.controlRouteQuery()
-      this.setQueryValuesToPayload(this.$route.query)
-
-       */
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS)
+      )
       this.getDefaultFilterAndSearch()
     }
   },

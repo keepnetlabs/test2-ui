@@ -84,8 +84,7 @@ export function setMFA(payload) {
 
 export function setMfaResync(payload) {
   return testRequest.put('/system-users/mfa/resync', payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
+    loading: true
   })
 }
 

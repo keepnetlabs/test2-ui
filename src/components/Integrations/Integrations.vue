@@ -42,6 +42,7 @@
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
+      :stored-table-settings="storedTableSettings"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @disable="handleDisable"
@@ -64,6 +65,7 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
+      @on-table-settings-change="handleSetRenderedColumns"
       :isServerSide="false"
     >
       <template v-slot:datatable-row-actions="{ scope }">
@@ -149,7 +151,8 @@ import {
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  INTEGRATION_TYPES
+  INTEGRATION_TYPES,
+  TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
@@ -171,6 +174,7 @@ export default {
       totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
+      storedTableSettings: null,
       selectedIntegration: {},
       tableOptions: {
         isColumnFilterActive: false,
@@ -338,6 +342,9 @@ export default {
     }
   },
   methods: {
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.INTEGRATION, JSON.stringify(tableSettings))
+    },
     resetPageNumber() {
       //generic
       this.bodyData.pageNumber = 1
@@ -590,12 +597,10 @@ export default {
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
   },
+  created() {
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
+  },
   mounted() {
-    /*
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    this.setQueryValuesToPayload(this.$route.query)
-    */
     this.getDefaultFilterAndSearch()
   }
 }
