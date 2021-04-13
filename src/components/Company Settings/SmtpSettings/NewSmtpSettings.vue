@@ -393,7 +393,7 @@ export default {
         ...testEmailPayload,
         serverAddress: this.formValues.serverAddress,
         port: Number(this.formValues.serverPort),
-        username: this.formValues.username,
+        username: this.formValues.userName,
         password: this.formValues.password,
         resourceId: this.resourceId,
         useAuthentication: Number(this.formValues.useAuthentication),
