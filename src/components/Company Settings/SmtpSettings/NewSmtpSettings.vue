@@ -392,9 +392,10 @@ export default {
       const payload = {
         ...testEmailPayload,
         serverAddress: this.formValues.serverAddress,
-        port: this.formValues.port,
+        port: Number(this.formValues.serverPort),
         username: this.formValues.username,
         password: this.formValues.password,
+        resourceId: this.resourceId,
         useAuthentication: Number(this.formValues.useAuthentication),
         useSsl: Number(this.formValues.useSSL)
       }
