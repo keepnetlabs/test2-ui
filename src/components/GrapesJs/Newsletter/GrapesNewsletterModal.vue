@@ -39,6 +39,7 @@ import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.c
 import 'grapesjs/dist/css/grapes.min.css'
 import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
+import { eventFire } from '@/utils/functions'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -441,17 +442,17 @@ export default {
         // Example on it's easy to wrap a selected content
 
       })*/
-      /*rte.get('link').result = (rte) => {
-        //copyEditor.select(copyEditor.DomComponents.getWrapper().find('body')[0])
-        setTimeout(() => {
-          //copyEditor.DomComponents.render()
-          //copyEditor.DomComponents.load()
-        }, 400)
-        setTimeout(() => {
-          //copyEditor.select(copyEditor.DomComponents.getWrapper().find('a#Reset')[0])
-        }, 500)
-        return rte.insertHTML(`<a href="">${rte.selection()}</a>`)
-      }*/
+      rte.get('link').result = (rte) => {
+        rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
+        const sel = this.editor.getSelected()
+        sel.trigger('disable')
+        const toSel = sel.find('[data-selectme]')[0]
+        const attr = toSel.getAttributes()
+        delete attr['data-selectme']
+        toSel.setAttributes(attr)
+        toSel.set('selectable', true)
+        this.editor.select(toSel)
+      }
       rte.get('link').btn.innerHTML =
         "<img height='19' width='20' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAdNJREFUWAntlj1LA0EQhu+M2AgWVhaCf0AIqI2FNha2aVL7GxQt09hG9J/Y29qkEdKIhWAhpLCwEkQQND4v3B6TdTe5iOIpOzDszOx8vDe3X1mWKHUgdSB1IHUgdeBfdyCv8nXD4XAev1V4CZ6LxPTyPB9oDv9lhs2I3yv2B/ga/+eITzUzhZrwOfwCT6K2y4pje5Iz88qp3E0XN9VIYAd+g6vStABdXtXoxMDNhiYI6GI/DMzdY4v9lifjL/nG6FbUclkxhhnkY2ou8MuPjD0s4tiCLT2i7MGL4YjprcpV5FRuS62x2fBswLcm4g5ZG+NHSLlh1XCk2o1oMSa3nSfju/So8zdNFDVVy9FITX8N7pi6fdbEpdFLkUz7KLFjpPTzBB1DZ54tUw3y9bGvFXPCUNb1Aer8cnTlhMAocOWuDczHTJ8AFo6q5QBaDJl2UB0oemH4HRwYtBtG9sWeb6igj4tZN/EWgzEjshbqsEm2RlEZDYD1PmaEFZC1OqiDixOQX7nqDjgyLoqP3GU8lRwg/6pzLifET77qnDcgO7Au8qpUHjsEVHnNuLyqEX0sODzBkcBff24Ff7GPFqD6LfV7sPpAk546kDqQOpA6kDrw9zrwAQ55zcgJtHvUAAAAAElFTkSuQmCC'>"
     },

@@ -883,3 +883,14 @@ export function datePrettier(date) {
   const newDate = new Date(date)
   return newDate.toLocaleDateString('en-US', options)
 }
+export function eventFire(el, etype) {
+  if (el.fireEvent) {
+    el.fireEvent('on' + etype)
+  } else {
+    let evObj = document
+      .getElementsByClassName('gjs-frame')[0]
+      .contentWindow.document.createEvent('Events')
+    evObj.initEvent(etype, true, false)
+    el.dispatchEvent(evObj)
+  }
+}
