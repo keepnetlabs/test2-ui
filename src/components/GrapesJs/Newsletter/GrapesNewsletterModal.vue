@@ -93,7 +93,7 @@ export default {
     })
   },
   methods: {
-    asd(a, b, c) {
+    setMergeTextNames(a, b, c) {
       let _this = this
       const component = this.editor.getSelected()
       setTimeout(() => {
@@ -115,7 +115,7 @@ export default {
           this.urlMergedTexts.push({
             value: key,
             name: this.blockManagerComponents[key].label,
-            title: 'asdasd'
+            title: 'Title'
           })
       })
     },
@@ -193,14 +193,14 @@ export default {
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
               )
               .addEventListener('change', (a, b, c) => {
-                this.asd(a, b, c)
+                this.setMergeTextNames(a, b, c)
               })
             document
               .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
               .addEventListener('change', (a, b, c) => {
-                this.asd(a, b, c)
+                this.setMergeTextNames(a, b, c)
               })
             if (selected.getTrait('href').props().value === '') {
               document.querySelector(
@@ -224,18 +224,6 @@ export default {
           this.editor.StyleManager.getSectors().models[1].attributes.open = true
           this.editor.StyleManager.getSectors().models[2].attributes.open = true
           this.editor.StyleManager.render()
-          /*document.getElementById('gjs-sm-dimension').className =
-            'gjs-sm-sector gjs-sm-sector__dimension no-select gjs-sm-open'
-          document.querySelector('#gjs-sm-dimension #gjs-sm-caret').className = 'fa fa-caret-down'
-          document.querySelector('#gjs-sm-dimension .gjs-sm-properties').style.display = 'block'
-          document.getElementById('gjs-sm-typography').className =
-            'gjs-sm-sector gjs-sm-sector__typography no-select gjs-sm-open'
-          document.querySelector('#gjs-sm-typography #gjs-sm-caret').className = 'fa fa-caret-down'
-          document.querySelector('#gjs-sm-typography .gjs-sm-properties').style.display = 'block'
-          document.getElementById('gjs-sm-decorations').className =
-            'gjs-sm-sector gjs-sm-sector__decorations no-select gjs-sm-open'
-          document.querySelector('#gjs-sm-decorations #gjs-sm-caret').className = 'fa fa-caret-down'
-          document.querySelector('#gjs-sm-decorations .gjs-sm-properties').style.display = 'block'*/
         }
       })
       setTimeout(() => {
