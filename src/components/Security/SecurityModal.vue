@@ -212,6 +212,7 @@ import {
 } from '@/api/auth'
 import MFASetup from '@/components/MFA/MFASetup'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'SecurityModal',
   props: {
@@ -294,6 +295,10 @@ export default {
       setMfaResync(payload)
         .then(() => {
           this.$emit('changePasswordChange')
+          this.$store.dispatch('common/createSnackBar', {
+            message: 'Multi-factor authentication enabled',
+            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR
+          })
         })
         .catch(() => {})
     },
@@ -314,6 +319,7 @@ export default {
           }
           getMfaSetup(payload)
             .then((response) => {
+              debugger
               this.mfaSetupDetails = response.data['data']
               this.step = 4
             })
