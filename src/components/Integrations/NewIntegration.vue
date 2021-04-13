@@ -455,6 +455,15 @@
                 color="#2196f3"
                 v-if="selectedIntegrationType.isSendFileHash"
               ></v-checkbox>
+              <div v-if="selectedIntegrationType.isSendIp">
+                <v-checkbox
+                  v-model="formValues.isSendIp"
+                  id="input--integration-is-send-ip"
+                  label="Scan sender IP address"
+                  style="margin-top: 10px;"
+                  color="#2196f3"
+                ></v-checkbox>
+              </div>
               <div v-if="selectedIntegrationType.isSendFile">
                 <v-checkbox
                   v-model="formValues.isUploadExecutableFile"
@@ -601,6 +610,7 @@ export default {
         isActive: true,
         isSendUrl: false,
         isSendFileHash: false,
+        isSendIp: false,
         isUploadExecutableFile: false,
         isUploadOtherFileType: false,
         apiKeys: [{ value: '', status: null, resourceId: null }],
@@ -612,7 +622,8 @@ export default {
       selectedIntegrationType: {
         isSendUrl: false,
         isSendFileHash: false,
-        isSendFile: false
+        isSendFile: false,
+        isSendIp: false
       },
       isFortiNetConnected: false,
       isFortiNetConnectionSended: false,

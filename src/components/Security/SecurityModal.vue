@@ -319,7 +319,6 @@ export default {
           }
           getMfaSetup(payload)
             .then((response) => {
-              debugger
               this.mfaSetupDetails = response.data['data']
               this.step = 4
             })
