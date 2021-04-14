@@ -1,7 +1,7 @@
 <template>
   <div class="feedback-popup">
-    <v-card style="width: 600px;">
-      <v-list-item class="feedback-popup__header">
+    <v-card style="width: 600px; max-height: 330px; overflow-y: auto;">
+      <v-list-item class="feedback-popup__header k-dialog__header-max-height">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">
             mdi-message-alert
@@ -36,7 +36,7 @@
           ></v-textarea>
         </v-form>
       </div>
-      <div class="feedback-button">
+      <div class="feedback-button k-dialog__footer-max-height">
         <v-btn class="feedback-button--cancel" text v-on:click="onCancelClicked">{{
           labels.Cancel
         }}</v-btn>

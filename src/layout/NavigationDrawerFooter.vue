@@ -9,7 +9,9 @@
         <v-list-item-icon>
           <v-icon>mdi-help-circle-outline</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>Documentation</v-list-item-title>
+        <v-list-item-title data-content="https://doc.keepnetlabs.com"
+          >Documentation</v-list-item-title
+        >
       </v-list-item>
       <v-list-item
         id="btn--navigation-drawer-feedback"
@@ -38,6 +40,7 @@
         id="btn--navigation-drawer-release-notes"
         class="navigation-drawer-footer__release-notes"
         target="_blank"
+        :data-content="getReleaseNotesUrl"
         :href="getReleaseNotesUrl"
       >
         Release Notes</a

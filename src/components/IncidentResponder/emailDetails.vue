@@ -676,7 +676,7 @@ export default {
         case 'Undetected':
           return '#00bcd4'
         case 'Malicious':
-          return '#e6a23c'
+          return '#b83a3a'
         case 'Phishing':
           return '#f56c6c'
         default:

@@ -524,6 +524,7 @@ export default {
     },
     columnFilterCleared(fieldName) {
       //generic
+      debugger
       let items = []
       let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
 
@@ -682,14 +683,16 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
+      console.trace('asasasa')
       getTargetUsers(this.payload)
         .then((response) => {
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
           this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
             for (let { name, value, dataType } of customFieldValues) {
               if (dataType === 'Boolean') {
                 if (value === 'True') {
@@ -805,6 +808,7 @@ export default {
           ]
         })
         .finally(() => {
+          console.log('iam invoked')
           this.callForTargetUsers()
         })
     },

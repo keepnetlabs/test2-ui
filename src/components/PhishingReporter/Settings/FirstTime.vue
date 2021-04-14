@@ -8,7 +8,7 @@
       @closeOverlay="showAddInConfiguration = false"
     />
 
-    <v-container tag="div" id="first-time" fluid style="padding-bottom: 78px !important;">
+    <v-container tag="div" id="first-time" fluid style="padding-bottom: 48px !important;">
       <v-list-item class="first-time__list-item">
         <v-list-item-content>
           <div class="first-time__header">Phishing Reporter Add-in</div>
@@ -40,18 +40,7 @@
           </div>
         </v-list-item-content>
       </v-list-item>
-      <v-list-item class="first-time__list-item">
-        <v-list-item-content>
-          <div class="first-time__guide-container">
-            <a
-              href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
-              target="_blank"
-            >
-              Installation and configuration guide
-            </a>
-          </div>
-        </v-list-item-content>
-      </v-list-item>
+      <v-list-item class="first-time__list-item"> </v-list-item>
     </v-container>
   </div>
 </template>
@@ -125,7 +114,7 @@ export default {
 
   &__button-container {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 42px;
   }
 
   &__guide-container {
