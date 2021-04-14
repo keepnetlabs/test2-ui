@@ -12,16 +12,6 @@
           Extra settings
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content>
-        <a
-          href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
-          class="other-settings__link"
-          target="_blank"
-          v-if="showHeaderLink"
-        >
-          Installation and configuration guide
-        </a>
-      </v-list-item-content>
     </v-list-item>
     <v-form ref="refForm">
       <v-list-item class="px-0 other-settings__list-item">

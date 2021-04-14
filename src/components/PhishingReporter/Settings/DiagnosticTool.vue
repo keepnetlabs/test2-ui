@@ -12,15 +12,6 @@
           Helper tool to check status of the add-in and diagnose problems
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content v-if="showHeaderLink" style="text-align: right;">
-        <a
-          href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
-          class="other-settings__link"
-          target="_blank"
-        >
-          Installation and configuration guide
-        </a>
-      </v-list-item-content>
     </v-list-item>
     <div class="diagnostic-tool" id="diagnostic-tool" v-if="!isInModal">
       <v-list-item class="px-0 diagnostic-tool__list-item">
