@@ -612,7 +612,16 @@
                 <v-icon v-text="item.icon"></v-icon>
               </v-list-item-icon>
               <v-list-item-content>
-                <v-list-item-title v-text="item.text"></v-list-item-title>
+                <v-list-item-title
+                  :data-content="
+                    item.text === 'Get Help'
+                      ? `mailto:${supportEmailAddress || 'support@keepnetlabs.com'}`
+                      : item.text === 'Documentation'
+                      ? 'https://doc.keepnetlabs.com'
+                      : ''
+                  "
+                  v-text="item.text"
+                ></v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

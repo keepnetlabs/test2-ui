@@ -24,16 +24,6 @@
           {{ labels.General }} add-in {{ labels.Settings }}
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-content>
-        <a
-          href="https://doc.keepnetlabs.com/beta-modules/incident-responder#2-phishing-reporter"
-          class="other-settings__link"
-          target="_blank"
-          v-if="showHeaderLink"
-        >
-          {{ labels.Installation }} {{ labels.And }} {{ labels.Configuration }} {{ labels.Guide }}
-        </a>
-      </v-list-item-content>
     </v-list-item>
     <v-form class="add-in-settings__form" lazy-validation ref="refForm" v-model="isValid">
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
