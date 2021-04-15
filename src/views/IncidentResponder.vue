@@ -119,7 +119,7 @@
                   to="/phishing-reporter"
                   id="btn-link--incident-responder-to-phishing-reporter"
                 >
-                  <v-icon :color="'white'">mdi-open-in-new</v-icon>
+                  <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
                 </router-link>
               </div>
               <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
@@ -150,26 +150,19 @@
                   }}
                   user(s) are
                 </div>
-                <div class="card-status">{{ labels.CurrentlyOnline }}</div>
+                <div class="card-status">{{ labels.Online }}</div>
               </div>
               <div class="columns-row__body" v-else>
-                <div class="card-footer no-data-text">No add-ins installed</div>
-                <v-btn
-                  class="btn-action btn-playbook btn-playbook__no-data"
-                  rounded
-                  color="white"
-                  style="box-shadow: none !important; margin-top: 16px;"
-                  @click="emptyPhishingButtonClick"
-                >
-                  {{ labels.InstallNow }}
-                </v-btn>
+                <div class="card-footer no-data-text">
+                  Add-in isn’t installed at any users’ account, yet
+                </div>
               </div>
               <div
                 class="bg-image"
-                style="bottom: 10px; right: 0;"
+                style="bottom: 10px; right: -11px;"
                 :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
               >
-                <img src="../assets/img/shape.svg" />
+                <img src="../assets/img/ph-crone.svg" />
               </div>
             </div>
           </template>
@@ -182,9 +175,10 @@
           <template v-slot:skeleton-content>
             <div
               id="card--incident-responder-incident-analysis"
-              class="dashboard-cards incident-analysis mr-2"
+              class="dashboard-cards mr-2"
               :class="{
-                'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+                'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
+                'incident-analysis': !isNotifiedEmailEmpty(irSummary)
               }"
             >
               <div class="card-header">
@@ -223,10 +217,6 @@
                 <div class="card-footer no-data-text">
                   {{ labels.NoEmailAnalysed }}
                 </div>
-                <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-                  @click="emptyNotifiedEmailButtonClick">
-            Start Now
-          </button>-->
               </div>
               <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
                 <img src="../assets/img/ic-warning.svg" />
@@ -253,7 +243,7 @@
                   :to="'/investigations'"
                   id="btn-link--incident-responder-to-investigations"
                 >
-                  <v-icon :color="'white'">mdi-open-in-new</v-icon>
+                  <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
                 </router-link>
               </div>
               <div
@@ -275,9 +265,11 @@
                       }}
                     </span>
 
-                    <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
+                    <span class="body-row__text" style="margin-left: 4px;">{{
+                      labels.Auto.toLowerCase()
+                    }}</span>
                   </div>
-                  <div class="body-row" style="margin-left: 81px;">
+                  <div class="body-row" style="margin-left: 64px;">
                     <span
                       class="body-row__number"
                       id="card--incident-responder-investigations-manual-investigation-count"
@@ -300,15 +292,6 @@
                 <div class="card-footer no-data-text">
                   {{ labels.NoInvestigationStarted }}
                 </div>
-                <v-btn
-                  class="btn-action btn-playbook btn-playbook__no-data"
-                  rounded
-                  color="white"
-                  style="box-shadow: none !important; margin-top: 16px;"
-                  @click="emptyInvestigationButtonClick"
-                >
-                  {{ labels.StartNow }}
-                </v-btn>
               </div>
               <div
                 class="bg-image"
@@ -327,9 +310,10 @@
           <template v-slot:skeleton-content>
             <div
               id="card--incident-responder-roi-summary"
-              class="dashboard-cards roi-summary"
+              class="dashboard-cards"
               :class="{
-                'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
+                'no-data__opacity-purple': isRoiSummaryEmpty(irSummary),
+                'roi-summary': !isRoiSummaryEmpty(irSummary)
               }"
             >
               <div class="card-header">
@@ -341,7 +325,10 @@
                   >mdi-cog</v-icon
                 >
               </div>
-              <div class="card-body d-flex roi-summary__body-container">
+              <div
+                class="card-body d-flex roi-summary__body-container"
+                v-if="!isRoiSummaryEmpty(irSummary)"
+              >
                 <div class="body-row">
                   <span
                     id="card--incident-responder-roi-summary-time"
@@ -353,15 +340,20 @@
 
                   <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
                 </div>
-                <div class="body-row">
+                <div class="body-row body-row--2">
                   <span class="body-row__number" id="card--incident-responder-roi-summary-revenue">
                     ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
                   </span>
 
                   <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
                 </div>
+                <div class="card-status">{{ labels.Saved }}</div>
               </div>
-              <div class="card-status">{{ labels.Saved }}</div>
+              <div class="columns-row__body" v-else>
+                <div class="card-footer no-data-text">
+                  You haven’t saved any work, yet
+                </div>
+              </div>
               <div class="bg-image">
                 <img src="../assets/img/ic-insert-chart.svg" />
               </div>
@@ -2607,9 +2599,12 @@ export default {
           baseManHourCost: this.baseManHourCost
         })
           .then(() => {
+            this.incidentLoading = true
             this.callForGetRoiSettings()
             this.isShowRoi = false
-            this.$store.dispatch('investigations/getIrSummary')
+            this.$store.dispatch('investigations/getIrSummary').finally(() => {
+              this.incidentLoading = false
+            })
           })
           .finally(() => {
             this.isConfirmButtonDisabled = false
@@ -3193,15 +3188,15 @@ export default {
 
     .no-data {
       &__opacity-blue {
-        background-image: linear-gradient(to bottom, #3c768e, #25608a) !important;
+        background-color: #5c7f9b;
       }
 
       &__opacity-red {
-        background-image: linear-gradient(to bottom, #895f5f, #8a4646) !important;
+        background-color: #9b7879 !important;
       }
 
       &__opacity-green {
-        background-image: linear-gradient(to bottom, #4a764d, #356437) !important;
+        background-color: #668267 !important;
       }
     }
 
@@ -3323,12 +3318,14 @@ export default {
           color: #ffffff;
         }
         .body-row__text {
-          font-size: 16px;
-          font-weight: 600;
+          font-size: 20px;
+          font-weight: normal;
+          font-stretch: normal;
+          font-style: normal;
           line-height: 1.25;
           letter-spacing: normal;
-          color: #ffffff;
-          opacity: 0.7;
+          color: #fff;
+          opacity: 1;
         }
 
         .body-row:nth-child(2) {
@@ -3336,20 +3333,27 @@ export default {
       }
 
       .card-footer {
-        font-size: 16px;
-        font-weight: 600;
-        line-height: normal;
-        letter-spacing: normal;
-        color: #ffffff;
-        opacity: 0.7;
+        font-size: 20px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.25;
+        color: #fff;
+        opacity: 1;
         //padding-bottom: 16px;
 
         &.no-data-text {
-          font-size: 20px;
-          line-height: 1.25;
+          font-size: 16px;
+          font-weight: 600;
+          font-stretch: normal;
+          font-style: normal;
+          line-height: normal;
           letter-spacing: normal;
-          color: #ffffff;
-          margin-top: 36px;
+          opacity: 0.7;
+          color: #fff;
+          margin-top: 62px;
+          max-width: 85%;
+          white-space: normal !important;
         }
       }
 
@@ -3371,15 +3375,11 @@ export default {
     }
 
     .phishing-reporter {
-      background-image: linear-gradient(to bottom, #5bcffd, #2196f3);
-    }
-
-    .incident-analysis {
-      background-image: linear-gradient(to bottom, #f3a0a0, #f56c6c 99%);
+      background-color: #2196f3;
     }
 
     .investigations {
-      background-image: linear-gradient(to bottom, #71c876, #43a047);
+      background-color: #43a047;
     }
 
     .roi-summary {
@@ -3735,11 +3735,8 @@ export default {
   letter-spacing: normal;
   color: #2196f3;
 }
-.no-data__opacity-green {
-  background-image: linear-gradient(to bottom, #268a50, #265229);
-}
 .no-data__opacity-purple {
-  background-image: linear-gradient(to bottom, #72517b, #431d4e) !important;
+  background-color: #7b6c81;
 }
 
 .incident-responder .analysis-link {

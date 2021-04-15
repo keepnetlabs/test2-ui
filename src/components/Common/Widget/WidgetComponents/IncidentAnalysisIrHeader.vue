@@ -7,9 +7,10 @@
     <template v-slot:skeleton-content>
       <div
         id="card--incident-responder-incident-analysis"
-        class="dashboard-cards incident-analysis"
+        class="dashboard-cards"
         :class="{
-          'no-data__opacity-red': isNotifiedEmailEmpty(irSummary)
+          'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
+          'incident-analysis': !isNotifiedEmailEmpty(irSummary)
         }"
       >
         <div class="card-header">

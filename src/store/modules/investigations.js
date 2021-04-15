@@ -171,7 +171,7 @@ const investigations = {
     async getIrSummary({ commit, dispatch }, obj) {
       // get investigaiton list via axious
 
-      await irSummary(obj).then((response) => {
+      return await irSummary(obj).then((response) => {
         const result = response.data
         commit('SET_IRSUMMARY', result)
       })

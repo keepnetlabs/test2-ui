@@ -524,7 +524,6 @@ export default {
     },
     columnFilterCleared(fieldName) {
       //generic
-      debugger
       let items = []
       let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
 
@@ -808,7 +807,6 @@ export default {
           ]
         })
         .finally(() => {
-          console.log('iam invoked')
           this.callForTargetUsers()
         })
     },
