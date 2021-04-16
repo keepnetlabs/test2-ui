@@ -150,6 +150,7 @@
                       :clearable="false"
                       :options="filterListOption"
                       :max-height="320"
+                      @input="changeSearchCriteria(list)"
                     />
                     <div
                       v-if="isSubmitted && !list.option"
@@ -598,6 +599,9 @@ export default {
     'isIr'
   ],
   methods: {
+    changeSearchCriteria(item) {
+      item.text = null
+    },
     actionChanged() {
       this.warningMessage = ''
       if (this.selectedAction === 'DeleteAndNotify' || this.selectedAction === 'Warning') {
@@ -682,6 +686,7 @@ export default {
         return rules
       } else if (option === 'size') {
         rules.push(
+          (v) => Validations.isNumber(v),
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
           (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Size, 320))

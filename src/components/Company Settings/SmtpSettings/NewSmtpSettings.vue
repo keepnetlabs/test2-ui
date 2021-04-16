@@ -284,11 +284,13 @@ export default {
         bCC: '',
         customHeader: ''
       },
+      initialFormValues: null,
       showPassword: false,
       testEmailErrorMessage: '',
       nonEditableAvailableForRequests: [],
       serviceProviderItems: [],
-      validations: validations
+      validations: validations,
+      isTestMailSend: false
     }
   },
   computed: {
@@ -326,6 +328,7 @@ export default {
   },
   methods: {
     submit() {
+      debugger
       const { refForm, refMakeAvailableFor } = this.$refs
       let isValid = true
       if (refMakeAvailableFor) {
@@ -334,6 +337,14 @@ export default {
       }
 
       if (refForm.validate() && isValid) {
+        if (!this.isTestMailSend) {
+          this.isTestEmailDialogShowing = true
+          return false
+        }
+        if (JSON.stringify(this.initialFormValues) !== JSON.stringify(this.formValues)) {
+          this.isTestEmailDialogShowing = true
+          return false
+        }
         this.saveDisable = true
         const {
           name,
@@ -402,6 +413,8 @@ export default {
       testConnection(payload)
         .then(() => {
           this.isTestEmailDialogShowing = false
+          this.isTestMailSend = true
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
         .catch((error) => {
           const { response } = error
@@ -526,6 +539,8 @@ export default {
             )
           }
         }
+        this.isTestMailSend = true
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   },

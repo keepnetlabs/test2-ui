@@ -43,3 +43,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.integration-error-message-popup {
+  .k-dialog__header .v-cart-icon-wrapper {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background: #f56c6c !important;
+    border-color: #f56c6c !important;
+    i {
+      color: white !important;
+    }
+  }
+}
+</style>

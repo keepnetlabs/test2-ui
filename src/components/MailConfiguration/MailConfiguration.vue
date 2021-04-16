@@ -7,6 +7,7 @@
       :icon-name="'mdi-book-search'"
       :title="getTitle"
       className="mail-configuration__modal"
+      ref="mail-configuration__modal"
     >
       <template v-slot:overlay-body>
         <v-form ref="mailConfiguration">
@@ -426,6 +427,7 @@ export default {
       directoryId: null,
       email: null
     },
+    initialFormValues: null,
     status: false,
     isWantToImportFile: false,
     tableData: [],
@@ -674,6 +676,7 @@ export default {
     testConnectionValues(isSuccess, isSave) {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             this.submit()
@@ -731,6 +734,7 @@ export default {
         directoryId: null,
         email: null
       }
+      this.initialFormValues = null
     },
     getTableData() {
       this.loading = true
@@ -762,6 +766,12 @@ export default {
       this.deleteDialog = true
     },
     submit() {
+      if (
+        JSON.stringify(this.formValues) !== JSON.stringify(this.initialFormValues) &&
+        this.editData
+      ) {
+        this.isTestConnectionWorkedBefore = false
+      }
       if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
         if (this.editData) {
@@ -829,6 +839,7 @@ export default {
         directoryId: selectedRow.directoryId,
         email: selectedRow.email
       }
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       this.isTestConnectionWorkedBefore = false
       this.saveButtonDisabled = false
       this.status = true
