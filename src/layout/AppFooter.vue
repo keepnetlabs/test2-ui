@@ -1,8 +1,6 @@
 <template>
   <v-footer class="k-footer d-flex">
-    <div class="footer-item__primary">
-      Copyright {{ brandName }} &copy; {{ new Date().getFullYear() }}
-    </div>
+    <div class="footer-item__primary">{{ brandName }} &copy; {{ new Date().getFullYear() }}</div>
     <div class="footer-item__secondary footer-links">
       <a
         id="btn--dashboard-footer-privacy-policy"
@@ -20,8 +18,6 @@
         >Terms and Conditions</a
       >
       <div class="footer-item__secondary--3">&bull;</div>
-    </div>
-    <div class="footer-item__third footer-links">
       <a
         id="btn--dashboard-footer-cookie-policy"
         class="footer-item__third--1"
@@ -38,7 +34,6 @@
         >EULA</a
       >
     </div>
-    <div class="footer-item__fourth">Designed by {{ brandName }}</div>
   </v-footer>
 </template>
 
@@ -75,10 +70,10 @@ export default {
     width: 100%;
     bottom: 0;
     @media (max-width: 719px) {
-      height: 144px !important;
+      padding-bottom: 5px;
     }
     @media (max-width: 1025px) and (min-width: 719px) {
-      height: 84px !important;
+      padding-bottom: 5px;
     }
   }
 }
@@ -90,10 +85,13 @@ export default {
   a {
     font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
     line-height: 1.58;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
     text-decoration: none;
+    color: #383b41 !important;
     padding: 0 16px;
     @media only screen and (min-width: 719px) and (max-width: 1025px) {
       padding: 0 8px;
@@ -108,97 +106,30 @@ export default {
     font-weight: 600;
     letter-spacing: normal;
     color: #000000;
-    order: 1;
     flex-grow: 1;
-    @media only screen and (max-width: 1025px) and (min-width: 719px) {
-      flex-grow: 0;
-      order: 3;
-      flex-basis: 52%;
-      justify-content: flex-end;
-      display: flex;
-      padding-right: 24px;
-    }
-    @media only screen and (max-width: 719px) {
-      flex-grow: 0;
-      order: 3;
-      padding: 0 25px;
+    @media (max-width: 719px) {
+      text-align: center;
     }
   }
 
   &__secondary {
-    order: 2;
-    @media only screen and (max-width: 1025px) and (min-width: 719px) {
-      order: 1;
-      flex-basis: 55%;
-      justify-content: flex-end;
-    }
-    @media only screen and (max-width: 719px) {
-      order: 1;
-      flex-basis: 100%;
-      justify-content: center;
-    }
-    &--1 {
-      @media only screen and (max-width: 719px) {
-        order: 2;
-      }
-    }
-    &--2 {
-      @media only screen and (max-width: 719px) {
-        order: -1;
-      }
-    }
-    &--3 {
-      @media only screen and (max-width: 719px) {
-        display: none;
-      }
-    }
   }
 
   &__third {
-    order: 3;
     flex-grow: 1;
-    @media only screen and (max-width: 1025px) and (min-width: 719px) {
-      flex-grow: 0;
-      order: 2;
-      flex-basis: 45%;
-    }
-    @media only screen and (max-width: 719px) {
-      flex-grow: 0;
-      order: 2;
-      flex-basis: 100%;
-      justify-content: center;
-    }
 
     &--1 {
-      order: 2;
-      @media only screen and (max-width: 1025px) and (min-width: 719px) {
-        order: -1;
-      }
     }
 
     &--2 {
-      order: -1;
-      @media only screen and (max-width: 1025px) and (min-width: 719px) {
-        order: 2;
-      }
     }
   }
 
   &__fourth {
-    order: 4;
     font-size: 12px;
     font-weight: 600;
     letter-spacing: normal;
     color: #000000 !important;
-    @media only screen and (max-width: 1025px) and (min-width: 719px) {
-      flex-basis: 48%;
-    }
-    @media only screen and (max-width: 719px) {
-      padding: 0 25px;
-      flex-basis: 100%;
-      justify-content: center;
-      display: flex;
-    }
   }
 }
 </style>

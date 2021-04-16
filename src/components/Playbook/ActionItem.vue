@@ -454,7 +454,7 @@ export default {
           }
         ],
         notifyTypes: ['Reporter', 'Users', 'Groups'],
-        markAsOpts: ['Undetected', 'Phishing', 'Malicious'],
+        markAsOpts: ['Undetected', 'Phishing', 'Malicious', 'Simulation'],
         statusOpts: [
           'Open',
           'Closed',

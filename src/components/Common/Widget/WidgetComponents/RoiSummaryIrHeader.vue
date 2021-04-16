@@ -7,9 +7,10 @@
     <template v-slot:skeleton-content>
       <div
         id="card--incident-responder-roi-summary"
-        class="dashboard-cards roi-summary"
+        class="dashboard-cards"
         :class="{
-          'no-data__opacity-purple': isRoiSummaryEmpty(irSummary)
+          'no-data__opacity-purple': isRoiSummaryEmpty(irSummary),
+          'roi-summary': !isRoiSummaryEmpty(irSummary)
         }"
       >
         <div class="card-header">
@@ -24,7 +25,10 @@
             >mdi-close-circle</v-icon
           >
         </div>
-        <div class="card-body d-flex roi-summary__body-container">
+        <div
+          v-if="!isRoiSummaryEmpty(irSummary)"
+          class="card-body d-flex roi-summary__body-container"
+        >
           <div class="body-row">
             <span
               id="card--incident-responder-roi-summary-time"
@@ -36,15 +40,20 @@
 
             <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
           </div>
-          <div class="body-row">
+          <div class="body-row body-row--2">
             <span id="card--incident-responder-roi-summary-revenue" class="body-row__number">
               ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
             </span>
 
             <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
           </div>
+          <div class="card-status">{{ labels.Saved }}</div>
         </div>
-        <div class="card-status">{{ labels.Saved }}</div>
+        <div class="columns-row__body" v-else>
+          <div class="card-footer no-data-text">
+            You haven’t saved any work, yet
+          </div>
+        </div>
         <div class="bg-image">
           <img src="../../../../assets/img/ic-insert-chart.svg" alt="icon" />
         </div>
@@ -159,22 +168,22 @@ export default {
 .roi-summary__body-container {
   margin-top: 13px;
   @media (max-width: 1900px) {
-    .body-row:last-child {
+    .body-row--2 {
       margin-left: 16px;
     }
   }
   @media (max-width: 1899px) and (min-width: 1500px) {
-    .body-row:last-child {
+    .body-row--2 {
       margin-left: 16px;
     }
   }
   @media (max-width: 1499px) and (min-width: 1026px) {
-    .body-row:last-child {
+    .body-row--2 {
       margin-left: 16px;
     }
   }
   @media (min-width: 1901px) {
-    .body-row:last-child {
+    .body-row--2 {
       margin-left: 70px;
     }
   }
