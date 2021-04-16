@@ -328,7 +328,6 @@ export default {
   },
   methods: {
     submit() {
-      debugger
       const { refForm, refMakeAvailableFor } = this.$refs
       let isValid = true
       if (refMakeAvailableFor) {
