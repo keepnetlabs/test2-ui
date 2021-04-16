@@ -70,9 +70,10 @@
                       :extensions="['.xlsx', '.xls', '.csv']"
                       :is-stand-alone="true"
                       @inputFile="onFileChanged"
-                      hint="Only XLS/XLSX or CSV files. Max. file size 30MB"
+                      hint="Only XLS/XLSX or CSV files. Max. file size 200MB"
                       :on-upload-progress="onUploadProgress"
                       :is-loading="step1Loading"
+                      :size="200"
                     />
                     <p
                       class="target-user-import-file__total-excel-score"
@@ -1169,6 +1170,11 @@ export default {
         .then((response) => {
           this.excelInfo = response.data.data
           this.step1Loading = false
+        })
+        .catch(() => {
+          this.isExcelUploaded = false
+          this.step1Loading = false
+          this.formData.file = null
         })
         .finally(() => {})
     },

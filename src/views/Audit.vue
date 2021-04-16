@@ -79,14 +79,25 @@ export default {
         isColumnFilterActive: false,
         columns: [
           {
+            property: PROPERTY_STORE.LOGDATE,
+            align: 'left',
+            editable: false,
+            label: LABEL_STORE.LOGDATE,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 160,
+            filterableType: 'date',
+            fixed: 'left'
+          },
+          {
             property: PROPERTY_STORE.RESOURCEID,
             align: 'left',
             editable: false,
             label: LABEL_STORE.LOGID,
             sortable: true,
-            show: true,
+            show: false,
             type: 'text',
-            fixed: 'left',
             width: 160
           },
           {
@@ -100,18 +111,7 @@ export default {
             width: 140,
             filterableType: 'text'
           },
-          {
-            property: PROPERTY_STORE.LOGDATE,
-            align: 'left',
-            editable: false,
-            label: LABEL_STORE.LOGDATE,
-            fixed: false,
-            sortable: true,
-            show: true,
-            type: 'text',
-            width: 160,
-            filterableType: 'date'
-          },
+
           {
             property: PROPERTY_STORE.ENTITYID,
             align: 'left',
@@ -119,7 +119,7 @@ export default {
             label: LABEL_STORE.ENTITYID,
             fixed: false,
             sortable: true,
-            show: true,
+            show: false,
             type: 'text',
             width: 185,
             filterableType: 'text',

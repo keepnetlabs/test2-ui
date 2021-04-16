@@ -88,6 +88,7 @@
             </div>
           </div>
         </div>
+        <div class="page-nav__simulated-company" v-if="isReturnMainAccountVisible">Managing as</div>
         <div :class="scroll()">
           <div class="user-name-dropdown">
             <div class="user-name-dropdown__menu">
@@ -202,7 +203,7 @@
           x-large
           style="left: 22px !important;"
         ></v-app-bar-nav-icon>
-
+        <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">M</div>
         <div class="v-responsive">
           <div v-if="mini && drawer">
             <img v-if="!!getMiniLogo" :src="getMiniLogo" class="menu-mini-img" />
@@ -1321,7 +1322,9 @@ export default {
       this.openPasswordChange = !this.openPasswordChange
     },
     scroll() {
-      const main = 'd-flex justify-center flex-wrap user-wrapper'
+      const main = `d-flex justify-center flex-wrap user-wrapper ${
+        this.isReturnMainAccountVisible && 'p-0'
+      }`
       const shadow = 'user-wrapper__scroll-on'
       let content =
         document.getElementsByClassName('page-nav__content') &&
@@ -1659,6 +1662,41 @@ export default {
     background: white !important;
     padding-top: 210px;
     z-index: 7 !important;
+    &__simulated-company {
+      width: 100%;
+      height: 24px;
+      background-color: #e6a23c;
+      font-size: 12px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: 1.33;
+      letter-spacing: normal;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &--mini {
+        top: 92px;
+        width: 100%;
+        height: 13px;
+        background-color: #e6a23c;
+        font-size: 9px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.33;
+        letter-spacing: normal;
+        color: #ffffff;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        width: 64px;
+      }
+    }
     &__left-menu-mini {
       width: 56px;
       height: 200px;
