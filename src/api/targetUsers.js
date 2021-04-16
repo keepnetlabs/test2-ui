@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import uploadRequest from '../utils/uploadRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
 export function getTargetUsers(payload) {
@@ -76,7 +77,7 @@ export function updateTargetUserCustomField(payload) {
 export function uploadExcelOrCsvForTargetUsers(file, onUploadProgress) {
   const formData = new FormData()
   formData.append('File', file)
-  return testRequest.post(`/target-users/upload`, formData, {
+  return uploadRequest.post(`/target-users/upload`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },

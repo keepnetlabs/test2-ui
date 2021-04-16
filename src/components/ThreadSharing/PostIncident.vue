@@ -232,6 +232,7 @@
                   @clear="clearUpload"
                   :on-upload-progress="onUploadProgress"
                   id="threat-sharing-upload-post-incident"
+                  :size="200"
                 />
                 <!-- <div
                   class="v-input up-btn v-input--dense theme--light v-text-field v-text-field--is-booted v-text-field--placeholder"
