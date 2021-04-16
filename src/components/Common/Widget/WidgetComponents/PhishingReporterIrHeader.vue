@@ -15,7 +15,7 @@
         <div class="card-header">
           <span class="head">{{ labels.PhishingReporter }}</span>
           <router-link to="/phishing-reporter" id="btn-link--dashboard-to-phishing-reporter">
-            <v-icon :color="'white'">mdi-open-in-new</v-icon>
+            <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
           <v-icon
             v-if="editMode"
@@ -56,24 +56,15 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">
-            {{ labels.NoAddInInstalled }}
+            Add-in isn’t installed at any users’ account, yet
           </div>
-          <v-btn
-            class="btn-action btn-playbook btn-playbook__no-data"
-            rounded
-            color="white"
-            style="box-shadow: none !important; margin-top: 16px;"
-            @click="emptyPhishingButtonClick"
-          >
-            {{ labels.InstallNow }}
-          </v-btn>
         </div>
         <div
           class="bg-image"
-          style="bottom: 10px; right: 0;"
+          style="bottom: 10px; right: -11px;"
           :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
         >
-          <img src="../../../../assets/img/shape.svg" alt="link" />
+          <img src="../../../../assets/img/ph-crone.svg" alt="link" />
         </div>
       </div>
     </template>
@@ -146,10 +137,9 @@ export default {
   max-height: 170px;
   border-radius: 8px;
   padding: 16px;
-  padding-right: 24px;
-  position: relative;
+
   &.investigations {
-    padding: 16px 24px 16px 16px;
+    padding: 16px 16px 16px 16px;
   }
   .card-header {
     display: -webkit-box;
@@ -207,33 +197,43 @@ export default {
         color: #ffffff;
       }
       &__text {
-        font-size: 16px;
-        font-weight: 600;
+        font-size: 20px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
         line-height: 1;
         letter-spacing: normal;
         color: #ffffff;
-        opacity: 0.7;
+        opacity: 1;
         white-space: nowrap;
       }
     }
   }
 
   .card-footer {
-    color: #fff;
     font-size: 20px;
-    font-weight: 600;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    color: #fff;
+    opacity: 1;
     line-height: 1.15;
     letter-spacing: normal;
-    opacity: 0.7;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     &.no-data-text {
-      font-size: 20px;
-      line-height: 1.25;
+      font-size: 16px;
+      font-weight: 600;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
       letter-spacing: normal;
-      color: #ffffff;
-      margin-top: 36px;
+      opacity: 0.7;
+      color: #fff;
+      margin-top: 62px;
+      max-width: 85%;
+      white-space: normal !important;
     }
   }
 
@@ -248,22 +248,22 @@ export default {
   }
 
   &.phishing-reporter {
-    background-image: linear-gradient(to bottom, #5bcffd, #2196f3);
+    background-color: #2196f3 !important;
   }
 
   &.no-data__opacity-blue {
-    background-image: linear-gradient(to bottom, #3c768e, #25608a) !important;
+    background-color: #5c7f9b !important;
   }
 
   &.no-data__opacity-red {
-    background-image: linear-gradient(to bottom, #895f5f, #8a4646) !important;
+    background-color: #9b7879 !important;
   }
 
   &.no-data__opacity-purple {
-    background-image: linear-gradient(to bottom, #b27fc2, #66257a 96%);
+    background-color: #7b6c81;
   }
   &.no-data__opacity-green {
-    background-image: linear-gradient(to bottom, #268a50, #265229) !important;
+    background-color: #668267 !important;
   }
   .columns-row__body {
     margin-top: 16px;

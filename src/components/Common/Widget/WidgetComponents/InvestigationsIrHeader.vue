@@ -24,10 +24,14 @@
             >mdi-close-circle</v-icon
           >
           <router-link :to="'/investigations'" id="btn-link--dashboard-to-investigations">
-            <v-icon :color="'white'">mdi-open-in-new</v-icon>
+            <v-icon style="opacity: 0.8;" :color="'white'">mdi-open-in-new</v-icon>
           </router-link>
         </div>
-        <div class="columns-row__body" style="margin-top: 13px;" v-if="true">
+        <div
+          class="columns-row__body"
+          style="margin-top: 13px;"
+          v-if="isInvestigationsEmpty(irSummary)"
+        >
           <div class="card-body d-flex">
             <div class="body-row">
               <span
@@ -42,9 +46,11 @@
                 }}
               </span>
 
-              <span class="body-row__text">{{ labels.Auto.toLowerCase() }}</span>
+              <span class="body-row__text" style="margin-left: 4px;">{{
+                labels.Auto.toLowerCase()
+              }}</span>
             </div>
-            <div class="body-row" style="margin-left: 81px;">
+            <div class="body-row" style="margin-left: 64px;">
               <span
                 id="card--incident-responder-investigations-manual-investigation-count"
                 class="body-row__number"
@@ -62,18 +68,9 @@
           <div class="card-status mt-7">Incident(s) resolved</div>
         </div>
         <div class="columns-row__body" v-else>
-          <div class="card-footer no-data-text" style="margin-top: 36px;">
-            No investigation started
+          <div class="card-footer no-data-text" style="margin-top: 61px;">
+            You haven’t started any investigations, yet
           </div>
-          <v-btn
-            class="btn-action btn-playbook btn-playbook__no-data"
-            rounded
-            color="white"
-            style="box-shadow: none !important; margin-top: 16px;"
-            @click="emptyInvestigationButtonClick"
-          >
-            Start Now
-          </v-btn>
         </div>
         <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
           <img src="../../../../assets/img/ic-check-box.svg" />
@@ -150,6 +147,6 @@ export default {
 
 <style lang="scss">
 .dashboard-cards.investigations {
-  background-image: linear-gradient(to bottom, #71c876, #43a047);
+  background-color: #43a047;
 }
 </style>

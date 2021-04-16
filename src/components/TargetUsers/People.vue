@@ -807,7 +807,6 @@ export default {
           ]
         })
         .finally(() => {
-          console.log('iam invoked')
           this.callForTargetUsers()
         })
     },
