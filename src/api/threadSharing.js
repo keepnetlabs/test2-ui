@@ -1,4 +1,5 @@
 import testRequest from '../utils/testRequest'
+import uploadRequest from '../utils/uploadRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 const API_URL = 'analysis-engines'
 
@@ -81,7 +82,7 @@ export function getSelectedEmailPreview(id) {
 export function uploadEmlOrMsg(file, onUploadProgress) {
   const formData = new FormData()
   formData.append('File', file)
-  return testRequest.post(`community-posts/message-file-preview`, formData, {
+  return uploadRequest.post(`community-posts/message-file-preview`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
