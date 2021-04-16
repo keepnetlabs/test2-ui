@@ -152,7 +152,9 @@ export default {
         this.$emit('loading')
       }
       return !isLoading
-    },
+    }
+  },
+  methods: {
     isAllSuccess() {
       let isSuccess =
         this.checkApiConnectivity === 'success' &&
@@ -165,9 +167,7 @@ export default {
         this.checkInboxAccess === 'success'
       this.$emit('testConnectionValues', isSuccess, this.isSave)
       return isSuccess
-    }
-  },
-  methods: {
+    },
     testConnection(isSave) {
       this.isSave = isSave
       if (this.isValidate()) {
@@ -185,6 +185,7 @@ export default {
         checkApiConnectivity(payload)
           .then((response) => {
             this.checkApiConnectivity = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkApiConnectivity = 'error'
@@ -192,10 +193,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
         checkPrivileges(payload)
           .then((response) => {
             this.checkPrivileges = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkPrivileges = 'error'
@@ -203,10 +206,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
         checkAllUsersAccess(payload)
           .then((response) => {
             this.checkAllUsersAccess = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkAllUsersAccess = 'error'
@@ -214,10 +219,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
         checkEmailAccess(payload)
           .then((response) => {
             this.checkEmailAccess = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkEmailAccess = 'error'
@@ -225,10 +232,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
         checkCreateNewCategory(payload)
           .then((response) => {
             this.checkCreateNewCategory = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkCreateNewCategory = 'error'
@@ -236,6 +245,7 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
           .finally((response) => {
             checkUpdateCategory(payload)
@@ -253,6 +263,7 @@ export default {
         checkDeleteEmail(payload)
           .then((response) => {
             this.checkDeleteEmail = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkDeleteEmail = 'error'
@@ -260,10 +271,12 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
         checkInboxAccess(payload)
           .then((response) => {
             this.checkInboxAccess = 'success'
+            this.isAllSuccess(true)
           })
           .catch((error) => {
             this.checkInboxAccess = 'error'
@@ -271,6 +284,7 @@ export default {
               (error.response.data.validationMessages &&
                 error.response.data.validationMessages[0]) ||
               error.response.data.message
+            this.isAllSuccess(false)
           })
       }
     },
