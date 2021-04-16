@@ -348,7 +348,7 @@ export default {
   },
   computed: {
     getGroupName() {
-      return this.selectedGroup.name
+      return this.selectedGroup.name || localStorage.getItem('lastTargetGroupUsers')
     },
     getResourceId() {
       return this.selectedGroup.resourceId

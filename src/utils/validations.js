@@ -103,3 +103,8 @@ export function startsWithSpace(value, message = 'Cannot start with space') {
   value = getValue(value)
   return !value.startsWith(' ') || message
 }
+
+export function isNumber(value, message = 'Invalid File Size') {
+  value = getValue(value)
+  return /^\d+$/gi.test(value) || message
+}
