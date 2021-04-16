@@ -398,27 +398,29 @@
             </v-list-item-content>
           </v-list-item>
 
-          <v-list-item class="px-0" v-if="selectedIntegrationType.isSendUrl">
+          <v-list-item class="px-0">
             <v-list-item-content>
               <label class="new-integration__label">URLs</label>
               <div class="mt-1">
                 <v-checkbox
                   v-model="formValues.isSendUrl"
                   id="input--integration-is-send-url"
-                  :label="`Share URLs in emails with integrated service`"
                   color="#2196f3"
+                  :label="`Share URLs in emails with integrated service`"
+                  :disabled="!selectedIntegrationType.isSendUrl"
+                  @change="handleSendUrlChange"
                 />
               </div>
               <div
-                v-if="formValues.isSendUrl && selectedIntegrationType.isSendUrl"
                 class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
               >
                 <v-checkbox
                   v-model="formValues.isHideUrlParameter"
                   id="input--integration-is-hide-url-parameter"
-                  :label="`Hide URL Parameters`"
                   class="black--text"
                   color="#2196f3"
+                  :label="`Hide URL Parameters`"
+                  :disabled="!formValues.isSendUrl || !selectedIntegrationType.isSendUrl"
                 ></v-checkbox>
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -431,14 +433,7 @@
               </div>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item
-            class="px-0 mt-6 mb-6"
-            v-if="
-              selectedIntegrationType.isSendUrl ||
-              selectedIntegrationType.isSendFileHash ||
-              selectedIntegrationType.isSendUrl
-            "
-          >
+          <v-list-item class="px-0 mt-6 mb-6">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 Attachments
@@ -450,30 +445,34 @@
               <v-checkbox
                 v-model="formValues.isSendFileHash"
                 id="input--integration-is-send-file-hash"
-                :label="`Share file hashes (MD5, SHA256 and SHA512)`"
                 style="margin-top: 10px;"
                 color="#2196f3"
-                v-if="selectedIntegrationType.isSendFileHash"
+                label="Scan file hashes"
+                :disabled="!selectedIntegrationType.isSendFileHash"
               ></v-checkbox>
-              <div v-if="selectedIntegrationType.isSendIp">
+              <div>
                 <v-checkbox
                   v-model="formValues.isSendIp"
                   id="input--integration-is-send-ip"
                   label="Scan sender IP address"
-                  style="margin-top: 10px;"
                   color="#2196f3"
+                  style="margin-top: 2px;"
+                  :disabled="!selectedIntegrationType.isSendIp"
                 ></v-checkbox>
               </div>
-              <div v-if="selectedIntegrationType.isSendFile">
+              <div>
                 <v-checkbox
                   v-model="formValues.isUploadExecutableFile"
                   id="input--integration-is-upload-executable-file"
-                  :label="`Upload PE files`"
+                  label="Upload PE files"
                   color="#2196f3"
+                  style="margin-top: 2px;"
+                  :disabled="!selectedIntegrationType.isSendFile"
                 ></v-checkbox>
                 <div
                   class="new-integration__api-key__subtitle__upload-subtitle position-relative ml-8"
                   style="font-size: 14px; line-height: 1.5;"
+                  :style="!selectedIntegrationType.isSendFile && { opacity: '0.5 !important' }"
                 >
                   Portable executable files (exe, .dll, .sys, etc.)
                 </div>
@@ -483,19 +482,26 @@
                     id="input--integration-is-upload-other-file-type"
                     :label="`Upload other file types`"
                     color="#2196f3"
+                    :disabled="!selectedIntegrationType.isSendFile"
+                    @change="handleUploadOtherFileChange"
                   />
                 </div>
                 <div
-                  v-if="formValues.isUploadOtherFileType"
                   class="new-integration__api-key__subtitle__upload-subtitle position-relative checkbox-tooltip"
                 >
-                  <div v-if="formValues.isUploadOtherFileType" class="ml-8 mt-1">
+                  <div class="ml-8 mt-1">
                     <div class="d-flex align-center">
-                      <span class="mr-4 type-text">File Types</span>
+                      <span
+                        class="mr-4 type-text"
+                        :style="
+                          (!selectedIntegrationType.isSendFile ||
+                            !formValues.isUploadOtherFileType) && { opacity: 0.6 }
+                        "
+                        >File Types</span
+                      >
                       <k-select
                         v-model.trim="formValues.uploadFileTypes"
                         id="input--integration-upload-file-types"
-                        :items="uploadFileTypes"
                         class="new-integration__select"
                         dense
                         multiple
@@ -503,6 +509,11 @@
                         hide-details
                         placeholder="Select integration type"
                         required
+                        style="margin-top: 2px;"
+                        :items="uploadFileTypes"
+                        :disabled="
+                          !selectedIntegrationType.isSendFile || !formValues.isUploadOtherFileType
+                        "
                       ></k-select>
                     </div>
                   </div>
@@ -728,6 +739,16 @@ export default {
     showErrorMessage(item) {
       this.isShowErrorMessage = true
       this.errorMessageOfApiKey = item.errorMessage || 'Error'
+    },
+    handleUploadOtherFileChange(val = false) {
+      if (!val) {
+        this.formValues.uploadFileTypes = []
+      }
+    },
+    handleSendUrlChange(val = false) {
+      if (!val) {
+        this.formValues.isHideUrlParameter = false
+      }
     },
     saveIntegration() {
       const data = { ...this.formValues }
