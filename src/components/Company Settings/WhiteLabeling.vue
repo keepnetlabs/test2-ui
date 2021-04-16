@@ -58,6 +58,7 @@
           ref="refMainLogo"
           :extensions="['png', 'jpg', 'svg']"
           @inputFile="onMenuLogoChange"
+          :size="2"
         />
         <v-list-item
           v-if="getMainLogo"

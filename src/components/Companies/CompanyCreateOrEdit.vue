@@ -174,6 +174,7 @@
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
                       id="input--company-logo"
                       @inputFile="onFileChanged"
+                      :size="2"
                     />
                     <div>
                       <img

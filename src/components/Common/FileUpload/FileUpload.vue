@@ -12,6 +12,7 @@
         @input-file="inputFile"
         @input-filter="inputFilter"
         :drop="true"
+        :size="size"
       >
         Select or drop file
         <v-icon>mdi-folder-open</v-icon>
@@ -42,60 +43,6 @@
         <div v-if="isStandAlone" class="k-file-uploads__item-actions">
           <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
         </div>
-        <!--
-      <div>{{ file.speed | formatSize }}</div>
-
-      <div v-if="file.error">{{ file.error }}</div>
-      <div v-else-if="file.success">success</div>
-      <div v-else-if="file.active">active</div>
-
-      <div>
-        <a
-          :class="{ 'dropdown-item': true, disabled: !file.active }"
-          href="#"
-          @click.prevent="
-            file.active ? $refs.upload.update(file, { error: 'cancel' }) : false
-          "
-          >Cancel</a
-        >
-
-        <a
-          class="dropdown-item"
-          href="#"
-          v-if="file.active"
-          @click.prevent="$refs.upload.update(file, { active: false })"
-          >Abort</a
-        >
-        <a
-          class="dropdown-item"
-          href="#"
-          v-else-if="
-            file.error && file.error !== 'compressing' && $refs.upload.features.html5
-          "
-          @click.prevent="
-            $refs.upload.update(file, { active: true, error: '', progress: '0.00' })
-          "
-          >Retry upload</a
-        >
-        <a
-          :class="{
-            'dropdown-item': true,
-            disabled: file.success || file.error === 'compressing'
-          }"
-          href="#"
-          v-else
-          @click.prevent="
-            file.success || file.error === 'compressing'
-              ? false
-              : $refs.upload.update(file, { active: true })
-          "
-          >Upload</a
-        >
-
-        <a class="dropdown-item" href="#" @click.prevent="$refs.upload.remove(file)"
-          >Remove</a
-        >
-      </div>-->
       </div>
     </div>
     <div v-if="hint" class="k-file-uploads__hint">{{ hint }}</div>
@@ -111,6 +58,10 @@ export default {
   name: 'KFileUpload',
   components: { FileUpload },
   props: {
+    size: {
+      type: Number,
+      default: 200
+    },
     isLoading: {
       type: Boolean,
       default: false
@@ -172,6 +123,15 @@ export default {
       this.$emit('inputFile', this.files[0].file)
     },
     inputFilter(newFile, oldFile, prevent) {
+      let maxSize = this.size * 1024 * 1024
+      if (newFile.size > maxSize) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: `File size cannot be bigger than ${this.size}MB`,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+        return prevent()
+      }
       this.$emit('inputFilter', { newFile, oldFile, prevent })
       if (newFile && !oldFile) {
         if (!this.regexExtensions.test(newFile.name)) {
