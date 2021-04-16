@@ -1210,7 +1210,7 @@ export default {
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', 'Undetected']
+                items: ['Phishing', 'Malicious', 'Undetected', 'Simulation']
               }
             },
             show: true
@@ -1348,7 +1348,7 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: ['Undetected', 'Malicious', 'Phishing'],
+          filterableItems: ['Undetected', 'Malicious', 'Phishing', 'Simulation'],
           editOptions: {
             component: 'select',
             getDisabledValue(row) {
@@ -1722,7 +1722,7 @@ export default {
           type: 'badge',
           isEditable: true,
           filterableType: 'select',
-          filterableItems: ['Undetected', 'Malicious', 'Phishing'],
+          filterableItems: ['Undetected', 'Malicious', 'Phishing', 'Simulation'],
           props: {
             style: {
               maxWidth: '110px'
@@ -1843,7 +1843,7 @@ export default {
                 }
               },
               props: {
-                items: ['Phishing', 'Malicious', 'Undetected']
+                items: ['Phishing', 'Malicious', 'Undetected', 'Simulation']
               }
             },
             show: true
