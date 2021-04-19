@@ -4,6 +4,8 @@
     icon="mdi-sync"
     custom-size="505"
     title="Reset whitelabeling settings to default?"
+    title-id="text--whitelabeling-reset-popup-title"
+    subtitle-id="text--whitelabeling-reset-popup-subtitle"
     :status="status"
     @changeStatus="handleCloseDialog"
   >
