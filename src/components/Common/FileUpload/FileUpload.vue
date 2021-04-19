@@ -124,14 +124,6 @@ export default {
     },
     inputFilter(newFile, oldFile, prevent) {
       let maxSize = this.size * 1024 * 1024
-      if (newFile.size > maxSize) {
-        this.$store.dispatch('common/createSnackBar', {
-          message: `File size cannot be bigger than ${this.size}MB`,
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          icon: 'mdi-alert-circle'
-        })
-        return prevent()
-      }
       this.$emit('inputFilter', { newFile, oldFile, prevent })
       if (newFile && !oldFile) {
         if (!this.regexExtensions.test(newFile.name)) {
@@ -142,6 +134,14 @@ export default {
           })
           return prevent()
         }
+      }
+      if (newFile.size > maxSize) {
+        this.$store.dispatch('common/createSnackBar', {
+          message: `File size cannot be bigger than ${this.size}MB`,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+        return prevent()
       }
       if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
         newFile.url = ''
