@@ -4,6 +4,7 @@
     title="Error Occurred"
     icon="mdi-alert"
     className="integration-error-message-popup"
+    title-id="text--smtp-settings-test-email-error-popup-title"
     :status="isShowErrorMessage"
     :body="errorMessage"
     @changeStatus="handleCloseDialog"

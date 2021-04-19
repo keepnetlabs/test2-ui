@@ -2,6 +2,8 @@
   <AppDialog
     icon="mdi-refresh"
     title="Re-analyze Incident"
+    title-id="text--incident-responder-email-details-re-analyze-dialog-title"
+    subtitle-id="text--incident-responder-email-details-re-analyze-dialog-subtitle"
     :status="status"
     :subtitle="name"
     @changeStatus="closeDialog"

@@ -6,6 +6,8 @@
     :title="getTitle"
     className="add-user-overlay"
     :saveDisable="saveDisable"
+    title-id="text--target-users-people-create-user-modal-title"
+    subtitle-id="text--target-users-people-create-user-modal-subtitle"
   >
     <template v-slot:overlay-body>
       <target-users-check-license-dialog

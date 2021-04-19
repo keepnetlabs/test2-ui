@@ -8,6 +8,8 @@
     size="maximum"
     maxHeightSize="auto"
     class-name="add-to-group-modal"
+    title-id="text--company-group-details-add-company-to-company-group-popup-title"
+    subtitle-id="text--company-group-details-add-company-to-company-group-popup-subtitle"
   >
     <template v-slot:app-dialog-body>
       <DataTable

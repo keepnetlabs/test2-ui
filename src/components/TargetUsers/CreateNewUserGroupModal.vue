@@ -7,6 +7,8 @@
     class-name="new-user-group"
     icon="mdi-account-multiple-plus"
     ref="appDialog"
+    title-id="text--create-target-users-group-popup-title"
+    subtitle-id="text--create-target-users-group-popup-subtitle"
     @changeStatus="changeNewUserGroupStatus"
   >
     <template v-slot:app-dialog-body>

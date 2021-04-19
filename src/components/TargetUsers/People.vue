@@ -24,16 +24,16 @@
       :company-license="companyLicense"
     />
     <custom-fields-modal
+      v-if="isWantToShowCustomFieldsModal"
       :status="isWantToShowCustomFieldsModal"
       @closeCustomFieldsModal="toggleCustomFieldsModal"
       @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
-      v-if="isWantToShowCustomFieldsModal"
     />
     <target-user-import-from-a-file
+      v-if="isWantToImportFile"
       :status="isWantToImportFile"
       @closeAddUserModal="closeImportModal"
       @closeOverlay="isWantToImportFile = false"
-      v-if="isWantToImportFile"
       :columns="tableOptions.columns"
       ref="targetUserFromAFile"
       :companyLicense="companyLicense"

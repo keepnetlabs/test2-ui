@@ -11,10 +11,10 @@
             <DatatableLoading :loading="isLoading" v-if="isLoading"> </DatatableLoading>
             <template v-else>
               <download-modal
-                :status="downloadModalStatus"
                 v-if="downloadModalStatus"
-                @changeDownloadModalStatus="downloadModalStatus = $event"
+                :status="downloadModalStatus"
                 :id="$attrs.id"
+                @changeDownloadModalStatus="downloadModalStatus = $event"
               />
               <email-details-content-details
                 :mail-details="mailDetails"
@@ -154,6 +154,7 @@
                         size="small"
                         :outline="false"
                         class-name="mr-4 badge"
+                        :id="`badge--incident-responder-email-details-attachment-${index}`"
                       />
                       <div
                         :id="`btn-download--incident-responder-email-details-attachment-${index}`"
@@ -693,7 +694,7 @@ export default {
       })
     },
     getResultOfAttachmentList(list) {
-      let result = 'N/A'
+      let result = 'Undetected'
       for (let item of list) {
         if (item.result === 'Malicious') {
           result = 'Malicious'

@@ -2,28 +2,45 @@
   <div>
     <app-modal
       :status="status"
-      @closeOverlay="$emit('closeOverlay')"
       icon-name="mdi-domain"
       title="Phishing Reporter Add-in Configuration"
       class-name="add-in-configuration"
+      title-id="text--create-phishing-reporter-modal-title"
+      @closeOverlay="$emit('closeOverlay')"
     >
       <template v-slot:overlay-body>
         <download-add-in-modal :status="showModal" @handleClose="handleContinue" />
         <v-stepper v-model="step" class="k-stepper">
           <v-stepper-header class="k-stepper__header">
-            <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
+            <v-stepper-step
+              id="step--create-phishing-reporter-addin-settings"
+              class="k-stepper__step"
+              :complete="step > 1"
+              :step="1"
               >Add-in Settings</v-stepper-step
             >
             <v-divider class="k-stepper__divider" />
-            <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
+            <v-stepper-step
+              id="step--create-phishing-reporter-email-settings"
+              class="k-stepper__step"
+              :complete="step > 2"
+              :step="2"
               >Email Settings</v-stepper-step
             >
             <v-divider class="k-stepper__divider" />
-            <v-stepper-step class="k-stepper__step" :complete="step > 3" :step="3"
+            <v-stepper-step
+              id="step--create-phishing-reporter-other-settings"
+              class="k-stepper__step"
+              :complete="step > 3"
+              :step="3"
               >Other Settings</v-stepper-step
             >
             <v-divider class="k-stepper__divider" />
-            <v-stepper-step class="k-stepper__step" :complete="step > 4" :step="4"
+            <v-stepper-step
+              id="step--create-phishing-reporter-diagnostic-tools"
+              class="k-stepper__step"
+              :complete="step > 4"
+              :step="4"
               >Diagnostic Tool
             </v-stepper-step>
           </v-stepper-header>

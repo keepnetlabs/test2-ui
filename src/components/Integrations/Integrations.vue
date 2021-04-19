@@ -10,8 +10,8 @@
     >
       <new-integration
         :showModal="modalStatus"
-        @closeOverlay="changeModalStatus"
         :integrationId="integrationId"
+        @closeOverlay="changeModalStatus"
       />
     </v-overlay>
     <delete-integration-modal
