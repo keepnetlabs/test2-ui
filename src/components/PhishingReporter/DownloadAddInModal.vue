@@ -14,10 +14,14 @@
           <v-icon class="ml-2" color="blue" left medium>mdi-download</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="v-card-headline download-add-in__title"
+          <v-list-item-title
+            id="text--phishing-reporter-download-add-in-modal-title"
+            class="v-card-headline download-add-in__title"
             >Download Add-in</v-list-item-title
           >
-          <v-list-item-subtitle class="v-card-sub-header"
+          <v-list-item-subtitle
+            id="text--phishing-reporter-download-add-in-modal-subtitle"
+            class="v-card-sub-header"
             >You can download the add-in below
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -118,7 +122,7 @@
         </v-btn>
       </v-list-item>
       <v-list-item class="px-0 mt-6 add-in-configuration__list-item">
-        <div class="px-0 overlay__footer">
+        <div class="px-0 overlay__footer" style="display: flex; justify-content: flex-end;">
           <div
             @click="$emit('handleClose')"
             id="btn-cancel--phishing-reporter-settings-add-in-modal"

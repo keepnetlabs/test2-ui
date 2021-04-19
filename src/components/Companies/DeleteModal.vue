@@ -1,5 +1,12 @@
 <template>
-  <app-dialog :status="isShow" icon="mdi-delete" title="Warning!" @changeStatus="closeModal">
+  <app-dialog
+    :status="isShow"
+    icon="mdi-delete"
+    title="Warning!"
+    title-id="text--company-delete-popup-title"
+    subtitle-id="text--company-delete-popup-subtitle"
+    @changeStatus="closeModal"
+  >
     <template v-slot:app-dialog-body>
       {{ selectedRow.companyName }} will be deleted and all data will be lost
     </template>

@@ -4,6 +4,8 @@
     icon="mdi-alert"
     title="Delete Group"
     subtitle="Do you want to delete this group?"
+    title-id="text--target-users-group-delete-popup-title"
+    subtitle-id="text--target-users-group-delete-popup-subtitle"
     @changeStatus="changeDeleteGroupStatus"
   >
     <template v-slot:app-dialog-body> {{ getGroupName }} will be permanently deleted. </template>

@@ -11,18 +11,20 @@
   >
     <v-card light class="k-overlay__container" :class="{ 'p-0': !showHeader }">
       <v-form lazy-validation ref="refForm">
-        <slot name="overlay-header" v-if="showHeader">
+        <slot v-if="showHeader" name="overlay-header">
           <v-list-item class="k-overlay__list-item k-overlay__header">
             <div class="v-btn v-cart-icon-wrapper">
               <v-icon class="ml-2" color="blue" left medium>{{ iconName }}</v-icon>
             </div>
             <v-list-item-content>
-              <v-list-item-title class="k-overlay__title">{{ title }}</v-list-item-title>
+              <v-list-item-title class="k-overlay__title" :id="titleId">{{
+                title
+              }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </slot>
         <slot name="overlay-body"> </slot>
-        <div class="k-overlay__footer" v-if="showFooter">
+        <div v-if="showFooter" class="k-overlay__footer">
           <slot name="overlay-footer">
             <v-btn class="k-overlay__btn-cancel" :id="cancelButtonId" rounded @click="closeOverlay">
               {{ labels.Cancel }}
@@ -98,6 +100,9 @@ export default {
       default: false
     },
     id: {
+      type: String
+    },
+    titleId: {
       type: String
     }
   },

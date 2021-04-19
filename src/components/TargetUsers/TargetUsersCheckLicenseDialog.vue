@@ -1,10 +1,12 @@
 <template>
   <app-dialog
     v-if="status"
-    :status="status"
     icon="mdi-license"
     title="License Warning"
     subtitle="License limit exceeded"
+    title-id="text--target-users-license-warning-popup-title"
+    subtitle-id="text--target-users-license-warning-popup-subtitle"
+    :status="status"
     :body="dialogBody"
     @changeStatus="closeDialog"
   >

@@ -17,10 +17,10 @@
     />
     <delete-group-modal
       :status="showDeleteGroupModal"
+      :selected-row="selectedRow"
       @changeDeleteGroupModalStatus="changeDeleteGroupModalStatus"
       @handleDelete="handleDeleteGroup"
       @handleMultipleDelete="handleDeleteGroupMultiple"
-      :selected-row="selectedRow"
     />
 
     <datatable

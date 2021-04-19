@@ -1,8 +1,8 @@
 <template>
   <v-card class="email-template__container">
     <app-modal
-      :status="showGrapesModal"
       v-if="showGrapesModal"
+      :status="showGrapesModal"
       icon-name="mdi-check"
       :title="labels.NotificationTemplate"
       z-index="999999"
@@ -22,6 +22,7 @@
     <div class="email-template__item">
       <label>Subject</label>
       <v-text-field
+        id="input--notification-template-subject"
         placeholder="Enter subject"
         outlined
         dense
@@ -40,6 +41,7 @@
     <div class="email-template__item">
       <label>From Name</label>
       <v-text-field
+        id="input--notification-template-sender-name"
         placeholder="Enter sender name"
         outlined
         dense
@@ -58,6 +60,7 @@
     <div class="email-template__item">
       <label>From Email</label>
       <InputEmail
+        id="input--notification-template-from-email"
         :disabled="editItemsDisabled"
         :value="fromAddress"
         @input="$emit('update:fromAddress', $event)"
@@ -65,6 +68,7 @@
     </div>
     <v-divider class="email-template__divider mb-6" />
     <v-btn
+      id="btn-edit--notification-template-email-template"
       :disabled="editItemsDisabled"
       rounded
       color="#2196f3"

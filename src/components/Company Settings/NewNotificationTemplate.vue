@@ -10,6 +10,7 @@
     :id="selectedItem ? 'edit-notification-template-modal' : 'new-notification-template-modal'"
     confirm-button-id="btn-save--notification-template-modal"
     cancel-button-id="btn-cancel--notification-template-modal"
+    title-id="text--notification-template-modal-title"
     :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
@@ -17,8 +18,9 @@
       <v-form ref="refForm" lazy-validation>
         <form-group title="Template Name" has-hint>
           <v-text-field
-            v-bind="commonRules"
             v-model.trim="formValues.name"
+            v-bind="commonRules"
+            id="input--notification-template-name"
             placeholder="Enter template name"
             outlined
             dense
@@ -29,6 +31,7 @@
           <k-select
             v-bind="commonRules"
             v-model.trim="formValues.emailTemplateCategoryResourceId"
+            id="input--notification-template-type"
             :items="categoryItems"
             class="new-integration__select"
             dense
@@ -41,6 +44,7 @@
           <k-select
             v-bind="commonRules"
             v-model.trim="formValues.smtpSettingResourceId"
+            id="input--notification-template-smtp"
             :items="smtpItems"
             class="new-integration__select"
             dense

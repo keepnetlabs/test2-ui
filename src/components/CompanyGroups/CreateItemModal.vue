@@ -3,10 +3,12 @@
     v-if="isShow"
     :status="true"
     icon="mdi-account-multiple-plus"
-    :title="this.isEdit ? 'Edit Company Group' : 'Create New Company Group'"
+    :title="isEdit ? 'Edit Company Group' : 'Create New Company Group'"
     :subtitle="
-      this.isEdit ? 'Edit a name to your group and save' : 'Give a name to your new group and save'
+      isEdit ? 'Edit a name to your group and save' : 'Give a name to your new group and save'
     "
+    title-id="text--create-company-group-popup-title"
+    subtitle-id="text--create-company-group-popup-subtitle"
     @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>

@@ -1,5 +1,12 @@
 <template>
-  <app-dialog v-if="!!selectedRow" :status="isShow" icon="mdi-delete" title="Warning!">
+  <app-dialog
+    v-if="!!selectedRow"
+    title-id="text--company-group-details-delete-popup-title"
+    subtitle-id="text--company-group-details-delete-popup-subtitle"
+    :status="isShow"
+    icon="mdi-delete"
+    title="Warning!"
+  >
     <template v-slot:app-dialog-body>
       {{ selectedRow.companyName && selectedRow.companyName }} will be removed from company group.
     </template>

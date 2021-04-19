@@ -6,6 +6,7 @@
     :save-disable="saveDisable"
     confirm-button-id="btn-save--target-users-group-add-users-group-modal"
     cancel-button-id="btn-cancel--target-users-group-add-users-group-modal"
+    title-id="text--target-users-group-add-users-modal-title"
     icon-name="mdi-account-plus"
     @closeOverlay="closeOverlay"
     @submit="submit"

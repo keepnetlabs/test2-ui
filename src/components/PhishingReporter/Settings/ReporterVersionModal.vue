@@ -6,6 +6,8 @@
     subtitle="Version configurations"
     @changeStatus="$emit('changeReporterVersionModalStatus', false)"
     custom-size="650"
+    title-id="text--phishing-reporters-versions-title"
+    subtitle-id="text--phishing-reporters-versions-subtitle"
     :class-name="'matching-modal version-history'"
     :max-height="selectedVersionRow.applicationType === 'Outlook'"
     v-if="status"

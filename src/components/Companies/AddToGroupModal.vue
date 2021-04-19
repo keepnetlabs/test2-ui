@@ -4,10 +4,12 @@
     icon="mdi-account-multiple-plus"
     :title="title"
     subtitle="Select groups to add companies to"
-    @changeStatus="changeStatus"
     size="ultraMaximum"
     maxHeightSize="auto"
     class-name="add-to-group-modal"
+    title-id="text--company-add-to-group-popup-title"
+    subtitle-id="text--company-add-to-group-delete-popup-subtitle"
+    @changeStatus="changeStatus"
   >
     <template v-slot:app-dialog-body>
       <v-form ref="refFormAddToGroup" lazy-validation>

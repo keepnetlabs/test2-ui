@@ -4,6 +4,8 @@
     icon="mdi-delete"
     title="Delete User?"
     subtitle="The user will deleted permanently"
+    title-id="text--target-users-people-delete-popup-title"
+    subtitle-id="text--target-users-people-delete-popup-subtitle"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>

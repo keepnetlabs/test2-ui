@@ -88,12 +88,10 @@
 <script>
 import Datatable from '../../components/DataTable'
 import {
-  exportCompanyGroup,
   exportCompanyGroupDetails,
   getCompanyByID,
   removeCompanyToCompanyGroup,
-  searchGroupCompanies,
-  updateCompanyGroup
+  searchGroupCompanies
 } from '@/api/company'
 import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'

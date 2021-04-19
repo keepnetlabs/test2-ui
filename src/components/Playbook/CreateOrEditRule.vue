@@ -4,11 +4,23 @@
       <v-col>
         <v-stepper light v-model="activeStep" class="wizard">
           <v-stepper-header class="wizard__header">
-            <v-stepper-step :complete="activeStep > 1" step="1">Rule Info</v-stepper-step>
+            <v-stepper-step
+              id="step--create-playbook-modal-rule-info"
+              :complete="activeStep > 1"
+              step="1"
+              >Rule Info</v-stepper-step
+            >
             <v-divider />
-            <v-stepper-step :complete="activeStep > 2" step="2">Conditions</v-stepper-step>
+            <v-stepper-step
+              id="step--create-playbook-modal-conditions"
+              :complete="activeStep > 2"
+              step="2"
+              >Conditions</v-stepper-step
+            >
             <v-divider />
-            <v-stepper-step step="3">{{ labels.Actions }}</v-stepper-step>
+            <v-stepper-step id="step--create-playbook-modal-actions" step="3">{{
+              labels.Actions
+            }}</v-stepper-step>
           </v-stepper-header>
 
           <v-stepper-items>
