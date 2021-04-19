@@ -1,6 +1,7 @@
 <template>
   <app-modal
     v-if="status"
+    title-id="text--rest-api-modal-title"
     :status="status"
     @closeOverlay="closeOverlay"
     @submit="submit"
@@ -17,13 +18,14 @@
       <v-form ref="refForm">
         <form-group :title="labels.ClientName" :sub-title="labels.CustomApiSubtitle" has-hint>
           <v-text-field
+            v-model.trim="formValues.name"
+            id="input--rest-api-name"
             placeholder="Enter client name"
             outlined
             dense
             class="auth-key__textfield"
             hint="*Required"
             persistent-hint
-            v-model.trim="formValues.name"
             :rules="[
               (v) => Validations.required(v, labels.Required),
               (v) => Validations.startsWithSpace(v),
@@ -37,6 +39,7 @@
           ></v-text-field>
           <v-btn
             v-if="isShowGenerateCredentialsBtn"
+            id="btn-generate--rest-api"
             @click="handleGenerateClientBtnClick"
             class="white--text btn-util"
             style="margin-bottom: 10px; box-shadow: none !important;"
@@ -56,6 +59,7 @@
           <div class="copy-to-clipboard__container">
             <v-text-field
               :placeholder="labels.GeneratedClientId"
+              id="input--rest-api-generated-client-id"
               outlined
               dense
               hint="*Required"
@@ -66,6 +70,7 @@
             ></v-text-field>
             <v-btn
               v-if="formValues.clientId"
+              id="input--rest-api-client-id"
               text
               color="#2196f3"
               class="ml-2"
@@ -88,6 +93,8 @@
         >
           <div class="copy-to-clipboard__container">
             <v-text-field
+              v-model.trim="formValues.clientSecret"
+              id="input--rest-api-client-secret"
               :placeholder="labels.GeneratedClientSecret"
               outlined
               dense
@@ -95,7 +102,6 @@
               persistent-hint
               class="auth-key__textfield"
               :disabled="true"
-              v-model.trim="formValues.clientSecret"
             ></v-text-field>
             <v-btn
               v-if="isShowGenerateCredentialsBtn && formValues.clientSecret"
@@ -113,10 +119,21 @@
           class-name="ip-restriction"
         >
           <div class="ip-restriction__container">
-            <v-radio-group v-model="formValues.hasIpAddressRestriction" :mandatory="false" row>
-              <v-radio :value="false" label="Allow all IPs" color="#2196f3"></v-radio>
+            <v-radio-group
+              v-model="formValues.hasIpAddressRestriction"
+              id="input--rest-api-is-ip-restriction"
+              :mandatory="false"
+              row
+            >
+              <v-radio
+                :value="false"
+                id="input--rest-api-allow-all-ip"
+                label="Allow all IPs"
+                color="#2196f3"
+              ></v-radio>
               <v-radio
                 :value="true"
+                id="input--rest-api-restrict-ip"
                 label="Restrict access by IP address"
                 color="#2196f3"
               ></v-radio>
@@ -127,6 +144,7 @@
               style="position: relative;"
             >
               <InputIpAddress
+                :id="`input--rest-api-allowed-ip-address-${index}`"
                 :placeholder="labels.EnterIpAdress"
                 :rules="
                   formValues.hasIpAddressRestriction ? [(v) => validations.ipWithStars(v)] : []
@@ -137,16 +155,17 @@
               />
               <div class="ip-restriction__delete-button">
                 <v-icon
+                  v-if="formValues.allowedIpAddresses.length > 1"
                   medium
                   left
                   class="ml-2"
-                  v-if="formValues.allowedIpAddresses.length > 1"
                   @click="formValues.allowedIpAddresses.splice(index, 1)"
                   >mdi-close</v-icon
                 >
               </div>
             </div>
             <button
+              id="btn-add--rest-api-add-ip-address"
               :disabled="!formValues.hasIpAddressRestriction"
               class="ip-restriction__button mb-2"
               :class="{ 'disabled-button': !formValues.hasIpAddressRestriction }"
@@ -160,6 +179,7 @@
         <form-group title="Status">
           <v-switch
             v-model="formValues.status"
+            id="input--rest-api-status"
             :label="formValues.status ? labels.Active : labels.InActive"
             class="k-switch"
             color="#2196f3"

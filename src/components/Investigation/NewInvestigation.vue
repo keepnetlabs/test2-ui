@@ -1,5 +1,10 @@
 <template>
-  <app-modal :status="status" iconName="mdi-magnify" :title="`Start New Manual Investigation`">
+  <app-modal
+    :status="status"
+    iconName="mdi-magnify"
+    :title="`Start New Manual Investigation`"
+    title-id="text--incident-responder-new-investigation-modal-title"
+  >
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
         <v-card flat light style="max-width: 554px;">

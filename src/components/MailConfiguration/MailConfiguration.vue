@@ -8,6 +8,7 @@
       :title="getTitle"
       className="mail-configuration__modal"
       ref="mail-configuration__modal"
+      title-id="text--create-o365-mail-configuration-modal-title"
     >
       <template v-slot:overlay-body>
         <v-form ref="mailConfiguration">
@@ -148,6 +149,7 @@
       :icon-name="'mdi-book-search'"
       :title="'Create GSuite Mail Configuration'"
       className="mail-configuration__modal"
+      title-id="text--create-gsuite-mail-configuration-modal-title"
       v-if="false"
     >
       <template v-slot:overlay-body>
@@ -225,11 +227,13 @@
       </template>
     </app-modal>
     <app-dialog
-      :status="deleteDialog"
       v-if="deleteDialog"
       icon="mdi-delete"
       title="Delete Mail Configuration?"
       subtitle="The O365 mail configuration will deleted permanently"
+      title-id="text--mail-configuration-delete-popup-title"
+      subtitle-id="text--mail-configuration-delete-popup-subtitle"
+      :status="deleteDialog"
     >
       <template v-slot:app-dialog-body>
         {{ deleteDialogName }} will be deleted and removed from all integrations.

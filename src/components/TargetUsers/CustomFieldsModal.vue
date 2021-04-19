@@ -7,6 +7,8 @@
     title="Edit Fields - Target Users / People"
     ref="refAppModal"
     z-index="999"
+    title-id="text--target-users-people-custom-fields-modal-title"
+    subtitle-id="text--target-users-people-custom-fields-modal-subtitle"
   >
     <template v-slot:overlay-body>
       <app-dialog

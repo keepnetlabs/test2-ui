@@ -1,10 +1,12 @@
 <template>
   <div id="users" class="users">
     <app-dialog
-      :status="isWantToDelete"
       icon="mdi-alert"
       title="Delete User"
       subtitle="Do you want to delete this user?"
+      title-id="text--phishing-reporter-users-delete-popup-title"
+      subtitle-id="text--phishing-reporter-users-delete-popup-subtitle"
+      :status="isWantToDelete"
       @changeStatus="isWantToDelete = false"
     >
       <template v-slot:app-dialog-body> {{ getUserName }} will be permanently deleted. </template>

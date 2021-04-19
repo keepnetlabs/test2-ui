@@ -11,6 +11,7 @@
       <form-group has-hint :title="labels.BrandName" :sub-title="labels.BrandNameSubTitle">
         <v-text-field
           v-model.trim="formValues.brandName"
+          id="input--whitelabeling-brand-name"
           outlined
           persistent-hint
           dense
@@ -27,6 +28,7 @@
         <div class="d-flex">
           <k-select
             v-model.trim="formValues.mainDomainProtocol"
+            id="input--whitelabeling-main-domain-protocol"
             placeholder="Select option"
             outlined
             dense
@@ -35,6 +37,7 @@
           />
           <v-text-field
             v-model.trim="formValues.mainDomainUrl"
+            id="input--whitelabeling-main-domain-url"
             outlined
             dense
             persistent-hint
@@ -53,6 +56,7 @@
       <form-group :title="labels.MainLogo" :sub-title="labels.MainLogoSubTitle">
         <k-file-upload
           key="mainLogo"
+          id="input--whitelabeling-main-logo"
           :class="getFileUploadClasses(getMainLogo)"
           hint="Upload png, jpg, svg. Suggested size: 180px * 60px"
           ref="refMainLogo"
@@ -83,6 +87,7 @@
       >
         <k-file-upload
           key="minimizedLogo"
+          id="input--whitelabeling-minimized-logo"
           :class="getFileUploadClasses(getMinimizedLogo)"
           hint="Upload png, jpg, svg. Suggested size: 40px * 40px"
           ref="refMinimizedLogo"
@@ -109,6 +114,7 @@
       <form-group title="Favicon" sub-title="Favicon for browser tab">
         <k-file-upload
           key="favIcon"
+          id="input--whitelabeling-fav-icon"
           :class="getFileUploadClasses(getFavIcon)"
           hint="Upload .ico file. Suggested size: 32px * 32px"
           ref="refFavIcon"
@@ -134,6 +140,7 @@
       </form-group>
       <form-group title="Notification Template Logo" sub-title="Default logo for email templates">
         <k-file-upload
+          id="input--whitelabeling-notification-template-logo"
           key="emailTemplateLogo"
           :class="getFileUploadClasses(getEmailTemplateLogo)"
           hint="Upload png, jpg, svg. Suggested size: 320px * 320px"
@@ -174,22 +181,35 @@
       >
         <div class="white-labeling__footer-links-item">
           <span class="white-labeling__footer-links-span"> Privacy Policy </span>
-          <input-url placeholder="Enter URL" v-model.trim="formValues.footerPrivacyPolicyUrl" />
+          <input-url
+            id="input--whitelabeling-footer-privacy-policy"
+            placeholder="Enter URL"
+            v-model.trim="formValues.footerPrivacyPolicyUrl"
+          />
         </div>
         <div class="white-labeling__footer-links-item">
           <span class="white-labeling__footer-links-span"> Terms and Conditions </span>
           <input-url
+            id="input--whitelabeling-footer-terms-and-conditions"
             placeholder="Enter URL"
             v-model.trim="formValues.footerTermsAndConditionsUrl"
           />
         </div>
         <div class="white-labeling__footer-links-item">
           <span class="white-labeling__footer-links-span"> EULA </span>
-          <input-url placeholder="Enter URL" v-model.trim="formValues.footerEulaUrl" />
+          <input-url
+            id="input--whitelabeling-footer-eula"
+            placeholder="Enter URL"
+            v-model.trim="formValues.footerEulaUrl"
+          />
         </div>
         <div class="white-labeling__footer-links-item">
           <span class="white-labeling__footer-links-span"> Cookie Policy </span>
-          <input-url placeholder="Enter URL" v-model.trim="formValues.footerCookiePolicyUrl" />
+          <input-url
+            id="input--whitelabeling-footer-cookie-policy-url"
+            placeholder="Enter URL"
+            v-model.trim="formValues.footerCookiePolicyUrl"
+          />
         </div>
       </form-group>
       <form-group
@@ -198,7 +218,11 @@
         :sub-title="labels.ReleaseInformationSubTitle"
       >
         <div class="white-labeling__release-information-item">
-          <v-checkbox v-model="formValues.isShowReleaseVersionNumber" color="#2196f3">
+          <v-checkbox
+            v-model="formValues.isShowReleaseVersionNumber"
+            id="input--whitelabeling-is-show-relase-version-number"
+            color="#2196f3"
+          >
             <template #label>
               <div>Show release version number</div>
               <div class="white-labeling__release-information-span">
@@ -206,7 +230,11 @@
               </div>
             </template>
           </v-checkbox>
-          <v-checkbox v-model="formValues.isShowReleaseNotes" color="#2196f3">
+          <v-checkbox
+            v-model="formValues.isShowReleaseNotes"
+            id="input--whitelabeling-is-show-relase-notes"
+            color="#2196f3"
+          >
             <template #label>
               <div>Show release notes</div>
               <div class="white-labeling__release-information-span">
@@ -219,6 +247,7 @@
               <span class="mt-3 mr-2 ml-8">URL</span>
               <input-url
                 v-model.trim="formValues.releaseNotesUrl"
+                id="input--whitelabeling-release-notes-url"
                 style="max-width: 324px;"
                 placeholder="https://doc.sitename.com/releasenotes"
               />

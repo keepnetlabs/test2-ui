@@ -8,8 +8,8 @@
     ]"
   >
     <download-add-in-modal
-      :status="downloadAddInModalStatus"
       v-if="downloadAddInModalStatus"
+      :status="downloadAddInModalStatus"
       @handleClose="downloadAddInModalStatus = false"
     />
     <el-tabs id="settings-el-tabs" v-model="tab" v-if="!inModal || applicationType === 'Outlook'">

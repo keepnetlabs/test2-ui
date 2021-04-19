@@ -1,13 +1,15 @@
 <template>
   <div class="playbook-rules">
     <app-dialog
-      :status="isWantToDelete"
+      v-if="getDeleteModalPermission"
       icon="mdi-alert"
       title="Delete Playbook Rule"
-      :subtitle="deleteMessage(deleteValues)"
-      @changeStatus="isWantToDelete = false"
       body="Do you want to delete playbook rule?"
-      v-if="getDeleteModalPermission"
+      title-id="text--playbook-delete-popup-title"
+      subtitle-id="text--playbook-delete-popup-subtitle"
+      :subtitle="deleteMessage(deleteValues)"
+      :status="isWantToDelete"
+      @changeStatus="isWantToDelete = false"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -30,6 +32,8 @@
       size="maximum"
       class-name="matching-modal"
       maxHeightSize="665"
+      title-id="text--playbook-matching-incidents-popup-title"
+      subtitle-id="text--playbook-matching-incidents-popup-subtitle"
     >
       <template v-slot:app-dialog-body>
         <v-card light>
@@ -124,12 +128,13 @@
       </template>
     </datatable>
     <app-modal
-      :status="showRuleModal"
       v-if="getModalRenderStatus"
+      title-id="text--create-playbook-modal-title"
+      class="playbook-modal"
+      :status="showRuleModal"
       :icon-name="getIconName"
       :title="getTitle"
       :show-footer="false"
-      class="playbook-modal"
     >
       <template v-slot:overlay-body>
         <CreateOrEditRule

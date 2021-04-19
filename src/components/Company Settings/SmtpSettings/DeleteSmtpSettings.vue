@@ -5,6 +5,8 @@
     title="Delete SMTP Setting"
     :subtitle="getSubtitle"
     id="smtp-settings-delete-popup"
+    title-id="text--smtp-settings-delete-popup-title"
+    subtitle-id="text--smtp-settings-delete-popup-subtitle"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>

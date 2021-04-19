@@ -299,7 +299,7 @@ export default {
       if (this.$parent && this.$parent.$parent && this.$parent.$parent.index) {
         return this.$parent.$parent.index
       } else {
-        return `${Math.floor(Math.random() * 10000).toString()}`
+        return '0'
       }
     }
   },

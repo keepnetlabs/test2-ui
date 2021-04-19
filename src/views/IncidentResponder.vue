@@ -9,35 +9,16 @@
         @on-close-dialog="toggleShowReAnalyzeDialog"
         @on-confirm="initDatas"
       />
-      <the-clustered-modal
-        v-if="false"
-        ref="refClusteredModal"
-        :hasMultipleNoteValue="hasMultipleNoteValue"
-        :row="clusteredRow"
-        :selected-cluster="selectedCluster"
-        :status="isShowingClusteredTable"
-        :extended-view-loading="extendedViewLoading"
-        :extended-view="extendedView"
-        :default-extended-view-values="defaultExtendedViewValues"
-        :extended-view-value="extendedViewValue"
-        :selectedRowsOfReportedEmailsLength="selectedRowsOfReportedEmailsLength"
-        @downloadEvent="exportReportedListEmails"
-        @closeDialog="toggleIsShowingClusteredTable"
-        @onEditClick="onEditClick"
-        @handleIsNotify="handleIsNotify"
-        @handleEdit="handleEdit"
-        @irPreview="irPreviewOnClick"
-        @handleDetails="irDetailsOnClick"
-        @handleInvestigate="handleReportedEmailInvestigate"
-      />
       <app-dialog
         size="big"
-        :status="isShowRoi"
         icon="mdi-cog"
-        :title="'ROI Summary Settings'"
-        @changeStatus="isShowRoi = false"
         subtitle="To calculate saving in time and money for automating the email analysis"
         class-name="roi-modal"
+        title-id="text--incident-responder-roi-summary-title"
+        subtitle-id="text--incident-responder-roi-summary-subtitle"
+        :status="isShowRoi"
+        :title="'ROI Summary Settings'"
+        @changeStatus="isShowRoi = false"
       >
         <template v-slot:app-dialog-body>
           <v-form ref="form" lazy-validation>
@@ -366,8 +347,10 @@
           <v-card>
             <div class="header">
               <div class="title">
-                <h2>{{ labels.TopRules }}</h2>
-                <p>{{ labels.MostTriggeredPlaybookRules }}</p>
+                <h2 id="text--incident-responder-playbook-top-rules">{{ labels.TopRules }}</h2>
+                <p id="text--incident-responder-most-triggered-playbook-top-rules">
+                  {{ labels.MostTriggeredPlaybookRules }}
+                </p>
               </div>
               <div class="action">
                 <v-btn
@@ -412,15 +395,17 @@
                     {{ labels.Matches }}
                   </span>
                   <app-dialog
+                    v-if="showMatchingModal"
                     :status="scope.row.resourceId === selectedMatch.resourceId"
                     icon="mdi-email"
                     title="Matching Incidents"
-                    v-if="showMatchingModal"
                     :subtitle="getSelectedMatchingIncidentsSubtitle"
                     @changeStatus="showMatchingModal = false"
                     size="ultraMaximum"
                     class-name="matching-modal"
                     maxHeightSize="665"
+                    title-id="text--incident-responder-top-rules-title"
+                    subtitle-id="text--incident-responder-top-rules-subtitle"
                   >
                     <template v-slot:app-dialog-body>
                       <v-card light>
@@ -483,8 +468,12 @@
           <v-card>
             <div class="header">
               <div class="title">
-                <h2>{{ labels.RecentInvestigations }}</h2>
-                <p>{{ labels.MostRecentInvestigations }}</p>
+                <h2 id="text--incident-responder-investigations-recent-investigations">
+                  {{ labels.RecentInvestigations }}
+                </h2>
+                <p id="text--incident-responder-investigations-most-recent-investigations">
+                  {{ labels.MostRecentInvestigations }}
+                </p>
               </div>
               <div class="action">
                 <v-btn
@@ -907,14 +896,12 @@ import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
-import TheClusteredModal from '@/components/IncidentResponder/TheClusteredModal'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 export default {
   components: {
     ReAnalyzeIncidentDialog,
-    TheClusteredModal,
     TheRecordsButton,
     AppDialogFooter,
     Datatable,
