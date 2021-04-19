@@ -5,6 +5,8 @@
     :title="getTitle"
     :subtitle="getSubtitle"
     id="notification-template-delete-popup"
+    title-id="text--notification-template-delete-popup-title"
+    subtitle-id="text--notification-template-delete-popup-subtitle"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>{{ labels.DeleteNotificationTemplateBody }}</template>

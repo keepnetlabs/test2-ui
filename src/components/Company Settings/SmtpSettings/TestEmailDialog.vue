@@ -8,19 +8,25 @@
     custom-size="600"
     max-height-size="516px"
     id="smtp-settings-delete-popup"
+    title-id="text--smtp-settings-test-email-popup-title"
+    subtitle-id="text--smtp-settings-test-email-popup-subtitle"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
       <v-form ref="refForm" lazy-validation>
         <form-group title="Send Test Email To" has-hint>
-          <input-email v-model.trim="formValues.to" />
+          <input-email v-model.trim="formValues.to" id="input--smtp-settings-test-email-to" />
         </form-group>
         <form-group title="Sender Email Address" has-hint>
-          <input-email v-model.trim="formValues.from" />
+          <input-email
+            v-model.trim="formValues.from"
+            id="input--smtp-settings-test-email-sender-email"
+          />
         </form-group>
         <form-group title="Sender Name" has-hint>
           <v-text-field
             v-model.trim="formValues.fromName"
+            id="input--smtp-settings-test-email-sender-name"
             outlined
             dense
             persistent-hint
@@ -35,10 +41,11 @@
         </form-group>
         <form-group title="Message" has-hint>
           <v-textarea
+            v-model.trim="formValues.message"
+            id="input--smtp-settings-test-email-message"
             rows="2"
             no-resize
             height="120"
-            v-model.trim="formValues.message"
             dense
             outlined
             hint="*Required"

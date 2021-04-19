@@ -6,6 +6,7 @@
   >
     <Treeselect
       v-bind="isAvailableForProps"
+      id="input--make-available-for"
       :class="[
         'k-treeselect',
         'make-available-for',

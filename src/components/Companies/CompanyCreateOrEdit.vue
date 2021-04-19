@@ -4,6 +4,8 @@
       v-if="isAddTheFirstSystemUserShow"
       icon="mdi-delete"
       title="Add The First System User"
+      title-id="text--company-add-the-first-system-user-popup-title"
+      subtitle-id="text--company-add-the-first-system-user-popup-subtitle"
       :status="isAddTheFirstSystemUserShow"
       :subtitle="formData.Name"
       @changeStatus="closeFirstSystemUserDialog"
@@ -29,7 +31,9 @@
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
         </div>
         <v-list-item-content class="pt-0 pb-0 mb-0">
-          <v-list-item-title class="">{{ edit ? 'Edit' : 'New' }} Company</v-list-item-title>
+          <v-list-item-title id="text--create-company-modal-title" class=""
+            >{{ edit ? 'Edit' : 'New' }} Company</v-list-item-title
+          >
         </v-list-item-content>
       </v-list-item>
     </v-card>
@@ -38,13 +42,24 @@
       <v-col>
         <v-stepper light v-model="activeStep" class="wizard">
           <v-stepper-header class="wizard__header">
-            <v-stepper-step :complete="activeStep > 1" step="1">Company Info</v-stepper-step>
+            <v-stepper-step
+              id="step--create-company-company-info"
+              :complete="activeStep > 1"
+              step="1"
+              >Company Info</v-stepper-step
+            >
             <v-divider />
-            <v-stepper-step :complete="activeStep > 2" step="2">License</v-stepper-step>
+            <v-stepper-step id="step--create-company-license" :complete="activeStep > 2" step="2"
+              >License</v-stepper-step
+            >
             <v-divider />
-            <v-stepper-step :complete="activeStep > 3" step="3">Groups</v-stepper-step>
+            <v-stepper-step id="step--create-company-groups" :complete="activeStep > 3" step="3"
+              >Groups</v-stepper-step
+            >
             <v-divider />
-            <v-stepper-step step="4">Content Management</v-stepper-step>
+            <v-stepper-step id="step--create-content-management" step="4"
+              >Content Management</v-stepper-step
+            >
           </v-stepper-header>
 
           <v-stepper-items>

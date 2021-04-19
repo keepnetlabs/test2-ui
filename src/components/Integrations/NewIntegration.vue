@@ -54,9 +54,10 @@
     </app-dialog>
     <app-modal
       v-if="showModal"
+      icon-name="mdi-plus"
+      title-id="text--new-integration-modal-title"
       :status="showModal"
       :title="integrationId ? 'Edit Integration' : 'New Integration'"
-      icon-name="mdi-plus"
     >
       <template v-slot:overlay-body>
         <app-modal-body-header

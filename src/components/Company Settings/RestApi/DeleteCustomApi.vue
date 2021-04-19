@@ -6,6 +6,8 @@
     @changeStatus="closeModal"
     :subtitle="getSubtitle"
     id="rest-api-delete-popup"
+    title-id="text--rest-api-delete-popup-title"
+    subtitle-id="text--test-api-delete-popup-subtitle"
   >
     <template v-slot:app-dialog-body>
       {{ labels.DeleteRestApiBody }}

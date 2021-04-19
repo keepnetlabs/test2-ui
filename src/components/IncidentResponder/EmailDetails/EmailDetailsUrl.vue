@@ -27,6 +27,7 @@
               :color="getColorOfType(url['analysisList'])"
               size="small"
               class-name="mr-4 badge"
+              :id="`badge--incident-responder-email-details-url-${index}`"
             />
             <div
               @click="handleCopyUrl(url.url)"

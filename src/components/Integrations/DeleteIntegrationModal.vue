@@ -1,10 +1,12 @@
 <template>
   <app-dialog
-    :status="status"
     icon="mdi-delete"
     title="Delete Integration?"
-    @changeStatus="closeModal"
     subtitle="The integration will deleted permanently"
+    title-id="text--integration-delete-popup-title"
+    subtitle-id="text--integration-delete-popup-subtitle"
+    :status="status"
+    @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
       {{ getIntegrationName }} will be deleted and removed from all integrations.

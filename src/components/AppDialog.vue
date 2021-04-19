@@ -13,8 +13,8 @@
     <v-card class="k-dialog__card" light>
       <v-form lazy-validation ref="refDialogForm" onSubmit="return false;">
         <v-list-item
-          class="k-dialog__header"
           v-if="icon && title"
+          class="k-dialog__header"
           :class="[maxHeight && 'k-dialog__header-max-height']"
         >
           <div class="v-btn v-cart-icon-wrapper" v-if="icon">
@@ -23,8 +23,8 @@
             </v-icon>
           </div>
           <div>
-            <v-list-item-title class="k-dialog__title">{{ title }}</v-list-item-title>
-            <v-list-item-subtitle class="k-dialog__sub-title" v-if="subtitle">{{
+            <v-list-item-title class="k-dialog__title" :id="titleId">{{ title }}</v-list-item-title>
+            <v-list-item-subtitle v-if="subtitle" class="k-dialog__sub-title" :id="subtitleId">{{
               subtitle
             }}</v-list-item-subtitle>
           </div>
@@ -115,6 +115,12 @@ export default {
       type: String
     },
     id: {
+      type: String
+    },
+    titleId: {
+      type: String
+    },
+    subtitleId: {
       type: String
     }
   },

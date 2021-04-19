@@ -7,6 +7,8 @@
     @changeStatus="$emit('changeDownloadModalStatus', false)"
     size="maximum"
     class-name="email-details__download-modal"
+    title-id="text--incident-responder-email-details-download-email-title"
+    subtitle-id="text--incident-responder-email-details-download-email-subtitle"
   >
     <template v-slot:app-dialog-body>
       <v-list-item class="px-0 py-0">

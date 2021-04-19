@@ -5,6 +5,7 @@
     class-name="create-edit-system-user"
     confirm-button-id="btn-save--system-users-people-modal"
     cancel-button-id="btn-cancel--system-users-people-modal"
+    title-id="text--create-system-users-modal-title"
     :status="status"
     :title="getTitle"
     :saveDisable="saveDisable"

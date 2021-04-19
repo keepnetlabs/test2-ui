@@ -8,8 +8,8 @@
       @closeOverlay="toggleCreateOrEditSystemUser"
     />
     <app-modal
-      :status="isShowCreateOrEditModal"
       v-if="isShowCreateOrEditModal"
+      :status="isShowCreateOrEditModal"
       :show-footer="false"
       class-name="company-create-edit"
       :show-header="false"

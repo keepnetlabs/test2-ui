@@ -4,6 +4,8 @@
     :status="isShow"
     icon="mdi-delete"
     title="Warning!"
+    title-id="text--company-group-delete-popup-title"
+    subtitle-id="text--company-group-delete-popup-subtitle"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>

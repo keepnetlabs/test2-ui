@@ -11,9 +11,9 @@
       :isEdit="isEdit"
     />
     <delete-smtp-settings
+      v-if="deleteSmtpModalStatus && PERMISSIONS.DELETE.hasPermission"
       :status="deleteSmtpModalStatus"
       :data="selectedDeleteSmtpSettings"
-      v-if="deleteSmtpModalStatus && PERMISSIONS.DELETE.hasPermission"
       @closeOverlay="toggleDeleteSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
       @handleMultipleDelete="handleDeleteMultipleSmtpSettings"

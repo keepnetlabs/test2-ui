@@ -454,9 +454,9 @@
         </v-list-item-content>
       </v-list-item>
       <phishing-settings-footer
+        v-if="showFooter"
         @submit="submit($event)"
         @submitWithDownload="submit($event, true)"
-        v-if="showFooter"
         className="mt-3"
         :saveDisable="saveDisable"
       />

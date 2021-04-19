@@ -1,12 +1,14 @@
 <template>
   <div>
     <app-dialog
-      :status="closeTargetUserImport"
-      @changeStatus="closeTargetUserImport = false"
       icon="mdi-close-circle"
+      :status="closeTargetUserImport"
       :title="labels.CancelUserImport"
       :subtitle="labels.CancelUserImportSubtitle"
       :body="labels.CancelUserImportBody"
+      title-id="text--target-users-people-import-from-file-cancel-popup-title"
+      subtitle-id="text--target-users-people-import-from-file-cancel-popup-subtitle"
+      @changeStatus="closeTargetUserImport = false"
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -39,21 +41,38 @@
       </template>
     </target-users-check-license-dialog>
     <app-modal
+      className="target-user-import-file"
+      title-id="text--target-users-people-import-user-from-file-modal-title"
+      subtitle-id="text--target-users-people-import-user-from-file-modal-subtitle"
       :status="status"
-      @closeOverlay="closeOverlay"
       :icon-name="'mdi-microsoft-excel'"
       :title="'Import Users From a File'"
-      className="target-user-import-file"
+      @closeOverlay="closeOverlay"
     >
       <template v-slot:overlay-body>
         <v-col>
           <v-stepper light v-model="activeStep" class="wizard">
             <v-stepper-header class="wizard__header">
-              <v-stepper-step :complete="activeStep > 1" step="1">Upload File</v-stepper-step>
+              <v-stepper-step
+                id="step--target-user-import-from-file-modal-upload-file"
+                :complete="activeStep > 1"
+                step="1"
+                >Upload File</v-stepper-step
+              >
               <v-divider />
-              <v-stepper-step :complete="activeStep > 2" step="2">Map Fields</v-stepper-step>
+              <v-stepper-step
+                id="step--target-user-import-from-file-modal-map-fields"
+                :complete="activeStep > 2"
+                step="2"
+                >Map Fields</v-stepper-step
+              >
               <v-divider />
-              <v-stepper-step :complete="activeStep > 3" step="3">Validate</v-stepper-step>
+              <v-stepper-step
+                id="step--target-user-import-from-file-modal-validate"
+                :complete="activeStep > 3"
+                step="3"
+                >Validate</v-stepper-step
+              >
             </v-stepper-header>
 
             <v-stepper-items>

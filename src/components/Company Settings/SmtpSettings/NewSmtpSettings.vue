@@ -5,6 +5,7 @@
     :id="isEdit ? 'edit-smtp-settings-modal' : 'new-smtp-settings-modal'"
     confirm-button-id="btn-save--smtp-settings-modal"
     cancel-button-id="btn-cancel--smtp-settings-modal"
+    title-id="text--create-smtp-settings-modal-title"
     @closeOverlay="closeOverlay"
     @submit="submit"
     :title="getTitle"
@@ -34,10 +35,11 @@
       <v-form ref="refForm">
         <form-group :title="labels.SMTPSettingName" has-hint>
           <v-text-field
+            v-model.trim="formValues.name"
+            id="input--smtp-settings-name"
             placeholder="Enter SMTP setting name"
             outlined
             dense
-            v-model.trim="formValues.name"
             hint="*Required"
             persistent-hint
             :rules="[
@@ -55,6 +57,7 @@
         <form-group :title="labels.ServiceProvider" has-hint>
           <k-select
             v-model.trim="formValues.serviceProvider"
+            id="input--smtp-settings-service-provider"
             :items="serviceProviderItems"
             class="new-integration__select"
             dense
@@ -72,8 +75,9 @@
         <form-group :title="labels.SMTPServerAddress" has-hint>
           <div class="new-smtp-setting__server-address-container">
             <InputUrl
-              placeholder="Server URL or IP Address"
               v-model.trim="formValues.serverAddress"
+              id="input--smtp-settings-server-address"
+              placeholder="Server URL or IP Address"
               :rules="[
                 (v) => validations.required(v),
                 (v) => validations.startsWithSpace(v),
@@ -86,6 +90,7 @@
               ]"
             ></InputUrl>
             <v-text-field
+              id="input--smtp-settings-server-port"
               :placeholder="labels.Port"
               outlined
               ref="refTextField"
@@ -105,20 +110,22 @@
         >
           <v-text-field
             v-bind="getUserNameAndPasswordCommonProps"
+            v-model.trim="formValues.userName"
+            id="input--smtp-settings-username"
             placeholder="Enter username"
             outlined
             dense
-            v-model.trim="formValues.userName"
             :rules="getUserNameRules"
           ></v-text-field>
         </form-group>
         <form-group title="Password" :has-hint="!!getUserNameAndPasswordCommonProps">
           <v-text-field
             v-bind="getUserNameAndPasswordCommonProps"
+            v-model.trim="formValues.password"
+            id="input--smtp-settings-password"
             placeholder="Enter password"
             outlined
             dense
-            v-model.trim="formValues.password"
             :type="showPassword ? 'text' : 'password'"
             :append-icon="isEdit ? '' : showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
             class="username-field input-group--focused"
@@ -129,13 +136,21 @@
         <form-group>
           <v-checkbox
             v-model="formValues.useAuthentication"
+            id="input--smtp-settings-is-authentication"
             class="mt-n3 mb-1"
             color="#2196f3"
             label="Use Authentication"
           />
-          <v-checkbox v-model="formValues.useSSL" class="mb-1" color="#2196f3" label="Use SSL" />
+          <v-checkbox
+            v-model="formValues.useSSL"
+            id="input--smtp-settings-is-ssl"
+            class="mb-1"
+            color="#2196f3"
+            label="Use SSL"
+          />
           <v-checkbox
             v-model="formValues.hasSMTPRelay"
+            id="input--smtp-settings-is-smtp-relay"
             class="mb-2"
             color="#2196f3"
             label="Has SMTP Relay"
@@ -143,14 +158,15 @@
         </form-group>
         <make-available-for
           v-if="showMakeAvailableFor"
-          ref="refMakeAvailableFor"
           v-model="formValues.availableForRequests"
+          ref="refMakeAvailableFor"
           class="mb-2"
         />
         <form-group title="Reply to" sub-title="Send replies to this email address">
           <InputEmail
-            placeholder="Enter Reply to"
             v-model.trim="formValues.replyTo"
+            placeholder="Enter Reply to"
+            id="input--smtp-settings-reply-to"
             :hint="null"
             :persistent-hint="false"
             :required="false"
