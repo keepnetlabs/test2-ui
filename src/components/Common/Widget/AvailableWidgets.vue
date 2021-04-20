@@ -38,7 +38,9 @@
                 @click="handleAddWidget(widget)"
                 :key="widget.key"
               >
-                <v-list-item-title>{{ widget.name }}</v-list-item-title>
+                <v-list-item-title :id="`text--widget-${widget.key}`">{{
+                  widget.name
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>

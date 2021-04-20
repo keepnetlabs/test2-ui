@@ -98,6 +98,7 @@
       <template v-slot:datatable-custom-column="{ scope }">
         <span
           v-if="scope.column.property === 'companyName'"
+          :id="`text--company-name-${scope.$index}`"
           class="datatable-link"
           @click="handleCompanyNameClick(scope.row)"
         >

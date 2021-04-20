@@ -16,6 +16,7 @@
             <v-form ref="refMfaCantLoginForm" @submit="(event) => event.preventDefault()">
               <v-text-field
                 v-model.trim="verificationCode"
+                id="input--login-verification-code"
                 class="verification-code-wrapper--textfield"
                 :class="{ 'input-error': isErrorActive }"
                 validate-on-blur
@@ -39,6 +40,7 @@
             <div class="verification-code-wrapper__remember d-flex">
               <v-checkbox
                 v-model.trim="rememberMeOnThisDevice"
+                id="input--is-remember-be-on-this-device"
                 :label="`Remember me on this device`"
                 class="remember-me-check"
                 hide-details
@@ -49,7 +51,11 @@
 
               <div @click="resendMessageButtonClick" class="verification-code-wrapper__cant-login">
                 <span v-if="!showCount">Resend message</span>
-                <Countdown v-else @changeButtonStatus="changeButtonStatus" />
+                <Countdown
+                  v-else
+                  id="text--login-countdown"
+                  @changeButtonStatus="changeButtonStatus"
+                />
               </div>
             </div>
           </v-col>

@@ -4,12 +4,14 @@
       <div class="password-complexity__content-label">Password strength:</div>
       <div class="password-complexity__content-checker">
         <div
+          id="text--password-checker-0"
           class="password-complexity__content-checker--group"
           :style="{ background: getPasswordColor }"
         >
           <span v-if="complexity === 1">Very Weak</span>
         </div>
         <div
+          id="text--password-checker-1"
           class="password-complexity__content-checker--group"
           :class="getPasswordColor"
           :style="{ background: (complexity > 1 && getPasswordColor) || '#e0e0e0' }"
@@ -17,6 +19,7 @@
           <span v-if="complexity === 2">Weak</span>
         </div>
         <div
+          id="text--password-checker-2"
           class="password-complexity__content-checker--group"
           :class="getPasswordColor"
           :style="{ background: (complexity > 2 && getPasswordColor) || '#e0e0e0' }"
@@ -24,6 +27,7 @@
           <span v-if="complexity === 3">Medium</span>
         </div>
         <div
+          id="text--password-checker-3"
           class="password-complexity__content-checker--group"
           :class="getPasswordColor"
           :style="{ background: (complexity > 3 && getPasswordColor) || '#e0e0e0' }"

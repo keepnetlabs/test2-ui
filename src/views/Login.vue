@@ -26,19 +26,23 @@
                 class="d-flex pa-0 align-center justify-center login-card-wrapper__logo"
               >
                 <div style="max-width: 180px; height: 60px;">
-                  <img style="height: 100%;" :src="loginWhiteLabel.mainLogoUrl" />
+                  <img
+                    id="img--login-main-logo"
+                    style="height: 100%;"
+                    :src="loginWhiteLabel.mainLogoUrl"
+                  />
                 </div>
               </v-card-title>
               <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
-                  <div class="login-title">
+                  <div id="text--login-title" class="login-title">
                     {{
                       isSessionExpired
                         ? 'Session Expired'
                         : `Welcome To ${loginWhiteLabel.brandName}`
                     }}
                   </div>
-                  <div class="login-desc">
+                  <div id="text--login-description" class="login-desc">
                     {{
                       isSessionExpired
                         ? 'Your session has been timed out. Please log in.'
@@ -50,7 +54,7 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div class="login-error-message pr-1">
+                      <div id="text--login-error" class="login-error-message pr-1">
                         {{ getErrors }}
                       </div>
                     </div>
@@ -60,7 +64,7 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div class="login-error-message pr-1">
+                      <div id="text--multifactor-message" class="login-error-message pr-1">
                         {{ 'Multifactor authentication is required' }}
                       </div>
                     </div>
@@ -70,7 +74,10 @@
                       <div class="login-success-icon dark pr-2">
                         <v-icon large color="#ffffff"> mdi-check-circle-outline</v-icon>
                       </div>
-                      <div class="login-success-message pr-1">
+                      <div
+                        id="text--password-has-been-set-message"
+                        class="login-success-message pr-1"
+                      >
                         Your password has been set successfully
                       </div>
                     </div>
@@ -84,9 +91,13 @@
                           autocomplete="off"
                           ref="email"
                         >
-                          <label class="new-password-wrapper__label p-0 mb-2">Username</label>
+                          <label
+                            id="text--login-username"
+                            class="new-password-wrapper__label p-0 mb-2"
+                            >Username</label
+                          >
                           <v-text-field
-                            id="email"
+                            id="input--login-email"
                             :type="'email'"
                             name="email"
                             ref="email"
@@ -113,12 +124,12 @@
                         >
                           <label class="new-password-wrapper__label p-0 mb-2">Password</label>
                           <v-text-field
+                            id="input--login-password"
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
                             :type="show1 ? '' : 'password'"
                             name="password"
                             ref="password"
-                            id="password"
                             v-model.trim="password"
                             class="username-field input-group--focused"
                             @click:append="show1 = !show1"
@@ -137,6 +148,7 @@
                         <div class="login-remember d-flex">
                           <v-checkbox
                             v-model.trim="rememberMe"
+                            id="input--is-remember-me"
                             :label="`Remember`"
                             class="remember-me-check"
                             hide-details
@@ -145,7 +157,11 @@
                           >
                           </v-checkbox>
 
-                          <div @click="onForgetPasswordButtonClick()" class="forgot-password">
+                          <div
+                            id="btn--login-forget-password"
+                            @click="onForgetPasswordButtonClick()"
+                            class="forgot-password"
+                          >
                             Forgot Password
                           </div>
                         </div>
@@ -165,6 +181,7 @@
                 <v-card-actions class="justify-center login-button">
                   <v-btn
                     color="blue"
+                    id="btn--login-continue"
                     class="pl-4 white--text login-btn"
                     rounded
                     @click="onLoginClicked"
@@ -188,7 +205,7 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div class="login-error-message pr-1">
+                      <div id="text--login-reset-password" class="login-error-message pr-1">
                         {{ resetPasswordErrorText }}
                       </div>
                     </div>
@@ -199,6 +216,7 @@
                         <v-form ref="resetEmail">
                           <InputEmail
                             v-model.trim="resePasswordModel"
+                            id="input--login-reset-password"
                             class="reset-pass-textfield"
                             @click="resetPasswordError = false"
                             :class="{ 'input-error': isErrorActive }"
@@ -219,7 +237,13 @@
                   </div>
                 </v-card-text>
                 <v-card-actions class="justify-center">
-                  <v-btn color="blue" class="pl-4 white--text" rounded @click="onResetClick">
+                  <v-btn
+                    id="btn--login-send-reset-link"
+                    color="blue"
+                    class="pl-4 white--text"
+                    rounded
+                    @click="onResetClick"
+                  >
                     SEND RESET LINK
                     <v-icon right dark>mdi-arrow-right</v-icon>
                   </v-btn>
@@ -261,7 +285,7 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div class="login-error-message pr-1">
+                      <div id="text--login-new-password" class="login-error-message pr-1">
                         {{ newPasswordErrorText }}
                       </div>
                     </div>
@@ -283,6 +307,7 @@
                           <div>
                             <label class="new-password-wrapper__label">New Password</label>
                             <v-text-field
+                              id="input--login-new-password"
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                               :type="show2 ? '' : 'password'"
                               @click:append="show2 = !show2"
@@ -309,6 +334,7 @@
                             <label class="new-password-wrapper__label">Confirm Password</label>
                             <v-text-field
                               v-model.trim="reNewPassword"
+                              id="input--login-confirm-password"
                               :rules="[
                                 rules.required,
                                 rules.minPassword,
@@ -335,7 +361,13 @@
                   </div>
                 </v-card-text>
                 <v-card-actions class="justify-center">
-                  <v-btn color="blue" class="pl-4 white--text" rounded @click="setPassword">
+                  <v-btn
+                    id="btn--login-set-password"
+                    color="blue"
+                    class="pl-4 white--text"
+                    rounded
+                    @click="setPassword"
+                  >
                     SET PASSWORD
                     <v-icon right dark>mdi-arrow-right</v-icon>
                   </v-btn>
