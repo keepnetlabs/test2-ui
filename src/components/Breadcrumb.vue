@@ -2,6 +2,7 @@
   <div class="breadcrumb">
     <template v-for="(item, index) in breadcrumb">
       <router-link
+        :id="getItemId(item)"
         :key="index"
         :to="{ name: item }"
         :style="[item === 'Company' && { pointerEvents: 'none' }]"
@@ -49,6 +50,9 @@ export default {
         parent = resolved.route.meta.parentName
       }
       //this.breadcrumb.unshift(this.baseName)
+    },
+    getItemId(item = '') {
+      return `breadcrumb-link--${item.replace(/\s/, '')}`
     }
   }
 }
