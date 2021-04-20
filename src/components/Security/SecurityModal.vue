@@ -1,10 +1,11 @@
 <template>
   <app-dialog
-    :status="openPasswordChange"
     v-if="openPasswordChange"
+    :status="openPasswordChange"
     icon="mdi-lock"
     :title="getTitle"
     size="big"
+    title-id="text--login-popup-title"
     @changeStatus="$emit('changePasswordChange')"
     :max-height-size="'500'"
   >
@@ -18,7 +19,11 @@
             <v-row align="center" justify="center" class="mr-0">
               <v-col sm="12" class="p-0">
                 <div class="password-modal__list-header">
-                  <label class="new-password-wrapper__label mb-0">{{ labels.LoginPassword }}</label>
+                  <label
+                    id="text--security-popup-login-password"
+                    class="new-password-wrapper__label mb-0"
+                    >{{ labels.LoginPassword }}</label
+                  >
                   <v-btn
                     id="btn-change--security-login-password-dashboard-popup"
                     outlined
@@ -30,7 +35,9 @@
                   >
                 </div>
                 <div class="password-modal__list-header mt-6">
-                  <label class="new-password-wrapper__label mb-0">{{ labels.Mfa }}</label>
+                  <label id="text--security-popup-mfa" class="new-password-wrapper__label mb-0">{{
+                    labels.Mfa
+                  }}</label>
                   <v-btn
                     id="btn-status--security-mfa-dashboard-popup"
                     outlined
@@ -51,7 +58,11 @@
               <v-col sm="12" class="p-0">
                 <v-form ref="newPasswordByMain">
                   <div>
-                    <label class="new-password-wrapper__label d-block mb-2">Current Password</label>
+                    <label
+                      id="text--security-popup-current-password"
+                      class="new-password-wrapper__label d-block mb-2"
+                      >Current Password</label
+                    >
                     <v-text-field
                       v-model="currentPassword"
                       label="Current password"
@@ -63,7 +74,7 @@
                       :type="show1 ? '' : 'password'"
                       @click:append="show1 = !show1"
                       autocomplete="new"
-                      :id="dynamicID"
+                      id="input--security-popup-current-password"
                       browser-autocomplete="username"
                       persistent-hint
                     ></v-text-field>
@@ -81,7 +92,7 @@
                       :type="show2 ? '' : 'password'"
                       @click:append="show2 = !show2"
                       autocomplete="password"
-                      :id="dynamicID"
+                      id="input--security-popup-new-password"
                       browser-autocomplete="password"
                       persistent-hint
                     ></v-text-field>
@@ -170,28 +181,57 @@
         >
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 2">
-        <v-btn text color="#f56c6c" class="k-dialog__button" @click="step = 1">{{
-          labels.Cancel
-        }}</v-btn>
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="changePassword">{{
-          labels.Confirm
-        }}</v-btn>
+        <v-btn
+          id="btn-cancel--security-dashboard-popup"
+          text
+          color="#f56c6c"
+          class="k-dialog__button"
+          @click="step = 1"
+          >{{ labels.Cancel }}</v-btn
+        >
+        <v-btn
+          id="btn-confirm--security-dashboard-popup"
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="changePassword"
+          >{{ labels.Confirm }}</v-btn
+        >
       </div>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 3">
-        <v-btn text color="#f56c6c" class="k-dialog__button" @click="step = 1">{{
-          labels.Cancel
-        }}</v-btn>
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="disableMFA">{{
-          labels.Confirm
-        }}</v-btn>
+        <v-btn
+          id="btn-cancel--security-dashboard-popup"
+          text
+          color="#f56c6c"
+          class="k-dialog__button"
+          @click="step = 1"
+          >{{ labels.Cancel }}</v-btn
+        >
+        <v-btn
+          id="btn-confirm--security-dashboard-popup"
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="disableMFA"
+          >{{ labels.Confirm }}</v-btn
+        >
       </div>
-      <div class="d-flex download-buttons flex-row flex-wrap justify-end" v-if="step === 4">
+      <div
+        id="btn-close--security-dashboard-popup"
+        class="d-flex download-buttons flex-row flex-wrap justify-end"
+        v-if="step === 4"
+      >
         <v-btn text color="#f56c6c" class="k-dialog__button" @click="step = 1">{{
           labels.Close
         }}</v-btn>
-        <v-btn text color="#2196f3" class="k-dialog__button" @click="confirmSetupMFA">{{
-          labels.Confirm
-        }}</v-btn>
+        <v-btn
+          id="btn-confirm--security-dashboard-popup"
+          text
+          color="#2196f3"
+          class="k-dialog__button"
+          @click="confirmSetupMFA"
+          >{{ labels.Confirm }}</v-btn
+        >
       </div>
     </template>
   </app-dialog>

@@ -10,6 +10,11 @@
       v-if="openPasswordChange"
       :rules="rules"
     />
+    <SettingsModal
+      :showSettingsModalStatus="showSettingsModalStatus"
+      v-if="showSettingsModalStatus"
+      @changeSettings="changeSettings"
+    />
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate />
@@ -269,15 +274,14 @@
           </router-link>
           <v-list-group
             prepend-icon="mdi-flash"
+            id="btn--link-navigator-menu-incident-responder-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
             v-if="checkIncidentResponderPermissions()"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title id="btn--link-navigator-menu-incident-responder-list-group"
-                  >Incident Responder</v-list-item-title
-                >
+                <v-list-item-title>Incident Responder</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item
@@ -389,13 +393,14 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            id="btn--link-navigator-menu-company-list-group"
             prepend-icon="mdi-briefcase-variant"
             no-action
             :class="['menu-with-item menu-link-default', getCompanyClasses]"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title id="btn--link-navigator-menu-company">Company</v-list-item-title>
+                <v-list-item-title>Company</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item
@@ -515,7 +520,7 @@
     >
       <div class="page-header__details">
         <div class="page-header__content">
-          <div class="page-header__title">
+          <div class="page-header__title" id="text--router-name">
             <h1 v-if="routerName === 'Community'">
               <router-link
                 :to="`/threat-sharing?detailsId=${communityId}`"
@@ -684,6 +689,7 @@ import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersC
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
 import SecurityModal from '@/components/Security/SecurityModal'
+import SettingsModal from '@/components/Settings/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 
 export default {
@@ -691,6 +697,7 @@ export default {
   components: {
     NavigationDrawerFooter,
     SecurityModal,
+    SettingsModal,
     AppRouterItem,
     FeedbackPopup,
     AppFooter,
@@ -705,6 +712,7 @@ export default {
   },
   data() {
     return {
+      showSettingsModalStatus: false,
       isScroll: null,
       companyLicense: null,
       showLicenseExceededDialog: false,
@@ -789,6 +797,13 @@ export default {
           icon: 'mdi-rotate-left',
           url: '',
           value: 'returnToMainAccount'
+        },
+        {
+          text: 'Settings',
+          id: 'btn-settings--dashboard',
+          icon: 'mdi-cog',
+          url: '',
+          value: 'changeSettings'
         },
         {
           text: 'Security',
@@ -1318,6 +1333,9 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    changeSettings() {
+      this.showSettingsModalStatus = !this.showSettingsModalStatus
+    },
     changePasswordChange() {
       this.openPasswordChange = !this.openPasswordChange
     },
@@ -1490,6 +1508,9 @@ export default {
           localStorage.setItem('selectedCompanyRequestId', mainCompanyId)
           localStorage.setItem('selectedCompanyName', mainCompanyName)
           this.$router.go(0)
+          break
+        case 'changeSettings':
+          this.changeSettings()
           break
         default:
           return

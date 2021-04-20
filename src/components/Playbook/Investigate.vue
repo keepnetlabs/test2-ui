@@ -187,7 +187,7 @@
               >Select Sources</label
             >
             <v-list-item-title
-              :id="`text--playbook-investigate-select sources-title-${getParentIndex}`"
+              :id="`text--playbook-investigate-select-sources-subtitle-${getParentIndex}`"
               class="v-card-sub-header bottom-margin"
             >
               Select sources to investigate with conditions above
@@ -214,8 +214,13 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label>Duration</label>
-            <v-list-item-title class="v-card-sub-header bottom-margin">
+            <label :id="`text--playbook-investigate-duration-title-${getParentIndex}`"
+              >Duration</label
+            >
+            <v-list-item-title
+              :id="`text--playbook-investigate-duration-subtitle-${getParentIndex}`"
+              class="v-card-sub-header bottom-margin"
+            >
               Select how many days the investigation will run
             </v-list-item-title>
           </v-list-item-content>
@@ -236,8 +241,13 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label>Actions</label>
-            <v-list-item-title class="v-card-sub-header bottom-margin">
+            <label :id="`text--playbook-investigate-actions-title-${getParentIndex}`"
+              >Actions</label
+            >
+            <v-list-item-title
+              :id="`text--playbook-investigate-actions-subtitle-${getParentIndex}`"
+              class="v-card-sub-header bottom-margin"
+            >
               Select action to be executed if email is found
             </v-list-item-title>
           </v-list-item-content>

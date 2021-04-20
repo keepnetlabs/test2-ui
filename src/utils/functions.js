@@ -226,8 +226,9 @@ export function setGlobalUserData(userData) {
       logoPath: userData.user_company_logopath,
       businessCategoryId: userData.user_company_industry_resourceid,
       resellerId: userData.user_company_parentcompany_resourceid,
-      timeZone: null,
-      isDemo: false
+      timeZone: userData.user_dateformat,
+      isDemo: false,
+      timeFormat: userData.user_timeformat
     },
     role: {
       name: userData.role.toString()
