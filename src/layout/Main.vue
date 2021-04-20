@@ -515,7 +515,7 @@
     >
       <div class="page-header__details">
         <div class="page-header__content">
-          <div class="page-header__title">
+          <div class="page-header__title" id="text--router-name">
             <h1 v-if="routerName === 'Community'">
               <router-link
                 :to="`/threat-sharing?detailsId=${communityId}`"
