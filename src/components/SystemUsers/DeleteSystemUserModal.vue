@@ -1,9 +1,12 @@
 <template>
   <app-dialog
+    v-if="status"
     :status="status"
     icon="mdi-delete"
     title="Delete System User?"
     subtitle="The system user will deleted permanently"
+    title-id="text--system-user-delete-popup-title"
+    subtitle-id="text--system-user-delete-popup-subtitle"
   >
     <template v-slot:app-dialog-body>
       {{ getSystemUserName }} will be deleted and removed from system users.

@@ -11,8 +11,10 @@
       :permissionEditData="permissionEditData"
     />
     <app-dialog
-      :status="deleteDialog"
       v-if="deleteDialog"
+      :status="deleteDialog"
+      title-id="text--permissions-delete-popup-title"
+      subtitle-id="text--permissions-delete-popup-subtitle"
       icon="mdi-delete"
       title="Delete Permission?"
       subtitle="The permission will deleted permanently"
