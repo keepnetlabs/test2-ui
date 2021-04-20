@@ -522,6 +522,9 @@
                     {{ col.emptyText || '' }}
                   </span>
                 </div>
+                <div v-if="col.type === 'number'">
+                  <span>{{ scope.row[col.property] || col.emptyText }}</span>
+                </div>
                 <div v-if="col.type === 'popup'">
                   <slot name="datatable-column-popup" :col="col" :scope="scope"></slot>
                 </div>

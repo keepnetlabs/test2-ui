@@ -179,9 +179,10 @@ export default {
             fixed: false,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'number',
             width: 120,
-            filterableType: 'text'
+            filterableType: 'number',
+            emptyText: 0
           },
           {
             property: PROPERTY_STORE.TYPENAME,

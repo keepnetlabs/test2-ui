@@ -111,6 +111,26 @@
         >
         </v-checkbox>
       </template>
+      <template v-if="filterableType === 'number'">
+        <v-select
+          :items="numberFilterItems"
+          dense
+          height="40"
+          outlined
+          required
+          :menu-props="{ offsetY: true }"
+          v-model="filteredSelectValueNumber"
+        ></v-select>
+        <v-text-field
+          placeholder="Enter Value"
+          class="filter__text"
+          outlined
+          dense
+          v-model="filterValue"
+          height="40"
+          type="number"
+        ></v-text-field>
+      </template>
       <div class="filter__footer">
         <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
           Clear
@@ -182,6 +202,7 @@ export default {
         ? this.filterProps.items && this.filterProps.items[0]
         : this.value.selectValue || 'Contains',
       filteredSelectValueNum: '=',
+      filteredSelectValueNumber: '=',
       filteredSelectValueDate:
         this.filterableType === 'date' ? this.value.selectValue || '<=' : '<=',
       filteredDateValue:
@@ -209,6 +230,14 @@ export default {
         { text: 'Not Equal', value: '!=' }
       ],
       numericFilterItems: [
+        { text: 'Equal', value: '=' },
+        { text: 'Not Equal', value: '!=' },
+        { text: 'Greater than', value: '>' },
+        { text: 'Greater than or equal', value: '>=' },
+        { text: 'Less than', value: '<' },
+        { text: 'Less than equal', value: '<=' }
+      ],
+      numberFilterItems: [
         { text: 'Equal', value: '=' },
         { text: 'Not Equal', value: '!=' },
         { text: 'Greater than', value: '>' },
@@ -269,6 +298,7 @@ export default {
       this.filterChecked = []
       this.filteredDateRangeValue = []
       this.filteredSelectValueNum = ''
+      this.filteredSelectValueNumber = ''
     },
     emitValue(textValue = '', selectValue = '', fieldName = '') {
       this.$emit('input', { textValue, selectValue, fieldName })
@@ -292,6 +322,14 @@ export default {
           Operator: this.filteredSelectValueNum
         })
         this.emitValue(this.filterValue, this.filteredSelectValueNum, this.fieldName)
+      }
+      if (this.filterableType === 'number') {
+        this.$emit('handleFilterColumn', {
+          Value: this.filterValue,
+          FieldName: this.fieldName,
+          Operator: this.filteredSelectValueNumber
+        })
+        this.emitValue(this.filterValue, this.filteredSelectValueNumber, this.fieldName)
       }
       if (this.filterableType === 'date') {
         if (this.filteredSelectValueDate === 'between') {
