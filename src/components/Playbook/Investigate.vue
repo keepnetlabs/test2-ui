@@ -1,11 +1,16 @@
 <template>
-  <div>
+  <div :id="`card--playbook-action-investigate-${getParentIndex}`">
     <v-row align="center" class="mb-4 mt-n3">
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label>Target users</label>
-            <v-list-item-title class="v-card-sub-header bottom-margin">
+            <label :id="`text--playbook-investigate-target-users-title-${getParentIndex}`"
+              >Target users</label
+            >
+            <v-list-item-title
+              :id="`text--playbook-investigate-target-users-subtitle-${getParentIndex}`"
+              class="v-card-sub-header bottom-margin"
+            >
               Select departments, groups or users to investigate
             </v-list-item-title>
           </v-list-item-content>
@@ -122,8 +127,11 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label>Filters</label>
-            <v-list-item-title class="v-card-sub-header bottom-margin">
+            <label :id="`text--playbook-investigate-filters-${getParentIndex}`">Filters</label>
+            <v-list-item-title
+              :id="`text--playbook-investigate-filters-subtitle-${getParentIndex}`"
+              class="v-card-sub-header bottom-margin"
+            >
               Select attributes of the email to investigate
             </v-list-item-title>
           </v-list-item-content>
@@ -148,8 +156,13 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label>Email Date Range</label>
-            <v-list-item-title class="v-card-sub-header bottom-margin">
+            <label :id="`text--playbook-investigate-email-date-range-title-${getParentIndex}`"
+              >Email Date Range</label
+            >
+            <v-list-item-title
+              :id="`text--playbook-investigate-email-date-range-subtitle-${getParentIndex}`"
+              class="v-card-sub-header bottom-margin"
+            >
               Select range of emails sending date according to email received date
             </v-list-item-title>
           </v-list-item-content>
@@ -170,8 +183,13 @@
       <v-col md="5">
         <v-list-item class="py-0">
           <v-list-item-content class="py-0">
-            <label>Select Sources</label>
-            <v-list-item-title class="v-card-sub-header bottom-margin">
+            <label :id="`text--playbook-investigate-select-sources-title-${getParentIndex}`"
+              >Select Sources</label
+            >
+            <v-list-item-title
+              :id="`text--playbook-investigate-select sources-title-${getParentIndex}`"
+              class="v-card-sub-header bottom-margin"
+            >
               Select sources to investigate with conditions above
             </v-list-item-title>
           </v-list-item-content>

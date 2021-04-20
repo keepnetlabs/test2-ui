@@ -610,9 +610,10 @@
                   >
                     <template v-slot:activator="{ on }">
                       <v-btn
+                        v-on="on"
+                        :id="`btn-dots--row-actions-list-${Math.random().toString().substring(2)}`"
                         class="btn-hover ml-1"
                         icon
-                        v-on="on"
                         :disabled="rowActions[1].disabled"
                       >
                         <v-icon @click.native="selectedMenuIndex = scope.$index"

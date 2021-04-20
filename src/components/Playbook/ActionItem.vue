@@ -8,6 +8,8 @@
       max-height
       title="Select Integrations"
       subtitle="Select Integrations and what data to send"
+      title-id="text--playbook-actions-engine-popup-title"
+      subtitle-id="text--playbook-actions-engine-popup-subtitle"
       @changeStatus="closeEngineModal"
     >
       <template v-slot:app-dialog-body>
@@ -168,7 +170,12 @@
             class="analyze__main-checkbox"
             style="padding: 4px 0 0 0 !important; margin-left: 24px;"
           >
-            <v-checkbox class="k-checkbox" color="#2196f3" v-model="analyzeCheckbox" />
+            <v-checkbox
+              class="k-checkbox"
+              color="#2196f3"
+              id="input--action-is-analyze-with-investigation"
+              v-model="analyzeCheckbox"
+            />
             <span class="checkbox-text">Investigate according to analyze results</span>
           </v-col>
         </v-col>

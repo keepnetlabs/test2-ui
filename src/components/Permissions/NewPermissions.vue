@@ -5,6 +5,7 @@
     :id="isEdit ? 'edit-permissions-modal' : 'new-permissions-modal'"
     confirm-button-id="btn-save--permissions-modal"
     cancel-button-id="btn-cancel--permissions-modal"
+    title-id="text--new-permission-modal-title"
     @closeOverlay="closeOverlay"
     @submit="submit"
     :title="getTitle"
@@ -20,6 +21,7 @@
       <v-form ref="refForm">
         <form-group :title="'Role Title'" has-hint>
           <v-text-field
+            id="input--permission-role-title"
             placeholder="Enter Title"
             outlined
             dense
@@ -35,6 +37,7 @@
         </form-group>
         <form-group title="Description">
           <v-textarea
+            id="input--permission-description"
             outlined
             dense
             rows="2"
@@ -60,6 +63,7 @@
         />
         <form-group :title="'Privileges'" has-hint class-name="mt-8">
           <v-text-field
+            id="input--permission-privileges"
             placeholder="Search for privileges"
             outlined
             dense
@@ -75,6 +79,7 @@
         <form-group class-name="max-width--780">
           <v-treeview
             v-model="formValues.permissionResourceIdList"
+            id="input--permission-description-list"
             :items="permissions"
             item-key="permissionResourceId"
             selectable
