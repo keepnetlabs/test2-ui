@@ -11,6 +11,7 @@
     </v-card-text>
     <v-card-actions class="justify-center">
       <v-btn
+        id="btn--login-continue-without-mfa"
         color="blue"
         class="pl-4 white--text login_without-continue-button"
         rounded
@@ -20,6 +21,7 @@
         CONTINUE WITHOUT MFA
       </v-btn>
       <v-btn
+        id="btn--login-setup-mfa"
         color="blue"
         class="pl-4 white--text login_setup-mfa-button"
         rounded

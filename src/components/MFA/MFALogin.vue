@@ -58,6 +58,7 @@
     </v-card-text>
     <v-card-actions class="justify-center">
       <v-btn
+        id="btn--login-continue"
         color="blue"
         class="pl-4 white--text"
         rounded

@@ -269,15 +269,14 @@
           </router-link>
           <v-list-group
             prepend-icon="mdi-flash"
+            id="btn--link-navigator-menu-incident-responder-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
             v-if="checkIncidentResponderPermissions()"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title id="btn--link-navigator-menu-incident-responder-list-group"
-                  >Incident Responder</v-list-item-title
-                >
+                <v-list-item-title>Incident Responder</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item
@@ -389,13 +388,14 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            id="btn--link-navigator-menu-company-list-group"
             prepend-icon="mdi-briefcase-variant"
             no-action
             :class="['menu-with-item menu-link-default', getCompanyClasses]"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
-                <v-list-item-title id="btn--link-navigator-menu-company">Company</v-list-item-title>
+                <v-list-item-title>Company</v-list-item-title>
               </v-list-item-content>
             </template>
             <v-list-item

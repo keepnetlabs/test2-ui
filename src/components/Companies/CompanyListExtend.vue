@@ -3,7 +3,10 @@
     <CompanyListExtendLoading :loading="isLoading">
       <template v-slot:skeleton-content>
         <div class="company-list-extend__header">
-          <div class="company-list-extend__header-title">
+          <div
+            id="text--company-name-extended-view-title"
+            class="company-list-extend__header-title"
+          >
             {{ selectedRow.companyName }}
           </div>
           <div class="company-list-extend__header-icon">
@@ -25,35 +28,80 @@
         </div>
         <div class="company-list-extend__body">
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Company Name</div>
-            <div class="company-list-extend__body-value">{{ selectedRow.companyName }}</div>
+            <div id="text--company-name-extended-view-key" class="company-list-extend__body-key">
+              Company Name
+            </div>
+            <div
+              id="text--company-name-extended-view-value"
+              class="company-list-extend__body-value"
+            >
+              {{ selectedRow.companyName }}
+            </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Industry</div>
-            <div class="company-list-extend__body-value">{{ selectedRow.industryName }}</div>
+            <div
+              id="text--company-industry-extended-view-key"
+              class="company-list-extend__body-key"
+            >
+              Industry
+            </div>
+            <div
+              id="text--company-industry-extended-view-value"
+              class="company-list-extend__body-value"
+            >
+              {{ selectedRow.industryName }}
+            </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Total Users</div>
-            <div class="company-list-extend__body-value">{{ selectedRow.numberOfUsers }}</div>
+            <div
+              id="text--company-total-users-extended-view-key"
+              class="company-list-extend__body-key"
+            >
+              Total Users
+            </div>
+            <div
+              id="text--company-total-users-extended-view-value"
+              class="company-list-extend__body-value"
+            >
+              {{ selectedRow.numberOfUsers }}
+            </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Address</div>
-            <div class="company-list-extend__body-value">{{ selectedExtend.address }}</div>
+            <div id="text--company-address-extended-view-key" class="company-list-extend__body-key">
+              Address
+            </div>
+            <div
+              id="text--company-address-extended-view-value"
+              class="company-list-extend__body-value"
+            >
+              {{ selectedExtend.address }}
+            </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Website</div>
-            <div class="company-list-extend__body-value">
+            <div id="text--company-website-extended-view-key" class="company-list-extend__body-key">
+              Website
+            </div>
+            <div
+              id="text--company-website-extended-view-value"
+              class="company-list-extend__body-value"
+            >
               <a :href="selectedExtend.websiteUrl" target="_blank">{{
                 selectedExtend.websiteUrl
               }}</a>
             </div>
           </div>
           <div class="company-list-extend__body-item d-flex align-center">
-            <div class="company-list-extend__body-key">Company Groups</div>
-            <div class="company-list-extend__body-value">
+            <div id="text--company-groups-extended-view-key" class="company-list-extend__body-key">
+              Company Groups
+            </div>
+            <div
+              id="text--company-groups-extended-view-value"
+              class="company-list-extend__body-value"
+            >
               <template v-if="!!selectedExtend && !!selectedExtend.companyGroups && groupCount > 0">
                 <a
                   v-for="(group, index) of selectedExtend.companyGroups.slice(0, limiter)"
+                  :id="`text--company-groups-group-${index}`"
                   :key="group.name"
                   class="fixxer"
                   @click="goToDetails(group.name, group.resourceId)"
@@ -72,34 +120,66 @@
             </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Country</div>
-            <div class="company-list-extend__body-value">
+            <div id="text--company-country-extended-view-key" class="company-list-extend__body-key">
+              Country
+            </div>
+            <div
+              id="text--company-country-extended-view-value"
+              class="company-list-extend__body-value"
+            >
               {{ selectedExtend.countryName }}
             </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Courses</div>
-            <div class="company-list-extend__body-value">
+            <div id="text--company-courses-extended-view-key" class="company-list-extend__body-key">
+              Courses
+            </div>
+            <div
+              id="text--company-courses-extended-view-value"
+              class="company-list-extend__body-value"
+            >
               {{ selectedExtend.trainingContentTypeName }}
             </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Notif. Templates</div>
-            <div class="company-list-extend__body-value">
+            <div
+              id="text--company-notification-template-extended-view-key"
+              class="company-list-extend__body-key"
+            >
+              Notif. Templates
+            </div>
+            <div
+              id="text--company-notification-template-extended-view-value"
+              class="company-list-extend__body-value"
+            >
               {{ selectedExtend.notificationTemplateTypeName }}
             </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key">Smtp Settings</div>
-            <div class="company-list-extend__body-value">
+            <div
+              id="text--company-smtp-settings-extended-view-key"
+              class="company-list-extend__body-key"
+            >
+              Smtp Settings
+            </div>
+            <div
+              id="text--company-smtp-settings-extended-view-value"
+              class="company-list-extend__body-value"
+            >
               {{ selectedExtend.smtpConfigurationTypeName }}
             </div>
           </div>
           <div class="company-list-extend__body-item">
-            <div class="company-list-extend__body-key d-flex align-center">Status</div>
+            <div
+              id="text--company-status-extended-view-key"
+              class="company-list-extend__body-key d-flex align-center"
+            >
+              Status
+            </div>
             <div class="company-list-extend__body-value">
               <v-btn
                 v-if="selectedExtend.statusId == '0' || selectedExtend.statusId == '1'"
+                id="badge--company-status-extended-view-value"
                 :dark="selectedExtend.statusId == 0 ? false : true"
                 :disabled="selectedExtend.statusId == 0 ? true : false"
                 color="#2196f3"
@@ -115,12 +195,32 @@
         </div>
         <div class="company-list-extend__footer">
           <div class="company-list-extend__footer-item">
-            <div class="company-list-extend__footer-key">Licence Type</div>
-            <div class="company-list-extend__footer-value">{{ selectedRow.licenseTypeName }}</div>
+            <div
+              id="text--company-license-type-extended-view-key"
+              class="company-list-extend__footer-key"
+            >
+              Licence Type
+            </div>
+            <div
+              id="text--company-license-type-extended-view-value"
+              class="company-list-extend__footer-value"
+            >
+              {{ selectedRow.licenseTypeName }}
+            </div>
           </div>
           <div class="company-list-extend__footer-item">
-            <div class="company-list-extend__footer-key">Licence Expires on</div>
-            <div class="company-list-extend__footer-value">{{ selectedRow.licenseEndDate }}</div>
+            <div
+              id="text--company-license-expires-on-extended-view-key"
+              class="company-list-extend__footer-key"
+            >
+              Licence Expires on
+            </div>
+            <div
+              id="text--company-license-expires-on-extended-view-value"
+              class="company-list-extend__footer-value"
+            >
+              {{ selectedRow.licenseEndDate }}
+            </div>
           </div>
         </div>
       </template>

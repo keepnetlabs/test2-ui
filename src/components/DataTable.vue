@@ -81,6 +81,7 @@
           <div class="table-search" v-if="filterable">
             <slot name="table-search-left-side"> </slot>
             <v-text-field
+              :id="`input--table-search-${Math.random().toString().substring(2)}`"
               class="filter-field"
               placeholder="Search"
               outlined
@@ -209,7 +210,13 @@
             </slot>
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-btn icon style="order: 4;" v-on="on" :disabled="refreshButtonDisabled">
+                <v-btn
+                  v-on="on"
+                  :id="`btn-refresh--table-${Math.random().toString().substring(2)}`"
+                  icon
+                  style="order: 4;"
+                  :disabled="refreshButtonDisabled"
+                >
                   <v-icon @click="handleRefresh">mdi-refresh</v-icon>
                 </v-btn>
               </template>
@@ -220,12 +227,13 @@
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
                     <v-btn
+                      v-on="{ ...tooltip, ...menu }"
+                      :id="`btn-download--table-${Math.random().toString().substring(2)}`"
                       class="btn-hover mr-1"
                       icon
                       style="order: 5;"
                       v-bind="attrs"
                       :disabled="downloadButton.disabled"
-                      v-on="{ ...tooltip, ...menu }"
                     >
                       <v-icon>mdi-download</v-icon>
                     </v-btn>
@@ -235,6 +243,7 @@
               </template>
               <v-list-item
                 v-for="(item, index) in downloadButtonOptions"
+                :id="`item--download-option-${index}`"
                 :key="index"
                 @click="handleDownloadButtonClick(item)"
               >
@@ -253,11 +262,12 @@
             <v-tooltip v-if="isSettingsPopup" v-once bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="toggleIsSettingsOpened"
+                  v-on="on"
+                  :id="`btn-settings--table-${Math.random().toString().substring(2)}`"
                   class="btn-hover mr-1"
                   icon
-                  v-on="on"
                   style="order: 5;"
+                  @click="toggleIsSettingsOpened"
                 >
                   <v-icon>mdi-cog</v-icon>
                 </v-btn>

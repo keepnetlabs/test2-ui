@@ -50,6 +50,7 @@
                 <label class="mfa-setup__content--header p-0">MFA Code</label>
                 <v-text-field
                   v-model.trim="mfaCode"
+                  id="input--login-mfa-code"
                   :rules="[rules.required]"
                   placeholder="Enter Code"
                   class="mfa-setup__content-textfield"
