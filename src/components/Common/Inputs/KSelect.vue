@@ -49,6 +49,9 @@ export default {
       type: String,
       default: 'select'
     },
+    customMenuClass: {
+      type: String
+    },
     slots: {
       type: Object,
       default: () => ({ selection: false, item: false })
@@ -81,7 +84,7 @@ export default {
     getContentClass() {
       return `k-select__menu ${
         this.minWidthType ? `k-select__menu--${this.minWidthType.toLowerCase()}` : ''
-      }`
+      } ${this.customMenuClass ? this.customMenuClass : ''}`
     }
   }
 }
