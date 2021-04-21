@@ -22,18 +22,22 @@
           icon="mdi-alert"
           size="small"
           title="Delete Emails?"
+          title-id="text--investigation-details-delete-emails-popup-title"
+          subtitle-id="text--investigation-details-delete-emails-popup-subtitle"
           :subtitle="deleteMessage()"
           @changeStatus="isWantToDelete = false"
           body="Do you want to delete emails or move to trash?"
           className="investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-footer>
-            <div
-              id="btn-cancel--investigation-details-delete-emails-popup"
-              class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row"
-            >
+            <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
               <div>
-                <v-btn class="k-dialog__button" text color="#f56c6c" @click="isWantToDelete = false"
+                <v-btn
+                  id="btn-cancel--investigation-details-delete-emails-popup"
+                  class="k-dialog__button"
+                  text
+                  color="#f56c6c"
+                  @click="isWantToDelete = false"
                   >{{ labels.Cancel }}
                 </v-btn>
               </div>
@@ -68,6 +72,8 @@
           icon="mdi-alert"
           :title="warningMessage"
           subtitle="Type a message to reporting user"
+          title-id="text--investigation-details-warning-message-popup-title"
+          subtitle-id="text--investigation-details-warning-message-popup-subtitle"
           class-name="investigation-details__warning-modal"
         >
           <template v-slot:app-dialog-body>
@@ -80,6 +86,7 @@
                 onSubmit="return false;"
               >
                 <v-text-field
+                  id="input--investigation-details-warning-message"
                   placeholder="Dangerous Email"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -112,6 +119,8 @@
           title="Stop Ongoing Investigation"
           subtitle="Do you want to stop this investigation?"
           body="Once stopped, you cannot resume this investigation"
+          title-id="text--investigation-details-warning-message-popup-title"
+          subtitle-id="text--investigation-details-warning-message-popup-subtitle"
         >
           <template v-slot:app-dialog-footer>
             <app-dialog-footer
@@ -132,6 +141,8 @@
           icon="mdi-alert"
           title="Delete Emails and Notify Users?"
           :subtitle="deleteMessage()"
+          title-id="text--investigation-details-delete-emails-and-notify-user-popup-title"
+          subtitle-id="text--investigation-details-delete-emails-and-notify-user-popup-subtitle"
           class-name="investigation-details__warning-modal investigation-details__modal-footer"
         >
           <template v-slot:app-dialog-body>
@@ -145,6 +156,7 @@
                 class="check-wrapper investigation-details__alerts-content pl-0 pr-0 d-block"
               >
                 <v-text-field
+                  id="input--investigation-details-delete-emails-and-notify-user"
                   placeholder="Dangerous Email"
                   outlined
                   class="edit-name-textfield edit-select standard-height"
@@ -356,18 +368,26 @@
             <InvestigationDetailsLeftBarLoading :loading="leftMenuLoading">
               <template v-slot:skeleton-content>
                 <div class="investigation-details__container__content--left-menu--time">
-                  <div class="investigation-details__container__content--left-menu--time--labels">
+                  <div
+                    id="text--investigation-details-expiry-time"
+                    class="investigation-details__container__content--left-menu--time--labels"
+                  >
                     Expiry Time
                   </div>
                   <div class="investigation-details__container__content--left-menu--time--progress">
-                    <span>{{ investigationDetailsData.createTime }}</span>
-                    <span>{{ investigationDetailsData.expireDate }}</span>
+                    <span id="text--investigation-details-create-time">{{
+                      investigationDetailsData.createTime
+                    }}</span>
+                    <span id="text--investigation-details-expire-date">{{
+                      investigationDetailsData.expireDate
+                    }}</span>
                   </div>
                   <div
                     class="investigation-details__container__content--left-menu--time--progress--bar"
                   >
                     <v-progress-linear
                       :value="progressValue"
+                      id="input--investigation-details-progress"
                       background-color="#b3d4fc"
                       color="#2196f3"
                     ></v-progress-linear>
@@ -698,6 +718,7 @@
                     style="flex-direction: column;"
                   >
                     <div
+                      id="card--investigation-details-investigation-name"
                       class="investigation-details__container__content--right-menu__summary__item--text-header"
                     >
                       Investigation Name:<span
@@ -706,6 +727,7 @@
                       </span>
                     </div>
                     <div
+                      id="card--investigation-details-email-date-range"
                       class="investigation-details__container__content--right-menu__summary__item mt-2"
                     >
                       <div
@@ -728,12 +750,19 @@
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
                       v-if="statsAndMenuData.status === 'Running'"
                     >
-                      <v-btn class="ma-2" outlined color="#2196f3" @click="stopInvestigationFunc">
+                      <v-btn
+                        id="btn-stop--investigation-details-card"
+                        class="ma-2"
+                        outlined
+                        color="#2196f3"
+                        @click="stopInvestigationFunc"
+                      >
                         <v-icon medium left color="#2196f3">mdi-stop</v-icon>
                         Stop
                       </v-btn>
                     </div>
                     <div
+                      id="btn-duplicate--investigation-details-card"
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
                     >
                       <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
@@ -743,8 +772,12 @@
                     </div>
                   </div>
                 </div>
-                <div class="investigation-details__container__content--right-menu__target-users">
+                <div
+                  id="container--investigation-details-target-users"
+                  class="investigation-details__container__content--right-menu__target-users"
+                >
                   <p
+                    id="text--investigation-details-card-target-users"
                     class="investigation-details__container__content--right-menu__target-users--header"
                   >
                     Target Users:
@@ -753,20 +786,30 @@
                     class="investigation-details__container__content--right-menu__target-users--list"
                     v-if="investigationDetailsData.targetUserType !== 'AllUsers'"
                   >
-                    <show-more :data="targetUserChips" />
+                    <show-more
+                      :data="targetUserChips"
+                      btn-show-more-id="btn-show-more--target-users"
+                    />
                   </div>
                   <div
+                    id="badge--investigation-details-card-all-users"
                     class="investigation-details__container__content--right-menu__target-users--list"
                     v-else
                   >
                     <v-chip>All Users</v-chip>
                   </div>
                 </div>
-                <div class="investigation-details__container__content--right-menu__filters">
-                  <p class="investigation-details__container__content--right-menu__filters--header">
+                <div
+                  id="container--investigation-details-criteria"
+                  class="investigation-details__container__content--right-menu__filters"
+                >
+                  <p
+                    id="text--investigation-details-card-criteria"
+                    class="investigation-details__container__content--right-menu__filters--header"
+                  >
                     Criteria:
                   </p>
-                  <show-more :data="criteriaChips" />
+                  <show-more :data="criteriaChips" btn-show-more-id="btn-show-more--criteria" />
                 </div>
               </template>
             </ThreeRowLoading>

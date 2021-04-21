@@ -792,8 +792,12 @@
         <div class="empty-table" v-else>
           <div class="empty-inline">
             <slot name="empty-table-inline">
-              <h2>{{ empty.message }}</h2>
-              <p>{{ empty.subMes }}</p>
+              <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
+                {{ empty.message }}
+              </h2>
+              <p :id="`text--empty-sub-message-${Math.random().toString().substring(2)}`">
+                {{ empty.subMes }}
+              </p>
               <v-btn
                 :disabled="empty['disabled']"
                 :id="empty['id']"

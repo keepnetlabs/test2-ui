@@ -15,7 +15,9 @@
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-list-item class="edit-name-area 0 pa-0 investigation-name">
               <v-list-item-content class>
-                <label class="pb-2 edit-labels">{{ labels.InvestigationName }}</label>
+                <label id="label--investigation-name" class="pb-2 edit-labels">{{
+                  labels.InvestigationName
+                }}</label>
                 <v-text-field
                   id="input--investigation-name"
                   placeholder="Enter an investigation name"
@@ -32,8 +34,12 @@
             </v-list-item>
             <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
               <v-list-item-content class>
-                <label class="edit-labels">{{ labels.TargetUsers }}</label>
-                <label class="edit-sub-labels">{{ labels.InvestigateSubLabel }}</label>
+                <label id="label--investigation-target-users" class="edit-labels">{{
+                  labels.TargetUsers
+                }}</label>
+                <label id="label--investigation-target-users-sub" class="edit-sub-labels">{{
+                  labels.InvestigateSubLabel
+                }}</label>
                 <div class="target-users-select__radio-group">
                   <v-radio-group
                     v-model="targetUserType"
@@ -70,6 +76,7 @@
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
                     "
+                    custom-menu-class="menu--investigation-target-user-all-users"
                     outlined
                     class="edit-select standard-height"
                     item-text="name"
@@ -87,6 +94,7 @@
                   <k-select
                     type="combobox"
                     id="input--investigation-target-user-groups"
+                    custom-menu-class="menu--investigation-target-user-groups"
                     :items="userGroupsItems"
                     :placeholder="
                       targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -110,6 +118,7 @@
                   <k-select
                     type="combobox"
                     id="input--investigation-target-user-specific-users"
+                    custom-menu-class="menu--investigation-target-user-specific-users"
                     :items="specificUserItems"
                     v-if="targetUserType === 'SpecificUsers'"
                     placeholder="Select specific users"
@@ -135,8 +144,10 @@
             </v-list-item>
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class="filter-container">
-                <label class="edit-labels">{{ labels.SearchCriteria }}</label>
-                <label class="edit-sub-labels"
+                <label id="label--investigation-search-criteria" class="edit-labels">{{
+                  labels.SearchCriteria
+                }}</label>
+                <label id="label--investigation-search-criteria-sub" class="edit-sub-labels"
                   >Define criteria for the investigation. Emails that match any of the criteria will
                   be found</label
                 >
@@ -217,8 +228,12 @@
             </v-list-item>
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class>
-                <label class="edit-labels">Email Date Range</label>
-                <label class="edit-sub-labels">Select range of emails’ sending date</label>
+                <label id="label--investigation-email-date-range" class="edit-labels"
+                  >Email Date Range</label
+                >
+                <label id="label--investigation-email-date-range-sub" class="edit-sub-labels"
+                  >Select range of emails’ sending date</label
+                >
                 <div class="date-row" :class="[!isDateValid && 'date-picker-container']">
                   <InputDate
                     v-model="date"
@@ -244,8 +259,10 @@
             </v-list-item>
             <v-list-item class="edit-industry-area mt-2 pb-0 pa-0">
               <v-list-item-content class>
-                <label class="edit-labels">Select Sources</label>
-                <label class="edit-sub-labels"
+                <label id="label--investigation-select-sources" class="edit-labels"
+                  >Select Sources</label
+                >
+                <label id="label--investigation-select-sources-sub" class="edit-sub-labels"
                   >Select sources to investigate with conditions above</label
                 >
                 <div class="select-sources flex">
@@ -276,12 +293,13 @@
 
             <v-list-item class="edit-industry-area mt-2 pb-4 pa-0">
               <v-list-item-content class>
-                <label class="edit-labels">Duration</label>
-                <label class="edit-sub-labels"
+                <label id="label--investigation-duration" class="edit-labels">Duration</label>
+                <label id="label--investigation-duration-sub" class="edit-sub-labels"
                   >Select how many days the investigation will run</label
                 >
                 <k-select
                   id="input--investigation-duration"
+                  custom-menu-class="menu--investigation-duration"
                   :items="durations"
                   outlined
                   class="input-select standard-height"
@@ -295,13 +313,14 @@
             </v-list-item>
             <v-list-item class="edit-industry-area mt-2 pa-0">
               <v-list-item-content class>
-                <label class="edit-labels">Action</label>
-                <label class="edit-sub-labels"
+                <label id="label--investigation-action" class="edit-labels">Action</label>
+                <label id="label--investigation-action-sub" class="edit-sub-labels"
                   >Select action to be executed if email is found</label
                 >
                 <k-select
                   id="input--investigation-action"
                   :items="actions"
+                  custom-menu-class="menu--investigation-action"
                   outlined
                   class="input-select standard-height"
                   v-model.trim="selectedAction"
@@ -319,7 +338,7 @@
               v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
             >
               <v-list-item-content class>
-                <label class="edit-labels">Message</label>
+                <label id="label--investigation-message" class="edit-labels">Message</label>
                 <v-text-field
                   v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
                   id="input--investigation-message"
