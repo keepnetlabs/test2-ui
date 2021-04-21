@@ -4,9 +4,10 @@
       <template v-for="index in renderedBadgeCount" v-if="renderedBadgeCount > 0 && status === 0">
         <v-chip
           v-for="(value, key) in computedData[index - 1]"
+          v-if="value && key !== 'resourceId'"
+          :id="`badge--${key}-${value}`"
           :class="[unRenderedBadgeCount !== 0 && 'show-more__hidden']"
           :key="value + key"
-          v-if="value && key !== 'resourceId'"
           >{{ key && key.substring(0, 1).toUpperCase() + key.substring(1, key.length) }}:
           {{ value }}
         </v-chip>
@@ -19,7 +20,14 @@
       </template>
     </div>
     <div class="show-more__right" v-if="getRenderStatusOfButton()">
-      <v-btn @click="changeStatus" small rounded color="#409eff" class="show-more__button">
+      <v-btn
+        @click="changeStatus"
+        :id="btnShowMoreId"
+        small
+        rounded
+        color="#409eff"
+        class="show-more__button"
+      >
         <v-icon class="show-more__icon" color="white">{{ getIconName }}</v-icon>
         <span>
           {{ getButtonText }}
@@ -38,6 +46,9 @@ export default {
       default: () => {
         return []
       }
+    },
+    btnShowMoreId: {
+      type: String
     }
   },
   data() {
