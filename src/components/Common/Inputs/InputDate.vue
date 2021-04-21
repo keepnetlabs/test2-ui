@@ -1,13 +1,15 @@
 <script>
-let timeZone = JSON.parse(localStorage.getItem('userData')).userCompany.timeZone
-let timeFormat = JSON.parse(localStorage.getItem('userData')).userCompany.timeFormat
+let isUserCompanyExist = JSON.parse(localStorage.getItem('userData'))
+let timeZone =
+  isUserCompanyExist && JSON.parse(localStorage.getItem('userData')).userCompany.timeZone
+let timeFormat =
+  isUserCompanyExist && JSON.parse(localStorage.getItem('userData')).userCompany.timeFormat
 
 if (timeFormat === '12h') {
   timeFormat = 'h'
 } else {
   timeFormat = 'HH'
 }
-console.log(timeZone, 1)
 switch (timeZone) {
   case 'DD/MM/YYYY':
     timeZone = `dd-MM-yyyy ${timeFormat}:mm:ss`
@@ -22,8 +24,6 @@ switch (timeZone) {
     //timeZone = `yyyy-MM-dd HH:mm:ss`
     break
 }
-
-console.log(timeZone, 2)
 
 import { DatePicker } from 'element-ui'
 export default {
@@ -46,7 +46,7 @@ export default {
       default: 'filter__date-picker'
     },
     format: {
-      default: timeZone
+      default: timeZone || 'yyyy-MM-dd HH:mm:ss'
     },
     valueFormat: {
       default: 'yyyy-MM-dd HH:mm:ss'
