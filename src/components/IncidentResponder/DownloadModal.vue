@@ -13,14 +13,19 @@
     <template v-slot:app-dialog-body>
       <v-list-item class="px-0 py-0">
         <v-list-item-content class="py-0">
-          <label class="add-in-settings__label">Set a password for the .zip file</label>
+          <label
+            id="label--email-details-download-modal-zip-password"
+            class="add-in-settings__label"
+            >Set a password for the .zip file</label
+          >
           <v-text-field
+            v-model="zipPassword"
+            id="input--email-details-zip-password"
             :rules="[(v) => validations.required(v, 'Required')]"
             class="k-textfield mt-2"
             dense
             outlined
             placeholder="Zip Password..."
-            v-model="zipPassword"
           ></v-text-field>
         </v-list-item-content>
       </v-list-item>
@@ -28,13 +33,19 @@
     <template v-slot:app-dialog-footer>
       <div class="d-flex download-buttons flex-row flex-wrap justify-end">
         <v-btn
+          id="btn-close--email-details-zip-password"
           class="users__button"
           text
           color="#f56c6c"
           @click="$emit('changeDownloadModalStatus', false)"
           >CLOSE</v-btn
         >
-        <v-btn class="users__button mr-n3" text color="#2196f3" @click="handleDownload"
+        <v-btn
+          id="btn-download--email-details-zip-password"
+          class="users__button mr-n3"
+          text
+          color="#2196f3"
+          @click="handleDownload"
           >DOWNLOAD</v-btn
         >
       </div>
