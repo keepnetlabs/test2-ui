@@ -5,6 +5,7 @@
       v-if="!uploadRespond.isSubjectHidden && !!uploadRespond.subject"
     >
       <span
+        id="text--threat-sharing-preview-header-for-single-post-subject"
         :class="{
           'malicious-style': uploadRespond.isSubjectFlagged,
           'malicious-style-hidden': uploadRespond.isSubjectHidden
@@ -24,6 +25,7 @@
       v-else-if="uploadRespond.isSubjectHidden && !!uploadRespond.subject"
     >
       <span
+        id="text--threat-sharing-preview-header-for-single-post-subject-hidden-by-owner"
         :class="{
           'malicious-style': uploadRespond.isSubjectFlagged,
           'malicious-style-hidden': uploadRespond.isSubjectHidden
@@ -43,6 +45,7 @@
         v-if="!uploadRespond.isFromHidden && !!uploadRespond.from"
       >
         <span
+          id="text--threat-sharing-preview-header-for-single-post-from"
           :class="{
             'malicious-style': uploadRespond.isFromFlagged,
             'malicious-style-hidden': uploadRespond.isFromHidden
@@ -58,6 +61,7 @@
         </span>
       </div>
       <div
+        id="text--threat-sharing-preview-header-for-single-post-from-hidden-by-owner"
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
         v-else-if="uploadRespond.isFromHidden && !!uploadRespond.from"
       >
@@ -81,6 +85,7 @@
         v-if="!uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length"
       >
         <span
+          id="text--threat-sharing-preview-header-for-single-post-email-address-may-be-targeted"
           :class="{
             'malicious-style': uploadRespond.isToFlagged,
             'malicious-style-hidden': uploadRespond.isToHidden
@@ -96,6 +101,7 @@
         </span>
       </div>
       <div
+        id="text--threat-sharing-preview-header-for-single-post-to-hidden-by-owner"
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
         v-else-if="uploadRespond.isToHidden && uploadRespond.to && !!uploadRespond.to.length"
       >
@@ -137,6 +143,7 @@
         v-else-if="uploadRespond.isCcHidden && !!uploadRespond.cc.length && uploadRespond.cc"
       >
         <span
+          id="text--threat-sharing-preview-header-for-single-post-cc-hidden-by-owner"
           :class="{
             'malicious-style': uploadRespond.isCcFlagged,
             'malicious-style-hidden': uploadRespond.isCcHidden
@@ -155,6 +162,7 @@
         v-if="!uploadRespond.isBccHidden && uploadRespond.bcc && !!uploadRespond.bcc.length"
       >
         <span
+          id="text--threat-sharing-preview-header-for-single-post-bcc-hidden-by-owner"
           :class="{
             'malicious-style': uploadRespond.isBccFlagged,
             'malicious-style-hidden': uploadRespond.isBccHidden
