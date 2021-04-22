@@ -46,7 +46,7 @@
                       <v-radio
                         id="input--settings-modal-type-DD/MM/YYYY"
                         value="DD/MM/YYYY"
-                        label="DD/MM/YYYY        16/5/2020"
+                        label="DD/MM/YYYY        16/05/2020"
                         color="#2196f3"
                       ></v-radio>
                       <v-radio

@@ -387,7 +387,7 @@ import {
 } from '../../api/targetUsers'
 import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { scrollToComponent } from '@/utils/functions'
+import { getTimeZoneForMoment, scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
@@ -1193,7 +1193,8 @@ export default {
       }
       let now = new Date()
       let newDate = addDays(now, duration)
-      return new Date(newDate).toISOString()
+      let date = new Date(newDate).toISOString()
+      return this.$moment(date).format(getTimeZoneForMoment())
     },
     allowedDates(val) {
       // return val < this.endDate;

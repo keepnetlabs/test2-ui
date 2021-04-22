@@ -895,3 +895,63 @@ export function eventFire(el, etype) {
     el.dispatchEvent(evObj)
   }
 }
+
+export function getTimeZone() {
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
+  let is12H = timeFormat === '12h'
+
+  if (is12H) {
+    timeFormat = 'h'
+  } else {
+    timeFormat = 'HH'
+  }
+
+  switch (timeZone) {
+    case 'DD/MM/YYYY':
+      timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+      //timeZone = `yyyy-MM-dd HH:mm:ss`
+      break
+    case 'MM/DD/YYYY':
+      timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+
+      //timeZone = `yyyy-MM-dd HH:mm:ss`
+      break
+    case 'YYYY/MM/DD':
+      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+      //timeZone = `yyyy-MM-dd HH:mm:ss`
+      break
+  }
+
+  return timeZone
+}
+
+export function getTimeZoneForMoment() {
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
+
+  let is12H = timeFormat === '12h'
+
+  if (is12H) {
+    timeFormat = 'hh'
+  } else {
+    timeFormat = 'HH'
+  }
+
+  switch (timeZone) {
+    case 'DD/MM/YYYY':
+      timeZone = `DD/MM/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+      //timeZone = `yyyy-MM-dd HH:mm:ss`
+      break
+    case 'MM/DD/YYYY':
+      timeZone = `MM/DD/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+      //timeZone = `yyyy-MM-dd HH:mm:ss`
+      break
+    case 'YYYY/MM/DD':
+      timeZone = `YYYY/MM/DD ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+      //timeZone = `yyyy-MM-dd HH:mm:ss`
+      break
+  }
+
+  return timeZone
+}
