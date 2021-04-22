@@ -5,6 +5,7 @@
       v-if="uploadRespond && !!uploadRespond.subject"
     >
       <span
+        id="text--threat-sharing-preview-header-subject"
         :class="{
           'malicious-style': uploadRespond.isSubjectFlagged && !uploadRespond.isSubjectHidden,
           'malicious-style-hidden': uploadRespond.isSubjectHidden,
@@ -27,6 +28,7 @@
         v-if="uploadRespond && !!uploadRespond.from"
       >
         <span
+          id="text--threat-sharing-preview-header-from"
           :class="{
             'malicious-style': uploadRespond.isFromFlagged && !uploadRespond.isFromHidden,
             'malicious-style-hidden': uploadRespond.isFromHidden,
@@ -48,6 +50,7 @@
         v-if="uploadRespond && uploadRespond.to && !!uploadRespond.to.length"
       >
         <span
+          id="text--threat-sharing-preview-header-to"
           :class="{
             'malicious-style': uploadRespond.isToFlagged && !uploadRespond.isToHidden,
             'malicious-style-hidden': uploadRespond.isToHidden,
@@ -66,6 +69,7 @@
       </div>
       <div
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
+        id="text--threat-sharing-preview-header-cc"
         v-if="uploadRespond && uploadRespond.cc && !!uploadRespond.cc.length"
       >
         <span
@@ -87,6 +91,7 @@
       </div>
       <div
         style="padding: 0 2px; border-bottom: 1px solid transparent;"
+        id="text--threat-sharing-preview-header-bcc"
         v-if="uploadRespond && uploadRespond.bcc && !!uploadRespond.bcc.length"
       >
         <span
@@ -106,7 +111,7 @@
           </v-tooltip>
         </span>
       </div>
-      <div>
+      <div id="text--threat-sharing-preview-header-sent-time">
         Date: {{ uploadRespond.sentTime }}
         <br />
       </div>

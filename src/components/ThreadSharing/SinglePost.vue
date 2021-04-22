@@ -1,5 +1,9 @@
 <template>
-  <div class="component-single-post" :key="$route.query.postId || '1'">
+  <div
+    :id="`card--threat-sharing-single-post-${postIndex}`"
+    class="component-single-post"
+    :key="$route.query.postId || '1'"
+  >
     <div style="z-index: 999999;">
       <new-investigation
         @closeAdd="closeNewInvestigationModal($event)"
@@ -16,6 +20,8 @@
       @changeStatus="isWantToDelete = false"
       icon="mdi-delete"
       title="Delete Incident?"
+      title-id="text--threat-sharing-incident-single-post-delete-popup-title"
+      subtitle-id="text--threat-sharing-incident-single-post-delete-popup-subtitle"
       :subtitle="deleteIncidentName"
       :body="`This post will be deleted from ${deleteIncidentCommunityName}`"
     >
@@ -36,6 +42,8 @@
       icon="mdi-send"
       title="Share incident"
       size="big"
+      title-id="text--threat-sharing-incident-single-post-share-popup-title"
+      subtitle-id="text--threat-sharing-incident-single-post-share-popup-subtitle"
       v-if="openShareModal"
       @changeStatus="
         openShareModal = false
@@ -56,6 +64,7 @@
             >Recipients</span
           >
           <k-select
+            id="input--threat-sharing-incident-share-email"
             type="combobox"
             :items="[]"
             placeholder="Enter emails (max. 10)"
@@ -104,7 +113,13 @@
           <div class="ts-title">
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on }">
-                <v-clamp autoresize :max-lines="2" v-if="post.title" v-on="on">
+                <v-clamp
+                  id="text--threat-sharing-single-post-title"
+                  autoresize
+                  :max-lines="2"
+                  v-if="post.title"
+                  v-on="on"
+                >
                   {{ post.title }}
                 </v-clamp>
                 <v-clamp autoresize :max-lines="2" v-else v-on="on">Post Title</v-clamp>
