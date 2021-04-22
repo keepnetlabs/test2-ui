@@ -1,8 +1,9 @@
 <template>
   <div class="k-widget__container">
     <app-modal
-      :status="showPlaybookModal"
       v-if="showPlaybookModal"
+      title-id="text--create-playbook-title"
+      :status="showPlaybookModal"
       :icon-name="'mdi-pencil'"
       :title="'Edit Rule'"
       :show-footer="false"

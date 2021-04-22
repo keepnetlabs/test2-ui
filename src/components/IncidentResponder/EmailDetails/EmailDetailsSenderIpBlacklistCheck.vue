@@ -1,6 +1,11 @@
 <template>
   <div class="sender-ip-blacklist-check">
-    <h3 class="sender-ip-blacklist-check__header mb-4">Sender IP Blacklist Check</h3>
+    <h3
+      id="text--email-details-sender-ip-blacklist-check"
+      class="sender-ip-blacklist-check__header mb-4"
+    >
+      Sender IP Blacklist Check
+    </h3>
     <data-table
       id="email-details-sender-api-blacklist-check"
       ref="refEmailDetailsSenderIpBlacklistCheck"

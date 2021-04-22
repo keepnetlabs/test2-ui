@@ -28,7 +28,11 @@
             <template v-if="mailDetails">
               <div class="email-details__header">
                 <v-card light class="email-details__header-card">
-                  <v-card-title class="email-details__header-title">Relay Information</v-card-title>
+                  <v-card-title
+                    id="text--email-details-header-relay-information"
+                    class="email-details__header-title"
+                    >Relay Information</v-card-title
+                  >
                   <div style="margin-top: 40px;">
                     <datatable
                       ref="refRelayTable"
@@ -49,7 +53,11 @@
                   </div>
                 </v-card>
                 <v-card light class="email-details__header-card" id="email-details--header">
-                  <v-card-title class="email-details__header-title">Headers Found</v-card-title>
+                  <v-card-title
+                    id="text--email-details-header-headers-found"
+                    class="email-details__header-title"
+                    >Headers Found</v-card-title
+                  >
                   <div class="email-details__datatable-container">
                     <datatable
                       ref="refHeadersTable"
@@ -75,8 +83,15 @@
                 </v-card>
 
                 <v-card light class="email-details__header-card">
-                  <v-card-title class="email-details__header-title">Received Header</v-card-title>
-                  <div class="email-details__received-header">
+                  <v-card-title
+                    id="text--email-details-header-received-header"
+                    class="email-details__header-title"
+                    >Received Header</v-card-title
+                  >
+                  <div
+                    id="container--email-details-received-header"
+                    class="email-details__received-header"
+                  >
                     <div :key="JSON.stringify(item)" v-for="item in headersTable.data">
                       {{
                         item.key.substring(0, 1).toUpperCase() +

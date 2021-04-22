@@ -126,14 +126,18 @@
       </template>
       <template v-slot:empty-table-inline>
         <div class="people__no-data">
-          <p class="people__no-data__header">
+          <p id="text--empty-table-title" class="people__no-data__header">
             You do not have any users added, yet
           </p>
-          <p class="people__no-data__body">Starts now!</p>
+          <p id="text--empty-table-subtitle" class="people__no-data__body">Starts now!</p>
           <div class="people__no-data__buttons">
             <v-menu offset-y transition="scale-transition" nudge-bottom="4">
               <template v-slot:activator="{ on }">
-                <div class="people__no-data__buttons--button" v-on="on">
+                <div
+                  class="people__no-data__buttons--button"
+                  v-on="on"
+                  id="btn-empty--target-users-people"
+                >
                   <v-icon color="#fff" class="mr-2">mdi-plus</v-icon> ADD USERS
                 </div>
               </template>
@@ -142,12 +146,16 @@
                   <v-list-item-group color="primary">
                     <v-list-item @click="handleClickEmptyBtnClicked">
                       <v-list-item-content>
-                        <v-list-item-title> Add users manually</v-list-item-title>
+                        <v-list-item-title id="item--target-user-empty-add-users-manually">
+                          Add users manually</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item @click="isWantToImportFile = true">
                       <v-list-item-content>
-                        <v-list-item-title>Import from a file</v-list-item-title>
+                        <v-list-item-title id="item--target-user-empty-import-from-file"
+                          >Import from a file</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>

@@ -8,8 +8,10 @@
           </v-icon>
         </div>
         <v-list-item-content>
-          <v-list-item-title class="v-card-headline">Feedback</v-list-item-title>
-          <v-list-item-subtitle class="feedback-title">
+          <v-list-item-title id="text--feedback-popup-title" class="v-card-headline"
+            >Feedback</v-list-item-title
+          >
+          <v-list-item-subtitle id="text--feedback-popup-subtitle" class="feedback-title">
             We treasure your suggestions
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -17,6 +19,7 @@
       <div class="feedback-popup__text-area">
         <v-form ref="feedbackForm">
           <v-textarea
+            id="input--feedback-message"
             filled
             auto-grow
             label="I would like to see"
@@ -37,10 +40,15 @@
         </v-form>
       </div>
       <div class="feedback-button k-dialog__footer-max-height">
-        <v-btn class="feedback-button--cancel" text v-on:click="onCancelClicked">{{
-          labels.Cancel
-        }}</v-btn>
         <v-btn
+          id="btn-cancel--feedback-popup"
+          class="feedback-button--cancel"
+          text
+          v-on:click="onCancelClicked"
+          >{{ labels.Cancel }}</v-btn
+        >
+        <v-btn
+          id="btn-send--feedback-popup"
           class="feedback-button--success"
           text
           :disabled="saveDisable"
