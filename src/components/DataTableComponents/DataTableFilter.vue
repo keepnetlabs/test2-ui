@@ -70,23 +70,24 @@
           :menu-props="{ offsetY: true }"
           @change="changeDateSelect"
           placeholder="Select an option"
+          :key="$store.state.auth.user.userCompany.timeZone"
         ></v-select>
         <InputDate
-          :key="column.property + 'a'"
           v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
           type="datetime"
           ref="refPicker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
+          :key="`${$store.state.auth.user.userCompany.timeZone}1`"
         />
         <InputDate
-          :key="column.property"
           v-if="filteredSelectValueDate === 'between'"
           v-model="filteredDateRangeValue"
           ref="refPicker2"
           type="datetimerange"
           style="margin-bottom: 14px;"
           @change="handleChangeBetweenDatepicker"
+          :key="`${$store.state.auth.user.userCompany.timeZone}2`"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -151,6 +152,7 @@
 
 <script>
 import InputDate from '@/components/Common/Inputs/InputDate'
+import { getTimeZoneForMoment } from '@/utils/functions'
 
 export default {
   name: 'DataTableFilter',
@@ -209,13 +211,13 @@ export default {
         (this.filterableType === 'date' &&
           this.value.selectValue !== 'between' &&
           this.value.textValue) ||
-        this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss'),
+        this.$moment(Date.now()).format(getTimeZoneForMoment()),
       filteredDateRangeValue:
         this.value.selectValue === 'between'
           ? [this.value.textValue[0], this.value.textValue[1]]
           : [
-              this.$moment(Date.now()).subtract(1, 'months').format('YYYY-MM-DD HH:mm:ss'),
-              this.$moment(Date.now()).format('YYYY-MM-DD HH:mm:ss')
+              this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
+              this.$moment(Date.now()).format(getTimeZoneForMoment())
             ],
       filterValue: this.value.textValue || '',
       filterChecked:
