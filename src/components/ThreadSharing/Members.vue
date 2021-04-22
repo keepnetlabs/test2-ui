@@ -38,6 +38,8 @@
       @changeStatus="showRemoveFromCommunityModal = false"
       icon="mdi-account"
       title="Remove user from community?"
+      title-id="text--threat-sharing-members-popup-title"
+      subtitle-id="text--threat-sharing-members-popup-subtitle"
       :subtitle="removeFromCommunityUserName"
       :body="`${removeFromCommunityUserName} will be removed and won’t be able to access the community`"
     >
@@ -82,7 +84,11 @@
           "
         >
           Requests
-          <span v-if="requestMembers.length" class="request-count">
+          <span
+            id="text--threat-sharing-members-members-length"
+            v-if="requestMembers.length"
+            class="request-count"
+          >
             {{ requestMembers.length }}
           </span>
         </v-tab>
@@ -103,6 +109,7 @@
               <div class="search-wrapper">
                 <v-text-field
                   @mouseover.native="hover = true"
+                  id="input--threat-sharing-members-search"
                   placeholder="Filter by attributes or keywords"
                   outlined
                   dense
@@ -125,26 +132,37 @@
                       <div class="ts-header">
                         <div class="ts-title">
                           <img
+                            :id="`item--threat-sharing-member-logo-${ind}`"
                             class="threat-sharing-content__logo d-flex"
                             :src="memberImage(member)"
                             alt="logo"
                           />
                           <div class="community-info-wrapper">
-                            <h2>{{ member.companyName }}</h2>
+                            <h2 :id="`item--threat-sharing-member-company-name-${ind}`">
+                              {{ member.companyName }}
+                            </h2>
                             <div class="community-sub-info">
                               <div class="pa-0">
                                 <v-icon class="company-mini-icon">mdi-account-multiple</v-icon>
-                                <span class="company-mini-info">{{ member.userCount }} users</span>
+                                <span
+                                  :id="`item--threat-sharing-member-user-count-${ind}`"
+                                  class="company-mini-info"
+                                  >{{ member.userCount }} users</span
+                                >
                               </div>
                               <div class="pl-4 pa-0">
                                 <v-icon class="company-mini-icon">mdi-domain</v-icon>
-                                <span class="company-mini-info">{{
-                                  member.industryName || 'Unknown'
-                                }}</span>
+                                <span
+                                  :id="`item--threat-sharing-member-industry-name-${ind}`"
+                                  class="company-mini-info"
+                                  >{{ member.industryName || 'Unknown' }}</span
+                                >
                               </div>
                               <div class="pl-4 pa-0">
                                 <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
-                                <span class="company-mini-info"
+                                <span
+                                  :id="`item--threat-sharing-member-post-count-${ind}`"
+                                  class="company-mini-info"
                                   >{{ member.postCount }} threat posts</span
                                 >
                               </div>
@@ -169,7 +187,10 @@
                                     <v-icon>mdi-magnify</v-icon>
                                   </v-list-item-icon>
                                   <v-list-item-content>
-                                    <v-list-item-title>See posted incidents</v-list-item-title>
+                                    <v-list-item-title
+                                      :id="`item--threat-sharing-member-see-posted-incidents-${ind}`"
+                                      >See posted incidents</v-list-item-title
+                                    >
                                   </v-list-item-content>
                                 </v-list-item>
                                 <v-list-item
@@ -181,7 +202,10 @@
                                     <v-icon>mdi-account-multiple-plus</v-icon>
                                   </v-list-item-icon>
                                   <v-list-item-content>
-                                    <v-list-item-title>Assign as owner</v-list-item-title>
+                                    <v-list-item-title
+                                      :id="`item--threat-sharing-member-assign-as-owner-${ind}`"
+                                      >Assign as owner</v-list-item-title
+                                    >
                                   </v-list-item-content>
                                 </v-list-item>
                                 <v-list-item
@@ -193,7 +217,10 @@
                                     <v-icon>mdi-delete</v-icon>
                                   </v-list-item-icon>
                                   <v-list-item-content>
-                                    <v-list-item-title>Remove from community</v-list-item-title>
+                                    <v-list-item-title
+                                      :id="`item--threat-sharing-member-remove-from-community-${ind}`"
+                                      >Remove from community</v-list-item-title
+                                    >
                                   </v-list-item-content>
                                 </v-list-item>
                               </v-list-item-group>
@@ -203,7 +230,10 @@
                       </div>
                       <v-expansion-panel-content class="expand-body member-company-body">
                         <div class="members-posts">
-                          <div class="members-posts-header">
+                          <div
+                            :id="`item--threat-sharing-member-top-posts-in-community-${ind}`"
+                            class="members-posts-header"
+                          >
                             Top posts in community
                           </div>
                           <div class="members-post-list">
@@ -226,7 +256,10 @@
               <div v-else>
                 <v-skeleton-loader :loading="membersLoading" type="article, actions">
                   <div class="empty-members">
-                    <p class="empty-members-span">
+                    <p
+                      id="item--threat-sharing-member-no-member-in-community"
+                      class="empty-members-span"
+                    >
                       No member in your communities
                     </p>
                   </div>

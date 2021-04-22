@@ -52,7 +52,11 @@
               <v-icon medium left color="blue" class="ml-2">mdi-send</v-icon>
             </div>
             <v-list-item-content class="pt-0 pb-0">
-              <v-list-item-title class="v-card-headline">Post an Incident</v-list-item-title>
+              <v-list-item-title
+                class="v-card-headline"
+                id="text--threat-sharing-incident-post-modal-title"
+                >Post an Incident</v-list-item-title
+              >
             </v-list-item-content>
           </v-list-item>
           <div id="incident-step-container" class="incident-steps">
@@ -62,6 +66,7 @@
               </div>
               <v-icon v-else color="#2196f3" class="pr-1">mdi-check-circle</v-icon>
               <span
+                id="text--threat-sharing-incident-select-incident"
                 :class="{
                   'active-step-span': step === 1,
                   'hide-step': step === 3 || step === 4 || step === 5
@@ -79,6 +84,7 @@
               </div>
               <v-icon v-else color="#2196f3" class="pr-1">mdi-check-circle</v-icon>
               <span
+                id="text--threat-sharing-incident-general-info"
                 :class="{
                   'active-step-span': step === 2,
                   'hide-step': step === 1 || step === 4 || step === 5
@@ -96,6 +102,7 @@
               </div>
               <v-icon v-else color="#2196f3" class="pr-1">mdi-check-circle</v-icon>
               <span
+                id="text--threat-sharing-incident-details"
                 :class="{
                   'active-step-span': step === 3,
                   'hide-step': step === 1 || step === 2 || step === 5
@@ -113,6 +120,7 @@
               </div>
               <v-icon v-else color="#2196f3" class="pr-1">mdi-check-circle</v-icon>
               <span
+                id="text--threat-sharing-incident-attributes"
                 :class="{
                   'active-step-span': step === 4,
                   'hide-step': step === 1 || step === 2 || step === 3
@@ -130,6 +138,7 @@
               </div>
               <v-icon v-else color="#2196f3" class="pr-1">mdi-check-circle</v-icon>
               <span
+                id="text--threat-sharing-incident-preview"
                 :class="{
                   'active-step-span': step === 5,
                   'hide-step': step === 1 || step === 2 || step === 3 || step === 4
@@ -142,14 +151,21 @@
           <div id="post-step-one" v-if="step === 1">
             <!-- Step 1 Starts -->
             <div class="incident-header pb-6">
-              <p>Select Incident</p>
-              <span
+              <p id="text--threat-sharing-incident-step-one-select-incident">Select Incident</p>
+              <span id="text--threat-sharing-incident-step-one-select-for-the-reported-incident"
                 >Search for the reported incident or upload an email to post as an incident</span
               >
             </div>
             <div v-if="!selectedEmail" class="incident-content">
-              <div class="input-header">Find Incident</div>
-              <div class="input-sub">Search and find emails among reported incidents</div>
+              <div id="text--threat-sharing-incident-step-one-find-incident" class="input-header">
+                Find Incident
+              </div>
+              <div
+                id="text--threat-sharing-incident-step-one-search-and-find-emails"
+                class="input-sub"
+              >
+                Search and find emails among reported incidents
+              </div>
               <input style="display: none;" type="text" name="fakeusernameremembered" />
               <k-select
                 type="autocomplete"
@@ -309,7 +325,7 @@
                       <div
                         v-for="(att, ind) of uploadRespond.attachments"
                         :key="ind + att.id"
-                        :id="'attachment-' + att.name"
+                        :id="'text--threat-sharing-incidents-attachment-' + ind"
                         class="attachment red-attach"
                         :class="[
                           att.isFlagged ? 'red-attach' : '',
@@ -327,17 +343,19 @@
           </div>
           <div id="post-step-two" class="step-container" v-if="step === 2">
             <div class="incident-header">
-              <p>General Info</p>
-              <span>
+              <p id="text--threat-sharing-incident-step-two-general-info">General Info</p>
+              <span id="text--threat-sharing-incident-step-two-general-info-sub">
                 Include title, description of incident and neccessary files(pics, documents, or
                 code)
               </span>
             </div>
             <div class="incident-content">
-              <div class="input-header">Title</div>
+              <div id="text--threat-sharing-incident-step-two-title" class="input-header">
+                Title
+              </div>
               <v-form onSubmit="return false;" v-model="valid" ref="titleInput">
                 <v-text-field
-                  id="post-title-text-field"
+                  id="input--threat-sharing-incident-title"
                   placeholder="Enter Title"
                   @mouseover.native="hover = true"
                   label="Title"
@@ -359,11 +377,21 @@
                 ></v-text-field>
               </v-form>
               <!--<span class="required">*Required</span>-->
-              <div class="input-header pt-6">Description</div>
-              <div class="input-sub pb-1">Describe the incident briefly (Max. 300 characters)</div>
+              <div
+                id="text--threat-sharing-incident-step-two-description"
+                class="input-header pt-6"
+              >
+                Description
+              </div>
+              <div
+                id="text--threat-sharing-incident-step-two-description-sub"
+                class="input-sub pb-1"
+              >
+                Describe the incident briefly (Max. 300 characters)
+              </div>
               <v-form onSubmit="return false;" v-model="valid" ref="descriptionInput">
                 <v-textarea
-                  id="post-description-textarea"
+                  id="input--threat-sharing-incident-description"
                   @mouseover.native="hover = true"
                   outlined
                   placeholder="Enter Description"
@@ -381,11 +409,15 @@
                 ></v-textarea>
               </v-form>
 
-              <div class="input-header pt-6">Category</div>
-              <div class="input-sub pb-1">Select threat categories</div>
+              <div id="text--threat-sharing-incident-step-two-category" class="input-header pt-6">
+                Category
+              </div>
+              <div id="text--threat-sharing-incident-step-two-category-sub" class="input-sub pb-1">
+                Select threat categories
+              </div>
               <v-form onSubmit="return false;" v-model="categoryValid" ref="categoryInput">
                 <k-select
-                  id="post-category-select"
+                  id="input--threat-sharing-incident-category"
                   class="cat-select"
                   v-model.trim="uploadRespond.CategoryResourceIdArray"
                   :items="categories"
@@ -400,6 +432,7 @@
                   outlined
                   required
                   :rules="category"
+                  custom-menu-class="menu--threat-sharing-incident-category"
                   :class="{
                     'errored-selectbox':
                       uploadRespond &&
@@ -414,8 +447,16 @@
               </v-form>
               <!--<span class="required">*Required</span>-->
 
-              <div class="input-header pt-6">Security Label (TLP)</div>
-              <div class="input-sub pb-1">
+              <div
+                id="text--threat-sharing-incident-step-two-security-label"
+                class="input-header pt-6"
+              >
+                Security Label (TLP)
+              </div>
+              <div
+                id="text--threat-sharing-incident-step-two-security-label-sub"
+                class="input-sub pb-1"
+              >
                 Use TLP labels to inform recipients about how to share sensitive information. Please
                 visit
                 <a
@@ -429,11 +470,13 @@
               <v-form>
                 <k-select
                   v-model="value"
+                  id="input--threat-sharing-incident-tlp"
                   :items="items2"
                   :return-object="false"
                   outlined
                   placeholder="Select an option"
                   class="tlp-select"
+                  custom-menu-class="menu--threat-sharing-post-tlp"
                   position="top"
                   :slots="{ selection: true, item: true }"
                   hint="*Required"
@@ -468,19 +511,27 @@
           </div>
           <div id="post-step-three" class="step-container" v-if="step === 3">
             <div class="incident-header">
-              <p>Incident Details</p>
-              <span>
+              <p id="text--threat-sharing-incident-step-three-incident-details">Incident Details</p>
+              <span id="text--threat-sharing-incident-step-three-incident-details-sub">
                 Enter information on discovery of threat, how it affects and how to fight against
               </span>
             </div>
             <div class="incident-content">
-              <div class="input-header">Discovery and Detection</div>
-              <div class="input-sub">
+              <div
+                id="text--threat-sharing-incident-step-three-discovery-and-detection"
+                class="input-header"
+              >
+                Discovery and Detection
+              </div>
+              <div
+                id="text--threat-sharing-incident-step-three-discovery-and-detection-sub"
+                class="input-sub"
+              >
                 Explain how the threat was detected and what tools were used?
               </div>
               <v-form onSubmit="return false;" v-model="validDisc" ref="discoveryInput">
                 <v-textarea
-                  id="post-discovery-textarea"
+                  id="input--threat-sharing-incident-discovery-detection"
                   v-model.trim="uploadRespond.DiscoveryAndDetection"
                   @mouseover.native="hover = true"
                   outlined
@@ -504,13 +555,25 @@
                 ></v-textarea>
               </v-form>
 
-              <div class="input-header pb-5 pt-7">Impact Range</div>
-              <div class="input-sec-header">Affect Area</div>
-              <div class="input-sub">Which systems and programs are affected by the threat?</div>
+              <div
+                id="text--threat-sharing-incident-step-three-impact-range"
+                class="input-header pb-5 pt-7"
+              >
+                Impact Range
+              </div>
+              <div
+                id="text--threat-sharing-incident-step-three-affect-area"
+                class="input-sec-header"
+              >
+                Affect Area
+              </div>
+              <div id="text--threat-sharing-incident-step-three-affect-area-sub" class="input-sub">
+                Which systems and programs are affected by the threat?
+              </div>
               <v-form onSubmit="return false;" v-model="validAffect" ref="affectInput">
                 <k-select
                   type="combobox"
-                  id="post-affect-area-combobox"
+                  id="input--threat-sharing-incident-impact-range"
                   v-model.trim="uploadRespond.AffectArea"
                   :search-input.sync="affectSearch"
                   label="Windows 10 etc."
@@ -520,6 +583,7 @@
                   chips
                   deletable-chips
                   class="affect-combobox affect-input"
+                  custom-menu-class="menu--threat-sharing-affect-area"
                   @keyup.tab="updateTags"
                   solo
                   outlined
@@ -531,11 +595,18 @@
                 ></k-select>
               </v-form>
 
-              <div class="input-sec-header pt-3">Scope</div>
-              <div class="input-sub">How does it work and affect your systems?</div>
+              <div
+                id="text--threat-sharing-incident-step-three-scope"
+                class="input-sec-header pt-3"
+              >
+                Scope
+              </div>
+              <div id="text--threat-sharing-incident-step-three-scope-sub" class="input-sub">
+                How does it work and affect your systems?
+              </div>
               <v-form onSubmit="return false;" v-model="validScope" ref="scopeInput">
                 <v-text-field
-                  id="post-scope-textfield"
+                  id="input--threat-sharing-incident-scope"
                   @mouseover.native="hover = true"
                   label="Explain"
                   outlined
@@ -563,8 +634,10 @@
           <div id="post-step-four" v-if="step === 4">
             <!-- Step 4 Starts -->
             <div class="investigate-header">
-              <p>Select Attributes To Share</p>
-              <span>
+              <p id="text--threat-sharing-incident-step-four-select-attributes">
+                Select Attributes To Share
+              </p>
+              <span id="text--threat-sharing-incident-step-four-select-attributes-sub">
                 Hide the information you want to exclude when sharing. You must share at least 1
                 attribute. Mark harmful attributes to let others know about them.
               </span>
@@ -641,16 +714,25 @@
                 <div class="investigation-filters__area">
                   <div class="d-flex justify-space-between investigation-filters__area--filter">
                     <div class="d-flex">
-                      <span class="investigation-filters__area--filter__title">Hide</span>
+                      <span
+                        id="text--threat-sharing-incident-step-four-hide"
+                        class="investigation-filters__area--filter__title"
+                        >Hide</span
+                      >
                     </div>
                     <div class="d-flex">
-                      <span class="investigation-filters__area--filter__title mr-4">Mark as</span>
+                      <span
+                        id="text--threat-sharing-incident-step-four-mark-as"
+                        class="investigation-filters__area--filter__title mr-4"
+                        >Mark as</span
+                      >
                     </div>
                   </div>
                   <div class="d-flex justify-space-between investigation-filters__area--filter">
                     <div class="d-flex" v-if="uploadRespond.subject">
                       <v-checkbox
                         v-model="allHeader"
+                        id="input--threat-sharing-incident-is-header"
                         @change="headerValChange"
                         hide-details
                         :indeterminate="checkHeaderSelected && !this.allHeader"
@@ -668,6 +750,7 @@
                     <div class="d-flex" v-if="uploadRespond.subject">
                       <v-checkbox
                         v-model="uploadRespond.isSubjectHidden"
+                        id="input--threat-sharing-incident-is-subject-hidden"
                         @change="subjectValChange"
                         hide-details
                         off-icon="mdi-eye"
@@ -733,6 +816,7 @@
                     <div class="d-flex" v-if="uploadRespond.from">
                       <v-checkbox
                         v-model="uploadRespond.isFromHidden"
+                        id="input--threat-sharing-incident-is-from-hidden"
                         @change="fromValChange"
                         hide-details
                         off-icon="mdi-eye"
@@ -801,6 +885,7 @@
                     <div class="d-flex" v-if="uploadRespond.to && uploadRespond.to.length">
                       <v-checkbox
                         v-model="uploadRespond.isToHidden"
+                        id="input--threat-sharing-incident-is-to-hidden"
                         @change="toValChange"
                         hide-details
                         off-icon="mdi-eye"
@@ -868,6 +953,7 @@
                     <div class="d-flex" v-if="uploadRespond.cc && uploadRespond.cc.length">
                       <v-checkbox
                         v-model="uploadRespond.isCcHidden"
+                        id="input--threat-sharing-incident-is-cc-hidden"
                         @change="ccValChange"
                         hide-details
                         off-icon="mdi-eye"
@@ -935,6 +1021,7 @@
                     <div class="d-flex" v-if="uploadRespond.bcc && uploadRespond.bcc.length">
                       <v-checkbox
                         v-model="uploadRespond.isBccHidden"
+                        id="input--threat-sharing-incident-is-bcc-hidden"
                         @change="bccValChange"
                         hide-details
                         off-icon="mdi-eye"
@@ -1010,6 +1097,7 @@
                     <div class="d-flex">
                       <v-checkbox
                         v-model="allLinks"
+                        id="input--threat-sharing-incident-is-all-links"
                         @change="allUrlsValChange"
                         :indeterminate="
                           uploadRespond.urls.find((item) => item.isHidden) && !allLinks
@@ -1034,6 +1122,7 @@
                     <div class="d-flex">
                       <v-checkbox
                         v-model="url.isHidden"
+                        id="input--threat-sharing-incident-is-url-hidden"
                         @change="urlSwitchChange(url, ind)"
                         hide-details
                         off-icon="mdi-eye"
@@ -1120,6 +1209,7 @@
                     <div class="d-flex">
                       <v-checkbox
                         v-model="allAttachments"
+                        id="input--threat-sharing-incident-is-all-attachments"
                         @change="allAttachmentsValChange"
                         :indeterminate="
                           uploadRespond.attachments.find((item) => item.isHidden) && !allAttachments
@@ -1143,6 +1233,7 @@
                     <div class="d-flex">
                       <v-checkbox
                         v-model="attachment.isHidden"
+                        :id="`input--attachment-is-hidden-${ind}`"
                         @change="checkAttachmentsChangeForAllLinksSwitch(attachment, ind)"
                         hide-details
                         off-icon="mdi-eye"
@@ -1224,15 +1315,17 @@
           <div id="post-step-five" v-if="step === 5">
             <!-- Step 5 Stars here -->
             <div class="incident-header pb-8">
-              <p>Preview</p>
-              <span>See how your post will look like</span>
+              <p id="text--threat-sharing-incident-step-five-preview">Preview</p>
+              <span id="text--threat-sharing-incident-step-five-preview-sub"
+                >See how your post will look like</span
+              >
             </div>
             <v-checkbox
               class="is-anonym-check"
+              id="input--threat-sharing-incident-is-anonym"
               v-model="isAnonym"
               label="Post as anonymous"
               color="#2196f3"
-              id="anonym-check"
             ></v-checkbox>
             <div id="last-preview-post" class="post-wrapper">
               <v-expansion-panels :multiple="false" v-model="panel" class="mb-4">
@@ -1290,8 +1383,17 @@
                           <span v-if="!isAnonym">{{ currentCompany }}</span>
                           <span v-else>Anonymous</span>
                         </b>
-                        <a v-else class="pl-1 pr-1">Company Name</a> on
-                        <a class="pl-1 pr-1">
+                        <a
+                          id="text--threat-sharing-incident-step-five-company-name"
+                          v-else
+                          class="pl-1 pr-1"
+                          >Company Name</a
+                        >
+                        on
+                        <a
+                          id="text--threat-sharing-incident-step-five-community-name"
+                          class="pl-1 pr-1"
+                        >
                           {{ currentCommunityName }}
                         </a>
                       </div>
@@ -1344,7 +1446,11 @@
                         >
                           <v-icon style="font-size: 14px;">mdi-alert-circle</v-icon>
                         </v-btn>
-                        <span class="ts-actions">{{ maliciousCount }} harmful item(s)</span>
+                        <span
+                          id="text--threat-sharing-incident-step-five-malicious-count"
+                          class="ts-actions"
+                          >{{ maliciousCount }} harmful item(s)</span
+                        >
                       </div>
                       <div class="flex-grow-1"></div>
                       <div class="ts-tags">
@@ -1357,8 +1463,16 @@
                           class="tag-btn text-none"
                           id="threat-sharing-post-incident-last-prev-attach"
                         >
-                          <span v-if="uploadRespond.attachments.length === 1">Attachment</span>
-                          <span v-else-if="uploadRespond.attachments.length > 1">Attachments</span>
+                          <span
+                            id="text--threat-sharing-incident-step-five-attachment"
+                            v-if="uploadRespond.attachments.length === 1"
+                            >Attachment</span
+                          >
+                          <span
+                            id="text--threat-sharing-incident-step-five-attachments"
+                            v-else-if="uploadRespond.attachments.length > 1"
+                            >Attachments</span
+                          >
                         </v-btn>
                         <v-btn
                           v-if="
@@ -1484,10 +1598,9 @@
                       background-color="transparent"
                       color="basil"
                       class="tab-bar v-tabs-bar__details-tab"
-                      id="last-prev-tabs"
                     >
-                      <v-tab>Email Preview</v-tab>
-                      <v-tab>Details</v-tab>
+                      <v-tab id="tab--threat-sharing-incident-email-preview">Email Preview</v-tab>
+                      <v-tab id="tab--threat-sharing-incident-details">Details</v-tab>
                     </v-tabs>
                     <v-tabs-items v-model="tab">
                       <v-tab-item>

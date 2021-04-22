@@ -19,6 +19,8 @@
       @changeStatus="showNeedPermissionModal = false"
       icon="mdi-exit-to-app"
       title="Cannot Leave Community"
+      title-id="text--threat-sharing-right-column-permission-popup-title"
+      subtitle-id="text--threat-sharing-right-column-permission-popup-subtitle"
       :subtitle="communityDetails && communityDetails.name"
       :body="`You have to give admin privileges to at least 1 other person`"
     >
@@ -42,6 +44,8 @@
       @changeStatus="isWantToToLeaveFromCommunity = false"
       icon="mdi-exit-to-app"
       title="Leave Community?"
+      title-id="text--threat-sharing-right-column-leave-community-popup-title"
+      subtitle-id="text--threat-sharing-right-column-leave-community-popup-subtitle"
       :subtitle="communityDetails && communityDetails.name"
       :body="`You are leaving ${
         communityDetails && communityDetails.name
@@ -50,6 +54,8 @@
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
           :confirm-button-disabled="isLeaveFromCommunityButtonDisabled"
+          cancel-button-id="btn-cancel--threat-sharing-right-column-leave-community-popup"
+          confirm-button-id="btn-leave--threat-sharing-right-column-leave-community-popup"
           @handleClose="isWantToToLeaveFromCommunity = false"
           @handleConfirm="leaveFromCommunityConfirm"
           actionButtonText="LEAVE"
@@ -60,6 +66,8 @@
       @changeStatus="openNotificationModal = false"
       :status="openNotificationModal"
       v-if="openNotificationModal"
+      title-id="text--threat-sharing-right-column-notification-popup-title"
+      subtitle-id="text--threat-sharing-right-column-notification-popup-subtitle"
       icon="mdi-bell"
       title="Community Notification Settings"
     >
@@ -136,6 +144,8 @@
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          cancel-button-id="btn-cancel--threat-sharing-right-column-notification"
+          confirm-button-id="btn-confirm--threat-sharing-right-column-notification"
           :confirm-button-disabled="isEmailNotificationsDisabled"
           @handleClose="openNotificationModal = false"
           @handleConfirm="saveNotificationSetting"
@@ -147,6 +157,8 @@
       @changeStatus="isWantToDelete = false"
       icon="mdi-delete"
       title="Delete Community?"
+      title-id="text--threat-sharing-right-delete-community-popup-title"
+      subtitle-id="text--threat-sharing-right-delete-community-popup-subtitle"
       :subtitle="communityDetails && communityDetails.name"
       :body="`${
         communityDetails && communityDetails.name
@@ -154,6 +166,8 @@
     >
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
+          cancel-button-id="btn-cancel--threat-sharing-right-column-community"
+          confirm-button-id="btn-delete--threat-sharing-right-column-community"
           @handleClose="isWantToDelete = false"
           @handleConfirm="deleteCommunityConfirm"
           actionButtonText="DELETE"
@@ -168,6 +182,8 @@
         title="Invite Members"
         subtitle="Bring new members to the community"
         size="big"
+        title-id="text--threat-sharing-right-invite-members-popup-title"
+        subtitle-id="text--threat-sharing-right-invite-members-popup-subtitle"
         v-if="openInviteModal"
         @changeStatus="openInviteModal = false"
       >
@@ -176,6 +192,7 @@
             <k-select
               type="combobox"
               :items="[]"
+              custom-menu-class="menu--threat-sharing-right-menu-invite-members"
               placeholder="Enter email addresses of the companies to be invited (max. 5)"
               multiple
               dense
@@ -262,7 +279,9 @@
                         <v-icon>mdi-pencil</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>Edit Community</v-list-item-title>
+                        <v-list-item-title id="item--threat-sharing-right-column-edit-community"
+                          >Edit Community</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -275,7 +294,10 @@
                         <v-icon>mdi-bell</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>Notification Settings</v-list-item-title>
+                        <v-list-item-title
+                          id="item--threat-sharing-right-column-notification-settings"
+                          >Notification Settings</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -289,7 +311,9 @@
                         <v-icon>mdi-exit-to-app</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>Leave</v-list-item-title>
+                        <v-list-item-title id="item--threat-sharing-right-column-leave-community"
+                          >Leave</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -305,7 +329,9 @@
                         <v-icon>mdi-delete</v-icon>
                       </v-list-item-icon>
                       <v-list-item-content>
-                        <v-list-item-title>Delete</v-list-item-title>
+                        <v-list-item-title id="item--threat-sharing-right-column-delete-community"
+                          >Delete</v-list-item-title
+                        >
                       </v-list-item-content>
                     </v-list-item>
                   </v-list-item-group>
@@ -314,12 +340,25 @@
             </v-menu>
           </div>
           <div class="right-side-post-container pt-2 pb-8">
-            <span class="about-community-statement">{{ communityDetails.description }}</span>
+            <span
+              id="text--threat-sharing-right-column-community-description"
+              class="about-community-statement"
+              >{{ communityDetails.description }}</span
+            >
             <v-row>
               <v-col cols="12" sm="5" class="about-community-table-td pb-0">
-                <span class="right-col-semibold-label">Owner</span>
+                <span
+                  id="text--threat-sharing-right-column-community-owner"
+                  class="right-col-semibold-label"
+                  >Owner</span
+                >
               </v-col>
-              <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0">
+              <v-col
+                id="text--threat-sharing-right-column-community-owner-company-name"
+                cols="12"
+                sm="7"
+                class="about-community-table-td-sec pb-0"
+              >
                 {{ communityDetails.ownerCompanyName }}
               </v-col>
             </v-row>
@@ -328,7 +367,12 @@
                 <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                   <span class="right-col-semibold-label">Members</span>
                 </v-col>
-                <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0 d-flex">
+                <v-col
+                  id="text--threat-sharing-right-column-community-member-count"
+                  cols="12"
+                  sm="7"
+                  class="about-community-table-td-sec pb-0 d-flex"
+                >
                   {{ communityDetails.memberCount }}
                   <a
                     v-if="
@@ -348,7 +392,12 @@
                 <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                   <span class="right-col-semibold-label">Industry</span>
                 </v-col>
-                <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0">
+                <v-col
+                  id="text--threat-sharing-right-column-community-industry-name"
+                  cols="12"
+                  sm="7"
+                  class="about-community-table-td-sec pb-0"
+                >
                   {{ communityDetails.industryName }}
                 </v-col>
               </v-row>
@@ -356,24 +405,19 @@
                 <v-col cols="12" sm="5" class="about-community-table-td pb-0">
                   <span class="right-col-semibold-label">Total Incidents</span>
                 </v-col>
-                <v-col cols="12" sm="7" class="about-community-table-td-sec pb-0"
+                <v-col
+                  id="text--threat-sharing-right-column-community-incident-count"
+                  cols="12"
+                  sm="7"
+                  class="about-community-table-td-sec pb-0"
                   >{{ communityDetails.incidentCount }}
                 </v-col>
-              </v-row>
-              <v-row v-if="false">
-                <v-col cols="12" sm="6" class="about-community-table-td pb-0"
-                  >You investigated</v-col
-                >
-                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">21</v-col>
-              </v-row>
-              <v-row v-if="false">
-                <v-col cols="12" sm="6" class="about-community-table-td pb-0">Eliminated</v-col>
-                <v-col cols="12" sm="6" class="about-community-table-td-sec pb-0">48 threats</v-col>
               </v-row>
             </div>
           </div>
         </div>
         <div
+          id="text--threat-sharing-right-column-posts-title"
           class="right-side-title pt-1"
           v-if="checkPermissions('community-posts/my-last-posts', 'GET')"
         >
@@ -390,14 +434,20 @@
           <div class="pb-4" v-if="yourPosts && yourPosts.length > 0">
             <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
               <div class="pt-2">
-                <div class="right-side-sub-title pb-1">
+                <div
+                  :id="`text--threat-sharing-right-column-post-title-${ind}`"
+                  class="right-side-sub-title pb-1"
+                >
                   <a
                     id="threat-sharing-right-column-go-to-post-details-your-posts-button"
                     @click="goToPostDetails(post)"
                     >{{ post.title }}</a
                   >
                 </div>
-                <div class="right-side-desc pb-1">
+                <div
+                  :id="`text--threat-sharing-right-column-post-community-name-${ind}`"
+                  class="right-side-desc pb-1"
+                >
                   in
                   <a
                     id="threat-sharing-right-column-go-to-community-details-your-posts-button"
@@ -410,24 +460,37 @@
                     <v-btn disabled text x-small icon color="grey">
                       <v-icon>mdi-thumb-up</v-icon>
                     </v-btn>
-                    <span class="like-count">{{ post.likeCount }}</span>
+                    <span
+                      :id="`text--threat-sharing-right-column-post-like-count-${ind}`"
+                      class="like-count"
+                      >{{ post.likeCount }}</span
+                    >
                   </div>
                   <div class="right-side-message pl-2">
                     <v-btn disabled text x-small icon color="grey">
                       <v-icon>mdi-message-reply-text</v-icon>
                     </v-btn>
-                    <span class="comment-count">{{ post.commentCount }}</span>
+                    <span
+                      :id="`text--threat-sharing-right-column-post-comment-count-${ind}`"
+                      class="comment-count"
+                      >{{ post.commentCount }}</span
+                    >
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="pb-4 pt-1 empty-posts" v-else-if="yourPosts && !yourPosts.length">
+          <div
+            id="text--threat-sharing-right-column-post-no-post"
+            class="pb-4 pt-1 empty-posts"
+            v-else-if="yourPosts && !yourPosts.length"
+          >
             You haven’t posted any incidents
           </div>
         </div>
 
         <div
+          id="text--threat-sharing-right-column-post-top-post-from-your-communities"
           class="right-side-title pt-4"
           v-if="checkPermissions('community-posts/top-posts', 'GET')"
         >
@@ -445,14 +508,20 @@
             >
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
                 <div class="right-side-post-container pt-2">
-                  <div class="right-side-sub-title pb-1">
+                  <div
+                    :id="`text--threat-sharing-right-column-top-posts-post-title-${ind}`"
+                    class="right-side-sub-title pb-1"
+                  >
                     <a
                       id="threat-sharing-right-column-go-to-post-details-top-posts-button"
                       @click="goToPostDetails(post)"
                       >{{ post.postTitle }}</a
                     >
                   </div>
-                  <div class="right-side-desc pb-1">
+                  <div
+                    :id="`text--threat-sharing-right-column-top-posts-post-community-name-${ind}`"
+                    class="right-side-desc pb-1"
+                  >
                     in
                     <a
                       id="threat-sharing-right-column-go-to-community-details-top-posts-button"
@@ -465,13 +534,21 @@
                       <v-btn disabled text x-small icon color="grey">
                         <v-icon>mdi-thumb-up</v-icon>
                       </v-btn>
-                      <span class="like-count">{{ post.likeCount }}</span>
+                      <span
+                        :id="`text--threat-sharing-right-column-top-posts-post-like-count-${ind}`"
+                        class="like-count"
+                        >{{ post.likeCount }}</span
+                      >
                     </div>
                     <div class="right-side-message pl-2">
                       <v-btn disabled text x-small icon color="grey">
                         <v-icon>mdi-message-reply-text</v-icon>
                       </v-btn>
-                      <span class="comment-count">{{ post.commentCount }}</span>
+                      <span
+                        :id="`text--threat-sharing-right-column-top-posts-post-comment-count-${ind}`"
+                        class="comment-count"
+                        >{{ post.commentCount }}</span
+                      >
                     </div>
                   </div>
                 </div>
@@ -481,12 +558,13 @@
               v-else-if="!checkPermissions('community-posts/top-posts', 'GET')"
               class="empty-posts pt-1"
             ></div>
-            <div v-else>
+            <div id="text--threat-sharing-right-column-top-posts-post-no-top-posts" v-else>
               No incident has been posted in your communities
             </div>
           </template>
         </PostCardLoading>
         <div
+          id="text--threat-sharing-right-column-suggested-communities"
           class="right-side-title pb-3 pt-8"
           v-if="checkPermissions('communities/suggested', 'GET')"
         >
@@ -506,14 +584,29 @@
             >
               <div class="suggested-row">
                 <div class="suggested-com-name" cols="12">
-                  <div class="suggested-title">{{ commun.communityName }}</div>
+                  <div
+                    :id="`text--threat-sharing-right-column-suggest-communities-item-community-name-${ind}`"
+                    class="suggested-title`"
+                  >
+                    {{ commun.communityName }}
+                  </div>
                   <div class="suggested-com-detail">
                     <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                    <b>{{ commun.memberCount }}</b
+                    <b
+                      :id="`text--threat-sharing-right-column-suggest-communities-item-member-count-${ind}`"
+                      >{{ commun.memberCount }}</b
                     ><span class="suggested-row__seperator">•</span>
-                    <span class="suggested-company">{{ commun.industryName }} </span>
+                    <span
+                      :id="`text--threat-sharing-right-column-suggest-communities-item-industry-name-${ind}`"
+                      class="suggested-company"
+                      >{{ commun.industryName }}
+                    </span>
                     <span class="suggested-row__seperator">•</span>
-                    <span class="suggested-company">{{ commun.privacyStatusName }} </span>
+                    <span
+                      :id="`text--threat-sharing-right-column-suggest-communities-item-privacy-status-name-${ind}`"
+                      class="suggested-company"
+                      >{{ commun.privacyStatusName }}
+                    </span>
                   </div>
                 </div>
                 <div class="suggested-right-action">
@@ -529,7 +622,7 @@
                   <v-btn
                     @click="joinCommunity(commun)"
                     class="suggested-btn"
-                    id="threat-sharing-right-column-join-button"
+                    :id="`btn--threat-sharing-right-column-suggest-communities-item-${ind}`"
                     block
                     rounded
                     v-else
@@ -552,7 +645,11 @@
               </div>
             </v-card>
           </div>
-          <div class="pb-2" v-else>
+          <div
+            :id="`text--threat-sharing-right-column-suggest-communities-item-no-suggested-communities`"
+            class="pb-2"
+            v-else
+          >
             There is no suggested community available
           </div>
         </div>

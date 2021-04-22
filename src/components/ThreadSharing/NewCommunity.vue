@@ -6,6 +6,8 @@
       icon="mdi-account-plus"
       subtitle=""
       title="Accept all requests?"
+      title-id="text--threat-sharing-community-privacy-settings-popup-title"
+      subtitle-id="text--threat-sharing-community-privacy-settings-popup-subtitle"
     >
       <template v-slot:app-dialog-footer>
         <div class="d-flex download-buttons flex-row flex-wrap justify-end">
@@ -35,7 +37,9 @@
             <v-icon class="ml-2" color="blue" left medium>mdi-send</v-icon>
           </div>
           <v-list-item-content class="pt-0 pb-0">
-            <v-list-item-title class="v-card-headline"
+            <v-list-item-title
+              title-id="text--threat-sharing-new-community-modal-title"
+              class="v-card-headline"
               >{{ resourceId ? 'Edit' : 'Create New' }} Community
             </v-list-item-title>
           </v-list-item-content>
@@ -43,9 +47,12 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-list-item class="edit-name-area pt-10 pa-0">
             <v-list-item-content class="pt-0 pb-0">
-              <label class="pb-3 edit-labels">Community Name</label>
+              <label id="label--threat-sharing-new-community-name" class="pb-3 edit-labels"
+                >Community Name</label
+              >
               <v-text-field
                 v-model.trim="name"
+                id="input--threat-sharing-community-name"
                 :rules="[
                   nameRules.required,
                   nameRules.empty,
@@ -62,12 +69,17 @@
           </v-list-item>
           <v-list-item class="edit-descrition-area pa-0">
             <v-list-item-content class="pt-0 pb-0">
-              <label class="edit-labels">Description</label>
-              <label class="edit-sub-labels"
+              <label id="label--threat-sharing-new-community-description" class="edit-labels"
+                >Description</label
+              >
+              <label
+                id="label--threat-sharing-new-community-description-sub"
+                class="edit-sub-labels"
                 >Describe the community’s goals and rules. (Max. 300 characters)</label
               >
               <v-textarea
                 v-model.trim="description"
+                id="input--threat-sharing-community-description"
                 :rules="[
                   descriptionRules.required,
                   descriptionRules.empty,
@@ -85,10 +97,16 @@
           </v-list-item>
           <v-list-item class="edit-industry-area-autocomplete pb-0 pa-0">
             <v-list-item-content class="pt-0 pb-0">
-              <label class="edit-labels">Industry</label>
-              <label class="edit-sub-labels">Select an industry category</label>
+              <label id="label--threat-sharing-new-community-industry" class="edit-labels"
+                >Industry</label
+              >
+              <label id="label--threat-sharing-new-community-industry-sub" class="edit-sub-labels"
+                >Select an industry category</label
+              >
               <k-select
                 v-model.trim="selectedCategory"
+                id="input--threat-sharing-community-industry-category"
+                custom-menu-class="menu--threat-sharing-community-industry-category"
                 :items="categories"
                 :rules="[categoryRule]"
                 class="edit-select"
@@ -103,13 +121,39 @@
           </v-list-item>
           <v-list-item class="edit-industry-area pa-0 target-users-select">
             <v-list-item-content class>
-              <label class="edit-labels">Privacy</label>
-              <label class="edit-sub-labels pb-0">Select a privacy option</label>
+              <label id="label--threat-sharing-new-community-privacy" class="edit-labels"
+                >Privacy</label
+              >
+              <label
+                id="label--threat-sharing-new-community-privacy-sub"
+                class="edit-sub-labels pb-0"
+                >Select a privacy option</label
+              >
               <div class="new-community__radio-group">
-                <v-radio-group v-model="privacystatusid" :mandatory="false" row>
-                  <v-radio color="primary" label="Public" value="1"></v-radio>
-                  <v-radio color="primary" label="Private" value="2"></v-radio>
-                  <v-radio color="primary" label="Hidden" value="3"></v-radio>
+                <v-radio-group
+                  v-model="privacystatusid"
+                  id="input--threat-sharing-community-privacy-status"
+                  :mandatory="false"
+                  row
+                >
+                  <v-radio
+                    id="input--threat-sharing-community-privacy-status-public"
+                    color="primary"
+                    label="Public"
+                    value="1"
+                  ></v-radio>
+                  <v-radio
+                    id="input--threat-sharing-community-privacy-status-privacy"
+                    color="primary"
+                    label="Private"
+                    value="2"
+                  ></v-radio>
+                  <v-radio
+                    id="input--threat-sharing-community-privacy-status-hidden"
+                    color="primary"
+                    label="Hidden"
+                    value="3"
+                  ></v-radio>
                 </v-radio-group>
                 <label v-if="privacystatusid == '1'" class="edit-privacy-bottom-label"
                   >Anyone can find the community and see posted threats</label
@@ -127,7 +171,7 @@
             <v-list-item-content class="pt-1 pb-0">
               <div class="d-flex" style="margin-bottom: 8px;">
                 <v-checkbox
-                  id="accept-terms-and-conditions-post-incident"
+                  id="input--threat-sharing-community-is-accept"
                   v-model="acceptCheckbox"
                   :rules="[checkboxRule.required]"
                   class="k-checkbox accept-terms-and-conditions-checkbox"
@@ -135,7 +179,7 @@
                   @change="checkCheckboxValidation()"
                 />
                 <div class="d-flex accept-terms-and-conditions-label-group">
-                  <label :for="'accept-terms-and-conditions-post-incident'" class="mr-1"
+                  <label :for="'input--threat-sharing-community-is-accept'" class="mr-1"
                     >I accept
                   </label>
                   <a
@@ -145,7 +189,7 @@
                     @click="(event) => event.stopPropagation()"
                     >terms and conditions</a
                   >
-                  <label :for="'accept-terms-and-conditions-post-incident'"> for communities</label>
+                  <label :for="'input--threat-sharing-community-is-accept'"> for communities</label>
                 </div>
               </div>
             </v-list-item-content>
