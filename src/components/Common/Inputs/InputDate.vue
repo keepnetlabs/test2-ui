@@ -22,11 +22,15 @@ export default {
       default: 'filter__date-picker'
     },
     format: {
-      default: getTimeZone() || 'yyyy/MM/dd HH:mm'
+      default: 'yyyy/MM/dd HH:mm'
     },
     valueFormat: {
-      default: getTimeZone() || `yyyy/MM/dd HH:mm`
+      default: `yyyy/MM/dd HH:mm`
     }
+  },
+  created() {
+    this.format = getTimeZone() || 'yyyy/MM/dd HH:mm'
+    this.valueFormat = getTimeZone() || `yyyy/MM/dd HH:mm`
   }
 }
 </script>

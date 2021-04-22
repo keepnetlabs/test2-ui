@@ -897,11 +897,8 @@ export function eventFire(el, etype) {
 }
 
 export function getTimeZone() {
-  let isUserCompanyExist = JSON.parse(localStorage.getItem('userData'))
-  let timeZone =
-    isUserCompanyExist && JSON.parse(localStorage.getItem('userData')).userCompany.timeZone
-  let timeFormat =
-    isUserCompanyExist && JSON.parse(localStorage.getItem('userData')).userCompany.timeFormat
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
   let is12H = timeFormat === '12h'
 
   if (is12H) {
@@ -921,7 +918,7 @@ export function getTimeZone() {
       //timeZone = `yyyy-MM-dd HH:mm:ss`
       break
     case 'YYYY/MM/DD':
-      timeZone = `yyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
+      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
       //timeZone = `yyyy-MM-dd HH:mm:ss`
       break
   }
@@ -930,11 +927,9 @@ export function getTimeZone() {
 }
 
 export function getTimeZoneForMoment() {
-  let isUserCompanyExist = JSON.parse(localStorage.getItem('userData'))
-  let timeZone =
-    isUserCompanyExist && JSON.parse(localStorage.getItem('userData')).userCompany.timeZone
-  let timeFormat =
-    isUserCompanyExist && JSON.parse(localStorage.getItem('userData')).userCompany.timeFormat
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
+
   let is12H = timeFormat === '12h'
 
   if (is12H) {
@@ -957,8 +952,6 @@ export function getTimeZoneForMoment() {
       //timeZone = `yyyy-MM-dd HH:mm:ss`
       break
   }
-
-  console.log(timeZone)
 
   return timeZone
 }

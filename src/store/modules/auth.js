@@ -68,6 +68,8 @@ const auth = {
         localStorage.setItem('userData', JSON.stringify(currentUserData))
         localStorage.setItem('selectedCompanyName', currentUserData.name)
         localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+        localStorage.setItem('selectedDateFormat', currentUserData.userCompany.timeZone)
+        localStorage.setItem('selectedTimeFormat', currentUserData.userCompany.timeFormat)
         if (
           currentUserData &&
           currentUserData.role &&
