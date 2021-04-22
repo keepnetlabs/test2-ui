@@ -5,7 +5,7 @@
       <div
         v-for="(att, ind) of mailDetails.attachments"
         :key="att.resourceId"
-        :id="'attachment-' + att.name"
+        :id="`text--email-details-preview__attachment-${ind}`"
         class="attachment red-attach"
         :class="[
           att.isFlagged ? 'red-attach' : '',

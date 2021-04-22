@@ -59,7 +59,7 @@
                 <v-form ref="newPasswordByMain">
                   <div>
                     <label
-                      id="text--security-popup-current-password"
+                      id="label--security-popup-current-password"
                       class="new-password-wrapper__label d-block mb-2"
                       >Current Password</label
                     >
@@ -80,7 +80,11 @@
                     ></v-text-field>
                   </div>
                   <div>
-                    <label class="new-password-wrapper__label d-block mb-2">New Password</label>
+                    <label
+                      id="label--security-popup-new-password"
+                      class="new-password-wrapper__label d-block mb-2"
+                      >New Password</label
+                    >
                     <v-text-field
                       v-model="newPassword"
                       label="Enter new password"
@@ -101,7 +105,11 @@
                     <PasswordChecker :password="newPassword" />
                   </div>
                   <div>
-                    <label class="new-password-wrapper__label d-block mb-2">Confirm Password</label>
+                    <label
+                      id="label--security-popup-confirm-password"
+                      class="new-password-wrapper__label d-block mb-2"
+                      >Confirm Password</label
+                    >
                     <v-text-field
                       v-model="reNewPassword"
                       :rules="[rules.required, rules.minPassword, rules.equal]"
@@ -113,7 +121,7 @@
                       outlined
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       autocomplete="new-password"
-                      :id="dynamicID"
+                      id="input--security-popup-re-new-password"
                       browser-autocomplete="new-password"
                       persistent-hint
                     ></v-text-field>
@@ -129,11 +137,14 @@
               <v-col sm="12" class="p-0">
                 <v-form ref="refDisableMfa">
                   <div>
-                    <label class="new-password-wrapper__label d-block mb-2"
+                    <label
+                      id="label--security-popup-mfa-code"
+                      class="new-password-wrapper__label d-block mb-2"
                       >Enter MFA code to disable your MFA status</label
                     >
                     <v-text-field
                       type="number"
+                      id="input--security-popup-mfa-code"
                       v-model="mfaCode"
                       placeholder="MFA Code"
                       class="reset-pass-textfield mt-3 max-width-228"

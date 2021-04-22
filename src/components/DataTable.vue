@@ -307,10 +307,11 @@
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.clipboard">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="handleCopy(multipleSelection)"
+                  v-on="on"
+                  id="btn-copy-to-clipboard-all--table-header"
                   class="btn-selected-hover mr-1"
                   icon
-                  v-on="on"
+                  @click="handleCopy(multipleSelection)"
                 >
                   <v-icon class="selection-icons" color="white">mdi-clipboard-text</v-icon>
                 </v-btn>
@@ -320,10 +321,11 @@
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.edit">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="handleMultipleSelectedEdits"
+                  v-on="on"
+                  id="btn-edit-all--table-header"
                   class="btn-selected-hover mr-1"
                   icon
-                  v-on="on"
+                  @click="handleMultipleSelectedEdits"
                 >
                   <v-icon class="selection-icons" color="white">mdi-pencil</v-icon>
                 </v-btn>
@@ -333,10 +335,11 @@
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.delete">
               <template v-slot:activator="{ on }">
                 <v-btn
-                  @click="handleDelete(multipleSelection)"
+                  v-on="on"
+                  id="btn-delete-all--table-header"
                   class="btn-selected-hover mr-1"
                   icon
-                  v-on="on"
+                  @click="handleDelete(multipleSelection)"
                 >
                   <v-icon class="selection-icons" color="white">mdi-delete</v-icon>
                 </v-btn>

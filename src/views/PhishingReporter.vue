@@ -119,6 +119,7 @@
           <v-list>
             <v-list-item
               v-for="(item, index) in listItems"
+              :id="`item--phishing-reporter-header-${index}`"
               :key="item"
               @click="handleListItemClick(item)"
             >

@@ -193,10 +193,10 @@
               </div>
               <div v-if="pageNumber == 2">
                 <v-card-text>
-                  <div class="login-title">
+                  <div id="text--login-reset-your-password-title" class="login-title">
                     Reset Your Password
                   </div>
-                  <div class="login-desc">
+                  <div id="text--login-reset-your-password-subtitle" class="login-desc">
                     <p class="mb-2">Enter your email address to</p>
                     <p class="mb-0">recieve the reset password link</p>
                   </div>
@@ -205,7 +205,10 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div id="text--login-reset-password" class="login-error-message pr-1">
+                      <div
+                        id="text--login-reset-password-error-text"
+                        class="login-error-message pr-1"
+                      >
                         {{ resetPasswordErrorText }}
                       </div>
                     </div>
@@ -274,10 +277,10 @@
               </div>
               <div v-if="pageNumber === 5">
                 <v-card-text>
-                  <div class="login-title">
+                  <div id="text--login-reset-your-new-password-title" class="login-title">
                     Reset Your Password
                   </div>
-                  <div class="login-desc">
+                  <div id="text--login-reset-your-new-password-subtitle" class="login-desc">
                     Enter your new password
                   </div>
                   <div v-if="newPasswordError" class="login-error-container">
@@ -285,7 +288,10 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div id="text--login-new-password" class="login-error-message pr-1">
+                      <div
+                        id="text--login-new-password-error-text"
+                        class="login-error-message pr-1"
+                      >
                         {{ newPasswordErrorText }}
                       </div>
                     </div>
@@ -295,7 +301,10 @@
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
-                      <div class="login-error-message pr-1">
+                      <div
+                        id="text--login-new-password-confirm-password-do-not-match"
+                        class="login-error-message pr-1"
+                      >
                         ‘New password’ and ‘Confirm password’ do no match
                       </div>
                     </div>
@@ -305,7 +314,11 @@
                       <v-col sm="12">
                         <v-form ref="newPassword" :lazy-validation="false">
                           <div>
-                            <label class="new-password-wrapper__label">New Password</label>
+                            <label
+                              id="label--login-new-password"
+                              class="new-password-wrapper__label"
+                              >New Password</label
+                            >
                             <v-text-field
                               id="input--login-new-password"
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
@@ -331,7 +344,11 @@
                             <PasswordChecker :password="newPassword" />
                           </div>
                           <div>
-                            <label class="new-password-wrapper__label">Confirm Password</label>
+                            <label
+                              id="label--login-confirm-password"
+                              class="new-password-wrapper__label"
+                              >Confirm Password</label
+                            >
                             <v-text-field
                               v-model.trim="reNewPassword"
                               id="input--login-confirm-password"
@@ -446,7 +463,7 @@
                 />
               </div>
               <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber)">
-                <div class="back-to-login" @click="onBackButtonClick()">
+                <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
                 </div>

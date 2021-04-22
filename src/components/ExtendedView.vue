@@ -1,5 +1,6 @@
 <template>
   <div
+    id="container--extended-view"
     class="settings-popup edit-popup"
     :style="[
       containerStyle,
@@ -21,19 +22,26 @@
       "
     >
       <div class="edit-popup__header">
-        <span class="settings-span" v-if="value.length === 1">
+        <span
+          id="text--extended-view-title-singular"
+          class="settings-span"
+          v-if="value.length === 1"
+        >
           {{ copyOfEditedRows[0][options.titleKey] || options.title }}
         </span>
-        <span class="settings-span" v-else>{{ value.length }} Items Selected</span>
+        <span id="text--extended-view-title-multiple" class="settings-span" v-else
+          >{{ value.length }} Items Selected</span
+        >
         <div class="edit-popup__edit-actions">
-          <v-btn @click="toggleEditStatus" icon v-if="!editMode">
+          <v-btn id="btn-edit--extended-view" @click="toggleEditStatus" icon v-if="!editMode">
             <v-icon class="close-icon">mdi-pencil</v-icon>
           </v-btn>
-          <v-btn @click="closeEditPopup()" icon v-if="!editMode">
+          <v-btn id="btn-close--extended-view" @click="closeEditPopup()" icon v-if="!editMode">
             <v-icon class="close-icon">mdi-close</v-icon>
           </v-btn>
           <v-btn
             @click="cancelEditedOnes"
+            id="btn-cancel--extended-view"
             class="pl-1 pr-1"
             color="#f56c6c"
             dense
@@ -43,6 +51,7 @@
           </v-btn>
           <v-btn
             @click="saveEditedOnes()"
+            id="btn-save--extended-view"
             color="#2196f3"
             dense
             text
@@ -58,16 +67,18 @@
             <div
               :key="col.label"
               class="row-edit-div"
-              v-for="col in options.col"
+              :id="`container--extended-view-item-${col.label}-${index}`"
+              v-for="(col, index) in options.col"
               v-if="
                 !col.hideLabel && col.property !== 'createTime' && col.property !== 'lastUpdateDate'
               "
             >
               <div v-if="!col.showOnlyPreview || editMode">
-                <label>
+                <label :id="`label--extended-view-singular-${col.label}-${index}`">
                   {{ col.label }}
                 </label>
                 <span
+                  :id="`text--extended-view-multiple-value-${col.label}-${index}`"
                   v-if="
                     (!editMode || !col.isEditable) &&
                     multipleValues(col.property) &&
@@ -79,6 +90,7 @@
                   Multiple Values
                 </span>
                 <span
+                  :id="`text--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     col.type === 'text' &&
@@ -89,6 +101,7 @@
                   {{ copyOfEditedRows[0][col.property] }}
                 </span>
                 <span
+                  :id="`text--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     col.type === 'copy' &&
@@ -101,6 +114,7 @@
                     {{ copyOfEditedRows[0][col.property] }}
                   </span>
                   <v-icon
+                    :id="`btn-copy--extended-view-${col.label}-${index}`"
                     style="cursor: pointer;"
                     class="ml-2"
                     @click="writeTextToClipBoard(copyOfEditedRows[0][col.property])"
@@ -117,6 +131,7 @@
                   "
                 >
                   <span
+                    :id="`text--extended-view-singular-value-${col.label}-${index}`"
                     v-if="
                       copyOfEditedRows[0].matchingPlaybooks &&
                       copyOfEditedRows[0].matchingPlaybooks.length === 0
@@ -129,6 +144,7 @@
                     }}
                   </span>
                   <router-link
+                    :id="`text--extended-view-singular-value-${col.label}-${index}`"
                     tag="span"
                     :key="item.resourceId"
                     v-else
@@ -139,6 +155,7 @@
                   >
                 </span>
                 <span
+                  :id="`text--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="
                     (!editMode || !col.isEditable) &&
                     (col.type === 'colorfulText' || col.showColorfulText) &&
@@ -152,6 +169,7 @@
                   {{ getDataTableFieldLabel(copyOfEditedRows[0][col.property]) }}
                 </span>
                 <badge
+                  :id="`badge--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="
                         ((!editMode || !col.isEditable) && (col.type === 'status' ||
                         col.type === 'detected' || col.type==='badge'))
@@ -166,6 +184,7 @@
                       "
                 >
                   <badge
+                    :id="`badge--extended-view-singular-value-${col.label}-${index}`"
                     size="small"
                     :color="'#2196f3'"
                     v-for="badge in copyOfEditedRows[0][col.property]"
@@ -176,18 +195,21 @@
                 </div>
 
                 <badge
+                  :id="`badge--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'priority'"
                   size="small"
                   :color="getBtnPriorityColor(copyOfEditedRows[0][col.property])"
                   :text="getDataTableFieldLabel(copyOfEditedRows[0][col.property])"
                 />
                 <router-link
+                  :id="`btn-link--extended-view-singular-value-${col.label}-${index}`"
                   v-else-if="(!editMode || !col.isEditable) && col.type === 'link'"
                   :to="`${col.href}/${copyOfEditedRows[0][col.hrefKey]}`"
                   class="k-table__link"
                   >{{ copyOfEditedRows[0][col.property] }}</router-link
                 >
                 <div
+                  :id="`chart--extended-view-singular-value-${col.label}-${index}`"
                   class="popup__apexchart-container"
                   style="display: flex; align-items: center;"
                   :class="[
@@ -212,7 +234,11 @@
                   </template>
                   <div v-else class="datatable-chart__empty"></div>
                 </div>
-                <span v-else-if="col.type === 'progress'" style="margin-left: 2px;">
+                <span
+                  :id="`progress--extended-view-singular-value-${col.label}-${index}`"
+                  v-else-if="col.type === 'progress'"
+                  style="margin-left: 2px;"
+                >
                   {{ copyOfEditedRows[0][col.property] }}%
                 </span>
                 <v-menu
@@ -227,6 +253,7 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="copyOfEditedRows[0][col.property]"
+                      :id="`input--extended-view-singular-value-${col.label}-${index}`"
                       label="Start Date"
                       class="edit-text-field"
                       dense
@@ -237,12 +264,14 @@
                     ></v-text-field>
                   </template>
                   <v-date-picker
+                    :id="`input--extended-view-singular-value-picker-${col.label}-${index}`"
                     :value="copyOfEditedRows[0][col.property]"
                     @input="handleEditPopupDatePickerChange($event, col.property)"
                     no-title
                   ></v-date-picker>
                 </v-menu>
                 <v-checkbox
+                  :id="`input--extended-view-singular-value-checkbox-${col.label}-${index}`"
                   v-else-if="
                         (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'checkbox')
                       "
@@ -252,6 +281,7 @@
                   @input="handleEditPopupCheckboxChange($event, col.property)"
                 ></v-checkbox>
                 <v-text-field
+                  :id="`input--extended-view-singular-value-${col.label}-${index}`"
                   class="edit-text-field"
                   dense
                   outlined
@@ -263,6 +293,7 @@
                   @input="handleEditPopupTextFieldChange($event, col.property)"
                 />
                 <v-combobox
+                  :id="`input--extended-view-singular-value-${col.label}-${index}`"
                   v-if="
                         (!multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'combobox')
                       "
@@ -279,6 +310,7 @@
                   @input="handleEditComboBoxChange($event, col.property)"
                 ></v-combobox>
                 <v-textarea
+                  :id="`input--extended-view-singular-value-${col.label}-${index}`"
                   outlined
                   dense
                   :value="copyOfEditedRows[0][col.property]"
@@ -291,6 +323,7 @@
                   row-height="20"
                 ></v-textarea>
                 <v-select
+                  :id="`input--extended-view-singular-value-${col.label}-${index}`"
                   class="edit-select"
                   dense
                   outlined
@@ -311,6 +344,7 @@
                   @input="handleEditPopupSelectChange($event, col.property)"
                 />
                 <v-text-field
+                  :id="`input--extended-view-multiple-value-${col.label}-${index}`"
                   :autofocus="!multipleEditDisables[col.property]"
                   :value="multipleEditModels[col.property]"
                   @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
@@ -345,6 +379,7 @@
                     "
                   >
                     <v-btn
+                      :id="`btn-edit--extended-view-multiple-value-${col.label}-${index}`"
                       text
                       @click.native="handleEditClick(col.property)"
                       class="edit-popup__edit-component"
@@ -354,6 +389,7 @@
                   </template>
                 </v-text-field>
                 <v-textarea
+                  :id="`input--extended-view-multiple-value-${col.label}-${index}`"
                   outlined
                   dense
                   :autofocus="!multipleEditDisables[col.property]"
@@ -378,6 +414,7 @@
                 >
                   <template v-slot:append v-if="!multipleEditDisables[col.property]">
                     <v-btn
+                      :id="`btn-edit--extended-view-multiple-value-${col.label}-${index}`"
                       text
                       @click.native="handleEditClick(col.property)"
                       class="edit-popup__edit-component"
@@ -407,6 +444,7 @@
                   <template v-slot:activator="{ on }">
                     <v-text-field
                       v-model="multipleEditModels[col.property]"
+                      :id="`input--extended-view-multiple-value-${col.label}-${index}`"
                       label="Start Date"
                       class="edit-text-field"
                       dense
@@ -418,6 +456,7 @@
                     >
                       <template v-slot:append v-if="!multipleEditDisables[col.property]">
                         <v-btn
+                          :id="`btn-edit--extended-view-multiple-value-${col.label}-${index}`"
                           text
                           @click.native="handleEditClick(col.property)"
                           class="edit-popup__edit-component"
@@ -429,6 +468,7 @@
                   </template>
 
                   <v-date-picker
+                    :id="`input--extended-view-multiple-value-picker-${col.label}-${index}`"
                     :value="multipleEditModels[col.property]"
                     @input="handleMultipleEdits(copyOfEditedRows, col.property, $event)"
                     no-title
@@ -440,6 +480,7 @@
                         (multipleValues(col.property) && editMode && col.isEditable && col.editOptions.component === 'checkbox')
                       "
                   color="#2196f3"
+                  :id="`input--extended-view-multiple-value-checkbox-${col.label}-${index}`"
                   :indeterminate="getCheckboxStatus(col.property)"
                   :label="getCheckboxLabel(col.property, col.editOptions.checkboxLabel)"
                   :value="copyOfEditedRows[0][col.property]"
@@ -448,6 +489,7 @@
 
                 <v-combobox
                   class="edit-combo-box"
+                  :id="`input--extended-view-multiple-value-${col.label}-${index}`"
                   :items="[]"
                   outlined
                   multiple
@@ -473,6 +515,7 @@
                 >
                   <template v-slot:append v-if="!multipleEditDisables[col.property]">
                     <v-btn
+                      :id="`btn-edit--extended-view-multiple-value-${col.label}-${index}`"
                       text
                       @click.native="handleEditClick(col.property)"
                       class="edit-popup__edit-component"
@@ -485,6 +528,7 @@
                 <v-select
                   class="edit-select"
                   dense
+                  :id="`input--extended-view-multiple-value-${col.label}-${index}`"
                   outlined
                   :menu-props="{ offsetY: true }"
                   v-bind="col.editOptions.props"
@@ -509,6 +553,7 @@
                 >
                   <template v-slot:append v-if="!multipleEditDisables[col.property]">
                     <v-btn
+                      :id="`btn-edit--extended-view-multiple-value-${col.label}-${index}`"
                       text
                       @click.native="handleEditClick(col.property)"
                       class="edit-popup__edit-component"
@@ -530,8 +575,10 @@
                       copyOfEditedRows[0]['createTime'] !== undefined
                     "
                   >
-                    <label>{{ options.footer[0].label }}</label>
-                    <span>{{
+                    <label id="text--extended-view-footer-label-0">{{
+                      options.footer[0].label
+                    }}</label>
+                    <span id="text--extended-view-footer-value-0">{{
                       multipleValues('createTime')
                         ? 'Multiple Values'
                         : multipleValues('createTime')
@@ -543,8 +590,10 @@
                     class="edit-date-created"
                     v-if="copyOfEditedRows[0]['lastUpdateDate'] !== undefined"
                   >
-                    <label>{{ options.footer[1].label }}</label>
-                    <span>{{
+                    <label id="text--extended-view-footer-label-1">{{
+                      options.footer[1].label
+                    }}</label>
+                    <span id="text--extended-view-footer-value-1">{{
                       multipleValues('lastUpdateDate')
                         ? 'Multiple Values'
                         : copyOfEditedRows[0][options.footer[1].key]

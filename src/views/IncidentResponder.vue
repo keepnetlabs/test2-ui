@@ -839,12 +839,13 @@
       </div>
     </div>
     <app-modal
-      :status="showPlaybookModal"
       v-if="showPlaybookModal"
+      title-id="text--create-playbook-title"
+      class-name="incident-responder__playbook"
+      :status="showPlaybookModal"
       :icon-name="getIconName"
       :title="getTitle"
       :show-footer="false"
-      class-name="incident-responder__playbook"
     >
       <template v-slot:overlay-body>
         <CreateOrEditRule
