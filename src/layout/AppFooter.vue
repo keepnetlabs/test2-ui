@@ -1,6 +1,8 @@
 <template>
   <v-footer class="k-footer d-flex">
-    <div class="footer-item__primary">{{ brandName }} &copy; {{ new Date().getFullYear() }}</div>
+    <div id="btn--dashboard-footer-brand-name" class="footer-item__primary">
+      {{ brandName }} &copy; {{ new Date().getFullYear() }}
+    </div>
     <div class="footer-item__secondary footer-links">
       <a
         id="btn--dashboard-footer-privacy-policy"
