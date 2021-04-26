@@ -254,14 +254,15 @@
               </div>
               <div v-if="pageNumber == 3" class="reset-password-wrapper__success">
                 <v-card-text>
-                  <div class="login-title">
+                  <div id="text--login-check-your-email-title" class="login-title">
                     Check Your Email
                   </div>
-                  <div class="login-desc">
+                  <div id="text--login-check-your-email-subtitle" class="login-desc">
                     <p class="mb-2">We have sent an email to your email address.</p>
                     <p class="mb-0">Click the link the email to reset your password</p>
                     <div v-if="pageNumber === 3">
                       <div
+                        id="text--login-check-your-email-i-didnt-receive-email"
                         class="back-to-reset-password"
                         @click="
                           pageNumber = 2
@@ -283,7 +284,11 @@
                   <div id="text--login-reset-your-new-password-subtitle" class="login-desc">
                     Enter your new password
                   </div>
-                  <div v-if="newPasswordError" class="login-error-container">
+                  <div
+                    id="container--login-new-password-error"
+                    v-if="newPasswordError"
+                    class="login-error-container"
+                  >
                     <div v-if="newPasswordError" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>

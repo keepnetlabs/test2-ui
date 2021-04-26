@@ -1,6 +1,7 @@
 <template>
   <div class="test-connection">
     <div
+      id="btn-test-connection--mail-configuration"
       :class="{
         'test-connection__disabled-text': isLoading,
         '': isAllSuccess
