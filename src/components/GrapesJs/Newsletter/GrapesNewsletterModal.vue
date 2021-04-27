@@ -40,6 +40,7 @@ import 'grapesjs/dist/css/grapes.min.css'
 import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
 import { eventFire } from '@/utils/functions'
+import store from '@/store'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -400,6 +401,10 @@ export default {
           block.attributes.category = {
             label: 'Components'
           }
+        } else if (block.attributes.id === 'companyId') {
+          block.attributes.category = {
+            label: 'Components'
+          }
         } else {
           block.attributes.category = {
             label: 'Components'
@@ -407,6 +412,10 @@ export default {
         }
       })
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
+        if (key === '{COMPANYLOGO}') {
+          const logoUrl = this.$store.state.whitelabel.mainLogoUrl
+          value.content.components[0].content = `<img class="logo-url" src="${logoUrl}"/>`
+        }
         blockManager.add(key, value)
       }
       setTimeout(() => {
