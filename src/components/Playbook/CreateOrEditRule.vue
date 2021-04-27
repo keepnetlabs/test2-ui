@@ -521,7 +521,7 @@ export default {
           playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
-          const { isSendFile, isSendFileHash, isSendUrl } = item.analysisEngineType
+          const { isSendFile, isSendFileHash, isSendUrl, isSendIp } = item.analysisEngineType
           if (!isSendFile) {
             item.isCheckFile = false
           }
@@ -530,6 +530,9 @@ export default {
           }
           if (!isSendUrl) {
             item.isCheckUrl = false
+          }
+          if (!isSendIp) {
+            item.isCheckSenderIP = false
           }
           return item.selected === true
         })
@@ -609,7 +612,7 @@ export default {
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           if (item && item.analysisEngineType && item.analysisEngineType) {
-            const { isSendFile, isSendFileHash, isSendUrl } = item.analysisEngineType
+            const { isSendFile, isSendFileHash, isSendUrl, isSendIp } = item.analysisEngineType
             if (!isSendFile) {
               item.isCheckFile = false
             }
@@ -618,6 +621,9 @@ export default {
             }
             if (!isSendUrl) {
               item.isCheckUrl = false
+            }
+            if (!isSendIp) {
+              item.isCheckSenderIP = false
             }
           }
           return item.selected === true

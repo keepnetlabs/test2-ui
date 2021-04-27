@@ -1,7 +1,7 @@
 <template>
   <div class="action-items" id="playbook-action-items">
     <app-dialog
-      size="small"
+      size="big"
       :status="openEnginesModal"
       icon="mdi-blur"
       v-if="openEnginesModal"
@@ -47,6 +47,9 @@
                 </span>
                 <span type="button" class="analyze__main__select-row-inline__button__title">
                   Url
+                </span>
+                <span type="button" class="analyze__main__select-row-inline__button__title">
+                  IP
                 </span>
               </div>
             </div>
@@ -99,6 +102,15 @@
                     @click="urlChange(engine.isCheckUrl, index)"
                   >
                     Url
+                  </span>
+                  <span
+                    :id="`input--anaysis-engine-${index}-sender-ip`"
+                    style="cursor: pointer;"
+                    class="analyze__main__select-row-inline__button"
+                    v-bind="getDynamicCheckboxProps(engine, index, 'sendIp')"
+                    @click="sendIpChange(engine.isCheckSenderIP, index)"
+                  >
+                    IP
                   </span>
                 </div>
               </div>
@@ -582,6 +594,16 @@ export default {
             props['style'] = { cursor: 'default', visibility: 'hidden' }
           }
           break
+        case 'sendIp':
+          if (engine.analysisEngineType['isSendIp']) {
+            props['style'] = { cursor: 'pointer' }
+            props['class'] = engine.isCheckSenderIP
+              ? 'analyze__main__select-row-inline__button-selected'
+              : ''
+          } else {
+            props['style'] = { cursor: 'default', visibility: 'hidden' }
+          }
+          break
         default:
           break
       }
@@ -668,12 +690,14 @@ export default {
     },
     checkAllDataChecked(index, item) {
       if (item) {
-        item.selected = item.isCheckHash || item.isCheckFile || item.isCheckUrl
+        item.selected =
+          item.isCheckHash || item.isCheckFile || item.isCheckUrl || item.isCheckSenderIP
       } else {
         this.analysisEngines[index].selected =
           this.analysisEngines[index].isCheckHash ||
           this.analysisEngines[index].isCheckFile ||
-          this.analysisEngines[index].isCheckUrl
+          this.analysisEngines[index].isCheckUrl ||
+          this.analysisEngines[index].isCheckSenderIP
       }
     },
     hashChange(val, index) {
@@ -712,6 +736,18 @@ export default {
         this.checkAllDataChecked(index)
       }
     },
+    sendIpChange(val, index) {
+      if (this.searchEnginesData) {
+        let item = this.analysisEngines.find(
+          (item) => item.resourceId == this.searchEnginesData[index].resourceId
+        )
+        item.isCheckSenderIP = !val
+        this.checkAllDataChecked(index, item)
+      } else {
+        this.analysisEngines[index].isCheckSenderIP = !val
+        this.checkAllDataChecked(index)
+      }
+    },
     acceptAllAnalysisEnginesClick() {
       const val = this.acceptAllAnalysisEngines
 
@@ -721,6 +757,7 @@ export default {
           isCheckUrl: val,
           isCheckHash: val,
           isCheckFile: false,
+          isCheckSenderIP: val,
           selected: val
         }
       })
@@ -733,6 +770,7 @@ export default {
         item.isCheckUrl = engine.selected
         item.isCheckHash = engine.selected
         item.isCheckFile = engine.selected
+        item.isCheckSenderIP = engine.selected
         this.checkAllDataChecked(index, item)
       } else {
         if (engine['analysisEngineType']) {
@@ -746,10 +784,14 @@ export default {
           this.analysisEngines[index].isCheckFile = engine.selected
             ? analysisEngineType.isSendFile
             : engine.selected
+          this.analysisEngines[index].isCheckSenderIP = engine.selected
+            ? analysisEngineType.isCheckSenderIP
+            : engine.selected
         } else {
           this.analysisEngines[index].isCheckUrl = engine.selected
           this.analysisEngines[index].isCheckHash = engine.selected
           this.analysisEngines[index].isCheckFile = engine.selected
+          this.analysisEngines[index].isCheckSenderIP = engine.selected
         }
       }
     },
@@ -780,6 +822,7 @@ export default {
             isCheckUrl: false,
             isCheckHash: false,
             isCheckFile: false,
+            isCheckSenderIP: false,
             selected: false,
             analysisEngineType: item.analysisEngineType
           }
