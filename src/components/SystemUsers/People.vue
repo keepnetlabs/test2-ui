@@ -57,7 +57,9 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
-        :isServerSide="false"
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
       />
     </div>
   </div>
@@ -548,6 +550,13 @@ export default {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE)
     )
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.tableOptions.pageSize = size
+    this.tableOptions.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }

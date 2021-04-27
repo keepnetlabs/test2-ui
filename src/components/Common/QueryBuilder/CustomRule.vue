@@ -36,7 +36,7 @@
         <k-select
           v-model="query.operator"
           :id="`input--query-builder-rule-operator-${index}-${getParentIndex}`"
-          :items="rule.operators"
+          :items="query.operand === 'Keyword' ? rule.keywordOperators : rule.operators"
           outlined
           item-value="value"
           min-width-type="small"

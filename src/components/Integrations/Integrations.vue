@@ -66,7 +66,9 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="false"
+      :isServerSide="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -298,7 +300,7 @@ export default {
       modalStatus: false,
       bodyData: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 10,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -319,7 +321,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 10,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -598,6 +600,13 @@ export default {
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.bodyData.pageSize = size
+    this.bodyData.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
   },
   mounted() {
