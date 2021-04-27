@@ -540,6 +540,7 @@
             id="incident-responder-reported-emails-clustered-table"
             refName="clustered-ref-name"
             ref="refReportedEmailsClustered"
+            show-select-all-button
             changeFooterPosition
             disable-extended-view-transition
             selectable
@@ -685,6 +686,7 @@
             ref="refReportedEmails"
             id="incident-responder-reported-emails-data-table"
             active-cluster=""
+            show-select-all-button
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :is-column-filter-active="emails.isColumnFilterActive"
@@ -2316,6 +2318,9 @@ export default {
           isSelectedAll: false,
           selectedCluster: '',
           sortProps,
+          serverSideSelectionCount: 0,
+          isSelectedAllEver: false,
+          excludedResourceIdList: [],
           unRenderedFilterData: [],
           totalLength: 0,
           renderedColumns: [],
@@ -2852,10 +2857,19 @@ export default {
         this.extendedView.customMessage = ''
       }
     },
-    handleEdit(selectedRows = []) {
+    handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
       if (selectedRows.length > 1) {
         const payload = {
           resourceIdList: []
+        }
+        if (isSelectedAllEver) {
+          payload['selectAll'] = {
+            filter: this.isShowingClusteredTable
+              ? this.clusteredTableAxios
+              : this.requestBodyReportedEmails.filter,
+            excludedResourceIdList,
+            clusteredBy: this.isShowingClusteredTable ? this.clusteredTableAxios.clusteredBy : ''
+          }
         }
         const sets = {
           result: new Set(),
@@ -2887,7 +2901,7 @@ export default {
           }
         }
 
-        updateNotifiedEmailBulk(payload).then(() => {
+        updateNotifiedEmailBulk(payload).finally(() => {
           this.callForGetRunningInvestigations()
           this.callForGetTopRules()
           this.callForSearchNotifiedMail()

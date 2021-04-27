@@ -246,6 +246,14 @@ export default {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
+        (item) => {
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'StatusId'
+          }
+          return item
+        }
+      )
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = filterActive
       this.callForSearch()
