@@ -82,6 +82,16 @@
                       </div>
                     </div>
                   </div>
+                  <div v-if="isMfaAuthenticated" class="login-success-container">
+                    <div v-if="isMfaAuthenticated" class="login-success-wrapper">
+                      <div class="login-success-icon dark pr-2">
+                        <v-icon large color="#ffffff"> mdi-check-circle-outline</v-icon>
+                      </div>
+                      <div id="text--mfa-authenticated-message" class="login-success-message pr-1">
+                        {{ mfaAuthenticatedMessage }}
+                      </div>
+                    </div>
+                  </div>
                   <div class="login-user-pass-wrapper">
                     <v-row align="center" justify="center">
                       <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
@@ -529,6 +539,7 @@ export default {
       recoveryCode: null,
       mfaDetails: null,
       mfaSetupDetails: null,
+      mfaAuthenticatedMessage: '',
       mfaCode: null,
       labels,
       showReNewPassword: false,
@@ -538,6 +549,7 @@ export default {
       newPassword: null,
       reNewPassword: null,
       newPasswordError: null,
+      isMfaAuthenticated: false,
       newPasswordErrorText: null,
       resetPasswordError: null,
       resetPasswordErrorText: null,
@@ -749,7 +761,9 @@ export default {
           code: code
         }
         setMFA(payload)
-          .then(() => {
+          .then((response) => {
+            this.isMfaAuthenticated = true
+            this.mfaAuthenticatedMessage = response.data.message
             this.pageNumber = 1
             this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
           })
@@ -779,6 +793,7 @@ export default {
       }
       getMfaQRCode(payload)
         .then((response) => {
+          debugger
           this.pageNumber = 7
           this.mfaSetupDetails = response.data['data']
         })
@@ -939,6 +954,7 @@ export default {
     },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false
+      this.isMfaAuthenticated = false
       if (this.pageNumber === 7) {
         this.pageNumber = 6
       } else if (this.pageNumber === 9) {
@@ -950,6 +966,7 @@ export default {
     },
     onForgetPasswordButtonClick() {
       this.isPasswordStep5Complete = false
+      this.isMfaAuthenticated = false
       this.pageNumber = 2
       this.clearError()
     },
@@ -1032,6 +1049,7 @@ export default {
       const _this = this
 
       this.isPasswordStep5Complete = false
+      this.isMfaAuthenticated = false
       if (
         this.$refs.email.validate() &&
         this.$refs.password.validate() &&

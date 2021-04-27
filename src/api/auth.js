@@ -77,8 +77,7 @@ export function getMfaQRCode(payload) {
 
 export function setMFA(payload) {
   return testRequest.put('/system-users/mfa', payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
+    loading: true
   })
 }
 
@@ -97,15 +96,13 @@ export function cantLogin(payload) {
 
 export function getMfaStatus(payload) {
   return testRequest.get('/system-users/mfa/status', payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
+    loading: true
   })
 }
 
 export function getMfaSetup(payload) {
   return testRequest.get('/system-users/mfa/setup', payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
+    loading: true
   })
 }
 
