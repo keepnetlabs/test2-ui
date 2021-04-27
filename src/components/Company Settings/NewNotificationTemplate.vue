@@ -260,6 +260,8 @@ export default {
     this.callForDatas()
     if (this.selectedItem && this.selectedItem.resourceId) {
       getEmailTemplate(this.selectedItem.resourceId).then((response) => {
+        const logoKey = '{COMPANYLOGO}'
+        const logoUrl = this.$store.state.whitelabel.mainLogoUrl
         const {
           data: { data }
         } = response
@@ -269,14 +271,21 @@ export default {
             this.nonEditableAvailableForRequests = getAvailableForListFromBackend(value)
             continue
           }
+          if (key === 'template') {
+            value = response.data.data.template.replace(
+              logoKey,
+              `<img class="logo-url" src="${logoUrl}"/>`
+            )
+          }
           this.formValues[key] = value
         }
       })
     }
   },
   mounted() {
+    let _this = this
     this.$nextTick(() => {
-      this.formValues.template = this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
+      _this.formValues.template = _this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
     })
   },
   methods: {
@@ -454,6 +463,10 @@ export default {
             ? getAvailableForValues(this.nonEditableAvailableForRequests)
             : null
         }
+        for (let i = document.getElementsByClassName('logo-url').length - 1; i >= 0; i--) {
+          document.getElementsByClassName('logo-url')[i].outerHTML = '{COMPANYLOGO}'
+        }
+        payload.template = document.getElementsByClassName('email-template-preview')[0].innerHTML
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
             .then(() => {
