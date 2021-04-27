@@ -276,7 +276,7 @@ export default {
     sortChanged({ order, prop } = {}) {
       //generic
       this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = prop
+      this.axiosPayload.orderBy = prop === 'statusName' ? 'StatusId' : prop
       this.callForSearch()
     },
     resetPageNumber() {
