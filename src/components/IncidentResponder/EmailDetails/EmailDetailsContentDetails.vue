@@ -118,7 +118,7 @@
         Geolocation
       </div>
       <div id="text--email-details-geolocation-value" class="details-content--item--value">
-        {{ mailDetails && mailDetails.GeoLocation }}
+        {{ mailDetails && mailDetails.geoLocation }}
       </div>
     </div>
     <email-details-sender-ip-blacklist-check
