@@ -300,7 +300,6 @@
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
-            v-if="isSelectAllButton"
             :ripple="false"
             class="btn-all-selection"
             rounded
@@ -1669,6 +1668,9 @@ export default {
     },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
+      this.resetSelectableParams()
+    },
+    resetSelectableParams() {
       this.multipleSelection = []
       this.isSelectedAllEver = false
       this.excludedResourceIdList = []
@@ -1796,9 +1798,11 @@ export default {
           this.$refs.elTableRef.clearSelection()
           this.$emit('on-selected-all-click', false)
         } else {
+          if (this.serverSideProps.totalNumberOfRecords > this.rowCount) {
+            this.isSelectedAllEver = true
+          }
           this.selectAllItems()
           this.isSelectedAll = true
-          this.isSelectedAllEver = true
           this.excludedResourceIdList = []
           this.serverSideSelectionCount = this.serverSideProps.totalNumberOfRecords
         }
@@ -1938,6 +1942,12 @@ export default {
       }
       const selections = this.multipleSelection.filter((item) => !item.isParent)
       if (selections.length) {
+        //temporary
+        if (this.isSelectedAllEver && selections.length === 1) {
+          this.multipleSelection.push(selections[0])
+          selections.push(selections[0])
+        }
+
         this.$emit('onEditClick', {
           selected: selections,
           isEditPopupOpen: true,
@@ -1946,6 +1956,18 @@ export default {
         })
         this.isWantToEditRow = true
         this.isSettingsOpened = false
+      } else {
+        if (this.isSelectedAllEver) {
+          const selections = [this.tableData[0], this.tableData[1]]
+          this.$emit('onEditClick', {
+            selected: selections,
+            isEditPopupOpen: true,
+            excludedResourceIdList: this.excludedResourceIdList,
+            isSelectedAllEver: this.isSelectedAllEver
+          })
+          this.isWantToEditRow = true
+          this.isSettingsOpened = false
+        }
       }
     },
     /**
@@ -2335,6 +2357,7 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+          this.resetSelectableParams()
         }, debounceTime)
       } else {
         this.debounce(() => {
