@@ -336,7 +336,7 @@ export default {
     sortChanged({ order, prop } = {}) {
       //generic
       this.bodyOptions.ascending = order === 'ascending'
-      this.bodyOptions.orderBy = prop
+      this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
       this.callForSearchSmtpSettings()
     },
     resetPageNumber() {
