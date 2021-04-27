@@ -290,7 +290,7 @@
                 id="post-first-error"
                 v-if="selectedEmail || msgEmlFile == null"
                 class="select-error"
-                >Please select an incident or upload an email</span
+                >Please select an incident or upload an email. Max. file size 200MB</span
               >
             </div>
             <div id="post-first-preview-container" class="mt-2" v-else-if="selectedEmail">

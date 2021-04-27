@@ -54,6 +54,13 @@
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
         @on-table-settings-change="handleSetRenderedColumns"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
+        @searchChangedEvent="handleSearchChange"
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -109,6 +116,8 @@ import NewSmtpSettings from '@/components/Company Settings/SmtpSettings/NewSmtpS
 import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
 import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/DeleteSmtpSettings'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -258,6 +267,11 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
@@ -274,13 +288,63 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   methods: {
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.bodyOptions.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForSearchSmtpSettings()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.bodyOptions.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.bodyOptions.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.bodyOptions.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForSearchSmtpSettings()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.bodyOptions.ascending = order === 'ascending'
+      this.bodyOptions.orderBy = prop
+      this.callForSearchSmtpSettings()
+    },
+    resetPageNumber() {
+      //generic
+      this.bodyOptions.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.bodyOptions.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForSearchSmtpSettings()
+    },
     toggleSmtpModalStatus() {
       if (this.newSmtpModalStatus) {
         this.resourceId = null
@@ -357,8 +421,16 @@ export default {
             const {
               data: { data }
             } = response
-            const { totalNumberOfRecords = 0 } = data
             this.totalNumberOfRecords = totalNumberOfRecords
+
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+            this.totalNumberOfRecords = totalNumberOfRecords
+
             if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
               this.showAllRecords = true
             }
@@ -520,6 +592,13 @@ export default {
   },
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS))
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.bodyOptions.pageSize = size
+    this.bodyOptions.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }

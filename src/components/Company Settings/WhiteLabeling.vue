@@ -58,7 +58,7 @@
           key="mainLogo"
           id="input--whitelabeling-main-logo"
           :class="getFileUploadClasses(getMainLogo)"
-          hint="Upload png, jpg, svg. Suggested size: 180px * 60px"
+          hint="Upload png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
           ref="refMainLogo"
           :extensions="['png', 'jpg', 'svg']"
           @inputFile="onMenuLogoChange"

@@ -1436,6 +1436,7 @@ export default {
 
       if (
         this.isServerSide &&
+        !!oldTable &&
         !oldTable.length &&
         this.multipleSelection.length &&
         !this.clusteredItems.length

@@ -53,16 +53,16 @@
           :selectEvent="selectEvent"
           :chartOptions="chartOptions"
           :sizeable="true"
+          :dataLength="tableData && tableData.totalNumberOfRecords"
+          :requestParams="bodyData"
+          :server-side-props="serverSideProps"
+          :server-side-events="{ pagination: true, search: true, sort: true }"
+          :isServerSide="true"
           @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
           @stopInvestigationFunc="stopInvestigationFunc($event)"
           @investigationDetails="investigationDetails($event)"
           @downloadEvent="exportInvestigationList"
-          @sortChangedEvent="sortChangedEvent($event)"
           @paginationChangedEvent="paginationChangedEvent($event)"
-          @searchChangedEvent="searchChangedEvent($event)"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
-          :isServerSide="false"
           @onEmptyBtnClicked="isWantToAddNewCommunity = true"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
@@ -72,6 +72,10 @@
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
           @on-table-settings-change="handleSetRenderedColumns"
+          @server-side-page-number-changed="serverSidePageNumberChanged"
+          @server-side-size-changed="serverSideSizeChanged"
+          @searchChangedEvent="handleSearchChange"
+          @sortChangedEvent="sortChanged"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -129,6 +133,10 @@ import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import { checkPermission } from '@/utils/functions'
+
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+
 export default {
   name: 'Investigations',
   components: {
@@ -301,7 +309,7 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 1000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -309,6 +317,11 @@ export default {
         FilterGroups: [
           {
             Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
             FilterItems: [],
             FilterGroups: []
           }
@@ -317,7 +330,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 1000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -327,12 +340,54 @@ export default {
             Condition: 'AND',
             FilterItems: [],
             FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
           }
         ]
       }
-    }
+    },
+    serverSideProps: new ServerSideProps()
   }),
   methods: {
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.isColumnFilterActive = columnFilterActive
+      this.getInvestigationList()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
+      this.getInvestigationList()
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.bodyData.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.getInvestigationList()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.getInvestigationList()
+    },
+    resetPageNumber() {
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
+    },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONS)
@@ -568,7 +623,16 @@ export default {
           const {
             data: { data }
           } = response
-          const { totalNumberOfRecords = 0 } = data
+
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
 
           this.totalNumberOfRecords = totalNumberOfRecords
 
@@ -650,6 +714,13 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
+      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.controlRouteQuery()
+      const { page, size } = this.queryHelper.returnQueryValues()
+      this.bodyData.pageSize = size
+      this.bodyData.pageNumber = page
+      this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }
 

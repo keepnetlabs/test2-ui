@@ -42,8 +42,6 @@
       ref="refPeopleTable"
       id="target-users-people-data-table"
       is-server-side
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
@@ -81,6 +79,9 @@
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
       @on-table-settings-change="handleSetRenderedColumns"
+      :isServerSide="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -690,7 +691,6 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
-      console.trace('asasasa')
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
@@ -848,7 +848,11 @@ export default {
     )
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
     this.setQueryValuesToPayload(this.$route.query)
+    this.tableOptions.pageSize = size
+    this.tableOptions.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }
