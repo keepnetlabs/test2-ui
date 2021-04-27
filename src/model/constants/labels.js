@@ -40,6 +40,7 @@ export const labels = {
   Delete: 'Delete',
   Next: 'NEXT',
   RestApi: 'Rest Api',
+  IntegrationType: 'Integration Type',
   Reason: 'Reason',
   OK: 'OK',
   Prev: 'PREV',

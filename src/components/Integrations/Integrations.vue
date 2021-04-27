@@ -198,7 +198,7 @@ export default {
             property: PROPERTY_STORE.ANALYSISENGINENAME,
             align: 'left',
             editable: false,
-            label: labels.AnalysisEngineType,
+            label: labels.IntegrationType,
             sortable: true,
             show: true,
             type: 'text',
