@@ -56,8 +56,8 @@
           :dataLength="tableData && tableData.totalNumberOfRecords"
           :requestParams="bodyData"
           :server-side-props="serverSideProps"
-          :server-side-events="{ pagination: true, search: true, sort: true }"
-          :isServerSide="true"
+          :server-side-events="{ pagination: false, search: false, sort: false }"
+          :isServerSide="false"
           @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
           @stopInvestigationFunc="stopInvestigationFunc($event)"
           @investigationDetails="investigationDetails($event)"
@@ -309,7 +309,7 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 75000,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -330,7 +330,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 10,
+      pageSize: 75000,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -715,12 +715,12 @@ export default {
       }
     } else {
       this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      /*this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
       const { page, size } = this.queryHelper.returnQueryValues()
       this.bodyData.pageSize = size
       this.bodyData.pageNumber = page
-      this.serverSideProps.pageSize = size
+      this.serverSideProps.pageSize = size*/
       this.getDefaultFilterAndSearch()
     }
 
