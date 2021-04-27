@@ -357,6 +357,14 @@ export default {
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
+        (item) => {
+          if (item.FieldName === 'AnalysisEngineName') {
+            item.FieldName = 'analysisEngineTypeId'
+          }
+          return item
+        }
+      )
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = filterActive
       this.getDatatableList()
