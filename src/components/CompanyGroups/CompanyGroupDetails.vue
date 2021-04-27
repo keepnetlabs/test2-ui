@@ -81,6 +81,13 @@
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
       @on-table-settings-change="handleSetRenderedColumns"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      :isServerSide="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
     />
   </div>
 </template>
@@ -107,6 +114,8 @@ import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'CompanyGroupDetails',
   components: {
@@ -267,7 +276,7 @@ export default {
       ]
     },
     payload: {
-      pageSize: 1000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -275,6 +284,11 @@ export default {
         FilterGroups: [
           {
             Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
             FilterItems: [],
             FilterGroups: []
           }
@@ -282,7 +296,7 @@ export default {
       }
     },
     defaultPayload: {
-      pageSize: 1000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -292,12 +306,18 @@ export default {
             Condition: 'AND',
             FilterItems: [],
             FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
           }
         ]
       }
     },
     industries: null,
-    licenceTypes: null
+    licenceTypes: null,
+    serverSideProps: new ServerSideProps()
   }),
   watch: {
     isShowCreateOrEditModal() {
@@ -311,10 +331,60 @@ export default {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS)
     )
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.payload.pageSize = size
+    this.payload.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
-    this.initMethods()
   },
   methods: {
+    resetPageNumber() {
+      //generic
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.payload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.initMethods()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.payload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.payload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.initMethods()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
+      this.initMethods()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.initMethods()
+    },
     handleAllRecordsClick() {
       this.payload.pageSize = 75000
       this.showAllRecords = false
@@ -355,6 +425,7 @@ export default {
           this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
         })
       }
+      this.initMethods()
     },
     handleTableDownload(downloadTypes) {
       downloadTypes.exportTypes.forEach((item) => {
@@ -400,7 +471,13 @@ export default {
           const {
             data: { data }
           } = response
-          const { totalNumberOfRecords = 0 } = data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true

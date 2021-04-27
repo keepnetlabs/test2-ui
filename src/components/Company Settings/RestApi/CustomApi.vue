@@ -29,7 +29,6 @@
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :filterable="true"
-        :isServerSide="false"
         :show-all-records="showAllRecords"
         :total-number-of-records="totalNumberOfRecords"
         :options="true"
@@ -53,6 +52,13 @@
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
         @on-table-settings-change="handleSetRenderedColumns"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @sortChangedEvent="sortChanged"
+        @searchChangedEvent="handleSearchChange"
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
       />
     </div>
   </div>
@@ -71,6 +77,8 @@ import labels from '@/model/constants/labels'
 import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'CustomApi',
   data() {
@@ -91,6 +99,11 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
@@ -105,6 +118,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -201,7 +219,8 @@ export default {
           tooltip: labels.NewCustomApiBtnTooltip,
           id: 'btn-add--rest-api'
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   components: {
@@ -212,9 +231,60 @@ export default {
   },
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.REST_API))
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.tableOptions.pageSize = size
+    this.tableOptions.pageNumber = page
+    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   },
   methods: {
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForSearch()
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.axiosPayload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.axiosPayload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.axiosPayload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForSearch()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.axiosPayload.ascending = order === 'ascending'
+      this.axiosPayload.orderBy = prop
+      this.callForSearch()
+    },
+    resetPageNumber() {
+      //generic
+      this.tableOptions.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.tableOptions.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForSearch()
+    },
     callForSearch() {
       this.loading = true
       searchRestApi(this.axiosPayload)
@@ -222,7 +292,13 @@ export default {
           const {
             data: { data }
           } = response
-          const { totalNumberOfRecords = 0 } = data
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
           this.totalNumberOfRecords = totalNumberOfRecords
           if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
             this.showAllRecords = true

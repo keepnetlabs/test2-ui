@@ -433,6 +433,10 @@ export default {
             { text: 'is not equal to', value: 'IsNotEqual' },
             { text: 'exists', value: 'Exists' },
             { text: 'does not exist', value: 'DoesNotExist' }
+          ],
+          keywordOperators: [
+            { text: 'contains', value: 'Contains' },
+            { text: 'does not contain', value: 'DoesNotContain' }
           ]
         }
       ],

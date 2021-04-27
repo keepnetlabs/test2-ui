@@ -287,7 +287,9 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
-        :isServerSide="false"
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -955,12 +957,13 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
-      /*
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
+      const { page, size } = this.queryHelper.returnQueryValues()
       this.setQueryValuesToPayload(this.$route.query)
-
-       */
+      this.tableOptions.pageSize = size
+      this.tableOptions.pageNumber = page
+      this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }
   }
