@@ -89,8 +89,7 @@ export function setMfaResync(payload) {
 
 export function cantLogin(payload) {
   return testRequest.post('/system-users/mfa/send-recovery-sms', payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
+    loading: true
   })
 }
 
