@@ -113,6 +113,14 @@
         {{ mailDetails && mailDetails.urls.length }}
       </div>
     </div>
+    <div class="details-content--item">
+      <div id="text--email-details-geolocation-key" class="details-content--item--key">
+        Geolocation
+      </div>
+      <div id="text--email-details-geolocation-value" class="details-content--item--value">
+        {{ mailDetails && mailDetails.GeoLocation }}
+      </div>
+    </div>
     <email-details-sender-ip-blacklist-check
       :mail-details="mailDetails"
       :loading="loading"
