@@ -320,7 +320,10 @@
                   to="/investigations"
                   class="menu-link-default"
                   id="btn--link-navigator-menu-investigations"
-                  :class="[routerName === 'Investigation Details' && 'active-link']"
+                  :class="[
+                    routerName === 'Investigation Details' ||
+                      (routerName === 'Investigations' && 'active-link')
+                  ]"
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Investigations</span>

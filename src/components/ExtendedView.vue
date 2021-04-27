@@ -30,7 +30,7 @@
           {{ copyOfEditedRows[0][options.titleKey] || options.title }}
         </span>
         <span id="text--extended-view-title-multiple" class="settings-span" v-else
-          >{{ value.length }} Items Selected</span
+          >{{ getItemLength }} Items Selected</span
         >
         <div class="edit-popup__edit-actions">
           <v-btn id="btn-edit--extended-view" @click="toggleEditStatus" icon v-if="!editMode">
@@ -659,6 +659,12 @@ export default {
         return {}
       }
     },
+    totalItemCount: {
+      type: Number
+    },
+    isMultiple: {
+      type: Boolean
+    },
     loading: {
       type: Boolean
     },
@@ -747,6 +753,9 @@ export default {
         JSON.stringify(this.copyOfEditedRows) === JSON.stringify(this.defaultValues) &&
         isDisableChecker
       )
+    },
+    getItemLength() {
+      return this.isMultiple ? this.totalItemCount : this.value.length
     }
   },
   methods: {
@@ -755,6 +764,9 @@ export default {
     },
     multipleValues(key, val) {
       // This method controls whether selected items has same value or not
+      if (this.isMultiple && this.value.length > 1) {
+        return true
+      }
       if (this.value && this.value.length > 1) {
         let value = true
         for (let a = 0; a <= this.value.length - 2; a++) {

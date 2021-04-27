@@ -186,7 +186,7 @@
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
                     <k-file-upload
-                      hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px"
+                      hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
                       id="input--company-logo"
                       @inputFile="onFileChanged"
                       :size="2"

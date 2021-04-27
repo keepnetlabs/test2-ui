@@ -57,17 +57,19 @@
         </div>
         <extended-view
           v-if="isWantToEditRow || isExtendedViewCreateMode"
+          :is-multiple="isSelectedAllEver"
+          :total-item-count="serverSideSelectionCount"
           :value="extendedViewValue"
           :create-mode="isExtendedViewCreateMode"
-          @closeCreateMode="$emit('closeCreateMode')"
           :options="extendedViewOptions"
           :container-style="extendedViewStyle"
-          @handleEdit="handleExtendedViewEdit"
           :disable-transition="disableExtendedViewTransition"
-          @closeEditPopup="closeEditPopup"
           :changeFooterPosition="changeFooterPosition"
           :extendedViewDisableChanger="extendedViewDisableChanger"
           :loading="extendedViewLoading"
+          @closeCreateMode="$emit('closeCreateMode')"
+          @closeEditPopup="closeEditPopup"
+          @handleEdit="handleExtendedViewEdit"
         >
           <template v-slot:body>
             <slot name="extended-view-slot" :scope="multipleSelection"></slot>
@@ -282,7 +284,12 @@
           @on-all-records-button-click="$emit('on-all-records-button-click')"
         />
         <slot name="table-notification"></slot>
-        <div class="selection-row" v-if="multipleSelection.length && tableData && tableData.length">
+        <div
+          class="selection-row"
+          v-if="
+            (multipleSelection.length || serverSideSelectionCount) && tableData && tableData.length
+          "
+        >
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
             @click.native="toggleAll(multipleSelection)"
@@ -293,7 +300,6 @@
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
-            v-if="!isServerSide"
             :ripple="false"
             class="btn-all-selection"
             rounded
@@ -990,6 +996,10 @@ export default {
       required: false,
       default: true
     },
+    showSelectAllButton: {
+      type: Boolean,
+      default: false
+    },
     columns: {
       type: Array,
       required: true
@@ -1209,16 +1219,19 @@ export default {
           showfilteredData: false,
           tableData: [],
           initialData: [],
+          serverSideSelectionCount: 0,
           filteredData: [],
           filterValues: {},
           lastColFixed: true,
           rowCount: this.countRow || 10,
           isSelectedAll: false,
+          excludedResourceIdList: [],
           selectedCluster: '',
           sortProps: null,
           unRenderedFilterData: [],
           totalLength: 0,
           renderedColumns: [],
+          isSelectedAllEver: false,
           selectionRowCheckboxDeterminate: false,
           multipleSelection: []
         }
@@ -1256,14 +1269,20 @@ export default {
     isShowAllRecords() {
       return !this.isServerSide && this.showAllRecords
     },
+    isSelectAllButton() {
+      return !this.isServerSide ? true : !this.search && this.showSelectAllButton
+    },
     getSelectionText() {
-      return this.isSelectedAll
-        ? 'All selected'
-        : `${this.multipleSelection.length} item(s) selected`
+      const selectionCount = this.isServerSide
+        ? this.serverSideSelectionCount
+        : this.multipleSelection.length
+      return this.isSelectedAll ? 'All selected' : `${selectionCount} item(s) selected`
     },
     getSelectionButtonText() {
       const text = this.isSelectedAll ? 'Unselect' : 'Select'
-      //const dataRef = this.showfilteredData ? this.unRenderedFilterData : this.initialData
+      if (this.isServerSide) {
+        return `${text} all ${this.serverSideProps.totalNumberOfRecords} item(s)`
+      }
       return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
@@ -1302,10 +1321,13 @@ export default {
       rowCount,
       isSelectedAll,
       unRenderedFilterData,
+      excludedResourceIdList,
       renderedColumns,
       multipleSelection,
       expandedRows,
-      selectionRowCheckboxDeterminate
+      selectionRowCheckboxDeterminate,
+      serverSideSelectionCount,
+      isSelectedAllEver
     } = this.persistentState
     return {
       columnKey: 'column-key',
@@ -1314,6 +1336,7 @@ export default {
       renderedColumns,
       filteredDataLength,
       showfilteredData,
+      excludedResourceIdList,
       selectCheckboxesLazy: false,
       sortProps,
       initialData,
@@ -1340,14 +1363,15 @@ export default {
       overFlowTooltipStyle: {},
       lastColFixed,
       clusteredItems: [],
+      serverSideSelectionCount,
       isRowActionsMenuOpen: [],
+      isSelectedAllEver,
       filterValues,
       download: {
         xls: false,
         csv: false,
         pdf: false
       },
-      cachedClusterIds: [],
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
@@ -1412,12 +1436,24 @@ export default {
 
       if (
         this.isServerSide &&
+        !!oldTable &&
         !oldTable.length &&
         this.multipleSelection.length &&
         !this.clusteredItems.length
       ) {
         this.$nextTick(() => {
           this.getSelectedObjectAndSelectRows()
+        })
+      }
+      if (this.isServerSide && this.isSelectedAllEver) {
+        this.$nextTick(() => {
+          this.$nextTick(() => {
+            this.tableData.forEach((item) => {
+              if (!this.excludedResourceIdList.find((id) => id === item[this.rowKey])) {
+                this.$refs.elTableRef.toggleRowSelection(item, true)
+              }
+            })
+          })
         })
       }
 
@@ -1490,6 +1526,11 @@ export default {
     },
     multipleSelection() {
       this.calculateAllSelected()
+    },
+    isSelectedAll(val = false) {
+      if (val && !this.search) {
+        //this.isSelectedAllEver = true
+      }
     },
     columns: {
       deep: true,
@@ -1566,6 +1607,9 @@ export default {
         totalLength: this.totalLength,
         renderedColumns: this.renderedColumns,
         multipleSelection: this.multipleSelection,
+        serverSideSelectionCount: this.serverSideSelectionCount,
+        isSelectedAllEver: this.isSelectedAllEver,
+        excludedResourceIdList: this.excludedResourceIdList,
         selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate
       }
     },
@@ -1624,8 +1668,14 @@ export default {
       return this.multipleSelection
     },
     handleExtendedViewEdit(val) {
-      this.$emit('handleEdit', val)
+      this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
+      this.resetSelectableParams()
+    },
+    resetSelectableParams() {
       this.multipleSelection = []
+      this.isSelectedAllEver = false
+      this.excludedResourceIdList = []
+      this.serverSideSelectionCount = 0
       this.$refs.elTableRef.clearSelection()
       this.clusteredItems = []
     },
@@ -1682,9 +1732,10 @@ export default {
       const length = this.groupable
         ? this.getTotalLength(this.initialData)
         : this.initialData.length
+
       this.isSelectedAll = this.isServerSide
-        ? !!this.multipleSelection.length &&
-          this.multipleSelection.length === this.serverSideProps.totalNumberOfRecords
+        ? !!this.serverSideSelectionCount &&
+          this.serverSideSelectionCount === this.serverSideProps.totalNumberOfRecords
         : this.multipleSelection.length === length
     },
     /**
@@ -1737,14 +1788,35 @@ export default {
      * No param
      */
     handleSelectButtonClick() {
-      if (this.isSelectedAll) {
-        this.multipleSelection = []
-        this.isSelectedAll = false
-        this.clusteredItems = []
-        this.$refs.elTableRef.clearSelection()
+      if (this.isServerSide) {
+        if (this.isSelectedAll) {
+          this.serverSideSelectionCount = 0
+          this.excludedResourceIdList = []
+          this.multipleSelection = []
+          this.clusteredItems = []
+          this.isSelectedAllEver = false
+          this.isSelectedAll = false
+          this.$refs.elTableRef.clearSelection()
+          this.$emit('on-selected-all-click', false)
+        } else {
+          if (this.serverSideProps.totalNumberOfRecords > this.rowCount) {
+            this.isSelectedAllEver = true
+          }
+          this.selectAllItems()
+          this.isSelectedAll = true
+          this.excludedResourceIdList = []
+          this.serverSideSelectionCount = this.serverSideProps.totalNumberOfRecords
+        }
       } else {
-        this.selectAllItems()
-        this.isSelectedAll = true
+        if (this.isSelectedAll) {
+          this.multipleSelection = []
+          this.isSelectedAll = false
+          this.clusteredItems = []
+          this.$refs.elTableRef.clearSelection()
+        } else {
+          this.selectAllItems()
+          this.isSelectedAll = true
+        }
       }
     },
     /**
@@ -1871,12 +1943,32 @@ export default {
       }
       const selections = this.multipleSelection.filter((item) => !item.isParent)
       if (selections.length) {
+        //temporary
+        if (this.isSelectedAllEver && selections.length === 1) {
+          this.multipleSelection.push(selections[0])
+          selections.push(selections[0])
+        }
+
         this.$emit('onEditClick', {
           selected: selections,
-          isEditPopupOpen: true
+          isEditPopupOpen: true,
+          excludedResourceIdList: this.excludedResourceIdList,
+          isSelectedAllEver: this.isSelectedAllEver
         })
         this.isWantToEditRow = true
         this.isSettingsOpened = false
+      } else {
+        if (this.isSelectedAllEver) {
+          const selections = [this.tableData[0], this.tableData[1]]
+          this.$emit('onEditClick', {
+            selected: selections,
+            isEditPopupOpen: true,
+            excludedResourceIdList: this.excludedResourceIdList,
+            isSelectedAllEver: this.isSelectedAllEver
+          })
+          this.isWantToEditRow = true
+          this.isSettingsOpened = false
+        }
       }
     },
     /**
@@ -1890,6 +1982,15 @@ export default {
       ref.parentNode.insertBefore(objStyle, ref)
     },
     handleSelectAll(selection) {
+      if (this.isServerSide) {
+        this.serverSideSelectionCount += this.tableData.length
+        if (this.isSelectedAllEver) {
+          for (const item of this.tableData) {
+            //TODO burada kaldım
+            this.findAndDeleteFromExcludedResourceIdList(item[this.rowKey])
+          }
+        }
+      }
       if (this.groupable) {
         if (this.clusteredItems.length) {
           for (let item of this.clusteredItems) {
@@ -2257,6 +2358,7 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+          this.resetSelectableParams()
         }, debounceTime)
       } else {
         this.debounce(() => {
@@ -2407,6 +2509,17 @@ export default {
       }
     },
     handleSelect(selection, row) {
+      if (this.isServerSide) {
+        if (selection.find((item) => item[this.rowKey] === row[this.rowKey])) {
+          this.serverSideSelectionCount++
+          this.findAndDeleteFromExcludedResourceIdList(row[this.rowKey])
+        } else {
+          this.serverSideSelectionCount--
+          if (this.isSelectedAllEver) {
+            this.excludedResourceIdList.push(row[this.rowKey])
+          }
+        }
+      }
       if (this.groupable) {
         this.handleToggleOrLazyWhenCheckboxSelected(
           row,
@@ -2457,6 +2570,13 @@ export default {
         }
         this.$emit('handleSelectionChange', selection)
       }
+    },
+    findAndDeleteFromExcludedResourceIdList(rowKey = '') {
+      const indexOfExcluded = this.excludedResourceIdList.indexOf(rowKey)
+      if (indexOfExcluded === -1) {
+        return
+      }
+      this.excludedResourceIdList.splice(indexOfExcluded, 1)
     },
     handleToggleOrLazyWhenCheckboxSelected(row = {}, selection = true) {
       const { hasChildren, children = [] } = row
@@ -2543,45 +2663,70 @@ export default {
       this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
-      if (this.renderedTotalLength === selections.length) {
-        this.$refs.elTableRef.toggleAllSelection()
-      } else {
-        if (this.selectionCheckbox) {
-          if (this.selectionRowCheckboxDeterminate) {
-            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-            const selectedItems = this.getAllItems(dataRef, [], false, true)
-            for (let item of selectedItems) {
+      if (this.selectionCheckbox) {
+        if (this.selectionRowCheckboxDeterminate) {
+          const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+          const allItems = this.getAllItems(dataRef, [], false, true)
+          for (let item of allItems) {
+            if (
+              this.multipleSelection.find(
+                (selection) => selection[this.rowKey] === item[[this.rowKey]]
+              )
+            ) {
               this.$refs.elTableRef.toggleRowSelection(item, false)
+              if (this.isSelectedAllEver) {
+                this.excludedResourceIdList.push(item[this.rowKey])
+              }
+              this.serverSideSelectionCount--
             }
-            this.selectionRowCheckboxDeterminate = false
-            this.selectionCheckbox = false
-          } else {
-            this.$refs.elTableRef.toggleAllSelection()
+          }
+          this.selectionRowCheckboxDeterminate = false
+          this.selectionCheckbox = false
+        } else {
+          this.$refs.elTableRef.toggleAllSelection()
+          /*
+            this.serverSideSelectionCount += this.tableData.length
+            if (this.isSelectedAllEver) {
+              for (const item of this.tableData) {
+                //TODO burada kaldım
+                this.findAndDeleteFromExcludedResourceIdList(item[this.rowKey])
+              }
+            }
+            */
+        }
+      } else {
+        const selectedItems = this.getAllItems(
+          this.multipleSelection.filter((item) => {
+            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+            return dataRef.find(
+              (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
+            )
+          }),
+          [],
+          false,
+          true
+        )
+
+        if (selectedItems.length) {
+          for (let selectedItem of selectedItems) {
+            const thisTableItem = this.isServerSide
+              ? this.tableData.find((item) => {
+                  return JSON.stringify(item) === JSON.stringify(selectedItem)
+                })
+              : selectedItem
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem)
+            this.serverSideSelectionCount--
+            if (this.isSelectedAllEver) {
+              this.excludedResourceIdList.push(selectedItem[this.rowKey])
+            }
           }
         } else {
-          const selectedItems = this.getAllItems(
-            this.multipleSelection.filter((item) => {
-              const dataRef = this.showfilteredData ? this.filteredData : this.tableData
-              return dataRef.find(
-                (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-              )
-            }),
-            [],
-            false,
-            true
-          )
-
-          if (selectedItems.length) {
-            for (let selectedItem of selectedItems) {
-              const thisTableItem = this.isServerSide
-                ? this.tableData.find((item) => {
-                    return JSON.stringify(item) === JSON.stringify(selectedItem)
-                  })
-                : selectedItem
-              this.$refs.elTableRef.toggleRowSelection(thisTableItem)
+          this.$refs.elTableRef.clearSelection()
+          this.serverSideSelectionCount -= this.tableData.length
+          if (this.isSelectedAllEver) {
+            for (const item of this.tableData) {
+              this.excludedResourceIdList.push(item[this.rowKey])
             }
-          } else {
-            this.$refs.elTableRef.clearSelection()
           }
         }
       }
@@ -2692,6 +2837,11 @@ export default {
           top: `${index * 48}px`
         }
       }
+
+      if (!this.multipleSelection.find((item) => item[this.rowKey] === selections[this.rowKey])) {
+        this.findAndDeleteFromExcludedResourceIdList(selections[this.rowKey])
+        this.serverSideSelectionCount++
+      }
       if (typeof selections === 'object' && !this.multipleSelection.length) {
         this.multipleSelection.push(selections)
       }
@@ -2748,9 +2898,11 @@ export default {
         []
     },
     handleFilterColumn(filterObj) {
+      this.isSelectedAllEver = false
       this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {
+      this.isSelectedAllEver = false
       this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
     }
