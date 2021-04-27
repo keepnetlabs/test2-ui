@@ -306,6 +306,14 @@ export default {
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
+      this.bodyOptions.filter.FilterGroups[1].FilterItems = this.bodyOptions.filter.FilterGroups[1].FilterItems.map(
+        (item) => {
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'Status'
+          }
+          return item
+        }
+      )
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = filterActive
       this.callForSearchSmtpSettings()
