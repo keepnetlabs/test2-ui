@@ -793,7 +793,6 @@ export default {
       }
       getMfaQRCode(payload)
         .then((response) => {
-          debugger
           this.pageNumber = 7
           this.mfaSetupDetails = response.data['data']
         })
