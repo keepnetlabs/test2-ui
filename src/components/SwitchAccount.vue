@@ -88,7 +88,7 @@
 
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex'
-import { searchMyCompanies } from '../api/company'
+import { getMyCompanies } from '@/api/company'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import labels from '@/model/constants/labels'
 import SwitchAccountTreeView from '@/components/SwitchAccountTreeView'
@@ -133,7 +133,7 @@ export default {
       }
     })
     this.isCompaniesLoading = true
-    searchMyCompanies({ Text: '' })
+    getMyCompanies()
       .then((response) => {
         this.defaultOrderedItems = JSON.parse(JSON.stringify(response.data.data))
         this.orderedAccounts = response.data.data

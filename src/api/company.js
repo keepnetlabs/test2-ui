@@ -12,6 +12,11 @@ export function searchMyCompanies(payload) {
     isCompanySelect: true
   })
 }
+
+export function getMyCompanies() {
+  return testRequest.get('/companies/my')
+}
+
 export function exportCompanies(payload) {
   return testRequest.post('/companies/search/export', payload, {
     responseType: 'blob'
