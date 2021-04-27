@@ -147,6 +147,9 @@ import userAgent from '@/components/GrapesJs/Newsletter/mergedTexts/userAgent'
 import actionDate from '@/components/GrapesJs/Newsletter/mergedTexts/actionDate'
 import actionIP from '@/components/GrapesJs/Newsletter/mergedTexts/actionIP'
 import productName from '@/components/GrapesJs/Newsletter/mergedTexts/productName'
+import analysisDetailUrl from '@/components/GrapesJs/Newsletter/mergedTexts/analysisDetailUrl'
+import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
+import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -409,6 +412,12 @@ export default {
           return actionIP
         case '{PRODUCTNAME}':
           return productName
+        case '{ANALYSISDETAILURL}':
+          return analysisDetailUrl
+        case '{INVESTIGATIONURL}':
+          return investigationUrl
+        case '{COMPANYLOGO}':
+          return companyLogo
 
         default:
           break

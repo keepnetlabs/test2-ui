@@ -81,10 +81,11 @@
 
           <k-file-upload
             id="input--phishing-reporter-settings-logo"
-            hint="Only jpg, png, gif, bmp files. Max. file size 3MB"
+            hint="Only jpg, png, gif, bmp files. Max. file size 2MB"
             ref="refFileUpload"
             :readonly="!showForm"
             @inputFile="onFileChanged"
+            :size="2"
           />
         </v-list-item-content>
       </v-list-item>
