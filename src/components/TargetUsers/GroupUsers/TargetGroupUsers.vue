@@ -85,7 +85,7 @@ export default {
       return [this.selectedRow]
     },
     getGroupName() {
-      return this.$route.params.label
+      return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
     }
   },
   created() {
