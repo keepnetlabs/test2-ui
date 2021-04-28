@@ -436,16 +436,13 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableOptions.table =
             results.map((item) => {
-              const { lastSeen, diagnosticToolStatus, diagnosticToolLastSeen } = item
-
+              const { diagnosticToolStatus } = item
               const newItem = {
                 ...item,
-                lastSeen: this.getUtcToNowDate(lastSeen),
                 diagnosticToolStatus:
                   diagnosticToolStatus === 'NotInstalled'
                     ? labels.NotInstalled
-                    : diagnosticToolStatus,
-                diagnosticToolLastSeen: this.getUtcToNowDate(diagnosticToolLastSeen)
+                    : diagnosticToolStatus
               }
               return newItem
             }) || []
@@ -459,33 +456,6 @@ export default {
             this.isRestoredOrClearedFilters = false
           }
         })
-    },
-    getUtcToNowDate(strDate) {
-      if (strDate) {
-        const lastSeenSplittedFormat = strDate.split(' ')
-        const lastSeenDateSide = lastSeenSplittedFormat[0].split('-')
-        const lastSeenTimeSide = lastSeenSplittedFormat[1].split(':')
-        const dateOfLastSeen = new Date(
-          lastSeenDateSide[0],
-          lastSeenDateSide[1] - 1,
-          lastSeenDateSide[2],
-          lastSeenTimeSide[0],
-          lastSeenTimeSide[1],
-          lastSeenTimeSide[2]
-        )
-        const timeZoneOffset = Math.floor(new Date().getTimezoneOffset() / -60)
-        const timezonedDate = new Date(
-          dateOfLastSeen.setHours(dateOfLastSeen.getHours() + timeZoneOffset)
-        )
-
-        return `${timezonedDate.getFullYear()}-${this.getDateValue(
-          timezonedDate.getMonth() + 1
-        )}-${this.getDateValue(timezonedDate.getDate())} ${this.getDateValue(
-          timezonedDate.getHours()
-        )}:${this.getDateValue(timezonedDate.getMinutes())}:${this.getDateValue(
-          timezonedDate.getSeconds()
-        )}`
-      }
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
@@ -551,19 +521,6 @@ export default {
         })
       } else {
         const elem = filter
-        if (filter.FieldName === 'LastSeen') {
-          const { Value: value } = filter
-          const lastSeenDate = new Date(value)
-          const utcLastSeen = `${lastSeenDate.getUTCFullYear()}-${this.getDateValue(
-            lastSeenDate.getUTCMonth() + 1
-          )}-${this.getDateValue(lastSeenDate.getUTCDate())} ${this.getDateValue(
-            lastSeenDate.getUTCHours()
-          )}:${this.getDateValue(lastSeenDate.getUTCMinutes())}:${this.getDateValue(
-            lastSeenDate.getUTCSeconds()
-          )}`
-          filter.Value = utcLastSeen
-        }
-
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
