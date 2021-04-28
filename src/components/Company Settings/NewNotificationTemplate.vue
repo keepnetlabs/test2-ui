@@ -261,7 +261,7 @@ export default {
     if (this.selectedItem && this.selectedItem.resourceId) {
       getEmailTemplate(this.selectedItem.resourceId).then((response) => {
         const logoKey = '{COMPANYLOGO}'
-        const logoUrl = this.$store.state.whitelabel.mainLogoUrl
+        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
         const {
           data: { data }
         } = response

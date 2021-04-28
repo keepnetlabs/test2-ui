@@ -413,7 +413,7 @@ export default {
       })
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
-          const logoUrl = this.$store.state.whitelabel.mainLogoUrl
+          const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
           value.content.components[0].content = `<img class="logo-url" src="${logoUrl}"/>`
         }
         blockManager.add(key, value)
