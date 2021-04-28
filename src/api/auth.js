@@ -70,8 +70,7 @@ export function updatePassword(payload) {
 
 export function getMfaQRCode(payload) {
   return testRequest.post('/system-users/mfa', payload, {
-    loading: true,
-    snackbar: COMMON_SNACKBAR
+    loading: true
   })
 }
 
