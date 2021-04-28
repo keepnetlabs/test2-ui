@@ -89,10 +89,11 @@
           key="minimizedLogo"
           id="input--whitelabeling-minimized-logo"
           :class="getFileUploadClasses(getMinimizedLogo)"
-          hint="Upload png, jpg, svg. Suggested size: 40px * 40px"
+          hint="Upload png, jpg, svg. Suggested size: 40px * 40px. Max. file size 2MB"
           ref="refMinimizedLogo"
           :extensions="['png', 'jpg', 'svg']"
           @inputFile="onMinimizedLogoChange"
+          :size="2"
         />
         <v-list-item
           v-if="getMinimizedLogo"
@@ -116,10 +117,11 @@
           key="favIcon"
           id="input--whitelabeling-fav-icon"
           :class="getFileUploadClasses(getFavIcon)"
-          hint="Upload .ico file. Suggested size: 32px * 32px"
+          hint="Upload .ico file. Suggested size: 32px * 32px. Max. file size 2MB"
           ref="refFavIcon"
           :extensions="['ico']"
           @inputFile="onFavIconChange"
+          :size="2"
         />
         <v-list-item
           v-if="getFavIcon"
@@ -143,10 +145,11 @@
           id="input--whitelabeling-notification-template-logo"
           key="emailTemplateLogo"
           :class="getFileUploadClasses(getEmailTemplateLogo)"
-          hint="Upload png, jpg, svg. Suggested size: 320px * 320px"
+          hint="Upload png, jpg, svg. Suggested size: 320px * 320px. Max. file size 2MB"
           ref="refNotificationTemplateLogo"
           :extensions="['png', 'jpg', 'svg']"
           @inputFile="onNotificationTemplateLogoChange"
+          :size="2"
         />
         <v-list-item
           v-if="getEmailTemplateLogo"
