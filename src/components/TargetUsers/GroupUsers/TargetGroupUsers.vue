@@ -165,6 +165,12 @@ export default {
     },
     handleRemoveUsers() {
       this.toggleShowRemoveUserModal()
+      this.selectedRow.map((selectedItem) => {
+        this.$refs.refTable.$refs.refTargetGroupUsersTable.$refs.elTableRef.toggleRowSelection(
+          selectedItem,
+          false
+        )
+      })
       this.callForSearchTargetGroupUsers()
     },
     toggleAddUserModal() {

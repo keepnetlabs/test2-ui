@@ -284,12 +284,7 @@
           @on-all-records-button-click="$emit('on-all-records-button-click')"
         />
         <slot name="table-notification"></slot>
-        <div
-          class="selection-row"
-          v-if="
-            (multipleSelection.length || serverSideSelectionCount) && tableData && tableData.length
-          "
-        >
+        <div class="selection-row" v-if="getTableHeaderRender">
           <v-checkbox
             :indeterminate="selectionRowCheckboxDeterminate"
             @click.native="toggleAll(multipleSelection)"
@@ -996,7 +991,7 @@ export default {
       required: false,
       default: true
     },
-    showSelectAllButton: {
+    isServerSideSelection: {
       type: Boolean,
       default: false
     },
@@ -1269,13 +1264,18 @@ export default {
     isShowAllRecords() {
       return !this.isServerSide && this.showAllRecords
     },
-    isSelectAllButton() {
-      return !this.isServerSide ? true : !this.search && this.showSelectAllButton
+    getTableHeaderRender() {
+      const compareVal =
+        this.isServerSide && this.isServerSideSelection
+          ? this.serverSideSelectionCount
+          : this.multipleSelection.length
+      return compareVal && this.tableData && this.tableData.length
     },
     getSelectionText() {
-      const selectionCount = this.isServerSide
-        ? this.serverSideSelectionCount
-        : this.multipleSelection.length
+      const selectionCount =
+        this.isServerSide && this.isServerSideSelection
+          ? this.serverSideSelectionCount
+          : this.multipleSelection.length
       return this.isSelectedAll ? 'All selected' : `${selectionCount} item(s) selected`
     },
     getSelectionButtonText() {
@@ -1733,10 +1733,14 @@ export default {
         ? this.getTotalLength(this.initialData)
         : this.initialData.length
 
-      this.isSelectedAll = this.isServerSide
-        ? !!this.serverSideSelectionCount &&
-          this.serverSideSelectionCount === this.serverSideProps.totalNumberOfRecords
-        : this.multipleSelection.length === length
+      this.isSelectedAll =
+        this.isServerSide && this.isServerSideSelection
+          ? !!this.serverSideSelectionCount &&
+            this.serverSideSelectionCount === this.serverSideProps.totalNumberOfRecords
+          : this.isServerSide
+          ? !!this.multipleSelection.length &&
+            this.multipleSelection.length === this.serverSideProps.totalNumberOfRecords
+          : this.multipleSelection.length === length
     },
     /**
      * This event comes from el-table for lazy-loading children
@@ -1982,7 +1986,7 @@ export default {
       ref.parentNode.insertBefore(objStyle, ref)
     },
     handleSelectAll(selection) {
-      if (this.isServerSide) {
+      if (this.isServerSide && this.isServerSideSelection) {
         this.serverSideSelectionCount += this.tableData.length
         if (this.isSelectedAllEver) {
           for (const item of this.tableData) {
@@ -2509,7 +2513,7 @@ export default {
       }
     },
     handleSelect(selection, row) {
-      if (this.isServerSide) {
+      if (this.isServerSide && this.isServerSideSelection) {
         if (selection.find((item) => item[this.rowKey] === row[this.rowKey])) {
           this.serverSideSelectionCount++
           this.findAndDeleteFromExcludedResourceIdList(row[this.rowKey])
@@ -2674,25 +2678,18 @@ export default {
               )
             ) {
               this.$refs.elTableRef.toggleRowSelection(item, false)
-              if (this.isSelectedAllEver) {
-                this.excludedResourceIdList.push(item[this.rowKey])
+              if (this.isServerSide && this.isServerSideSelection) {
+                if (this.isSelectedAllEver) {
+                  this.excludedResourceIdList.push(item[this.rowKey])
+                }
+                this.serverSideSelectionCount--
               }
-              this.serverSideSelectionCount--
             }
           }
           this.selectionRowCheckboxDeterminate = false
           this.selectionCheckbox = false
         } else {
           this.$refs.elTableRef.toggleAllSelection()
-          /*
-            this.serverSideSelectionCount += this.tableData.length
-            if (this.isSelectedAllEver) {
-              for (const item of this.tableData) {
-                //TODO burada kaldım
-                this.findAndDeleteFromExcludedResourceIdList(item[this.rowKey])
-              }
-            }
-            */
         }
       } else {
         const selectedItems = this.getAllItems(
@@ -2715,17 +2712,21 @@ export default {
                 })
               : selectedItem
             this.$refs.elTableRef.toggleRowSelection(thisTableItem)
-            this.serverSideSelectionCount--
+            if (this.isServerSide && this.isServerSideSelection) {
+              this.serverSideSelectionCount--
+            }
             if (this.isSelectedAllEver) {
               this.excludedResourceIdList.push(selectedItem[this.rowKey])
             }
           }
         } else {
           this.$refs.elTableRef.clearSelection()
-          this.serverSideSelectionCount -= this.tableData.length
-          if (this.isSelectedAllEver) {
-            for (const item of this.tableData) {
-              this.excludedResourceIdList.push(item[this.rowKey])
+          if (this.isServerSide && this.isServerSideSelection) {
+            this.serverSideSelectionCount -= this.tableData.length
+            if (this.isSelectedAllEver) {
+              for (const item of this.tableData) {
+                this.excludedResourceIdList.push(item[this.rowKey])
+              }
             }
           }
         }
@@ -2838,9 +2839,11 @@ export default {
         }
       }
 
-      if (!this.multipleSelection.find((item) => item[this.rowKey] === selections[this.rowKey])) {
-        this.findAndDeleteFromExcludedResourceIdList(selections[this.rowKey])
-        this.serverSideSelectionCount++
+      if (this.isServerSide && this.isServerSideSelection) {
+        if (!this.multipleSelection.find((item) => item[this.rowKey] === selections[this.rowKey])) {
+          this.findAndDeleteFromExcludedResourceIdList(selections[this.rowKey])
+          this.serverSideSelectionCount++
+        }
       }
       if (typeof selections === 'object' && !this.multipleSelection.length) {
         this.multipleSelection.push(selections)
