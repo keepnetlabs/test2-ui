@@ -540,7 +540,7 @@
             id="incident-responder-reported-emails-clustered-table"
             refName="clustered-ref-name"
             ref="refReportedEmailsClustered"
-            show-select-all-button
+            is-server-side-selection
             changeFooterPosition
             disable-extended-view-transition
             selectable
@@ -686,7 +686,7 @@
             ref="refReportedEmails"
             id="incident-responder-reported-emails-data-table"
             active-cluster=""
-            show-select-all-button
+            is-server-side-selection
             :loading="reportedEmailsLoading"
             :server-side-events="{ pagination: true, search: true, sort: true }"
             :is-column-filter-active="emails.isColumnFilterActive"

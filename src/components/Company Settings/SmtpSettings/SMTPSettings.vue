@@ -578,7 +578,10 @@ export default {
     handleDeleteMultipleSmtpSettings(selections) {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
-        selections.forEach((item) => this.handleDeleteSmtpSettings(item))
+        selections.forEach((item) => {
+          this.handleDeleteSmtpSettings(item)
+          this.$refs.refSmtpSettingsList.$refs.elTableRef.toggleRowSelection(item, false)
+        })
       }
     },
     getDefaultFilterAndSearch() {
