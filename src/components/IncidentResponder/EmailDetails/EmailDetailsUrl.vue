@@ -23,11 +23,12 @@
           </div>
           <div class="ed-header-btn-1 collapse-details d-flex align-center">
             <badge
-              :text="getTextOfType(url['analysisList'])"
-              :color="getColorOfType(url['analysisList'])"
               size="small"
               class-name="mr-4 badge"
               :id="`badge--incident-responder-email-details-url-${index}`"
+              :outline="false"
+              :text="getTextOfType(url['analysisList'])"
+              :color="getColorOfType(url['analysisList'])"
             />
             <div
               @click="handleCopyUrl(url.url)"
