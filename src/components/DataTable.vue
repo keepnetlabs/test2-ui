@@ -295,6 +295,7 @@
           />
           <span class="selection-span">{{ getSelectionText }}</span>
           <v-btn
+            v-if="isServerSideSelection || !isServerSide"
             :ripple="false"
             class="btn-all-selection"
             rounded
