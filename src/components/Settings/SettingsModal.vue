@@ -18,7 +18,7 @@
             <v-row align="center" justify="center">
               <v-col sm="12" class="p-0">
                 <v-form ref="settingsRef">
-                  <div class="mb-4">
+                  <div class="mb-8">
                     <label class="settings-modal-wrapper__label d-block">Timezone</label>
                     <label class="settings-modal-wrapper__label--sub d-block mb-2"
                       >Select your timezone</label
@@ -37,7 +37,7 @@
                       :search-input.sync="timeZoneSearchVal"
                     ></k-select>
                   </div>
-                  <div class="mb-4">
+                  <div class="mb-8">
                     <label class="settings-modal-wrapper__label d-block mb-2">Date Format</label>
                     <v-radio-group
                       v-model="formValues.dateFormat"
