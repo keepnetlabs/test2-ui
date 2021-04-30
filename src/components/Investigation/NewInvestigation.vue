@@ -710,9 +710,9 @@ export default {
         return rules
       } else if (option === 'size') {
         rules.push(
-          (v) => Validations.isNumber(v),
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
+          (v) => Validations.isNumber(v),
           (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Size, 320))
         )
         return rules
