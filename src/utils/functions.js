@@ -902,7 +902,7 @@ export function getTimeZone() {
   let is12H = timeFormat === '12h'
 
   if (is12H) {
-    timeFormat = 'h'
+    timeFormat = 'hh'
   } else {
     timeFormat = 'HH'
   }
@@ -954,4 +954,8 @@ export function getTimeZoneForMoment() {
   }
 
   return timeZone
+}
+
+export function deepCopyArray(data) {
+  return JSON.parse(JSON.stringify(data))
 }

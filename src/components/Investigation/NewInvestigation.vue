@@ -514,9 +514,9 @@ export default {
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: `Manual Investigation - ${new Date().getDate()}.${
-        new Date().getMonth() + 1
-      }.${new Date().getFullYear()} ${new Date().getHours()}:${new Date().getMinutes()}`,
+      investgationName: `Manual Investigation - ${this.$moment(Date.now()).format(
+        getTimeZoneForMoment()
+      )}`,
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
@@ -1382,9 +1382,9 @@ export default {
               label: 'Phishing'
             })
         })
-      this.investgationName = `Manual Investigation - ${new Date().getDate()}.${
-        new Date().getMonth() + 1
-      }.${new Date().getFullYear()} ${new Date().getHours()}:${new Date().getMinutes()}`
+      this.investgationName = `Manual Investigation - ${this.$moment(Date.now()).format(
+        getTimeZoneForMoment()
+      )}`
     }
     document.querySelector('.page-nav').style.zIndex = 8
   },

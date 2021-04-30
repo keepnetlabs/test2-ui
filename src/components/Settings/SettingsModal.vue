@@ -18,12 +18,13 @@
             <v-row align="center" justify="center">
               <v-col sm="12" class="p-0">
                 <v-form ref="settingsRef">
-                  <div class="mb-4">
+                  <div class="mb-8">
                     <label class="settings-modal-wrapper__label d-block">Timezone</label>
                     <label class="settings-modal-wrapper__label--sub d-block mb-2"
                       >Select your timezone</label
                     >
                     <k-select
+                      type="autocomplete"
                       v-model.trim="formValues.timeZoneId"
                       id="input--settings-modal"
                       :items="timeZoneList"
@@ -33,9 +34,10 @@
                       item-value="id"
                       outlined
                       placeholder="Select your timezone"
+                      :search-input.sync="timeZoneSearchVal"
                     ></k-select>
                   </div>
-                  <div class="mb-4">
+                  <div class="mb-8">
                     <label class="settings-modal-wrapper__label d-block mb-2">Date Format</label>
                     <v-radio-group
                       v-model="formValues.dateFormat"
@@ -58,7 +60,7 @@
                       <v-radio
                         id="input--settings-modal-type-YYYY/MM/DD"
                         value="YYYY/MM/DD"
-                        label="YYYY/MM/DD        2020/5/16"
+                        label="YYYY/MM/DD        2020/05/16"
                         color="#2196f3"
                       ></v-radio>
                     </v-radio-group>
@@ -74,7 +76,7 @@
                       <v-radio
                         id="input--settings-modal-type-12h"
                         value="12h"
-                        label="12h        6:25 PM"
+                        label="12h        06:25 PM"
                         color="#2196f3"
                       ></v-radio>
                       <v-radio
@@ -114,6 +116,7 @@ import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getSystemUserSettings, getTimezone, setSystemUserSettings } from '@/api/settings'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import { deepCopyArray } from '@/utils/functions'
 
 export default {
   name: 'SettingsModal',
@@ -135,7 +138,9 @@ export default {
         dateFormat: null,
         timeFormat: null
       },
-      timeZoneList: []
+      timeZoneList: [],
+      defaultTimeZoneList: [],
+      timeZoneSearchVal: null
     }
   },
   created() {
@@ -157,7 +162,9 @@ export default {
       this.loadingSettingsModal = true
       getTimezone()
         .then((response) => {
-          this.timeZoneList = response.data.data
+          let data = response.data.data
+          this.timeZoneList = data
+          this.defaultTimeZoneList = deepCopyArray(data)
           this.getSystemUserSettings()
         })
         .catch(() => {
@@ -172,6 +179,20 @@ export default {
         .finally(() => {
           this.loadingSettingsModal = false
         })
+    }
+  },
+  watch: {
+    timeZoneSearchVal(newVal, oldVal) {
+      if (newVal && newVal.length && oldVal !== null) {
+        this.timeZoneList = this.defaultTimeZoneList.reduce((acc, item) => {
+          if (item.displayName.toLocaleLowerCase().includes(newVal.toLocaleLowerCase())) {
+            acc.push(item)
+          }
+          return acc
+        }, [])
+      } else {
+        this.timeZoneList = this.defaultTimeZoneList
+      }
     }
   }
 }
