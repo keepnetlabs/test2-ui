@@ -157,6 +157,11 @@ export default {
           show: true,
           maxWidth: 170,
           type: 'badge',
+          props: {
+            style: {
+              maxWidth: '130px'
+            }
+          },
           hasTooltip: true
         },
         {

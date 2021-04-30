@@ -180,6 +180,8 @@ export function getDataTableFieldLabel(field = '') {
       return 'N/A'
     case 'notinstalled':
       return 'Not Installed'
+    case 'waitingresponse':
+      return 'Waiting Response'
     case 'unknown':
       return 'N/A'
     default:
