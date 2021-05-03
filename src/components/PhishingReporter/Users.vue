@@ -101,6 +101,7 @@ import DataTable from '../DataTable'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
+  PHISHING_REPORTER_FILTERABLE_ITEMS,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -202,7 +203,9 @@ export default {
               style: {
                 maxWidth: '110px'
               }
-            }
+            },
+            filterableType: 'select',
+            filterableItems: PHISHING_REPORTER_FILTERABLE_ITEMS
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
