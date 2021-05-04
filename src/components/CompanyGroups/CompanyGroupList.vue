@@ -227,14 +227,12 @@ export default {
   },
   created() {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    debugger
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.payload.pageSize = size
     this.serverSideProps.pageSize = size
     this.payload.pageNumber = page
     if (this.isLoadState) {
-      debugger
       const tableState =
         this.$store.state['datatable'].tables['CompanyGroups'] &&
         this.$store.state['datatable'].tables['CompanyGroups'].tableState
