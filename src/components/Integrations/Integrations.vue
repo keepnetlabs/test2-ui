@@ -451,7 +451,9 @@ export default {
       this.getDatatableList()
     },
     handleDeleteMultiple(selections) {
-      selections.forEach((item) => this.handleDelete(item))
+      selections.forEach((item) => {
+        this.handleDelete(item)
+      })
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
@@ -467,6 +469,7 @@ export default {
       this.getDatatableList()
     },
     handleDelete(row) {
+      this.$refs.refIntegrationsList.$refs.elTableRef.toggleRowSelection(row, false)
       deleteIntegration(row.resourceId).then(() => {
         this.getDatatableList()
       })
