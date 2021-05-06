@@ -319,7 +319,6 @@ export default {
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
-      this.payload.pageSize = pageSize
       this.resetPageNumber()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)

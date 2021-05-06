@@ -84,7 +84,7 @@ import {
 import Datatable from '../../components/DataTable'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import QueryHelperForTable from '@/helper-classes/query-helper'
+
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
@@ -194,26 +194,20 @@ export default {
     }
   },
   created() {
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page } = this.queryHelper.returnQueryValues()
     this.payload.pageSize = 5
     this.serverSideProps.pageSize = 5
-    this.payload.pageNumber = page
+    this.payload.pageNumber = 1
     this.getTableData()
   },
   methods: {
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
       this.payload.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getTableData()
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
@@ -237,7 +231,6 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     changeStatus(value) {
       this.$emit('changeStatus', value)

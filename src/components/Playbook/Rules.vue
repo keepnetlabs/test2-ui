@@ -22,66 +22,13 @@
         />
       </template>
     </app-dialog>
-    <app-dialog
-      :status="showMatchingModal"
-      icon="mdi-email"
-      :title="labels.MatchingIncidents"
+    <matching-incident-modal
       v-if="getMatchingModalRenderStatus"
-      :subtitle="getSelectedMatchingIncidentsSubtitle"
-      @changeStatus="toggleMatchingModal"
-      size="maximum"
-      class-name="matching-modal"
-      maxHeightSize="665"
-      title-id="text--playbook-matching-incidents-popup-title"
-      subtitle-id="text--playbook-matching-incidents-popup-subtitle"
-    >
-      <template v-slot:app-dialog-body>
-        <v-card light>
-          <v-list-item class="matching-modal__list-item">
-            <v-list-item-content>
-              <datatable
-                id="playbook-rules-matching-investigation-data-table"
-                :refName="'matchingInvestigationPlaybookRules'"
-                :table="matchingPlaybookData"
-                :columns="matchingInvestigationPlaybookRules.columns"
-                :pageSizes="[5, 10, 25]"
-                :show-all-records="showAllRecordsMatchingPopup"
-                :showHeader="true"
-                :total-number-of-records="totalNumberOfRecordsMatchingPopup"
-                :count-row="5"
-                :loading="isMatchingTableLoading"
-                :defaultSort="'subject'"
-                :selectable="false"
-                :download-button="getMatchingModalDownloadButton"
-                :filterable="true"
-                :options="true"
-                :rowActions="[]"
-                :cell-padding="15"
-                :empty="matchingInvestigationPlaybookRules.iEmpty"
-                @refreshAction="matchingPopupClick(selectedMatch, false)"
-                @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
-                @set-default-search="handleSetDefaultSearchForMatchingPlaybook"
-                @restore-default-search="handleRestoreDefaultSearchForMatchingPlaybook"
-                @clear-filters="handleClearFiltersForMatchingPlaybook"
-                :show-filter-options="false"
-              />
-            </v-list-item-content>
-          </v-list-item>
-        </v-card>
-      </template>
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            id="btn-close--playbook-show-matching-incidents-popup"
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="toggleMatchingModal"
-            >{{ labels.Close.toUpperCase() }}
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
+      subtitle-prop="name"
+      :status="showMatchingModal"
+      :selectedMatch="selectedMatch"
+      @closeOverlay="toggleMatchingModal"
+    />
     <datatable
       is-server-side
       :loading="loading"
@@ -175,9 +122,11 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 export default {
   name: 'Rules',
   components: {
+    MatchingIncidentModal,
     AppDialogFooter,
     AppModal,
     Datatable,
@@ -204,19 +153,11 @@ export default {
       labels,
       loading: false,
       storedTableSettings: null,
-      matchingPlaybookData: [],
       showRuleModal: false,
-      matchingPopupPayload: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateDate',
-        ascending: true
-      },
       selectedMatch: null,
       showMatchingModal: false,
       isWantToDelete: false,
       deleteValues: null,
-      isMatchingTableLoading: true,
       selectedPlaybookId: null,
       tableOptions: {
         isColumnFilterActive: false,
@@ -410,7 +351,8 @@ export default {
         },
         chartOptions: {}
       },
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      serverSidePropsMatchingIncident: new ServerSideProps()
     }
   },
   methods: {
@@ -493,48 +435,6 @@ export default {
         })
       )
     },
-    getDefaultFilterAndSearchForMatchingPlaybook() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
-      )
-      if (savedFilter) {
-        this.tableCredientials.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refRulesList.filterValues = savedFilter.filterValues
-          this.$refs.refRulesList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
-      this.callForSearchPlaybook()
-    },
-    handleClearFiltersForMatchingPlaybook() {
-      this.isRestoredOrClearedFilters = true
-      this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refRulesList.filterValues = {}
-      this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
-      this.callForSearchPlaybook()
-    },
-    handleRestoreDefaultSearchForMatchingPlaybook() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
-    },
-    handleSetDefaultSearchForMatchingPlaybook(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES,
-        JSON.stringify({
-          filter: this.tableCredientials.filter,
-          filterValues
-        })
-      )
-    },
-    handleAllRecordsMatchingPopupClick() {
-      this.matchingPopupPayload.pageSize = 75000
-      this.showAllRecordsMatchingPopup = false
-      this.matchingPopupClick(this.selectedMatch)
-    },
     handleAllRecordsClick() {
       this.tableCredientials.pageSize = 75000
       this.showAllRecords = false
@@ -611,31 +511,9 @@ export default {
     matchingPopupClick(match, toggleModal = true) {
       if (this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission) {
         this.selectedMatch = match
-        this.isMatchingTableLoading = true
         if (toggleModal) {
           this.toggleMatchingModal()
         }
-
-        getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords = 0 } = data
-            this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
-
-            if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecordsMatchingPopup = true
-            }
-
-            if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
-              this.showAllRecordsMatchingPopup = false
-            }
-
-            const matchingPlaybookData = data
-            this.matchingPlaybookData = matchingPlaybookData.results || []
-          })
-          .finally(() => (this.isMatchingTableLoading = false))
       }
     },
     exportRules({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -707,7 +585,6 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-
       let items = []
       let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
