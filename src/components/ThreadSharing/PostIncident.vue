@@ -590,6 +590,7 @@
                   dense
                   validate-on-blur
                   @blur="validateAffectArea"
+                  @change="validateAffectArea"
                   :rules="[affectRules.regex]"
                   @input="handleTagItemChange"
                 ></k-select>

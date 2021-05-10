@@ -65,21 +65,58 @@ testService.interceptors.response.use(
       AuthenticationService.removeToken()
       router.push({ name: 'login', params: { isSessionExpired: 'true' } })
     } else if (error.response && error.response.status !== 404) {
-      store.dispatch(
-        'common/createSnackBar',
-        {
-          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-          message:
-            (error.response.data &&
-              error.response.data.validationMessages &&
-              error.response.data.validationMessages.length &&
-              error.response.data.validationMessages[0]) ||
-            error.response.data.message ||
-            error.response.data.Message,
-          icon: 'mdi-alert'
-        },
-        { root: true }
-      )
+      if (
+        error.request.responseType === 'blob' &&
+        error.response.data instanceof Blob &&
+        error.response.data.type &&
+        error.response.data.type.toLowerCase().indexOf('json') != -1
+      ) {
+        return new Promise((resolve, reject) => {
+          let reader = new FileReader()
+          reader.onload = () => {
+            error.response.data = JSON.parse(reader.result)
+            store.dispatch(
+              'common/createSnackBar',
+              {
+                color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+                message:
+                  (error.response.data &&
+                    error.response.data.validationMessages &&
+                    error.response.data.validationMessages.length &&
+                    error.response.data.validationMessages[0]) ||
+                  error.response.data.message ||
+                  error.response.data.Message,
+                icon: 'mdi-alert'
+              },
+              { root: true }
+            )
+            resolve(Promise.reject(error))
+          }
+
+          reader.onerror = () => {
+            reject(error)
+          }
+
+          reader.readAsText(error.response.data)
+        })
+      } else {
+        store.dispatch(
+          'common/createSnackBar',
+          {
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            message:
+              (error.response.data &&
+                error.response.data.validationMessages &&
+                error.response.data.validationMessages.length &&
+                error.response.data.validationMessages[0]) ||
+              error.response.data.message ||
+              error.response.data.Message ||
+              'Something Went Wrong',
+            icon: 'mdi-alert'
+          },
+          { root: true }
+        )
+      }
     }
     if (
       AuthenticationService.getToken() == null ||
