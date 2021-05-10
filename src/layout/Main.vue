@@ -355,7 +355,7 @@
                 <router-link
                   to="/playbook"
                   id="btn--link-navigator-menu-playbook"
-                  class="menu-link-default"
+                  :class="['menu-link-default', routerName === 'Playbook' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Playbook</span>
