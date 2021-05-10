@@ -6,10 +6,6 @@
   >
     <Treeselect
       v-bind="isAvailableForProps"
-      v-infinite-scroll="{
-        target: '.vue-treeselect__menu',
-        callback: this.handleInfiniteLoading
-      }"
       id="input--make-available-for"
       :class="[
         'k-treeselect',
@@ -84,7 +80,8 @@ export default {
       labels,
       isAvailableForProps: COMMON_PROPS.AVAILABLEFOR,
       isAvailableForValid: true,
-      isInfiniteLoading: true,
+      isInfiniteLoading: false,
+      menuElement: 'null',
       isAvailableForValidated: false,
       maximumApiCount: 1,
       apiCount: 0,
@@ -125,25 +122,23 @@ export default {
     this.callForSearchAvailableFor()
   },
   methods: {
-    handleMenuOpen(id = '') {
+    handleMenuOpen() {
       this.$nextTick(() => {
-        document
+        this.menuElement = document
           .getElementById('input--make-available-for')
           .querySelector('.vue-treeselect__menu')
-          .addEventListener('scroll', ({ target }) => {
-            debugger
-            const { scrollTop, scrollHeight, offsetHeight } = target
-            const { isInfiniteLoading, maximumApiCount, apiCount } = this
-            console.log(isInfiniteLoading, maximumApiCount, apiCount)
-            if (
-              scrollTop - (scrollHeight - offsetHeight) < 10 &&
-              scrollTop - (scrollHeight - offsetHeight) > -10 &&
-              !isInfiniteLoading &&
-              apiCount < maximumApiCount
-            ) {
-              this.callForSearchAvailableFor()
-            }
-          })
+        this.menuElement.addEventListener('scroll', ({ target }) => {
+          const { scrollTop, scrollHeight, offsetHeight } = target
+          const { isInfiniteLoading, maximumApiCount, apiCount } = this
+          if (
+            scrollTop - (scrollHeight - offsetHeight) < 10 &&
+            scrollTop - (scrollHeight - offsetHeight) > -10 &&
+            !isInfiniteLoading &&
+            apiCount < maximumApiCount
+          ) {
+            this.handleInfiniteLoading()
+          }
+        })
       })
     },
     callForSearchAvailableFor() {
