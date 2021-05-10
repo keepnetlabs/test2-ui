@@ -49,6 +49,7 @@
     <datatable
       id="company-groups-details-data-table"
       ref="refDataList"
+      row-key="companyName"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
@@ -479,16 +480,6 @@ export default {
           this.tableData = results
           this.totalNumberOfRecords = totalNumberOfRecords
           this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
-            this.showAllRecords = false
-          }
-          this.tableData =
-            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-              ? response.data.data.results
-              : []
         })
         .catch((error) => {
           if (error.response.status === 403) {

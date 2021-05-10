@@ -227,6 +227,7 @@ export default {
   },
   created() {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.payload.pageSize = size
