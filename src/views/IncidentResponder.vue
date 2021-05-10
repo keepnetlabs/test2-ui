@@ -394,61 +394,12 @@
                     {{ scope.row[col.property] === 0 ? 'No' : scope.row[col.property] }}
                     {{ labels.Matches }}
                   </span>
-                  <app-dialog
+                  <matching-incident-modal
                     v-if="showMatchingModal"
                     :status="scope.row.resourceId === selectedMatch.resourceId"
-                    icon="mdi-email"
-                    title="Matching Incidents"
-                    :subtitle="getSelectedMatchingIncidentsSubtitle"
-                    @changeStatus="showMatchingModal = false"
-                    size="ultraMaximum"
-                    class-name="matching-modal"
-                    maxHeightSize="665"
-                    title-id="text--incident-responder-top-rules-title"
-                    subtitle-id="text--incident-responder-top-rules-subtitle"
-                  >
-                    <template v-slot:app-dialog-body>
-                      <v-card light>
-                        <v-list-item class="matching-modal__list-item">
-                          <v-list-item-content>
-                            <datatable
-                              id="incident-responder-matching-investigations-data-table"
-                              ref="refMatchingInvestigation"
-                              :refName="'matchingInvestigation'"
-                              :count-row="5"
-                              :show-all-records="showAllRecordsMatchingPopup"
-                              :table="matchingInvestigationData"
-                              :total-number-of-records="totalNumberOfRecordsMatchingPopup"
-                              :loading="isMatchingInvestigationLoading"
-                              :columns="matchingInvestigation.columns"
-                              :pageSizes="[5, 10, 25]"
-                              :showHeader="true"
-                              :defaultSort="'subject'"
-                              :selectable="false"
-                              :filterable="true"
-                              :options="true"
-                              :rowActions="[]"
-                              :cell-padding="15"
-                              :empty="matchingInvestigation.iEmpty"
-                              @refreshAction="matchingPopupClick(selectedMatch)"
-                              @on-all-records-button-click="handleAllRecordsMatchingPopupClick"
-                            />
-                          </v-list-item-content>
-                        </v-list-item>
-                      </v-card>
-                    </template>
-                    <template v-slot:app-dialog-footer>
-                      <div class="d-flex" style="justify-content: flex-end;">
-                        <v-btn
-                          class="pa-0 k-dialog__button"
-                          text
-                          color="#2196f3"
-                          @click="closeMatchingModal"
-                          >{{ labels.Close.toUpperCase() }}
-                        </v-btn>
-                      </div>
-                    </template>
-                  </app-dialog>
+                    :selectedMatch="selectedMatch"
+                    @closeOverlay="showMatchingModal = false"
+                  />
                 </template>
                 <template v-slot:datatable-custom-column="{ scope }">
                   <span
@@ -902,8 +853,10 @@ import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
+import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 export default {
   components: {
+    MatchingIncidentModal,
     ReAnalyzeIncidentDialog,
     TheRecordsButton,
     AppDialogFooter,
@@ -924,12 +877,6 @@ export default {
   data: () => ({
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
-    matchingPopupPayload: {
-      pageNumber: 1,
-      pageSize: 1000,
-      orderBy: 'createDate',
-      ascending: true
-    },
     mailDetails: {
       name: '',
       resourceId: ''
@@ -963,7 +910,6 @@ export default {
     investigationListData: [],
     matchingInvestigationData: [],
     isShowingClusteredTable: false,
-    isMatchingInvestigationLoading: true,
     showMatchingModal: false,
     selectedRowsOfReportedEmailsLength: 0,
     selectedReportedMails: null,
@@ -2251,11 +2197,6 @@ export default {
         }
       }
     },
-    handleAllRecordsMatchingPopupClick() {
-      this.matchingPopupPayload.pageSize = 75000
-      this.showAllRecordsMatchingPopup = false
-      this.matchingPopupClick(this.selectedMatch)
-    },
     clusterChanged(selectedCluster = '') {
       this.resetTableFilters()
       this.changeColumnsOrder(selectedCluster)
@@ -2809,26 +2750,6 @@ export default {
     matchingPopupClick(match) {
       this.selectedMatch = match
       this.showMatchingModal = true
-      this.isMatchingInvestigationLoading = true
-      getMatchingIncidents(this.matchingPopupPayload, match.resourceId)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-
-          const { totalNumberOfRecords = 0 } = data
-          this.totalNumberOfRecordsMatchingPopup = totalNumberOfRecords
-
-          if (this.matchingPopupPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecordsMatchingPopup = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.matchingPopupPayload.pageSize === 1000) {
-            this.showAllRecordsMatchingPopup = false
-          }
-
-          this.matchingInvestigationData = data.results
-        })
-        .finally(() => (this.isMatchingInvestigationLoading = false))
     },
     onEmptyBtnClicked() {
       this.$router.push({
@@ -3686,14 +3607,17 @@ export default {
       padding: 0;
     }
   }
+  .filter__icon {
+    margin-right: 8px;
+  }
   .k-table__wrapper {
     padding-bottom: 0;
     overflow-x: auto;
     .card .table-wrapper .el-table th > .cell {
-      margin-left: 24px;
+      margin-left: 8px;
     }
     .card .table-wrapper .el-table td > .cell {
-      padding-left: 32px !important;
+      padding-left: 12px !important;
     }
   }
   .v-card {

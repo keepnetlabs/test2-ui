@@ -19,6 +19,7 @@
       v-bind="tableState"
       id="company-groups-data-table"
       ref="refGroupDataList"
+      is-server-side
       :key="tableKey"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
@@ -37,6 +38,8 @@
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :selectable="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @addButton="addButton"
       @downloadEvent="handleTableDownload"
       @delete="handleTableItemDelete"
@@ -50,6 +53,10 @@
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
       @on-table-settings-change="handleSetRenderedColumns"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @searchChangedEvent="handleSearchChange"
+      @sortChangedEvent="sortChanged"
     >
       <template v-slot:datatable-custom-column="{ scope }">
         <span v-if="scope.row.name" class="datatable-link">
@@ -71,6 +78,8 @@ import {
 } from '../../model/constants/commonConstants'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission } from '@/utils/functions'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
   name: 'CompanyGroupList',
@@ -173,7 +182,7 @@ export default {
       showAllRecords: false,
       totalNumberOfRecords: 0,
       payload: {
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -181,6 +190,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -188,7 +202,7 @@ export default {
         }
       },
       defaultPayload: {
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -198,19 +212,32 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
       },
-      tableState: null
+      tableState: null,
+      serverSideProps: new ServerSideProps()
     }
   },
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.payload.pageSize = size
+    this.serverSideProps.pageSize = size
+    this.payload.pageNumber = page
     if (this.isLoadState) {
       const tableState =
         this.$store.state['datatable'].tables['CompanyGroups'] &&
         this.$store.state['datatable'].tables['CompanyGroups'].tableState
       if (tableState) {
+        this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
           this.tableOptions.isColumnFilterActive = true
@@ -241,6 +268,7 @@ export default {
             const {
               data: { data }
             } = response
+            debugger
             tableState.initialData = data.results
 
             let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
@@ -251,11 +279,17 @@ export default {
               (maxPage - 1) * tableState.rowCount,
               maxPage * tableState.rowCount
             )
-            tableState.multipleSelection = tableState.initialData.filter((row) => {
-              return tableState.multipleSelection.find((selection) => {
-                return row.resourceId === selection.resourceId
-              })
-            })
+            tableState.multipleSelection = tableState.multipleSelection.reduce((acc, selection) => {
+              const index = tableState.initialData.findIndex(
+                (item) => item.resourceId === selection.resourceId
+              )
+              if (index === -1) {
+                acc.push(selection)
+              } else {
+                acc.push(tableState.initialData[index])
+              }
+              return acc
+            }, [])
             if (tableState.search) {
               tableState.filteredData = tableState.initialData.filter((row) => {
                 return tableState.filteredData.find((filteredRow) => {
@@ -278,6 +312,41 @@ export default {
     }
   },
   methods: {
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.payload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.getTableData()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.payload.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.getTableData()
+    },
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.tableOptions.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.getTableData()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
+      this.getTableData()
+    },
+    resetPageNumber() {
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
+    },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST,
@@ -367,20 +436,14 @@ export default {
       searchCompanyGroups(this.payload)
         .then((response) => {
           const {
-            data: { data }
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
           } = response
-          const { totalNumberOfRecords = 0 } = data
-          this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
-            this.showAllRecords = false
-          }
-          this.tableData = data.results.length > 0 ? data.results : []
-        })
-        .catch((error) => {
-          this.tableData = []
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
         })
         .finally(() => (this.loading = false))
     },
@@ -477,7 +540,10 @@ export default {
     }
   },
   beforeDestroy() {
-    const tableState = this.$refs.refGroupDataList.getState()
+    const tableState = {
+      ...this.$refs.refGroupDataList.getState(),
+      serverSideProps: this.serverSideProps
+    }
     this.$store.dispatch('datatable/setTable', {
       key: 'CompanyGroups',
       tableState

@@ -15,7 +15,10 @@
       <v-form ref="refFormAddToGroup" lazy-validation>
         <Datatable
           ref="refGroupDataList"
+          refName="refNameTableAddToGroup"
+          is-server-side
           :is-column-filter-active="tableOptions.isColumnFilterActive"
+          :show-filter-options="false"
           :loading="isLoading"
           :count-row="5"
           :download-button="{ show: true, disabled: false }"
@@ -30,13 +33,18 @@
           :selectEvent="tableOptions.selectEvent"
           :selectable="true"
           :table="tableData"
-          refName="refNameTableAddToGroup"
+          :server-side-props="serverSideProps"
+          :server-side-events="{ pagination: true, search: true, sort: true }"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @downloadEvent="handleTableDownload"
           @handleSelectionChange="handleSelectionChange"
           @refreshAction="getTableData"
           @on-all-records-button-click="handleAllRecordsClick"
+          @server-side-page-number-changed="serverSidePageNumberChanged"
+          @server-side-size-changed="serverSideSizeChanged"
+          @searchChangedEvent="handleSearchChange"
+          @sortChangedEvent="sortChanged"
         />
       </v-form>
     </template>
@@ -76,6 +84,8 @@ import {
 import Datatable from '../../components/DataTable'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
   name: 'AddGroupToModal',
@@ -155,7 +165,7 @@ export default {
         }
       },
       payload: {
-        pageSize: 1000,
+        pageSize: 5,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -165,10 +175,16 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   computed: {
@@ -177,10 +193,45 @@ export default {
       return len > 1 ? `Add ${len} companies to company groups` : `Add a company to company groups`
     }
   },
-  mounted() {
+  created() {
+    this.payload.pageSize = 5
+    this.serverSideProps.pageSize = 5
+    this.payload.pageNumber = 1
     this.getTableData()
   },
   methods: {
+    serverSidePageNumberChanged(pageNumber = 1) {
+      this.payload.pageNumber = pageNumber
+      this.getTableData()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      this.payload.pageSize = pageSize
+      this.payload.pageSize = pageSize
+      this.resetPageNumber()
+      this.getTableData()
+    },
+    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
+        const column = this.tableOptions.columns.find(
+          (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
+        )
+        return column.filterableType
+      })
+      this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.getTableData()
+    },
+    sortChanged({ order, prop } = {}) {
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
+      this.getTableData()
+    },
+    resetPageNumber() {
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+    },
     changeStatus(value) {
       this.$emit('changeStatus', value)
       if (value === false) {
@@ -245,18 +296,15 @@ export default {
       searchCompanyGroups(this.payload)
         .then((response) => {
           const {
-            data: { data }
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
           } = response
-          const { totalNumberOfRecords = 0 } = data
-          this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.payload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.payload.pageSize === 1000) {
-            this.showAllRecords = false
-          }
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
 
-          this.tableData = data.results.length > 0 ? data.results : []
+          this.tableData = results
         })
         .finally(() => (this.isLoading = false))
     },

@@ -402,3 +402,11 @@ export const INTEGRATION_LABELS = {
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IBM X-Force'
 }
+
+export const PHISHING_REPORTER_FILTERABLE_ITEMS = [
+  'Online',
+  'Offline',
+  'Disabled',
+  'NotInstalled',
+  'Undetected'
+]
