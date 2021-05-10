@@ -2256,6 +2256,7 @@ export default {
     }
   },
   data: () => ({
+    over20: false,
     saveDisable: false,
     labels,
     visibleBodyForPreview: null,
@@ -2471,6 +2472,9 @@ export default {
   watch: {
     searchIncident(val) {
       val !== this.select && this.querySelections(val)
+    },
+    affectSearch(val) {
+      //let value1 = val
     }
   },
   created() {
@@ -3106,6 +3110,9 @@ export default {
     validateAffectArea() {
       const refThis = this
       setTimeout(function () {
+        refThis.uploadRespond.AffectArea = refThis.uploadRespond.AffectArea.map((item) => {
+          return item.slice(0, 20)
+        })
         if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
           let i = refThis.uploadRespond.AffectArea.length
           while (i--) {

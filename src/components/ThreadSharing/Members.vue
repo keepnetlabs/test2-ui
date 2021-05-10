@@ -268,7 +268,7 @@
             </template>
             <template slot="no-data">
               <v-skeleton-loader :loading="membersLoading" type="article, actions">
-                <div class="empty-members mt-8">
+                <div class="empty-members mb-10">
                   <p class="empty-members-span">
                     {{
                       search.length
@@ -401,7 +401,7 @@
                   </v-expansion-panel>
                 </v-expansion-panels>
                 <div v-else>
-                  <div class="empty-members">
+                  <div class="empty-members mb-10">
                     <p class="empty-members-span">
                       No Requests to join your community
                     </p>
@@ -411,7 +411,7 @@
             </template>
             <template slot="no-data">
               <v-skeleton-loader :loading="membersLoading" type="article, actions">
-                <div class="empty-members">
+                <div class="empty-members mb-10">
                   <p class="empty-members-span">
                     No Requests to join your community
                   </p>

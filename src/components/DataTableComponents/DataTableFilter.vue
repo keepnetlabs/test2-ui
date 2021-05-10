@@ -130,7 +130,10 @@
           v-model="filterValue"
           height="40"
           type="number"
-        ></v-text-field>
+          onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
+        >
+          ></v-text-field
+        >
       </template>
       <div class="filter__footer">
         <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">

@@ -6,7 +6,7 @@ import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const testService = axios.create({
   baseURL: APP_CONFIG.VUE_APP_APP_API_TEST || 'https://test-api.keepnetlabs.com/api',
-  timeout: 30000, //@note timeout changed from 50000 to 10000
+  timeout: 100000, //@note timeout changed from 30000 to 100000
   rejectUnauthorized: false
 })
 
@@ -72,6 +72,7 @@ testService.interceptors.response.use(
           message:
             (error.response.data &&
               error.response.data.validationMessages &&
+              error.response.data.validationMessages.length &&
               error.response.data.validationMessages[0]) ||
             error.response.data.message ||
             error.response.data.Message,
