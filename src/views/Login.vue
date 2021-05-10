@@ -595,7 +595,12 @@ export default {
     this.$store.dispatch('whitelabel/resetState')
     if (this.$route.query && this.$route.query.mfaRequired) {
       this.showMfaMessage = true
-      this.$router.replace('/login')
+      if (this.$route.name === 'login') {
+        this.pageNumber = 1
+      } else {
+        this.$router.replace('/login')
+      }
+      //this.$router.replace('/login') login change
     }
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')

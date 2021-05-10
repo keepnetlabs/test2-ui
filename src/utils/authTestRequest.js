@@ -6,7 +6,7 @@ import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
 
 const authTestService = axios.create({
   baseURL: APP_CONFIG.VUE_APP_AUTH_API_TEST || 'https://test-api.keepnetlabs.com',
-  timeout: 50000,
+  timeout: 100000,
   rejectUnauthorized: false
 })
 
