@@ -502,11 +502,7 @@ export default {
     updateTable() {
       this.toggleRuleModal()
       this.loading = true
-      this.getPlaybookList(this.tableCredientials)
-        .then(() => {
-          this.tableData = this.playbookList.results
-        })
-        .finally(() => (this.loading = false))
+      this.callForSearchPlaybook()
     },
     matchingPopupClick(match, toggleModal = true) {
       if (this.PERMISSIONS.MATCHING_PLAYBOOKS_SEARCH.hasPermission) {

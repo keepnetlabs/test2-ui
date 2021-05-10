@@ -20,7 +20,7 @@
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :show-filter-options="false"
           :loading="isLoading"
-          :count-row="5"
+          :count-row="countRow"
           :download-button="{ show: true, disabled: false }"
           :show-all-records="showAllRecords"
           :total-number-of-records="totalNumberOfRecords"
@@ -103,6 +103,7 @@ export default {
   },
   data() {
     return {
+      countRow: 5,
       isLoading: false,
       saveDisable: false,
       labels,
@@ -206,7 +207,8 @@ export default {
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
-      this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.countRow = pageSize
       this.resetPageNumber()
       this.getTableData()
     },

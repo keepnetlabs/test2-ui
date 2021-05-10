@@ -9,6 +9,11 @@ export default class QueryHelperForTable {
     return this.route.query && this.route.query.page && this.route.query.size
   }
 
+  setDefaultValues() {
+    this.setRouterQuery('page', 1)
+    this.setRouterQuery('size', 10)
+  }
+
   controlRouteQuery() {
     if (!this.isRouteQuery()) {
       this.setRouterQuery('page', 1)
