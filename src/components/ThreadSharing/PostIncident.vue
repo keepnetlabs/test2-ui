@@ -2256,6 +2256,7 @@ export default {
     }
   },
   data: () => ({
+    over20: false,
     saveDisable: false,
     labels,
     visibleBodyForPreview: null,
@@ -2471,6 +2472,15 @@ export default {
   watch: {
     searchIncident(val) {
       val !== this.select && this.querySelections(val)
+    },
+    affectSearch(val) {
+      let value1 = val
+      if (val && val.length > 20) {
+        value1 = value1.slice(0, -1)
+        this.affectSearch = value1
+        val = value1
+        this.$forceUpdate()
+      }
     }
   },
   created() {

@@ -161,7 +161,12 @@ export default {
     handleForgetPasswordClick() {
       AuthenticationService.removeToken()
       this.$store.dispatch('common/changeSessionExpiredStatus', false)
-      this.$router.push('/login')
+      if (this.$route.name === 'login') {
+        this.pageNumber = 1
+      } else {
+        this.$router.replace('/login')
+      }
+      //this.$router.push('/login') login change
     },
     loginAction() {
       let _this = this
