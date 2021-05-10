@@ -377,6 +377,7 @@ export default {
     //generic
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     this.setQueryValuesToPayload(this.$route.query)
     this.getDefaultFilterAndSearch()
