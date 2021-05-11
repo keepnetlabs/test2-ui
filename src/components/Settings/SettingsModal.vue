@@ -46,21 +46,11 @@
                       hide-details
                     >
                       <v-radio
-                        id="input--settings-modal-type-DD/MM/YYYY"
-                        value="DD/MM/YYYY"
-                        label="DD/MM/YYYY        16/05/2020"
-                        color="#2196f3"
-                      ></v-radio>
-                      <v-radio
-                        id="input--settings-modal-type-MM/DD/YYYY"
-                        value="MM/DD/YYYY"
-                        label="MM/DD/YYYY        05/16/2020"
-                        color="#2196f3"
-                      ></v-radio>
-                      <v-radio
-                        id="input--settings-modal-type-YYYY/MM/DD"
-                        value="YYYY/MM/DD"
-                        label="YYYY/MM/DD        2020/05/16"
+                        v-for="item in dateFormatList"
+                        :key="item"
+                        :id="`input--settings-modal-type-${item}`"
+                        :value="item"
+                        :label="`${item} ${moment(new Date()).format(item)}`"
                         color="#2196f3"
                       ></v-radio>
                     </v-radio-group>
@@ -74,15 +64,11 @@
                       hide-details
                     >
                       <v-radio
+                        v-for="item in timeFormatList"
+                        :key="item"
                         id="input--settings-modal-type-12h"
-                        value="12h"
-                        label="12h        06:25 PM"
-                        color="#2196f3"
-                      ></v-radio>
-                      <v-radio
-                        id="input--settings-modal-type-24h"
-                        value="24h"
-                        label="24h        18:25"
+                        :value="item"
+                        :label="`${item} ${item === '12h' ? '06:25 PM' : '18:25'}`"
                         color="#2196f3"
                       ></v-radio>
                     </v-radio-group>
@@ -117,6 +103,7 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getSystemUserSettings, getTimezone, setSystemUserSettings } from '@/api/settings'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { deepCopyArray } from '@/utils/functions'
+import moment from 'moment'
 
 export default {
   name: 'SettingsModal',
@@ -130,6 +117,7 @@ export default {
   },
   data() {
     return {
+      moment,
       labels,
       loadingSettingsModal: false,
       formValues: {
@@ -138,6 +126,8 @@ export default {
         dateFormat: null,
         timeFormat: null
       },
+      dateFormatList: [],
+      timeFormatList: [],
       timeZoneList: [],
       defaultTimeZoneList: [],
       timeZoneSearchVal: null
@@ -163,8 +153,10 @@ export default {
       getTimezone()
         .then((response) => {
           let data = response.data.data
-          this.timeZoneList = data
-          this.defaultTimeZoneList = deepCopyArray(data)
+          this.timeZoneList = data.timeZoneList
+          this.defaultTimeZoneList = deepCopyArray(data.timeZoneList)
+          this.dateFormatList = data.dateFormatList
+          this.timeFormatList = data.timeFormatList
           this.getSystemUserSettings()
         })
         .catch(() => {
