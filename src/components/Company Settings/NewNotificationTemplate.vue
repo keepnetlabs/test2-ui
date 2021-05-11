@@ -272,10 +272,7 @@ export default {
             continue
           }
           if (key === 'template') {
-            value = response.data.data.template.replace(
-              logoKey,
-              `<img class="logo-url" src="${logoUrl}"/>`
-            )
+            value = response.data.data.template.replaceAll(logoKey, logoUrl)
           }
           this.formValues[key] = value
         }
@@ -463,8 +460,11 @@ export default {
             ? getAvailableForValues(this.nonEditableAvailableForRequests)
             : null
         }
-        for (let i = document.getElementsByClassName('logo-url').length - 1; i >= 0; i--) {
-          document.getElementsByClassName('logo-url')[i].outerHTML = '{COMPANYLOGO}'
+        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+        for (let i = document.getElementById('logo-url').length - 1; i >= 0; i--) {
+          document.getElementById('logo-url')[i].outerHTML = document
+            .getElementById('logo-url')
+            [i].outerHTML.replaceAll(logoUrl, '{COMPANYLOGO}')
         }
         payload.template = document.getElementsByClassName('email-template-preview')[0].innerHTML
         if (this.selectedItem && this.selectedItem.resourceId) {
