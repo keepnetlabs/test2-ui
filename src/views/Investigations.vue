@@ -687,6 +687,7 @@ export default {
         this.$store.state['datatable'].tables['Investigations'] &&
         this.$store.state['datatable'].tables['Investigations'].tableState
       if (tableState) {
+        this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
           this.isColumnFilterActive = true
@@ -730,7 +731,10 @@ export default {
     }
   },
   beforeDestroy() {
-    const tableState = this.$refs.investigationTable.getState()
+    const tableState = {
+      ...this.$refs.investigationTable.getState(),
+      serverSideProps: this.serverSideProps
+    }
     this.$store.dispatch('datatable/setTable', {
       key: 'Investigations',
       tableState
