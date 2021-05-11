@@ -1017,7 +1017,7 @@ import {
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
-import { getDataTableFieldLabel } from '../utils/functions'
+import { getDataTableFieldLabel, getTimeZoneForMoment } from '../utils/functions'
 import { required, trim } from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
@@ -1902,9 +1902,18 @@ export default {
     },
     calculateProgressData() {
       let today = moment(new Date()).toDate()
-      let createDate = moment(this.investigationDetailsData.createTime).toDate()
-      let expireDate = moment(this.investigationDetailsData.expireDate).toDate()
-      let startDate = moment(this.investigationDetailsData.startDate).toDate()
+      let createDate = moment(
+        this.investigationDetailsData.createTime.split(' ')[0],
+        getTimeZoneForMoment()
+      ).toDate()
+      let expireDate = moment(
+        this.investigationDetailsData.expireDate.split(' ')[0],
+        getTimeZoneForMoment()
+      ).toDate()
+      let startDate = moment(
+        this.investigationDetailsData.startDate.split(' ')[0],
+        getTimeZoneForMoment()
+      ).toDate()
       let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)
       let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10)
       this.diffDays = diffDays
