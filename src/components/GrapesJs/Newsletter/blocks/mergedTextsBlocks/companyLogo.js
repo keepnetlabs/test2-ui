@@ -2,8 +2,8 @@ import store from '../../../../../store'
 const logoUrl = store.state.whitelabel.mainLogoUrl
 const companyLogo = [
   {
-    type: 'img',
-    content: `<img class="logo-url" src="${logoUrl}"/>`
+    src: logoUrl,
+    id: 'logo-url'
   }
 ]
 export default companyLogo
