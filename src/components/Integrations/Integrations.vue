@@ -596,15 +596,15 @@ export default {
       let items = []
       let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== fieldName) {
+      filterPayload.map((x) => {
+        if (x.FieldName.toLowerCase() !== fieldName.toLowerCase()) {
           items.push(x)
         }
       })
 
       filterPayload = [...items]
       this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-      this.getDatatableList()
+      this.callForGetUserRoles()
 
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1

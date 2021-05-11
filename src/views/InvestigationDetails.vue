@@ -1239,9 +1239,10 @@ export default {
         hasMapper: true
       },
       {
-        property: 'investigationStatus',
+        property: 'emailLastAction',
         align: 'left',
-        sortable: true,
+        sortable: false,
+        hideSort: true,
         label: 'Status',
         show: true,
         width: 280,
@@ -1298,7 +1299,7 @@ export default {
         type: 'text'
       },
       {
-        property: 'status',
+        property: 'investigationStatus',
         align: 'center',
         editable: false,
         label: 'Scan Status',
@@ -1306,7 +1307,7 @@ export default {
         sortable: true,
         show: true,
         width: 150,
-        type: 'status'
+        type: 'badge'
       },
       {
         property: 'scanType',
