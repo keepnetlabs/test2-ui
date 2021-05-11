@@ -249,58 +249,6 @@ export default {
       this.toggleShowDeleteSystemUserModal()
     }
   },
-  mounted() {
-    /*
-    this.$refs.refUserRolesList.loadWithDataArray([
-      {
-        id: 1,
-        date: '2016-05-02',
-        name: 'wangxiaohu',
-        status: 'Active'
-      },
-      {
-        id: 2,
-        date: '2016-05-04',
-        name: 'wangxiaohu',
-        status: 'Active',
-        children: [
-          {
-            id: 31,
-            date: '2016-05-01',
-            name: 'wangxiaohu',
-            status: 'Active'
-          },
-          {
-            id: 32,
-            date: '2016-05-05',
-            name: 'wangxiaohu',
-            status: 'Active'
-          }
-        ]
-      },
-      {
-        id: 3,
-        date: '2016-05-01',
-        name: 'wangxiaohu',
-        children: [
-          {
-            id: 33,
-            date: '2016-05-02',
-            name: 'wangxiaohu',
-            status: 'Inactive'
-          },
-          {
-            id: 34,
-            date: '2016-05-05',
-            name: 'wangxiaohu',
-            status: 'Inactive'
-          }
-        ]
-      }
-    ])
-  */
-  },
-
   created() {
     this.callForGetUserRoles()
   }

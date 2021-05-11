@@ -1181,7 +1181,7 @@ export default {
         filterableType: 'text'
       },
       {
-        property: 'to',
+        property: 'recipient',
         align: 'left',
         editable: false,
         label: getStoreValue('to'),
@@ -1239,7 +1239,7 @@ export default {
         hasMapper: true
       },
       {
-        property: 'status',
+        property: 'investigationStatus',
         align: 'left',
         sortable: true,
         label: 'Status',
@@ -2826,7 +2826,8 @@ export default {
                         flex-flow: column;
                         max-height: 40px;
                         .v-list-item-title__value {
-                          top: 22px;
+                          top: 8px;
+                          right: 18px;
                         }
                       }
 

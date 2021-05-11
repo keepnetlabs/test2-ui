@@ -604,6 +604,7 @@ export default {
   mounted() {
     this.getPermissions()
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.bodyData.pageSize = size
