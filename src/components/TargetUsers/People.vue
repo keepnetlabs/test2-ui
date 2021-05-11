@@ -847,6 +847,7 @@ export default {
       localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE)
     )
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.setQueryValuesToPayload(this.$route.query)

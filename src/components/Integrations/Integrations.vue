@@ -576,19 +576,19 @@ export default {
       if (Array.isArray(filter)) {
         filter.forEach((x, i, t) => {
           const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
+          elem.FieldName =
+            filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
           requestBody.push(elem)
         })
       } else {
         const elem = filter
-        elem.FieldName = filter.FieldName
+        elem.FieldName = filter.FieldName.slice(0, 1).toUpperCase() + filter.FieldName.slice(1)
         const { FieldName, Value } = filter
         if (FieldName === 'Status' && Value === '') {
         } else {
           requestBody.push(elem)
         }
       }
-
       this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
       this.getDatatableList()
     },

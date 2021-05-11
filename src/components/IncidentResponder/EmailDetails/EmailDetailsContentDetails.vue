@@ -132,6 +132,7 @@
 <script>
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 import EmailDetailsSenderIpBlacklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlacklistCheck'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'EmailDetailsContentDetails',
   components: { EmailDetailsSenderIpBlacklistCheck, ReAnalyzeIncidentDialog },
@@ -166,12 +167,19 @@ export default {
     },
     isReAnalyzeDisabled() {
       const mailDetails = this.mailDetails
-      return mailDetails.status === 'BeingAnalyzed' || mailDetails.status === 'InProgress'
+      return (
+        mailDetails.status === 'BeingAnalyzed' ||
+        mailDetails.status === 'InProgress' ||
+        !this.checkPermissions('notified-emails/{resourceId}/reanalyze', 'GET')
+      )
     }
   },
   methods: {
     handleReAnalyze() {
       this.toggleShowReAnalyzeDialog()
+    },
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
     },
     toggleShowReAnalyzeDialog() {
       this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog
