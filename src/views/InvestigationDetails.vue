@@ -676,7 +676,27 @@
                             <v-list-item-content>
                               <v-list-item-title>
                                 Stored
-                                <span class="v-list-item-title__value">5</span>
+                                <span
+                                  class="v-list-item-title__value"
+                                  v-if="
+                                    statsAndMenuData.folders &&
+                                    statsAndMenuData.folders.find(
+                                      (item) => item.folderName == 'Stored'
+                                    ) &&
+                                    statsAndMenuData.folders.find(
+                                      (item) => item.folderName == 'Stored'
+                                    ).mailCount
+                                  "
+                                  >{{
+                                    statsAndMenuData.folders &&
+                                    statsAndMenuData.folders.find(
+                                      (item) => item.folderName == 'Inbox'
+                                    ) &&
+                                    statsAndMenuData.folders.find(
+                                      (item) => item.folderName == 'Inbox'
+                                    ).mailCount
+                                  }}</span
+                                >
                               </v-list-item-title>
                             </v-list-item-content>
                           </div>
