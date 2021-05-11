@@ -183,7 +183,7 @@
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-content>
+                  <v-list-item-content :class="[getPreviewLogoUrl && 'mb-0']">
                     <label class="bottom-margin">{{ labels.CompanyLogo }}</label>
                     <k-file-upload
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
@@ -192,11 +192,22 @@
                       :size="2"
                     />
                     <div>
-                      <img
-                        v-if="edit && this.formData.logoURL"
-                        :src="this.formData.logoURL"
-                        style="max-height: 60px; object-fit: contain; margin-top: 16px;"
-                      />
+                      <v-list-item
+                        v-if="getPreviewLogoUrl"
+                        class="px-0 add-in-settings__list-item add-in-settings__logo-container"
+                      >
+                        <v-list-item-content>
+                          <div>
+                            <div class="add-in-settings__image-container">
+                              <img
+                                class="add-in-settings__image"
+                                :src="getImagePreview(getPreviewLogoUrl)"
+                                alt="logo-preview"
+                              />
+                            </div>
+                          </div>
+                        </v-list-item-content>
+                      </v-list-item>
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -678,6 +689,9 @@ export default {
     canNext() {
       return this.activeStep < this.totalStep
     },
+    getPreviewLogoUrl() {
+      return this.formData.logoURL || this.formData.File
+    },
     getAddTheFirstSystemUserBody() {
       return `Would you like to create the first system user for ${this.formData.Name}?`
     },
@@ -724,6 +738,9 @@ export default {
     }
   },
   methods: {
+    getImagePreview(url) {
+      return url && typeof url === 'string' ? url : URL.createObjectURL(url)
+    },
     confirmFirstSystemUserDialog() {
       this.formData = []
       this.LicenseDates = null
