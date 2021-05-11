@@ -269,7 +269,6 @@ export default {
             const {
               data: { data }
             } = response
-            debugger
             tableState.initialData = data.results
 
             let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
