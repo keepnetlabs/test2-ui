@@ -1181,7 +1181,7 @@ export default {
         filterableType: 'text'
       },
       {
-        property: 'to',
+        property: 'recipient',
         align: 'left',
         editable: false,
         label: getStoreValue('to'),
@@ -1239,7 +1239,7 @@ export default {
         hasMapper: true
       },
       {
-        property: 'status',
+        property: 'investigationStatus',
         align: 'left',
         sortable: true,
         label: 'Status',
