@@ -227,6 +227,19 @@ export default {
           this.editor.StyleManager.render()
         }
       })
+      const logoUrl = store.state.whitelabel.mainLogoUrl
+
+      this.editor.on('block:drag:stop', (droppedComponent) => {
+        if (droppedComponent.attributes.attributes['data-title'] === 'Company Logo') {
+          for (const img of document
+            .getElementsByClassName('gjs-frame')[0]
+            .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
+            droppedComponent.attributes.src = logoUrl
+            img.src = logoUrl
+            img.className = img.className.replaceAll('gjs-plh-image', '')
+          }
+        }
+      })
       setTimeout(() => {
         if (!document.getElementsByClassName('gjs-btn-prim').length) {
           document
@@ -414,7 +427,7 @@ export default {
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
           const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-          value.content.components[0].content = `<img class="logo-url" src="${logoUrl}"/>`
+          value.content.components[0].src = logoUrl
         }
         blockManager.add(key, value)
       }
