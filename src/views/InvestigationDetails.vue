@@ -2070,6 +2070,7 @@ export default {
       if (menu != 'targetUsers') {
         this.loading = true
         let dataBody = this.investigationListBodyData
+        dataBody.pageNumber = 1
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
         }
