@@ -2071,6 +2071,7 @@ export default {
         this.loading = true
         let dataBody = this.investigationListBodyData
         dataBody.pageNumber = 1
+        dataBody.pageSize = 10
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
         }
