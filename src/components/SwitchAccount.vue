@@ -241,7 +241,7 @@ export default {
 
         function filterTreeItem(item, search, textKey) {
           const text = getObjectValueByPath(item, textKey)
-          return text.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) > -1
+          return text && text.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) > -1
         }
         function filterTreeItems(filter, item, search, idKey, textKey, childrenKey, excluded) {
           if (filter(item, search, textKey)) {
