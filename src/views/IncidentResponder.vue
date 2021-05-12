@@ -1472,7 +1472,11 @@ export default {
           icon: 'mdi-refresh',
           action: 'handleReAnalyze',
           disabled: (row) => {
-            return row.status === 'BeingAnalyzed' || row.status === 'InProgress'
+            return (
+              row.status === 'BeingAnalyzed' ||
+              row.status === 'InProgress' ||
+              !this.checkPermissions('notified-emails/{resourceId}/reanalyze', 'GET')
+            )
           }
         }
       ],

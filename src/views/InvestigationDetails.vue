@@ -957,7 +957,7 @@
                 @sortChangedEvent="sortChangedForTargetUsers"
                 @searchChangedEvent="handleSearchChangeForTargetUsers"
                 :isServerSide="true"
-                :server-side-props="serverSideProps"
+                :server-side-props="serverSidePropsForTargetUsers"
                 :server-side-events="{ pagination: true, search: true, sort: true }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
@@ -1414,13 +1414,14 @@ export default {
         ]
       }
     },
-    serverSideProps: new ServerSideProps()
+    serverSideProps: new ServerSideProps(),
+    serverSidePropsForTargetUsers: new ServerSideProps()
   }),
   methods: {
     serverSideSizeChangedForTargetUsers(pageSize = 10) {
       //generic
       this.investigationTargetUsersListBodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
+      this.serverSidePropsForTargetUsers.pageSize = pageSize
       this.resetPageNumberForTargetUsers()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)
@@ -1429,7 +1430,7 @@ export default {
     resetPageNumberForTargetUsers() {
       //generic
       this.investigationTargetUsersListBodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.serverSidePropsForTargetUsers.pageNumber = 1
     },
     handleSearchChangeForTargetUsers(searchFilter = {}, filterActive = false) {
       //generic
@@ -1447,7 +1448,7 @@ export default {
       const parsedSize = parseInt(size)
       size = isNaN(parsedSize) ? 10 : parsedSize
       this.investigationTargetUsersListBodyData.pageSize = size
-      this.serverSideProps.pageSize = size
+      this.serverSidePropsForTargetUsers.pageSize = size
     },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
       //generic
@@ -2109,7 +2110,10 @@ export default {
       const {
         data: { data }
       } = response
-      const { totalNumberOfRecords = 0 } = data
+      const { totalNumberOfRecords = 0, totalNumberOfPages, pageNumber } = data
+      this.serverSidePropsForTargetUsers.totalNumberOfRecords = totalNumberOfRecords
+      this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
+      this.serverSidePropsForTargetUsers.pageNumber = pageNumber
       this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
       if (
         this.investigationTargetUsersListBodyData.pageSize === 1000 &&
@@ -2506,6 +2510,7 @@ export default {
     this.investigationListBodyData.pageSize = size
     this.investigationListBodyData.pageNumber = page
     this.serverSideProps.pageSize = size
+    this.serverSidePropsForTargetUsers.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
     this.getDefaultFilterAndSearch()
   },
