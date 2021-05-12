@@ -461,11 +461,14 @@ export default {
             : null
         }
         const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-        for (let i = document.getElementById('logo-url').length - 1; i >= 0; i--) {
-          document.getElementById('logo-url')[i].outerHTML = document
-            .getElementById('logo-url')
-            [i].outerHTML.replaceAll(logoUrl, '{COMPANYLOGO}')
+        if (document.getElementById('logo-url') && document.getElementById('logo-url').length) {
+          for (let i = document.getElementById('logo-url').length - 1; i >= 0; i--) {
+            document.getElementById('logo-url')[i].outerHTML = document
+              .getElementById('logo-url')
+              [i].outerHTML.replaceAll(logoUrl, '{COMPANYLOGO}')
+          }
         }
+
         payload.template = document.getElementsByClassName('email-template-preview')[0].innerHTML
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
