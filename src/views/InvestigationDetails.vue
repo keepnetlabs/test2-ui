@@ -2071,9 +2071,11 @@ export default {
         this.loading = true
         let dataBody = this.investigationListBodyData
         dataBody.pageNumber = 1
+        /*
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
         }
+        */
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
         this.refreshDatatable()
         /*this.$store
