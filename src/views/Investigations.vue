@@ -213,7 +213,7 @@ export default {
         isEditable: true,
         width: 150,
         filterableType: 'select',
-        filterableItems: ['Idle', 'Running', 'Canceled', 'Expired', 'Finished']
+        filterableItems: ['Running', 'Canceled', 'Expired', 'Finished']
       },
       {
         property: 'createTime',
