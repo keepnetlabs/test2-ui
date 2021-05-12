@@ -203,9 +203,7 @@ export default {
               style: {
                 maxWidth: '110px'
               }
-            },
-            filterableType: 'select',
-            filterableItems: PHISHING_REPORTER_FILTERABLE_ITEMS
+            }
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
