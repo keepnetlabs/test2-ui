@@ -1475,7 +1475,7 @@ export default {
             return (
               row.status === 'BeingAnalyzed' ||
               row.status === 'InProgress' ||
-              !this.checkPermissions('notified-emails/{resourceId}/reanalyze', 'GET')
+              !checkPermission('notified-emails/{resourceId}/reanalyze', 'GET')
             )
           }
         }
