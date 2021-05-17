@@ -7,7 +7,7 @@ import testService from './testRequest'
 
 const service = axios.create({
   baseURL: APP_CONFIG.VUE_APP_ROOT_API,
-  timeout: 50000,
+  timeout: 100000,
   rejectUnauthorized: false
 })
 

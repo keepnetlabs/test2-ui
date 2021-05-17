@@ -604,6 +604,7 @@ export default {
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.setQueryValuesToPayload(this.$route.query)

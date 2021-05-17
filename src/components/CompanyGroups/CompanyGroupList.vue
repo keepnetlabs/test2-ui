@@ -227,6 +227,7 @@ export default {
   },
   created() {
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.payload.pageSize = size
@@ -268,7 +269,6 @@ export default {
             const {
               data: { data }
             } = response
-            debugger
             tableState.initialData = data.results
 
             let maxPage = Math.ceil(tableState.initialData.length / tableState.rowCount)
@@ -319,6 +319,7 @@ export default {
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)

@@ -89,7 +89,7 @@ export default {
       isRestoredOrClearedFilters: false,
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -110,7 +110,7 @@ export default {
       },
       defaultAxiosPayload: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -232,6 +232,7 @@ export default {
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.REST_API))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
     this.setQueryValuesToPayload(this.$route.query)
@@ -281,12 +282,12 @@ export default {
     },
     resetPageNumber() {
       //generic
-      this.tableOptions.pageNumber = 1
+      this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
       //generic
-      this.tableOptions.pageSize = pageSize
+      this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.queryHelper.setRouterQuery('size', pageSize)

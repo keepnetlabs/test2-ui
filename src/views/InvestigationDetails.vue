@@ -957,7 +957,7 @@
                 @sortChangedEvent="sortChangedForTargetUsers"
                 @searchChangedEvent="handleSearchChangeForTargetUsers"
                 :isServerSide="true"
-                :server-side-props="serverSideProps"
+                :server-side-props="serverSidePropsForTargetUsers"
                 :server-side-events="{ pagination: true, search: true, sort: true }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
@@ -1017,7 +1017,7 @@ import {
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
-import { getDataTableFieldLabel } from '../utils/functions'
+import { getDataTableFieldLabel, getTimeZoneForMoment } from '../utils/functions'
 import { required, trim } from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
@@ -1181,7 +1181,7 @@ export default {
         filterableType: 'text'
       },
       {
-        property: 'to',
+        property: 'recipient',
         align: 'left',
         editable: false,
         label: getStoreValue('to'),
@@ -1239,9 +1239,10 @@ export default {
         hasMapper: true
       },
       {
-        property: 'status',
+        property: 'emailLastAction',
         align: 'left',
-        sortable: true,
+        sortable: false,
+        hideSort: true,
         label: 'Status',
         show: true,
         width: 280,
@@ -1298,7 +1299,7 @@ export default {
         type: 'text'
       },
       {
-        property: 'status',
+        property: 'investigationStatus',
         align: 'center',
         editable: false,
         label: 'Scan Status',
@@ -1306,7 +1307,7 @@ export default {
         sortable: true,
         show: true,
         width: 150,
-        type: 'status'
+        type: 'badge'
       },
       {
         property: 'scanType',
@@ -1413,13 +1414,14 @@ export default {
         ]
       }
     },
-    serverSideProps: new ServerSideProps()
+    serverSideProps: new ServerSideProps(),
+    serverSidePropsForTargetUsers: new ServerSideProps()
   }),
   methods: {
     serverSideSizeChangedForTargetUsers(pageSize = 10) {
       //generic
       this.investigationTargetUsersListBodyData.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
+      this.serverSidePropsForTargetUsers.pageSize = pageSize
       this.resetPageNumberForTargetUsers()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)
@@ -1428,7 +1430,7 @@ export default {
     resetPageNumberForTargetUsers() {
       //generic
       this.investigationTargetUsersListBodyData.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.serverSidePropsForTargetUsers.pageNumber = 1
     },
     handleSearchChangeForTargetUsers(searchFilter = {}, filterActive = false) {
       //generic
@@ -1446,7 +1448,7 @@ export default {
       const parsedSize = parseInt(size)
       size = isNaN(parsedSize) ? 10 : parsedSize
       this.investigationTargetUsersListBodyData.pageSize = size
-      this.serverSideProps.pageSize = size
+      this.serverSidePropsForTargetUsers.pageSize = size
     },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
       //generic
@@ -1902,9 +1904,18 @@ export default {
     },
     calculateProgressData() {
       let today = moment(new Date()).toDate()
-      let createDate = moment(this.investigationDetailsData.createTime).toDate()
-      let expireDate = moment(this.investigationDetailsData.expireDate).toDate()
-      let startDate = moment(this.investigationDetailsData.startDate).toDate()
+      let createDate = moment(
+        this.investigationDetailsData.createTime.split(' ')[0],
+        getTimeZoneForMoment()
+      ).toDate()
+      let expireDate = moment(
+        this.investigationDetailsData.expireDate.split(' ')[0],
+        getTimeZoneForMoment()
+      ).toDate()
+      let startDate = moment(
+        this.investigationDetailsData.startDate.split(' ')[0],
+        getTimeZoneForMoment()
+      ).toDate()
       let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)
       let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10)
       this.diffDays = diffDays
@@ -2060,9 +2071,12 @@ export default {
       if (menu != 'targetUsers') {
         this.loading = true
         let dataBody = this.investigationListBodyData
+        dataBody.pageNumber = 1
+        /*
         while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
           dataBody.filter.FilterGroups[0].FilterItems.pop()
         }
+        */
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
         this.refreshDatatable()
         /*this.$store
@@ -2096,7 +2110,10 @@ export default {
       const {
         data: { data }
       } = response
-      const { totalNumberOfRecords = 0 } = data
+      const { totalNumberOfRecords = 0, totalNumberOfPages, pageNumber } = data
+      this.serverSidePropsForTargetUsers.totalNumberOfRecords = totalNumberOfRecords
+      this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
+      this.serverSidePropsForTargetUsers.pageNumber = pageNumber
       this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
       if (
         this.investigationTargetUsersListBodyData.pageSize === 1000 &&
@@ -2493,6 +2510,7 @@ export default {
     this.investigationListBodyData.pageSize = size
     this.investigationListBodyData.pageNumber = page
     this.serverSideProps.pageSize = size
+    this.serverSidePropsForTargetUsers.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
     this.getDefaultFilterAndSearch()
   },
@@ -2826,7 +2844,8 @@ export default {
                         flex-flow: column;
                         max-height: 40px;
                         .v-list-item-title__value {
-                          top: 22px;
+                          top: 8px;
+                          right: 18px;
                         }
                       }
 

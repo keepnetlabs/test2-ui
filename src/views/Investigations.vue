@@ -32,6 +32,7 @@
       <v-card class="investigations__container-card" light>
         <datatable
           v-bind="tableState"
+          is-server-side
           :loading="loading"
           :show-all-records="showAllRecords"
           :is-column-filter-active="isColumnFilterActive"
@@ -56,8 +57,7 @@
           :dataLength="tableData && tableData.totalNumberOfRecords"
           :requestParams="bodyData"
           :server-side-props="serverSideProps"
-          :server-side-events="{ pagination: false, search: false, sort: false }"
-          :isServerSide="false"
+          :server-side-events="{ pagination: true, search: true, sort: true }"
           @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
           @stopInvestigationFunc="stopInvestigationFunc($event)"
           @investigationDetails="investigationDetails($event)"
@@ -213,7 +213,7 @@ export default {
         isEditable: true,
         width: 150,
         filterableType: 'select',
-        filterableItems: ['Idle', 'Running', 'Canceled', 'Expired', 'Finished']
+        filterableItems: ['Running', 'Canceled', 'Expired', 'Finished']
       },
       {
         property: 'createTime',
@@ -687,6 +687,7 @@ export default {
         this.$store.state['datatable'].tables['Investigations'] &&
         this.$store.state['datatable'].tables['Investigations'].tableState
       if (tableState) {
+        this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
           this.isColumnFilterActive = true
@@ -715,12 +716,13 @@ export default {
       }
     } else {
       this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
-      /*this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.setDefaultValues()
       this.queryHelper.controlRouteQuery()
       const { page, size } = this.queryHelper.returnQueryValues()
       this.bodyData.pageSize = size
       this.bodyData.pageNumber = page
-      this.serverSideProps.pageSize = size*/
+      this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }
 
@@ -729,7 +731,10 @@ export default {
     }
   },
   beforeDestroy() {
-    const tableState = this.$refs.investigationTable.getState()
+    const tableState = {
+      ...this.$refs.investigationTable.getState(),
+      serverSideProps: this.serverSideProps
+    }
     this.$store.dispatch('datatable/setTable', {
       key: 'Investigations',
       tableState

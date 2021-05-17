@@ -624,6 +624,7 @@ export default {
         this.$store.state['datatable'].tables['Groups'] &&
         this.$store.state['datatable'].tables['Groups'].tableState
       if (tableState) {
+        this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
         if (Object.keys(filterValues).length) {
           this.tableOptions.isColumnFilterActive = true
@@ -655,6 +656,7 @@ export default {
         localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS)
       )
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.setDefaultValues()
       this.queryHelper.controlRouteQuery()
       const { page, size } = this.queryHelper.returnQueryValues()
       this.setQueryValuesToPayload(this.$route.query)
@@ -665,7 +667,10 @@ export default {
     }
   },
   beforeDestroy() {
-    const tableState = this.$refs.refGroupsTable.getState()
+    const tableState = {
+      ...this.$refs.refGroupsTable.getState(),
+      serverSideProps: this.serverSideProps
+    }
     this.$store.dispatch('datatable/setTable', {
       key: 'Groups',
       tableState
