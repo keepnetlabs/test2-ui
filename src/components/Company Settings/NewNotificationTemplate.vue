@@ -470,10 +470,7 @@ export default {
             i >= 0;
             i--
           ) {
-            document.querySelectorAll('[data-title="Company Logo"]')[
-              i
-            ].outerHTML = document.querySelectorAll('[data-title="Company Logo"]')[i].src =
-              '{COMPANYLOGO}'
+            document.querySelectorAll('[data-title="Company Logo"]')[i].src = '{COMPANYLOGO}'
           }
         }
 
