@@ -15,8 +15,8 @@
   >
     <template #overlay-body>
       <app-modal-body-header
-        :title="labels.SamlModalBodyTitle"
-        :sub-title="labels.SamlModalBodySubTitle"
+        :title="getTitle"
+        :sub-title="isEdit ? labels.SamlModalBodyEditSubTitle : labels.SamlModalBodySubTitle"
       />
       <v-form ref="refForm">
         <form-group :title="labels.SAMLSettingName" has-hint>

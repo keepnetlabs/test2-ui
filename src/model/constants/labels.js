@@ -17,6 +17,7 @@ export const labels = {
   SamlModalBodyTitle: 'New SAML Configuration',
   SamlModalBodyEditTitle: 'Edit SAML Configuration',
   SamlModalBodySubTitle: 'Set new SAML configuration',
+  SamlModalBodyEditSubTitle: 'Set edit SAML configuration',
   SamlSettingsSubHeader: 'Manage SAML Configurations',
   EmptySamlTableSub: 'Create a new SAML configuration',
   SamlAddButtonTooltip: 'Add Saml Setting',

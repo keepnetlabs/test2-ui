@@ -483,6 +483,7 @@ export default {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         const { resourceId } = row
+        this.$refs.refSmtpSettingsList.unSelectRow(row)
         this.callForDeleteSmtpSettings(resourceId)
       }
     },
@@ -580,7 +581,6 @@ export default {
       if (DELETE.hasPermission) {
         selections.forEach((item) => {
           this.handleDeleteSmtpSettings(item)
-          this.$refs.refSmtpSettingsList.$refs.elTableRef.toggleRowSelection(item, false)
         })
       }
     },

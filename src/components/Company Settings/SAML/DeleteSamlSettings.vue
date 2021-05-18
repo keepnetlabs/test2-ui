@@ -62,7 +62,7 @@ export default {
       this.saveDisable = true
       deleteSamlSettings(this.selectedRow.resourceId)
         .then(() => {
-          this.$emit('on-delete')
+          this.$emit('on-delete', this.selectedRow)
           this.handleCloseDialog()
         })
         .finally(() => {

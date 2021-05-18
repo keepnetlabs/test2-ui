@@ -9,7 +9,7 @@
       :status="isDeletePopupOpen"
       :selected-row="selectedRow"
       @on-close="toggleDeletePopupStatus"
-      @on-delete="callForSamlSettings"
+      @on-delete="handleOnDelete"
     />
     <new-saml-settings
       v-if="isEditOrNewModalOpen"
@@ -379,6 +379,10 @@ export default {
     toggleDeletePopupStatus(row = null) {
       this.selectedRow = row
       this.isDeletePopupOpen = !this.isDeletePopupOpen
+    },
+    handleOnDelete(selectedRow = {}) {
+      this.$refs.refSamlSettings.unSelectRow(selectedRow)
+      this.callForSamlSettings()
     }
   }
 }

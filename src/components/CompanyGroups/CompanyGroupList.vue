@@ -454,6 +454,7 @@ export default {
     },
     deleteConfirmedItem(selectedItem) {
       deleteCompanyGroup(selectedItem.resourceId).then((response) => {
+        this.$refs.refGroupDataList.unSelectRow(selectedItem)
         if (response.data && response.data.message) {
           this.getTableData()
         }

@@ -485,6 +485,7 @@ export default {
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
         .then(() => {
+          this.$refs.refUsersList.unSelectRow(this.selectedRow)
           this.callForPhishingReporterUser()
           this.$emit('callForPhishingReporterSummary')
         })

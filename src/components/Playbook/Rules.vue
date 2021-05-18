@@ -549,16 +549,17 @@ export default {
         let _this = this
         if (this.totalSelectedItemsCount > 1) {
           for (const [key, value] of Object.entries(this.deleteValues)) {
-            values.push(value.resourceId)
+            values.push(value)
           }
         } else {
-          values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
+          values.push(this.deleteValues || this.deleteValues[0])
         }
         values.map((item) => {
           this.deleteButtonDisabled = true
-          deletePlaybookRule(item).then(() => {
+          deletePlaybookRule(item.resourceId).then(() => {
             this.isWantToDelete = false
             this.loading = true
+            this.$refs.refRulesList.unSelectRow(item)
             _this
               .getPlaybookList(_this.tableCredientials)
               .then(() => {

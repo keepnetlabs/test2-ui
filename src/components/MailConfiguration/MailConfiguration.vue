@@ -420,6 +420,7 @@ export default {
       json: null,
       email: null
     },
+    deletedItem: null,
     statusGsuite: null,
     deleteDialogId: null,
     deleteDialog: null,
@@ -705,6 +706,7 @@ export default {
     },
     handleDeleteDialog() {
       deleteO365(this.deleteDialogId).then(() => {
+        this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
         this.closeDeleteDialog()
         this.getTableData()
       })
@@ -769,6 +771,7 @@ export default {
     handleDelete(item) {
       this.deleteDialogName = item.name
       this.deleteDialogId = item.resourceId
+      this.deletedItem = item
       this.deleteDialog = true
     },
     submit() {

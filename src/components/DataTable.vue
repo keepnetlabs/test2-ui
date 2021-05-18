@@ -2833,6 +2833,9 @@ export default {
         })
       })
     },
+    unSelectRow(row) {
+      this.$refs.elTableRef.toggleRowSelection(row, false)
+    },
     handleEdit(selections, index) {
       if (index > -1) {
         this.extendedViewStyle = {

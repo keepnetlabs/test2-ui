@@ -39,6 +39,7 @@
         :selectable="true"
         :sizeable="true"
         :table="tableData"
+        :select-event="tableOptions.selectEvent"
         @editAction="handleEdit"
         @downloadEvent="exportRestApi"
         @deleteAction="handleDelete"
@@ -192,6 +193,12 @@ export default {
         ],
         pageSizes: [5, 10, 25],
         isColumnFilterActive: false,
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         rowActions: [
           {
             name: labels.Edit,
@@ -461,6 +468,7 @@ export default {
       this.saveDisableDelete = true
       deleteRestApi(resourceId)
         .then(() => {
+          this.$refs.refCustomApiList.unSelectRow(this.selectedRow)
           this.toggleShowDeleteCustomApi()
           this.callForSearch()
         })
