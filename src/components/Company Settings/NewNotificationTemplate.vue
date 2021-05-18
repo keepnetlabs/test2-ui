@@ -461,11 +461,19 @@ export default {
             : null
         }
         const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-        if (document.getElementById('logo-url') && document.getElementById('logo-url').length) {
-          for (let i = document.getElementById('logo-url').length - 1; i >= 0; i--) {
-            document.getElementById('logo-url')[i].outerHTML = document
-              .getElementById('logo-url')
-              [i].outerHTML.replaceAll(logoUrl, '{COMPANYLOGO}')
+        if (
+          document.querySelectorAll('[data-title="Company Logo"]') &&
+          document.querySelectorAll('[data-title="Company Logo"]').length
+        ) {
+          for (
+            let i = document.querySelectorAll('[data-title="Company Logo"]').length - 1;
+            i >= 0;
+            i--
+          ) {
+            document.querySelectorAll('[data-title="Company Logo"]')[
+              i
+            ].outerHTML = document.querySelectorAll('[data-title="Company Logo"]')[i].src =
+              '{COMPANYLOGO}'
           }
         }
 
