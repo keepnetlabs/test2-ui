@@ -9,13 +9,15 @@
       :status="isDeletePopupOpen"
       :selected-row="selectedRow"
       @on-close="toggleDeletePopupStatus"
-      @on-delete="handleDeleteSamlSettings"
+      @on-delete="callForSamlSettings"
     />
     <new-saml-settings
       v-if="isEditOrNewModalOpen"
       :status="isEditOrNewModalOpen"
       :is-edit="isEdit"
+      :selected-row="selectedRow"
       @on-close="toggleNewSamlSettingsModalStatus"
+      @on-success="handleEditOrNewFormSuccess"
     />
     <div class="smtp-settings__container">
       <data-table
@@ -41,6 +43,7 @@
         :server-side-events="{ pagination: true, search: true, sort: true }"
         @addNewSamlSetting="toggleNewSamlSettingsModalStatus"
         @deleteAction="toggleDeletePopupStatus"
+        @editAction="handleEditAction"
         @onEmptyBtnClicked="toggleNewSamlSettingsModalStatus"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -323,6 +326,12 @@ export default {
       this.getDefaultFilterAndSearch()
       this.callForSamlSettings()
     },
+    handleEditOrNewFormSuccess() {
+      this.selectedRow = null
+      this.resource = null
+      this.callForSamlSettings()
+      this.toggleNewSamlSettingsModalStatus()
+    },
     handleClearFilters() {
       this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
       this.$refs.refSamlSettings.filterValues = {}
@@ -342,7 +351,12 @@ export default {
       this.serverSideProps.pageSize = size
       this.axiosPayload.pageNumber = page
     },
-    toggleNewSamlSettingsModalStatus() {
+    handleEditAction(row = {}) {
+      this.selectedRow = row
+      this.toggleNewSamlSettingsModalStatus(true)
+    },
+    toggleNewSamlSettingsModalStatus(isEdit = false) {
+      this.isEdit = isEdit
       this.isEditOrNewModalOpen = !this.isEditOrNewModalOpen
     },
     exportSamlSettings(downloadTypes = {}) {
@@ -362,13 +376,8 @@ export default {
         })
       })
     },
-    handleDeleteSamlSettings(selectedRow = {}) {
-      deleteSamlSettings(selectedRow.resourceId).finally(this.callForSamlSettings)
-    },
     toggleDeletePopupStatus(row = null) {
-      if (row) {
-        this.selectedRow = row
-      }
+      this.selectedRow = row
       this.isDeletePopupOpen = !this.isDeletePopupOpen
     }
   }

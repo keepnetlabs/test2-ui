@@ -10,13 +10,26 @@ export function getDefaultSamlSettings() {
   return testRequest.get(`${BASE_URL}/default`)
 }
 
+export function getSamlSetting(resourceId = '') {
+  return testRequest.get(`${BASE_URL}/${resourceId}`)
+}
+
+export function createSamlSetting(payload = {}) {
+  return testRequest.post(`${BASE_URL}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function updateSamlSetting(payload = {}, resourceId = '') {
+  return testRequest.put(`${BASE_URL}/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function deleteSamlSettings(resourceId = '') {
-  return (
-    testRequest.delete(`${BASE_URL}/resourceId`),
-    {
-      snackbar: COMMON_SNACKBAR
-    }
-  )
+  return testRequest.delete(`${BASE_URL}/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function exportSamlSettings(payload = {}) {

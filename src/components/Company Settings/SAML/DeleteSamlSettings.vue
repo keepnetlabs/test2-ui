@@ -17,6 +17,7 @@
         cancel-button-id="btn-cancel--saml-settings-popup"
         confirm-button-id="btn-delete--saml-settings-popup"
         type="delete"
+        :confirmButtonDisabled="saveDisable"
         @handleClose="handleCloseDialog"
         @handleConfirm="handleDelete"
       />
@@ -28,6 +29,7 @@
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
+import { deleteSamlSettings } from '@/api/samlSettings'
 export default {
   name: 'DeleteSamlSettings',
   components: { AppDialogFooter, AppDialog },
@@ -43,7 +45,8 @@ export default {
   emits: ['on-close', 'on-delete'],
   data() {
     return {
-      labels
+      labels,
+      saveDisable: false
     }
   },
   computed: {
@@ -56,7 +59,15 @@ export default {
       this.$emit('on-close')
     },
     handleDelete() {
-      this.$emit('on-delete', this.selectedRow)
+      this.saveDisable = true
+      deleteSamlSettings(this.selectedRow.resourceId)
+        .then(() => {
+          this.$emit('on-delete')
+          this.handleCloseDialog()
+        })
+        .finally(() => {
+          this.saveDisable = false
+        })
     }
   }
 }
