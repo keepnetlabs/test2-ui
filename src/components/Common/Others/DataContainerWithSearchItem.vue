@@ -14,6 +14,14 @@
       </v-form>
     </div>
     <div v-if="!isEdit" class="data-container-with-search-item__actions">
+      <v-tooltip v-if="!isValid" bottom opacity="1">
+        <template #activator="{ on }">
+          <v-icon v-on="on" class="mr-8" color="#F56C6C" style="font-size: 24px !important;"
+            >mdi-alert-circle</v-icon
+          >
+        </template>
+        This Domain is not valid!
+      </v-tooltip>
       <v-btn icon @click="handleEditClick">
         <v-icon> mdi-pencil</v-icon>
       </v-btn>

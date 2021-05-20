@@ -197,9 +197,10 @@
                 outlined
                 rounded
                 color="#2196F3"
-                class="ml-10"
+                class="btn-domain-add ml-10"
                 @click="handleDomainToAddButtonClick"
               >
+                <v-icon left>mdi-plus</v-icon>
                 Add</v-btn
               >
             </div>
@@ -423,4 +424,13 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style lang="scss">
+.btn-domain-add {
+  .v-btn__content {
+    margin: 0 10px;
+  }
+  .v-icon {
+    margin-right: 4px !important;
+  }
+}
+</style>
