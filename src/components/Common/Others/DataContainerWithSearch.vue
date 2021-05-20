@@ -11,6 +11,40 @@
           placeholder="Search"
           prepend-inner-icon="mdi-magnify"
         />
+        <v-menu
+          v-model="isMenuOpen"
+          :offset-y="true"
+          bottom
+          min-width="240"
+          max-width="240"
+          :close-on-content-click="false"
+          class="filter__container"
+          content-class="data-container-with-search__menu"
+          max-height="260px"
+          z-index="999"
+        >
+          <template v-slot:activator="{ on }">
+            <v-icon v-on="on" class="filter__icon">mdi-filter-variant</v-icon>
+          </template>
+          <div class="filter__body-container">
+            <v-checkbox v-model="isFilterChecked" color="#2196f3" label="Only show invalid entries">
+            </v-checkbox>
+            <div class="filter__footer">
+              <v-btn text class="filter__footer-button" color="#00BCD4" @click="clearFilter">
+                Clear
+              </v-btn>
+              <v-btn
+                text
+                class="filter__footer-button"
+                :color="isFilterChecked ? '#409eff' : '#2196f3'"
+                :disabled="!isFilterChecked"
+                @click="handleFilter"
+              >
+                Filter
+              </v-btn>
+            </div>
+          </div>
+        </v-menu>
       </slot>
     </div>
     <div class="data-container-with-search__content">
@@ -73,6 +107,9 @@ export default {
   },
   data() {
     return {
+      isFilterChecked: false,
+      isFilterActive: false,
+      isMenuOpen: false,
       search: '',
       scrollKey: 'scroll-key-aksaks'
     }
@@ -82,7 +119,12 @@ export default {
       return { ...this.customStyle, maxWidth: this.maxWidth }
     },
     getItems() {
-      return this.search ? this.value.filter((item) => item.includes(this.search)) : this.value
+      const items = this.search
+        ? this.value.filter((item) => item.includes(this.search))
+        : this.value
+      return this.isFilterActive
+        ? items.filter((item) => !this.textFieldRules.every((func) => func(item) === true))
+        : items
     }
   },
   watch: {
@@ -97,6 +139,17 @@ export default {
       const index = this.value.indexOf(item)
       if (index === -1) return
       this.value.splice(index, 1)
+    },
+    handleFilter() {
+      this.setCommonProperties(true)
+    },
+    clearFilter() {
+      this.setCommonProperties()
+    },
+    setCommonProperties(val = false) {
+      this.isFilterChecked = val
+      this.isFilterActive = val
+      this.isMenuOpen = false
     }
   }
 }
@@ -108,8 +161,28 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin-bottom: 24px;
+  &__menu {
+    .filter__body-container {
+      padding: 16px 16px 6px 16px;
+    }
+    .filter__footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .v-btn__content {
+        font-weight: 600;
+      }
+    }
+  }
   &__input {
     padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .filter__icon {
+      margin-left: 16px;
+      cursor: pointer;
+    }
   }
   &__content {
     background: #fafafa;
