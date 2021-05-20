@@ -14,6 +14,12 @@
     @submit="submit"
   >
     <template #overlay-body>
+      <batch-import-popup
+        v-if="isBatchImportPopupOpen"
+        :status="isBatchImportPopupOpen"
+        @on-close="toggleBatchImportPopup"
+        @on-confirm="handleBatchImport"
+      />
       <app-modal-body-header
         :title="getTitle"
         :sub-title="isEdit ? labels.SamlModalBodyEditSubTitle : labels.SamlModalBodySubTitle"
@@ -168,6 +174,49 @@
             ></v-text-field>
           </template>
         </input-with-copy-to-clipboard>
+        <form-group class-name="input-copy-to-clipboard" :title="labels.Domain">
+          <v-form ref="refDomainToAddForm" onSubmit="return false;">
+            <div class="copy-to-clipboard__container">
+              <v-text-field
+                v-model.trim="formValues.domainToAdd"
+                id="input--saml-settings-domain-to-add"
+                placeholder="Enter Domain name"
+                style="max-width: 554px;"
+                outlined
+                dense
+                persistent-hint
+                hint="*Required"
+                :rules="[
+                  (v) => validations.required(v, labels.Required),
+                  (v) =>
+                    validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Domain, 256)),
+                  (v) => validations.domain(v, labels.InvalidDomainName)
+                ]"
+              ></v-text-field>
+              <v-btn
+                outlined
+                rounded
+                color="#2196F3"
+                class="ml-10"
+                @click="handleDomainToAddButtonClick"
+              >
+                Add</v-btn
+              >
+            </div>
+          </v-form>
+        </form-group>
+        <data-container-with-search
+          v-if="dataContainerWithSearchItems.length"
+          v-model="dataContainerWithSearchItems"
+        />
+        <button
+          id="btn-import--saml-settings"
+          class="ip-restriction__button mb-6 ml-2"
+          type="button"
+          @click="handleBatchImportClick"
+        >
+          <v-icon medium left color="blue" class="ml-0">mdi-swap-vertical</v-icon>BATCH IMPORT
+        </button>
         <form-group :title="labels.EnableSAMLSSO">
           <v-switch
             v-model="formValues.enableSAMLSSO"
@@ -197,9 +246,20 @@ import {
   getSamlSetting,
   updateSamlSetting
 } from '@/api/samlSettings'
+import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
+import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'NewSamlSettings',
-  components: { InputWithCopyToClipboard, InputUrl, FormGroup, AppModalBodyHeader, AppModal },
+  components: {
+    BatchImportPopup,
+    DataContainerWithSearch,
+    InputWithCopyToClipboard,
+    InputUrl,
+    FormGroup,
+    AppModalBodyHeader,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean
@@ -217,7 +277,9 @@ export default {
       labels,
       validations,
       resourceId: null,
+      isBatchImportPopupOpen: false,
       saveDisable: false,
+      dataContainerWithSearchItems: [],
       formValues: {
         name: '',
         idPSSOTargetUrl: '',
@@ -230,7 +292,8 @@ export default {
         ssoCallbackUrl: '',
         bypassSSOLoginUrl: '',
         enableSAMLSSO: true,
-        domain: ['fancybank.com.tr']
+        domain: [],
+        domainToAdd: ''
       }
     }
   },
@@ -267,6 +330,7 @@ export default {
           idPCertFingerprintTypeId,
           idPSSOTargetUrl,
           name,
+          domain,
           resourceId,
           statusId
         } = data
@@ -277,7 +341,12 @@ export default {
         this.formValues.name = name
         this.resourceId = resourceId
         this.formValues.enableSAMLSSO = !!statusId
+        this.formValues.domain = domain
+        this.dataContainerWithSearchItems = domain.concat()
       })
+    },
+    handleBatchImportClick() {
+      this.toggleBatchImportPopup()
     },
     callForGetDefaultSettings() {
       getDefaultSamlSettings().then((response) => {
@@ -295,6 +364,21 @@ export default {
     },
     handleCopyToClipboard(key = '') {
       navigator.clipboard.writeText(this.formValues[key])
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'COPIED TO CLIPBOARD',
+        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+        icon: 'mdi-check-circle'
+      })
+    },
+    handleDomainToAddButtonClick() {
+      if (
+        this.$refs.refDomainToAddForm.validate() &&
+        !this.dataContainerWithSearchItems.find((item) => item === this.formValues.domainToAdd)
+      ) {
+        this.dataContainerWithSearchItems.unshift(this.formValues.domainToAdd)
+        this.formValues.domainToAdd = ''
+        this.$refs.refDomainToAddForm.resetValidation()
+      }
     },
     submit() {
       if (this.$refs.refForm.validate()) {
@@ -304,8 +388,7 @@ export default {
           idPCertFingerprint,
           idPCertFingerprintTypeId,
           entityID,
-          enableSAMLSSO,
-          domain
+          enableSAMLSSO
         } = this.formValues
         const payload = {
           name,
@@ -314,7 +397,7 @@ export default {
           idPCertFingerprintTypeId,
           entityID,
           statusId: Number(enableSAMLSSO),
-          domain
+          domain: this.dataContainerWithSearchItems
         }
         this.saveDisable = true
         const promise = !this.isEdit
@@ -328,6 +411,13 @@ export default {
             this.saveDisable = false
           })
       }
+    },
+    handleBatchImport(data = []) {
+      if (!data.length) return
+      this.dataContainerWithSearchItems.unshift(...data)
+    },
+    toggleBatchImportPopup() {
+      this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
     }
   }
 }
