@@ -203,7 +203,16 @@ export default {
               style: {
                 maxWidth: '110px'
               }
-            }
+            },
+            filterableType: 'select',
+            filterableItems: [
+              'N/A',
+              'Online',
+              'Offline',
+              'Disabled',
+              { text: 'Not Installed', value: 'NotInstalled' }
+            ],
+            filterableCustomFieldName: 'AddInStatusName'
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -231,7 +240,15 @@ export default {
             show: true,
             type: 'slot',
             isEditable: true,
-            width: 160
+            width: 160,
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Not Installed', value: 'NotInstalled' },
+              'Online',
+              'Offline',
+              'Error/Uninstalled'
+            ],
+            filterableCustomFieldName: 'DiagnosticToolStatus'
           },
           {
             property: PROPERTY_STORE.HOSTNAME,
