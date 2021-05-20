@@ -211,8 +211,7 @@ export default {
               'Offline',
               'Disabled',
               { text: 'Not Installed', value: 'NotInstalled' }
-            ],
-            filterableCustomFieldName: 'AddInStatusName'
+            ]
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -247,8 +246,7 @@ export default {
               'Online',
               'Offline',
               'Error/Uninstalled'
-            ],
-            filterableCustomFieldName: 'DiagnosticToolStatus'
+            ]
           },
           {
             property: PROPERTY_STORE.HOSTNAME,
