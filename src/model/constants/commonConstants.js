@@ -267,7 +267,8 @@ export const TABLE_SETTINGS_KEYS = {
   SYSTEM_USERS_ROLES: 'SystemUsersRolesSettings',
   AUDIT: 'AuditTableSettings',
   TARGET_USERS_GROUPS: 'TargetUsersGroupsTableSettings',
-  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings'
+  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings',
+  SAML_SETTINGS: 'SamlSettingsTableSettings'
 }
 
 export function getStoreValue(key, type) {
@@ -387,7 +388,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   COMPANY_GROUP_LIST: 'CompanyGroupList',
   COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
   INVESTIGATIONSFOLDER: 'InvestigationsFolder',
-  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
+  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers',
+  SAMLSETTINGS: 'SamlSettings'
 }
 
 export const INTEGRATION_TYPES = {

@@ -482,6 +482,7 @@ export default {
       this.isDeleteButtonDisabled = true
       deleteEmailTemplate(resourceId)
         .then(() => {
+          this.$refs.refNotificationList.unSelectRow(this.selectedItem)
           this.toggleDeleteNotificationTemplate()
           this.callForDatas()
         })

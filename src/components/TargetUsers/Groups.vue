@@ -562,6 +562,7 @@ export default {
     },
     handleDeleteGroup(selectedRow) {
       deleteTargetGroup(selectedRow.resourceId).then(() => {
+        this.$refs.refGroupsTable.unSelectRow(selectedRow)
         this.callForTargetGroups()
       })
     },
