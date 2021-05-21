@@ -3,7 +3,7 @@ import authTestRequest from '../utils/authTestRequest'
 import testRequest from '../utils/testRequest'
 import AuthenticationService from '../services/authentication'
 import { COMMON_SNACKBAR } from '../model/constants/commonConstants'
-
+import axios from 'axios'
 export function loginAction(payload) {
   const params = new URLSearchParams()
   let skipMfa = false
@@ -42,6 +42,10 @@ export function resetPassword(payload) {
   })
 }
 
+export function loginWithUsername(payload = {}) {
+  return testRequest.post('/account/login', payload)
+}
+
 export function profile() {
   return request.get('/users/me')
 }
@@ -65,6 +69,16 @@ export function updatePassword(payload) {
   return testRequest.put('/system-users/change-password', payload, {
     loading: true,
     snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function getSaml(url = '') {
+  return axios.get(url, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+    }
   })
 }
 
