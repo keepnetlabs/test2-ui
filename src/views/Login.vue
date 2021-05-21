@@ -42,10 +42,12 @@
                         : `Welcome To ${loginWhiteLabel.brandName}`
                     }}
                   </div>
-                  <div id="text--login-description" class="login-desc">
+                  <div id="text--login-description" class="login-desc mb-14">
                     {{
                       isSessionExpired
                         ? 'Your session has been timed out. Please log in.'
+                        : showPasswordField
+                        ? `Enter password for ${email}`
                         : 'Please Login'
                     }}
                   </div>
@@ -99,41 +101,33 @@
                           @submit="(event) => event.preventDefault()"
                           v-model.trim="validEmail"
                           autocomplete="off"
-                          ref="email"
+                          :ref="showPasswordField ? 'password' : 'email'"
                         >
-                          <label
-                            id="text--login-username"
-                            class="new-password-wrapper__label p-0 mb-2"
-                            >Username</label
-                          >
                           <v-text-field
+                            v-if="!showPasswordField"
                             id="input--login-email"
                             :type="'email'"
                             name="email"
                             ref="email"
                             v-model.trim="email"
-                            :rules="[rules.required, rules.email, rules.max, rules.controlEmail]"
+                            :rules="[
+                              rules.required,
+                              rules.min,
+                              rules.email,
+                              rules.max,
+                              rules.controlEmail
+                            ]"
                             class="username-field"
                             required
-                            label="Username"
+                            label="Username or email"
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
                             autocomplete="disabled"
                           ></v-text-field>
-                        </v-form>
-                      </v-col>
-                    </v-row>
-                    <v-row align="center" justify="center">
-                      <v-col class="pt-0 pl-0 pr-0" md="6" sm="12">
-                        <v-form
-                          @submit="(event) => event.preventDefault()"
-                          v-model.trim="validPassword"
-                          ref="password"
-                        >
-                          <label class="new-password-wrapper__label p-0 mb-2">Password</label>
                           <v-text-field
+                            v-else
                             id="input--login-password"
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
@@ -153,13 +147,14 @@
                         </v-form>
                       </v-col>
                     </v-row>
-                    <v-row align="center" justify="center">
-                      <v-col class="pl-0 pt-1 pr-2 pb-0" md="6" xs="12">
+                    <v-row v-if="showPasswordField" align="center" justify="center">
+                      <v-col class="pl-0 pt-0 pr-2 pb-0" md="6" xs="12">
                         <div class="login-remember d-flex">
                           <v-checkbox
                             v-model.trim="rememberMe"
                             id="input--is-remember-me"
                             :label="`Remember`"
+                            style="visibility: hidden;"
                             class="remember-me-check"
                             hide-details
                             dense
@@ -188,13 +183,13 @@
                     @expired="onCaptchaExpired"
                   ></vue-recaptcha>
                 </div>
-                <v-card-actions class="justify-center login-button">
+                <v-card-actions class="justify-center login-button mt-0">
                   <v-btn
                     color="blue"
                     id="btn--login-continue"
                     class="pl-4 white--text login-btn"
                     rounded
-                    @click="onLoginClicked"
+                    @click="handleContinueClick"
                   >
                     CONTINUE
                     <v-icon right dark>mdi-arrow-right</v-icon>
@@ -477,7 +472,7 @@
                   ref="refMfaCantLogin"
                 />
               </div>
-              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber)">
+              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber) || showPasswordField">
                 <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
@@ -500,7 +495,9 @@ import {
   cantLogin,
   createPasswordByToken,
   getMfaQRCode,
+  getSaml,
   loginAction,
+  loginWithUsername,
   resetPassword,
   resetPasswordByToken,
   setMFA
@@ -536,6 +533,7 @@ export default {
       showMfaMessage: false,
       mfaSetupErrorText: null,
       phoneNumber: null,
+      showPasswordField: false,
       recoveryCode: null,
       mfaDetails: null,
       mfaSetupDetails: null,
@@ -725,6 +723,27 @@ export default {
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    handleContinueClick() {
+      if (this.showPasswordField) {
+        this.onLoginClicked()
+      } else {
+        if (this.$refs.email.validate()) {
+          loginWithUsername({ username: this.email }).then((response) => {
+            const {
+              data: { data }
+            } = response
+            if (data.authenticationTypeId === 1) {
+              this.showPasswordField = true
+            } else if (data.authenticationTypeId === 2) {
+              getSaml(data.redirectUrl)
+                .then((response) => {})
+                .finally(() => {})
+              //element.click()
+            }
+          })
+        }
+      }
+    },
     onCantLoginButtonClick() {
       let payload = {
         email: this.email,
@@ -959,6 +978,14 @@ export default {
     onBackButtonClick() {
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
+      this.showPasswordField = false
+      if (this.pageNumber === 1) {
+        this.$nextTick(() => {
+          if (this.$refs && this.$refs.email) {
+            this.$refs.email.validate()
+          }
+        })
+      }
       if (this.pageNumber === 7) {
         this.pageNumber = 6
       } else if (this.pageNumber === 9) {
@@ -1054,20 +1081,11 @@ export default {
 
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
-      if (
-        this.$refs.email.validate() &&
-        this.$refs.password.validate() &&
-        this.wrongLoginAttempt < 3
-      ) {
-        // this.isLoading = true
+      if (this.$refs.password.validate() && this.wrongLoginAttempt < 3) {
         let payload = { email: this.email, password: this.password, router: this.$router }
         this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
         this.loginAction(payload)
-      } else if (
-        this.$refs.email.validate() &&
-        this.$refs.password.validate &&
-        this.wrongLoginAttempt >= 3
-      ) {
+      } else if (this.$refs.password.validate() && this.wrongLoginAttempt >= 3) {
         if (window.grecaptcha.getResponse() == '') {
         } else {
           let payload = {
