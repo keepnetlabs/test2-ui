@@ -748,6 +748,10 @@ export default {
             } = response
             if (data.authenticationTypeId === 1) {
               this.showPasswordField = true
+            } else if (data.authenticationTypeId === 2) {
+              const anchor = document.createElement('a')
+              anchor.href = data.redirectUrl
+              anchor.click()
             }
           })
         }
