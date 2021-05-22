@@ -31,6 +31,24 @@ export function loginAction(payload) {
   })
 }
 
+export function loginWithSaml(payload) {
+  const { email, authcode } = payload
+  const params = new URLSearchParams()
+  params.append('grant_type', 'password')
+  params.append('username', 'gokhan@fancybank.co.uk')
+  params.append('scope', 'api1')
+  params.append('client_id', 'ui_client')
+  params.append('client_secret', 'secret')
+  params.append('client_id', 'ui_client')
+  params.append('authcode', authcode)
+  return authTestRequest.post('connect/token', params, {
+    loading: true,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
 export function getCurrentUser() {
   return request.get('account/myself')
 }
@@ -43,7 +61,9 @@ export function resetPassword(payload) {
 }
 
 export function loginWithUsername(payload = {}) {
-  return testRequest.post('/account/login', payload)
+  return testRequest.post('/account/login', payload, {
+    loading: true
+  })
 }
 
 export function profile() {

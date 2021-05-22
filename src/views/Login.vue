@@ -497,6 +497,7 @@ import {
   getMfaQRCode,
   getSaml,
   loginAction,
+  loginWithSaml,
   loginWithUsername,
   resetPassword,
   resetPasswordByToken,
@@ -600,6 +601,19 @@ export default {
       }
       //this.$router.replace('/login') login change
     }
+
+    if (this.$route.query.authcode) {
+      const { authcode } = this.$route.query
+      const newAuthCode = encodeURIComponent(authcode)
+      loginWithSaml({ authcode: newAuthCode })
+        .then((response) => {
+          this.onSuccessLogin({}, response)
+        })
+        .catch((err) => {
+          this.onErrorLogin({}, err)
+        })
+    }
+
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
       this.$vlf.getItem('username', (err, username = '') => {
@@ -734,11 +748,6 @@ export default {
             } = response
             if (data.authenticationTypeId === 1) {
               this.showPasswordField = true
-            } else if (data.authenticationTypeId === 2) {
-              getSaml(data.redirectUrl)
-                .then((response) => {})
-                .finally(() => {})
-              //element.click()
             }
           })
         }
@@ -823,157 +832,159 @@ export default {
         .catch(() => {})
     },
     loginAction(payload) {
-      let _this = this
-
       loginAction(payload)
         .then((response) => {
-          let isSessionExpired = payload.sessionExpired
-          this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
-          AuthenticationService.setToken(
-            response.data.access_token,
-            response.data.expiredIn || 9999999999999,
-            response.data.status || 1
-          )
-          if (response.data.status === 3) {
-            this.$store.commit('SET_PAGE_NUMBER', 4)
-          } else {
-            this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
-          }
-          if (payload.sessionExpired) {
-            getCompanyList().then((response) => {
-              const result = response.data.data && response.data.data
-              this.$store.commit('SET_DROPDOWN_COMPANIES', result)
-            })
-          }
-          if (isSessionExpired) {
-            let token = JSON.parse(localStorage.getItem('auth-token')).token
-            let tokenData = jwt_decode(token)
-            let currentUserData = setGlobalUserData(tokenData)
-            localStorage.setItem('userData', JSON.stringify(currentUserData))
-            localStorage.setItem('selectedCompanyName', currentUserData.name)
-            localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
-            if (
-              currentUserData &&
-              currentUserData.role &&
-              currentUserData.role.name !== 'CompanyAdmin'
-            ) {
-              this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
-            }
-            let payload = {
-              currentUserData: currentUserData,
-              isSelectCompany: false,
-              permissions: tokenData.Permission
-            }
-            this.$store.commit('SET_CURRENTUSER', payload)
-            this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
-              location.reload()
-            })
-          }
-          if (
-            (_this.$route.query &&
-              !!_this.$route.query.communityResourceId &&
-              !!_this.$route.query.communityPostResourceId) ||
-            !!_this.$route.query['amp;communityPostResourceId']
-          ) {
-            this.pageNumber = 1
-            _this.$router.push(
-              `/community/${_this.$route.query.communityResourceId}?postId=${
-                _this.$route.query.communityPostResourceId ||
-                _this.$route.query['amp;communityPostResourceId']
-              }`
-            )
-          } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
-            this.pageNumber = 1
-            _this.$router.push(
-              `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
-            )
-          } else if (this.$route.query && !!this.$route.query.showInvitation) {
-            this.pageNumber = 1
-            this.$router.push({
-              path: `/threat-sharing`,
-              query: { showInvitation: this.$route.query.showInvitation }
-            })
-          } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
-            _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
-          } else if (_this.$route.query) {
-            if (_this.$route.query.cp) {
-              _this.pageNumber = 5
-              _this.token = _this.getToken('cp', window.location.href)
-              _this.resetType = 'createPassword'
-            } else if (_this.$route.query.rp) {
-              _this.pageNumber = 5
-              _this.token = _this.getToken('rp', window.location.href)
-              _this.resetType = 'resetPassword'
-            } else if (!indexStore.getters['common/getSessionCheck']) {
-              this.pageNumber = 1
-              _this.$router.push('/')
-            } else {
-              this.pageNumber = 1
-              _this.$router.push('/')
-            }
-          } else if (!indexStore.getters['common/getSessionCheck']) {
-            this.pageNumber = 1
-            _this.$router.push('/')
-          } else {
-            this.pageNumber = 1
-            _this.$router.push('/')
-          }
-
-          setTimeout(() => {
-            if (_this.rememberMe) {
-              this.$vlf.setItem('username', _this.email)
-              localStorage.setItem('isRemember', _this.rememberMe)
-            } else {
-              localStorage.removeItem('username')
-              localStorage.removeItem('password')
-              localStorage.removeItem('isRemember')
-              this.$vlf.removeItem('username')
-              this.$vlf.removeItem('password')
-            }
-          }, 500)
+          this.onSuccessLogin(payload, response)
         })
         .catch((error) => {
-          if (
-            error.response.data &&
-            error.response.data.mfa &&
-            error.response.data.mfa.StatusId === 1
-          ) {
-            this.pageNumber = 8
-          } else if (
-            error.response.data &&
-            error.response.data.mfa &&
-            error.response.data.mfa.StatusId === 0
-          ) {
-            this.mfaDetails = error.response.data.mfa
-            this.pageNumber = 6
-          } else {
-            this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
-            if (error.response && error.response.status === 401) {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              this.$store.commit(
-                'common/SET_ERROR_MESSAGE',
-                error.response.data.errors[0].message,
-                {
-                  root: true
-                }
-              )
-            } else {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              let content =
-                error.response.data && error.response.data.error_description
-                  ? error.response.data.error_description
-                  : error.response.data.Message
-                  ? error.response.data.Message
-                  : 'Unknown Error Occured !!!'
-              this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
-            }
-          }
+          this.onErrorLogin(payload, error)
         })
         .finally(() => {
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
             root: true
           })
         })
+    },
+    onSuccessLogin(payload, response) {
+      let _this = this
+      let isSessionExpired = payload.sessionExpired
+      this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+      AuthenticationService.setToken(
+        response.data.access_token,
+        response.data.expiredIn || 9999999999999,
+        response.data.status || 1
+      )
+      if (response.data.status === 3) {
+        this.$store.commit('SET_PAGE_NUMBER', 4)
+      } else {
+        this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
+      }
+      if (payload.sessionExpired) {
+        getCompanyList().then((response) => {
+          const result = response.data.data && response.data.data
+          this.$store.commit('SET_DROPDOWN_COMPANIES', result)
+        })
+      }
+      if (isSessionExpired) {
+        let token = JSON.parse(localStorage.getItem('auth-token')).token
+        let tokenData = jwt_decode(token)
+        let currentUserData = setGlobalUserData(tokenData)
+        localStorage.setItem('userData', JSON.stringify(currentUserData))
+        localStorage.setItem('selectedCompanyName', currentUserData.name)
+        localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+        if (
+          currentUserData &&
+          currentUserData.role &&
+          currentUserData.role.name !== 'CompanyAdmin'
+        ) {
+          this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
+        }
+        let payload = {
+          currentUserData: currentUserData,
+          isSelectCompany: false,
+          permissions: tokenData.Permission
+        }
+        this.$store.commit('SET_CURRENTUSER', payload)
+        this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+          location.reload()
+        })
+      }
+      if (
+        (_this.$route.query &&
+          !!_this.$route.query.communityResourceId &&
+          !!_this.$route.query.communityPostResourceId) ||
+        !!_this.$route.query['amp;communityPostResourceId']
+      ) {
+        this.pageNumber = 1
+        _this.$router.push(
+          `/community/${_this.$route.query.communityResourceId}?postId=${
+            _this.$route.query.communityPostResourceId ||
+            _this.$route.query['amp;communityPostResourceId']
+          }`
+        )
+      } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
+        this.pageNumber = 1
+        _this.$router.push(
+          `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
+        )
+      } else if (this.$route.query && !!this.$route.query.showInvitation) {
+        this.pageNumber = 1
+        this.$router.push({
+          path: `/threat-sharing`,
+          query: { showInvitation: this.$route.query.showInvitation }
+        })
+      } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
+        _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
+      } else if (_this.$route.query) {
+        if (_this.$route.query.cp) {
+          _this.pageNumber = 5
+          _this.token = _this.getToken('cp', window.location.href)
+          _this.resetType = 'createPassword'
+        } else if (_this.$route.query.rp) {
+          _this.pageNumber = 5
+          _this.token = _this.getToken('rp', window.location.href)
+          _this.resetType = 'resetPassword'
+        } else if (!indexStore.getters['common/getSessionCheck']) {
+          this.pageNumber = 1
+          _this.$router.push('/')
+        } else {
+          this.pageNumber = 1
+          _this.$router.push('/')
+        }
+      } else if (!indexStore.getters['common/getSessionCheck']) {
+        this.pageNumber = 1
+        _this.$router.push('/')
+      } else {
+        this.pageNumber = 1
+        _this.$router.push('/')
+      }
+
+      setTimeout(() => {
+        if (_this.rememberMe) {
+          this.$vlf.setItem('username', _this.email)
+          localStorage.setItem('isRemember', _this.rememberMe)
+        } else {
+          localStorage.removeItem('username')
+          localStorage.removeItem('password')
+          localStorage.removeItem('isRemember')
+          this.$vlf.removeItem('username')
+          this.$vlf.removeItem('password')
+        }
+      }, 500)
+    },
+    onErrorLogin(payload, error) {
+      let _this = this
+      if (
+        error.response.data &&
+        error.response.data.mfa &&
+        error.response.data.mfa.StatusId === 1
+      ) {
+        this.pageNumber = 8
+      } else if (
+        error.response.data &&
+        error.response.data.mfa &&
+        error.response.data.mfa.StatusId === 0
+      ) {
+        this.mfaDetails = error.response.data.mfa
+        this.pageNumber = 6
+      } else {
+        this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
+        if (error.response && error.response.status === 401) {
+          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          this.$store.commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
+            root: true
+          })
+        } else {
+          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          let content =
+            error.response.data && error.response.data.error_description
+              ? error.response.data.error_description
+              : error.response.data.Message
+              ? error.response.data.Message
+              : 'Unknown Error Occured !!!'
+          this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
+        }
+      }
     },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false
