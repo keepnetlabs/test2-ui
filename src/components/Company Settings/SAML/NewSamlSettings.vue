@@ -365,6 +365,7 @@ export default {
         const {
           data: { data }
         } = response
+
         const {
           entityID,
           idPCertFingerprint,
@@ -374,9 +375,11 @@ export default {
           domain,
           resourceId,
           statusId,
+          idPEntityID,
           idPCertificateFileContent
         } = data
         this.formValues.entityID = entityID
+        this.formValues.idPEntityID = idPEntityID
         this.formValues.idPCertFingerprint = idPCertFingerprint
         this.formValues.idPCertFingerprintTypeId = idPCertFingerprintTypeId
         this.formValues.idPSSOTargetUrl = idPSSOTargetUrl
