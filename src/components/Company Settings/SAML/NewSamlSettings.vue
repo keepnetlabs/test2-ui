@@ -44,7 +44,7 @@
         </form-group>
         <form-group :title="labels.IdPEntityID" has-hint>
           <v-text-field
-            v-model.trim="formValues.idpEntityID"
+            v-model.trim="formValues.idPEntityID"
             id="input--saml-settings-id-entity-id"
             placeholder="Enter SAML idp entity id"
             outlined
@@ -315,7 +315,7 @@ export default {
       dataContainerWithSearchItems: [],
       formValues: {
         name: '',
-        idpEntityID: '',
+        idPEntityID: '',
         file: null,
         idPSSOTargetUrl: '',
         idPCertFingerprint: '',
@@ -426,15 +426,19 @@ export default {
           idPCertFingerprint,
           idPCertFingerprintTypeId,
           entityID,
-          enableSAMLSSO
+          enableSAMLSSO,
+          idPEntityID,
+          file
         } = this.formValues
         const formData = {
           name,
           idPSSOTargetUrl,
+          idPEntityID,
           idPCertFingerprint,
           idPCertFingerprintTypeId,
           entityID,
           statusId: Number(enableSAMLSSO),
+          file,
           domain: this.dataContainerWithSearchItems
         }
         this.saveDisable = true
