@@ -518,6 +518,7 @@ import MFASetup from '@/components/MFA/MFASetup'
 import MFACantLogin from '@/components/MFA/MFACantLogin'
 import MFALogin from '@/components/MFA/MFALogin'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
+import { getSystemUserSettings } from '@/api/settings'
 export default {
   name: 'Login',
   components: {
@@ -646,6 +647,12 @@ export default {
         })
       } else if (this.$route.query && !!this.$route.query.CommunityId) {
         this.$router.push(`/threat-sharing/${this.$route.query.CommunityId}`)
+      } else if (this.$route.query && !!this.$route.query.investigationDetailsResourceId) {
+        this.$router.push(
+          `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
+        )
+      } else if (this.$route.query && !!this.$route.query.analysisDetailsResourceId) {
+        this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
       } else if (this.$route.query) {
         if (this.$route.query.cp) {
           this.pageNumber = 5
@@ -657,7 +664,14 @@ export default {
           this.resetType = 'resetPassword'
         }
       } else {
-        this.$router.push('/')
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push('/')
+          })
       }
     } else if (this.$route.query) {
       if (this.$route.query.cp) {
@@ -930,17 +944,45 @@ export default {
           _this.resetType = 'resetPassword'
         } else if (!indexStore.getters['common/getSessionCheck']) {
           this.pageNumber = 1
-          _this.$router.push('/')
+          getSystemUserSettings()
+            .then((response) => {
+              localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+              localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+            })
+            .finally(() => {
+              this.$router.push('/')
+            })
         } else {
           this.pageNumber = 1
-          _this.$router.push('/')
+          getSystemUserSettings()
+            .then((response) => {
+              localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+              localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+            })
+            .finally(() => {
+              this.$router.push('/')
+            })
         }
       } else if (!indexStore.getters['common/getSessionCheck']) {
         this.pageNumber = 1
-        _this.$router.push('/')
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push('/')
+          })
       } else {
         this.pageNumber = 1
-        _this.$router.push('/')
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push('/')
+          })
       }
 
       setTimeout(() => {
