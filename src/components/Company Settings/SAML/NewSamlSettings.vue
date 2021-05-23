@@ -74,7 +74,12 @@
             ref="refMainLogo"
             :extensions="['cer', 'cert', 'pk12']"
             @inputFile="onFileChange"
-        /></form-group>
+          />
+          <div class="saml-settings__certificate-text" v-if="certificateText">
+            {{ certificateText }}
+          </div>
+        </form-group>
+
         <form-group :title="labels.SAMLIdpCert" has-hint>
           <v-text-field
             v-model.trim="formValues.idPCertFingerprint"
@@ -310,6 +315,7 @@ export default {
       labels,
       validations,
       resourceId: null,
+      certificateText: '',
       isBatchImportPopupOpen: false,
       saveDisable: false,
       dataContainerWithSearchItems: [],
@@ -367,7 +373,8 @@ export default {
           name,
           domain,
           resourceId,
-          statusId
+          statusId,
+          idPCertificateFileContent
         } = data
         this.formValues.entityID = entityID
         this.formValues.idPCertFingerprint = idPCertFingerprint
@@ -378,6 +385,7 @@ export default {
         this.formValues.enableSAMLSSO = !!statusId
         this.formValues.domain = domain
         this.dataContainerWithSearchItems = domain.concat()
+        this.certificateText = idPCertificateFileContent
       })
     },
     handleBatchImportClick() {
@@ -416,7 +424,12 @@ export default {
       }
     },
     onFileChange(file) {
+      this.certificateText = ''
       this.formValues.file = file
+      this.setCertificateText(file)
+    },
+    async setCertificateText(file) {
+      this.certificateText = await file.text()
     },
     submit() {
       if (this.$refs.refForm.validate()) {
@@ -481,5 +494,16 @@ export default {
   .v-icon {
     margin-right: 4px !important;
   }
+}
+.saml-settings__certificate-text {
+  max-height: 100px;
+  overflow: auto;
+  padding: 12px;
+  line-height: 1.4;
+  border: 1px solid darkgray;
+  font-size: 13px;
+  background: #f2f2f2 !important;
+  border-radius: 4px;
+  margin-top: 4px;
 }
 </style>
