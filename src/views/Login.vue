@@ -604,9 +604,10 @@ export default {
     }
 
     if (this.$route.query.authcode) {
-      const { authcode } = this.$route.query
+      const { authcode, uid } = this.$route.query
       const newAuthCode = encodeURIComponent(authcode)
-      loginWithSaml({ authcode: newAuthCode })
+      const username = uid
+      loginWithSaml({ authcode: newAuthCode, username })
         .then((response) => {
           this.onSuccessLogin({}, response)
         })

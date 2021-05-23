@@ -32,10 +32,10 @@ export function loginAction(payload) {
 }
 
 export function loginWithSaml(payload) {
-  const { email, authcode } = payload
+  const { username, authcode } = payload
   const params = new URLSearchParams()
   params.append('grant_type', 'password')
-  params.append('username', 'gokhan@fancybank.co.uk')
+  params.append('username', username)
   params.append('scope', 'api1')
   params.append('client_id', 'ui_client')
   params.append('client_secret', 'secret')
