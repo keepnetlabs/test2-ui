@@ -42,9 +42,39 @@
             ]"
           ></v-text-field>
         </form-group>
+        <form-group :title="labels.IdPEntityID" has-hint>
+          <v-text-field
+            v-model.trim="formValues.idpEntityID"
+            id="input--saml-settings-id-entity-id"
+            placeholder="Enter SAML idp entity id"
+            outlined
+            dense
+            hint="*Required"
+            persistent-hint
+            :rules="[
+              (v) => validations.required(v),
+              (v) => validations.startsWithSpace(v),
+              (v) =>
+                validations.maxLength(
+                  v,
+                  256,
+                  labels.getMaxLengthMessage(labels.SAMLSettingName, 256)
+                )
+            ]"
+          ></v-text-field>
+        </form-group>
         <form-group :title="labels.SAMLIdpTargetUrl" has-hint>
           <input-url v-model="formValues.idPSSOTargetUrl" id="input--saml-settings-target-url" />
         </form-group>
+        <form-group :title="labels.CertificateName" has-hint>
+          <k-file-upload
+            key="mainLogo"
+            id="input--saml-settings-file"
+            hint="Upload certification file. Max. file size 2MB"
+            ref="refMainLogo"
+            :extensions="['cer', 'cert', 'pk12']"
+            @inputFile="onFileChange"
+        /></form-group>
         <form-group :title="labels.SAMLIdpCert" has-hint>
           <v-text-field
             v-model.trim="formValues.idPCertFingerprint"
@@ -250,9 +280,11 @@ import {
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 export default {
   name: 'NewSamlSettings',
   components: {
+    KFileUpload,
     BatchImportPopup,
     DataContainerWithSearch,
     InputWithCopyToClipboard,
@@ -283,6 +315,8 @@ export default {
       dataContainerWithSearchItems: [],
       formValues: {
         name: '',
+        idpEntityID: '',
+        file: null,
         idPSSOTargetUrl: '',
         idPCertFingerprint: '',
         idPCertFingerprintTypeId: 1,
@@ -381,6 +415,9 @@ export default {
         this.$refs.refDomainToAddForm.resetValidation()
       }
     },
+    onFileChange(file) {
+      this.formValues.file = file
+    },
     submit() {
       if (this.$refs.refForm.validate()) {
         const {
@@ -391,7 +428,7 @@ export default {
           entityID,
           enableSAMLSSO
         } = this.formValues
-        const payload = {
+        const formData = {
           name,
           idPSSOTargetUrl,
           idPCertFingerprint,
@@ -401,6 +438,7 @@ export default {
           domain: this.dataContainerWithSearchItems
         }
         this.saveDisable = true
+        const payload = this.createFormDataPayload(formData)
         const promise = !this.isEdit
           ? createSamlSetting(payload)
           : updateSamlSetting(payload, this.resourceId)
@@ -412,6 +450,13 @@ export default {
             this.saveDisable = false
           })
       }
+    },
+    createFormDataPayload(payload = {}) {
+      const formData = new FormData()
+      for (const key of Object.keys(payload)) {
+        formData.append(key.slice(0, 1).toUpperCase() + key.slice(1), payload[key])
+      }
+      return formData
     },
     handleBatchImport(data = []) {
       if (!data.length) return
