@@ -630,7 +630,11 @@ export default {
           this.onErrorLogin({}, err)
         })
         .finally(() => {
-          this.isSamlLoading = false
+          setTimeout(() => {
+            if (this && this.isSamlLoading) {
+              this.isSamlLoading = false
+            }
+          }, 2000)
         })
     }
 
