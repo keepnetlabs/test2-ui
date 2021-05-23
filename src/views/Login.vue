@@ -188,11 +188,23 @@
                     color="blue"
                     id="btn--login-continue"
                     class="pl-4 white--text login-btn"
+                    :style="isSamlLoading ? { width: '260px' } : ''"
                     rounded
+                    :loading="isSamlLoading"
                     @click="handleContinueClick"
                   >
-                    CONTINUE
+                    {{ isSamlLoading ? 'REDIRECTING FOR SSO LOGIN' : 'CONTINUE' }}
                     <v-icon right dark>mdi-arrow-right</v-icon>
+                    <template #loader>
+                      <span style="font-size: 14px; font-weight: 600; text-transform: capitalize;">
+                        REDIRECTING FOR SSO LOGIN
+                      </span>
+                      <img
+                        src="../assets/img/spinner.svg"
+                        class="add-in-settings__spinner"
+                        alt="spinner"
+                      />
+                    </template>
                   </v-btn>
                 </v-card-actions>
               </div>
@@ -534,6 +546,7 @@ export default {
     return {
       showMfaMessage: false,
       mfaSetupErrorText: null,
+      isSamlLoading: false,
       phoneNumber: null,
       showPasswordField: false,
       recoveryCode: null,
@@ -591,6 +604,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.pageNumber = 1
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
     this.$store.dispatch('whitelabel/resetState')
     if (this.$route.query && this.$route.query.mfaRequired) {
@@ -607,12 +621,16 @@ export default {
       const { authcode, uid } = this.$route.query
       const newAuthCode = encodeURIComponent(authcode)
       const username = uid
+      this.isSamlLoading = true
       loginWithSaml({ authcode: newAuthCode, username })
         .then((response) => {
           this.onSuccessLogin({}, response)
         })
         .catch((err) => {
           this.onErrorLogin({}, err)
+        })
+        .finally(() => {
+          this.isSamlLoading = false
         })
     }
 
@@ -944,7 +962,6 @@ export default {
           _this.token = _this.getToken('rp', window.location.href)
           _this.resetType = 'resetPassword'
         } else if (!indexStore.getters['common/getSessionCheck']) {
-          this.pageNumber = 1
           getSystemUserSettings()
             .then((response) => {
               localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
@@ -954,7 +971,6 @@ export default {
               this.$router.push('/')
             })
         } else {
-          this.pageNumber = 1
           getSystemUserSettings()
             .then((response) => {
               localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
@@ -962,10 +978,10 @@ export default {
             })
             .finally(() => {
               this.$router.push('/')
+              this.pageNumber = 1
             })
         }
       } else if (!indexStore.getters['common/getSessionCheck']) {
-        this.pageNumber = 1
         getSystemUserSettings()
           .then((response) => {
             localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
@@ -973,9 +989,9 @@ export default {
           })
           .finally(() => {
             this.$router.push('/')
+            this.pageNumber = 1
           })
       } else {
-        this.pageNumber = 1
         getSystemUserSettings()
           .then((response) => {
             localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
@@ -983,6 +999,7 @@ export default {
           })
           .finally(() => {
             this.$router.push('/')
+            this.pageNumber = 1
           })
       }
 

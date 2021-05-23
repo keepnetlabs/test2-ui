@@ -16,7 +16,7 @@
       :status="isEditOrNewModalOpen"
       :is-edit="isEdit"
       :selected-row="selectedRow"
-      @on-close="toggleNewSamlSettingsModalStatus"
+      @on-close="toggleNewSamlSettingsModalStatus(false)"
       @on-success="handleEditOrNewFormSuccess"
     />
     <div class="smtp-settings__container">
@@ -41,10 +41,10 @@
         :row-actions="tableOptions.rowActions"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
-        @addNewSamlSetting="toggleNewSamlSettingsModalStatus"
+        @addNewSamlSetting="toggleNewSamlSettingsModalStatus(false)"
         @deleteAction="toggleDeletePopupStatus"
         @editAction="handleEditAction"
-        @onEmptyBtnClicked="toggleNewSamlSettingsModalStatus"
+        @onEmptyBtnClicked="toggleNewSamlSettingsModalStatus(false)"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSamlSettings"
