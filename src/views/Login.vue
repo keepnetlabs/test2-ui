@@ -948,7 +948,31 @@ export default {
         _this.$router.push(
           `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
         )
-      } else if (this.$route.query && !!this.$route.query.showInvitation) {
+      }else if (this.$route.query && !!this.$route.query.investigationDetailsResourceId) {
+         getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+             this.$router.push(
+          `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
+        )
+            this.pageNumber = 1
+          })
+       
+      } else if (this.$route.query && !!this.$route.query.analysisDetailsResourceId) {
+         getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+             this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
+            this.pageNumber = 1
+          })
+      
+      }  else if (this.$route.query && !!this.$route.query.showInvitation) {
         this.pageNumber = 1
         this.$router.push({
           path: `/threat-sharing`,
