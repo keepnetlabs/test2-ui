@@ -203,7 +203,15 @@ export default {
               style: {
                 maxWidth: '110px'
               }
-            }
+            },
+            filterableType: 'select',
+            filterableItems: [
+              'N/A',
+              'Online',
+              'Offline',
+              'Disabled',
+              { text: 'Not Installed', value: 'NotInstalled' }
+            ]
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -231,7 +239,14 @@ export default {
             show: true,
             type: 'slot',
             isEditable: true,
-            width: 160
+            width: 160,
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Not Installed', value: 'NotInstalled' },
+              'Online',
+              'Offline',
+              'Error/Uninstalled'
+            ]
           },
           {
             property: PROPERTY_STORE.HOSTNAME,
@@ -485,6 +500,7 @@ export default {
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
         .then(() => {
+          this.$refs.refUsersList.unSelectRow(this.selectedRow)
           this.callForPhishingReporterUser()
           this.$emit('callForPhishingReporterSummary')
         })

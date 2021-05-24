@@ -504,6 +504,7 @@ export default {
       this.removeModalDisable = true
       removeCompanyToCompanyGroup(this.groupId, payload)
         .then((response) => {
+          this.$refs.refDataList.unSelectRow(selectedItem)
           if (response.data && response.data.message) {
             this.getTableData()
           }

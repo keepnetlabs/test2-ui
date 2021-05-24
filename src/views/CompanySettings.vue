@@ -27,6 +27,12 @@
               ref="refWhitelabeling"
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
           /></el-tab-pane>
+          <el-tab-pane label="Proxy Settings" name="proxy-settings" id="proxy-settings-content">
+            <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
+          </el-tab-pane>
+          <el-tab-pane label="SAML Settings" name="saml-settings" id="saml-settings-content">
+            <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
+          /></el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -40,18 +46,21 @@ import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
+import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
+import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
 export default {
   name: 'CompanySettings',
   components: {
+    SamlSettings,
     SMTPSettings,
     NotificationTemplates,
     CustomApi,
-    WhiteLabeling
+    WhiteLabeling,
+    ProxySettings
   },
   data() {
     return {
       tab: 'smtp-settings',
-      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
       },

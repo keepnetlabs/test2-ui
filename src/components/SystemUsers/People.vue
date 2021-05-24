@@ -542,10 +542,11 @@ export default {
       this.selectedDeleteRow = row
       this.toggleShowDeleteSystemUserModal()
     },
-    callForDeleteUser({ resourceId = '' } = {}) {
+    callForDeleteUser(row = {}) {
       this.deleteButtonDisabled = true
-      deleteSystemUser(resourceId)
+      deleteSystemUser(row.resourceId)
         .then(() => {
+          this.$refs.refSystemUsersList.unSelectRow(row)
           this.toggleShowDeleteSystemUserModal()
           this.callForListSystemUsers()
         })

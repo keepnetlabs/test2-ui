@@ -42,3 +42,59 @@ export function getAvailableForValues(data) {
     }
   })
 }
+
+export function columnFilterChanged(filter = {}, axiosPayload = {}) {
+  let items = []
+  let requestBody = axiosPayload.filter.FilterGroups[0].FilterItems
+  requestBody.map((x) => {
+    if (Array.isArray(filter)) {
+      filter.forEach((i) => {
+        if (x.FieldName !== i.FieldName) {
+          items.push(x)
+        }
+      })
+    } else {
+      if (x.FieldName !== filter.FieldName) {
+        items.push(x)
+      }
+    }
+  })
+
+  requestBody = [...items]
+  if (Array.isArray(filter)) {
+    filter.forEach((x, i) => {
+      const elem = filter[i]
+      elem.FieldName = filter[i].FieldName
+      requestBody.push(elem)
+    })
+  } else {
+    const elem = filter
+    elem.FieldName = filter.FieldName
+    requestBody.push(elem)
+  }
+
+  return requestBody
+}
+
+export function columnFilterCleared(fieldName = '', axiosPayload = {}) {
+  let items = []
+  let filterPayload = axiosPayload.filter.FilterGroups[0].FilterItems
+
+  filterPayload.map((x) => {
+    if (x.FieldName !== fieldName) {
+      items.push(x)
+    }
+  })
+
+  filterPayload = [...items]
+  return filterPayload
+}
+
+export function downloadExportedFile(data = {}, fileName = '', type = '') {
+  const link = document.createElement('a')
+  link.href = window.URL.createObjectURL(data)
+  link.download = `${fileName}.${
+    type.toLocaleLowerCase() === 'xls' ? 'xlsx' : type.toLocaleLowerCase()
+  }`
+  link.click()
+}

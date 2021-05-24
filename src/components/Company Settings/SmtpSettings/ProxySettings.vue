@@ -1,30 +1,28 @@
 <template>
-  <div class="smtp-settings">
-    <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
-    <new-smtp-settings
-      v-if="newSmtpModalStatus && PERMISSIONS.CREATE.hasPermission"
-      :status="newSmtpModalStatus"
-      @closeOverlay="toggleSmtpModalStatus"
-      @handleDelete="handleDeleteSmtpSettings"
+  <div class="proxy-settings">
+    <company-settings-header title="Proxy Settings" sub-title="Configure proxy" />
+    <new-proxy-settings
+      :status="newProxyModalStatus"
+      @closeOverlay="toggleProxyModalStatus"
+      @handleDelete="handleDeleteProxySettings"
       @closeOverlayWithUpdate="closeOverlayWithUpdate"
-      :resourceId="selectedEditSmtpSettings"
+      :resourceId="selectedEditProxySettings"
       :isEdit="isEdit"
+      v-if="newProxyModalStatus"
     />
-    <delete-smtp-settings
-      v-if="deleteSmtpModalStatus && PERMISSIONS.DELETE.hasPermission"
-      :status="deleteSmtpModalStatus"
-      :data="selectedDeleteSmtpSettings"
-      @closeOverlay="toggleDeleteSmtpModalStatus"
-      @handleDelete="handleDeleteSmtpSettings"
-      @handleMultipleDelete="handleDeleteMultipleSmtpSettings"
+    <delete-proxy-settings
+      :status="deleteProxyModalStatus"
+      :data="selectedDeleteProxySettings"
+      @closeOverlay="toggleDeleteProxyModalStatus"
+      @handleDelete="handleDeleteProxySettings"
     />
-    <div class="smtp-settings__container">
+    <div class="proxy-settings__container">
       <data-table
-        id="company-settings-smtp-settings-data-table"
-        ref="refSmtpSettingsList"
+        id="company-settings-proxy-settings-data-table"
+        ref="refProxySettingsList"
         :loading="loading"
         :table="tableData"
-        :refName="'smtpSettingsList'"
+        :refName="'proxySettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :total-number-of-records="totalNumberOfRecords"
         :columns="tableOptions.columns"
@@ -42,13 +40,13 @@
         :selectable="true"
         :sizeable="true"
         :resizable="true"
-        @addNewSmtpSetting="toggleSmtpModalStatus"
-        @onEmptyBtnClicked="toggleSmtpModalStatus"
+        @addNewProxySetting="toggleProxyModalStatus"
+        @onEmptyBtnClicked="toggleProxyModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @refreshAction="callForSearchSmtpSettings"
-        @downloadEvent="exportSmtpSettingsList"
+        @refreshAction="callForSearchProxySettings"
+        @downloadEvent="exportProxySettingsList"
         @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
@@ -112,33 +110,27 @@ import {
 } from '@/model/constants/commonConstants'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
-import NewSmtpSettings from '@/components/Company Settings/SmtpSettings/NewSmtpSettings'
-import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
-import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/DeleteSmtpSettings'
+import NewProxySettings from '@/components/Company Settings/ProxySettings/NewProxySettings'
+import { deleteProxySettings, exportProxySettings, searchProxySettings } from '@/api/proxySettings'
+import DeleteProxySettings from '@/components/Company Settings/ProxySettings/DeleteProxySettings'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
-  name: 'SMTPSettings',
+  name: 'PROXYSettings',
   components: {
-    DeleteSmtpSettings,
     CompanySettingsHeader,
     DataTable,
-    NewSmtpSettings
-  },
-  props: {
-    PERMISSIONS: {
-      type: Object,
-      required: true
-    }
+    NewProxySettings,
+    DeleteProxySettings
   },
   data() {
     return {
       tableData: [],
       loading: false,
-      selectedDeleteSmtpSettings: null,
+      selectedDeleteProxySettings: null,
       isRestoredOrClearedFilters: false,
-      selectedEditSmtpSettings: null,
+      selectedEditProxySettings: null,
       storedTableSettings: null,
       isEdit: false,
       showAllRecords: false,
@@ -149,7 +141,7 @@ export default {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.NAME),
+            label: 'Proxy Name',
             sortable: true,
             show: true,
             fixed: 'left',
@@ -158,10 +150,10 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.SMTPADDRESS,
+            property: PROPERTY_STORE.ADDRESS,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.SMTPADDRESS),
+            label: 'IP Address',
             sortable: true,
             show: true,
             fixed: false,
@@ -170,10 +162,22 @@ export default {
             width: 150
           },
           {
-            property: PROPERTY_STORE.COMPANYNAME,
+            property: PROPERTY_STORE.PORT,
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATEDBY),
+            label: 'Port',
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
+          },
+          {
+            property: PROPERTY_STORE.AuthenticationTypeName,
+            align: 'left',
+            editable: false,
+            label: 'Authentication',
             sortable: true,
             show: true,
             fixed: false,
@@ -182,32 +186,29 @@ export default {
             width: 180
           },
           {
-            property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
-            editable: false,
-            label: getStoreValue(PROPERTY_STORE.CREATETIME),
-            sortable: true,
-            show: true,
-            fixed: false,
-            type: 'text',
-            filterableType: 'date'
-          },
-          {
-            property: PROPERTY_STORE.STATUSNAME,
+            property: PROPERTY_STORE.ISDEFAULT,
             align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            label: 'Is Default?',
             sortable: true,
             show: true,
             fixed: false,
             type: 'badge',
             filterableType: 'select',
             filterableCustomFieldName: 'Status',
-            filterableItems: [
-              { text: 'Running', value: 'Running' },
-              { text: 'Failed', value: 'Failed' }
-            ],
             width: 150
+          },
+          {
+            property: 'createTime',
+            align: 'left',
+            editable: false,
+            label: 'Date Created',
+            fixed: 'right',
+            sortable: true,
+            show: true,
+            filterableType: 'date',
+            type: 'text',
+            width: 180
           }
         ],
         isColumnFilterActive: false,
@@ -215,46 +216,46 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: this.PERMISSIONS.DELETE.hasPermission,
+          delete: false,
           download: false
         },
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+          disabled: false
         },
         rowActions: [
           {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction',
-            id: 'btn-edit--smtp-settings-row-actions',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+            id: 'btn-edit--proxy-settings-row-actions',
+            disabled: false
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
-            id: 'btn-delete--smtp-settings-row-actions',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            id: 'btn-delete--proxy-settings-row-actions',
+            disabled: false
           }
         ],
         empty: {
-          message: 'No SMTP Configurations',
-          btn: 'Create SMTP Configuration',
+          message: 'No PROXY Configurations',
+          btn: 'Create PROXY Configuration',
           icon: 'mdi-plus',
-          id: 'btn-empty--smtp-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          id: 'btn-empty--proxy-settings',
+          disabled: false
         },
         addButton: {
           show: true,
-          action: 'addNewSmtpSetting',
-          tooltip: 'Add SMTP Setting',
-          id: 'btn-add--smtp-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          action: 'addNewProxySetting',
+          tooltip: 'Add PROXY Setting',
+          id: 'btn-add--proxy-settings',
+          disabled: false
         }
       },
-      newSmtpModalStatus: false,
-      deleteSmtpModalStatus: false,
+      newProxyModalStatus: false,
+      deleteProxyModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
         pageSize: 1000,
@@ -311,12 +312,15 @@ export default {
           if (item.FieldName === 'StatusName') {
             item.FieldName = 'Status'
           }
+          if (item.FieldName === 'AuthenticationTypeName') {
+            item.FieldName = 'AuthenticationType'
+          }
           return item
         }
       )
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = filterActive
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
     setQueryValuesToPayload({ page, size }) {
       //generic
@@ -331,13 +335,13 @@ export default {
       //generic
       this.bodyOptions.pageNumber = pageNumber
       this.queryHelper.setRouterQuery('page', pageNumber)
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
     sortChanged({ order, prop } = {}) {
       //generic
       this.bodyOptions.ascending = order === 'ascending'
       this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
     resetPageNumber() {
       //generic
@@ -351,148 +355,130 @@ export default {
       this.resetPageNumber()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
-    toggleSmtpModalStatus() {
-      if (this.newSmtpModalStatus) {
+    toggleProxyModalStatus() {
+      if (this.newProxyModalStatus) {
         this.resourceId = null
         this.isEdit = false
       }
-      this.newSmtpModalStatus = !this.newSmtpModalStatus
+      this.newProxyModalStatus = !this.newProxyModalStatus
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS, JSON.stringify(tableSettings))
+      localStorage.setItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS, JSON.stringify(tableSettings))
     },
     handleAllRecordsClick() {
       this.bodyOptions.pageSize = 75000
       this.showAllRecords = false
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
     getDisabledStatusOfEdit({ isOwner } = {}) {
-      return this.tableOptions.rowActions[0].disabled || !isOwner
+      //return this.tableOptions.rowActions[0].disabled || !isOwner
     },
     getDisabledStatusOfDelete({ isOwner } = {}) {
-      return this.tableOptions.rowActions[1].disabled || !isOwner
+      //return this.tableOptions.rowActions[1].disabled || !isOwner
     },
-    exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const { EXPORT } = this.PERMISSIONS
-      if (EXPORT.hasPermission) {
-        const clientTableExportHelper = new ClientTableExportHelper(
-          JSON.parse(JSON.stringify(this.bodyOptions.filter)),
-          this.$refs.refSmtpSettingsList,
-          'CreateTime'
-        )
-        if (this.$refs.refSmtpSettingsList.search) {
-          clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-          clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-            (item) => item.FieldName === 'StatusName'
-          ).FieldName = 'Status'
-        }
-        if (
-          this.$refs.refSmtpSettingsList.sortProps &&
-          this.$refs.refSmtpSettingsList.sortProps.order
-        ) {
-          clientTableExportHelper.addSortItems()
-        }
+    exportProxySettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+      const clientTableExportHelper = new ClientTableExportHelper(
+        JSON.parse(JSON.stringify(this.bodyOptions.filter)),
+        this.$refs.refProxySettingsList,
+        'CreateTime'
+      )
+      if (this.$refs.refProxySettingsList.search) {
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+        clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'Status'
+      }
+      if (
+        this.$refs.refProxySettingsList.sortProps &&
+        this.$refs.refProxySettingsList.sortProps.order
+      ) {
+        clientTableExportHelper.addSortItems()
+      }
 
-        const { filter, sortFilter } = clientTableExportHelper
-        exportTypes.map((exportType) => {
-          const payload = {
-            ...sortFilter,
-            pageNumber: pageNumber,
-            pageSize: pageSize,
-            reportAllPages,
-            exportType: exportType === 'XLS' ? 'Excel' : exportType,
-            filter
-          }
-          exportSmtpSettings(payload).then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Smtp Settings.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-          })
+      const { filter, sortFilter } = clientTableExportHelper
+      exportTypes.map((exportType) => {
+        const payload = {
+          ...sortFilter,
+          pageNumber: pageNumber,
+          pageSize: pageSize,
+          reportAllPages,
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
+        exportProxySettings(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Proxy Settings.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
         })
-      }
+      })
     },
-    toggleDeleteSmtpModalStatus() {
-      this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
+    toggleDeleteProxyModalStatus() {
+      this.deleteProxyModalStatus = !this.deleteProxyModalStatus
     },
-    callForSearchSmtpSettings() {
-      const { SEARCH } = this.PERMISSIONS
-      if (SEARCH.hasPermission) {
-        this.loading = true
-        searchSmtpSettings(this.bodyOptions)
-          .then((response) => {
-            const {
-              data: { data }
-            } = response
-            this.totalNumberOfRecords = totalNumberOfRecords
+    callForSearchProxySettings() {
+      this.loading = true
+      searchProxySettings(this.bodyOptions)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.totalNumberOfRecords = totalNumberOfRecords
 
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            const { results = [] } = data
-            this.tableData = results
-            this.totalNumberOfRecords = totalNumberOfRecords
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
 
-            if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
+          if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
 
-            if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
-              this.showAllRecords = false
-            }
+          if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
+            this.showAllRecords = false
+          }
 
-            this.tableData = data.results
-          })
-          .finally(() => {
-            this.loading = false
-            this.isRestoredOrClearedFilters = false
-          })
-      }
+          this.tableData = data.results
+        })
+        .finally(() => {
+          this.loading = false
+          this.isRestoredOrClearedFilters = false
+        })
     },
     handleEditAction({ resourceId } = {}) {
-      const { UPDATE, GET } = this.PERMISSIONS
-      if (UPDATE.hasPermission && GET.hasPermission) {
-        this.isEdit = true
-        this.selectedEditSmtpSettings = resourceId
-        this.toggleSmtpModalStatus()
-      }
+      this.isEdit = true
+      this.selectedEditProxySettings = resourceId
+      this.toggleProxyModalStatus()
     },
     closeOverlayWithUpdate() {
-      this.toggleSmtpModalStatus()
-      this.callForSearchSmtpSettings()
+      this.toggleProxyModalStatus()
+      this.callForSearchProxySettings()
     },
-    callForDeleteSmtpSettings(resourceId) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
-        deleteSmtpSettings(resourceId)
-          .then(() => {
-            this.callForSearchSmtpSettings()
-          })
-          .finally(() => {
-            this.selectedDeleteSmtpSettings = null
-          })
-      }
+    callForDeleteProxySettings(resourceId) {
+      deleteProxySettings(resourceId)
+        .then(() => {
+          this.callForSearchProxySettings()
+        })
+        .finally(() => {
+          this.selectedDeleteProxySettings = null
+        })
     },
-    handleDeleteSmtpSettings(row) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
-        const { resourceId } = row
-        this.$refs.refSmtpSettingsList.unSelectRow(row)
-        this.callForDeleteSmtpSettings(resourceId)
-      }
+    handleDeleteProxySettings(row) {
+      const { resourceId } = row
+      this.$refs.refProxySettingsList.unSelectRow(row)
+      this.callForDeleteProxySettings(resourceId)
     },
     handleDeleteAction(selectedRow) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
-        this.selectedDeleteSmtpSettings = selectedRow
-        this.toggleDeleteSmtpModalStatus()
-      }
+      this.selectedDeleteProxySettings = selectedRow
+      this.toggleDeleteProxyModalStatus()
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
@@ -525,7 +511,7 @@ export default {
         requestBody.push(elem)
       }
       this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
     columnFilterCleared(fieldName) {
       if (this.isRestoredOrClearedFilters) {
@@ -544,11 +530,11 @@ export default {
       this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
       this.tableOptions.isColumnFilterActive =
         this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS,
+        DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS,
         JSON.stringify({
           filter: this.bodyOptions.filter,
           filterValues
@@ -560,49 +546,38 @@ export default {
       this.getDefaultFilterAndSearch()
     },
     handleMultipleDelete(selections) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
-        this.selectedDeleteSmtpSettings = selections
-        this.toggleDeleteSmtpModalStatus()
-      }
+      this.selectedDeleteProxySettings = selections
+      this.toggleDeleteProxyModalStatus()
     },
     handleClearFilters() {
       this.isRestoredOrClearedFilters = true
       this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refSmtpSettingsList.filterValues = {}
-      this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
+      this.$refs.refProxySettingsList.filterValues = {}
+      this.$refs.refProxySettingsList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
-      this.callForSearchSmtpSettings()
-    },
-    handleDeleteMultipleSmtpSettings(selections) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
-        selections.forEach((item) => {
-          this.handleDeleteSmtpSettings(item)
-        })
-      }
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS)
+      this.callForSearchProxySettings()
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS)
       )
       if (savedFilter) {
         this.bodyOptions.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refSmtpSettingsList.filterValues = savedFilter.filterValues
-          this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
+          this.$refs.refProxySettingsList.filterValues = savedFilter.filterValues
+          this.$refs.refProxySettingsList.columnKey = `column-key${Math.random()
             .toString()
             .substring(0, 5)}`
         })
       }
-      this.callForSearchSmtpSettings()
+      this.callForSearchProxySettings()
     }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS))
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.setDefaultValues()
     this.queryHelper.controlRouteQuery()

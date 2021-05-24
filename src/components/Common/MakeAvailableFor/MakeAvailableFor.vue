@@ -67,7 +67,7 @@ export default {
       isAvailableForValidated: false,
       searchAvailableForPayload: {
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 75000,
         orderBy: 'CreateTime',
         ascending: false
       },

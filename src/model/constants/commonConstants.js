@@ -243,7 +243,14 @@ export const PROPERTY_STORE = {
   NONE_SELECTED: 'None Selected',
   SENDERNAME: 'senderName',
   SENDERADDRESS: 'from',
-  ROLEDESCRIPTION: 'roleDescription'
+  ROLEDESCRIPTION: 'roleDescription',
+  PROXYADDRESS: 'proxySettings',
+  PROXYNAME: 'Proxy Name',
+  ADDRESS: 'address',
+  PORT: 'port',
+  AuthenticationTypeId: 'authenticationTypeId',
+  AuthenticationTypeName: 'authenticationTypeName',
+  ISDEFAULT: 'isDefault'
 }
 
 export const TABLE_SETTINGS_KEYS = {
@@ -267,7 +274,9 @@ export const TABLE_SETTINGS_KEYS = {
   SYSTEM_USERS_ROLES: 'SystemUsersRolesSettings',
   AUDIT: 'AuditTableSettings',
   TARGET_USERS_GROUPS: 'TargetUsersGroupsTableSettings',
-  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings'
+  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings',
+  SAML_SETTINGS: 'SamlSettingsTableSettings',
+  PROXY_SETTINGS: 'ProxySettingsTableSettings'
 }
 
 export function getStoreValue(key, type) {
@@ -387,7 +396,9 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   COMPANY_GROUP_LIST: 'CompanyGroupList',
   COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
   INVESTIGATIONSFOLDER: 'InvestigationsFolder',
-  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
+  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers',
+  SAMLSETTINGS: 'SamlSettings',
+  PROXY_SETTINGS: 'ProxySettings'
 }
 
 export const INTEGRATION_TYPES = {
