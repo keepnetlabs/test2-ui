@@ -1,31 +1,28 @@
 <template>
   <div class="workshop">
-    <v-layout wrap class="workshop__container">
-      <v-card class="workshop__container-card">
-        <v-form ref="form1" lazy-validation>
-          <v-row>
-            <v-col cols="5"><InputFirstName v-model="formData.inputFirstName" /></v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn rounded color="primary" @click="submit">
-                {{ labels.Save }}
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
-      </v-card>
-    </v-layout>
+    <multipane class="vertical-panes" layout="vertical">
+      <div class="pane" :style="{ width: '50%' }">
+        <div>
+          <h6 class="title is-6">Pane 1</h6>
+        </div>
+      </div>
+      <multipane-resizer></multipane-resizer>
+      <div class="pane" :style="{ flexGrow: 1 }">
+        <div>
+          <h6 class="title is-6">Pane 3</h6>
+        </div>
+      </div>
+    </multipane>
   </div>
 </template>
 
 <script>
-import InputFirstName from '@/components/Common/Inputs/InputFirstName'
+import { Multipane, MultipaneResizer } from 'vue-multipane'
 
 export default {
   name: 'Workshop',
   props: {},
-  components: { InputFirstName },
+  components: { Multipane, MultipaneResizer },
   data() {
     return {
       formData: {
@@ -55,6 +52,20 @@ export default {
       border-radius: 20px !important;
       width: 100%;
     }
+  }
+  .vertical-panes {
+    width: 100%;
+    height: 400px;
+    border: 1px solid #ccc;
+  }
+  .vertical-panes > .pane {
+    text-align: left;
+    padding: 15px;
+    overflow: hidden;
+    background: #eee;
+  }
+  .vertical-panes > .pane ~ .pane {
+    border-left: 1px solid #ccc;
   }
 }
 </style>
