@@ -2,6 +2,11 @@ import store from '../store'
 import jwt_decode from 'jwt-decode'
 
 export function getBtnStatusColor(type) {
+  if (typeof type === 'boolean' && type) {
+    type = 'yes'
+  } else if (typeof type === 'boolean' && !type) {
+    type = 'no'
+  }
   switch (type && type.toLowerCase()) {
     case 'pending':
       return '#00bcd4'
@@ -81,6 +86,10 @@ export function getBtnStatusColor(type) {
       return '#f56c6c'
     case 'system':
       return '#2196f3'
+    case 'yes':
+      return '#1173c1'
+    case 'no':
+      return '#757575'
     default:
       return '#00bcd4'
   }
