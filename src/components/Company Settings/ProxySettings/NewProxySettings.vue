@@ -49,6 +49,19 @@
             :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
+        <form-group :title="'Port'" has-hint>
+          <v-text-field
+            v-model.trim="formValues.port"
+            id="input--proxy-settings-name"
+            placeholder="Enter port"
+            outlined
+            dense
+            hint="*Required"
+            persistent-hint
+            @input="saveDisable = true"
+            :rules="[(v) => validations.required(v)]"
+          ></v-text-field>
+        </form-group>
         <form-group :title="'Auhtentication Method'" has-hint class-name="mb-4">
           <v-radio-group
             v-model="formValues.authenticationTypeId"
@@ -126,6 +139,8 @@
                 >mdi-rotate-left
               </v-icon>
             </v-btn>
+              <span v-if="testConnectionSuccess" class="test-connection-success">Connected successfully!</span>
+
           </div>
         </form-group>
       </v-form>
@@ -173,6 +188,7 @@ export default {
   data() {
     return {
       isTesting: false,
+      testConnectionSuccess: false,
       labels,
       isTestEmailDialogShowing: false,
       isTestEmailActionDisabled: false,
@@ -182,12 +198,12 @@ export default {
       formValues: {
         name: '',
         address: '',
-        port: '8080',
+        port: '',
         authenticationTypeId: 0,
         username: '',
         password: '',
         isDefault: false,
-        testUrl: ''
+        testUrl: 'https://www.google.com'
       },
       initialFormValues: null,
       showPassword: false,
@@ -238,7 +254,7 @@ export default {
         const payload = {
           Address: this.formValues.address,
           Name: this.formValues.name,
-          AuthenticationType: this.formValues.authenticationTypeId,
+          AuthenticationTypeId: this.formValues.authenticationTypeId,
           Username: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.userName,
           Password: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.password,
           TestUrl: this.formValues.testUrl,
@@ -293,7 +309,7 @@ export default {
         this.isTesting = true
         let payload = {
           Address: this.formValues.address,
-          AuthenticationType: this.formValues.authenticationTypeId,
+          AuthenticationTypeId: this.formValues.authenticationTypeId,
           Username: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.userName,
           Password: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.password,
           TestUrl: this.formValues.testUrl,
@@ -302,6 +318,10 @@ export default {
         testConnection(payload)
           .then((response) => {
             this.saveDisable = false
+            this.testConnectionSuccess = true
+            setTimeout(()=> {
+              this.testConnectionSuccess = false
+            }, 3000)
           })
           .catch(() => {
             this.saveDisable = true
@@ -355,7 +375,6 @@ export default {
         this.formValues.userName = username
         this.formValues.password = password
         this.formValues.isDefault = isDefault
-        this.formValues.testUrl = testUrl
       })
     }
   },
@@ -390,6 +409,12 @@ export default {
     display: flex;
     .v-input {
       padding-right: 8px;
+    }
+    .test-connection-success{
+      color:#217124 ;
+      position: absolute;
+      right: -190px;
+      bottom: 36px;
     }
   }
 }
