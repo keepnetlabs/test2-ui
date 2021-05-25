@@ -159,7 +159,7 @@ export default {
             fixed: false,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 180
           },
           {
             property: PROPERTY_STORE.PORT,
@@ -183,6 +183,12 @@ export default {
             fixed: false,
             type: 'text',
             filterableType: 'text',
+             filterableType: 'select',
+             filterableCustomFieldName: 'AuthenticationType',
+             filterableItems: [
+              { text: 'Basic', value: '1' },
+              { text: 'Transparent', value: '0' }
+            ],
             width: 180
           },
           {
@@ -195,7 +201,10 @@ export default {
             fixed: false,
             type: 'badge',
             filterableType: 'select',
-            filterableCustomFieldName: 'Status',
+             filterableItems: [
+              { text: 'Yes', value: 'Yes' },
+              { text: 'No', value: 'No' }
+            ],
             width: 150
           },
           {
