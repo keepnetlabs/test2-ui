@@ -3,15 +3,15 @@
     v-if="status"
     title-id="text--rest-api-modal-title"
     :status="status"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
     :title="getTitle"
     :icon-name="getIconName"
     class-name="new-smtp-setting"
     :id="selectedRow ? 'edit-rest-api-modal' : 'new-rest-api-modal'"
     confirm-button-id="btn-save--rest-api-modal"
     cancel-button-id="btn-cancel--rest-api-modal"
-    :saveDisable="saveDisable"
+    :saveDisable="getConfirmButtonDisabled"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
   >
     <template v-slot:overlay-body>
       <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
@@ -251,6 +251,10 @@ export default {
     },
     isShowGenerateCredentialsBtn() {
       return !(this.selectedRow && this.selectedRow.resourceId)
+    },
+    getConfirmButtonDisabled() {
+      const { clientId, clientSecret } = this.formValues
+      return this.saveDisable || (!clientId && !clientSecret)
     }
   },
   watch: {
@@ -360,7 +364,7 @@ export default {
     color: #757575;
     position: absolute;
     right: -40px;
-    top: 0px;
+    top: 0;
     justify-content: center;
     display: flex;
   }

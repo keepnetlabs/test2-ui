@@ -29,12 +29,12 @@
             <div class="analyze__main__select-row-wrap check-all">
               <div class="checkbox-and-text">
                 <v-checkbox
+                  v-model="getAllCheckboxSelection"
                   class="k-checkbox"
                   color="#2196f3"
                   id="input--is-all-analysis"
-                  v-model="getAllCheckboxSelection"
-                  @change="acceptAllAnalysisEnginesClick"
                   hide-details
+                  @change="acceptAllAnalysisEnginesClick"
                 />
                 <span class="checkbox-text-dialog">Select All</span>
               </div>
@@ -387,7 +387,8 @@ export default {
   computed: {
     getAllCheckboxSelection: {
       get() {
-        return this.analysisEngines.every((item) => item.selected)
+        const data = this.searchEnginesModelInput ? this.searchEnginesData : this.analysisEngines
+        return data.every((item) => item.selected)
       },
       set(val) {
         this.acceptAllAnalysisEngines = val
@@ -750,15 +751,39 @@ export default {
     },
     acceptAllAnalysisEnginesClick() {
       const val = this.acceptAllAnalysisEngines
-
       this.analysisEngines = this.analysisEngines.map((item) => {
-        return {
-          ...item,
-          isCheckUrl: val,
-          isCheckHash: val,
-          isCheckFile: false,
-          isCheckSenderIP: val,
-          selected: val
+        if (this.searchEnginesModelInput) {
+          this.searchEnginesData = this.searchEnginesData.map((item) => {
+            return {
+              ...item,
+              isCheckUrl: val,
+              isCheckHash: val,
+              isCheckFile: false,
+              isCheckSenderIP: val,
+              selected: val
+            }
+          })
+          return this.searchEnginesData.find(
+            (searchItem) => searchItem.resourceId === item.resourceId
+          )
+            ? {
+                ...item,
+                isCheckUrl: val,
+                isCheckHash: val,
+                isCheckFile: false,
+                isCheckSenderIP: val,
+                selected: val
+              }
+            : item
+        } else {
+          return {
+            ...item,
+            isCheckUrl: val,
+            isCheckHash: val,
+            isCheckFile: false,
+            isCheckSenderIP: val,
+            selected: val
+          }
         }
       })
     },

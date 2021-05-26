@@ -715,7 +715,9 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
+      )
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.setDefaultValues()
       this.queryHelper.controlRouteQuery()
