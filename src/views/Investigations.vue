@@ -309,7 +309,7 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -330,7 +330,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
