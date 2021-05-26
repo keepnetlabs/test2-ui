@@ -3,7 +3,7 @@
     v-if="status"
     :status="status"
     :title="getTitle"
-    :save-disable="saveDisable"
+    :save-disable="getConfirmButtonDisabled"
     confirm-button-id="btn-save--target-users-group-add-users-group-modal"
     cancel-button-id="btn-cancel--target-users-group-add-users-group-modal"
     title-id="text--target-users-group-add-users-modal-title"
@@ -69,6 +69,9 @@ export default {
   computed: {
     getTitle() {
       return `Add Users To “${this.groupName}” Group`
+    },
+    getConfirmButtonDisabled() {
+      return this.saveDisable || !this.selectedUsers.length
     }
   },
   methods: {
