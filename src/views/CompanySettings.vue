@@ -30,7 +30,12 @@
           <el-tab-pane label="Proxy Settings" name="proxy-settings" id="proxy-settings-content">
             <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
           </el-tab-pane>
-          <el-tab-pane label="SAML Settings" name="saml-settings" id="saml-settings-content">
+          <el-tab-pane
+            v-if="checkPermissions('companies/saml-settings/search', 'POST')"
+            label="SAML Settings"
+            name="saml-settings"
+            id="saml-settings-content"
+          >
             <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
           /></el-tab-pane>
         </el-tabs>
@@ -48,6 +53,7 @@ import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
 import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
 import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'CompanySettings',
   components: {
@@ -73,6 +79,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     changeTabStatus(status) {
       this.tab = status
     },
