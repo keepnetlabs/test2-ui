@@ -58,6 +58,7 @@
               :items="orderedAccounts"
               :loading="isCompaniesLoading"
               :search="searchedText"
+              :is-open-all="isOpenAllMenuItems"
               @on-selected-account="handleOnSelectedAccount"
             />
           </div>
@@ -108,6 +109,7 @@ export default {
       defaultOrderedItems: [],
       value: null,
       isMenuOpen: false,
+      isOpenAllMenuItems: false,
       keys: ['name'],
       searchCompanyIcon: 'mdi-menu-down',
       itemsPerPageOptions: [4, 8, 12],
@@ -212,7 +214,7 @@ export default {
     handleSearchText() {
       this.debounce(() => {
         const excluded = new Set()
-
+        this.isOpenAllMenuItems = !!this.searchedCompanyText
         function getObjectValueByPath(obj, path, fallback) {
           // credit: http://stackoverflow.com/questions/6491463/accessing-nested-javascript-objects-with-string-key#comment55278413_6491621
           if (obj == null || !path || typeof path !== 'string') return fallback
@@ -262,12 +264,9 @@ export default {
 
             if (match) return true
           }
-
           excluded.add(getObjectValueByPath(item, idKey))
-
           return false
         }
-
         for (let i = 0; i < this.defaultOrderedItems.length; i++) {
           filterTreeItems(
             filterTreeItem,
@@ -282,9 +281,30 @@ export default {
         const isExcluded = (key) => {
           return !!this.searchedCompanyText && excluded.has(key)
         }
-        this.orderedAccounts = this.defaultOrderedItems.filter((item) => {
-          return !isExcluded(getObjectValueByPath(item, 'resourceId'))
-        })
+
+        const checkElements = (children = []) => {
+          return children.reduce((acc, child) => {
+            if (child.children.length) {
+              child.children = checkElements(child.children)
+            }
+            if (!isExcluded(getObjectValueByPath(child, 'resourceId'))) {
+              acc.push(child)
+            }
+            return acc
+          }, [])
+        }
+
+        this.orderedAccounts = this.defaultOrderedItems
+          .filter((item) => {
+            return !isExcluded(getObjectValueByPath(item, 'resourceId'))
+          })
+          .reduce((acc, item) => {
+            if (item.children) {
+              item.children = checkElements(item.children)
+            }
+            acc.push(item)
+            return acc
+          }, [])
       }, 750)
     }
   },
