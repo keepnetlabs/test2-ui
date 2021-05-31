@@ -18,7 +18,7 @@
             item-key="resourceId"
             :items="[item]"
             :id="`switch-account-item-container-${item.name}`"
-            open-all
+            :open-all="isOpenAll"
             @input="handleTreeViewChange"
           >
             <template #prepend="{ item }">

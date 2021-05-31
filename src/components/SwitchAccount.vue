@@ -139,6 +139,9 @@ export default {
       .then((response) => {
         this.defaultOrderedItems = JSON.parse(JSON.stringify(response.data.data))
         this.orderedAccounts = response.data.data
+        if (this.searchedCompanyText) {
+          this.handleSearchText()
+        }
       })
       .finally(() => {
         this.companyLoading = false
@@ -169,7 +172,7 @@ export default {
       this.searchCompanyIcon = 'mdi-menu-down'
       this.isMenuOpen = false
       this.changeMenuStatus()
-
+      this.isOpenAllMenuItems = false
       this.searchedCompanyText = this.selectedAccount.label
     },
     changeMenuStatus(status = 'hidden') {
