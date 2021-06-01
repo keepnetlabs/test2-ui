@@ -323,6 +323,7 @@ export default {
         TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS,
         JSON.stringify(tableSettings)
       )
+      this.storedTableSettings = tableSettings
     },
     setQueryValuesToPayload({ page, size }) {
       //generic
@@ -437,6 +438,7 @@ export default {
           default:
             break
         }
+
         return {
           property: name,
           type: 'text',

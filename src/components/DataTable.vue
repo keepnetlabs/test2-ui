@@ -2363,7 +2363,9 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-          this.resetSelectableParams()
+          if (this.isServerSideSelection) {
+            this.resetSelectableParams()
+          }
         }, debounceTime)
       } else {
         this.debounce(() => {

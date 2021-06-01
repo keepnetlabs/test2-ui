@@ -213,7 +213,7 @@ export default {
         isEditable: true,
         width: 150,
         filterableType: 'select',
-        filterableItems: ['Running', 'Canceled', 'Expired', 'Finished']
+        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished']
       },
       {
         property: 'createTime',
@@ -309,7 +309,7 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -330,7 +330,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -715,7 +715,9 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
+      )
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.setDefaultValues()
       this.queryHelper.controlRouteQuery()

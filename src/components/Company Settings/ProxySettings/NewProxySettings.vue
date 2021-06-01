@@ -120,7 +120,7 @@
             @input="saveDisable = true"
           />
         </form-group>
-        <form-group title="Test Email" sub-title="Enter a domain to test connection">
+        <form-group title="Test Connection" sub-title="Enter a domain to test connection">
           <div class="proxy-test-connection">
             <InputUrl
               placeholder="https://"
@@ -139,8 +139,9 @@
                 >mdi-rotate-left
               </v-icon>
             </v-btn>
-              <span v-if="testConnectionSuccess" class="test-connection-success">Connected successfully!</span>
-
+            <span v-if="testConnectionSuccess" class="test-connection-success"
+              >Connected successfully!</span
+            >
           </div>
         </form-group>
       </v-form>
@@ -319,7 +320,7 @@ export default {
           .then((response) => {
             this.saveDisable = false
             this.testConnectionSuccess = true
-            setTimeout(()=> {
+            setTimeout(() => {
               this.testConnectionSuccess = false
             }, 3000)
           })
@@ -410,8 +411,8 @@ export default {
     .v-input {
       padding-right: 8px;
     }
-    .test-connection-success{
-      color:#217124 ;
+    .test-connection-success {
+      color: #217124;
       position: absolute;
       right: -190px;
       bottom: 36px;
