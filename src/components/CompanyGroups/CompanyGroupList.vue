@@ -8,6 +8,7 @@
       @confirmDelete="deleteConfirmedItem"
     />
     <create-item-modal
+      v-if="isShowAddModal"
       :is-show="isShowAddModal"
       :isEdit="editAddModal"
       :selectedRow="selectedRow"

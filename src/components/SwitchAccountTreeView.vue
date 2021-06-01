@@ -4,7 +4,7 @@
       <template v-show="!loading" v-for="(item, i) in items">
         <v-lazy
           transition="none"
-          :key="i"
+          :key="item.name + i"
           :options="{
             threshold: 0
           }"
@@ -18,6 +18,7 @@
             item-key="resourceId"
             :items="[item]"
             :id="`switch-account-item-container-${item.name}`"
+            :open-all="isOpenAll"
             @input="handleTreeViewChange"
           >
             <template #prepend="{ item }">
@@ -72,6 +73,9 @@ export default {
     },
     isShowingMenu: {
       type: Boolean
+    },
+    isOpenAll: {
+      type: Boolean
     }
   },
   methods: {
@@ -95,6 +99,9 @@ export default {
   width: 100%;
   will-change: visibility;
   visibility: hidden;
+  & * {
+    transition: none !important;
+  }
 }
 .switch-account__select-footer {
   span {
