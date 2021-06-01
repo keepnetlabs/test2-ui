@@ -9,6 +9,7 @@
         autofocus
         outlined
         dense
+        placeholder="Enter column name"
         :rules="[
           (v) => validations.required(v, 'Required'),
           (v) => validations.maxLength(v, 50, 'Max 50 characters')
@@ -118,10 +119,14 @@ export default {
     align-items: center;
     min-height: 64px;
     .v-text-field__details {
-      display: none;
+      position: absolute;
+      bottom: -21px;
+      left: -5px;
     }
-    .v-messages {
-      display: none;
+    .v-input--checkbox {
+      .v-messages {
+        display: none;
+      }
     }
   }
 
