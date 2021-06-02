@@ -995,6 +995,31 @@
                     /></span>
                   </div>
                 </template>
+                <template v-slot:empty-table-inline>
+                  <div class="empty-table">
+                    <div
+                      class="empty-inline"
+                      v-if="
+                        investigationDetailsTargetUsersListData &&
+                        investigationDetailsTargetUsersListData.results.length === 0
+                      "
+                    >
+                      <slot name="empty-table-inline-sort">
+                        <h2>
+                          Sorry, that search and filter criteria has no results.
+                        </h2>
+                        <p>Please try adjusting your search or filter</p>
+                      </slot>
+                    </div>
+                    <div class="empty-inline" v-else>
+                      <slot name="empty-table-inline-sort">
+                        <h2>
+                          No email has been found, yet
+                        </h2>
+                      </slot>
+                    </div>
+                  </div>
+                </template>
               </datatable>
             </div>
           </div>
@@ -1130,6 +1155,27 @@ export default {
       }
     },
     investigationTargetUsersListBodyData: {
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'Email',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultInvestigationTargetUsersListBodyData: {
       pageNumber: 1,
       pageSize: 10,
       orderBy: 'Email',
@@ -2093,7 +2139,7 @@ export default {
         //this.getDefaultFilterAndSearchForTargetUsers()
         this.$store
           .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.investigationTargetUsersListBodyData,
+            data: this.defaultInvestigationTargetUsersListBodyData,
             id: this.$route.params.id
           })
           .then((response) => {

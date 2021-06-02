@@ -2,16 +2,14 @@
   <DataTable
     id="target-users-group-users-data-table"
     ref="refTargetGroupUsersTable"
-    selectable
     :refName="'groupsTable'"
     :loading="loading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
     :pageSizes="tableOptions.pageSizes"
     :empty="tableOptions.iEmpty"
-    :filterable="true"
-    :options="true"
+    :filterable="false"
+    :options="false"
     :add-button="tableOptions.addButton"
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
@@ -19,53 +17,9 @@
     is-server-side
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
-    @addAction="handleAddAction"
-    @downloadEvent="exportTargetGroupsUserList"
-    @onEmptyBtnClicked="handleAddAction"
-    @handleEditTargetUsers="handleEditTargetUsers"
-    @handleAddToAnExistingGroup="handleAddToAnExistingGroup"
-    @handleSelectionChange="handleSelectionChange"
-    @handleRemoveToGroup="handleRemoveToGroup"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @refreshAction="callForGetTargetUserCustomFieldsByCompanyId"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
+    :hideActionOptions="true"
+    :showPagination="false"
   >
-    <template #selection-all-slot v-if="hasSelectionSlot">
-      <v-tooltip bottom opacity="1">
-        <template v-slot:activator="{ on }">
-          <v-btn
-            class="btn-selected-hover mr-1"
-            icon
-            v-on="on"
-            @click="handleAddUsersSelectionClick"
-          >
-            <v-icon class="selection-icons" color="white">mdi-account-plus</v-icon>
-          </v-btn>
-        </template>
-        <span class="tooltip-span">Add Users</span>
-      </v-tooltip>
-      <v-tooltip bottom opacity="1">
-        <template v-slot:activator="{ on }">
-          <v-btn
-            class="btn-selected-hover mr-1"
-            icon
-            v-on="on"
-            @click="handleRemoveUsersSelectionClick"
-          >
-            <v-icon class="selection-icons" color="white">mdi-minus-circle</v-icon>
-          </v-btn>
-        </template>
-        <span class="tooltip-span">Remove Users</span>
-      </v-tooltip>
-    </template>
   </DataTable>
 </template>
 
@@ -75,6 +29,7 @@ import {
   COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
+  LABEL_STORE,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -89,24 +44,16 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 
 export default {
-  name: 'TargetGroupUsersTable',
+  name: 'CompanyGroupDetailsPreview',
   components: {
     DataTable
   },
   props: {
-    iEmpty: {
-      type: Object,
-      default: () => ({
-        message: labels.NoTargetGroupUserAdded,
-        btn: 'Add Users',
-        icon: 'mdi-plus'
-      })
-    },
     excludeGroupUsers: {
       type: Boolean,
       default: false
     },
-    resourceId: {
+    groupId: {
       type: String
     },
     hasRowActions: {
@@ -136,7 +83,7 @@ export default {
     return {
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 1000000,
+        pageSize: 25,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -158,7 +105,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 1000000,
+        pageSize: 25,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -189,7 +136,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          filterableType: 'text',
           dbName: 'firstName'
         },
         {
@@ -200,7 +146,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          filterableType: 'text',
           dbName: 'lastName'
         },
         {
@@ -212,7 +157,6 @@ export default {
           show: true,
           type: 'text',
           width: 275,
-          filterableType: 'text',
           dbName: 'email'
         },
         {
@@ -223,7 +167,6 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          filterableType: 'text',
           dbName: 'department'
         }
       ],
@@ -237,9 +180,7 @@ export default {
           show: true,
           type: 'priority',
           width: 150,
-          fullWidth: true,
-          filterableType: 'select',
-          filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS
+          fullWidth: true
         },
         {
           property: PROPERTY_STORE.STATUS,
@@ -253,9 +194,7 @@ export default {
           isEditable: true,
           hasTooltip: true,
           fullWidth: true,
-          dbName: 'status',
-          filterableType: 'select',
-          filterableItems: COMMON_CONSTANTS.STATUS_ITEMS
+          dbName: 'status'
         },
         {
           property: 'createTime',
@@ -269,7 +208,6 @@ export default {
           maxWidth: 300,
           minWidth: 160,
           overrideWidth: true,
-          filterableType: 'date',
           dbName: 'createTime'
         }
       ],
@@ -282,14 +220,16 @@ export default {
           tooltip: 'Add Users'
         },
         columns: [],
-        iEmpty: this.iEmpty,
-        isColumnFilterActive: false,
-        rowActions: this.getRowActions(),
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
           download: false
+        },
+        iEmpty: {
+          message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
+          id: 'btn-empty--target-users-group',
+          icon: 'mdi-plus'
         }
       },
       tableData: [],
@@ -306,47 +246,22 @@ export default {
   },
 
   created() {
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS)
-    )
-    if (this.resourceId) {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.controlRouteQuery()
-      this.setQueryValuesToPayload(this.$route.query)
+    if (this.groupId) {
       this.getDefaultFilterAndSearch()
     }
   },
 
   methods: {
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS,
-        JSON.stringify(tableSettings)
-      )
       this.storedTableSettings = tableSettings
-    },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.axiosPayload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.axiosPayload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     sortChanged({ order, prop } = {}) {
@@ -355,13 +270,8 @@ export default {
       this.axiosPayload.orderBy = prop
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
-    serverSideSizeChanged(pageSize = 10) {
+    serverSideSizeChanged(pageSize = 25) {
       //generic
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     resetPageNumber() {
@@ -370,19 +280,6 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETGROUPUSERSTABLE)
-      )
-      if (savedFilter) {
-        this.axiosPayload.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
-        this.$nextTick(() => {
-          this.$refs.refTargetGroupUsersTable.filterValues = savedFilter.filterValues
-          this.$refs.refTargetGroupUsersTable.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
-        })
-      }
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     handleClearFilters() {
@@ -412,32 +309,6 @@ export default {
       const columnsOfCustomFields = this.customFields.map((field) => {
         const { name, fieldDataType } = field
         const filterableProps = {}
-        switch (fieldDataType.toLowerCase()) {
-          case 'string':
-            filterableProps['filterableType'] = 'text'
-            break
-          case 'email':
-            filterableProps['filterableType'] = 'text'
-            break
-          case 'number':
-            filterableProps['filterableType'] = 'text'
-            break
-          case 'boolean':
-            filterableProps['filterableType'] = 'select'
-            filterableProps['filterableItems'] = [
-              { text: 'Yes', value: 1 },
-              { text: 'No', value: 0 }
-            ]
-            break
-          case 'date':
-            filterableProps['filterableType'] = 'date'
-            break
-          case 'datetime':
-            filterableProps['filterableType'] = 'date'
-            break
-          default:
-            break
-        }
 
         return {
           property: name,
@@ -448,8 +319,7 @@ export default {
           label: name,
           align: 'left',
           show: true,
-          width: 80 + name.length * 7,
-          ...filterableProps
+          width: 80 + name.length * 7
         }
       })
       if (!columnsOfCustomFields.length) {
@@ -493,7 +363,7 @@ export default {
         })
         .finally(() => this.callForSearchTargetGroupUsers())
     },
-    callForSearchTargetGroupUsers(id = this.resourceId) {
+    callForSearchTargetGroupUsers(id = this.groupId) {
       this.loading = true
       searchTargetGroupUsers(id, this.axiosPayload)
         .then((response) => {
@@ -504,20 +374,8 @@ export default {
           const { data: { data: { results = [] } } = {} } = response
           this.tableData = results.map((item) => {
             const { customFieldValues } = item
-            for (let { name, value, dataType, timestampValue } of customFieldValues) {
-              if (dataType === 'Boolean') {
-                if (value === 'True') {
-                  item[name] = 'Yes'
-                } else if (value === 'False') {
-                  item[name] = 'No'
-                } else {
-                  item[name] = 'No'
-                }
-              } else if (['Date', 'DateTime'].includes(dataType)) {
-                item[name] = timestampValue
-              } else {
-                item[name] = value !== null && value !== undefined ? value : ''
-              }
+            for (let { name, value } of customFieldValues) {
+              item[name] = value
             }
             return item
           })
@@ -530,82 +388,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-
-    columnFilterChanged(filter) {
-      //generic
-      this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
-      this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForSearchTargetGroupUsers()
-    },
-    columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForSearchTargetGroupUsers()
-
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
-    },
-    getRowActions() {
-      return this.hasRowActions
-        ? [
-            {
-              name: 'Edit this row',
-              icon: 'mdi-pencil',
-              action: 'handleEditTargetUsers',
-              isNotShow: true
-            },
-            {
-              name: 'Add to an existing group',
-              icon: 'mdi-account-multiple-plus',
-              action: 'handleAddToAnExistingGroup'
-            },
-            {
-              name: 'Remove from group',
-              icon: 'mdi-minus-circle',
-              action: 'handleRemoveToGroup'
-            }
-          ]
-        : []
     },
     handleAddUsersSelectionClick() {
       this.$emit('handleAddUsersSelectionClick', this.selections)
@@ -628,45 +410,6 @@ export default {
     },
     handleRemoveToGroup(selectedRow = {}) {
       this.$emit('handleRemoveToGroup', selectedRow)
-    },
-    exportTargetGroupsUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.axiosPayload.filter)),
-        this.$refs.refTargetGroupUsersTable,
-        'CreateTime'
-      )
-      if (this.$refs.refTargetGroupUsersTable.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-      }
-      if (
-        this.$refs.refTargetGroupUsersTable.sortProps &&
-        this.$refs.refTargetGroupUsersTable.sortProps.order
-      ) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-      exportTypes.map((exportType) => {
-        const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter,
-          excludeGroupUsers: this.excludeGroupUsers
-        }
-
-        exportTargetGroupUsers(this.resourceId, payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Target Group Details.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
     },
     toggleLoading() {
       this.loading = !this.loading
