@@ -42,7 +42,7 @@
     "v-mask": "^2.2.3",
     "v-offline": "^1.1.0",
     "vlf": "^1.1.0",
-    "vue": "^2.6.12",
+    "vue": "2.6.12",
     "vue-analytics": "^5.22.1",
     "vue-chartjs": "^3.5.1",
     "vue-clamp": "^0.2.2",
