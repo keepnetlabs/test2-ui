@@ -98,9 +98,10 @@
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
+              :hideActionOptions="hideActionOptions"
             />
           </div>
-          <div class="table-settings" v-if="options">
+          <div class="table-settings" v-if="options && !hideActionOptions">
             <v-btn
               class="clust-btn btn-hover mr-1"
               :color="!selectedCluster ? '#2196f3' : '#757575'"
@@ -430,6 +431,7 @@
             :lazy="lazy"
             ref="elTableRef"
             :row-key="rowKey"
+            @row-click="handleRowClick"
             style="width: 100%;"
           >
             <el-table-column
@@ -831,16 +833,19 @@
         "
       >
         <el-pagination
+          v-if="showPagination"
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
           :page-sizes="pageSizes || [5, 10, 25]"
           :total="serverSideProps.totalNumberOfRecords"
           @current-change="handleServerSideCurrentChange"
           @size-change="handleServerSideSizeChange"
-          layout="sizes, prev, pager, next,slot"
+          :layout="showPageSize ? 'sizes, prev, pager, next,slot' : 'prev, pager, next,slot'"
         >
           <template>
-            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--1" v-if="showPageSize"
+              >Rows per page:
+            </span>
             <span class="el-pagination__text el-pagination__text--2">
               {{
                 serverSideProps.pageNumber === 1
@@ -987,7 +992,17 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    showPageSize: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     showFilterOptions: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    showPagination: {
       type: Boolean,
       required: false,
       default: true
@@ -1202,6 +1217,10 @@ export default {
     showHeader: {
       type: Boolean,
       default: true
+    },
+    hideActionOptions: {
+      type: Boolean,
+      default: false
     },
     persistentState: {
       type: Object,
@@ -1587,6 +1606,9 @@ export default {
     }
   },
   methods: {
+    handleRowClick(row, column, event) {
+      this.$emit('row-click', row)
+    },
     getState() {
       return {
         firstColFixed: this.firstColFixed,

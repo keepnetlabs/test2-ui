@@ -214,7 +214,7 @@ export default {
   data: () => ({
     payload: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -236,7 +236,7 @@ export default {
     storedTableSettings: null,
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {

@@ -76,6 +76,7 @@
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
           @sortChangedEvent="sortChanged"
+          @handleSelectionChange="handleSelectionChange"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -352,6 +353,9 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    handleSelectionChange(asd) {
+      //https://element.eleme.io/#/en-US/component/table
+    },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.isColumnFilterActive = columnFilterActive
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
