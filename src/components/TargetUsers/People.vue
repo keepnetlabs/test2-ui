@@ -128,7 +128,7 @@
       <template v-slot:empty-table-inline>
         <div class="people__no-data">
           <p id="text--empty-table-title" class="people__no-data__header">
-            You do not have any users added, yet
+            You do not have any users, yet
           </p>
           <p id="text--empty-table-subtitle" class="people__no-data__body">Add now</p>
           <div class="people__no-data__buttons">

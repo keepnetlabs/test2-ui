@@ -533,12 +533,22 @@ export default {
     },
 
     columnFilterChanged(filter) {
+      //generic
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
@@ -554,6 +564,7 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
+
       this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchTargetGroupUsers()
     },
