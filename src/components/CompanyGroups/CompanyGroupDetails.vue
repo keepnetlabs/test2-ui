@@ -75,7 +75,6 @@
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @columnFilterChanged="columnFilterChanged"
-      @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
       @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
@@ -582,12 +581,22 @@ export default {
       this.$router.push({ name: 'Company Group Details', params: { groupId: resourceId } })
     },
     columnFilterChanged(filter) {
+      //generic
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
@@ -603,7 +612,6 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
       this.payload.filter.FilterGroups[0].FilterItems = requestBody
       this.getTableData()
     },
