@@ -908,6 +908,7 @@ export default {
           emailDateRangeType: 'ThreeDays'
         }
       }
+      this.checkMarkAsAndStatusDisability()
       this.$forceUpdate()
     },
     addAction(actionVal = null) {
@@ -960,8 +961,26 @@ export default {
 
       const length = this.actions.length
       this.actionsValues[length - 1] = nextAvailableAction
+      this.checkMarkAsAndStatusDisability()
       this.$forceUpdate()
       return this.actions.length
+    },
+    checkMarkAsAndStatusDisability() {
+      const checkFindedItem = (type) => this.actionsValues.find((item) => item.val === type)
+      const setDisabledValue = (value1, value2, index) => {
+        if (value1 && !value2) {
+          this.act.actionTypes[index].disabled = true
+        }
+      }
+      const markAs = checkFindedItem('markAs')
+      const status = checkFindedItem('status')
+      if (!markAs && !status) {
+        this.act.actionTypes[0].disabled = false
+        this.act.actionTypes[4].disabled = false
+      } else {
+        setDisabledValue(markAs, status, 4)
+        setDisabledValue(status, markAs, 0)
+      }
     },
     removeAction(index, actionVal) {
       this.act.actionTypes.find((item) => {

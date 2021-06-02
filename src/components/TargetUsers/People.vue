@@ -700,7 +700,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
-            for (let { name, value, dataType } of customFieldValues) {
+            for (let { name, value, dataType, timestampValue } of customFieldValues) {
               if (dataType === 'Boolean') {
                 if (value === 'True') {
                   item[name] = 'Yes'
@@ -709,6 +709,8 @@ export default {
                 } else {
                   item[name] = 'No'
                 }
+              } else if (['Date', 'DateTime'].includes(dataType)) {
+                item[name] = timestampValue
               } else {
                 item[name] = value !== null && value !== undefined ? value : ''
               }
