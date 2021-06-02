@@ -72,11 +72,11 @@ export function listBusinessCategories() {
 }
 
 export function searchNotifiedMail(payload) {
-  return testRequest.post(`notified-emails/search`, payload)
+  return testRequest.post(`notified-emails/search`, payload, { loading: true })
 }
 
 export function getSelectedEmailPreview(id) {
-  return testRequest.get(`/community-posts/notified-email-preview/${id}`)
+  return testRequest.get(`/community-posts/notified-email-preview/${id}`, { loading: true })
 }
 
 export function uploadEmlOrMsg(file, onUploadProgress) {

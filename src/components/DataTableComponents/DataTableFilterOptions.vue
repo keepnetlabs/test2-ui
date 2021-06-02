@@ -6,6 +6,7 @@
     nudge-bottom="12"
     content-class="filter-options__menu-content"
     class="filter-options__menu"
+    v-if="!hideActionOptions"
   >
     <template #activator="{ on }">
       <div v-on="on" :class="['filter-options', { 'filter-options--menu-active': menuModel }]">
@@ -32,6 +33,9 @@ export default {
   name: 'DataTableFilterOptions',
   props: {
     isActive: {
+      type: Boolean
+    },
+    hideActionOptions: {
       type: Boolean
     }
   },
