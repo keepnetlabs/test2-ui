@@ -130,7 +130,7 @@
           <p id="text--empty-table-title" class="people__no-data__header">
             You do not have any users added, yet
           </p>
-          <p id="text--empty-table-subtitle" class="people__no-data__body">Starts now!</p>
+          <p id="text--empty-table-subtitle" class="people__no-data__body">Add now</p>
           <div class="people__no-data__buttons">
             <v-menu offset-y transition="scale-transition" nudge-bottom="4">
               <template v-slot:activator="{ on }">
