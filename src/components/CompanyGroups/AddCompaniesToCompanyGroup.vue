@@ -5,7 +5,7 @@
     :title="getTitle"
     :subtitle="labels.AddCompaniesToCompanyGroupSubtitle"
     @changeStatus="closeOverlay"
-    size="maximum"
+    :custom-size="dialogWidth"
     maxHeightSize="auto"
     class-name="add-to-group-modal"
     title-id="text--company-group-details-add-company-to-company-group-popup-title"
@@ -89,6 +89,7 @@ export default {
       saveDisable: false,
       loading: false,
       selectedArray: [],
+      dialogWidth: '650',
       tableData: [],
       tableOptions: {
         columns: [
@@ -268,6 +269,7 @@ export default {
                 response.data.data.results.length > 0
                   ? response.data.data.results
                   : []
+              this.dialogWidth = this.tableData.length > 1000 ? '750' : '650'
             })
             .catch(() => {
               this.tableData = []

@@ -43,7 +43,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="p-0">
-          <v-list-item-content class="py-0">
+          <v-list-item-content class="py-0" style="overflow: visible;">
             <label class="create-company-group__label mb-0">Add Members</label>
             <v-list-item-title
               class="v-card-sub-header bottom-margin create-company-group__label--sub"
@@ -68,7 +68,14 @@
               outlined
               persistent-hint
               placeholder="Select companies"
-            />
+              :loading="isCompaniesLoading"
+              :hide-no-data="isCompaniesLoading"
+              @focus="showLoader = true"
+            >
+              <template v-slot:progress>
+                <k-select-loading v-show="showLoader" />
+              </template>
+            </v-autocomplete>
           </v-list-item-content>
         </v-list-item>
       </v-form>
@@ -108,6 +115,7 @@ import {
 } from '@/api/company'
 import { maxLength, required, startsWithSpace } from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import KSelectLoading from '@/components/KSelectLoading'
 
 export default {
   name: 'CreateItemModal',
@@ -128,11 +136,13 @@ export default {
     }
   },
   components: {
+    KSelectLoading,
     AppDialog
   },
   data() {
     return {
       saveDisable: false,
+      isCompaniesLoading: true,
       labels,
       search: null,
       groupName: '',
@@ -157,21 +167,31 @@ export default {
             }
           ]
         }
-      }
+      },
+      showLoader: false
     }
   },
-  beforeUpdate() {
-    this.selectedCompanies = this.selectedRow
-    this.editHandler()
+  created() {
+    this.getDefaultCompanies()
+    if (this.selectedRow) {
+      this.selectedCompanies = this.selectedRow
+      this.editHandler()
+    }
   },
   methods: {
     getDefaultCompanies() {
-      searchCompanies(this.payload).then((response) => {
-        this.companies =
-          response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-            ? response.data.data.results
-            : []
-      })
+      this.isCompaniesLoading = true
+      searchCompanies(this.payload)
+        .then((response) => {
+          this.companies =
+            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+              ? response.data.data.results
+              : []
+        })
+        .finally(() => {
+          this.showLoader = false
+          this.isCompaniesLoading = false
+        })
     },
     editHandler() {
       if ((this.isShow && this.isEdit) || (this.isShow && this.forCompany)) {
@@ -236,31 +256,6 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
-    }
-  },
-  watch: {
-    search(val) {
-      if (val && val.length > 2) {
-        /*
-        this.debounce(() => {
-          this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
-          searchCompanies(this.payload)
-            .then((response) => {
-              this.companies = [
-                ...this.companies,
-                ...(response.data.data.hasOwnProperty('results') &&
-                response.data.data.results.length > 0
-                  ? response.data.data.results
-                  : [])
-              ]
-            })
-            .catch(() => {})
-        }, 1000)
-         */
-      }
-    },
-    isShow(status) {
-      status && this.getDefaultCompanies()
     }
   }
 }

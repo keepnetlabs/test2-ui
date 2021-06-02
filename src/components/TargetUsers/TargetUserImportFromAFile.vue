@@ -872,7 +872,7 @@ export default {
     handleSelectionChange(selectedValues) {
       this.selectedTableData = !selectedValues.length
     },
-    getLabelCount(label, data) {
+    getLabelCount(label) {
       switch (label) {
         case labels.ImportSelected:
           let selectedValues = this.$refs.refValidateList
@@ -881,7 +881,7 @@ export default {
           return selectedValues.length
           break
         case labels.ImportAll:
-          return this.tableData.length
+          return this.mappingStatus.newUserCount + this.mappingStatus.existingUserCount
         case 'onlyImportNewUsers':
           return this.responsNumbers.newUserCount
         case 'onlyUpdateExistingUsers':

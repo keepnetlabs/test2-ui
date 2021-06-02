@@ -192,7 +192,7 @@ export default {
             property: PROPERTY_STORE.ADDINSTATUSNAME,
             align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            label: getStoreValue(PROPERTY_STORE.ADDINSTATUSNAME),
             fixed: false,
             sortable: true,
             show: true,

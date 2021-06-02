@@ -425,9 +425,11 @@ export default {
       const editedData = { ...this.editData }
       const customFieldProp = 'customFieldValues'
       const customFields = editedData[customFieldProp]
-      for (let { resourceId, value, name, dataType } of customFields) {
+      for (let { resourceId, value, name, dataType, timestampValue } of customFields) {
         if (dataType === 'Boolean') {
           value = this.getBooleanValue(value)
+        } else if (['Date', 'DateTime'].includes(dataType)) {
+          value = timestampValue
         }
         this.$set(this.customFieldsModels, resourceId, value)
         delete editedData[name]
