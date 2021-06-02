@@ -1016,6 +1016,9 @@ export default {
       type: Boolean,
       default: false
     },
+    toggleAllRowExpansion: {
+      type: Boolean
+    },
     activeCluster: {
       type: String
     },
@@ -1483,6 +1486,13 @@ export default {
           this.$refs.elTableRef.store.states.expandRows = []
           this.$refs.elTableRef.store.states.treeData = []
         }
+      }
+      if (this.toggleAllRowExpansion) {
+        this.$nextTick(() => {
+          for (const row of this.tableData) {
+            this.handleToggleOrLazyWhenCheckboxSelected(row)
+          }
+        })
       }
     },
     tableData(data) {

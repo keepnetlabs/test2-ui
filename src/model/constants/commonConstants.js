@@ -115,6 +115,7 @@ export const LABEL_STORE = {
   ROLE: 'Role',
   PHONENUMBER: 'Phone',
   STATUSNAME: 'Status',
+  ADDINSTATUSNAME: 'Add-in Status',
   TYPENAME: 'Type',
   TITLE: 'Title',
   ROLENAME: 'Title',

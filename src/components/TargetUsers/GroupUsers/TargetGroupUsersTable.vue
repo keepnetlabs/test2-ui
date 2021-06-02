@@ -504,8 +504,20 @@ export default {
           const { data: { data: { results = [] } } = {} } = response
           this.tableData = results.map((item) => {
             const { customFieldValues } = item
-            for (let { name, value } of customFieldValues) {
-              item[name] = value
+            for (let { name, value, dataType, timestampValue } of customFieldValues) {
+              if (dataType === 'Boolean') {
+                if (value === 'True') {
+                  item[name] = 'Yes'
+                } else if (value === 'False') {
+                  item[name] = 'No'
+                } else {
+                  item[name] = 'No'
+                }
+              } else if (['Date', 'DateTime'].includes(dataType)) {
+                item[name] = timestampValue
+              } else {
+                item[name] = value !== null && value !== undefined ? value : ''
+              }
             }
             return item
           })

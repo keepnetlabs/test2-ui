@@ -49,6 +49,7 @@
       id="companies-data-table"
       ref="refDataList"
       is-server-side
+      toggle-all-row-expansion
       :loading="loading"
       :selectable="true"
       :table="tableData"
