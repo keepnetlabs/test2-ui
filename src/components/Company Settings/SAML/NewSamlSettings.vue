@@ -449,7 +449,17 @@ export default {
     callForParseMetadata(file) {
       const formData = new FormData()
       formData.append('File', file)
-      parseMetadata(formData).then((response) => {})
+      parseMetadata(formData).then((response) => {
+        const {
+          data: { data }
+        } = response
+        Object.keys(data).forEach((key) => {
+          this.formValues[key] = data[key]
+          if (key === 'idPCertificate' && this.formValues[key]) {
+            this.certificateText = this.formValues[key]
+          }
+        })
+      })
     },
     submit() {
       if (this.$refs.refForm.validate()) {
@@ -524,6 +534,7 @@ export default {
   font-size: 13px;
   background: #f2f2f2 !important;
   border-radius: 4px;
+  word-break: break-all;
   margin-top: 4px;
 }
 </style>
