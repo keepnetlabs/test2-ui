@@ -30,6 +30,7 @@ export const labels = {
   EnableSAMLSSO: 'Enable SAML SSO',
   EntityId: 'Entity ID',
   SSOEnabled: 'SSO Enabled',
+  Metadata: 'Metadata',
   SAMLSettingName: 'SAML Name',
   ConditionsSubHeader:
     'Define conditions to filter reported emails in order to take actions. Use conditional expressions “and” and “or” to create required criteria. You can add conditions sets for even more complicated conditions',

@@ -616,8 +616,7 @@ export default {
       }
       //this.$router.replace('/login') login change
     }
-
-    if (this.$route.query.authcode) {
+    if (this.$route.query.authcode && !this.$route.query.bypasssaml) {
       const { authcode, uid } = this.$route.query
       const newAuthCode = encodeURIComponent(authcode)
       const username = uid
@@ -779,18 +778,36 @@ export default {
         this.onLoginClicked()
       } else {
         if (this.$refs.email.validate()) {
-          loginWithUsername({ username: this.email }).then((response) => {
-            const {
-              data: { data }
-            } = response
-            if (data.authenticationTypeId === 1) {
-              this.showPasswordField = true
-            } else if (data.authenticationTypeId === 2) {
-              const anchor = document.createElement('a')
-              anchor.href = data.redirectUrl
-              anchor.click()
-            }
-          })
+          const payload = {
+            username: this.email
+          }
+          if (
+            this.$route.query &&
+            this.$route.query.bypasssaml &&
+            this.$route.query.bypasssaml === 'true'
+          ) {
+            payload.bypassSaml = true
+          }
+          loginWithUsername(payload)
+            .then((response) => {
+              this.clearError()
+              const {
+                data: { data }
+              } = response
+              if (data.authenticationTypeId === 1) {
+                this.showPasswordField = true
+              } else if (data.authenticationTypeId === 2) {
+                const anchor = document.createElement('a')
+                anchor.href = data.redirectUrl
+                anchor.click()
+              }
+            })
+            .catch((e) => {
+              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+              this.$store.commit('common/SET_ERROR_MESSAGE', e.response.data.message, {
+                root: true
+              })
+            })
         }
       }
     },
@@ -948,31 +965,29 @@ export default {
         _this.$router.push(
           `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
         )
-      }else if (this.$route.query && !!this.$route.query.investigationDetailsResourceId) {
-         getSystemUserSettings()
+      } else if (this.$route.query && !!this.$route.query.investigationDetailsResourceId) {
+        getSystemUserSettings()
           .then((response) => {
             localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
             localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
           })
           .finally(() => {
-             this.$router.push(
-          `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
-        )
+            this.$router.push(
+              `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
+            )
             this.pageNumber = 1
           })
-       
       } else if (this.$route.query && !!this.$route.query.analysisDetailsResourceId) {
-         getSystemUserSettings()
+        getSystemUserSettings()
           .then((response) => {
             localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
             localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
           })
           .finally(() => {
-             this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
+            this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
             this.pageNumber = 1
           })
-      
-      }  else if (this.$route.query && !!this.$route.query.showInvitation) {
+      } else if (this.$route.query && !!this.$route.query.showInvitation) {
         this.pageNumber = 1
         this.$router.push({
           path: `/threat-sharing`,
@@ -1181,7 +1196,6 @@ export default {
     onLoginClicked() {
       const mainUrl = this.$router.currentRoute
       const _this = this
-
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
       if (this.$refs.password.validate() && this.wrongLoginAttempt < 3) {
