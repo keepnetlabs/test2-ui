@@ -252,6 +252,7 @@ export default {
             checkUpdateCategory(payload)
               .then((response) => {
                 this.checkUpdateCategory = 'success'
+                this.isAllSuccess(true)
               })
               .catch((error) => {
                 this.checkUpdateCategory = 'error'
