@@ -128,9 +128,9 @@
       <template v-slot:empty-table-inline>
         <div class="people__no-data">
           <p id="text--empty-table-title" class="people__no-data__header">
-            You do not have any users added, yet
+            You do not have any users, yet
           </p>
-          <p id="text--empty-table-subtitle" class="people__no-data__body">Starts now!</p>
+          <p id="text--empty-table-subtitle" class="people__no-data__body">Add now</p>
           <div class="people__no-data__buttons">
             <v-menu offset-y transition="scale-transition" nudge-bottom="4">
               <template v-slot:activator="{ on }">
@@ -214,7 +214,7 @@ export default {
   data: () => ({
     payload: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -236,7 +236,7 @@ export default {
     storedTableSettings: null,
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
