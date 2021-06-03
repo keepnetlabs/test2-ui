@@ -75,6 +75,7 @@
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
       @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
       @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
