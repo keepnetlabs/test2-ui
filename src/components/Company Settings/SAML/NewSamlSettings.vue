@@ -63,6 +63,17 @@
             ]"
           ></v-text-field>
         </form-group>
+        <form-group :title="labels.Metadata" has-hint>
+          <k-file-upload
+            key="metadataLogo"
+            id="input--saml-settings-metadata-file"
+            hint="Upload metadata file. Max. file size 2MB"
+            ref="refMainLogo"
+            style="margin-bottom: 10px;"
+            :extensions="['xml']"
+            @inputFile="onMetadataFileChange"
+          />
+        </form-group>
         <form-group :title="labels.SAMLIdpTargetUrl" has-hint>
           <input-url v-model="formValues.idPSSOTargetUrl" id="input--saml-settings-target-url" />
         </form-group>
@@ -80,21 +91,19 @@
           </div>
         </form-group>
 
-        <form-group :title="labels.SAMLIdpCert" has-hint>
+        <form-group :title="labels.SAMLIdpCert">
           <v-text-field
             v-model.trim="formValues.idPCertFingerprint"
             id="input--saml-settings-idp-fingerprint"
             placeholder="Enter the key from your provider"
             outlined
             dense
-            hint="*Required"
-            persistent-hint
             :rules="getCertRules"
           ></v-text-field>
           <v-radio-group
             v-model.trim="formValues.idPCertFingerprintTypeId"
             id="input--saml-cert-type"
-            class="mt-0"
+            class="mt-n3 mb-5"
             row
             hide-details
             dense
@@ -280,6 +289,7 @@ import {
   createSamlSetting,
   getDefaultSamlSettings,
   getSamlSetting,
+  parseMetadata,
   updateSamlSetting
 } from '@/api/samlSettings'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
@@ -342,7 +352,6 @@ export default {
     getCertRules() {
       return [
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.required(v),
         (v) => Validations.maxLength(v, 3000, labels.getMaxLengthMessage(labels.SAMLIdpCert, 3000))
       ]
     },
@@ -434,6 +443,24 @@ export default {
     async setCertificateText(file) {
       this.certificateText = await file.text()
     },
+    onMetadataFileChange(file) {
+      this.callForParseMetadata(file)
+    },
+    callForParseMetadata(file) {
+      const formData = new FormData()
+      formData.append('File', file)
+      parseMetadata(formData).then((response) => {
+        const {
+          data: { data }
+        } = response
+        Object.keys(data).forEach((key) => {
+          this.formValues[key] = data[key]
+          if (key === 'idPCertificate' && this.formValues[key]) {
+            this.certificateText = this.formValues[key]
+          }
+        })
+      })
+    },
     submit() {
       if (this.$refs.refForm.validate()) {
         const {
@@ -507,6 +534,7 @@ export default {
   font-size: 13px;
   background: #f2f2f2 !important;
   border-radius: 4px;
+  word-break: break-all;
   margin-top: 4px;
 }
 </style>

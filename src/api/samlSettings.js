@@ -20,6 +20,12 @@ export function createSamlSetting(payload = {}) {
   })
 }
 
+export function parseMetadata(payload = new FormData()) {
+  return testRequest.post(`${BASE_URL}/parse-metadata-file`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function updateSamlSetting(payload = {}, resourceId = '') {
   return testRequest.put(`${BASE_URL}/${resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
