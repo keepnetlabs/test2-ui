@@ -37,7 +37,6 @@ export function loginWithSaml(payload) {
   params.append('grant_type', 'password')
   params.append('username', username)
   params.append('scope', 'api1')
-  params.append('client_id', 'ui_client')
   params.append('client_secret', 'secret')
   params.append('client_id', 'ui_client')
   params.append('authcode', authcode)
