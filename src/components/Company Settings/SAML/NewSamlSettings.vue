@@ -25,15 +25,19 @@
         :sub-title="isEdit ? labels.SamlModalBodyEditSubTitle : labels.SamlModalBodySubTitle"
       />
       <v-form ref="refForm">
-        <form-group :title="labels.SAMLSettingName" has-hint>
+        <form-group
+          :title="labels.SAMLSettingName"
+          :sub-title="labels.SAMLSettingNameSubtitle"
+          has-hint
+        >
           <v-text-field
             v-model.trim="formValues.name"
             id="input--saml-settings-name"
-            placeholder="Enter SAML setting name"
+            placeholder="Enter a name"
             outlined
             dense
-            hint="*Required"
             persistent-hint
+            :hint="labels.DefaultHint"
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
@@ -42,185 +46,13 @@
             ]"
           ></v-text-field>
         </form-group>
-        <form-group :title="labels.IdPEntityID" has-hint>
-          <v-text-field
-            v-model.trim="formValues.idPEntityID"
-            id="input--saml-settings-id-entity-id"
-            placeholder="Enter SAML idp entity id"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v),
-              (v) => validations.startsWithSpace(v),
-              (v) =>
-                validations.maxLength(
-                  v,
-                  256,
-                  labels.getMaxLengthMessage(labels.SAMLSettingName, 256)
-                )
-            ]"
-          ></v-text-field>
-        </form-group>
-        <form-group :title="labels.Metadata" has-hint>
-          <k-file-upload
-            key="metadataLogo"
-            id="input--saml-settings-metadata-file"
-            hint="Upload metadata file. Max. file size 2MB"
-            ref="refMainLogo"
-            style="margin-bottom: 10px;"
-            :extensions="['xml']"
-            @inputFile="onMetadataFileChange"
-          />
-        </form-group>
-        <form-group :title="labels.SAMLIdpTargetUrl" has-hint>
-          <input-url v-model="formValues.idPSSOTargetUrl" id="input--saml-settings-target-url" />
-        </form-group>
-        <form-group :title="labels.CertificateName" has-hint>
-          <k-file-upload
-            key="mainLogo"
-            id="input--saml-settings-file"
-            hint="Upload certification file. Max. file size 2MB"
-            ref="refMainLogo"
-            :extensions="['cer', 'cert', 'pk12']"
-            @inputFile="onFileChange"
-          />
-          <div class="saml-settings__certificate-text" v-if="certificateText">
-            {{ certificateText }}
-          </div>
-        </form-group>
-
-        <form-group :title="labels.SAMLIdpCert">
-          <v-text-field
-            v-model.trim="formValues.idPCertFingerprint"
-            id="input--saml-settings-idp-fingerprint"
-            placeholder="Enter the key from your provider"
-            outlined
-            dense
-            :rules="getCertRules"
-          ></v-text-field>
-          <v-radio-group
-            v-model.trim="formValues.idPCertFingerprintTypeId"
-            id="input--saml-cert-type"
-            class="mt-n3 mb-5"
-            row
-            hide-details
-            dense
-          >
-            <v-radio
-              id="input--saml-cert-type-sha1"
-              :value="1"
-              label="SHA1"
-              color="#2196f3"
-            ></v-radio>
-            <v-radio
-              id="input--saml-cert-type-sha216"
-              :value="2"
-              label="SHA256"
-              color="#2196f3"
-            ></v-radio>
-          </v-radio-group>
-        </form-group>
-        <input-with-copy-to-clipboard
-          copyKey="entityID"
-          :title="labels.EntityId"
-          @on-copy="handleCopyToClipboard"
+        <form-group
+          class-name="input-copy-to-clipboard"
+          :title="labels.AllowedDomains"
+          :sub-title="labels.SamlDomainSubLabel"
         >
-          <template #input>
-            <v-text-field
-              v-model.trim="formValues.entityID"
-              id="input--saml-settings-entity-id"
-              placeholder="Enter Entity ID"
-              outlined
-              dense
-              disabled
-            ></v-text-field>
-          </template>
-        </input-with-copy-to-clipboard>
-        <input-with-copy-to-clipboard
-          copyKey="ssoSignInUrl"
-          :title="labels.SSOSignInURL"
-          @on-copy="handleCopyToClipboard"
-        >
-          <template #input>
-            <v-text-field
-              v-model.trim="formValues.ssoSignInUrl"
-              id="input--saml-settings-sso-sign-in-url"
-              placeholder="Enter SSO Sign-in URL"
-              outlined
-              dense
-              disabled
-            ></v-text-field>
-          </template>
-        </input-with-copy-to-clipboard>
-        <input-with-copy-to-clipboard
-          copyKey="ssoSignOutUrl"
-          :title="labels.SSOSignOutURL"
-          @on-copy="handleCopyToClipboard"
-        >
-          <template #input>
-            <v-text-field
-              v-model.trim="formValues.ssoSignOutUrl"
-              id="input--saml-settings-sso-sign-in-url"
-              placeholder="Enter SSO Sign-out URL"
-              outlined
-              dense
-              disabled
-            ></v-text-field>
-          </template>
-        </input-with-copy-to-clipboard>
-        <input-with-copy-to-clipboard
-          copyKey="ssoCallbackUrl"
-          :title="labels.SSOCallbackURL"
-          @on-copy="handleCopyToClipboard"
-        >
-          <template #input>
-            <v-text-field
-              v-model.trim="formValues.ssoCallbackUrl"
-              id="input--saml-settings-sso-callback-url"
-              placeholder="Enter SSO Callback URL"
-              outlined
-              dense
-              disabled
-            ></v-text-field>
-          </template>
-        </input-with-copy-to-clipboard>
-        <input-with-copy-to-clipboard
-          copyKey="metadataUrl"
-          :title="labels.MetadataUrl"
-          @on-copy="handleCopyToClipboard"
-        >
-          <template #input>
-            <v-text-field
-              v-model.trim="formValues.metadataUrl"
-              id="input--saml-settings-metadata-url"
-              placeholder="Enter Metadata URL"
-              outlined
-              dense
-              disabled
-            ></v-text-field>
-          </template>
-        </input-with-copy-to-clipboard>
-        <input-with-copy-to-clipboard
-          copyKey="bypassSSOLoginUrl"
-          :title="labels.BypassSSOLoginURL"
-          @on-copy="handleCopyToClipboard"
-        >
-          <template #input>
-            <v-text-field
-              v-model.trim="formValues.bypassSSOLoginUrl"
-              id="input--saml-settings-bypass-sso-login-url"
-              placeholder="Enter Bypass Sso Login URL"
-              outlined
-              dense
-              disabled
-            ></v-text-field>
-          </template>
-        </input-with-copy-to-clipboard>
-        <form-group class-name="input-copy-to-clipboard" :title="labels.Domain">
           <v-form ref="refDomainToAddForm" onSubmit="return false;">
-            <div class="copy-to-clipboard__container">
+            <div class="copy-to-clipboard__container saml-domain">
               <v-text-field
                 v-model.trim="formValues.domainToAdd"
                 id="input--saml-settings-domain-to-add"
@@ -262,6 +94,196 @@
         >
           <v-icon medium left color="blue" class="ml-0">mdi-swap-vertical</v-icon>BATCH IMPORT
         </button>
+        <form-group
+          style="max-width: 648px;"
+          :title="getMetadataLabel"
+          :sub-title="labels.SamlMetadataSubLabel"
+        >
+          <form-group-horizontal-content label="Upload Metadata" class="mt-2">
+            <k-file-upload
+              key="metadataFile"
+              id="input--saml-settings-metadata-file"
+              hint="Only .xml files"
+              ref="refMetadataFile"
+              style="flex-basis: 62%; max-width: 400px;"
+              :extensions="['xml']"
+              @inputFile="onMetadataFileChange"
+            />
+          </form-group-horizontal-content>
+        </form-group>
+        <div class="mt-9" style="display: flex; align-items: center; max-width: 648px;">
+          <v-divider />
+          <span style="font-size: 14px; color: #383b41; margin: 0 16px;"> or</span>
+          <v-divider />
+        </div>
+
+        <form-group-horizontal-content label="Issuer URL of the IdP" class="mt-11">
+          <v-text-field
+            v-model.trim="formValues.issuerUrlOfTheIdp"
+            id="input--saml-settings-id-entity-id"
+            placeholder="Enter issuer URL from your provider"
+            outlined
+            dense
+            hint="*Required"
+            persistent-hint
+            :rules="[
+              (v) => validations.required(v),
+              (v) => validations.startsWithSpace(v),
+              (v) =>
+                validations.maxLength(
+                  v,
+                  256,
+                  labels.getMaxLengthMessage(labels.SAMLSettingName, 256)
+                )
+            ]"
+            :disabled="isTextFieldsDisabled"
+          ></v-text-field>
+        </form-group-horizontal-content>
+        <form-group-horizontal-content label="IdP SSO URL">
+          <input-url
+            v-model="formValues.idPSSOTargetUrl"
+            id="input--saml-settings-target-url"
+            :disabled="isTextFieldsDisabled"
+          />
+        </form-group-horizontal-content>
+        <form-group-horizontal-content label="Upload Certificate">
+          <k-file-upload
+            key="mainLogo"
+            style="flex-basis: 62%; max-width: 400px;"
+            id="input--saml-settings-certificate-file"
+            hint="Only .cert files"
+            ref="refMainLogo"
+            :extensions="['cert']"
+            :readonly="isTextFieldsDisabled"
+            @inputFile="onFileChange"
+          />
+        </form-group-horizontal-content>
+        <form-group-horizontal-content
+          class="mt-2"
+          style="align-items: baseline;"
+          label="IdP Certificate"
+        >
+          <v-textarea
+            v-model.trim="certificateText"
+            outlined
+            dense
+            rows="2"
+            no-resize
+            placeholder="Enter the key from your provider"
+            height="160"
+            :readonly="(isCertificateTextDisabled || isTextFieldsDisabled)"
+            :class="[
+              (isCertificateTextDisabled || isTextFieldsDisabled) &&
+                'saml-settings-text-area-disabled'
+            ]"
+          ></v-textarea>
+        </form-group-horizontal-content>
+
+        <form-group
+          title="SAML Configuration For Your Identity Provider"
+          sub-title="Share information below with your identity provider"
+        >
+        </form-group>
+        <div class="saml-settings-disabled-area">
+          <form-group-horizontal-content class="mt-2" :label="labels.IdPEntityID">
+            <input-with-copy-to-clipboard copyKey="entityID" @on-copy="handleCopyToClipboard">
+              <template #input>
+                <v-text-field
+                  v-model.trim="formValues.entityID"
+                  id="input--saml-settings-entity-id"
+                  placeholder="Enter Entity ID"
+                  outlined
+                  dense
+                  disabled
+                ></v-text-field>
+              </template>
+            </input-with-copy-to-clipboard>
+          </form-group-horizontal-content>
+          <form-group-horizontal-content :label="labels.SSOSignInURL">
+            <input-with-copy-to-clipboard copyKey="ssoSignInUrl" @on-copy="handleCopyToClipboard">
+              <template #input>
+                <v-text-field
+                  v-model.trim="formValues.ssoSignInUrl"
+                  id="input--saml-settings-sso-sign-in-url"
+                  placeholder="Enter SSO Sign-in URL"
+                  outlined
+                  dense
+                  disabled
+                ></v-text-field>
+              </template>
+            </input-with-copy-to-clipboard>
+          </form-group-horizontal-content>
+          <form-group-horizontal-content :label="labels.MetadataUrl">
+            <input-with-copy-to-clipboard copyKey="metadataUrl" @on-copy="handleCopyToClipboard">
+              <template #input>
+                <v-text-field
+                  v-model.trim="formValues.metadataUrl"
+                  id="input--saml-settings-metadata-url"
+                  placeholder="Enter Metadata URL"
+                  outlined
+                  dense
+                  disabled
+                ></v-text-field>
+              </template>
+            </input-with-copy-to-clipboard>
+          </form-group-horizontal-content>
+          <form-group-horizontal-content :label="labels.BypassSSOLoginURL">
+            <input-with-copy-to-clipboard
+              copyKey="bypassSSOLoginUrl"
+              @on-copy="handleCopyToClipboard"
+            >
+              <template #input>
+                <v-text-field
+                  v-model.trim="formValues.bypassSSOLoginUrl"
+                  id="input--saml-settings-bypass-sso-login-url"
+                  placeholder="Enter Bypass Sso Login URL"
+                  outlined
+                  dense
+                  disabled
+                ></v-text-field>
+              </template>
+            </input-with-copy-to-clipboard>
+          </form-group-horizontal-content>
+          <form-group-horizontal-content
+            class="mt-2 saml-settings__mapping"
+            label="SAML Attributes Mapping"
+          >
+            <input-with-copy-to-clipboard
+              copyKey="attributesMapping"
+              @on-copy="handleCopyToClipboard"
+            >
+              <template #input>
+                <v-textarea
+                  v-model.trim="attributesMapping"
+                  disabled
+                  outlined
+                  readonly
+                  class="saml-settings-text-area-disabled mb-3"
+                  dense
+                  rows="2"
+                  no-resize
+                  placeholder="Enter the key from your provider"
+                  height="160"
+                ></v-textarea>
+              </template>
+            </input-with-copy-to-clipboard>
+          </form-group-horizontal-content>
+        </div>
+        <form-group-horizontal-content label="Default Role">
+          <k-select
+            v-model.trim="formValues.roleResourceIdList"
+            id="input--sytem-user-role"
+            placeholder="Select Option"
+            outlined
+            dense
+            :items="roleItems"
+            hint="*Required"
+            persistent-hint
+            item-text="name"
+            item-value="resourceId"
+            :rules="[(v) => validations.required(v, labels.Required)]"
+          />
+        </form-group-horizontal-content>
         <form-group :title="labels.EnableSAMLSSO">
           <v-switch
             v-model="formValues.enableSAMLSSO"
@@ -270,6 +292,11 @@
             class="k-switch"
             color="#2196f3"
           />
+        </form-group>
+        <form-group :title="labels.TestConnection">
+          <div class="test-connection__button" style="width: 160px; cursor: pointer;">
+            TEST CONNECTION
+          </div>
         </form-group>
       </v-form>
     </template>
@@ -296,9 +323,15 @@ import DataContainerWithSearch from '@/components/Common/Others/DataContainerWit
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
+import { mapGetters } from 'vuex'
+import { getSystemUsersRole } from '@/api/systemUsers'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
   name: 'NewSamlSettings',
   components: {
+    KSelect,
+    FormGroupHorizontalContent,
     KFileUpload,
     BatchImportPopup,
     DataContainerWithSearch,
@@ -322,18 +355,30 @@ export default {
   emits: ['on-close', 'on-success'],
   data() {
     return {
+      attributesMapping:
+        '{\t' +
+        "    email: 'john.doe@keepnetlabs.com', //optional\n" +
+        "        firstName: 'John', //required\n" +
+        "        lastName: 'Doe', //required\n" +
+        '        spRole: \'Company Admin\', //optional. \n        Default is "Company Admin"\n' +
+        "        phoneNumber: 'Phone' //optional     } \n" +
+        '',
       labels,
       validations,
+      isCertificateTextDisabled: false,
       resourceId: null,
       certificateText: '',
       isBatchImportPopupOpen: false,
       saveDisable: false,
       dataContainerWithSearchItems: [],
+      isTextFieldsDisabled: false,
+      roleItems: [],
       formValues: {
         name: '',
         idPEntityID: '',
         file: null,
         idPSSOTargetUrl: '',
+        issuerUrlOfTheIdp: '',
         idPCertFingerprint: '',
         idPCertFingerprintTypeId: 1,
         entityID: '',
@@ -344,16 +389,23 @@ export default {
         bypassSSOLoginUrl: '',
         enableSAMLSSO: true,
         domain: [],
-        domainToAdd: ''
+        domainToAdd: '',
+        roleResourceIdList: []
       }
     }
   },
   computed: {
+    ...mapGetters({
+      brandName: 'whitelabel/getBrandName'
+    }),
     getCertRules() {
       return [
         (v) => Validations.startsWithSpace(v),
         (v) => Validations.maxLength(v, 3000, labels.getMaxLengthMessage(labels.SAMLIdpCert, 3000))
       ]
+    },
+    getMetadataLabel() {
+      return `${labels.SamlConfigurationFor} ${this.brandName}`
     },
     getId() {
       return this.isEdit ? 'edit-saml-settings-modal' : 'new-saml-settings-modal'
@@ -366,6 +418,7 @@ export default {
     if (this.isEdit && this.selectedRow) {
       this.callForSamlSetting()
     }
+    this.callForRoles()
     this.callForGetDefaultSettings()
   },
   methods: {
@@ -400,6 +453,60 @@ export default {
         this.certificateText = idPCertificateFileContent
       })
     },
+    callForRoles() {
+      let allRoles = []
+      let availableRoles = []
+      getSystemUsersRole({
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'RoleName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }).then((response) => {
+        allRoles = response.data.data
+        availableRoles = allRoles
+
+        if (this.isEdit) {
+          allRoles &&
+            allRoles.find((item) => {
+              return item.name === roles
+            }).resourceId
+          availableRoles = allRoles
+          this.roleItems = availableRoles.map((item) => {
+            let data = {
+              name: item.name,
+              resourceId: item.resourceId
+            }
+            return data
+          })
+        } else {
+          this.roleItems = availableRoles.map((item) => {
+            return {
+              name: item.name,
+              resourceId: item.resourceId
+            }
+          })
+          this.formValues.roleResourceIdList =
+            availableRoles &&
+            availableRoles.length &&
+            availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
+        }
+      })
+    },
     handleBatchImportClick() {
       this.toggleBatchImportPopup()
     },
@@ -408,7 +515,7 @@ export default {
         const {
           data: { data }
         } = response
-
+        console.log('data', data)
         for (const key of Object.keys(data)) {
           this.formValues[key] = data[key]
         }
@@ -418,7 +525,7 @@ export default {
       this.$emit('on-close')
     },
     handleCopyToClipboard(key = '') {
-      navigator.clipboard.writeText(this.formValues[key])
+      navigator.clipboard.writeText(this.formValues[key] || this[key])
       this.$store.dispatch('common/createSnackBar', {
         message: 'COPIED TO CLIPBOARD',
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
@@ -442,6 +549,7 @@ export default {
     },
     async setCertificateText(file) {
       this.certificateText = await file.text()
+      this.isCertificateTextDisabled = true
     },
     onMetadataFileChange(file) {
       this.callForParseMetadata(file)
@@ -459,6 +567,7 @@ export default {
             this.certificateText = this.formValues[key]
           }
         })
+        this.isTextFieldsDisabled = true
       })
     },
     submit() {
@@ -536,5 +645,39 @@ export default {
   border-radius: 4px;
   word-break: break-all;
   margin-top: 4px;
+}
+.saml-settings {
+  .form-group-horizontal-content {
+    max-width: 648px;
+    margin-bottom: 8px;
+  }
+  &-text-area-disabled {
+    .v-input__slot {
+      background: #e0e0e0 !important;
+    }
+  }
+  &-disabled-area {
+    .form-group-horizontal-content {
+      max-width: 840px;
+      margin-bottom: 8px;
+      > *:first-child {
+        margin-top: 0;
+      }
+    }
+  }
+  &__mapping {
+    align-items: flex-start;
+    label {
+      margin-top: 16px !important;
+    }
+    button {
+      align-self: center;
+    }
+  }
+}
+.copy-to-clipboard__container.saml-domain {
+  .v-text-field__details {
+    display: block !important;
+  }
 }
 </style>
