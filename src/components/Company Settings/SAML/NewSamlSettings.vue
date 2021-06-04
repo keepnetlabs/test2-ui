@@ -127,7 +127,6 @@
             hint="*Required"
             persistent-hint
             :rules="[
-              (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
               (v) =>
                 validations.maxLength(
@@ -281,7 +280,6 @@
             persistent-hint
             item-text="name"
             item-value="resourceId"
-            :rules="[(v) => validations.required(v, labels.Required)]"
           />
         </form-group-horizontal-content>
         <form-group :title="labels.EnableSAMLSSO">
@@ -479,8 +477,8 @@ export default {
       }).then((response) => {
         allRoles = response.data.data
         availableRoles = allRoles
-
-        if (this.isEdit) {
+        //this.isedit gelecek roller gelince.
+        if (false) {
           allRoles &&
             allRoles.find((item) => {
               return item.name === roles
