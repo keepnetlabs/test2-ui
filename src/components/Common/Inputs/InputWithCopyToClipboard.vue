@@ -5,8 +5,9 @@
         <v-text-field
           outlined
           dense
-          hint="*Required"
+          hide-details
           persistent-hint
+          hint="*Required"
           class="auth-key__textfield"
           :disabled="true"
         ></v-text-field>
@@ -52,5 +53,8 @@ export default {
 <style lang="scss">
 .input-copy-to-clipboard {
   max-width: 745px;
+  .v-text-field__details {
+    display: none;
+  }
 }
 </style>
