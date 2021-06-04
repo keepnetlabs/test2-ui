@@ -65,7 +65,6 @@ export default {
   methods: {
     getGroupDetails(resourceId) {
       this.selectedGroupDetailsRecourseId = resourceId
-      debugger
       if (this.$refs.CompanyGroupDetailsPreview) {
         this.$refs.CompanyGroupDetailsPreview.getDefaultFilterAndSearch()
       }
