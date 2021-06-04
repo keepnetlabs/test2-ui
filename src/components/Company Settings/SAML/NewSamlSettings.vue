@@ -57,7 +57,7 @@
                 v-model.trim="formValues.domainToAdd"
                 id="input--saml-settings-domain-to-add"
                 placeholder="Enter Domain name"
-                style="max-width: 554px;"
+                style="max-width: 428px;"
                 outlined
                 dense
                 persistent-hint
