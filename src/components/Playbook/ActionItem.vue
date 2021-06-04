@@ -388,7 +388,7 @@ export default {
     getAllCheckboxSelection: {
       get() {
         const data = this.searchEnginesModelInput ? this.searchEnginesData : this.analysisEngines
-        return data.every((item) => item.selected)
+        return data.length && data.every((item) => item.selected)
       },
       set(val) {
         this.acceptAllAnalysisEngines = val

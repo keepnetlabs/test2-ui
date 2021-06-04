@@ -363,11 +363,14 @@ export default {
         customFields: keys.reduce((acc, key) => {
           const item = this.customFields.find((item) => item.resourceId === key)
           let value = this.customFieldsModels[key]
+          let timestampValue = ''
           if (item.fieldDataType === 'Boolean') {
             value = this.setStringBoolean(value)
+          } else if (['Date', 'DateTime'].includes(item.fieldDataType)) {
+            timestampValue = value
           }
           if (!(value === null || value === undefined || value === '')) {
-            acc.push({ resourceId: key, value })
+            acc.push({ resourceId: key, value, timestampValue })
           }
 
           return acc
