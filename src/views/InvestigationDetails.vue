@@ -1393,12 +1393,6 @@ export default {
         name: 'Send user a warning message',
         icon: 'mdi-alert',
         action: 'sendWarningMessage'
-      },
-      {
-        id: 'btn-delete-and-notify--investigation-details-row-actions',
-        name: 'Delete and notify user',
-        icon: 'mdi-delete',
-        action: 'deleteAndNotifyInvestigationDetails'
       }
     ],
 
@@ -1433,7 +1427,7 @@ export default {
       delete: true,
       download: false,
       warning: true,
-      deleteAndNotify: true
+      deleteAndNotify: false
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4']
