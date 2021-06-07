@@ -183,9 +183,9 @@ export default {
             fixed: false,
             type: 'text',
             filterableType: 'text',
-             filterableType: 'select',
-             filterableCustomFieldName: 'AuthenticationType',
-             filterableItems: [
+            filterableType: 'select',
+            filterableCustomFieldName: 'AuthenticationType',
+            filterableItems: [
               { text: 'Basic', value: '1' },
               { text: 'Transparent', value: '0' }
             ],
@@ -201,7 +201,7 @@ export default {
             fixed: false,
             type: 'badge',
             filterableType: 'select',
-             filterableItems: [
+            filterableItems: [
               { text: 'Yes', value: 'Yes' },
               { text: 'No', value: 'No' }
             ],
@@ -249,8 +249,8 @@ export default {
           }
         ],
         empty: {
-          message: 'No PROXY Configurations',
-          btn: 'Create PROXY Configuration',
+          message: 'No Proxy Configurations',
+          btn: 'Create Proxy Configuration',
           icon: 'mdi-plus',
           id: 'btn-empty--proxy-settings',
           disabled: false
@@ -258,7 +258,7 @@ export default {
         addButton: {
           show: true,
           action: 'addNewProxySetting',
-          tooltip: 'Add PROXY Setting',
+          tooltip: 'Add Proxy Setting',
           id: 'btn-add--proxy-settings',
           disabled: false
         }

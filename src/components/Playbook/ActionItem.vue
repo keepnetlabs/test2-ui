@@ -516,6 +516,7 @@ export default {
         ],
         investigateActions: [
           { text: 'Notify', value: 'Warning' },
+          { text: 'Move to trash', value: 'MoveToTrash' },
           { text: 'Delete email', value: 'Delete' }
         ],
         investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone']

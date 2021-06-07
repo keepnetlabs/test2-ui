@@ -6,6 +6,7 @@
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
       v-if="options && downloadButton.show && isWantToDownload"
+      :download="download"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -561,6 +562,9 @@
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
+                  :filterableOptions="col.filterableOptions"
+                  :filterOptionProps="col.filterOptionProps"
+                  :defaultDate="col.defaultDate"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
                   :sortable="!col.hideSort"
@@ -1275,6 +1279,9 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    download: {
+      default: () => ({ xls: true, csv: true, pdf: true })
     }
   },
   computed: {
@@ -1390,11 +1397,6 @@ export default {
       isRowActionsMenuOpen: [],
       isSelectedAllEver,
       filterValues,
-      download: {
-        xls: false,
-        csv: false,
-        pdf: false
-      },
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,

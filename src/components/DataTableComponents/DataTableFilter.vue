@@ -38,7 +38,31 @@
           dense
           v-model="filterValue"
           height="40"
+          v-if="filteredSelectValue !== 'between'"
         ></v-text-field>
+        <div class="d-flex" v-if="filteredSelectValue === 'between'">
+          <v-text-field
+            placeholder="Enter Value"
+            class="filter__text"
+            outlined
+            dense
+            v-model="filterValueBetween[0]"
+            height="40"
+            type="number"
+            onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
+          ></v-text-field>
+          <span class="ml-2 mr-2" style="line-height: 12px;">-</span>
+          <v-text-field
+            placeholder="Enter Value"
+            class="filter__text"
+            outlined
+            dense
+            v-model="filterValueBetween[1]"
+            height="40"
+            type="number"
+            onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
+          ></v-text-field>
+        </div>
       </template>
       <template v-if="filterableType === 'numeric'">
         <v-select
@@ -79,6 +103,7 @@
           ref="refPicker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
           :key="`${$store.state.auth.user.userCompany.timeZone}1`"
+          :picker-options="this.defaultDate ? inBetweenDatesPickerOptions : ''"
         />
         <InputDate
           v-if="filteredSelectValueDate === 'between'"
@@ -88,6 +113,7 @@
           style="margin-bottom: 14px;"
           @change="handleChangeBetweenDatepicker"
           :key="`${$store.state.auth.user.userCompany.timeZone}2`"
+          :picker-options="this.defaultDate ? inBetweenDatesPickerOptions : ''"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -196,6 +222,17 @@ export default {
           selectValue: ''
         }
       }
+    },
+    filterableOptions: {
+      default() {
+        return { exactDate: true, after: true, before: true, between: true }
+      }
+    },
+    filterOptionProps: {
+      required: false
+    },
+    defaultDate: {
+      required: false
     }
   },
   data() {
@@ -209,20 +246,31 @@ export default {
       filteredSelectValueNum: '=',
       filteredSelectValueNumber: '=',
       filteredSelectValueDate:
-        this.filterableType === 'date' ? this.value.selectValue || '<=' : '<=',
+        this.filterableType === 'date'
+          ? this.value.selectValue || this.defaultDate
+            ? '>='
+            : '<='
+          : '<=',
       filteredDateValue:
-        (this.filterableType === 'date' &&
-          this.value.selectValue !== 'between' &&
-          this.value.textValue) ||
-        this.$moment(Date.now()).format(getTimeZoneForMoment()),
+        this.filterableType === 'date' &&
+        this.value.selectValue !== 'between' &&
+        this.value.selectValue
+          ? this.value.textValue || this.$moment(Date.now()).format(getTimeZoneForMoment())
+          : this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment()),
       filteredDateRangeValue:
         this.value.selectValue === 'between'
           ? [this.value.textValue[0], this.value.textValue[1]]
           : [
-              this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
+              this.defaultDate
+                ? this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment())
+                : this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
               this.$moment(Date.now()).format(getTimeZoneForMoment())
             ],
       filterValue: this.value.textValue || '',
+      filterValueBetween:
+        this.value.selectValue === 'between'
+          ? [this.value.textValue[0], this.value.textValue[1]]
+          : [],
       filterChecked:
         this.filterableType === 'select'
           ? this.value.selectValue === ''
@@ -251,10 +299,10 @@ export default {
         { text: 'Less than equal', value: '<=' }
       ],
       dateFilterItems: [
-        { text: 'Exact date', value: '=' },
-        { text: 'After', value: '>=' },
-        { text: 'Before', value: '<=' },
-        { text: 'Between', value: 'between' }
+        { text: 'Exact date', value: '=', show: this.filterableOptions.exactDate },
+        { text: 'After', value: '>=', show: this.filterableOptions.after },
+        { text: 'Before', value: '<=', show: this.filterableOptions.before },
+        { text: 'Between', value: 'between', show: this.filterableOptions.between }
       ],
       pickerOptions: {},
       convertedFilterableItems: []
@@ -275,6 +323,12 @@ export default {
         )
       })
     }
+    this.dateFilterItems = this.dateFilterItems.reduce((acc, item) => {
+      if (item.show) {
+        acc.push(item)
+      }
+      return acc
+    }, [])
   },
   beforeDestroy() {
     if (this.isFilterActive) {
@@ -299,6 +353,7 @@ export default {
       this.menu = false
       this.isFilterActive = false
       this.filterValue = ''
+      this.filterValueBetween = []
       this.filteredDateValue = null
       this.filterChecked = []
       this.filteredDateRangeValue = []
@@ -313,12 +368,32 @@ export default {
       this.isFilterActive = true
 
       if (this.filterableType === 'text') {
-        this.$emit('handleFilterColumn', {
-          Value: this.filterValue,
-          FieldName: this.fieldName,
-          Operator: this.filteredSelectValue
-        })
-        this.emitValue(this.filterValue, this.filteredSelectValue, this.fieldName)
+        if (this.filteredSelectValue === 'between') {
+          this.$emit('handleFilterColumn', [
+            {
+              Value: this.filterValueBetween[0],
+              FieldName: this.fieldName,
+              Operator: '>='
+            },
+            {
+              value: this.filterValueBetween[1],
+              FieldName: this.fieldName,
+              Operator: '<='
+            }
+          ])
+          this.emitValue(
+            [this.filterValueBetween[0], this.filterValueBetween[1]],
+            this.filteredSelectValue,
+            this.fieldName
+          )
+        } else {
+          this.$emit('handleFilterColumn', {
+            Value: this.filterValue,
+            FieldName: this.fieldName,
+            Operator: this.filteredSelectValue
+          })
+          this.emitValue(this.filterValue, this.filteredSelectValue, this.fieldName)
+        }
       }
       if (this.filterableType === 'numeric') {
         this.$emit('handleFilterColumn', {
@@ -377,7 +452,20 @@ export default {
     }
   },
   computed: {
+    inBetweenDatesPickerOptions() {
+      return {
+        disabledDate: (time) => {
+          return !this.$moment(time.getTime()).isBetween(
+            this.$moment(Date.now()).subtract(15, 'days').format(getTimeZoneForMoment()),
+            this.$moment(Date.now()).format(getTimeZoneForMoment())
+          )
+        }
+      }
+    },
     getTextFilterItems() {
+      if (this.filterOptionProps && this.filterOptionProps.length > 0) {
+        return this.filterOptionProps
+      }
       return this.filterProps
         ? this.filterProps.items && this.filterProps.items
         : this.textFilterItems
@@ -392,10 +480,19 @@ export default {
           })
         : this.convertedFilterableItems
     },
+    checkTextFilterButtonIsDisabled() {
+      if (this.filterValueBetween[0] && this.filterValueBetween[1]) {
+        return false
+      }
+      if (this.filterValue) {
+        return false
+      }
+      return true
+    },
     getFilterButtonDisabled() {
       switch (this.filterableType) {
         case 'text':
-          return !this.filterValue
+          return this.checkTextFilterButtonIsDisabled
         case 'select':
           return !this.filterChecked.length
         case 'numeric':
@@ -423,8 +520,6 @@ export default {
     font-size: 20px;
     order: 1;
     margin-top: 7px;
-  }
-  &__container {
   }
   &__body-container {
     background-color: white;
