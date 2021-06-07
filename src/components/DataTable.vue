@@ -563,6 +563,7 @@
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
                   :filterableOptions="col.filterableOptions"
+                  :filterOptionProps="col.filterOptionProps"
                   :defaultDate="col.defaultDate"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
