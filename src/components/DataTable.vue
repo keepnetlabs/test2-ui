@@ -562,6 +562,8 @@
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
+                  :filterableOptions="col.filterableOptions"
+                  :defaultDate="col.defaultDate"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
                   :sortable="!col.hideSort"
@@ -1278,7 +1280,7 @@ export default {
       default: false
     },
     download: {
-      default: { xls: true, csv: true, pdf: true }
+      default: () => ({ xls: true, csv: true, pdf: true })
     }
   },
   computed: {
