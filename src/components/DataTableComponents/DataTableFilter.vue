@@ -51,7 +51,7 @@
             type="number"
             onkeypress="return event.keyCode === 8 || event.charCode >= 48 && event.charCode <= 57"
           ></v-text-field>
-          <span class="ml-2 mr-2">-</span>
+          <span class="ml-2 mr-2" style="line-height: 12px;">-</span>
           <v-text-field
             placeholder="Enter Value"
             class="filter__text"
