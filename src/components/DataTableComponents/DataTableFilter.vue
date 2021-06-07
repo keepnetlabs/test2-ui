@@ -457,8 +457,6 @@ export default {
     order: 1;
     margin-top: 7px;
   }
-  &__container {
-  }
   &__body-container {
     background-color: white;
     padding: 20px 20px 0 20px;
