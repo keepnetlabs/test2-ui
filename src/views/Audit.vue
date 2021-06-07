@@ -62,6 +62,7 @@ import ClientTableExportHelper from '@/helper-classes/client-table-export-helper
 import { exportSmtpSettings } from '@/api/smtpSettings'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getTimeZoneForMoment } from '@/utils/functions'
 
 export default {
   name: 'Audit',
@@ -89,6 +90,17 @@ export default {
             type: 'text',
             width: 160,
             filterableType: 'date',
+            filterableOptions: {
+              exactDate: true,
+              after: true,
+              before: false,
+              between: true
+            },
+            defaultDate: {
+              hours: 2,
+              time: 'weeks',
+              select: '>='
+            },
             fixed: 'left'
           },
           {
@@ -226,7 +238,7 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [{ Value: '', FieldName: 'logDate', Operator: '>=' }]
             },
             {
               Condition: 'OR',
@@ -247,7 +259,7 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [{ Value: '', FieldName: 'logDate', Operator: '>=' }]
             },
             {
               Condition: 'OR',
@@ -457,6 +469,12 @@ export default {
     }
   },
   created() {
+    this.bodyData.filter.FilterGroups[0].FilterGroups[0].Value = this.$moment(Date.now())
+      .subtract(2, 'weeks')
+      .format(getTimeZoneForMoment())
+    this.defaultRequestBody.filter.FilterGroups[0].FilterGroups[0].Value = this.$moment(Date.now())
+      .subtract(2, 'weeks')
+      .format(getTimeZoneForMoment())
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
