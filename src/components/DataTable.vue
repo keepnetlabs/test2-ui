@@ -6,6 +6,7 @@
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
       v-if="options && downloadButton.show && isWantToDownload"
+      :download="download"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -1275,6 +1276,9 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    download: {
+      default: { xls: true, csv: true, pdf: true }
     }
   },
   computed: {
@@ -1390,11 +1394,6 @@ export default {
       isRowActionsMenuOpen: [],
       isSelectedAllEver,
       filterValues,
-      download: {
-        xls: false,
-        csv: false,
-        pdf: false
-      },
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,

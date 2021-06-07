@@ -26,6 +26,7 @@
           :addButton="tableOptions.addButton"
           :dataLength="tableData && tableData.totalNumberOfRecords"
           :requestParams="bodyData"
+          :download="downloadOptions"
           @refreshAction="getDatatableList"
           @downloadEvent="exportAuditLog"
           @columnFilterChanged="columnFilterChanged"
@@ -208,6 +209,11 @@ export default {
         empty: {
           message: LABEL_STORE.NO_AUDIT
         }
+      },
+      downloadOptions: {
+        xls: false,
+        csv: true,
+        pdf: false
       },
       bodyData: {
         pageNumber: 1,
