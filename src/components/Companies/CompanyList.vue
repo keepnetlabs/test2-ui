@@ -239,7 +239,13 @@ export default {
           show: true,
           type: 'slot',
           filterableType: 'text',
-          width: 130
+          width: 130,
+          filterOptionProps: [
+            { text: 'Contains', value: 'Contains' },
+            { text: 'Equal', value: '=' },
+            { text: 'Not Equal', value: '!=' },
+            { text: 'Between', value: 'between' }
+          ]
         },
         {
           property: PROPERTY_STORE.LICENSEENDDATE,
