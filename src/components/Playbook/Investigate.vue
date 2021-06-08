@@ -347,7 +347,7 @@ export default {
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
-          actionType: 'Notify',
+          actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTemplateId: 1,
