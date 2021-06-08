@@ -272,6 +272,7 @@ export default {
         view: dView
       })
       let blockManager = this.editor.BlockManager
+      blockManager.add('exampleComponent', exampleComponent)
 
       let pn = this.editor.Panels
       pn.getButton('options', 'sw-visibility').set('active', 0)
