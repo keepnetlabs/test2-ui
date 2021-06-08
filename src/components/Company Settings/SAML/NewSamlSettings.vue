@@ -119,7 +119,7 @@
 
         <form-group-horizontal-content label="Issuer URL of the IdP" class="mt-11">
           <v-text-field
-            v-model.trim="formValues.issuerUrlOfTheIdp"
+            v-model.trim="formValues.idPEntityID"
             id="input--saml-settings-id-entity-id"
             placeholder="Enter issuer URL from your provider"
             outlined
@@ -376,7 +376,6 @@ export default {
         idPEntityID: '',
         file: null,
         idPSSOTargetUrl: '',
-        issuerUrlOfTheIdp: '',
         idPCertFingerprint: '',
         idPCertFingerprintTypeId: 1,
         entityID: '',
@@ -449,6 +448,9 @@ export default {
         this.formValues.domain = domain
         this.dataContainerWithSearchItems = domain.concat()
         this.certificateText = idPCertificateFileContent
+        if (this.certificateText) {
+          this.isCertificateTextDisabled = true
+        }
       })
     },
     callForRoles() {
