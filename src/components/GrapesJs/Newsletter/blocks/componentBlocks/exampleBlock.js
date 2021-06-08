@@ -6,6 +6,7 @@ const exampleBlock = [
     components: `
 
 
+
 <section class="form">
   <div class='form-content'>
     <div class='form-bg'>
@@ -17,7 +18,7 @@ const exampleBlock = [
    <label class='login-label' for='password'>Password</label>
     <input  placeholder="" style='margin-bottom: 0' type="password" id="password"></input>
 <p class='forget-password'>Forget Password?</p>
-<button id="submit">Sign In</button>
+<button id="submit" onclick="alert('clicked')">Sign In</button>
         </div>
 </form>
 <div class='d-flex login-seperator'><div></div><div>or</div><div></div></div>
@@ -106,7 +107,8 @@ font-weight: 600;
 line-height: 24px;
 letter-spacing: 0px;
 text-align: right;
-margin-bottom: 40px
+margin-bottom: 40px;
+  cursor:pointer;
 }
 #submit{
 background: #2196F3;
@@ -157,7 +159,7 @@ text-align: left;
 }
 .form-bg{
     background: #fff;
-    padding: 40px;
+     padding: 40px;
 }
 
 .create-account{
@@ -171,6 +173,13 @@ font-weight: 600;
 line-height: 24px;
 letter-spacing: 0px;
   margin-top: 30px;
+  background: #FFFFFF;
+
+border: 1px solid #383B41;
+box-sizing: border-box;
+border-radius: 4px;
+  padding:4px;
+  cursor:pointer;
 }</style>`
   }
 ]
