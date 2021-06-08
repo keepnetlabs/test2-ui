@@ -82,6 +82,8 @@ const whitelabel = {
         if (key === 'faviconUrl' && payload[key]) {
           const favIcon = document.querySelector('link[rel="icon"]')
           favIcon.href = payload[key]
+        } else if (key === 'brandName' && payload[key]) {
+          document.title = payload[key]
         }
         if (key !== 'systemVersion') {
           state[key] = payload[key]

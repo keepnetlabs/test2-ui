@@ -166,6 +166,7 @@
           Clear
         </v-btn>
         <v-btn
+          :key="btnKeySafariFix"
           :disabled="getFilterButtonDisabled"
           text
           class="filter__footer-button"
@@ -238,6 +239,7 @@ export default {
   data() {
     return {
       menu: null,
+      btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`,
       isFilterActive:
         this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue,
       filteredSelectValue: this.filterProps
@@ -313,6 +315,9 @@ export default {
       if (newVal) {
         this.$emit('update:isSettingsOpened', false)
       }
+    },
+    getFilterButtonDisabled() {
+      this.btnKeySafariFix = `btn-key${Math.random().toString().substring(0, 5)}`
     }
   },
   created() {
