@@ -3,6 +3,7 @@
     id="target-users-group-users-data-table"
     ref="refTargetGroupUsersTable"
     selectable
+    is-server-side-selection
     :refName="'groupsTable'"
     :loading="loading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -622,9 +623,9 @@ export default {
     handleRemoveUsersSelectionClick() {
       this.$emit('handleRemoveUsersSelectionClick', this.selections)
     },
-    handleSelectionChange(selection = []) {
+    handleSelectionChange(selection = [], excludedResourceIdList = [], isSelectedAllEver = false) {
       this.selections = selection
-      this.$emit('handleSelectionChange', selection)
+      this.$emit('handleSelectionChange', selection, excludedResourceIdList, isSelectedAllEver)
     },
     handleRemoveToGroup(selectedRow = {}) {
       this.$emit('handleRemoveToGroup', selectedRow)

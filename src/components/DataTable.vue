@@ -2504,7 +2504,12 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
-      this.$emit('handleSelectionChange', val)
+      const serverSideSelectionParams = {}
+      if (this.isServerSideSelection) {
+        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
+        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
+      }
+      this.$emit('handleSelectionChange', val, ...Object.values(serverSideSelectionParams))
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
       for (let row of rows) {
