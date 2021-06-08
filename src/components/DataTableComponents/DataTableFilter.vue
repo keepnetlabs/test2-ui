@@ -220,8 +220,7 @@ export default {
       default() {
         return {
           textValue: '',
-          selectValue: '',
-          btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`
+          selectValue: ''
         }
       }
     },
@@ -240,6 +239,7 @@ export default {
   data() {
     return {
       menu: null,
+      btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`,
       isFilterActive:
         this.filterableType === 'select' ? !!this.value.selectValue : !!this.value.textValue,
       filteredSelectValue: this.filterProps
