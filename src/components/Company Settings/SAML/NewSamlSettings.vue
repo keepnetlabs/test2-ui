@@ -355,10 +355,10 @@ export default {
     return {
       attributesMapping:
         '{\t' +
-        "    email: 'john.doe@keepnetlabs.com', //optional\n" +
+        "    email: 'john.doe@keepnetlabs.com', //required\n" +
         "        firstName: 'John', //required\n" +
         "        lastName: 'Doe', //required\n" +
-        '        spRole: \'Company Admin\', //optional. \n        Default is "Company Admin"\n' +
+        '        spRole: \'Company Admin\', //required. \n        Default is "Company Admin"\n' +
         "        phoneNumber: 'Phone' //optional     } \n" +
         '',
       labels,
