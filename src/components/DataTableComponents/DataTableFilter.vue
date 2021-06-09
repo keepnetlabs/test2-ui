@@ -9,8 +9,27 @@
     v-if="filterableType"
     max-height="260px"
     v-model="menu"
-    z-index="999"
+    z-index="201"
   >
+    <app-dialog
+      v-if="status"
+      :icon="'mdi-alert'"
+      title="Invalid Selection"
+      title-id="text--invalid-section"
+      :status="status"
+      :body="'Selected date range cannot exceed 14 days'"
+      @changeStatus="closeDialog"
+    >
+      <template #app-dialog-footer>
+        <slot name="footer">
+          <div class="d-flex justify-end">
+            <v-btn text color="#2196f3" class="k-dialog__button" @click="closeDialog">
+              OKAY
+            </v-btn>
+          </div>
+        </slot>
+      </template>
+    </app-dialog>
     <template v-slot:activator="{ on }">
       <v-icon
         v-on="on"
@@ -92,10 +111,11 @@
           required
           v-model="filteredSelectValueDate"
           :menu-props="{ offsetY: true }"
-          @change="changeDateSelect"
           placeholder="Select an option"
           :key="$store.state.auth.user.userCompany.timeZone"
+          v-if="filterableOptions.showSelect"
         ></v-select>
+        <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
           v-if="filteredSelectValueDate !== 'between'"
           v-model="filteredDateValue"
@@ -103,7 +123,6 @@
           ref="refPicker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
           :key="`${$store.state.auth.user.userCompany.timeZone}1`"
-          :picker-options="this.defaultDate ? inBetweenDatesPickerOptions : ''"
         />
         <InputDate
           v-if="filteredSelectValueDate === 'between'"
@@ -113,7 +132,6 @@
           style="margin-bottom: 14px;"
           @change="handleChangeBetweenDatepicker"
           :key="`${$store.state.auth.user.userCompany.timeZone}2`"
-          :picker-options="this.defaultDate ? inBetweenDatesPickerOptions : ''"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -183,10 +201,11 @@
 <script>
 import InputDate from '@/components/Common/Inputs/InputDate'
 import { getTimeZoneForMoment } from '@/utils/functions'
-
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import AppDialog from '@/components/AppDialog'
 export default {
   name: 'DataTableFilter',
-  components: { InputDate },
+  components: { InputDate, AppDialog },
   props: {
     column: {
       type: Object
@@ -224,9 +243,13 @@ export default {
         }
       }
     },
+    showSelect: {
+      required: false,
+      default: true
+    },
     filterableOptions: {
       default() {
-        return { exactDate: true, after: true, before: true, between: true }
+        return { exactDate: true, after: true, before: true, between: true, showSelect: true }
       }
     },
     filterOptionProps: {
@@ -238,6 +261,7 @@ export default {
   },
   data() {
     return {
+      status: false,
       menu: null,
       btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`,
       isFilterActive:
@@ -250,7 +274,7 @@ export default {
       filteredSelectValueDate:
         this.filterableType === 'date'
           ? this.value.selectValue || this.defaultDate
-            ? '>='
+            ? 'between'
             : '<='
           : '<=',
       filteredDateValue:
@@ -311,6 +335,9 @@ export default {
     }
   },
   watch: {
+    filteredDateRangeValue(newVal) {
+      console.log(newVal)
+    },
     menu(newVal) {
       if (newVal) {
         this.$emit('update:isSettingsOpened', false)
@@ -341,10 +368,29 @@ export default {
     }
   },
   methods: {
+    closeDialog() {
+      this.status = false
+    },
     changeDateSelect() {},
     handleChangeBetweenDatepicker(val) {
       if (!val) {
-        this.filteredDateRangeValue = []
+        this.filteredDateRangeValue = [
+          this.defaultDate
+            ? this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment())
+            : this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
+          this.$moment(Date.now()).format(getTimeZoneForMoment())
+        ]
+      } else {
+        const createdDate = this.$moment(val[0]).startOf('day')
+        const diff = this.$moment(val[1]).diff(createdDate, 'days')
+        if (diff <= 14) {
+        } else if (this.defaultDate) {
+          this.status = true
+          this.filteredDateRangeValue = [
+            this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment()),
+            this.$moment(Date.now()).format(getTimeZoneForMoment())
+          ]
+        }
       }
     },
     clearFilter(isEmit = true) {
@@ -361,7 +407,12 @@ export default {
       this.filterValueBetween = []
       this.filteredDateValue = null
       this.filterChecked = []
-      this.filteredDateRangeValue = []
+      this.filteredDateRangeValue = [
+        this.defaultDate
+          ? this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment())
+          : this.$moment(Date.now()).subtract(1, 'months').format(getTimeZoneForMoment()),
+        this.$moment(Date.now()).format(getTimeZoneForMoment())
+      ]
       this.filteredSelectValueNum = ''
       this.filteredSelectValueNumber = ''
     },
@@ -574,5 +625,17 @@ export default {
   }
 }
 .data-table-filter__date-picker {
+}
+.datatable-filter-header {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 16px;
+  font-width: semi-bold;
+  height: 18px;
+  letter-spacing: normal;
+  line-height: 18px;
+  margin-bottom: 20px;
+  margin-left: 0px;
+  margin-right: 4px;
+  margin-top: 5px;
 }
 </style>

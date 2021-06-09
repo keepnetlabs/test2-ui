@@ -90,11 +90,13 @@ export default {
             type: 'text',
             width: 160,
             filterableType: 'date',
+            showSelect: false,
             filterableOptions: {
-              exactDate: true,
-              after: true,
+              exactDate: false,
+              after: false,
               before: false,
-              between: true
+              between: true,
+              showSelect: false
             },
             defaultDate: {
               hours: 2,
@@ -237,8 +239,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: [{ Value: '', FieldName: 'logDate', Operator: '>=' }]
+              FilterItems: [
+                { Value: '', FieldName: 'logDate', Operator: '>=' },
+                { Value: '', FieldName: 'logDate', Operator: '=<' }
+              ],
+              FilterGroups: []
             },
             {
               Condition: 'OR',
@@ -258,8 +263,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: [{ Value: '', FieldName: 'logDate', Operator: '>=' }]
+              FilterItems: [
+                { Value: '', FieldName: 'logDate', Operator: '>=' },
+                { Value: '', FieldName: 'logDate', Operator: '=<' }
+              ],
+              FilterGroups: []
             },
             {
               Condition: 'OR',
@@ -469,12 +477,18 @@ export default {
     }
   },
   created() {
-    this.bodyData.filter.FilterGroups[0].FilterGroups[0].Value = this.$moment(Date.now())
+    this.bodyData.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
       .subtract(2, 'weeks')
       .format(getTimeZoneForMoment())
-    this.defaultRequestBody.filter.FilterGroups[0].FilterGroups[0].Value = this.$moment(Date.now())
+    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[0].Value = this.$moment(Date.now())
       .subtract(2, 'weeks')
       .format(getTimeZoneForMoment())
+    this.bodyData.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(Date.now()).format(
+      getTimeZoneForMoment()
+    )
+    this.defaultRequestBody.filter.FilterGroups[0].FilterItems[1].Value = this.$moment(
+      Date.now()
+    ).format(getTimeZoneForMoment())
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()

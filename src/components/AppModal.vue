@@ -174,7 +174,7 @@ export default {
     @media (max-width: 500px) {
       padding: 16px 24px !important;
     }
-    z-index: 999;
+    z-index: 99999;
   }
   &__btn-cancel {
     color: #f56c6c !important;
