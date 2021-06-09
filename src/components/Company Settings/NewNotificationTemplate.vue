@@ -282,12 +282,6 @@ export default {
   mounted() {
     let _this = this
     this.$nextTick(() => {
-      const logoKey = '{COMPANYLOGO}'
-      const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-      _this.$refs.refEmailTemplate.$refs.refPreview.outerHTML = _this.$refs.refEmailTemplate.$refs.refPreview.outerHTML.replaceAll(
-        logoKey,
-        logoUrl
-      )
       _this.formValues.template = _this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
     })
   },
