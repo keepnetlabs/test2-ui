@@ -381,8 +381,10 @@ export default {
           this.$moment(Date.now()).format(getTimeZoneForMoment())
         ]
       } else {
-        const createdDate = this.$moment(val[0]).startOf('day')
-        const diff = this.$moment(val[1]).diff(createdDate, 'days')
+        debugger
+        const value1 = this.$moment(val[0], getTimeZoneForMoment())
+        const value2 = this.$moment(val[1], getTimeZoneForMoment())
+        const diff = value2.diff(value1, 'days')
         if (diff <= 14) {
         } else if (this.defaultDate) {
           this.status = true
