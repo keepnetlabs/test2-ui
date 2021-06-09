@@ -103,56 +103,44 @@
               <img
                 alt="logo"
                 style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
-                :src="emailTemplateLogo"
+                :src="'{COMPANYLOGO}'"
               />
             </td>
           </tr>
           <tr>
-            <td>
-              <p :style="getHeaderStyle()">
-                Let’s design an email template
-              </p>
+            <td style="padding-top: 10px;">
+              Let’s design an email template
             </td>
           </tr>
           <tr :style="[{ marginTop: '16px' }]">
-            <td>
-              <p :style="getSubHeaderStyle()">
-                To design an email template, first click the Edit button to enter design mode
-              </p>
+            <td style="padding-top: 10px;">
+              To design an email template, first click the Edit button to enter design mode
             </td>
           </tr>
           <tr>
-            <td>
-              <p :style="getPStyle()">
-                Once there choose the layout, use blocks, text, images and other features you need
-                to design a responsive email, really fast.
-              </p>
+            <td style="padding-top: 10px;">
+              Once there choose the layout, use blocks, text, images and other features you need to
+              design a responsive email, really fast.
             </td>
           </tr>
           <tr>
-            <td>
-              <p :style="getPStyle()">
-                Give your content a style by changing fonts, colors, borders and other properties.
-              </p>
+            <td style="padding-top: 10px;">
+              Give your content a style by changing fonts, colors, borders and other properties.
             </td>
           </tr>
           <tr>
-            <td>
-              <p :style="getPStyle()">
-                Use shortcodes to define user names, email addresses, URLs, training pieces, dates
-                and many more properties
-              </p>
+            <td style="padding-top: 10px;">
+              Use shortcodes to define user names, email addresses, URLs, training pieces, dates and
+              many more properties
             </td>
           </tr>
           <tr>
-            <td>
-              <p :style="getPStyle()">
-                Upload files as attachments to track who downloads and runs suspicious files
-              </p>
+            <td style="padding-top: 10px;">
+              Upload files as attachments to track who downloads and runs suspicious files
             </td>
           </tr>
           <tr>
-            <td>
+            <td style="padding-top: 10px;">
               <hr
                 style="margin: 8px auto 16px auto; max-width: 600px; border: 1px solid #b3d4fc;"
               />
@@ -174,18 +162,16 @@
             </td>
           </tr>
           <tr>
-            <td>
+            <td style="padding-top: 10px;">
               <hr
                 style="margin: 14px auto 14px auto; max-width: 600px; border: 1px solid #b3d4fc;"
               />
             </td>
           </tr>
           <tr>
-            <td>
-              <p :style="{ ...getPStyle(), textAlign: 'center', marginBottom: '0' }">
-                This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
-                <span>{DATESENT}</span>
-              </p>
+            <td style="padding-top: 10px;">
+              This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
+              <span>{DATESENT}</span>
             </td>
           </tr>
         </tbody>
