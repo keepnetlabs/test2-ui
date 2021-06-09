@@ -1,8 +1,10 @@
 const path = require('path')
+const axios = require('axios')
+
+const { defaults } = require('jest-config')
 module.exports = {
   preset: '@vue/cli-plugin-unit-jest',
   globals: {
-    name: 'gurkan',
     APP_CONFIG: {
       VUE_APP_IS_CLOUD: false,
       VUE_APP_GTM_STATUS: true,
@@ -27,20 +29,26 @@ module.exports = {
       VUE_APP_API_KEY: '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
       VUE_APP_AUTH_API_TEST: 'https://dev-api.devkeepnet.com',
       VUE_APP_APP_API_TEST: 'https://dev-api.devkeepnet.com/api'
-    }
+    },
+    axios
   },
   setupFiles: ['<rootDir>/tests/unit/index.js'],
+  moduleDirectories: ['node_modules', 'src'],
+  modulePaths: ['<rootDir>/src', '<rootDir>/node_modules'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    'vuetify/lib(.*)': '<rootDir>/node_modules/vuetify/es5$1'
+    '\\.(css|scss|sass)$': '<rootDir>/tests/__mocks__/styleMock.js',
+    'vuetify/lib(.*)': '<rootDir>/node_modules/vuetify/es5$1',
+    'element-ui/(.*)': '<rootDir>/node_modules/element-ui/$1'
   },
-  modulePaths: ['<rootDir>/src', '<rootDir>/node_modules'],
   transform: {
     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$': 'jest-transform-stub',
-    '^.+\\.ts?$': 'ts-jest',
+    '^.+\\.js$': 'babel-jest',
     '.*\\.(vue)$': 'vue-jest'
   },
-  transformIgnorePatterns: ['<rootDir>/node_modules/(?!(vuetify)/)']
+  transformIgnorePatterns: [
+    '<rootDir>/node_modules/(?!(vuetify)|(vue-query-builder)|(vue-treeselect)/)'
+  ]
 }
 
 const coverageObj = {

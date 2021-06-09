@@ -1,5 +1,5 @@
-import store from '../../../../../store'
-const logoUrl = store.state.whitelabel.mainLogoUrl
+import store from '@/store/index'
+const logoUrl = store && store.state.whitelabel.mainLogoUrl
 const companyLogo = [
   {
     src: logoUrl,
