@@ -100,6 +100,11 @@
             "
           >
             <td>
+              <!--<img
+                alt="logo"
+                style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
+                :src="'{COMPANYLOGO}'"
+              /> -->
               <img
                 alt="logo"
                 style="display: block; width: 100%; max-width: 200px; min-height: 72px;"

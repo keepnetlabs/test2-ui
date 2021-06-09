@@ -218,6 +218,7 @@ export default {
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForMatchingIncident()
     },
