@@ -95,7 +95,7 @@ export default {
         payload.targetUserResourceIds = []
       } else {
         payload.selectAll = null
-        payload.targetUserResourceIds = this.selectedUsers
+        payload.targetUserResourceIds = this.selectedUsers.map((item) => item.resourceId)
       }
 
       createTargetGroupUsers(this.resourceId, payload)
