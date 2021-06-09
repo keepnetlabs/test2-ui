@@ -6,6 +6,7 @@
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
       v-if="options && downloadButton.show && isWantToDownload"
+      :download="download"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -561,6 +562,10 @@
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
+                  :filterableOptions="col.filterableOptions"
+                  :showSelect:="col.showSelect"
+                  :filterOptionProps="col.filterOptionProps"
+                  :defaultDate="col.defaultDate"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
                   :sortable="!col.hideSort"
@@ -1275,6 +1280,9 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    download: {
+      default: () => ({ xls: true, csv: true, pdf: true })
     }
   },
   computed: {
@@ -1390,11 +1398,6 @@ export default {
       isRowActionsMenuOpen: [],
       isSelectedAllEver,
       filterValues,
-      download: {
-        xls: false,
-        csv: false,
-        pdf: false
-      },
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
@@ -2502,7 +2505,12 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
-      this.$emit('handleSelectionChange', val)
+      const serverSideSelectionParams = {}
+      if (this.isServerSideSelection) {
+        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
+        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
+      }
+      this.$emit('handleSelectionChange', val, ...Object.values(serverSideSelectionParams))
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
       for (let row of rows) {

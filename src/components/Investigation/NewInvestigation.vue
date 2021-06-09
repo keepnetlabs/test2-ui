@@ -539,12 +539,9 @@ export default {
       ],
       actions: [
         { actionLabel: 'No action', actionValue: 'NoAction' },
-        { actionLabel: 'Delete Email', actionValue: 'Delete' },
-        {
-          actionLabel: 'Delete Email and Notify User',
-          actionValue: 'DeleteAndNotify'
-        },
-        { actionLabel: 'Notify user only', actionValue: 'Warning' }
+        { actionLabel: 'Notify user only', actionValue: 'Warning' },
+        { actionLabel: 'Move to trash', actionValue: 'MoveToTrash' },
+        { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
       filterList: [{}],
       sources: [],

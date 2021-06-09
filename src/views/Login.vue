@@ -28,7 +28,7 @@
                 <div style="max-width: 180px; height: 60px;">
                   <img
                     id="img--login-main-logo"
-                    style="height: 100%;"
+                    style="height: 100%; max-width: 100%;"
                     :src="loginWhiteLabel.mainLogoUrl"
                   />
                 </div>

@@ -17,6 +17,7 @@
         sub-title="Select Users and add them to your group"
       />
       <TargetGroupUsersTable
+        ref="refTargetGroupUsersTable"
         :has-row-actions="false"
         :has-add-button="false"
         :i-empty="iEmpty"
@@ -34,7 +35,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import TargetGroupUsersTable from '@/components/TargetUsers/GroupUsers/TargetGroupUsersTable'
 import { createTargetGroupUsers } from '@/api/targetUsers'
 import labels from '@/model/constants/labels'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+
 export default {
   name: 'TargetGroupUsersAddUsersModal',
   components: { TargetGroupUsersTable, AppModalBodyHeader, AppModal },
@@ -63,7 +64,9 @@ export default {
       saveDisable: false,
       iEmpty: {
         message: labels.NoUsersToAdd
-      }
+      },
+      excludedResourceIdList: [],
+      isSelectedAllEver: false
     }
   },
   computed: {
@@ -80,9 +83,22 @@ export default {
     },
     submit() {
       this.saveDisable = true
-      createTargetGroupUsers(this.resourceId, {
-        targetUserResourceIds: this.selectedUsers.map((user) => user.resourceId)
-      })
+      const payload = {}
+      if (
+        this.isSelectedAllEver ||
+        this.$refs.refTargetGroupUsersTable.$refs.refTargetGroupUsersTable.isSelectedAllEver
+      ) {
+        payload.selectAll = {
+          filter: this.$refs.refTargetGroupUsersTable.axiosPayload.filter,
+          excludedResourceIdList: this.excludedResourceIdList
+        }
+        payload.targetUserResourceIds = []
+      } else {
+        payload.selectAll = null
+        payload.targetUserResourceIds = this.selectedUsers.map((item) => item.resourceId)
+      }
+
+      createTargetGroupUsers(this.resourceId, payload)
         .then(() => {
           this.$emit('closeOverlayWithUpdate')
         })
@@ -90,7 +106,13 @@ export default {
           this.saveDisable = false
         })
     },
-    handleSelectionChange(selectedUsers = []) {
+    handleSelectionChange(
+      selectedUsers = [],
+      excludedResourceIdList = [],
+      isSelectedAllEver = false
+    ) {
+      this.isSelectedAllEver = isSelectedAllEver
+      this.excludedResourceIdList = excludedResourceIdList
       this.selectedUsers = selectedUsers
     }
   }

@@ -119,7 +119,7 @@
 
         <form-group-horizontal-content label="Issuer URL of the IdP" class="mt-11">
           <v-text-field
-            v-model.trim="formValues.issuerUrlOfTheIdp"
+            v-model.trim="formValues.idPEntityID"
             id="input--saml-settings-id-entity-id"
             placeholder="Enter issuer URL from your provider"
             outlined
@@ -355,10 +355,10 @@ export default {
     return {
       attributesMapping:
         '{\t' +
-        "    email: 'john.doe@keepnetlabs.com', //optional\n" +
+        "    email: 'john.doe@keepnetlabs.com', //required\n" +
         "        firstName: 'John', //required\n" +
         "        lastName: 'Doe', //required\n" +
-        '        spRole: \'Company Admin\', //optional. \n        Default is "Company Admin"\n' +
+        '        spRole: \'Company Admin\', //required. \n        Default is "Company Admin"\n' +
         "        phoneNumber: 'Phone' //optional     } \n" +
         '',
       labels,
@@ -376,7 +376,6 @@ export default {
         idPEntityID: '',
         file: null,
         idPSSOTargetUrl: '',
-        issuerUrlOfTheIdp: '',
         idPCertFingerprint: '',
         idPCertFingerprintTypeId: 1,
         entityID: '',
@@ -449,6 +448,9 @@ export default {
         this.formValues.domain = domain
         this.dataContainerWithSearchItems = domain.concat()
         this.certificateText = idPCertificateFileContent
+        if (this.certificateText) {
+          this.isCertificateTextDisabled = true
+        }
       })
     },
     callForRoles() {

@@ -388,7 +388,7 @@ export default {
     getAllCheckboxSelection: {
       get() {
         const data = this.searchEnginesModelInput ? this.searchEnginesData : this.analysisEngines
-        return data.every((item) => item.selected)
+        return data.length && data.every((item) => item.selected)
       },
       set(val) {
         this.acceptAllAnalysisEngines = val
@@ -515,7 +515,9 @@ export default {
           { text: '7 days', value: 'SevenDays' }
         ],
         investigateActions: [
+          { text: 'No action', value: 'NoAction' },
           { text: 'Notify', value: 'Warning' },
+          { text: 'Move to trash', value: 'MoveToTrash' },
           { text: 'Delete email', value: 'Delete' }
         ],
         investigateActionNotifications: ['Reporter', 'Mailbox owner', 'Group', 'Everyone']
@@ -545,13 +547,13 @@ export default {
         filters: [],
         targetUserType: 'AllUsers',
         targetUsers: [],
-        actionType: 'Notify',
+        actionType: 'NoAction',
         actionNotifyTargetUserType: 'Reporter',
         actionNotifyTargetUsers: [],
         emailTempleditedPlaybookActionAnalyzersteId: 1,
         autoAction: {
           isPermanentDelete: false,
-          type: 'Warning',
+          type: 'NoAction',
           warningMessage: ''
         },
         durationType: 'ThreeDays',
@@ -895,13 +897,13 @@ export default {
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
-          actionType: 'Notify',
+          actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
-            type: 'Warning',
+            type: 'NoAction',
             warningMessage: ''
           },
           durationType: 'ThreeDays',
@@ -943,13 +945,13 @@ export default {
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
-          actionType: 'Notify',
+          actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
-            type: 'Warning',
+            type: 'NoAction',
             warningMessage: ''
           },
           durationType: 'ThreeDays',
@@ -1040,13 +1042,13 @@ export default {
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
-          actionType: 'Notify',
+          actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
-            type: 'Warning',
+            type: 'NoAction',
             warningMessage: ''
           },
           durationType: 'ThreeDays',

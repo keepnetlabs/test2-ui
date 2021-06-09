@@ -16,6 +16,7 @@
           label="XLSX"
           v-model="downloadType[0]"
           hide-details
+          v-if="download.xls"
         />
         <v-checkbox
           class="download-modal__checkbox"
@@ -23,6 +24,7 @@
           label="CSV"
           v-model="downloadType[1]"
           hide-details
+          v-if="download.csv"
         />
         <v-checkbox
           class="download-modal__checkbox"
@@ -30,6 +32,7 @@
           label="PDF"
           v-model="downloadType[2]"
           hide-details
+          v-if="download.pdf"
         />
       </div>
     </template>
@@ -72,6 +75,9 @@ export default {
     title: {
       type: String,
       default: 'Download Current Page'
+    },
+    download: {
+      type: Object
     }
   },
   data() {
