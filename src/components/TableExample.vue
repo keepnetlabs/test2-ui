@@ -6,12 +6,7 @@
     <el-table-column prop="city" label="City" width="120"> </el-table-column>
     <el-table-column prop="address" label="Address" width="300"> </el-table-column>
     <el-table-column prop="zip" label="Zip" width="120"> </el-table-column>
-    <el-table-column fixed="right" label="Operations" width="120">
-      <template slot-scope="scope">
-        <el-button @click="handleClick" type="text" size="small">Detail</el-button>
-        <el-button type="text" size="small">Edit</el-button>
-      </template>
-    </el-table-column>
+    <el-table-column fixed="right" label="Operations" width="120"> </el-table-column>
   </el-table>
 </template>
 
