@@ -144,7 +144,7 @@
             v-model="filterValue"
             height="40"
             style="margin-top: 1px;"
-            v-if="searchInItems.length > 4"
+            v-if="filterValue || searchInItems.length > 4"
           ></v-text-field>
         </div>
         <v-checkbox
@@ -535,7 +535,7 @@ export default {
     searchInItems: function () {
       return this.filterValue.length > 0
         ? this.convertedFilterableItems.filter((item) => {
-            return item.text.toLowerCase().startsWith(this.filterValue.toLowerCase())
+            return item.text.toLowerCase().includes(this.filterValue.toLowerCase())
           })
         : this.convertedFilterableItems
     },
