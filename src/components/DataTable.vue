@@ -26,7 +26,12 @@
         </v-list-item-content>
       </v-list-item>
       <div class="table-wrapper">
-        <div class="settings-popup" v-show="isSettingsOpened" :style="settingsPopupStyle">
+        <div
+          v-click-outside="handleSettingsPopupClickOutside"
+          class="settings-popup"
+          v-show="isSettingsOpened"
+          :style="settingsPopupStyle"
+        >
           <div class="settings-header">
             <span class="settings-span">Table Settings</span>
             <v-icon @click="toggleIsSettingsOpened" class="close-icon">mdi-close</v-icon>
@@ -1823,7 +1828,12 @@ export default {
         }
       })
     },
+    handleSettingsPopupClickOutside() {
+      if (!this.isSettingsOpened || this.isFirstOpenSettings) return
+      this.isSettingsOpened = false
+    },
     /**
+     *
      * This event is throwed when All select button clicked
      * No param
      */
@@ -2489,6 +2499,10 @@ export default {
       }
       this.$emit('handleChangeIsSettingsOpen', !this.isSettingsOpened)
       this.isSettingsOpened = !this.isSettingsOpened
+      this.isFirstOpenSettings = true
+      setTimeout(() => {
+        this.isFirstOpenSettings = false
+      }, 200)
     },
     addButtonFunction(action, row) {
       this.$emit(action, row)
