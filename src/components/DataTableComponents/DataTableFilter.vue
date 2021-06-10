@@ -144,6 +144,7 @@
             v-model="filterValue"
             height="40"
             style="margin-top: 1px;"
+            v-if="searchInItems.length > 4"
           ></v-text-field>
         </div>
         <v-checkbox
