@@ -678,14 +678,16 @@ export default {
       this.isWantToShowAddUsersManuallyModal = status
     },
     handleDeleteUsers(selections) {
-      selections.forEach((item) => this.handleDeleteUser(item))
+      selections.forEach((item) => this.handleDeleteUser(item, selections))
     },
-    handleDeleteUser(selectedUser) {
+    handleDeleteUser(selectedUser, selections) {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
           this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
-          this.$emit('call-for-company-licenses')
-          this.callForTargetUsers()
+          if (selections[selections.length - 1].resourceId === selectedUser.resourceId) {
+            this.$emit('call-for-company-licenses')
+            this.callForTargetUsers()
+          }
         }
       })
     },
