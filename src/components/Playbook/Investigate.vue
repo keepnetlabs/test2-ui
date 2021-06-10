@@ -262,6 +262,7 @@
               :items="act.investigateActions"
               outlined
               hide-details
+              :position="'top'"
               @change="
                 $forceUpdate()
                 investigateData.autoAction.type === 'Delete'
