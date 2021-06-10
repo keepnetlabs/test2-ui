@@ -81,6 +81,8 @@
               popper-class="filter__date-picker"
               :key="item.name"
               v-bind="getDatePickerProps(item)"
+              :format="getTimeZone() || 'yyyy/MM/dd HH:mm'"
+              :valueFormat="getTimeZone() || `yyyy/MM/dd HH:mm`"
               :type="item.fieldDataType === 'DateTime' ? 'datetime' : 'date'"
             />
             <template v-if="item.isRequired">
@@ -176,6 +178,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
+import { getTimeZone } from '@/utils/functions'
 export default {
   name: 'AddUserModal',
   components: {
@@ -249,6 +252,9 @@ export default {
     }
   },
   methods: {
+    getTimeZone() {
+      return getTimeZone()
+    },
     closeOverlay() {
       this.$emit('closeAddUserModal')
     },
