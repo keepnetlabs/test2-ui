@@ -45,6 +45,13 @@ export function getDefaultVuex(store) {
   const getters = {
     getDownloadModalStatus: (state) => state.downloadModalStatus
   }
+
+  const mutations = {
+    SET_DOWNLOAD_MODAL_STATUS: (state, status) => {
+      state.downloadModalStatus = status
+    }
+  }
+
   return new Vuex.Store({
     modules: {
       common: {
@@ -52,7 +59,8 @@ export function getDefaultVuex(store) {
         state: {
           downloadModalStatus: false
         },
-        getters
+        getters,
+        mutations
       }
     }
   })

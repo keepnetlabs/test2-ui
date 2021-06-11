@@ -27,5 +27,22 @@ describe('Datatable test cases suite', () => {
     expect(wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.REFRESH_ACTION]).toBeTruthy()
   })
 
-  it
+  it('Download Button case', async () => {
+    const wrapper = mount(DataTable, {
+      localVue,
+      store,
+      ...getDefaultPropsData()
+    })
+
+    //getting download button
+    const downloadButton = wrapper.find(CONSTANTS.SELECTORS.DOWNLOAD_BUTTON)
+    //clicking button
+    await downloadButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //finding menu
+    const menu = wrapper.find(CONSTANTS.SELECTORS.ACTIVE_MENU)
+    //finding First element
+    const firstItem = menu.find('item--download-option-0')
+    await firstItem.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    expect(firstItem.exists()).toBe(true)
+  })
 })
