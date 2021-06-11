@@ -51,6 +51,11 @@ export function getDefaultVuex(store) {
       state.downloadModalStatus = status
     }
   }
+  const actions = {
+    changeDownloadModalStatus({ commit }, payload) {
+      commit('SET_DOWNLOAD_MODAL_STATUS', payload)
+    }
+  }
 
   return new Vuex.Store({
     modules: {
@@ -60,6 +65,7 @@ export function getDefaultVuex(store) {
           downloadModalStatus: false
         },
         getters,
+        actions,
         mutations
       }
     }

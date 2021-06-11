@@ -1,11 +1,14 @@
 export default {
   CUSTOM_EVENTS: {
-    REFRESH_ACTION: 'refreshAction'
+    REFRESH_ACTION: 'refreshAction',
+    DOWNLOAD_ACTION: 'downloadEvent'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',
     DOWNLOAD_BUTTON: '[id*="btn-download--table"]',
-    ACTIVE_MENU: '.v-menu__content theme--light .menuable__content__active'
+    ACTIVE_MENU: '.v-menu__content',
+    DOWNLOAD_MENU_ITEM_0: '#item--download-option-0',
+    DOWNLOAD_MENU_ITEM_1: '#item--download-option-1'
   },
   EVENT_TYPES: {
     CLICK: 'click'
