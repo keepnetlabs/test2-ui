@@ -397,12 +397,6 @@ export default {
     ...mapGetters({
       brandName: 'whitelabel/getBrandName'
     }),
-    getCertRules() {
-      return [
-        (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 3000, labels.getMaxLengthMessage(labels.SAMLIdpCert, 3000))
-      ]
-    },
     getMetadataLabel() {
       return `${labels.SamlConfigurationFor} ${this.brandName}`
     },
@@ -411,6 +405,11 @@ export default {
     },
     getTitle() {
       return this.isEdit ? labels.SamlModalBodyEditTitle : labels.SamlModalBodyTitle
+    }
+  },
+  watch: {
+    certificateText(val) {
+      this.formValues.idPCertFingerprint = val
     }
   },
   created() {
