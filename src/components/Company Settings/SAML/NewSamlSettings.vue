@@ -291,11 +291,13 @@
             color="#2196f3"
           />
         </form-group>
+        <!--
         <form-group :title="labels.TestConnection">
           <div class="test-connection__button" style="width: 160px; cursor: pointer;">
             TEST CONNECTION
           </div>
         </form-group>
+         -->
       </v-form>
     </template>
   </app-modal>
