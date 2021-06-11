@@ -291,11 +291,13 @@
             color="#2196f3"
           />
         </form-group>
+        <!--
         <form-group :title="labels.TestConnection">
           <div class="test-connection__button" style="width: 160px; cursor: pointer;">
             TEST CONNECTION
           </div>
         </form-group>
+         -->
       </v-form>
     </template>
   </app-modal>
@@ -358,7 +360,7 @@ export default {
         "    email: 'john.doe@keepnetlabs.com', //required\n" +
         "        firstName: 'John', //required\n" +
         "        lastName: 'Doe', //required\n" +
-        '        spRole: \'Company Admin\', //required. \n        Default is "Company Admin"\n' +
+        '        spRole: \'CompanyAdmin\', //required. \n        Default is "CompanyAdmin"\n' +
         "        phoneNumber: 'Phone' //optional     } \n" +
         '',
       labels,
