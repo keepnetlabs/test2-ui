@@ -1410,7 +1410,8 @@ export default {
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate,
       renderedTotalLength: 0,
-      totalLength
+      totalLength,
+      isFirstOpenSettings: false
     }
   },
   watch: {

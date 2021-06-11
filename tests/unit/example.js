@@ -32,7 +32,7 @@ describe('CustomCard.vue', () => {
     expect(response[0]).toEqual('gurkan')
   })
 })
-*/
+
 import DataTable from '@/components/DataTable'
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -186,3 +186,5 @@ describe('Datatable Suite', () => {
     expect(emittedObj['server-side-page-number-changed'][0][0]).toBe(2)
   })
 })
+
+*/
