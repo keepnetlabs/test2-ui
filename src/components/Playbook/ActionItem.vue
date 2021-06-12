@@ -1063,11 +1063,11 @@ export default {
       const newIndex = this.actions.findIndex((item) => {
         return JSON.stringify(this.actionsValues[index]) === JSON.stringify(item)
       })
-
       if (newIndex !== -1) {
         this.actions.splice(newIndex, 1)
         this.actionsValues.splice(index, 1)
       }
+      this.checkMarkAsAndStatusDisability()
     },
     updateAnalysisEngines() {
       if (this.analysisEngines.length > 0 && this.editedPlaybookActionAnalyzers) {
