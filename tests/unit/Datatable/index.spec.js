@@ -84,13 +84,35 @@ describe('Datatable test cases suite', () => {
     //clicking download button
     getDownloadModalButtons(downloadModal).at(1).trigger(CONSTANTS.EVENT_TYPES.CLICK)
     //checking is Event emitted
-    expect(wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.DOWNLOAD_ACTION]).toBeTruthy()
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.DOWNLOAD_ACTION]
+    expect(emittedEvent).toBeTruthy()
     //Checking emitted event like this
-    expect(wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.DOWNLOAD_ACTION][0][0]).toStrictEqual({
+    expect(emittedEvent[0][0]).toStrictEqual({
       exportTypes: ['CSV'],
       pageNumber: 1,
       pageSize: 10,
       reportAllPages: false
     })
+  })
+  it('Action Button case', async () => {
+    //mounting table
+    const wrapper = mount(DataTable, {
+      localVue,
+      store,
+      vuetify: new Vuetify({}),
+      ...getDefaultPropsData({
+        addButton: {
+          show: true,
+          action: 'handleClickAction',
+          id: 'btn-add--action-button',
+          tooltip: '',
+          disabled: false
+        }
+      })
+    })
+    const button = wrapper.find('#btn-add--action-button')
+    await button.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.ACTION_BUTTON]
+    expect(emittedEvent).toBeTruthy()
   })
 })
