@@ -231,7 +231,14 @@
               </template>
               <span class="tooltip-span">{{ 'Refresh' }}</span>
             </v-tooltip>
-            <v-menu bottom left offset-y v-if="downloadButton && downloadButton.show">
+            <v-menu
+              v-model="isDownloadMenuOpen"
+              bottom
+              left
+              :attach="isTesting && testProps.menuAttach"
+              offset-y
+              v-if="downloadButton && downloadButton.show"
+            >
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -1288,6 +1295,16 @@ export default {
     },
     download: {
       default: () => ({ xls: true, csv: true, pdf: true })
+    },
+    isTesting: {
+      type: Boolean,
+      default: false
+    },
+    testProps: {
+      type: Object,
+      default: () => {
+        return { menuAttach: '.k-table__wrapper' }
+      }
     }
   },
   computed: {
@@ -1410,7 +1427,9 @@ export default {
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate,
       renderedTotalLength: 0,
-      totalLength
+      totalLength,
+      isFirstOpenSettings: false,
+      isDownloadMenuOpen: false
     }
   },
   watch: {
