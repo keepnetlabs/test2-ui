@@ -417,14 +417,8 @@
                               Target Users
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  investigationDetailsTargetUsersListData &&
-                                  investigationDetailsTargetUsersListData.results
-                                "
-                                >{{
-                                  investigationDetailsTargetUsersListData &&
-                                  investigationDetailsTargetUsersListData.results.length
-                                }}</span
+                                v-if="statsAndMenuData && statsAndMenuData.scannedUserCount"
+                                >{{ statsAndMenuData && statsAndMenuData.scannedUserCount }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
