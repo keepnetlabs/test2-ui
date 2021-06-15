@@ -4,8 +4,10 @@ import Vuetify from 'vuetify'
 import ElementUI from 'element-ui'
 import locale from 'element-ui/lib/locale/lang/en'
 import Vuex from 'vuex'
+import VueMoment from 'vue-moment'
 global.Vue = Vue
 Vue.config.productionTip = false
 Vue.use(ElementUI, { locale })
+Vue.use(VueMoment)
 Vue.use(Vuetify)
 Vue.use(Vuex)
