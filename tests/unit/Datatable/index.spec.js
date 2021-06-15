@@ -1,8 +1,8 @@
-import DataTable from '@/components/DataTable'
-import { mount, createLocalVue } from '@vue/test-utils'
+import { createLocalVue } from '@vue/test-utils'
 import CONSTANTS from './constants'
-import { getDefaultPropsData, getDefaultVuex } from './utils'
-import Vuetify from 'vuetify'
+import { getDefaultVuex } from './utils'
+import DataTableWrapper from '../Objects/Datatable'
+import { wait } from '../utils'
 describe('Datatable test cases suite', () => {
   const localVue = createLocalVue()
   let store
@@ -14,11 +14,7 @@ describe('Datatable test cases suite', () => {
   it('Refresh Button case', async () => {
     //Mounting table
     localVue.use(store)
-    const wrapper = mount(DataTable, {
-      localVue,
-      store,
-      ...getDefaultPropsData()
-    })
+    const { wrapper } = new DataTableWrapper(localVue, store)
     //getting refreshButton
     const refreshButton = wrapper.find(CONSTANTS.SELECTORS.REFRESH_BUTTON)
     //clicking button
@@ -29,12 +25,7 @@ describe('Datatable test cases suite', () => {
 
   it('Download Button case', async () => {
     //mounting table
-    const wrapper = mount(DataTable, {
-      localVue,
-      store,
-      vuetify: new Vuetify({}),
-      ...getDefaultPropsData()
-    })
+    const { wrapper } = new DataTableWrapper(localVue, store)
 
     const checkingDownloadModalButtonDisabled = (downloadModal) =>
       getDownloadModalButtons(downloadModal).filter((wrapper) => wrapper.classes('v-btn--disabled'))
@@ -44,7 +35,7 @@ describe('Datatable test cases suite', () => {
 
     const setMenuItemClickCases = async (menu, index, title = 'Download Current Page') => {
       const selector = `DOWNLOAD_MENU_ITEM_${index}`
-      console.log('selector', selector)
+      //finding menu
       const item = menu.find(CONSTANTS.SELECTORS[selector])
       //clicking  element
       await item.trigger(CONSTANTS.EVENT_TYPES.CLICK)
@@ -96,23 +87,65 @@ describe('Datatable test cases suite', () => {
   })
   it('Action Button case', async () => {
     //mounting table
-    const wrapper = mount(DataTable, {
-      localVue,
-      store,
-      vuetify: new Vuetify({}),
-      ...getDefaultPropsData({
-        addButton: {
-          show: true,
-          action: 'handleClickAction',
-          id: 'btn-add--action-button',
-          tooltip: '',
-          disabled: false
-        }
-      })
+    const { wrapper } = new DataTableWrapper(localVue, store, {
+      addButton: {
+        show: true,
+        action: 'handleClickAction',
+        id: 'btn-add--action-button',
+        tooltip: '',
+        disabled: false
+      }
     })
+    //getting action button
     const button = wrapper.find('#btn-add--action-button')
+    //clicking button
     await button.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is event emitted
     const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.ACTION_BUTTON]
     expect(emittedEvent).toBeTruthy()
+  })
+
+  it('Search Field case', async () => {
+    //mounting table
+    const { wrapper } = new DataTableWrapper(localVue, store, {
+      isServerSide: true,
+      serverSideEvents: { pagination: true, search: true, sort: true }
+    })
+    //getting search input
+    const inputWrapper = wrapper.find('.table-search input')
+    //setting input value
+    inputWrapper.element.value = 'custom data'
+    wrapper.vm.search = 'custom data'
+    await inputWrapper.trigger('keyup')
+    //checking is data writed to the dom
+    expect(inputWrapper.element.value).toBe('custom data')
+    //adding wait function to make function async
+    await wait()
+    //checking is event throwed
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.SEARCH_INPUT]
+    expect(emittedEvent).toBeTruthy()
+    //checking is event object
+    expect(emittedEvent[0][0]).toStrictEqual({
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [
+              {
+                FieldName: 'Name',
+                Operator: 'Contains',
+                Value: 'custom data'
+              },
+              {
+                FieldName: 'Surname',
+                Operator: 'Contains',
+                Value: 'custom data'
+              }
+            ]
+          }
+        ]
+      }
+    })
   })
 })
