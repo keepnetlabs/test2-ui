@@ -367,6 +367,7 @@ export default {
     serverSideSizeChanged(pageSize = 10) {
       this.tableCredientials.pageSize = pageSize
       this.tableCredientials.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)
@@ -546,13 +547,16 @@ export default {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         let values = []
-        let _this = this
         if (this.totalSelectedItemsCount > 1) {
-          for (const [key, value] of Object.entries(this.deleteValues)) {
+          for (const [_, value] of Object.entries(this.deleteValues)) {
             values.push(value)
           }
         } else {
-          values.push(this.deleteValues || this.deleteValues[0])
+          const value =
+            this.deleteValues.constructor.name === 'Array'
+              ? this.deleteValues[0]
+              : this.deleteValues
+          values.push(value)
         }
         values.map((item) => {
           this.deleteButtonDisabled = true

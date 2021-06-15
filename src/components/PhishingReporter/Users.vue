@@ -206,7 +206,6 @@ export default {
             },
             filterableType: 'select',
             filterableItems: [
-              'N/A',
               'Online',
               'Offline',
               'Disabled',

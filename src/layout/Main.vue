@@ -321,8 +321,8 @@
                   class="menu-link-default"
                   id="btn--link-navigator-menu-investigations"
                   :class="[
-                    routerName === 'Investigation Details' ||
-                      (routerName === 'Investigations' && 'active-link')
+                    (routerName === 'Investigation Details' || routerName === 'Investigations') &&
+                      'active-link'
                   ]"
                 >
                   <v-list-item-title class="menu-item-wrapper">

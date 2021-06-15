@@ -291,11 +291,13 @@
             color="#2196f3"
           />
         </form-group>
+        <!--
         <form-group :title="labels.TestConnection">
           <div class="test-connection__button" style="width: 160px; cursor: pointer;">
             TEST CONNECTION
           </div>
         </form-group>
+         -->
       </v-form>
     </template>
   </app-modal>
@@ -358,7 +360,7 @@ export default {
         "    email: 'john.doe@keepnetlabs.com', //required\n" +
         "        firstName: 'John', //required\n" +
         "        lastName: 'Doe', //required\n" +
-        '        spRole: \'Company Admin\', //required. \n        Default is "Company Admin"\n' +
+        '        spRole: \'CompanyAdmin\', //required. \n        Default is "CompanyAdmin"\n' +
         "        phoneNumber: 'Phone' //optional     } \n" +
         '',
       labels,
@@ -395,12 +397,6 @@ export default {
     ...mapGetters({
       brandName: 'whitelabel/getBrandName'
     }),
-    getCertRules() {
-      return [
-        (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 3000, labels.getMaxLengthMessage(labels.SAMLIdpCert, 3000))
-      ]
-    },
     getMetadataLabel() {
       return `${labels.SamlConfigurationFor} ${this.brandName}`
     },
@@ -409,6 +405,11 @@ export default {
     },
     getTitle() {
       return this.isEdit ? labels.SamlModalBodyEditTitle : labels.SamlModalBodyTitle
+    }
+  },
+  watch: {
+    certificateText(val) {
+      this.formValues.idPCertFingerprint = val
     }
   },
   created() {
