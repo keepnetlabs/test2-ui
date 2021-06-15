@@ -44,7 +44,7 @@ describe('Datatable test cases suite', () => {
 
     const setMenuItemClickCases = async (menu, index, title = 'Download Current Page') => {
       const selector = `DOWNLOAD_MENU_ITEM_${index}`
-      console.log('selector', selector)
+      //finding menu
       const item = menu.find(CONSTANTS.SELECTORS[selector])
       //clicking  element
       await item.trigger(CONSTANTS.EVENT_TYPES.CLICK)
@@ -114,5 +114,18 @@ describe('Datatable test cases suite', () => {
     await button.trigger(CONSTANTS.EVENT_TYPES.CLICK)
     const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.ACTION_BUTTON]
     expect(emittedEvent).toBeTruthy()
+  })
+
+  it('Search Field case', async () => {
+    //mounting table
+    const wrapper = mount(DataTable, {
+      localVue,
+      store,
+      vuetify: new Vuetify({}),
+      ...getDefaultPropsData({
+        isServerSide: true,
+        serverSideEvents: { pagination: true, search: true, sort: true }
+      })
+    })
   })
 })
