@@ -96,8 +96,11 @@ describe('Datatable test cases suite', () => {
         disabled: false
       }
     })
+    //getting action button
     const button = wrapper.find('#btn-add--action-button')
+    //clicking button
     await button.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is event emitted
     const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.ACTION_BUTTON]
     expect(emittedEvent).toBeTruthy()
   })
