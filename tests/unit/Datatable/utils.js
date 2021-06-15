@@ -23,7 +23,7 @@ export function getDefaultPropsData(propsData = {}) {
         {
           property: 'surname',
           align: 'left',
-          label: 'Name',
+          label: 'Surname',
           sortable: true,
           show: true,
           fixed: false,
@@ -37,7 +37,7 @@ export function getDefaultPropsData(propsData = {}) {
           surname: 'Uğurlu'
         }
       ],
-      refName: 'table-refresh-button-case',
+      refName: 'table-button-case',
       ...propsData
     }
   }

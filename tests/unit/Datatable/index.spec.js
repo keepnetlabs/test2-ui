@@ -3,6 +3,8 @@ import CONSTANTS from './constants'
 import { getDefaultVuex } from './utils'
 import DataTableWrapper from '../Objects/Datatable'
 import { wait } from '../utils'
+import MOCKS from '../Mocks'
+
 describe('Datatable test cases suite', () => {
   const localVue = createLocalVue()
   let store
@@ -88,13 +90,7 @@ describe('Datatable test cases suite', () => {
   it('Action Button case', async () => {
     //mounting table
     const { wrapper } = new DataTableWrapper(localVue, store, {
-      addButton: {
-        show: true,
-        action: 'handleClickAction',
-        id: 'btn-add--action-button',
-        tooltip: '',
-        disabled: false
-      }
+      addButton: MOCKS.ADD_BUTTON
     })
     //getting action button
     const button = wrapper.find('#btn-add--action-button')
@@ -126,26 +122,7 @@ describe('Datatable test cases suite', () => {
     expect(emittedEvent).toBeTruthy()
     //checking is event object
     expect(emittedEvent[0][0]).toStrictEqual({
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'Name',
-                Operator: 'Contains',
-                Value: 'custom data'
-              },
-              {
-                FieldName: 'Surname',
-                Operator: 'Contains',
-                Value: 'custom data'
-              }
-            ]
-          }
-        ]
-      }
+      filter: MOCKS.SEARCH_FIELD_CASE
     })
   })
 })
