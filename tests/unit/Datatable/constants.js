@@ -2,7 +2,8 @@ export default {
   CUSTOM_EVENTS: {
     REFRESH_ACTION: 'refreshAction',
     DOWNLOAD_ACTION: 'downloadEvent',
-    ACTION_BUTTON: 'handleClickAction'
+    ACTION_BUTTON: 'handleClickAction',
+    SEARCH_INPUT: 'searchChangedEvent'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',
