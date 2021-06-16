@@ -279,4 +279,38 @@ describe('Datatable test cases suite', () => {
       expect(row.classes('selected-row')).toBe(false)
     }
   })
+
+  it('Checking tooltip', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
+    const { wrapper } = datatableWrapper
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name:
+            'GürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnn',
+          surname: 'UğurluUğurluUğurluUğurluUğurluUğurluUğurluUğurluUğurlu'
+        },
+        {
+          name: 'ArdaArdaArdaArdaArdaArdaArdaArda',
+          surname: 'DuraDuraDuraDuraDuraDura'
+        }
+      ]
+    })
+    //getting first row
+    const firstRow = wrapper.find('.el-table__body-wrapper .el-table__row')
+    //getting second column
+    const secondTd = firstRow.find('td:nth-child(2)')
+    //entering cell
+    await secondTd.trigger('mouseenter')
+    //checking is tooltip is open
+    expect(wrapper.vm.showOverFlowTooltip).toBe(true)
+    //checking is tooltip rendered
+    const datatableTooltip = wrapper.find('.datatable-tooltip')
+    expect(datatableTooltip.exists()).toBe(true)
+    //checking text is equal to what was expecte
+    expect(datatableTooltip.text()).toContain(
+      'GürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnn'
+    )
+  })
 })
