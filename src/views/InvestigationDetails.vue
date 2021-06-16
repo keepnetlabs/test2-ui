@@ -2688,6 +2688,7 @@ export default {
         &-right-col {
           display: flex;
           flex-basis: 50%;
+          align-items: center;
           @media (max-width: 992px) {
             margin-top: 6px;
           }
