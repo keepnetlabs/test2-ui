@@ -6,7 +6,8 @@ export default {
     SEARCH_INPUT: 'searchChangedEvent',
     FILTER_OPTIONS_SET_DEFAULT_SEARCH: 'set-default-search',
     FILTER_OPTIONS_RESET_DEFAULT_SEARCH: 'restore-default-search',
-    FILTER_OPTIONS_CLEAR_FILTER: 'clear-filters'
+    FILTER_OPTIONS_CLEAR_FILTER: 'clear-filters',
+    SELECTION: 'handleSelectionChange'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',

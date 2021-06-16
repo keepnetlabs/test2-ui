@@ -165,4 +165,36 @@ describe('Datatable test cases suite', () => {
     //checking is event is throwed
     expect(wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_CLEAR_FILTER]).toBeTruthy()
   })
+
+  it('Selection case', async () => {
+    const { wrapper } = new DataTableWrapper(localVue, store, { selectable: true })
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //getting first row
+    const findFirstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting first row checkbox
+    const checkbox = findFirstRow.find('.el-checkbox')
+    //clicking checkbox
+    await checkbox.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is row selected
+    expect(findFirstRow.classes('selected-row'))
+    //checking is event throwed
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.SELECTION]
+    expect(emittedEvent).toBeTruthy()
+    //comparing event object
+    const selectionObject = emittedEvent[0][0]
+    expect(selectionObject).toStrictEqual([
+      {
+        name: 'Gürkan',
+        surname: 'Uğurlu'
+      }
+    ])
+  })
 })
