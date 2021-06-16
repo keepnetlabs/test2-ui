@@ -178,13 +178,13 @@ describe('Datatable test cases suite', () => {
       ]
     })
     //getting first row
-    const findFirstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
     //getting first row checkbox
-    const checkbox = findFirstRow.find('.el-checkbox')
+    const checkbox = firstRow.find('.el-checkbox')
     //clicking checkbox
     await checkbox.trigger(CONSTANTS.EVENT_TYPES.CLICK)
     //checking is row selected
-    expect(findFirstRow.classes('selected-row'))
+    expect(firstRow.classes('selected-row')).toBe(true)
     //checking is event throwed
     const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.SELECTION]
     expect(emittedEvent).toBeTruthy()
@@ -196,5 +196,87 @@ describe('Datatable test cases suite', () => {
         surname: 'Uğurlu'
       }
     ])
+  })
+  it('Multi selection case selection that lower than table length', async () => {
+    const { wrapper } = new DataTableWrapper(localVue, store, { selectable: true })
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        },
+        {
+          name: 'Arda',
+          surname: 'Dura'
+        }
+      ]
+    })
+    //getting all rows
+    const row = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking  checkbox
+
+    const checkbox = row.find('.el-checkbox')
+    await checkbox.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+
+    const selectionRow = wrapper.find('.selection-row')
+    //is selection row exists
+    expect(selectionRow.exists()).toBe(true)
+    //checking icon is minus-box
+    expect(selectionRow.find('i').classes('mdi-minus-box')).toBe(true)
+    //because every checkbox is clicked
+    expect(selectionRow.text()).toContain(`1 item(s) selected`)
+  })
+  it('Multi selection case all selection', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
+    const { wrapper } = datatableWrapper
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        },
+        {
+          name: 'Arda',
+          surname: 'Dura'
+        }
+      ]
+    })
+    await datatableWrapper.checkAllCheckboxes()
+    const selectionRow = wrapper.find('.selection-row')
+    //is selection row exists
+    expect(selectionRow.exists()).toBe(true)
+    //checking icon is checkbox-marked
+    expect(selectionRow.find('i').classes('mdi-checkbox-marked')).toBe(true)
+    //because every checkbox is clicked
+    expect(selectionRow.text()).toContain(`All selected`)
+  })
+  it('Multi selection case  removing selection', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
+    const { wrapper } = datatableWrapper
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        },
+        {
+          name: 'Arda',
+          surname: 'Dura'
+        }
+      ]
+    })
+    const rows = await datatableWrapper.checkAllCheckboxes()
+    const selectionRowCheckbox = wrapper.find('.selection-row .v-input__control .v-input__slot')
+    //clicking checkbox to remove selection
+    await selectionRowCheckbox.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //selection component is not rendered
+    expect(wrapper.find('.selection-row').exists()).toBe(false)
+    //checking is rows selected
+    for (const row of rows.wrappers) {
+      expect(row.classes('selected-row')).toBe(false)
+    }
   })
 })
