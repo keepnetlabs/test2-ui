@@ -125,4 +125,44 @@ describe('Datatable test cases suite', () => {
       filter: MOCKS.SEARCH_FIELD_CASE
     })
   })
+
+  it('Datatable filtering options', async () => {
+    //mounting table
+    const { wrapper } = new DataTableWrapper(localVue, store)
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //checking filter options
+    const filterOptions = wrapper.find('.filter-options')
+    //clicking filter options
+    await filterOptions.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is menu open
+    expect(filterOptions.classes('filter-options--menu-active'))
+    //getting menu items
+    const filterOptionsItems = wrapper.findAll('.filter-options__menu .v-list-item')
+    //checking there is 3 items
+    expect(filterOptionsItems.length).toEqual(3)
+    //clicking first item
+    await filterOptionsItems.at(0).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is event is throwed
+    expect(
+      wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_SET_DEFAULT_SEARCH]
+    ).toBeTruthy()
+    //clicking second item
+    await filterOptionsItems.at(1).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is event is throwed
+    expect(
+      wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_RESET_DEFAULT_SEARCH]
+    ).toBeTruthy()
+    //clicking third item
+    await filterOptionsItems.at(2).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is event is throwed
+    expect(wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.FILTER_OPTIONS_CLEAR_FILTER]).toBeTruthy()
+  })
 })
