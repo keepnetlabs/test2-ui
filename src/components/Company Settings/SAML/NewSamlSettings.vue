@@ -111,13 +111,13 @@
             />
           </form-group-horizontal-content>
         </form-group>
-        <div class="mt-9" style="display: flex; align-items: center; max-width: 648px;">
+        <div class="mt-2" style="display: flex; align-items: center; max-width: 648px;">
           <v-divider />
           <span style="font-size: 14px; color: #383b41; margin: 0 16px;"> or</span>
           <v-divider />
         </div>
 
-        <form-group-horizontal-content label="Issuer URL of the IdP" class="mt-11">
+        <form-group-horizontal-content label="Issuer URL of the IdP" class="mt-4">
           <v-text-field
             v-model.trim="formValues.idPEntityID"
             id="input--saml-settings-id-entity-id"
