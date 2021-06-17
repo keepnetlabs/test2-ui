@@ -474,6 +474,7 @@ export default {
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
+        const filter = JSON.parse(JSON.stringify(this.requestBody.filter))
         const payload = {
           orderBy: this.requestBody.orderBy,
           ascending: this.requestBody.ascending,
@@ -481,7 +482,14 @@ export default {
           pageSize: pageSize,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
+          filter
+        }
+        if (!reportAllPages) {
+          payload.filter.FilterGroups[0].FilterItems.push({
+            FieldName: 'ResourceId',
+            Operator: 'Include',
+            Value: this.tableOptions.table.map((row) => row.resourceId).join(',')
+          })
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
