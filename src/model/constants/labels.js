@@ -19,6 +19,8 @@ export const labels = {
   CopyToClipboard: 'Copy to Clipboard',
   SamlSettings: 'SAML Settings',
   IdPEntityID: 'Idp Entity ID',
+  Skip: 'Skip',
+  YesConfigure: 'Yes, Configure',
   SamlConfigurationFor: 'SAML Configuration For',
   TestConnection: 'Test Connection',
   SamlDomainSubLabel: 'Include domains to be used with this configuration',
@@ -33,6 +35,7 @@ export const labels = {
   SAMLIdpTargetUrl: 'IdP SSO Target URL',
   SAMLIdpCert: 'IdP Cert Fingerprint',
   EnableSAMLSSO: 'Enable SAML SSO',
+  NewCompanyQuickSetup: 'New Company Quick Setup',
   EntityId: 'Entity ID',
   SSOEnabled: 'SSO Enabled',
   Metadata: 'Metadata',
@@ -47,10 +50,12 @@ export const labels = {
   SSOCallbackURL: 'SSO Callback URL',
   MetadataUrl: 'Metadata URL',
   BypassSSOLoginURL: 'Bypass SSO Login URL',
+  NextSteps: 'Next Steps',
   EditClient: 'Edit Client',
   NewClient: 'New Client',
   Keyword: 'Keyword',
   Notes: 'Notes',
+  ConfigureNewCompanyTitle: 'Configure New Company?',
   ReleaseInformation: 'Release Information',
   SAMLDeletePopupBody: 'This SAML setting will be deleted. All data will be lost.',
   ReleaseInformationSubTitle:
@@ -302,7 +307,10 @@ export const labels = {
   EnableMfa: 'Setup Multi-factor Authentication',
   Resync: 'RESYNC',
   Permissions: 'Permissions',
-  ADDAPERMISSION: 'Add a permission'
+  ADDAPERMISSION: 'Add a permission',
+  WhiteLabeling: 'White Labeling',
+  WhiteListing: 'Whitelisting',
+  FirstSystemUser: 'First System User'
 }
 
 export default labels

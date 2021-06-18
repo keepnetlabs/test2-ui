@@ -1,30 +1,13 @@
 <template>
   <div class="fullscreen-form company-create-modal">
-    <app-dialog
-      v-if="isAddTheFirstSystemUserShow"
-      icon="mdi-delete"
-      title="Add The First System User"
-      title-id="text--company-add-the-first-system-user-popup-title"
-      subtitle-id="text--company-add-the-first-system-user-popup-subtitle"
-      :status="isAddTheFirstSystemUserShow"
-      :subtitle="formData.Name"
-      @changeStatus="closeFirstSystemUserDialog"
-    >
-      <template v-slot:app-dialog-body>
-        {{ getAddTheFirstSystemUserBody }}
-      </template>
-      <template v-slot:app-dialog-footer>
-        <app-dialog-footer
-          cancel-button-id="btn-cancel--add-first-system-user-company-modal-popup"
-          confirm-button-id="btn-confirm--add-first-system-user-company-modal-popup"
-          cancel-button-text="I’ll Do it later"
-          cancel-button-color="#00bcd4"
-          action-button-text="YES, create a system user"
-          @handleClose="closeFirstSystemUserDialog"
-          @handleConfirm="confirmFirstSystemUserDialog"
-        />
-      </template>
-    </app-dialog>
+    <configure-new-company-dialog
+      v-if="isShowConfigurewNewCompany"
+      :company-name="formData.Name"
+      :status="isShowConfigurewNewCompany"
+      @on-close="closeConfigureNewCompanyDialog"
+      @on-confirm="confirmConfigureNewCompanyDialog"
+    />
+
     <v-card flat light class="header">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-cart-icon-wrapper">
@@ -589,9 +572,7 @@
 import * as validations from '@/utils/validations'
 import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import AppDialog from '@/components/AppDialog'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+
 import { scrollToComponent } from '@/utils/functions'
 import { getLicences, getLookupListByTypeIdList } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -599,6 +580,7 @@ import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
+import ConfigureNewCompanyDialog from '@/components/Companies/ConfigureNewCompanyDialog'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -608,19 +590,18 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    ConfigureNewCompanyDialog,
     KSelect,
     InputCompany,
     InputUrl,
     KFileUpload,
-    InputDate,
-    AppDialog,
-    AppDialogFooter
+    InputDate
   },
   data() {
     return {
       saveDisable: false,
       createdCompanyResourceId: null,
-      isAddTheFirstSystemUserShow: false,
+      isShowConfigurewNewCompany: false,
       labels,
       stepLock: false,
       totalStep: 4,
@@ -692,9 +673,6 @@ export default {
     getPreviewLogoUrl() {
       return this.formData.logoURL || this.formData.File
     },
-    getAddTheFirstSystemUserBody() {
-      return `Would you like to create the first system user for ${this.formData.Name}?`
-    },
     canPrev() {
       return this.activeStep > 1
     }
@@ -741,11 +719,11 @@ export default {
     getImagePreview(url) {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
     },
-    confirmFirstSystemUserDialog() {
+    confirmConfigureNewCompanyDialog() {
       this.formData = []
       this.LicenseDates = null
       this.activeStep = 1
-      this.$emit('closeFormAndOpenSystemUserModal', this.createdCompanyResourceId)
+      this.$emit('closeFormConfigureNewCompanyModal', this.createdCompanyResourceId)
     },
     getLookupContents() {
       Promise.all([
@@ -802,15 +780,13 @@ export default {
       })
     },
     getCompanyGroups() {
-      searchCompanyGroups(this.companyGroupPayload)
-        .then((response) => {
-          const { data: { data = [] } = [] } = response
-          this.companyGroupList = data.results
-        })
-        .catch((error) => {})
+      searchCompanyGroups(this.companyGroupPayload).then((response) => {
+        const { data: { data = [] } = [] } = response
+        this.companyGroupList = data.results
+      })
     },
-    closeFirstSystemUserDialog() {
-      this.isAddTheFirstSystemUserShow = false
+    closeConfigureNewCompanyDialog() {
+      this.isShowConfigurewNewCompany = false
       this.cancelForm()
     },
     handleSave() {
@@ -838,8 +814,7 @@ export default {
               } = response
               this.createdCompanyResourceId = data.resourceId
               this.saveDisable = false
-              this.isAddTheFirstSystemUserShow = true
-              //this.cancelForm()
+              this.isShowConfigurewNewCompany = true
             })
             .catch(() => {
               this.saveDisable = false
