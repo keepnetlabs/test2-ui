@@ -53,6 +53,13 @@ export const labels = {
   NextSteps: 'Next Steps',
   EditClient: 'Edit Client',
   NewClient: 'New Client',
+  WhiteLabelingSubTitle:
+    'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
+  WhiteListingSubTitle:
+    'Allow emails to be recieved without being filtered by antispam and other applications',
+  CreateFirstSystemUser: 'Create First System User',
+  CreateFirstSystemUserSubTitle:
+    'Create the first user for this new company. You skip this step for now.',
   Keyword: 'Keyword',
   Notes: 'Notes',
   ConfigureNewCompanyTitle: 'Configure New Company?',
@@ -91,6 +98,8 @@ export const labels = {
   EmptySamlTableButton: 'Create a new SAML configuration',
   CreateNewNotificationTemplate: 'Create New Notification Template',
   EditNewNotificationTemplate: 'Edit Notification Template',
+  NextStepsSubTitle: 'A few more suggestions',
+  SaveAndContinue: 'save and continue',
   Name: 'Name',
   Description: 'Description',
   Low: 'Low',
