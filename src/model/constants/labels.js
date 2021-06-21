@@ -41,6 +41,7 @@ export const labels = {
   Metadata: 'Metadata',
   SAMLSettingName: 'SAML Name',
   SAMLSettingNameSubtitle: 'Name this SAML configuration',
+  Regex: 'Regex',
   ConditionsSubHeader:
     'Define conditions to filter reported emails in order to take actions. Use conditional expressions “and” and “or” to create required criteria. You can add conditions sets for even more complicated conditions',
   ClientName: 'Client Name',

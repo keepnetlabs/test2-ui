@@ -510,7 +510,8 @@ export default {
         name: 'Enter a file name(case sensitive)',
         sha512: 'Enter a sha512 key',
         md5: 'Enter a md5 key',
-        extension: 'Enter an file extension'
+        extension: 'Enter an file extension',
+        regex: 'Enter a regular expression'
       },
       scanTypes: [],
       checkboxError: false,
@@ -566,7 +567,8 @@ export default {
           isDefaultExpanded: true,
           children: [
             { label: 'URL', id: 'url' },
-            { label: 'Keyword', id: 'keyword' }
+            { label: 'Keyword', id: 'keyword' },
+            { label: 'Regex', id: 'regex' }
           ]
         },
         {
@@ -744,6 +746,11 @@ export default {
           (v) => Validations.extension(v, labels.InvalidExtension)
         )
         return rules
+      } else if (option === 'regex') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.Regex, 10))
+        )
       }
       return rules
     },
