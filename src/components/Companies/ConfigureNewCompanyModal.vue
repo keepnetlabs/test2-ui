@@ -63,8 +63,15 @@
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
+              class="mb-6"
               :title="labels.CreateFirstSystemUser"
               :subtitle="labels.CreateFirstSystemUserSubTitle"
+            />
+            <CreateOrEditSystemUserForm
+              ref="refForm"
+              :form-values="systemUserFormData"
+              :status-items="statusItems"
+              :role-items="roleItems"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="4">
@@ -95,6 +102,18 @@
         >
           {{ labels.Back }}
         </v-btn>
+
+        <v-btn
+          @click="changeStep()"
+          id="btn-skip--configure-new-company-modal"
+          class="add-in-configuration__footer-btn-next mr-4"
+          color="#00BCD4"
+          rounded
+          v-if="step === 3"
+        >
+          {{ labels.Skip }}
+        </v-btn>
+
         <v-btn
           id="btn-next--phishing-reporter-settings-add-in-configuration"
           class="add-in-configuration__footer-btn-next"
@@ -105,16 +124,6 @@
           @click="handleSaveAndContinue"
         >
           {{ [1, 3].includes(step) ? labels.SaveAndContinue : labels.Next }}
-        </v-btn>
-        <v-btn
-          @click="submit"
-          id="btn-save--phishing-reporter-settings-add-in-configuration"
-          class="add-in-configuration__footer-btn-next"
-          color="#2196f3"
-          rounded
-          v-if="step === 4"
-        >
-          {{ labels.Save }}
         </v-btn>
       </div>
     </template>
@@ -127,11 +136,20 @@ import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
-import { getPermissionsOfAllItems } from '@/utils/functions'
+import { getPermissionsOfAllItems, scrollToComponent } from '@/utils/functions'
 import WhiteListing from '@/components/Company Settings/WhiteListing'
+import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
+import SystemUserModel from '@/components/SystemUsers/system-user-model'
+import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
 export default {
   name: 'ConfigureNewCompanyModal',
-  components: { WhiteListing, WhiteLabeling, ConfigureCompanyStepHeader, AppModal },
+  components: {
+    CreateOrEditSystemUserForm,
+    WhiteListing,
+    WhiteLabeling,
+    ConfigureCompanyStepHeader,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean
@@ -147,11 +165,18 @@ export default {
       PERMISSIONS: {
         WHITE_LABEL_PERMISSIONS: {}
       },
-      step: 1
+      step: 1,
+      systemUserFormData: new SystemUserModel(),
+      statusItems: [
+        { name: 'Active', val: 1 },
+        { name: 'Inactive', val: 0 }
+      ],
+      roleItems: []
     }
   },
   created() {
     this.getPermissions()
+    this.getRoles()
   },
   methods: {
     closeOverlay() {
@@ -160,6 +185,47 @@ export default {
     changeStep(flag = 1) {
       this.step += flag
     },
+    getRoles() {
+      let payload = {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'RoleName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      let allRoles = []
+      let availableRoles = []
+      getSystemUsersRole(payload).then((response) => {
+        allRoles = response.data.data
+        availableRoles = []
+        availableRoles = allRoles
+
+        this.roleItems = availableRoles.map((item) => {
+          return {
+            name: item.name,
+            resourceId: item.resourceId
+          }
+        })
+        this.systemUserFormData.roleResourceIdList =
+          availableRoles &&
+          availableRoles.length &&
+          availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
+      })
+    },
     getPermissions() {
       const { WHITE_LABEL_PERMISSIONS } = PERMISSIONS
       this.$set(
@@ -167,6 +233,9 @@ export default {
         'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
       )
+    },
+    handleChangeStatus(val) {
+      this.systemUserFormData.statusName = this.statusItems.find((item) => item.val === val).name
     },
     handleSaveAndContinue() {
       const { refWhiteLabeling } = this.$refs
@@ -179,7 +248,37 @@ export default {
         case 2:
           this.changeStep()
           break
+        case 3:
+          const isNumberValid = this.$refs.refForm.validatePhoneNumber()
+          const isFormValid = this.$refs.refForm.validate()
+          if (isFormValid && isNumberValid) {
+            this.isSaveDisabled = true
+            const { phoneNumber } = this.systemUserFormData
+            const formData = {
+              ...this.systemUserFormData,
+              phoneNumber: phoneNumber.split(' ').join('')
+            }
+            formData.roleResourceIdList = [this.systemUserFormData.roleResourceIdList]
+            this.callForCreateSystemUser(formData)
+          } else {
+            this.$forceUpdate()
+            this.$nextTick(() => {
+              const el = this.$refs.refForm.$el.querySelector('.error--text')
+              scrollToComponent(el)
+            })
+          }
       }
+    },
+    callForCreateSystemUser(payload) {
+      if (this.createdCompanyResourceId) {
+        payload.CompanyResourceId = this.createdCompanyResourceId
+      }
+
+      createSystemUser(payload)
+        .then(() => {
+          this.changeStep()
+        })
+        .finally(() => (this.isSaveDisabled = false))
     }
   }
 }
