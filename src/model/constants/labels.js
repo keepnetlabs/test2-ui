@@ -63,6 +63,8 @@ export const labels = {
   Keyword: 'Keyword',
   Notes: 'Notes',
   ConfigureNewCompanyTitle: 'Configure New Company?',
+  SendWhitelistingDirections: 'Send Whitelisting Directions',
+  SendWhitelistingDirectionsSubTitle: 'Send an email to customer with whitelisting directions',
   ReleaseInformation: 'Release Information',
   SAMLDeletePopupBody: 'This SAML setting will be deleted. All data will be lost.',
   ReleaseInformationSubTitle:

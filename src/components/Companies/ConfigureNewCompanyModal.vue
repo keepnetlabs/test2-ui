@@ -1,7 +1,7 @@
 <template>
   <AppModal
     :status="status"
-    icon-name="mdi-briefcase"
+    icon-name="mdi-briefcase-variant"
     :title="labels.NewCompanyQuickSetup"
     class-name="add-in-configuration"
     title-id="text--configure-new-company-modal-title"
@@ -59,6 +59,7 @@
               :title="labels.WhiteListing"
               :subtitle="labels.WhiteListingSubTitle"
             />
+            <WhiteListing />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -97,13 +98,13 @@
         <v-btn
           id="btn-next--phishing-reporter-settings-add-in-configuration"
           class="add-in-configuration__footer-btn-next"
-          style="width: 176px;"
           color="#2196f3"
           rounded
+          :style="[1, 3].includes(step) && { width: '176px' }"
           :disabled="isSaveDisabled"
           @click="handleSaveAndContinue"
         >
-          {{ labels.SaveAndContinue }}
+          {{ [1, 3].includes(step) ? labels.SaveAndContinue : labels.Next }}
         </v-btn>
         <v-btn
           @click="submit"
@@ -127,9 +128,10 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
+import WhiteListing from '@/components/Company Settings/WhiteListing'
 export default {
   name: 'ConfigureNewCompanyModal',
-  components: { WhiteLabeling, ConfigureCompanyStepHeader, AppModal },
+  components: { WhiteListing, WhiteLabeling, ConfigureCompanyStepHeader, AppModal },
   props: {
     status: {
       type: Boolean
@@ -173,6 +175,10 @@ export default {
           if (refWhiteLabeling.$refs.refForm.validate()) {
             this.changeStep()
           }
+          break
+        case 2:
+          this.changeStep()
+          break
       }
     }
   }
