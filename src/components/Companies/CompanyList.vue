@@ -449,6 +449,9 @@ export default {
     },
 
     toggleConfigureNewCompanyModal() {
+      if (this.isShowConfigureCompanyModal) {
+        this.getTableData()
+      }
       this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal
       if (!this.isShowConfigureCompanyModal) {
         this.createdCompanyResourceIdForConfigureCompany = ''
