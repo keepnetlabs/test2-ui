@@ -79,6 +79,7 @@
               :title="labels.NextSteps"
               :subtitle="labels.NextStepsSubTitle"
             />
+            <ConfigureNewCompanyNextSteps />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -123,7 +124,9 @@
           :disabled="isSaveDisabled"
           @click="handleSaveAndContinue"
         >
-          {{ [1, 3].includes(step) ? labels.SaveAndContinue : labels.Next }}
+          {{
+            [1, 3].includes(step) ? labels.SaveAndContinue : step === 4 ? labels.Close : labels.Next
+          }}
         </v-btn>
       </div>
     </template>
@@ -141,9 +144,11 @@ import WhiteListing from '@/components/Company Settings/WhiteListing'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
+import ConfigureNewCompanyNextSteps from '@/components/Companies/ConfigureNewCompanyNextSteps'
 export default {
   name: 'ConfigureNewCompanyModal',
   components: {
+    ConfigureNewCompanyNextSteps,
     CreateOrEditSystemUserForm,
     WhiteListing,
     WhiteLabeling,
@@ -267,6 +272,9 @@ export default {
               scrollToComponent(el)
             })
           }
+          break
+        case 4:
+          this.closeOverlay()
       }
     },
     callForCreateSystemUser(payload) {
