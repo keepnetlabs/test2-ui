@@ -1,6 +1,7 @@
 <template>
   <div class="white-labeling mt-6">
     <ResetToDefaultWhiteLabelingDialog
+      v-if="!isCompanyConfigure"
       :status="resetToDefaultWhiteLabelingDialogStatus"
       :is-reset-to-default-action-button-disabled="isResetToDefaultActionButtonDisabled"
       @handleCloseDialog="toggleWhiteLabelingDialog"
@@ -258,7 +259,7 @@
           </div>
         </div>
       </form-group>
-      <div class="white-labeling__footer">
+      <div v-if="!isCompanyConfigure" class="white-labeling__footer">
         <v-btn
           id="btn-save--whitelabeling"
           class="white--text btn-util btn-save-changes mb-6"
@@ -311,6 +312,10 @@ export default {
     PERMISSIONS: {
       type: Object,
       required: true
+    },
+    isCompanyConfigure: {
+      type: Boolean,
+      default: false
     }
   },
   data() {

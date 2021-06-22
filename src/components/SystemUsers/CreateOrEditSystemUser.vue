@@ -20,65 +20,26 @@
         @sendEmail="handleSendEmail"
       />
       <app-modal-body-header :title="getBodyTitle" sub-title="Fill information below" />
-      <v-form ref="refForm" lazy-validation>
-        <form-group title="First Name" has-hint>
-          <InputFirstName v-model.trim="formValues.firstName" id="input--system-user-first-name" />
-        </form-group>
-        <form-group title="Last Name" has-hint>
-          <InputLastName v-model.trim="formValues.lastName" id="input--system-user-last-name" />
-        </form-group>
-        <form-group title="Email Address" has-hint>
-          <InputEmail v-model.trim="formValues.email" id="input--system-user-email" />
-        </form-group>
-        <form-group title="Phone Number">
-          <InputPhone
-            v-model.trim="formValues.phoneNumber"
-            ref="refPhone"
-            id="input--system-user-phone-number"
-          />
-        </form-group>
-        <form-group title="Status">
-          <k-select
-            v-model.trim="formValues.statusId"
-            id="input--sytem-user-status"
-            placeholder="Select Option"
-            outlined
-            dense
-            :items="statusItems"
-            item-text="name"
-            item-value="val"
-            @change="handleChangeStatus"
-          />
-        </form-group>
-        <form-group title="Role">
-          <k-select
-            v-model.trim="formValues.roleResourceIdList"
-            id="input--sytem-user-role"
-            placeholder="Select Option"
-            outlined
-            dense
-            :items="roleItems"
-            hint="*Required"
-            persistent-hint
-            item-text="name"
-            item-value="resourceId"
-            :rules="[(v) => validations.required(v, 'Required')]"
-          />
-        </form-group>
-        <form-group v-if="selectedRow">
-          <v-btn
-            id="btn-send-information-email--system-users-people-modal"
-            @click="callForSendInformationEmail(selectedRow.resourceId)"
-            color="#2196f3"
-            rounded
-            :disabled="sendInformationEmailDisabled"
-            class="white--text btn-util"
-          >
-            <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
-            Send Information Email
-          </v-btn></form-group
+      <create-or-edit-system-user-form
+        ref="refForm"
+        :form-values="formValues"
+        :role-items="roleItems"
+        :status-items="statusItems"
+        @on-status-change="handleChangeStatus"
+      />
+      <form-group v-if="selectedRow">
+        <v-btn
+          id="btn-send-information-email--system-users-people-modal"
+          @click="callForSendInformationEmail(selectedRow.resourceId)"
+          color="#2196f3"
+          rounded
+          :disabled="sendInformationEmailDisabled"
+          class="white--text btn-util"
         >
-      </v-form>
+          <v-icon class="ml-0" left color="#fff">mdi-email</v-icon>
+          Send Information Email
+        </v-btn></form-group
+      >
     </template>
   </app-modal>
 </template>
@@ -86,31 +47,23 @@
 <script>
 import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { mail, maxLength, required } from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import SendWelcomeEmailToNewUserModal from '@/components/SystemUsers/SendWelcomeEmailToNewUserModal'
 import { createSystemUser, sendInformationEmail, updateSystemUser } from '@/api/systemUsers'
 import { scrollToComponent } from '@/utils/functions'
-import InputFirstName from '@/components/Common/Inputs/InputFirstName'
-import InputLastName from '@/components/Common/Inputs/InputLastName'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InputEmail from '@/components/Common/Inputs/InputEmail'
-import InputPhone from '@/components/Common/Inputs/InputPhone'
 import { getSystemUsersRole } from '@/api/systemUsers'
 import jwt_decode from 'jwt-decode'
+import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
+import SystemUserModel from '@/components/SystemUsers/system-user-model'
 
 export default {
   name: 'CreateOrEditSystemUser',
   components: {
-    InputFirstName,
-    InputLastName,
-    InputEmail,
+    CreateOrEditSystemUserForm,
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    SendWelcomeEmailToNewUserModal,
-    KSelect,
-    InputPhone
+    SendWelcomeEmailToNewUserModal
   },
   props: {
     status: {
@@ -129,27 +82,13 @@ export default {
       role: null,
       saveDisable: false,
       sendInformationEmailDisabled: false,
-      formValues: {
-        firstName: '',
-        lastName: '',
-        email: '',
-        phoneNumber: '',
-        statusName: '',
-        roleResourceIdList: [],
-        statusId: 1
-      },
-      maxLen: 17,
+      formValues: new SystemUserModel(),
       showWelcomeEmailModal: false,
       statusItems: [
         { name: 'Active', val: 1 },
         { name: 'Inactive', val: 0 }
       ],
-      roleItems: [],
-      validations: {
-        maxLength,
-        required,
-        mail
-      }
+      roleItems: []
     }
   },
   computed: {
@@ -175,8 +114,9 @@ export default {
     },
 
     submit() {
-      this.$refs.refPhone.validatePhoneNumber()
-      if (this.$refs.refForm.validate() && this.$refs.refPhone.isPhoneNumberValid) {
+      const isNumberValid = this.$refs.refForm.validatePhoneNumber()
+      const isFormValid = this.$refs.refForm.validate()
+      if (isFormValid && isNumberValid) {
         this.saveDisable = true
         if (this.selectedRow) {
           const { phoneNumber } = this.formValues
@@ -233,7 +173,7 @@ export default {
         .catch(() => (this.saveDisable = false))
     }
   },
-  watch: {},
+
   mounted() {
     this.$nextTick(() => {
       this.$refs.refForm.resetValidation()
@@ -305,12 +245,6 @@ export default {
         this.formValues.email = email
         this.formValues.statusId = statusId
         this.formValues.phoneNumber = phoneNumber
-        /*
-        this.$nextTick(() => {
-          this.formValues.phoneNumber = this.$refs.refTelInput.phoneObject.number.international
-        })
-
-         */
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {
@@ -318,19 +252,17 @@ export default {
           }).resourceId
         availableRoles = allRoles
         this.roleItems = availableRoles.map((item) => {
-          let data = {
+          return {
             name: item.name,
             resourceId: item.resourceId
           }
-          return data
         })
       } else {
         this.roleItems = availableRoles.map((item) => {
-          let data = {
+          return {
             name: item.name,
             resourceId: item.resourceId
           }
-          return data
         })
         this.formValues.roleResourceIdList =
           availableRoles &&
@@ -343,8 +275,6 @@ export default {
 </script>
 
 <style lang="scss">
-.create-edit-system-user {
-}
 .phone-number-invalid {
   border-color: #ff5252 !important;
 }

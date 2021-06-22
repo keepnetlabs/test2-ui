@@ -19,6 +19,8 @@ export const labels = {
   CopyToClipboard: 'Copy to Clipboard',
   SamlSettings: 'SAML Settings',
   IdPEntityID: 'Idp Entity ID',
+  Skip: 'Skip',
+  YesConfigure: 'Yes, Configure',
   SamlConfigurationFor: 'SAML Configuration For',
   TestConnection: 'Test Connection',
   SamlDomainSubLabel: 'Include domains to be used with this configuration',
@@ -33,11 +35,13 @@ export const labels = {
   SAMLIdpTargetUrl: 'IdP SSO Target URL',
   SAMLIdpCert: 'IdP Cert Fingerprint',
   EnableSAMLSSO: 'Enable SAML SSO',
+  NewCompanyQuickSetup: 'New Company Quick Setup',
   EntityId: 'Entity ID',
   SSOEnabled: 'SSO Enabled',
   Metadata: 'Metadata',
   SAMLSettingName: 'SAML Name',
   SAMLSettingNameSubtitle: 'Name this SAML configuration',
+  Regex: 'Regex',
   ConditionsSubHeader:
     'Define conditions to filter reported emails in order to take actions. Use conditional expressions “and” and “or” to create required criteria. You can add conditions sets for even more complicated conditions',
   ClientName: 'Client Name',
@@ -47,10 +51,21 @@ export const labels = {
   SSOCallbackURL: 'SSO Callback URL',
   MetadataUrl: 'Metadata URL',
   BypassSSOLoginURL: 'Bypass SSO Login URL',
+  NextSteps: 'Next Steps',
   EditClient: 'Edit Client',
   NewClient: 'New Client',
+  WhiteLabelingSubTitle:
+    'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
+  WhiteListingSubTitle:
+    'Allow emails to be recieved without being filtered by antispam and other applications',
+  CreateFirstSystemUser: 'Create First System User',
+  CreateFirstSystemUserSubTitle:
+    'Create the first user for this new company. You skip this step for now.',
   Keyword: 'Keyword',
   Notes: 'Notes',
+  ConfigureNewCompanyTitle: 'Configure New Company?',
+  SendWhitelistingDirections: 'Send Whitelisting Directions',
+  SendWhitelistingDirectionsSubTitle: 'Send an email to customer with whitelisting directions',
   ReleaseInformation: 'Release Information',
   SAMLDeletePopupBody: 'This SAML setting will be deleted. All data will be lost.',
   ReleaseInformationSubTitle:
@@ -86,6 +101,8 @@ export const labels = {
   EmptySamlTableButton: 'Create a new SAML configuration',
   CreateNewNotificationTemplate: 'Create New Notification Template',
   EditNewNotificationTemplate: 'Edit Notification Template',
+  NextStepsSubTitle: 'A few more suggestions',
+  SaveAndContinue: 'save and continue',
   Name: 'Name',
   Description: 'Description',
   Low: 'Low',
@@ -302,7 +319,10 @@ export const labels = {
   EnableMfa: 'Setup Multi-factor Authentication',
   Resync: 'RESYNC',
   Permissions: 'Permissions',
-  ADDAPERMISSION: 'Add a permission'
+  ADDAPERMISSION: 'Add a permission',
+  WhiteLabeling: 'White Labeling',
+  WhiteListing: 'Whitelisting',
+  FirstSystemUser: 'First System User'
 }
 
 export default labels
