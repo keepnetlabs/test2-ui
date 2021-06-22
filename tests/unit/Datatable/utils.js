@@ -4,6 +4,8 @@ export function getDefaultPropsData(propsData = {}) {
   return {
     propsData: {
       options: true,
+      loading: false,
+      filterable: true,
       empty: {
         message: ''
       },
@@ -21,7 +23,7 @@ export function getDefaultPropsData(propsData = {}) {
         {
           property: 'surname',
           align: 'left',
-          label: 'Name',
+          label: 'Surname',
           sortable: true,
           show: true,
           fixed: false,
@@ -35,9 +37,9 @@ export function getDefaultPropsData(propsData = {}) {
           surname: 'Uğurlu'
         }
       ],
-      refName: 'table-refresh-button-case'
-    },
-    ...propsData
+      refName: 'table-button-case',
+      ...propsData
+    }
   }
 }
 

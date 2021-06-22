@@ -382,7 +382,6 @@ export default {
           this.$moment(Date.now()).format(getTimeZoneForMoment())
         ]
       } else {
-        debugger
         const value1 = this.$moment(val[0], getTimeZoneForMoment())
         const value2 = this.$moment(val[1], getTimeZoneForMoment())
         const diff = value2.diff(value1, 'days')

@@ -92,7 +92,7 @@ export default {
 
 <style lang="scss">
 .v-menu__content.k-select__menu {
-  z-index: 99999 !important;
+  z-index: 999999999 !important;
   .v-list.v-select-list {
     .v-list-item {
       padding: 0 16px !important;
