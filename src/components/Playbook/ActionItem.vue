@@ -910,7 +910,7 @@ export default {
           emailDateRangeType: 'ThreeDays'
         }
       }
-      this.checkMarkAsAndStatusDisability()
+      //this.checkMarkAsAndStatusDisability()
       this.$forceUpdate()
     },
     addAction(actionVal = null) {
@@ -963,7 +963,7 @@ export default {
 
       const length = this.actions.length
       this.actionsValues[length - 1] = nextAvailableAction
-      this.checkMarkAsAndStatusDisability()
+      //this.checkMarkAsAndStatusDisability()
       this.$forceUpdate()
       return this.actions.length
     },
@@ -1067,7 +1067,7 @@ export default {
         this.actions.splice(newIndex, 1)
         this.actionsValues.splice(index, 1)
       }
-      this.checkMarkAsAndStatusDisability()
+      //this.checkMarkAsAndStatusDisability()
     },
     updateAnalysisEngines() {
       if (this.analysisEngines.length > 0 && this.editedPlaybookActionAnalyzers) {
