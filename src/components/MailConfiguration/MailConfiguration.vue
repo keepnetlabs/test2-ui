@@ -401,7 +401,7 @@
       v-if="deleteDialog"
       icon="mdi-delete"
       title="Delete Mail Configuration?"
-      subtitle="The O365 mail configuration will deleted permanently"
+      :subtitle="`The ${deleteItemType} mail configuration will deleted permanently`"
       title-id="text--mail-configuration-delete-popup-title"
       subtitle-id="text--mail-configuration-delete-popup-subtitle"
       :status="deleteDialog"
@@ -608,6 +608,7 @@ export default {
     deleteDialogId: null,
     deleteDialog: null,
     deleteDialogName: null,
+    deleteItemType: null,
     editData: null,
     ewsEditData: null,
     storedTableSettings: null,
@@ -939,11 +940,15 @@ export default {
       this.deleteDialogId = null
     },
     handleDeleteDialog() {
-      deleteO365(this.deleteDialogId).then(() => {
-        this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
-        this.closeDeleteDialog()
-        this.getTableData()
-      })
+      if (this.deleteItemType === 'Exchange') {
+        alert('exchange delete')
+      } else {
+        deleteO365(this.deleteDialogId).then(() => {
+          this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
+          this.closeDeleteDialog()
+          this.getTableData()
+        })
+      }
     },
     exportMailConfigurationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
@@ -1003,6 +1008,7 @@ export default {
         })
     },
     handleDelete(item) {
+      this.deleteItemType = item.platform
       this.deleteDialogName = item.name
       this.deleteDialogId = item.resourceId
       this.deletedItem = item
@@ -1087,7 +1093,9 @@ export default {
       this.callForTargetUsers()
     },
     handleEditTargetUsers(selectedRow) {
-      this.editData = selectedRow
+      selectedRow.platform === 'Exchange'
+        ? (this.ewsEditData = selectedRow)
+        : (this.editData = selectedRow)
       this.formValues = {
         name: selectedRow.name,
         applicationId: selectedRow.applicationId,
@@ -1098,7 +1106,8 @@ export default {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       this.isTestConnectionWorkedBefore = false
       this.saveButtonDisabled = false
-      this.status = true
+      if (selectedRow.platform === 'Exchange') this.ewsStatus = true
+      if (selectedRow.platform === 'O365') this.status = true
     },
     handleEditFieldsClick() {
       this.isWantToShowCustomFieldsModal = true
