@@ -396,6 +396,7 @@ export default {
       }
     },
     clearFilter(isEmit = true) {
+      debugger
       this.clearDataParams()
       if (isEmit) {
         this.emitValue()

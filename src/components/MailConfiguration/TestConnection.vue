@@ -338,6 +338,7 @@ export default {
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
         margin-right: 8px;
+        min-width: 202px;
       }
     }
   }
