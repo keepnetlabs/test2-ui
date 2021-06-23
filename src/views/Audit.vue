@@ -241,7 +241,7 @@ export default {
               Condition: 'AND',
               FilterItems: [
                 { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '=<' }
+                { Value: '', FieldName: 'logDate', Operator: '<=' }
               ],
               FilterGroups: []
             },
@@ -265,7 +265,7 @@ export default {
               Condition: 'AND',
               FilterItems: [
                 { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '=<' }
+                { Value: '', FieldName: 'logDate', Operator: '<=' }
               ],
               FilterGroups: []
             },
