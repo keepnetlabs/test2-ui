@@ -144,6 +144,177 @@
       </template>
     </app-modal>
     <app-modal
+      :status="ewsStatus"
+      v-if="ewsStatus"
+      @closeOverlay="ewsStatus = false"
+      :icon-name="'mdi-book-search'"
+      :title="this.editData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
+      className="mail-configuration__modal"
+      ref="ews-configuration__modal"
+      title-id="text--create-ews-mail-configuration-modal-title"
+    >
+      <template v-slot:overlay-body>
+        <v-form ref="ewsMailConfiguration">
+          <app-modal-body-header
+            :title="editData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
+            sub-title="Select filters and date options to start an investigation"
+          />
+          <form-group title="Name" has-hint>
+            <v-text-field
+              placeholder="Enter name"
+              id="input--ews-configuration-name"
+              outlined
+              dense
+              v-model.trim="ewsFormValues.name"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+              ]"
+              hint="*Required"
+              persistent-hint
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="URL" has-hint>
+            <InputUrl
+              v-model="ewsFormValues.url"
+              :required="true"
+              :persistent-hint="true"
+              :hint="'*Required'"
+              id="input--ews-url"
+            />
+          </form-group>
+          <form-group title="Account Type" has-hint>
+            <v-radio-group
+              v-model="ewsFormValues.accountType"
+              id="input--ews-account-type"
+              :mandatory="true"
+              row
+            >
+              <v-radio
+                id="input--ews-impersonation"
+                color="primary"
+                label="Impersonation"
+                value="impersonation"
+              ></v-radio>
+              <v-radio
+                id="input--delegation"
+                color="primary"
+                label="Delegation"
+                value="delegation"
+              ></v-radio>
+            </v-radio-group>
+          </form-group>
+          <form-group title="Username" has-hint>
+            <v-text-field
+              placeholder="Enter a username"
+              id="input--ews-username"
+              outlined
+              dense
+              v-model.trim="ewsFormValues.username"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Username', 64))
+              ]"
+              hint="*Required"
+              persistent-hint
+              autocomplete="disabled"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Password" has-hint>
+            <v-text-field
+              placeholder="Enter a password"
+              id="input--ews-password"
+              outlined
+              dense
+              v-model.trim="ewsFormValues.password"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Password', 64))
+              ]"
+              hint="*Required"
+              persistent-hint
+              autocomplete="disabled"
+              height="40"
+            ></v-text-field>
+          </form-group>
+          <form-group title="Test Email Address" has-hint>
+            <v-text-field
+              placeholder="Enter an email address"
+              id="input--ews-test-email-address"
+              outlined
+              dense
+              hint="*Required"
+              persistent-hint
+              v-model.trim="ewsFormValues.email"
+              :rules="[
+                (v) => validations.required(v, labels.Required),
+                (v) => validations.mail(v, labels.InvalidEmailAddress),
+                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
+              ]"
+              height="40"
+            ></v-text-field>
+          </form-group>
+
+          <form-group title="Target Groups" has-hint>
+            <k-select
+              :items="[]"
+              custom-menu-class="menu--ews-target-users"
+              placeholder="Select Target Groups"
+              multiple
+              dense
+              deletable-chips
+              autocomplete="off"
+              small-chips
+              outlined
+              :no-data-text="'No Target Groups'"
+              v-model.trim="formValues.targetGroups"
+              class="pop-up-card__invite-member"
+            ></k-select>
+          </form-group>
+
+          <v-list-item class="add-user-overlay__list-item">
+            <v-list-item-content class="test-connection-wrapper">
+              <TestConnection
+                :values="formValues"
+                :isValidate="isValidate"
+                :isEdit="editData"
+                ref="testConnection"
+                @testConnectionValues="testConnectionValues"
+                @loading="saveButtonDisabled = false"
+              />
+            </v-list-item-content>
+          </v-list-item>
+        </v-form>
+      </template>
+      <template v-slot:overlay-footer>
+        <div class="text-left">
+          <v-btn
+            id="btn-cancel--ews-modal"
+            class="playbook-rule-form__button"
+            outlined
+            rounded
+            color="error"
+            @click="cancelEWS"
+            >{{ labels.Cancel }}</v-btn
+          >
+        </div>
+        <div>
+          <v-btn
+            id="btn-save--ews-modal"
+            class="playbook-rule-form__button white--text"
+            rounded
+            color="#2196f3"
+            @click="submitEWS"
+            :disabled="saveButtonDisabled"
+          >
+            {{ labels.Save }}
+          </v-btn>
+        </div>
+      </template>
+    </app-modal>
+    <app-modal
       :status="statusGsuite"
       @closeOverlay="statusGsuite = false"
       :icon-name="'mdi-book-search'"
@@ -357,6 +528,14 @@
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
                 <img alt="outlook" src="../../assets/img/office-365-logo.png" />
               </div>
+              <div
+                id="btn-empty--mail-configurations-office-EWS"
+                class="mail-configuration__no-data__buttons--button"
+                @click="ewsStatus = true"
+              >
+                <v-icon color="#2196f3">mdi-plus-circle</v-icon>
+                EWS CONFIGURATION
+              </div>
             </div>
           </div>
         </template>
@@ -392,6 +571,8 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -401,7 +582,9 @@ export default {
     AppDialog,
     TestConnection,
     AppModalBodyHeader,
-    FormGroup
+    FormGroup,
+    KSelect,
+    InputUrl
   },
   computed: {
     getTitle() {
@@ -426,6 +609,7 @@ export default {
     deleteDialog: null,
     deleteDialogName: null,
     editData: null,
+    ewsEditData: null,
     storedTableSettings: null,
     formValues: {
       name: null,
@@ -434,8 +618,17 @@ export default {
       directoryId: null,
       email: null
     },
+    ewsFormValues: {
+      name: null,
+      directoryId: null,
+      email: null,
+      accountType: null,
+      targetGroups: []
+    },
     initialFormValues: null,
+    ewsInitialFormValues: null,
     status: false,
+    ewsStatus: false,
     isWantToImportFile: false,
     tableData: [],
     loading: true,
@@ -548,7 +741,7 @@ export default {
         }
       ]
     },
-    addUsersItems: ['O365'],
+    addUsersItems: ['O365', 'EWS'],
     validations: validations,
     requestBody: {
       pageNumber: 1,
@@ -595,6 +788,44 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    cancelEWS() {
+      this.ewsStatus = false
+    },
+    submitEWS() {
+      if (
+        JSON.stringify(this.ewsFormValues) !== JSON.stringify(this.ewsInitialFormValues) &&
+        this.ewsEditData
+      ) {
+        this.isTestConnectionWorkedBefore = false
+      }
+      if (this.$refs.ewsMailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
+        this.saveButtonDisabled = true
+        if (this.ewsEditData) {
+          let ewsEditData = this.ewsFormValues
+          updateO365(ewsEditData, this.ewsEditData.resourceId).then(() => {
+            this.status = false
+            this.ewsEditData = null
+            this.getTableData()
+          })
+        } else {
+          createO365(this.formValues).then(() => {
+            this.status = false
+            this.ewsEditData = null
+            this.getTableData()
+          })
+        }
+      } else if (this.$refs.ewsMailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
+        this.saveButtonDisabled = true
+        this.$refs.testConnection.testConnection(true)
+        setTimeout(() => {
+          let el = this.$el.querySelector('.test-connection__testing-content__item')
+          scrollToComponent(el)
+        }, 50)
+      } else {
+        const el = this.$refs.ewsMailConfiguration.$el
+        scrollToComponent(el)
+      }
+    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION, JSON.stringify(tableSettings))
     },
@@ -686,7 +917,8 @@ export default {
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
-            this.submit()
+            if (this.status) this.submit()
+            if (this.ewsStatus) this.submitEWS()
           })
         }
       }
@@ -697,6 +929,8 @@ export default {
       this.getTableData()
     },
     isValidate() {
+      if (this.ewsStatus)
+        return this.$refs.ewsMailConfiguration && this.$refs.ewsMailConfiguration.validate()
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
     },
     closeDeleteDialog() {
@@ -826,6 +1060,19 @@ export default {
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
           this.status = true
+          break
+        case this.addUsersItems[1]:
+          this.formValues = {
+            name: null,
+            applicationId: null,
+            applicationSecret: null,
+            directoryId: null,
+            email: null
+          }
+          this.editData = null
+          this.isTestConnectionWorkedBefore = false
+          this.saveButtonDisabled = false
+          this.ewsStatus = true
           break
         default:
           break
