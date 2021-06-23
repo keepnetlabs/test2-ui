@@ -718,20 +718,16 @@ export default {
         }
         this.tableState = { persistentState: tableState }
       }
-    } else {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
-      )
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.bodyData.pageSize = size
-      this.bodyData.pageNumber = page
-      this.serverSideProps.pageSize = size
-      this.getDefaultFilterAndSearch()
     }
-
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.bodyData.pageSize = size
+    this.bodyData.pageNumber = page
+    this.serverSideProps.pageSize = size
+    this.getDefaultFilterAndSearch()
     if (this.$route.query.openPopup) {
       this.isWantToAddNewCommunity = true
     }

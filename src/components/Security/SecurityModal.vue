@@ -8,6 +8,9 @@
     title-id="text--login-popup-title"
     @changeStatus="$emit('changePasswordChange')"
     :max-height-size="'500'"
+    hideOverlay="trueReporterVersionDialoga"
+    custom-size="650"
+    :max-height="true"
   >
     <template v-slot:app-dialog-body>
       <div v-if="loadingSecurityModal">
