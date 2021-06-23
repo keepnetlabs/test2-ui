@@ -394,6 +394,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PLAYBOOKRULES: 'PlaybookRules',
   MAILCONFIG: 'MailConfig',
   COMPANY_LIST: 'CompanyList',
+  ADD_COMPANY_LIST: 'AddCompanyList',
   COMPANY_GROUP_LIST: 'CompanyGroupList',
   COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
   INVESTIGATIONSFOLDER: 'InvestigationsFolder',
