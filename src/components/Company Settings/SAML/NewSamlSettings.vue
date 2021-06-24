@@ -375,7 +375,7 @@ export default {
       certificateText: '',
       isBatchImportPopupOpen: false,
       saveDisable: false,
-      dataContainerWithSearchItems: ['keepnetlabs.com'],
+      dataContainerWithSearchItems: [],
       isTextFieldsDisabled: false,
       roleItems: [],
       formValues: {
@@ -521,7 +521,6 @@ export default {
         const {
           data: { data }
         } = response
-        console.log('data', data)
         for (const key of Object.keys(data)) {
           this.formValues[key] = data[key]
         }

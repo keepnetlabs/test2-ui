@@ -490,6 +490,7 @@ export default {
             Operator: 'Include',
             Value: this.tableOptions.table.map((row) => row.resourceId).join(',')
           })
+          payload.pageNumber = 1
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
