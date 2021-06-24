@@ -692,7 +692,12 @@ export default {
         this.$store.state['datatable'].tables['Investigations'].tableState
       if (tableState) {
         this.serverSideProps = tableState.serverSideProps
+        tableState.currentPage = tableState.serverSideProps.pageNumber
         const { filterValues = {} } = tableState
+        this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+        this.queryHelper.controlRouteQuery()
+        //this.queryHelper.setDefaultValues()
+        const { page, size } = this.queryHelper.returnQueryValues()
         if (Object.keys(filterValues).length) {
           this.isColumnFilterActive = true
           for (const [key, value] of Object.entries(filterValues)) {
@@ -718,16 +723,20 @@ export default {
         }
         this.tableState = { persistentState: tableState }
       }
+    } else {
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
+      )
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.controlRouteQuery()
+      this.queryHelper.setDefaultValues()
+      const { page, size } = this.queryHelper.returnQueryValues()
+      this.bodyData.pageSize = size
+      this.bodyData.pageNumber = page
+      this.serverSideProps.pageSize = size
+      this.getDefaultFilterAndSearch()
     }
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.bodyData.pageSize = size
-    this.bodyData.pageNumber = page
-    this.serverSideProps.pageSize = size
-    this.getDefaultFilterAndSearch()
+
     if (this.$route.query.openPopup) {
       this.isWantToAddNewCommunity = true
     }
