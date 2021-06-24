@@ -51,6 +51,7 @@
             <WhiteLabeling
               ref="refWhiteLabeling"
               is-company-configure
+              :created-company-id="createdCompanyResourceId"
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
             />
           </v-stepper-content>
@@ -145,6 +146,7 @@ import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSys
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
 import ConfigureNewCompanyNextSteps from '@/components/Companies/ConfigureNewCompanyNextSteps'
+import { updateWhiteLabel } from '@/api/whitelabel'
 export default {
   name: 'ConfigureNewCompanyModal',
   components: {
@@ -247,7 +249,18 @@ export default {
       switch (this.step) {
         case 1:
           if (refWhiteLabeling.$refs.refForm.validate()) {
-            this.changeStep()
+            const formData = new FormData()
+            const id = refWhiteLabeling.configureCompanyWhitelabelingResourceId
+            const payload = refWhiteLabeling.formValues
+
+            Object.keys(payload).map((key) => {
+              formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
+            })
+            updateWhiteLabel(formData, id, {
+              headers: { 'X-IR-COMPANY-ID': this.createdCompanyResourceId }
+            }).then(() => {
+              this.changeStep()
+            })
           }
           break
         case 2:
