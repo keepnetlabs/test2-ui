@@ -375,7 +375,7 @@ export default {
       certificateText: '',
       isBatchImportPopupOpen: false,
       saveDisable: false,
-      dataContainerWithSearchItems: ['keepnetlabs.com'],
+      dataContainerWithSearchItems: [],
       isTextFieldsDisabled: false,
       roleItems: [],
       formValues: {
