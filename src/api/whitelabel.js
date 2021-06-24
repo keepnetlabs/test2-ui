@@ -1,8 +1,8 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 
-export function getWhiteLabel() {
-  return testRequest.get('/whitelabeling')
+export function getWhiteLabel(config = {}) {
+  return testRequest.get('/whitelabeling', config)
 }
 
 export function getWhiteLabelByUrl(payload = {}) {
@@ -11,8 +11,9 @@ export function getWhiteLabelByUrl(payload = {}) {
   })
 }
 
-export function updateWhiteLabel(payload = {}, id = '') {
+export function updateWhiteLabel(payload = {}, id = '', config = {}) {
   return testRequest.put(`/whitelabeling/${id}`, payload, {
+    ...config,
     snackbar: COMMON_SNACKBAR
   })
 }

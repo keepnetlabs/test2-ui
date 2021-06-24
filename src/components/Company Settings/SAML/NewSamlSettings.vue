@@ -521,7 +521,6 @@ export default {
         const {
           data: { data }
         } = response
-        console.log('data', data)
         for (const key of Object.keys(data)) {
           this.formValues[key] = data[key]
         }
