@@ -840,11 +840,12 @@ export default {
             senderName: null
           }
         ]
+
         let bodyData = [
           {
             url: null,
             keyword: null,
-            isRegex: false
+            regex: null
           }
         ]
         let attachmentsData = [
@@ -1106,7 +1107,19 @@ export default {
                 })
               }
               break
-
+            case 'regex':
+              if (
+                !bodyData[bodyData.length - 1].regex &&
+                bodyData[bodyData.length - 1].regex !== this.filterList[index].text
+              ) {
+                bodyData.filter((s) => s.regex == null)[0].regex = this.filterList[index].text
+              } else {
+                bodyData.push({
+                  url: null,
+                  keyword: null,
+                  regex: this.filterList[index].text
+                })
+              }
             default:
               break
           }
