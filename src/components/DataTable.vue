@@ -2985,7 +2985,7 @@ export default {
     },
     handleClearColumnFilter(fieldName) {
       this.isSelectedAllEver = false
-      if (fieldName !== 'logDate') this.$delete(this.filterValues, fieldName)
+      this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
     }
   }
