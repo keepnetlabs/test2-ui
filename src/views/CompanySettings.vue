@@ -97,10 +97,16 @@ export default {
         'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
       )
+    },
+    changeTabByRoute() {
+      const { $route: { params } = {} } = this
+      if (!params || !params.tab) return
+      this.tab = params.tab
     }
   },
   created() {
     this.getPermissions()
+    this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {
     const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs

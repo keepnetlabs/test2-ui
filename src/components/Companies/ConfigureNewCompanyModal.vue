@@ -230,7 +230,8 @@ export default {
         this.systemUserFormData.roleResourceIdList =
           availableRoles &&
           availableRoles.length &&
-          availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
+          availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
+            .resourceId
       })
     },
     getPermissions() {

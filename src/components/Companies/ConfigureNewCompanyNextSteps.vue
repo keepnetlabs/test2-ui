@@ -1,10 +1,10 @@
 <template>
   <div class="mt-6">
     <ConfigureNewCompanyNextStepsItem
-      route-link="/company-settings"
       route-text="Company > Company Settings > Notification Templates"
       text="to edit and create email notificaiton templates"
       title="Customize notification templates"
+      :route-link="{ name: 'Company Settings', params: { tab: 'notification-template' } }"
     />
     <ConfigureNewCompanyNextStepsItem
       route-link="/target-users"
@@ -13,7 +13,7 @@
       title="Create target users"
     />
     <ConfigureNewCompanyNextStepsItem
-      route-link="/mail-configuration"
+      route-link="/mailConfiguration"
       route-text="Incident Responder > Mail configurations"
       text="to define email services for effective use of Phishing Reporter and Incident responder"
       title="Mail configurations"
@@ -25,10 +25,10 @@
       title="Create tenant companies"
     />
     <ConfigureNewCompanyNextStepsItem
-      route-link="/phishing-reporter"
       route-text="Phishing Reporter > Settings "
       text="to configure add-in settings"
       title="Configure Phishing Reporter"
+      :route-link="{ name: 'Phishing Reporter', params: { tab: 'phishing-reporter-settings' } }"
     />
   </div>
 </template>
