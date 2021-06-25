@@ -18,27 +18,28 @@
             >{{ labels.WhiteLabeling }}</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-          <v-stepper-step
+          <!--  <v-stepper-step
             id="step--configure-new-company-white-listing"
             class="k-stepper__step"
             :complete="step > 2"
             :step="2"
             >{{ labels.WhiteListing }}</v-stepper-step
           >
-          <v-divider class="k-stepper__divider" />
+          <v-divider class="k-stepper__divider" /> -->
+
           <v-stepper-step
             id="step--configure-new-company-first-system-user"
             class="k-stepper__step"
-            :complete="step > 3"
-            :step="3"
+            :complete="step > 2"
+            :step="2"
             >{{ labels.FirstSystemUser }}</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
             id="step--configure-new-company-next-steps"
             class="k-stepper__step"
-            :complete="step > 4"
-            :step="4"
+            :complete="step > 3"
+            :step="3"
             >{{ labels.NextSteps }}
           </v-stepper-step>
         </v-stepper-header>
@@ -55,14 +56,21 @@
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
             />
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2">
+          <!--      <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               :title="labels.WhiteListing"
               :subtitle="labels.WhiteListingSubTitle"
             />
             <WhiteListing />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="3">
+          </v-stepper-content>     <v-stepper-content class="k-stepper__content" :step="2">
+            <ConfigureCompanyStepHeader
+              :title="labels.WhiteListing"
+              :subtitle="labels.WhiteListingSubTitle"
+            />
+            <WhiteListing />
+          </v-stepper-content> -->
+
+          <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               class="mb-6"
               :title="labels.CreateFirstSystemUser"
@@ -75,7 +83,7 @@
               :role-items="roleItems"
             />
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="4">
+          <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
               :title="labels.NextSteps"
               :subtitle="labels.NextStepsSubTitle"
@@ -111,7 +119,7 @@
           class="add-in-configuration__footer-btn-next mr-4"
           color="#00BCD4"
           rounded
-          v-if="step === 3"
+          v-if="step === 2"
         >
           {{ labels.Skip }}
         </v-btn>
@@ -121,12 +129,12 @@
           class="add-in-configuration__footer-btn-next"
           color="#2196f3"
           rounded
-          :style="[1, 3].includes(step) && { width: '176px' }"
+          :style="[1, 2].includes(step) && { width: '176px' }"
           :disabled="isSaveDisabled"
           @click="handleSaveAndContinue"
         >
           {{
-            [1, 3].includes(step) ? labels.SaveAndContinue : step === 4 ? labels.Close : labels.Next
+            [1, 2].includes(step) ? labels.SaveAndContinue : step === 3 ? labels.Close : labels.Next
           }}
         </v-btn>
       </div>
@@ -141,7 +149,6 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems, scrollToComponent } from '@/utils/functions'
-import WhiteListing from '@/components/Company Settings/WhiteListing'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
@@ -152,7 +159,6 @@ export default {
   components: {
     ConfigureNewCompanyNextSteps,
     CreateOrEditSystemUserForm,
-    WhiteListing,
     WhiteLabeling,
     ConfigureCompanyStepHeader,
     AppModal
@@ -265,9 +271,6 @@ export default {
           }
           break
         case 2:
-          this.changeStep()
-          break
-        case 3:
           const isNumberValid = this.$refs.refForm.validatePhoneNumber()
           const isFormValid = this.$refs.refForm.validate()
           if (isFormValid && isNumberValid) {
@@ -287,7 +290,7 @@ export default {
             })
           }
           break
-        case 4:
+        case 3:
           this.closeOverlay()
       }
     },
