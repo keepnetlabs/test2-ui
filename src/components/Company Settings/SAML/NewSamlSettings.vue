@@ -60,6 +60,8 @@
                 style="max-width: 428px;"
                 outlined
                 dense
+                persistent-hint
+                hint="*Required"
                 :rules="[
                   (v) => validations.required(v, labels.Required),
                   (v) =>
@@ -84,13 +86,6 @@
           v-if="dataContainerWithSearchItems.length"
           v-model="dataContainerWithSearchItems"
         />
-        <div class="v-messages theme--light mt-n4 mb-2">
-          <div class="v-messages__wrapper">
-            <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
-              *Required
-            </div>
-          </div>
-        </div>
         <button
           id="btn-import--saml-settings"
           class="ip-restriction__button mb-6 ml-2"
