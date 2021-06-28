@@ -692,7 +692,6 @@ export default {
       })
     },
     callForTargetUsers() {
-      this.loading = true
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
@@ -726,6 +725,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
+      this.loading = true
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const { data } = response
