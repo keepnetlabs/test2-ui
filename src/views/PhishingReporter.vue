@@ -230,6 +230,8 @@ export default {
     handleTabClick({ label = '' }) {
       if (label === 'Settings') {
         this.getPhishingReport()
+      } else {
+        this.getPhishingReportSummary()
       }
     },
     changeTabStatus(status) {
