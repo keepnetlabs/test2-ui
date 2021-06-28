@@ -429,4 +429,50 @@ describe('Datatable test cases suite', () => {
       Operator: 'Include'
     })
   })
+
+  it('Cluster Case', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      clusterItems: [{ name: 'Company Name' }],
+      activeCluster: '',
+      hideActionOptions: false,
+      options: true,
+      loading: false,
+      groupable: true
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Mamını',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //checking is cluster buttons is active
+    const bulletedButton = wrapper.find('.clust-btn')
+    const clusterButton = wrapper.find('.cluster__right i')
+    expect(bulletedButton.exists()).toBe(true)
+    expect(clusterButton.exists()).toBe(true)
+    //Clicking button
+    await clusterButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    const menu = wrapper.find('.cluster-view')
+    console.log('wrapper.html', wrapper.html())
+    //checking is menu rendered
+    expect(wrapper.vm.clusterChevron).toBe(true)
+    expect(menu.exists()).toBe(true)
+    //clicking first item
+    await menu.find('.cluster-view__item').trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //expecting is event is throwed
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.CLUSTER]
+    expect(emittedEvent).toBeTruthy()
+    //expecting is event is what we wanted
+    expect(emittedEvent[0][0]).toStrictEqual('Company Name')
+    //clicking bulleted button
+    await bulletedButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //expecting bulleted event
+    const emittedBulletedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.BULLETED]
+    expect(emittedBulletedEvent).toBeTruthy()
+    expect(emittedBulletedEvent[0]).toStrictEqual([])
+  })
 })
