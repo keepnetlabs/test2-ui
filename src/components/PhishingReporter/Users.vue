@@ -43,7 +43,6 @@
       :resizable="resizable"
       :sizeable="true"
       :table="tableOptions.table"
-      @handleEdit="handleEdit"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
       @columnFilterChanged="columnFilterChanged"
@@ -135,6 +134,7 @@ export default {
     return {
       PROPERTY_STORE,
       isLoading: true,
+      isInit: true,
       isRestoredOrClearedFilters: false,
       tableOptions: {
         isColumnFilterActive: false,
@@ -435,10 +435,11 @@ export default {
       value = typeof value == 'string' ? value : value.toString()
       return value.length === 1 ? `0${value}` : `${value}`
     },
-    handleEdit(rows) {},
-    handleAdd(row) {},
     callForPhishingReporterUser() {
       this.isLoading = true
+      if (!this.isInit) {
+        this.$emit('callForPhishingReporterSummary')
+      }
       searchPhishingReporterUser(this.requestBody)
         .then((response) => {
           const {
@@ -470,6 +471,7 @@ export default {
           if (this.isRestoredOrClearedFilters) {
             this.isRestoredOrClearedFilters = false
           }
+          this.isInit = false
         })
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -510,7 +512,6 @@ export default {
         .then(() => {
           this.$refs.refUsersList.unSelectRow(this.selectedRow)
           this.callForPhishingReporterUser()
-          this.$emit('callForPhishingReporterSummary')
         })
         .catch(() => {})
     },

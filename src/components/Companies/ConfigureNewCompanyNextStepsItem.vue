@@ -3,7 +3,8 @@
     <h3>{{ title }}</h3>
     <slot>
       <p>
-        Go to <router-link :to="routeLink"> {{ routeText }} </router-link> {{ text }}
+        Go to <router-link :to="routeLink" target="_blank"> {{ routeText }} </router-link>
+        {{ text }}
       </p>
     </slot>
   </div>
