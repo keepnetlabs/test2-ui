@@ -4,6 +4,7 @@ import { getDefaultVuex } from './utils'
 import DataTableWrapper from '../Objects/Datatable'
 import { wait } from '../utils'
 import MOCKS from '../Mocks'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 describe('Datatable test cases suite', () => {
   const localVue = createLocalVue()
@@ -474,5 +475,49 @@ describe('Datatable test cases suite', () => {
     const emittedBulletedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.BULLETED]
     expect(emittedBulletedEvent).toBeTruthy()
     expect(emittedBulletedEvent[0]).toStrictEqual([])
+  })
+  it('Server side Select all', async () => {
+    const { wrapper } = new DataTableWrapper(localVue, store, {
+      selectable: true,
+      isServerSide: true,
+      serverSideEvents: { pagination: true, search: true, sort: true },
+      isServerSideSelection: true,
+      serverSideProps: new ServerSideProps()
+    })
+    //setting total number of records
+    wrapper.vm.serverSideProps.totalNumberOfRecords = 2
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        },
+        {
+          name: 'Arda',
+          surname: 'Dura'
+        }
+      ]
+    })
+
+    //getting all rows
+    const row = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking  checkbox
+    const checkbox = row.find('.el-checkbox')
+    await checkbox.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //serverSideSelection variable must be 1
+    expect(wrapper.vm.serverSideSelectionCount).toEqual(1)
+    const selectAllButton = wrapper.find('.selection-row .btn-all-selection')
+    //expecting selectAllButton to exist.
+    expect(selectAllButton.exists()).toBe(true)
+    //Clicking select All button
+    await selectAllButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //it has to be equal 2
+    expect(wrapper.vm.serverSideSelectionCount).toEqual(2)
+    //expect selection row to be all selected
+    const selectionRow = wrapper.find('.selection-row')
+    expect(selectionRow.text()).toContain(`All selected`)
+    await selectAllButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //it has to be equal 0
+    expect(wrapper.vm.serverSideSelectionCount).toEqual(0)
   })
 })
