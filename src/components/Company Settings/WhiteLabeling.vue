@@ -390,6 +390,7 @@ export default {
     }
     if (this.isCompanyConfigure) {
       getWhiteLabel({
+        overrideCompanyId: true,
         headers: { 'X-IR-COMPANY-ID': this.createdCompanyId },
         loading: true
       }).then((response) => {
