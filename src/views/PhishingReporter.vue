@@ -419,6 +419,11 @@ export default {
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
     }
+    if (this.$route.query && this.$route.query.tab) {
+      this.$nextTick(() => {
+        this.tab = this.$route.query.tab
+      })
+    }
   },
   mounted() {
     this.getHash()
