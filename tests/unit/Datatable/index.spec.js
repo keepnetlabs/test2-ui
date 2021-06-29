@@ -14,6 +14,41 @@ describe('Datatable test cases suite', () => {
     store = getDefaultVuex(store)
   })
 
+  it('Pagination Case', async () => {
+    const { wrapper } = new DataTableWrapper(localVue, store, {
+      serverSideProps: new ServerSideProps()
+    })
+    wrapper.vm.serverSideProps.totalNumberOfRecords = MOCKS.PAGINATION_DATA.length
+    await wrapper.setProps({
+      table: MOCKS.PAGINATION_DATA,
+      isServerSide: true,
+      serverSideEvents: { pagination: true, search: true, sort: true }
+    })
+    console.log(
+      'wrapper.vm.serverSideProps.totalNumberOfRecords',
+      wrapper.vm.serverSideProps.totalNumberOfRecords
+    )
+    //getting pagination
+    const pagination = wrapper.find('.el-pagination')
+    //expecting pagination to be rendered
+    expect(pagination.exists()).toBe(true)
+    //expecting text message of pagination
+    expect(pagination.find('.el-pagination__text--2').text().replace(/\s/g, '')).toContain(
+      '1-10of13'
+    )
+    const elPager = pagination.find('.el-pager')
+    //clicking second item
+    await elPager.findAll('li').at(1).trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking on dom is second page active
+    expect(elPager.findAll('li').at(1).classes('active')).toBe(true)
+    console.log('wrapper.emitted(', wrapper.emitted())
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.SERVER_SIDE_PAGE_CHANGED]
+    //checking is event throwed
+    expect(emittedEvent).toBeTruthy()
+    //expect emitted event page is 2
+    expect(emittedEvent[0][0]).toEqual(2)
+  })
+
   it('Refresh Button case', async () => {
     //Mounting table
     localVue.use(store)
@@ -458,7 +493,6 @@ describe('Datatable test cases suite', () => {
     //Clicking button
     await clusterButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
     const menu = wrapper.find('.cluster-view')
-    console.log('wrapper.html', wrapper.html())
     //checking is menu rendered
     expect(wrapper.vm.clusterChevron).toBe(true)
     expect(menu.exists()).toBe(true)
@@ -519,5 +553,28 @@ describe('Datatable test cases suite', () => {
     await selectAllButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
     //it has to be equal 0
     expect(wrapper.vm.serverSideSelectionCount).toEqual(0)
+  })
+
+  it('Dynamic width', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      selectable: true
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Mamını',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //changing width value
+    wrapper.vm.columns[0].width = 250
+    //waiting dom updates
+    await wrapper.vm.$nextTick()
+    //expecting is width changed
+    expect(wrapper.vm.columns[0].width).toEqual(250)
   })
 })
