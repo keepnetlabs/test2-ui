@@ -4,7 +4,7 @@
       route-text="Company > Company Settings > Notification Templates"
       text="to edit and create email notificaiton templates"
       title="Customize notification templates"
-      :route-link="{ name: 'Company Settings', params: { tab: 'notification-template' } }"
+      :route-link="{ name: 'Company Settings', query: { tab: 'notification-template' } }"
     />
     <ConfigureNewCompanyNextStepsItem
       route-link="/target-users"
@@ -28,7 +28,7 @@
       route-text="Phishing Reporter > Settings "
       text="to configure add-in settings"
       title="Configure Phishing Reporter"
-      :route-link="{ name: 'Phishing Reporter', params: { tab: 'phishing-reporter-settings' } }"
+      :route-link="{ name: 'Phishing Reporter', query: { tab: 'phishing-reporter-settings' } }"
     />
   </div>
 </template>

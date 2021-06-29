@@ -8,7 +8,9 @@ export default {
     FILTER_OPTIONS_RESET_DEFAULT_SEARCH: 'restore-default-search',
     FILTER_OPTIONS_CLEAR_FILTER: 'clear-filters',
     SELECTION: 'handleSelectionChange',
-    COLUMN_FILTER: 'columnFilterChanged'
+    COLUMN_FILTER: 'columnFilterChanged',
+    CLUSTER: 'clusterChanged',
+    BULLETED: 'handleListBulleted'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',

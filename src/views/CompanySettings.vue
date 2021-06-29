@@ -99,9 +99,12 @@ export default {
       )
     },
     changeTabByRoute() {
-      const { $route: { params } = {} } = this
-      if (!params || !params.tab) return
-      this.tab = params.tab
+      const { $route: { query } = {} } = this
+      if (!query || !query.tab) return
+      this.tab = query.tab
+      this.$nextTick(() => {
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template&', ''))
+      })
     }
   },
   created() {

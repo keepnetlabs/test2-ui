@@ -230,6 +230,8 @@ export default {
     handleTabClick({ label = '' }) {
       if (label === 'Settings') {
         this.getPhishingReport()
+      } else {
+        this.getPhishingReportSummary()
       }
     },
     changeTabStatus(status) {
@@ -416,6 +418,11 @@ export default {
     this.getPhishingReport()
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
+    }
+    if (this.$route.query && this.$route.query.tab) {
+      this.$nextTick(() => {
+        this.tab = this.$route.query.tab
+      })
     }
   },
   mounted() {

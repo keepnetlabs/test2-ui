@@ -565,6 +565,7 @@ export default {
           this.formValues[key] = data[key]
           if (key === 'idPCertificate' && this.formValues[key]) {
             this.certificateText = this.formValues[key]
+            this.formValues.idPCertFingerprint = this.formValues[key]
           }
         })
         this.isTextFieldsDisabled = true
