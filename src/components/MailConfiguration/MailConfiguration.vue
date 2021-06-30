@@ -148,7 +148,7 @@
       v-if="ewsStatus"
       @closeOverlay="ewsStatus = false"
       :icon-name="'mdi-book-search'"
-      :title="this.editData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
+      :title="this.ewsEditData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
       className="mail-configuration__modal"
       ref="ews-configuration__modal"
       title-id="text--create-ews-mail-configuration-modal-title"
@@ -156,7 +156,7 @@
       <template v-slot:overlay-body>
         <v-form ref="ewsMailConfiguration">
           <app-modal-body-header
-            :title="editData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
+            :title="ewsEditData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
             sub-title="Select filters and date options to start an investigation"
           />
           <form-group title="Name" has-hint>
@@ -165,7 +165,7 @@
               id="input--ews-configuration-name"
               outlined
               dense
-              v-model.trim="ewsFormValues.name"
+              v-model.trim="ewsFormValues.Name"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
@@ -175,18 +175,39 @@
               height="40"
             ></v-text-field>
           </form-group>
-          <form-group title="URL" has-hint>
+          <form-group title="Service URL" has-hint>
             <InputUrl
-              v-model="ewsFormValues.url"
+              v-model="ewsFormValues.ServiceUrl"
               :required="true"
               :persistent-hint="true"
               :hint="'*Required'"
               id="input--ews-url"
             />
           </form-group>
+          <form-group title="Exchange Version">
+            <k-select
+              :items="exchangeVersions"
+              custom-menu-class="menu--ews-exchange-version"
+              placeholder="Select Exchange Version"
+              dense
+              deletable-chips
+              autocomplete="off"
+              small-chips
+              outlined
+              :no-data-text="'No Exchange Version'"
+              v-model.trim="ewsFormValues.ExchangeVersionLookupResourceId"
+              item-value="resourceId"
+              item-text="name"
+              required
+              :rules="[(v) => validations.required(v, labels.Required)]"
+              class="pop-up-card__invite-member"
+              :persistent-hint="true"
+              :hint="'*Required'"
+            ></k-select>
+          </form-group>
           <form-group title="Account Type" has-hint>
             <v-radio-group
-              v-model="ewsFormValues.accountType"
+              v-model="ewsFormValues.AccountType"
               id="input--ews-account-type"
               :mandatory="true"
               row
@@ -195,13 +216,13 @@
                 id="input--ews-impersonation"
                 color="primary"
                 label="Impersonation"
-                value="impersonation"
+                :value="1"
               ></v-radio>
               <v-radio
                 id="input--delegation"
                 color="primary"
                 label="Delegation"
-                value="delegation"
+                :value="2"
               ></v-radio>
             </v-radio-group>
           </form-group>
@@ -211,14 +232,14 @@
               id="input--ews-username"
               outlined
               dense
-              v-model.trim="ewsFormValues.username"
+              v-model.trim="ewsFormValues.Username"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Username', 64))
               ]"
               hint="*Required"
               persistent-hint
-              autocomplete="disabled"
+              autocomplete="off"
               height="40"
             ></v-text-field>
           </form-group>
@@ -228,15 +249,16 @@
               id="input--ews-password"
               outlined
               dense
-              v-model.trim="ewsFormValues.password"
+              v-model.trim="ewsFormValues.Password"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Password', 64))
               ]"
               hint="*Required"
               persistent-hint
-              autocomplete="disabled"
+              autocomplete="off"
               height="40"
+              type="password"
             ></v-text-field>
           </form-group>
           <form-group title="Test Email Address" has-hint>
@@ -247,7 +269,7 @@
               dense
               hint="*Required"
               persistent-hint
-              v-model.trim="ewsFormValues.email"
+              v-model.trim="ewsFormValues.Email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.mail(v, labels.InvalidEmailAddress),
@@ -256,31 +278,63 @@
               height="40"
             ></v-text-field>
           </form-group>
-
+          <form-group title="X-Anchor Mail Box Header" has-hint>
+            <v-checkbox
+              v-model="ewsFormValues.XAnchorMailBoxHeader"
+              color="#2196f3"
+              class="mt-1"
+              label="X-Anchor Mail Box Header"
+            />
+          </form-group>
           <form-group title="Target Groups" has-hint>
+            <div class="ews-target-groups-select__radio-group">
+              <v-radio-group
+                v-model="ewsFormValues.IsAllTargetGroupsSelected"
+                id="input--ews-target-group-type"
+                :mandatory="false"
+                @change="handleGroupTypeChange"
+                row
+              >
+                <v-radio
+                  id="input--ews-all-users"
+                  :value="true"
+                  label="All Groups"
+                  color="#2196f3"
+                ></v-radio>
+                <v-radio
+                  id="input--ews-user-groups"
+                  :value="false"
+                  label="Specific User Groups"
+                  color="#2196f3"
+                ></v-radio>
+              </v-radio-group>
+            </div>
             <k-select
-              :items="[]"
+              :items="targetGroupsList"
               custom-menu-class="menu--ews-target-users"
               placeholder="Select Target Groups"
               multiple
               dense
               deletable-chips
               autocomplete="off"
+              :disabled="ewsFormValues.IsAllTargetGroupsSelected"
               small-chips
               outlined
               :no-data-text="'No Target Groups'"
-              v-model.trim="formValues.targetGroups"
+              v-model.trim="ewsFormValues.TargetGroupResourceIdList"
+              item-text="name"
+              item-value="resourceId"
               class="pop-up-card__invite-member"
             ></k-select>
           </form-group>
 
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content class="test-connection-wrapper">
-              <TestConnection
-                :values="formValues"
+              <TestConnectionEWS
+                :values="ewsFormValues"
                 :isValidate="isValidate"
-                :isEdit="editData"
-                ref="testConnection"
+                :isEdit="ewsEditData"
+                ref="testConnectionEWS"
                 @testConnectionValues="testConnectionValues"
                 @loading="saveButtonDisabled = false"
               />
@@ -534,7 +588,7 @@
                 @click="ewsStatus = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
-                EWS CONFIGURATION
+                <img alt="exchange" src="../../assets/img/office365_logo.png" />
               </div>
             </div>
           </div>
@@ -557,14 +611,21 @@ import {
 import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import {
+  createEWS,
   createO365,
+  deleteEWS,
   deleteO365,
   exportMailConfiguration,
+  getEWSMailData,
+  getExchangeVersions,
   getMailConfigurationList,
+  getO365MailData,
+  updateEWS,
   updateO365
 } from '@/api/mailConfiguration'
 import * as validations from '@/utils/validations'
 import TestConnection from './TestConnection'
+import TestConnectionEWS from './TestConnectionEWS'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { checkPermission, scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -573,6 +634,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
+import { getTargetGroups } from '@/api/targetUsers'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -581,6 +643,7 @@ export default {
     AppModal,
     AppDialog,
     TestConnection,
+    TestConnectionEWS,
     AppModalBodyHeader,
     FormGroup,
     KSelect,
@@ -619,12 +682,20 @@ export default {
       directoryId: null,
       email: null
     },
+    exchangeVersions: [],
+    targetGroupsList: [],
+    defaultTargetGroupsList: [],
     ewsFormValues: {
-      name: null,
-      directoryId: null,
-      email: null,
-      accountType: null,
-      targetGroups: []
+      Name: null,
+      ServiceUrl: null,
+      ExchangeVersionLookupResourceId: null,
+      AccountType: 1,
+      Username: null,
+      Password: null,
+      Email: null,
+      XAnchorMailBoxHeader: false,
+      TargetGroupResourceIdList: [],
+      IsAllTargetGroupsSelected: true
     },
     initialFormValues: null,
     ewsInitialFormValues: null,
@@ -789,8 +860,14 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    handleGroupTypeChange() {
+      if (this.ewsFormValues.IsAllTargetGroupsSelected) {
+        this.ewsFormValues.TargetGroupResourceIdList = []
+      }
+    },
     cancelEWS() {
       this.ewsStatus = false
+      this.ewsInitialFormValues = null
     },
     submitEWS() {
       if (
@@ -803,21 +880,21 @@ export default {
         this.saveButtonDisabled = true
         if (this.ewsEditData) {
           let ewsEditData = this.ewsFormValues
-          updateO365(ewsEditData, this.ewsEditData.resourceId).then(() => {
-            this.status = false
+          updateEWS(ewsEditData, this.ewsEditData.ResourceId).then(() => {
+            this.ewsStatus = false
             this.ewsEditData = null
             this.getTableData()
           })
         } else {
-          createO365(this.formValues).then(() => {
-            this.status = false
+          createEWS(this.ewsFormValues).then(() => {
+            this.ewsStatus = false
             this.ewsEditData = null
             this.getTableData()
           })
         }
       } else if (this.$refs.ewsMailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
-        this.$refs.testConnection.testConnection(true)
+        this.$refs.testConnectionEWS.testConnection(true)
         setTimeout(() => {
           let el = this.$el.querySelector('.test-connection__testing-content__item')
           scrollToComponent(el)
@@ -916,6 +993,7 @@ export default {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             if (this.status) this.submit()
@@ -941,7 +1019,11 @@ export default {
     },
     handleDeleteDialog() {
       if (this.deleteItemType === 'Exchange') {
-        alert('exchange delete')
+        deleteEWS(this.deleteDialogId).then(() => {
+          this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
+          this.closeDeleteDialog()
+          this.getTableData()
+        })
       } else {
         deleteO365(this.deleteDialogId).then(() => {
           this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
@@ -1068,14 +1150,19 @@ export default {
           this.status = true
           break
         case this.addUsersItems[1]:
-          this.formValues = {
-            name: null,
-            applicationId: null,
-            applicationSecret: null,
-            directoryId: null,
-            email: null
+          this.ewsFormValues = {
+            Name: null,
+            ServiceUrl: null,
+            ExchangeVersionLookupResourceId: null,
+            AccountType: 1,
+            Username: null,
+            Password: null,
+            Email: null,
+            XAnchorMailBoxHeader: false,
+            TargetGroupResourceIdList: [],
+            IsAllTargetGroupsSelected: true
           }
-          this.editData = null
+          this.ewsEditData = null
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
           this.ewsStatus = true
@@ -1093,21 +1180,44 @@ export default {
       this.callForTargetUsers()
     },
     handleEditTargetUsers(selectedRow) {
-      selectedRow.platform === 'Exchange'
-        ? (this.ewsEditData = selectedRow)
-        : (this.editData = selectedRow)
-      this.formValues = {
-        name: selectedRow.name,
-        applicationId: selectedRow.applicationId,
-        applicationSecret: selectedRow.applicationSecret,
-        directoryId: selectedRow.directoryId,
-        email: selectedRow.email
+      if (selectedRow.platform === 'Exchange') {
+        getEWSMailData(selectedRow.resourceId).then((response) => {
+          const apiData = response.data.data
+          this.ewsFormValues = {
+            Name: apiData.name,
+            ServiceUrl: apiData.serviceUrl,
+            ExchangeVersionLookupResourceId: apiData.ewsSchemaVersionLookupResourceId,
+            AccountType: apiData.accountType,
+            Username: apiData.username,
+            Password: apiData.password,
+            Email: apiData.email,
+            XAnchorMailBoxHeader: apiData.xAnchorMailBoxHeader,
+            TargetGroupResourceIdList: apiData.targetGroupResourceIdList,
+            IsAllTargetGroupsSelected: apiData.isAllTargetGroupsSelected,
+            ResourceId: selectedRow.resourceId
+          }
+          this.ewsEditData = this.ewsFormValues
+          this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.isTestConnectionWorkedBefore = false
+          this.saveButtonDisabled = false
+          this.ewsStatus = true
+        })
+      } else {
+        getO365MailData(selectedRow.resourceId).then((response) => {
+          const apiData = response.data.data
+          this.formValues = {
+            name: apiData.name,
+            applicationId: apiData.applicationId,
+            applicationSecret: apiData.applicationSecret,
+            directoryId: apiData.directoryId,
+            email: apiData.email
+          }
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.isTestConnectionWorkedBefore = false
+          this.saveButtonDisabled = false
+          this.status = true
+        })
       }
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      this.isTestConnectionWorkedBefore = false
-      this.saveButtonDisabled = false
-      if (selectedRow.platform === 'Exchange') this.ewsStatus = true
-      if (selectedRow.platform === 'O365') this.status = true
     },
     handleEditFieldsClick() {
       this.isWantToShowCustomFieldsModal = true
@@ -1211,6 +1321,13 @@ export default {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION)
     )
+    getExchangeVersions().then((response) => {
+      this.exchangeVersions = response.data.data
+    })
+    getTargetGroups().then((response) => {
+      this.targetGroupsList = response.data.data
+      this.defaultTargetGroupsList = response.data.data
+    })
   },
   mounted() {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
