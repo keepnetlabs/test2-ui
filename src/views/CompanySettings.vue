@@ -97,10 +97,19 @@ export default {
         'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
       )
+    },
+    changeTabByRoute() {
+      const { $route: { query } = {} } = this
+      if (!query || !query.tab) return
+      this.tab = query.tab
+      this.$nextTick(() => {
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template&', ''))
+      })
     }
   },
   created() {
     this.getPermissions()
+    this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {
     const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs

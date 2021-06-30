@@ -241,7 +241,7 @@ export default {
               Condition: 'AND',
               FilterItems: [
                 { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '=<' }
+                { Value: '', FieldName: 'logDate', Operator: '<=' }
               ],
               FilterGroups: []
             },
@@ -265,7 +265,7 @@ export default {
               Condition: 'AND',
               FilterItems: [
                 { Value: '', FieldName: 'logDate', Operator: '>=' },
-                { Value: '', FieldName: 'logDate', Operator: '=<' }
+                { Value: '', FieldName: 'logDate', Operator: '<=' }
               ],
               FilterGroups: []
             },
@@ -464,6 +464,11 @@ export default {
 
       filterPayload.map((x, i, t) => {
         if (x.FieldName !== fieldName) {
+          items.push(x)
+        } else if (x.FieldName === 'logDate') {
+          if (x.Operator === '>=')
+            x.value = this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment())
+          if (x.Operator === '<=') x.value = this.$moment(Date.now()).format(getTimeZoneForMoment())
           items.push(x)
         }
       })

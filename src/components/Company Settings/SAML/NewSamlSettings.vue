@@ -60,6 +60,8 @@
                 style="max-width: 428px;"
                 outlined
                 dense
+                persistent-hint
+                hint="*Required"
                 :rules="[
                   (v) => validations.required(v, labels.Required),
                   (v) =>
@@ -84,13 +86,6 @@
           v-if="dataContainerWithSearchItems.length"
           v-model="dataContainerWithSearchItems"
         />
-        <div class="v-messages theme--light mt-n4 mb-2">
-          <div class="v-messages__wrapper">
-            <div class="v-messages__message" style="padding-left: 12px; font-size: 9px;">
-              *Required
-            </div>
-          </div>
-        </div>
         <button
           id="btn-import--saml-settings"
           class="ip-restriction__button mb-6 ml-2"
@@ -375,7 +370,7 @@ export default {
       certificateText: '',
       isBatchImportPopupOpen: false,
       saveDisable: false,
-      dataContainerWithSearchItems: ['keepnetlabs.com'],
+      dataContainerWithSearchItems: [],
       isTextFieldsDisabled: false,
       roleItems: [],
       formValues: {
@@ -521,7 +516,6 @@ export default {
         const {
           data: { data }
         } = response
-        console.log('data', data)
         for (const key of Object.keys(data)) {
           this.formValues[key] = data[key]
         }
@@ -571,6 +565,7 @@ export default {
           this.formValues[key] = data[key]
           if (key === 'idPCertificate' && this.formValues[key]) {
             this.certificateText = this.formValues[key]
+            this.formValues.idPCertFingerprint = this.formValues[key]
           }
         })
         this.isTextFieldsDisabled = true

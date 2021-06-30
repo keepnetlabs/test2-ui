@@ -7,6 +7,8 @@
     size="big"
     @changeStatus="$emit('changeSettings')"
     :max-height-size="'500'"
+    custom-size="650"
+    :max-height="true"
   >
     <template v-slot:app-dialog-body>
       <div v-if="loadingSettingsModal">

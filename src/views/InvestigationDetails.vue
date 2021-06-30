@@ -2102,41 +2102,33 @@ export default {
       this.showEmails = false
       this.investigationDetailsList = []
 
-      if (menu != 'targetUsers') {
+      if (menu !== 'targetUsers') {
         this.loading = true
         let dataBody = this.investigationListBodyData
         dataBody.pageNumber = 1
-        /*
-        while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
-          dataBody.filter.FilterGroups[0].FilterItems.pop()
-        }
-        */
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
         this.refreshDatatable()
-        /*this.$store
-          .dispatch('investigations/getInvestigationDetailsListData', {
-            data: dataBody,
-            id: this.$route.params.id
-          })
-          .finally(() => {
-            this.loading = false
-            this.showEmails = true
-            //vm.$forceUpdate()
-          })*/
       } else {
-        //this.getDefaultFilterAndSearchForTargetUsers()
+        this.leftMenuLoading = true
+        this.loading = true
         this.$store
-          .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.defaultInvestigationTargetUsersListBodyData,
-            id: this.$route.params.id
-          })
-          .then((response) => {
-            this.adjustTargetUserShowRecords(response)
-          })
+          .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
           .finally(() => {
-            this.showTargetUsersDetails = true
-            this.loading = false
-            vm.$forceUpdate()
+            this.$store
+              .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
+                data: this.defaultInvestigationTargetUsersListBodyData,
+                id: this.$route.params.id
+              })
+              .then((response) => {
+                this.adjustTargetUserShowRecords(response)
+              })
+              .finally(() => {
+                this.showTargetUsersDetails = true
+                this.loading = false
+                this.leftMenuLoading = false
+                this.loading = false
+                vm.$forceUpdate()
+              })
           })
       }
     },

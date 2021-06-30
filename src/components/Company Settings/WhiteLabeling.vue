@@ -297,6 +297,7 @@ import { scrollToComponent } from '@/utils/functions'
 import * as validations from '@/utils/validations'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
+import { getWhiteLabel } from '@/api/whitelabel'
 export default {
   name: 'WhiteLabeling',
   components: {
@@ -316,6 +317,9 @@ export default {
     isCompanyConfigure: {
       type: Boolean,
       default: false
+    },
+    createdCompanyId: {
+      type: String
     }
   },
   data() {
@@ -345,6 +349,7 @@ export default {
         emailTemplateLogoFile: null
       },
       mainDomainItems: ['https://', 'http://'],
+      configureCompanyWhitelabelingResourceId: '',
       labels,
       validations
     }
@@ -383,6 +388,22 @@ export default {
     if (GET.hasPermission) {
       this.loadDatas(this.$store.state.whitelabel.loading)
     }
+    if (this.isCompanyConfigure) {
+      getWhiteLabel({
+        overrideCompanyId: true,
+        headers: { 'X-IR-COMPANY-ID': this.createdCompanyId },
+        loading: true
+      }).then((response) => {
+        const payload = response.data.data
+        this.configureCompanyWhitelabelingResourceId = payload.resourceId
+        delete payload.resourceId
+        for (const key of Object.keys(payload)) {
+          if (key !== 'systemVersion') {
+            this.formValues[key] = payload[key]
+          }
+        }
+      })
+    }
   },
   methods: {
     getFileUploadClasses(url = '') {
@@ -392,7 +413,7 @@ export default {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
     },
     loadDatas(loading = true) {
-      if (!loading) {
+      if (!loading && !this.isCompanyConfigure) {
         const state = JSON.parse(JSON.stringify(this.$store.state.whitelabel))
         delete state.loading
         for (const key of Object.keys(state)) {

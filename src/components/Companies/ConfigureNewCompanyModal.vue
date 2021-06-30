@@ -18,27 +18,28 @@
             >{{ labels.WhiteLabeling }}</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
-          <v-stepper-step
+          <!--  <v-stepper-step
             id="step--configure-new-company-white-listing"
             class="k-stepper__step"
             :complete="step > 2"
             :step="2"
             >{{ labels.WhiteListing }}</v-stepper-step
           >
-          <v-divider class="k-stepper__divider" />
+          <v-divider class="k-stepper__divider" /> -->
+
           <v-stepper-step
             id="step--configure-new-company-first-system-user"
             class="k-stepper__step"
-            :complete="step > 3"
-            :step="3"
+            :complete="step > 2"
+            :step="2"
             >{{ labels.FirstSystemUser }}</v-stepper-step
           >
           <v-divider class="k-stepper__divider" />
           <v-stepper-step
             id="step--configure-new-company-next-steps"
             class="k-stepper__step"
-            :complete="step > 4"
-            :step="4"
+            :complete="step > 3"
+            :step="3"
             >{{ labels.NextSteps }}
           </v-stepper-step>
         </v-stepper-header>
@@ -51,17 +52,25 @@
             <WhiteLabeling
               ref="refWhiteLabeling"
               is-company-configure
+              :created-company-id="createdCompanyResourceId"
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
             />
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="2">
+          <!--      <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               :title="labels.WhiteListing"
               :subtitle="labels.WhiteListingSubTitle"
             />
             <WhiteListing />
-          </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="3">
+          </v-stepper-content>     <v-stepper-content class="k-stepper__content" :step="2">
+            <ConfigureCompanyStepHeader
+              :title="labels.WhiteListing"
+              :subtitle="labels.WhiteListingSubTitle"
+            />
+            <WhiteListing />
+          </v-stepper-content> -->
+
+          <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               class="mb-6"
               :title="labels.CreateFirstSystemUser"
@@ -74,7 +83,7 @@
               :role-items="roleItems"
             />
           </v-stepper-content>
-          <v-stepper-content class="k-stepper__content" :step="4">
+          <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
               :title="labels.NextSteps"
               :subtitle="labels.NextStepsSubTitle"
@@ -110,7 +119,7 @@
           class="add-in-configuration__footer-btn-next mr-4"
           color="#00BCD4"
           rounded
-          v-if="step === 3"
+          v-if="step === 2"
         >
           {{ labels.Skip }}
         </v-btn>
@@ -120,12 +129,12 @@
           class="add-in-configuration__footer-btn-next"
           color="#2196f3"
           rounded
-          :style="[1, 3].includes(step) && { width: '176px' }"
+          :style="[1, 2].includes(step) && { width: '176px' }"
           :disabled="isSaveDisabled"
           @click="handleSaveAndContinue"
         >
           {{
-            [1, 3].includes(step) ? labels.SaveAndContinue : step === 4 ? labels.Close : labels.Next
+            [1, 2].includes(step) ? labels.SaveAndContinue : step === 3 ? labels.Close : labels.Next
           }}
         </v-btn>
       </div>
@@ -140,17 +149,16 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems, scrollToComponent } from '@/utils/functions'
-import WhiteListing from '@/components/Company Settings/WhiteListing'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { createSystemUser, getSystemUsersRole } from '@/api/systemUsers'
 import ConfigureNewCompanyNextSteps from '@/components/Companies/ConfigureNewCompanyNextSteps'
+import { updateWhiteLabel } from '@/api/whitelabel'
 export default {
   name: 'ConfigureNewCompanyModal',
   components: {
     ConfigureNewCompanyNextSteps,
     CreateOrEditSystemUserForm,
-    WhiteListing,
     WhiteLabeling,
     ConfigureCompanyStepHeader,
     AppModal
@@ -228,7 +236,8 @@ export default {
         this.systemUserFormData.roleResourceIdList =
           availableRoles &&
           availableRoles.length &&
-          availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
+          availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
+            .resourceId
       })
     },
     getPermissions() {
@@ -247,13 +256,21 @@ export default {
       switch (this.step) {
         case 1:
           if (refWhiteLabeling.$refs.refForm.validate()) {
-            this.changeStep()
+            const formData = new FormData()
+            const id = refWhiteLabeling.configureCompanyWhitelabelingResourceId
+            const payload = refWhiteLabeling.formValues
+
+            Object.keys(payload).map((key) => {
+              formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
+            })
+            updateWhiteLabel(formData, id, {
+              headers: { 'X-IR-COMPANY-ID': this.createdCompanyResourceId }
+            }).then(() => {
+              this.changeStep()
+            })
           }
           break
         case 2:
-          this.changeStep()
-          break
-        case 3:
           const isNumberValid = this.$refs.refForm.validatePhoneNumber()
           const isFormValid = this.$refs.refForm.validate()
           if (isFormValid && isNumberValid) {
@@ -273,7 +290,7 @@ export default {
             })
           }
           break
-        case 4:
+        case 3:
           this.closeOverlay()
       }
     },

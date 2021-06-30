@@ -252,7 +252,7 @@ describe('Datatable test cases suite', () => {
     //because every checkbox is clicked
     expect(selectionRow.text()).toContain(`All selected`)
   })
-  it('Multi selection case  removing selection', async () => {
+  it('Multi selection case removing selection', async () => {
     const datatableWrapper = new DataTableWrapper(localVue, store, { selectable: true })
     const { wrapper } = datatableWrapper
     //adding data
@@ -312,5 +312,167 @@ describe('Datatable test cases suite', () => {
     expect(datatableTooltip.text()).toContain(
       'GürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnnGürkannnnnnn'
     )
+  })
+
+  it('Text Filter case', async () => {
+    //mounting table
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      selectable: true,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'text',
+          filterableType: 'text',
+          width: 150
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Gürkan',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //getting filter cell
+    const cell = wrapper.findAll('.el-table__fixed-header-wrapper .k-table-header th .cell').at(1)
+    //getting filter button
+    const button = cell.find('button')
+    //clicking
+    await button.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //getting menu
+    const filterMenu = wrapper.find('.v-menu__content')
+    filterMenu.element.style.display = ''
+    //checking is filter button disabled
+    expect(filterMenu.find('button[disabled="disabled"]').exists()).toBe(true)
+    //adding text to input
+    const input = filterMenu.find('.filter__text input')
+    input.element.value = 'asasa'
+    await input.trigger('input')
+    //checking is filter is not disabled
+    expect(filterMenu.find('button[disabled="disabled"]').exists()).toBe(false)
+    //Throwing event
+    await cell.find('.filter__footer-button:last-child').trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //expected is event throwing
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.COLUMN_FILTER]
+    expect(emittedEvent).toBeTruthy()
+    //expecting event is
+    expect(emittedEvent[0][0]).toStrictEqual({
+      Value: 'asasa',
+      FieldName: 'name',
+      Operator: 'Contains'
+    })
+  })
+  it('Checkbox Filter case', async () => {
+    //mounting table
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      selectable: true,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'text',
+          filterableType: 'select',
+          filterableItems: ['Yes', 'No'],
+          width: 150
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //adding data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Name',
+          surname: 'Surname'
+        }
+      ]
+    })
+    //getting filter cell
+    const cell = wrapper.findAll('.el-table__fixed-header-wrapper .k-table-header th .cell').at(1)
+    //getting filter button
+    const button = cell.find('button')
+    //clicking
+    await button.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //getting menu
+    const filterMenu = wrapper.find('.v-menu__content')
+    filterMenu.element.style.display = ''
+    //checking checkboxes to be rendered
+    expect(cell.findAll('.v-input--checkbox').length).toEqual(2)
+    //clicking first checkbox
+    await cell
+      .findAll('.v-input--checkbox')
+      .at(0)
+      .find('.v-input__control .v-input__slot')
+      .trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //Throwing event
+    await cell.find('.filter__footer-button:last-child').trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //expected is event throwing
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.COLUMN_FILTER]
+    expect(emittedEvent).toBeTruthy()
+    //expecting event is
+    expect(emittedEvent[0][0]).toStrictEqual({
+      Value: 'Yes',
+      FieldName: 'name',
+      Operator: 'Include'
+    })
+  })
+
+  it('Cluster Case', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      clusterItems: [{ name: 'Company Name' }],
+      activeCluster: '',
+      hideActionOptions: false,
+      options: true,
+      loading: false,
+      groupable: true
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Mamını',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //checking is cluster buttons is active
+    const bulletedButton = wrapper.find('.clust-btn')
+    const clusterButton = wrapper.find('.cluster__right i')
+    expect(bulletedButton.exists()).toBe(true)
+    expect(clusterButton.exists()).toBe(true)
+    //Clicking button
+    await clusterButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    const menu = wrapper.find('.cluster-view')
+    console.log('wrapper.html', wrapper.html())
+    //checking is menu rendered
+    expect(wrapper.vm.clusterChevron).toBe(true)
+    expect(menu.exists()).toBe(true)
+    //clicking first item
+    await menu.find('.cluster-view__item').trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //expecting is event is throwed
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.CLUSTER]
+    expect(emittedEvent).toBeTruthy()
+    //expecting is event is what we wanted
+    expect(emittedEvent[0][0]).toStrictEqual('Company Name')
+    //clicking bulleted button
+    await bulletedButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //expecting bulleted event
+    const emittedBulletedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.BULLETED]
+    expect(emittedBulletedEvent).toBeTruthy()
+    expect(emittedBulletedEvent[0]).toStrictEqual([])
   })
 })
