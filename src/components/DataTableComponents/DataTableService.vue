@@ -6,18 +6,14 @@
         src="../../assets/img/Office.png"
         v-if="scope.row[col.property] === 'Outlook'"
       />
+      <img alt="o365" src="../../assets/img/Word.png" v-if="scope.row[col.property] === 'O365'" />
       <img
-        alt="outlook"
-        src="../../assets/img/Word.png"
-        v-if="scope.row[col.property] === 'O365'"
-      />
-      <img
-        alt="outlook"
+        alt="gsuite"
         src="../../assets/img/Google.png"
         v-if="scope.row[col.property] === 'GSuite'"
       />
       <img
-        alt="outlook"
+        alt="exchange"
         src="../../assets/img/Exchange.png"
         v-if="scope.row[col.property] === 'Exchange'"
       />

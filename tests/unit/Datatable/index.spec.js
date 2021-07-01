@@ -24,10 +24,6 @@ describe('Datatable test cases suite', () => {
       isServerSide: true,
       serverSideEvents: { pagination: true, search: true, sort: true }
     })
-    console.log(
-      'wrapper.vm.serverSideProps.totalNumberOfRecords',
-      wrapper.vm.serverSideProps.totalNumberOfRecords
-    )
     //getting pagination
     const pagination = wrapper.find('.el-pagination')
     //expecting pagination to be rendered
@@ -41,7 +37,6 @@ describe('Datatable test cases suite', () => {
     await elPager.findAll('li').at(1).trigger(CONSTANTS.EVENT_TYPES.CLICK)
     //checking on dom is second page active
     expect(elPager.findAll('li').at(1).classes('active')).toBe(true)
-    console.log('wrapper.emitted(', wrapper.emitted())
     const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.SERVER_SIDE_PAGE_CHANGED]
     //checking is event throwed
     expect(emittedEvent).toBeTruthy()
@@ -576,5 +571,458 @@ describe('Datatable test cases suite', () => {
     await wrapper.vm.$nextTick()
     //expecting is width changed
     expect(wrapper.vm.columns[0].width).toEqual(250)
+  })
+  it('Text column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Mamını',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //getting firstRow
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it datatableText component
+    expect(wrapper.findComponent({ name: 'DataTableText' })).toBeTruthy()
+    //checking is dom element is text and equal do what we expect
+    expect(firstRow.find('.cell span').text()).toEqual('Mamını')
+  })
+  it('Colorful text column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'colorfulText'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'Mamını',
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //getting firstRow
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DataTableColorfulText component
+    expect(wrapper.findComponent({ name: 'DataTableColorfulText' })).toBeTruthy()
+    //checking is dom element is text and equal do what we expect
+    const cell = firstRow.find('.cell span')
+    expect(cell.text()).toEqual('Mamını')
+    //checking classes
+    expect(cell.classes('datatable__colorful-text')).toBe(true)
+  })
+
+  it('Text With Badge column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'textWithBadge'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: ['Mamını', 'Leo'],
+          surname: 'Uğurlu'
+        }
+      ]
+    })
+    //getting firstRow
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DatatableTextWithBadge component
+    expect(wrapper.findComponent({ name: 'DatatableTextWithBadge' })).toBeTruthy()
+    //getting dom element
+    const componentContainer = firstRow.find('.data-table-text-with-badge')
+    //getting children and expecting to be 2
+    expect(componentContainer.findAll('.data-table-text-with-badge__span').length).toEqual(2)
+  })
+  it('Attachment column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'attachment'
+        },
+        {
+          property: 'surname',
+          align: 'left',
+          label: 'Surname',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'attachment'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 1,
+          surname: 0
+        }
+      ]
+    })
+    //getting firstRow
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DatatableTextWithBadge component
+    expect(wrapper.findComponent({ name: 'DataTableAttachment' })).toBeTruthy()
+    //getting dom element
+    const nameCell = firstRow.find('td:first-child')
+    const surnameCell = firstRow.find('td:last-child')
+    //expecting icon to be rendered
+    expect(nameCell.find('i.mdi-check').exists()).toBeTruthy()
+    //expecting icon not to be rendered
+    expect(surnameCell.find('i.mdi-check').exists()).toBe(false)
+  })
+
+  it('Detected column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'detected'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'warning'
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DatatableTextWithBadge component
+    expect(wrapper.findComponent({ name: 'DataTableDetected' })).toBeTruthy()
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    //expecting cell is equal text
+    expect(cell.text()).toEqual('warning')
+    //expecting is badge component
+    expect(cell.find('button').classes('k-badge')).toBe(true)
+  })
+  it('User status column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'name',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'detected'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          name: 'online'
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DatatableTextWithBadge component
+    expect(wrapper.findComponent({ name: 'DataTableUserStatus' })).toBeTruthy()
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    //expecting cell is equal text
+    expect(cell.text()).toEqual('online')
+    //expecting is badge component
+    expect(cell.find('button').classes('k-badge')).toBe(true)
+  })
+  it('Fiber column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'status',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'fiber'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          status: 'Online'
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DataTableFiber component
+    expect(wrapper.findComponent({ name: 'DataTableFiber' })).toBeTruthy()
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    //expecting cell is equal text
+    expect(cell.text()).toEqual('Online')
+    //getting fiber item
+    const fiberItem = cell.find('.datatable-fiber__item img')
+    //checking img source.
+    expect(fiberItem.element.getAttribute('src')).toEqual(
+      '../../assets/img/fiber-manual-record-offline.svg'
+    )
+  })
+  it('Progress column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'progress',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'progress'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          progress: 100
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DataTableProgress component
+    expect(wrapper.findComponent({ name: 'DataTableProgress' })).toBeTruthy()
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    const progressBar = cell.find('[role="progressbar"]')
+    //expecting value to be 100
+    expect(progressBar.element.getAttribute('aria-valuenow')).toEqual('100')
+  })
+  it('Service column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'service',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'service'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          service: 'Outlook'
+        },
+        {
+          service: 'O365'
+        },
+        {
+          service: 'GSuite'
+        },
+        {
+          service: 'Exchange'
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it DataTableService component
+    expect(wrapper.findComponent({ name: 'DataTableService' }).exists()).toBeTruthy()
+    //checking first dom element
+    expect(firstRow.find('img[alt="outlook"').exists()).toBe(true)
+    //checking second row element
+    const secondRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(2)')
+    expect(secondRow.find('img[alt="o365"').exists()).toBe(true)
+    //checking third row element
+    const thirdRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(3)')
+    expect(thirdRow.find('img[alt="gsuite"').exists()).toBe(true)
+    //checking fourth row element
+    const fourthRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row:nth-child(4)')
+    expect(fourthRow.find('img[alt="exchange"').exists()).toBe(true)
+  })
+  it('Badge column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'status',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'badge'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          status: 'warning'
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    //expecting cell is equal text
+    expect(cell.text()).toEqual('warning')
+    //expecting is badge component
+    expect(cell.find('button').classes('k-badge')).toBe(true)
+  })
+  it('Status column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'status',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'status'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          status: 'warning'
+        }
+      ]
+    })
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //checking is it Badge component
+    const cell = firstRow.find('.cell')
+    //expecting cell is equal text
+    expect(cell.text()).toEqual('warning')
+    //expecting is badge component
+    expect(cell.find('button').classes('k-badge')).toBe(true)
+  })
+  it('Small badge column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'smallBadge',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'smallBadge'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          smallBadge: ['ab', 'cd']
+        }
+      ]
+    })
+    //getting row
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    const smallBadgeContainer = cell.find('.small-badge__container')
+    const children = smallBadgeContainer.findAll('.k-badge__sizes--small')
+    //checking is badges rendered and equal to 2
+    expect(children.length).toEqual(2)
+  })
+  it('Number column type', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: [
+        {
+          property: 'number',
+          align: 'left',
+          label: 'Name',
+          sortable: true,
+          show: true,
+          fixed: 'left',
+          type: 'number'
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          number: 155
+        }
+      ]
+    })
+    //getting row
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting dom element
+    const cell = firstRow.find('.cell')
+    //expecting text to be rendered
+    expect(cell.find('span').text()).toEqual('155')
   })
 })
