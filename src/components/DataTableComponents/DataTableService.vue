@@ -13,7 +13,7 @@
         v-if="scope.row[col.property] === 'GSuite'"
       />
       <img
-        alt="excahnge"
+        alt="exchange"
         src="../../assets/img/office365_logo.png"
         v-if="scope.row[col.property] === 'Exchange'"
       />
