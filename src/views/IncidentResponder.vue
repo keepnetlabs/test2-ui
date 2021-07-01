@@ -2738,8 +2738,7 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const tableData = results
-            this.reportedEmailsData = tableData || []
+            this.reportedEmailsData = results || []
             if (this.selectedCluster) {
               this.$nextTick(() => {
                 this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360
