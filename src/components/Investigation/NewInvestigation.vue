@@ -1253,7 +1253,6 @@ export default {
         const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
-              debugger
               acc.push({ option: key, text: value })
             }
           }
