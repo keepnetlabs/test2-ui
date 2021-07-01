@@ -10,7 +10,8 @@ export default {
     SELECTION: 'handleSelectionChange',
     COLUMN_FILTER: 'columnFilterChanged',
     CLUSTER: 'clusterChanged',
-    BULLETED: 'handleListBulleted'
+    BULLETED: 'handleListBulleted',
+    SERVER_SIDE_PAGE_CHANGED: 'server-side-page-number-changed'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',

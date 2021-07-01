@@ -25,5 +25,59 @@ export default {
     id: 'btn-add--action-button',
     tooltip: '',
     disabled: false
-  }
+  },
+  PAGINATION_DATA: [
+    {
+      name: 'Gürkan',
+      surname: 'Uğurlu'
+    },
+    {
+      name: 'Arda',
+      surname: 'Dura'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    },
+    {
+      name: 'asksak',
+      surname: 'aslaslsla'
+    }
+  ]
 }
