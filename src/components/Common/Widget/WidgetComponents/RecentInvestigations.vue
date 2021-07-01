@@ -114,7 +114,7 @@ export default {
       ],
       tableData: [],
       empty: {
-        message: "There isn't any recent investigations, yet"
+        message: 'You do not have any recent investigations'
       }
     }
   },

@@ -562,9 +562,9 @@
         <template v-slot:empty-table-inline>
           <div class="mail-configuration__no-data">
             <p class="mail-configuration__no-data__header">
-              No mail configuration has been created, yet
+              {{ labels.EmptyMailConfiguration }}
             </p>
-            <p class="mail-configuration__no-data__body">Create now!</p>
+            <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
             <div class="mail-configuration__no-data__buttons">
               <div
                 v-if="false"
@@ -760,8 +760,13 @@ export default {
           label: 'Status',
           sortable: true,
           show: true,
-          type: 'detected',
-          width: 150
+          type: 'badge',
+          width: 150,
+          props: {
+            style: {
+              maxWidth: '100px'
+            }
+          }
         },
         {
           property: PROPERTY_STORE.CREATETIME,
@@ -786,10 +791,10 @@ export default {
         download: false
       },
       iEmpty: {
-        message: 'No mail configuration has been created, yet',
+        message: labels.EmptyMailConfiguration,
         btn: 'O365',
         icon: 'mdi-microsoft-office',
-        subMes: 'Create now!'
+        subMes: labels.EmptyMailConfigurationSub
       },
       addButton: {
         show: true,

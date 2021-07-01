@@ -13,11 +13,6 @@
 <script>
 export default {
   name: 'TableExample',
-  methods: {
-    handleClick() {
-      console.log('click')
-    }
-  },
   data() {
     return {
       tableData: [

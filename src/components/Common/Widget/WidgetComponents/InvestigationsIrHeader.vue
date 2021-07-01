@@ -69,7 +69,7 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text" style="margin-top: 61px;">
-            You haven’t started any investigations, yet
+            You haven’t started any investigations
           </div>
         </div>
         <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">

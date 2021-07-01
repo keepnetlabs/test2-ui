@@ -118,6 +118,7 @@ import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/Delet
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -239,8 +240,8 @@ export default {
           }
         ],
         empty: {
-          message: 'No SMTP Configurations',
-          btn: 'Create SMTP Configuration',
+          message: labels.EmptySmtpSettings,
+          btn: labels.EmptySmtpSettingsSub,
           icon: 'mdi-plus',
           id: 'btn-empty--smtp-settings',
           disabled: !this.PERMISSIONS.CREATE.hasPermission

@@ -104,7 +104,6 @@
 <script>
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  getStoreValue,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -116,6 +115,7 @@ import DeleteProxySettings from '@/components/Company Settings/ProxySettings/Del
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
 export default {
   name: 'PROXYSettings',
   components: {
@@ -182,7 +182,6 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            filterableType: 'text',
             filterableType: 'select',
             filterableCustomFieldName: 'AuthenticationType',
             filterableItems: [
@@ -249,8 +248,8 @@ export default {
           }
         ],
         empty: {
-          message: 'No Proxy Configurations',
-          btn: 'Create Proxy Configuration',
+          message: labels.EmptyProxy,
+          btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--proxy-settings',
           disabled: false

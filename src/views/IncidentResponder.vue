@@ -964,7 +964,7 @@ export default {
       ],
       iEmpty: {
         message: labels.NoRulesConfigured,
-        btn: labels.CreateNewRule,
+        btn: labels.New,
         icon: 'mdi-plus',
         id: 'btn-empty--incident-responder-rules'
       },
@@ -1027,7 +1027,7 @@ export default {
       },
       iEmpty: {
         message: labels.NoInvestigation,
-        btn: labels.StartNewInvestigation,
+        btn: labels.New,
         icon: 'mdi-plus',
         id: 'btn-empty--incident-responder-investigation'
       },

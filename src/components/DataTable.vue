@@ -826,16 +826,15 @@
                 {{ empty.subMes }}
               </p>
               <v-btn
-                :disabled="empty['disabled']"
-                :id="empty['id']"
-                @click="onEmptyBtnClicked"
-                class="empty-btn"
-                :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
                 v-if="empty.btn"
+                :id="empty['id']"
+                :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
+                :disabled="empty['disabled']"
+                @click="onEmptyBtnClicked"
               >
                 <!-- empty action -->
-                <v-icon class="mr-2">{{ empty.icon }}</v-icon>
-                {{ empty.btn }}
+                <v-icon class="mr-1" style="margin-top: -1px;">{{ empty.icon }}</v-icon>
+                <span>{{ empty.btn }} </span>
               </v-btn>
             </slot>
           </div>

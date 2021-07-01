@@ -292,7 +292,7 @@ export default {
     },
     iEmpty: {
       message: labels.NoInvestigationStarted,
-      btn: labels.StartNewInvestigation,
+      btn: labels.New,
       id: 'btn-empty--investigations',
       icon: 'mdi-plus'
     },
