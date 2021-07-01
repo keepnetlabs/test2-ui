@@ -352,6 +352,10 @@ export default {
           required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
           format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
         },
+        senderName: {
+          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
+          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
+        },
         url: {
           required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
           format: (v) =>
