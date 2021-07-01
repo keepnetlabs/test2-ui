@@ -503,7 +503,7 @@ export default {
         cc: 'Enter an email address',
         bcc: 'Enter an email address',
         subject: 'Enter a subject',
-        from_name: 'Enter a from name',
+        senderName: 'Enter a from name',
         url: 'Enter a domain name',
         keyword: 'Enter a keyword',
         size: 'Enter size',
@@ -558,7 +558,7 @@ export default {
             { label: 'CC', id: 'cc' },
             { label: 'BCC', id: 'bcc' },
             { label: 'IP Address', id: 'ip' },
-            { label: 'Sender Name', id: 'from_name' }
+            { label: 'Sender Name', id: 'senderName' }
           ]
         },
         {
@@ -685,7 +685,7 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
         )
         return rules
-      } else if (option === 'from_name') {
+      } else if (option === 'senderName') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
@@ -975,7 +975,7 @@ export default {
                 })
               }
               break
-            case 'from_name':
+            case 'senderName':
               if (
                 !headersData[headersData.length - 1].senderName &&
                 headersData[headersData.length - 1].senderName != this.filterList[index].text
