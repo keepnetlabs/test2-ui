@@ -238,9 +238,9 @@ export default {
       },
       iEmpty: {
         id: 'btn-empty--company-group-detail',
-        message: 'No company defined',
-        btn: 'ADD A COMPANY',
-        icon: 'mdi-account-plus'
+        message: labels.EmptyCompany,
+        btn: labels.New,
+        icon: 'mdi-plus'
       },
       addButton: {
         show: true,

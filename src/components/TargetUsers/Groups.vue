@@ -218,7 +218,7 @@ export default {
         },
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
-          btn: 'ADD A GROUP',
+          btn: 'New',
           id: 'btn-empty--target-users-group',
           icon: 'mdi-plus'
         },

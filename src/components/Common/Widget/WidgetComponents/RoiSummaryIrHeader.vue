@@ -51,7 +51,7 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">
-            You haven’t saved any work, yet
+            You haven’t saved any work
           </div>
         </div>
         <div class="bg-image">

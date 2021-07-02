@@ -128,9 +128,11 @@
       <template v-slot:empty-table-inline>
         <div class="people__no-data">
           <p id="text--empty-table-title" class="people__no-data__header">
-            You do not have any users, yet
+            {{ labels.EmptyTargetUsersPeople }}
           </p>
-          <p id="text--empty-table-subtitle" class="people__no-data__body">Add now</p>
+          <p id="text--empty-table-subtitle" class="people__no-data__body">
+            {{ labels.EmptyTargetUsersPeopleSub }}
+          </p>
           <div class="people__no-data__buttons">
             <v-menu offset-y transition="scale-transition" nudge-bottom="4">
               <template v-slot:activator="{ on }">
@@ -139,7 +141,8 @@
                   v-on="on"
                   id="btn-empty--target-users-people"
                 >
-                  <v-icon color="#fff" class="mr-2">mdi-plus</v-icon> ADD USERS
+                  <v-icon color="#fff" style="margin-top: 1px;" class="mr-1">mdi-plus</v-icon>
+                  <span style="font-weight: 600;">NEW</span>
                 </div>
               </template>
               <div>
@@ -175,6 +178,7 @@ import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
+import labels from '@/model/constants/labels'
 import {
   deleteTargetUser,
   exportTargetUsers,
@@ -212,6 +216,7 @@ export default {
   },
   emits: ['call-for-company-licenses'],
   data: () => ({
+    labels,
     payload: {
       pageNumber: 1,
       pageSize: 10,

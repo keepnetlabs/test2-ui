@@ -90,6 +90,8 @@ export function getBtnStatusColor(type) {
       return '#1173c1'
     case 'no':
       return '#757575'
+    case 'not running':
+      return '#f56c6c'
     default:
       return '#00bcd4'
   }

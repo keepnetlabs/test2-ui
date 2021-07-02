@@ -56,10 +56,6 @@
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">{{ labels.NoEmailAnalysed }}</div>
-          <!--<button class="btn-action btn-playbook btn-playbook__no-data" block rounded
-            @click="emptyNotifiedEmailButtonClick">
-      Start Now
-    </button>-->
         </div>
         <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
           <img src="../../../../assets/img/ic-warning.svg" alt="link" />

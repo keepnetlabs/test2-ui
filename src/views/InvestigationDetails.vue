@@ -1413,7 +1413,7 @@ export default {
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'No email has been found, yet'
+      message: 'You do not have any emails'
     },
     selectEvent: {
       clipboard: true,

@@ -345,7 +345,7 @@ export default {
           popUp: false
         },
         iEmpty: {
-          message: "There isn't any matching Incidents, yet",
+          message: labels.EmptyMatchingIncidents,
           btn: '',
           icon: 'mdi-plus'
         },
@@ -445,7 +445,7 @@ export default {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
         icon: 'mdi-plus',
-        btn: 'Add a Rule',
+        btn: 'New',
         id: 'btn-empty--playbook-rules'
       }
       if (!this.PERMISSIONS.CREATE.hasPermission) {

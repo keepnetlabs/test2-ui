@@ -139,9 +139,10 @@
 </template>
 
 <script>
-import Datatable from '../../components/DataTable'
+import Datatable from '@/components/DataTable'
 import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
+import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
@@ -279,10 +280,10 @@ export default {
         download: false
       },
       iEmpty: {
-        message: 'No company defined',
-        btn: 'ADD A COMPANY',
+        message: labels.EmptyCompany,
+        btn: labels.New,
         id: 'btn-empty--company',
-        icon: 'mdi-account-plus'
+        icon: 'mdi-plus'
       },
       addButton: {
         show: true,
