@@ -117,7 +117,7 @@
             letter-spacing: normal;
             font-size: 14px;
             color: rgba(0, 0, 0, 0.87) !important;
-
+            word-break: break-all;
             .v-input--selection-controls {
               margin-top: 0 !important;
 
@@ -762,14 +762,16 @@
           box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
           background-color: #2196f3 !important;
           color: #fff !important;
+          padding-left:12px;
           &--disabled{
             box-shadow: none;
           }
-          text-transform: capitalize !important;
-          font-size: 14px;
-          font-weight: 600 !important;
-          line-height: 1.71;
-          letter-spacing: normal;
+          span {
+            font-size: 14px;
+            font-weight: 600 !important;
+            letter-spacing: normal;
+            text-transform: uppercase;
+          }
           height: 36px !important;
           .v-btn__content{
             text-transform: uppercase;

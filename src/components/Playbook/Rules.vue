@@ -345,7 +345,7 @@ export default {
           popUp: false
         },
         iEmpty: {
-          message: "There isn't any matching Incidents, yet",
+          message: labels.EmptyMatchingIncidents,
           btn: '',
           icon: 'mdi-plus'
         },
@@ -362,15 +362,16 @@ export default {
     serverSidePageNumberChanged(pageNumber = 1) {
       this.tableCredientials.pageNumber = pageNumber
       this.queryHelper.setRouterQuery('page', pageNumber)
-      this.getTableData()
+      this.callForSearchPlaybook()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.tableCredientials.pageSize = pageSize
       this.tableCredientials.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.queryHelper.setRouterQuery('size', pageSize)
       this.queryHelper.setRouterQuery('page', 1)
-      this.getTableData()
+      this.callForSearchPlaybook()
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.tableOptions.isColumnFilterActive = columnFilterActive
@@ -383,12 +384,12 @@ export default {
       this.tableCredientials.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
-      this.getTableData()
+      this.callForSearchPlaybook()
     },
     sortChanged({ order, prop } = {}) {
       this.tableCredientials.ascending = order === 'ascending'
       this.tableCredientials.orderBy = prop
-      this.getTableData()
+      this.callForSearchPlaybook()
     },
     resetPageNumber() {
       this.tableCredientials.pageNumber = 1
@@ -444,7 +445,7 @@ export default {
       const emptyObj = {
         message: LABEL_STORE.NO_RULES_CONFIGURED,
         icon: 'mdi-plus',
-        btn: 'Add a Rule',
+        btn: 'New',
         id: 'btn-empty--playbook-rules'
       }
       if (!this.PERMISSIONS.CREATE.hasPermission) {
@@ -546,29 +547,29 @@ export default {
       const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         let values = []
-        let _this = this
         if (this.totalSelectedItemsCount > 1) {
-          for (const [key, value] of Object.entries(this.deleteValues)) {
-            values.push(value.resourceId)
+          for (const [_, value] of Object.entries(this.deleteValues)) {
+            values.push(value)
           }
         } else {
-          values.push(this.deleteValues.resourceId || this.deleteValues[0].resourceId)
+          const value =
+            this.deleteValues.constructor.name === 'Array'
+              ? this.deleteValues[0]
+              : this.deleteValues
+          values.push(value)
         }
         values.map((item) => {
           this.deleteButtonDisabled = true
-          deletePlaybookRule(item).then(() => {
-            this.isWantToDelete = false
-            this.loading = true
-            _this
-              .getPlaybookList(_this.tableCredientials)
-              .then(() => {
-                this.tableData = _this.playbookList.results
-              })
-              .finally(() => {
-                this.loading = false
-                this.deleteButtonDisabled = false
-              })
-          })
+          deletePlaybookRule(item.resourceId)
+            .then(() => {
+              this.isWantToDelete = false
+              this.loading = true
+              this.$refs.refRulesList.unSelectRow(item)
+            })
+            .finally(() => {
+              this.deleteButtonDisabled = false
+              this.callForSearchPlaybook()
+            })
         })
       }
     },
@@ -615,7 +616,7 @@ export default {
       }
 
       this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
-      this.getTableData()
+      this.callForSearchPlaybook()
     },
     columnFilterCleared(fieldName) {
       let items = []
@@ -629,18 +630,10 @@ export default {
 
       filterPayload = [...items]
       this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
-      this.getTableData()
+      this.callForSearchPlaybook()
 
       this.tableOptions.isColumnFilterActive =
         this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
-    },
-    getTableData() {
-      this.loading = true
-      this.getPlaybookList(this.tableCredientials)
-        .then(() => {
-          this.tableData = this.playbookList.results
-        })
-        .finally(() => (this.loading = false))
     },
     callForSearchPlaybook() {
       this.loading = true

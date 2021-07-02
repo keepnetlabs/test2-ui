@@ -76,6 +76,7 @@
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
           @sortChangedEvent="sortChanged"
+          @handleSelectionChange="handleSelectionChange"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -213,7 +214,7 @@ export default {
         isEditable: true,
         width: 150,
         filterableType: 'select',
-        filterableItems: ['Running', 'Canceled', 'Expired', 'Finished']
+        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished']
       },
       {
         property: 'createTime',
@@ -291,7 +292,7 @@ export default {
     },
     iEmpty: {
       message: labels.NoInvestigationStarted,
-      btn: labels.StartNewInvestigation,
+      btn: labels.New,
       id: 'btn-empty--investigations',
       icon: 'mdi-plus'
     },
@@ -309,7 +310,7 @@ export default {
     isColumnFilterActive: false,
     bodyData: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -330,7 +331,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'createTime',
       ascending: false,
       filter: {
@@ -352,6 +353,9 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    handleSelectionChange(asd) {
+      //https://element.eleme.io/#/en-US/component/table
+    },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.isColumnFilterActive = columnFilterActive
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
@@ -688,7 +692,12 @@ export default {
         this.$store.state['datatable'].tables['Investigations'].tableState
       if (tableState) {
         this.serverSideProps = tableState.serverSideProps
+        tableState.currentPage = tableState.serverSideProps.pageNumber
         const { filterValues = {} } = tableState
+        this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+        this.queryHelper.controlRouteQuery()
+        //this.queryHelper.setDefaultValues()
+        const { page, size } = this.queryHelper.returnQueryValues()
         if (Object.keys(filterValues).length) {
           this.isColumnFilterActive = true
           for (const [key, value] of Object.entries(filterValues)) {
@@ -715,10 +724,12 @@ export default {
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
+      )
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
       this.queryHelper.controlRouteQuery()
+      this.queryHelper.setDefaultValues()
       const { page, size } = this.queryHelper.returnQueryValues()
       this.bodyData.pageSize = size
       this.bodyData.pageNumber = page

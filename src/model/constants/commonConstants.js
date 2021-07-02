@@ -91,13 +91,13 @@ export const LABEL_STORE = {
   DETAILS: 'Details',
   ANALYSISENGINE: 'Service',
   CREATEDBY: 'Created By',
-  NO_INTEGRATIONS: 'No integrations',
-  NO_RULES_CONFIGURED: 'No rules configured',
-  NO_TARGET_GROUPS_DEFINED: 'No target groups defined',
-  NO_TARGET_USER_ADDED: 'No target users added',
-  NO_IP_ADDRESS_DEFINED: 'You do not have any IP Addresses, yet',
-  NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification template, yet',
-  NO_AUDIT: 'There is no audit log',
+  NO_INTEGRATIONS: 'You do not have any integrations',
+  NO_RULES_CONFIGURED: 'You do not have any rules',
+  NO_TARGET_GROUPS_DEFINED: 'You do not have any target groups',
+  NO_TARGET_USER_ADDED: 'You do not have any users',
+  NO_IP_ADDRESS_DEFINED: 'You do not have any IP Addresses',
+  NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification templates',
+  NO_AUDIT: 'You do not have any audit logs',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
@@ -115,6 +115,7 @@ export const LABEL_STORE = {
   ROLE: 'Role',
   PHONENUMBER: 'Phone',
   STATUSNAME: 'Status',
+  ADDINSTATUSNAME: 'Add-in Status',
   TYPENAME: 'Type',
   TITLE: 'Title',
   ROLENAME: 'Title',
@@ -142,7 +143,7 @@ export const LABEL_STORE = {
   FILEUPLOADED: 'File Uploaded',
   SENDERNAME: 'Sender Name',
   SENDERADDRESS: 'Sender Address',
-  PERMISSIONS: 'There is no Permissions',
+  PERMISSIONS: 'You do not have any rules',
   ROLENAMEPERMISSION: 'Role Name',
   ROLEDESCRIPTION: 'Role Description'
 }
@@ -243,7 +244,14 @@ export const PROPERTY_STORE = {
   NONE_SELECTED: 'None Selected',
   SENDERNAME: 'senderName',
   SENDERADDRESS: 'from',
-  ROLEDESCRIPTION: 'roleDescription'
+  ROLEDESCRIPTION: 'roleDescription',
+  PROXYADDRESS: 'proxySettings',
+  PROXYNAME: 'Proxy Name',
+  ADDRESS: 'address',
+  PORT: 'port',
+  AuthenticationTypeId: 'authenticationTypeId',
+  AuthenticationTypeName: 'authenticationTypeName',
+  ISDEFAULT: 'isDefault'
 }
 
 export const TABLE_SETTINGS_KEYS = {
@@ -267,7 +275,9 @@ export const TABLE_SETTINGS_KEYS = {
   SYSTEM_USERS_ROLES: 'SystemUsersRolesSettings',
   AUDIT: 'AuditTableSettings',
   TARGET_USERS_GROUPS: 'TargetUsersGroupsTableSettings',
-  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings'
+  TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings',
+  SAML_SETTINGS: 'SamlSettingsTableSettings',
+  PROXY_SETTINGS: 'ProxySettingsTableSettings'
 }
 
 export function getStoreValue(key, type) {
@@ -384,10 +394,13 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PLAYBOOKRULES: 'PlaybookRules',
   MAILCONFIG: 'MailConfig',
   COMPANY_LIST: 'CompanyList',
+  ADD_COMPANY_LIST: 'AddCompanyList',
   COMPANY_GROUP_LIST: 'CompanyGroupList',
   COMPANY_GROUP_DETAILS: 'CompanyGroupDetails',
   INVESTIGATIONSFOLDER: 'InvestigationsFolder',
-  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers'
+  INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers',
+  SAMLSETTINGS: 'SamlSettings',
+  PROXY_SETTINGS: 'ProxySettings'
 }
 
 export const INTEGRATION_TYPES = {

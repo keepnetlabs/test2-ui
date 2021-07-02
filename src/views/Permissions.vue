@@ -151,6 +151,7 @@ export default {
       deleteDialog: false,
       deletePermissionName: null,
       deletePermissionId: null,
+      selectedItem: null,
       storedTableSettings: null,
       loading: true,
       labels,
@@ -323,6 +324,7 @@ export default {
     handleDeleteDialog() {
       deletePermission(this.deletePermissionId)
         .then(() => {
+          this.$refs.refPermissionList.unSelectRow(this.selectedItem)
           this.deleteDialog = false
           this.getDefaultFilterAndSearch()
         })
@@ -346,6 +348,7 @@ export default {
     handleDelete(item) {
       this.deletePermissionName = item.roleName
       this.deletePermissionId = item.resourceId
+      this.selectedItem = item
       this.deleteDialog = true
     },
     editPermissions(item) {
@@ -618,7 +621,7 @@ export default {
 <style lang="scss">
 .permission-logs {
   width: 100%;
-  min-height: 90vh;
+  //min-height: 90vh;
   &__container {
     border-radius: 20px !important;
     background: white;

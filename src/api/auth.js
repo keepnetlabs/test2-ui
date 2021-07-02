@@ -3,7 +3,7 @@ import authTestRequest from '../utils/authTestRequest'
 import testRequest from '../utils/testRequest'
 import AuthenticationService from '../services/authentication'
 import { COMMON_SNACKBAR } from '../model/constants/commonConstants'
-
+import axios from 'axios'
 export function loginAction(payload) {
   const params = new URLSearchParams()
   let skipMfa = false
@@ -31,6 +31,23 @@ export function loginAction(payload) {
   })
 }
 
+export function loginWithSaml(payload) {
+  const { username, authcode } = payload
+  const params = new URLSearchParams()
+  params.append('grant_type', 'password')
+  params.append('username', username)
+  params.append('scope', 'api1')
+  params.append('client_secret', 'secret')
+  params.append('client_id', 'ui_client')
+  params.append('authcode', authcode)
+  return authTestRequest.post('connect/token', params, {
+    loading: true,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+}
+
 export function getCurrentUser() {
   return request.get('account/myself')
 }
@@ -39,6 +56,12 @@ export function resetPassword(payload) {
   return testRequest.post('system-users/send-reset-password-link', {
     loading: true,
     Email: payload
+  })
+}
+
+export function loginWithUsername(payload = {}) {
+  return testRequest.post('/account/login', payload, {
+    loading: true
   })
 }
 
@@ -65,6 +88,16 @@ export function updatePassword(payload) {
   return testRequest.put('/system-users/change-password', payload, {
     loading: true,
     snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function getSaml(url = '') {
+  return axios.get(url, {
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+    }
   })
 }
 

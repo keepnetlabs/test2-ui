@@ -3,6 +3,7 @@
     id="target-users-group-users-data-table"
     ref="refTargetGroupUsersTable"
     selectable
+    is-server-side-selection
     :refName="'groupsTable'"
     :loading="loading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -323,6 +324,7 @@ export default {
         TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS,
         JSON.stringify(tableSettings)
       )
+      this.storedTableSettings = tableSettings
     },
     setQueryValuesToPayload({ page, size }) {
       //generic
@@ -437,6 +439,7 @@ export default {
           default:
             break
         }
+
         return {
           property: name,
           type: 'text',
@@ -502,8 +505,20 @@ export default {
           const { data: { data: { results = [] } } = {} } = response
           this.tableData = results.map((item) => {
             const { customFieldValues } = item
-            for (let { name, value } of customFieldValues) {
-              item[name] = value
+            for (let { name, value, dataType, timestampValue } of customFieldValues) {
+              if (dataType === 'Boolean') {
+                if (value === 'True') {
+                  item[name] = 'Yes'
+                } else if (value === 'False') {
+                  item[name] = 'No'
+                } else {
+                  item[name] = 'No'
+                }
+              } else if (['Date', 'DateTime'].includes(dataType)) {
+                item[name] = timestampValue
+              } else {
+                item[name] = value !== null && value !== undefined ? value : ''
+              }
             }
             return item
           })
@@ -519,12 +534,22 @@ export default {
     },
 
     columnFilterChanged(filter) {
+      //generic
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
@@ -540,6 +565,7 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
+
       this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchTargetGroupUsers()
     },
@@ -597,9 +623,9 @@ export default {
     handleRemoveUsersSelectionClick() {
       this.$emit('handleRemoveUsersSelectionClick', this.selections)
     },
-    handleSelectionChange(selection = []) {
+    handleSelectionChange(selection = [], excludedResourceIdList = [], isSelectedAllEver = false) {
       this.selections = selection
-      this.$emit('handleSelectionChange', selection)
+      this.$emit('handleSelectionChange', selection, excludedResourceIdList, isSelectedAllEver)
     },
     handleRemoveToGroup(selectedRow = {}) {
       this.$emit('handleRemoveToGroup', selectedRow)

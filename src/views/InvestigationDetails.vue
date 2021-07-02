@@ -417,14 +417,8 @@
                               Target Users
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  investigationDetailsTargetUsersListData &&
-                                  investigationDetailsTargetUsersListData.results
-                                "
-                                >{{
-                                  investigationDetailsTargetUsersListData &&
-                                  investigationDetailsTargetUsersListData.results.length
-                                }}</span
+                                v-if="statsAndMenuData && statsAndMenuData.scannedUserCount"
+                                >{{ statsAndMenuData && statsAndMenuData.scannedUserCount }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -995,6 +989,31 @@
                     /></span>
                   </div>
                 </template>
+                <template v-slot:empty-table-inline>
+                  <div class="empty-table">
+                    <div
+                      class="empty-inline"
+                      v-if="
+                        investigationDetailsTargetUsersListData &&
+                        investigationDetailsTargetUsersListData.results.length === 0
+                      "
+                    >
+                      <slot name="empty-table-inline-sort">
+                        <h2>
+                          Sorry, that search and filter criteria has no results.
+                        </h2>
+                        <p>Please try adjusting your search or filter</p>
+                      </slot>
+                    </div>
+                    <div class="empty-inline" v-else>
+                      <slot name="empty-table-inline-sort">
+                        <h2>
+                          No email has been found, yet
+                        </h2>
+                      </slot>
+                    </div>
+                  </div>
+                </template>
               </datatable>
             </div>
           </div>
@@ -1130,6 +1149,27 @@ export default {
       }
     },
     investigationTargetUsersListBodyData: {
+      pageNumber: 1,
+      pageSize: 10,
+      orderBy: 'Email',
+      ascending: true,
+      filter: {
+        Condition: 'AND',
+        FilterGroups: [
+          {
+            Condition: 'AND',
+            FilterItems: [],
+            FilterGroups: []
+          },
+          {
+            Condition: 'OR',
+            FilterItems: [],
+            FilterGroups: []
+          }
+        ]
+      }
+    },
+    defaultInvestigationTargetUsersListBodyData: {
       pageNumber: 1,
       pageSize: 10,
       orderBy: 'Email',
@@ -1347,12 +1387,6 @@ export default {
         name: 'Send user a warning message',
         icon: 'mdi-alert',
         action: 'sendWarningMessage'
-      },
-      {
-        id: 'btn-delete-and-notify--investigation-details-row-actions',
-        name: 'Delete and notify user',
-        icon: 'mdi-delete',
-        action: 'deleteAndNotifyInvestigationDetails'
       }
     ],
 
@@ -1379,7 +1413,7 @@ export default {
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'No email has been found, yet'
+      message: 'You do not have any emails'
     },
     selectEvent: {
       clipboard: true,
@@ -1387,7 +1421,7 @@ export default {
       delete: true,
       download: false,
       warning: true,
-      deleteAndNotify: true
+      deleteAndNotify: false
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4']
@@ -2068,41 +2102,33 @@ export default {
       this.showEmails = false
       this.investigationDetailsList = []
 
-      if (menu != 'targetUsers') {
+      if (menu !== 'targetUsers') {
         this.loading = true
         let dataBody = this.investigationListBodyData
         dataBody.pageNumber = 1
-        /*
-        while (dataBody.filter.FilterGroups[0].FilterItems.length > 1) {
-          dataBody.filter.FilterGroups[0].FilterItems.pop()
-        }
-        */
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
         this.refreshDatatable()
-        /*this.$store
-          .dispatch('investigations/getInvestigationDetailsListData', {
-            data: dataBody,
-            id: this.$route.params.id
-          })
-          .finally(() => {
-            this.loading = false
-            this.showEmails = true
-            //vm.$forceUpdate()
-          })*/
       } else {
-        //this.getDefaultFilterAndSearchForTargetUsers()
+        this.leftMenuLoading = true
+        this.loading = true
         this.$store
-          .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-            data: this.investigationTargetUsersListBodyData,
-            id: this.$route.params.id
-          })
-          .then((response) => {
-            this.adjustTargetUserShowRecords(response)
-          })
+          .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
           .finally(() => {
-            this.showTargetUsersDetails = true
-            this.loading = false
-            vm.$forceUpdate()
+            this.$store
+              .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
+                data: this.defaultInvestigationTargetUsersListBodyData,
+                id: this.$route.params.id
+              })
+              .then((response) => {
+                this.adjustTargetUserShowRecords(response)
+              })
+              .finally(() => {
+                this.showTargetUsersDetails = true
+                this.loading = false
+                this.leftMenuLoading = false
+                this.loading = false
+                vm.$forceUpdate()
+              })
           })
       }
     },
@@ -2654,6 +2680,7 @@ export default {
         &-right-col {
           display: flex;
           flex-basis: 50%;
+          align-items: center;
           @media (max-width: 992px) {
             margin-top: 6px;
           }

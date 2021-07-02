@@ -321,8 +321,8 @@
                   class="menu-link-default"
                   id="btn--link-navigator-menu-investigations"
                   :class="[
-                    routerName === 'Investigation Details' ||
-                      (routerName === 'Investigations' && 'active-link')
+                    (routerName === 'Investigation Details' || routerName === 'Investigations') &&
+                      'active-link'
                   ]"
                 >
                   <v-list-item-title class="menu-item-wrapper">
@@ -432,7 +432,7 @@
               style="padding-left: 0 !important; margin-left: -5px;"
               v-if="
                 this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
-                checkPermissionMultiple(['company-groups|GET', 'companies/search|POST'])
+                checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST'])
               "
             >
               <v-list-item-content class="menu-item-content">

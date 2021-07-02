@@ -252,6 +252,7 @@ export default {
             checkUpdateCategory(payload)
               .then((response) => {
                 this.checkUpdateCategory = 'success'
+                this.isAllSuccess(true)
               })
               .catch((error) => {
                 this.checkUpdateCategory = 'error'
@@ -337,6 +338,7 @@ export default {
         letter-spacing: normal;
         color: rgba(0, 0, 0, 0.87);
         margin-right: 8px;
+        min-width: 202px;
       }
     }
   }

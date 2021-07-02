@@ -1,11 +1,10 @@
 <template>
   <div class="company-list">
-    <create-or-edit-system-user
-      v-if="showCreateOrEditSystemUserModal"
-      :status="showCreateOrEditSystemUserModal"
-      :created-company-resource-id="createdCompanyResourceIdForSystemUser"
-      @closeOverlayWithUpdate="toggleCreateOrEditSystemUser"
-      @closeOverlay="toggleCreateOrEditSystemUser"
+    <ConfigureNewCompanyModal
+      v-if="isShowConfigureCompanyModal"
+      :status="isShowConfigureCompanyModal"
+      :created-company-resource-id="createdCompanyResourceIdForConfigureCompany"
+      @on-close="toggleConfigureNewCompanyModal"
     />
     <app-modal
       v-if="isShowCreateOrEditModal"
@@ -20,7 +19,7 @@
           :selectedExtend="selectedExtend"
           :edit="editModal"
           @cancelForm="cancelCreateOrEditForm"
-          @closeFormAndOpenSystemUserModal="closeFormAndOpenSystemUserModal"
+          @closeFormConfigureNewCompanyModal="closeFormConfigureNewCompanyModal"
         />
       </template>
     </app-modal>
@@ -49,6 +48,7 @@
       id="companies-data-table"
       ref="refDataList"
       is-server-side
+      toggle-all-row-expansion
       :loading="loading"
       :selectable="true"
       :table="tableData"
@@ -139,9 +139,10 @@
 </template>
 
 <script>
-import Datatable from '../../components/DataTable'
+import Datatable from '@/components/DataTable'
 import { deleteCompany, exportCompanies, getCompanyByID, searchCompanies } from '@/api/company'
 import DeleteModal from './DeleteModal'
+import labels from '@/model/constants/labels'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
@@ -157,24 +158,24 @@ import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
+import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 export default {
   name: 'CompanyList',
   components: {
+    ConfigureNewCompanyModal,
     AppModal,
     CreateItemModal,
     AddGroupToModal,
     CompanyCreateOrEdit,
     CompanyListExtend,
     Datatable,
-    CreateOrEditSystemUser,
     DeleteModal
   },
   data: () => ({
     loading: true,
     tableData: [],
-    createdCompanyResourceIdForSystemUser: '',
-    showCreateOrEditSystemUserModal: false,
+    createdCompanyResourceIdForConfigureCompany: '',
+    isShowConfigureCompanyModal: false,
     tableHeight: 0,
     extendTop: 0,
     bindPropsIsSafari: {},
@@ -238,7 +239,13 @@ export default {
           show: true,
           type: 'slot',
           filterableType: 'text',
-          width: 130
+          width: 130,
+          filterOptionProps: [
+            { text: 'Contains', value: 'Contains' },
+            { text: 'Equal', value: '=' },
+            { text: 'Not Equal', value: '!=' },
+            { text: 'Between', value: 'between' }
+          ]
         },
         {
           property: PROPERTY_STORE.LICENSEENDDATE,
@@ -273,10 +280,10 @@ export default {
         download: false
       },
       iEmpty: {
-        message: 'No company defined',
-        btn: 'ADD A COMPANY',
+        message: labels.EmptyCompany,
+        btn: labels.New,
         id: 'btn-empty--company',
-        icon: 'mdi-account-plus'
+        icon: 'mdi-plus'
       },
       addButton: {
         show: true,
@@ -442,10 +449,13 @@ export default {
       }
     },
 
-    toggleCreateOrEditSystemUser() {
-      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
-      if (!this.showCreateOrEditSystemUserModal) {
-        this.createdCompanyResourceIdForSystemUser = ''
+    toggleConfigureNewCompanyModal() {
+      if (this.isShowConfigureCompanyModal) {
+        this.getTableData()
+      }
+      this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal
+      if (!this.isShowConfigureCompanyModal) {
+        this.createdCompanyResourceIdForConfigureCompany = ''
       }
     },
     handleSwitchCompany(account = {}) {
@@ -668,10 +678,10 @@ export default {
       this.selectedRow = {}
       this.getTableData({ orderBy: 'createTime', ascending: false })
     },
-    closeFormAndOpenSystemUserModal(createdCompanyResourceId = '') {
-      this.createdCompanyResourceIdForSystemUser = createdCompanyResourceId
+    closeFormConfigureNewCompanyModal(createdCompanyResourceId = '') {
+      this.createdCompanyResourceIdForConfigureCompany = createdCompanyResourceId
       this.cancelCreateOrEditForm()
-      this.toggleCreateOrEditSystemUser()
+      this.toggleConfigureNewCompanyModal()
     },
     closeExtend() {
       this.selectedExtend = {}

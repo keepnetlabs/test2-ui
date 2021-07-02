@@ -115,7 +115,7 @@ export default {
       ],
       tableData: [],
       empty: {
-        message: "There isn't any reporters, yet"
+        message: 'You do not have any reporters'
       }
     }
   },

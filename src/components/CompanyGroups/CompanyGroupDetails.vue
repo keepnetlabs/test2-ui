@@ -238,9 +238,9 @@ export default {
       },
       iEmpty: {
         id: 'btn-empty--company-group-detail',
-        message: 'No company defined',
-        btn: 'ADD A COMPANY',
-        icon: 'mdi-account-plus'
+        message: labels.EmptyCompany,
+        btn: labels.New,
+        icon: 'mdi-plus'
       },
       addButton: {
         show: true,
@@ -504,6 +504,7 @@ export default {
       this.removeModalDisable = true
       removeCompanyToCompanyGroup(this.groupId, payload)
         .then((response) => {
+          this.$refs.refDataList.unSelectRow(selectedItem)
           if (response.data && response.data.message) {
             this.getTableData()
           }
@@ -581,12 +582,22 @@ export default {
       this.$router.push({ name: 'Company Group Details', params: { groupId: resourceId } })
     },
     columnFilterChanged(filter) {
+      //generic
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
+      this.resetPageNumber()
       requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
+        if (Array.isArray(filter)) {
+          filter.forEach((i) => {
+            if (x.FieldName !== i.FieldName) {
+              items.push(x)
+            }
+          })
+        } else {
+          if (x.FieldName !== filter.FieldName) {
+            items.push(x)
+          }
         }
       })
 
@@ -602,7 +613,6 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
       this.payload.filter.FilterGroups[0].FilterItems = requestBody
       this.getTableData()
     },

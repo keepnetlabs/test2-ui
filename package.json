@@ -5,6 +5,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
+    "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "format": "vue-cli-service lint --fix"
   },
@@ -21,6 +22,7 @@
     "chart.js": "^2.9.3",
     "chartjs-plugin-datalabels": "^0.7.0",
     "core-js": "^3.6.5",
+    "flush-promises": "^1.0.2",
     "grapesjs": "^0.16.30",
     "grapesjs-blocks-avance": "0.0.32",
     "grapesjs-blocks-basic": "^0.1.8",
@@ -39,26 +41,31 @@
     "localforage": "^1.9.0",
     "pdfmake": "^0.1.63",
     "print-js": "^1.0.63",
+    "regenerator-runtime": "^0.13.7",
     "v-mask": "^2.2.3",
     "v-offline": "^1.1.0",
     "vlf": "^1.1.0",
-    "vue": "^2.6.12",
+    "vue": "2.6.12",
     "vue-analytics": "^5.22.1",
     "vue-chartjs": "^3.5.1",
     "vue-clamp": "^0.2.2",
     "vue-custom-element": "^3.2.14",
     "vue-grid-layout": "^2.3.9",
     "vue-hotjar": "^1.2.0",
+    "vue-jest": "^3.0.7",
     "vue-mixpanel": "^1.0.7",
     "vue-moment": "^4.1.0",
+    "vue-multipane": "^0.9.5",
     "vue-query-builder": "^0.8.2",
     "vue-recaptcha": "^1.2.0",
+    "vue-resize-split-pane": "^0.1.5",
     "vue-router": "^3.3.4",
     "vue-smart-widget": "^0.5.5",
     "vue-tag-manager": "^0.1.2",
     "vue-tel-input": "4.4.2",
     "vue-tour": "^1.1.0",
     "vue-upload-component": "^2.8.20",
+    "vue-video-player": "^5.0.2",
     "vuedraggable": "^2.23.2",
     "vuetify": "2.3.19",
     "vuex": "^3.4.0"
@@ -67,8 +74,10 @@
     "@babel/preset-env": "^7.10.2",
     "@vue/cli-plugin-babel": "^4.5.6",
     "@vue/cli-plugin-eslint": "^4.5.6",
+    "@vue/cli-plugin-unit-jest": "~4.5.0",
     "@vue/cli-service": "^4.5.6",
     "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/test-utils": "^1.2.0",
     "babel-eslint": "^10.1.0",
     "deepmerge": "^4.0.0",
     "element-ui": "^2.15.1",
@@ -124,7 +133,18 @@
       "ecmaFeatures": {
         "jsx": true
       }
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/__tests__/*.{j,t}s?(x)",
+          "**/tests/unit/**/*.spec.{j,t}s?(x)"
+        ],
+        "env": {
+          "jest": true
+        }
+      }
+    ]
   },
   "postcss": {
     "plugins": {

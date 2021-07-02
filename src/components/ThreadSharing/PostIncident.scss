@@ -2310,3 +2310,6 @@
   top: -10px;
   right: 0px;
 }
+.v-menu__content.theme--light.menuable__content__active{
+z-index: 1001!important;
+}

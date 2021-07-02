@@ -218,7 +218,7 @@ export default {
         },
         iEmpty: {
           message: LABEL_STORE.NO_TARGET_GROUPS_DEFINED,
-          btn: 'ADD A GROUP',
+          btn: 'New',
           id: 'btn-empty--target-users-group',
           icon: 'mdi-plus'
         },
@@ -527,6 +527,7 @@ export default {
     },
     handleDelete(selectedRow) {
       this.changeDeleteGroupModalStatus(true)
+      this.getDefaultFilterAndSearch()
       this.selectedRow = selectedRow
     },
     exportTargetGroupsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -562,6 +563,7 @@ export default {
     },
     handleDeleteGroup(selectedRow) {
       deleteTargetGroup(selectedRow.resourceId).then(() => {
+        this.$refs.refGroupsTable.unSelectRow(selectedRow)
         this.callForTargetGroups()
       })
     },

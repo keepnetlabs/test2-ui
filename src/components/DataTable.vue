@@ -6,6 +6,7 @@
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
       v-if="options && downloadButton.show && isWantToDownload"
+      :download="download"
       :title="downloadModalTitle"
     />
     <data-table-tooltip
@@ -25,7 +26,12 @@
         </v-list-item-content>
       </v-list-item>
       <div class="table-wrapper">
-        <div class="settings-popup" v-show="isSettingsOpened" :style="settingsPopupStyle">
+        <div
+          v-click-outside="handleSettingsPopupClickOutside"
+          class="settings-popup"
+          v-show="isSettingsOpened"
+          :style="settingsPopupStyle"
+        >
           <div class="settings-header">
             <span class="settings-span">Table Settings</span>
             <v-icon @click="toggleIsSettingsOpened" class="close-icon">mdi-close</v-icon>
@@ -98,9 +104,10 @@
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="$emit('clear-filters')"
+              :hideActionOptions="hideActionOptions"
             />
           </div>
-          <div class="table-settings" v-if="options">
+          <div class="table-settings" v-if="options && !hideActionOptions">
             <v-btn
               class="clust-btn btn-hover mr-1"
               :color="!selectedCluster ? '#2196f3' : '#757575'"
@@ -224,7 +231,14 @@
               </template>
               <span class="tooltip-span">{{ 'Refresh' }}</span>
             </v-tooltip>
-            <v-menu bottom left offset-y v-if="downloadButton && downloadButton.show">
+            <v-menu
+              v-model="isDownloadMenuOpen"
+              bottom
+              left
+              :attach="isTesting && testProps.menuAttach"
+              offset-y
+              v-if="downloadButton && downloadButton.show"
+            >
               <template v-slot:activator="{ on: menu, attrs }">
                 <v-tooltip bottom opacity="1">
                   <template v-slot:activator="{ on: tooltip }">
@@ -430,6 +444,7 @@
             :lazy="lazy"
             ref="elTableRef"
             :row-key="rowKey"
+            @row-click="handleRowClick"
             style="width: 100%;"
           >
             <el-table-column
@@ -559,6 +574,10 @@
                   :filter-props="col.filterProps"
                   :filterableType="col.filterableType"
                   :filterableItems="col.filterableItems"
+                  :filterableOptions="col.filterableOptions"
+                  :showSelect:="col.showSelect"
+                  :filterOptionProps="col.filterOptionProps"
+                  :defaultDate="col.defaultDate"
                   :filterableCustomFieldName="col.filterableCustomFieldName"
                   :index="$index"
                   :sortable="!col.hideSort"
@@ -807,16 +826,15 @@
                 {{ empty.subMes }}
               </p>
               <v-btn
-                :disabled="empty['disabled']"
-                :id="empty['id']"
-                @click="onEmptyBtnClicked"
-                class="empty-btn"
-                :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
                 v-if="empty.btn"
+                :id="empty['id']"
+                :class="['empty-btn', empty['disabled'] && 'empty-btn--disabled']"
+                :disabled="empty['disabled']"
+                @click="onEmptyBtnClicked"
               >
                 <!-- empty action -->
-                <v-icon class="mr-2">{{ empty.icon }}</v-icon>
-                {{ empty.btn }}
+                <v-icon class="mr-1" style="margin-top: -1px;">{{ empty.icon }}</v-icon>
+                <span>{{ empty.btn }} </span>
               </v-btn>
             </slot>
           </div>
@@ -831,16 +849,19 @@
         "
       >
         <el-pagination
+          v-if="showPagination"
           :current-page="serverSideProps.pageNumber"
           :page-size="serverSideProps.pageSize"
           :page-sizes="pageSizes || [5, 10, 25]"
           :total="serverSideProps.totalNumberOfRecords"
           @current-change="handleServerSideCurrentChange"
           @size-change="handleServerSideSizeChange"
-          layout="sizes, prev, pager, next,slot"
+          :layout="showPageSize ? 'sizes, prev, pager, next,slot' : 'prev, pager, next,slot'"
         >
           <template>
-            <span class="el-pagination__text el-pagination__text--1">Rows per page: </span>
+            <span class="el-pagination__text el-pagination__text--1" v-if="showPageSize"
+              >Rows per page:
+            </span>
             <span class="el-pagination__text el-pagination__text--2">
               {{
                 serverSideProps.pageNumber === 1
@@ -987,7 +1008,17 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    showPageSize: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
     showFilterOptions: {
+      type: Boolean,
+      required: false,
+      default: true
+    },
+    showPagination: {
       type: Boolean,
       required: false,
       default: true
@@ -1015,6 +1046,9 @@ export default {
     hideParentRowActions: {
       type: Boolean,
       default: false
+    },
+    toggleAllRowExpansion: {
+      type: Boolean
     },
     activeCluster: {
       type: String
@@ -1203,6 +1237,10 @@ export default {
       type: Boolean,
       default: true
     },
+    hideActionOptions: {
+      type: Boolean,
+      default: false
+    },
     persistentState: {
       type: Object,
       default() {
@@ -1253,6 +1291,19 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+    download: {
+      default: () => ({ xls: true, csv: true, pdf: true })
+    },
+    isTesting: {
+      type: Boolean,
+      default: false
+    },
+    testProps: {
+      type: Object,
+      default: () => {
+        return { menuAttach: '.k-table__wrapper' }
+      }
     }
   },
   computed: {
@@ -1368,11 +1419,6 @@ export default {
       isRowActionsMenuOpen: [],
       isSelectedAllEver,
       filterValues,
-      download: {
-        xls: false,
-        csv: false,
-        pdf: false
-      },
       showOverFlowTooltip: false,
       actionFixed: 'right',
       allHidden: false,
@@ -1380,7 +1426,9 @@ export default {
       downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate,
       renderedTotalLength: 0,
-      totalLength
+      totalLength,
+      isFirstOpenSettings: false,
+      isDownloadMenuOpen: false
     }
   },
   watch: {
@@ -1483,6 +1531,13 @@ export default {
           this.$refs.elTableRef.store.states.expandRows = []
           this.$refs.elTableRef.store.states.treeData = []
         }
+      }
+      if (this.toggleAllRowExpansion) {
+        this.$nextTick(() => {
+          for (const row of this.tableData) {
+            this.handleToggleOrLazyWhenCheckboxSelected(row)
+          }
+        })
       }
     },
     tableData(data) {
@@ -1587,6 +1642,9 @@ export default {
     }
   },
   methods: {
+    handleRowClick(row, column, event) {
+      this.$emit('row-click', row)
+    },
     getState() {
       return {
         firstColFixed: this.firstColFixed,
@@ -1788,7 +1846,12 @@ export default {
         }
       })
     },
+    handleSettingsPopupClickOutside() {
+      if (!this.isSettingsOpened || this.isFirstOpenSettings) return
+      this.isSettingsOpened = false
+    },
     /**
+     *
      * This event is throwed when All select button clicked
      * No param
      */
@@ -2363,7 +2426,9 @@ export default {
             }
           }
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
-          this.resetSelectableParams()
+          if (this.isServerSideSelection) {
+            this.resetSelectableParams()
+          }
         }, debounceTime)
       } else {
         this.debounce(() => {
@@ -2452,6 +2517,10 @@ export default {
       }
       this.$emit('handleChangeIsSettingsOpen', !this.isSettingsOpened)
       this.isSettingsOpened = !this.isSettingsOpened
+      this.isFirstOpenSettings = true
+      setTimeout(() => {
+        this.isFirstOpenSettings = false
+      }, 200)
     },
     addButtonFunction(action, row) {
       this.$emit(action, row)
@@ -2468,7 +2537,12 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
-      this.$emit('handleSelectionChange', val)
+      const serverSideSelectionParams = {}
+      if (this.isServerSideSelection) {
+        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
+        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
+      }
+      this.$emit('handleSelectionChange', val, ...Object.values(serverSideSelectionParams))
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
       for (let row of rows) {
@@ -2832,6 +2906,9 @@ export default {
           icon: 'mdi-check-circle'
         })
       })
+    },
+    unSelectRow(row) {
+      this.$refs.elTableRef.toggleRowSelection(row, false)
     },
     handleEdit(selections, index) {
       if (index > -1) {

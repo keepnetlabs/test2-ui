@@ -128,9 +128,11 @@
       <template v-slot:empty-table-inline>
         <div class="people__no-data">
           <p id="text--empty-table-title" class="people__no-data__header">
-            You do not have any users added, yet
+            {{ labels.EmptyTargetUsersPeople }}
           </p>
-          <p id="text--empty-table-subtitle" class="people__no-data__body">Starts now!</p>
+          <p id="text--empty-table-subtitle" class="people__no-data__body">
+            {{ labels.EmptyTargetUsersPeopleSub }}
+          </p>
           <div class="people__no-data__buttons">
             <v-menu offset-y transition="scale-transition" nudge-bottom="4">
               <template v-slot:activator="{ on }">
@@ -139,7 +141,8 @@
                   v-on="on"
                   id="btn-empty--target-users-people"
                 >
-                  <v-icon color="#fff" class="mr-2">mdi-plus</v-icon> ADD USERS
+                  <v-icon color="#fff" style="margin-top: 1px;" class="mr-1">mdi-plus</v-icon>
+                  <span style="font-weight: 600;">NEW</span>
                 </div>
               </template>
               <div>
@@ -175,6 +178,7 @@ import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
 import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
+import labels from '@/model/constants/labels'
 import {
   deleteTargetUser,
   exportTargetUsers,
@@ -212,9 +216,10 @@ export default {
   },
   emits: ['call-for-company-licenses'],
   data: () => ({
+    labels,
     payload: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -236,7 +241,7 @@ export default {
     storedTableSettings: null,
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 50000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -678,19 +683,20 @@ export default {
       this.isWantToShowAddUsersManuallyModal = status
     },
     handleDeleteUsers(selections) {
-      selections.forEach((item) => this.handleDeleteUser(item))
+      selections.forEach((item) => this.handleDeleteUser(item, selections))
     },
-    handleDeleteUser(selectedUser) {
+    handleDeleteUser(selectedUser, selections) {
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
           this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
-          this.$emit('call-for-company-licenses')
-          this.callForTargetUsers()
+          if (selections[selections.length - 1].resourceId === selectedUser.resourceId) {
+            this.$emit('call-for-company-licenses')
+            this.callForTargetUsers()
+          }
         }
       })
     },
     callForTargetUsers() {
-      this.loading = true
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
@@ -700,7 +706,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = response.data.data.results.map((item) => {
             const { customFieldValues } = item
-            for (let { name, value, dataType } of customFieldValues) {
+            for (let { name, value, dataType, timestampValue } of customFieldValues) {
               if (dataType === 'Boolean') {
                 if (value === 'True') {
                   item[name] = 'Yes'
@@ -709,6 +715,8 @@ export default {
                 } else {
                   item[name] = 'No'
                 }
+              } else if (['Date', 'DateTime'].includes(dataType)) {
+                item[name] = timestampValue
               } else {
                 item[name] = value !== null && value !== undefined ? value : ''
               }
@@ -722,6 +730,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
+      this.loading = true
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const { data } = response

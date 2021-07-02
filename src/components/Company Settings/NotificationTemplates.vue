@@ -225,9 +225,9 @@ export default {
         pageSizes: [5, 10, 25],
         isColumnFilterActive: false,
         empty: {
-          message: LABEL_STORE.NO_NOTIFICATION_TEMPLATE_DEFINED,
-          subMes: 'Create a new user directory integration',
-          btn: 'Create Notification Template',
+          message: labels.EmptyNotificationTemplate,
+          subMes: labels.EmptyNotificationTemplateSub,
+          btn: 'New',
           id: 'btn-empty--notification-template',
           icon: 'mdi-plus'
         },
@@ -482,6 +482,7 @@ export default {
       this.isDeleteButtonDisabled = true
       deleteEmailTemplate(resourceId)
         .then(() => {
+          this.$refs.refNotificationList.unSelectRow(this.selectedItem)
           this.toggleDeleteNotificationTemplate()
           this.callForDatas()
         })

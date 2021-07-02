@@ -157,9 +157,9 @@ export default {
           download: false
         },
         iEmpty: {
-          message: 'No company defined',
-          btn: 'ADD A COMPANY',
-          icon: 'mdi-account-plus'
+          message: labels.EmptyCompany,
+          btn: labels.New,
+          icon: 'mdi-plus'
         },
         addButton: {
           show: false

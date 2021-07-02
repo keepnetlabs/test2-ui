@@ -52,11 +52,11 @@
             }}
             user(s) are
           </div>
-          <div class="card-status">{{ labels.CurrentlyOnline }}</div>
+          <div class="card-status">{{ labels.Online }}</div>
         </div>
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">
-            Add-in isn’t installed at any users’ account, yet
+            Add-in isn’t installed at any users’ account
           </div>
         </div>
         <div

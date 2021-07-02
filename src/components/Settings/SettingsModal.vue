@@ -7,6 +7,8 @@
     size="big"
     @changeStatus="$emit('changeSettings')"
     :max-height-size="'500'"
+    custom-size="650"
+    :max-height="true"
   >
     <template v-slot:app-dialog-body>
       <div v-if="loadingSettingsModal">
@@ -145,6 +147,11 @@ export default {
   methods: {
     setSystemUserSettings() {
       setSystemUserSettings(this.formValues).then((response) => {
+        localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+        localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+        setTimeout(() => {
+          window.location.reload()
+        }, 250)
         this.$emit('changeSettings')
       })
     },

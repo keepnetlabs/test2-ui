@@ -5,7 +5,7 @@
     :title="getTitle"
     :subtitle="labels.AddCompaniesToCompanyGroupSubtitle"
     @changeStatus="closeOverlay"
-    size="maximum"
+    :custom-size="dialogWidth"
     maxHeightSize="auto"
     class-name="add-to-group-modal"
     title-id="text--company-group-details-add-company-to-company-group-popup-title"
@@ -15,6 +15,7 @@
       <DataTable
         :loading="loading"
         :selectable="true"
+        is-server-side
         :table="tableData"
         :count-row="5"
         id="companies-data-table"
@@ -30,10 +31,19 @@
         :selectEvent="tableOptions.selectEvent"
         :refName="'companyList'"
         row-key="companyName"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @handleSelectionChange="handleSelectionChange"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearch"
+        @searchChangedEvent="handleSearchChange"
+        @sortChangedEvent="sortChanged"
+        @server-side-page-number-changed="serverSidePageNumberChanged"
+        @server-side-size-changed="serverSideSizeChanged"
+        @set-default-search="handleSetDefaultSearch"
+        @restore-default-search="handleRestoreDefaultSearch"
+        @clear-filters="handleClearFilters"
       />
     </template>
     <template v-slot:app-dialog-footer>
@@ -64,10 +74,17 @@
 import AppDialog from '@/components/AppDialog'
 import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import { checkPermission } from '@/utils/functions'
+import {
+  DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE,
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
 import { getLookupListByTypeIdList } from '@/api/common'
+import QueryHelperForTable from '@/helper-classes/query-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'AddCompaniesToCompanyGroup',
   components: {
@@ -89,6 +106,7 @@ export default {
       saveDisable: false,
       loading: false,
       selectedArray: [],
+      dialogWidth: '650',
       tableData: [],
       tableOptions: {
         columns: [
@@ -172,9 +190,9 @@ export default {
           download: false
         },
         iEmpty: {
-          message: 'No company defined',
-          btn: 'ADD A COMPANY',
-          icon: 'mdi-account-plus'
+          message: labels.EmptyCompany,
+          btn: labels.New,
+          icon: 'mdi-plus'
         },
         addButton: {
           show: false,
@@ -222,10 +240,16 @@ export default {
               Condition: 'AND',
               FilterItems: [],
               FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
             }
           ]
         }
-      }
+      },
+      serverSideProps: new ServerSideProps()
     }
   },
   computed: {
@@ -234,9 +258,153 @@ export default {
     }
   },
   created() {
-    this.callForSearch()
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+    this.queryHelper.setDefaultValues()
+    this.queryHelper.controlRouteQuery()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.getDefaultFilterAndSearch()
+    this.getLookUpDatas()
   },
   methods: {
+    getLookUpDatas() {
+      getLookupListByTypeIdList({ typeidlist: [2, 3] })
+        .then((response) => {
+          const res = response.data.data
+          this.$set(
+            this.tableOptions.columns[1],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 2)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+          this.$set(
+            this.tableOptions.columns[2],
+            'filterableItems',
+            res
+              .filter((item) => item.genericCodeTypeId === 3)
+              .map((item) => ({ text: item.name, value: item.resourceId }))
+          )
+        })
+        .finally(() => this.callForSearch())
+    },
+    setQueryValuesToPayload({ page, size }) {
+      //generic
+      const parsedPage = parseInt(page)
+      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
+      const parsedSize = parseInt(size)
+      size = isNaN(parsedSize) ? 10 : parsedSize
+      this.payload.pageSize = size
+      this.serverSideProps.pageSize = size
+    },
+    handleSetRenderedColumns(tableSettings = {}) {
+      localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_LIST, JSON.stringify(tableSettings))
+    },
+    handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfFilter = JSON.parse(JSON.stringify(this.payload.filter))
+      copyOfFilter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+      localStorage.setItem(
+        DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST,
+        JSON.stringify({
+          filter: copyOfFilter,
+          filterValues
+        })
+      )
+    },
+    handleRestoreDefaultSearch() {
+      this.getDefaultFilterAndSearch()
+      this.getLookUpDatas()
+    },
+    handleClearFilters() {
+      this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
+      this.payload.pageNumber = 1
+      this.$refs.refDataList.filterValues = {}
+      this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.ADD_COMPANY_LIST)
+      this.getLookUpDatas()
+    },
+    getDefaultFilterAndSearch() {
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.ADD_COMPANY_LIST)
+      )
+      if (savedFilter) {
+        this.payload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
+        this.$nextTick(() => {
+          this.$refs.refDataList.filterValues = savedFilter.filterValues
+          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    },
+
+    toggleConfigureNewCompanyModal() {
+      if (this.isShowConfigureCompanyModal) {
+        this.callForSearch()
+      }
+      this.isShowConfigureCompanyModal = !this.isShowConfigureCompanyModal
+      if (!this.isShowConfigureCompanyModal) {
+        this.createdCompanyResourceIdForConfigureCompany = ''
+      }
+    },
+    handleSwitchCompany(account = {}) {
+      this.$router.go(0)
+      localStorage.setItem('isSelectCompany', true)
+      localStorage.setItem('companyId', account.companyResourceId)
+      localStorage.setItem('companyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyRequestId', account.companyResourceId)
+      localStorage.setItem('selectedCompanyName', account.companyName)
+    },
+    serverSidePageNumberChanged(pageNumber = 1) {
+      //generic
+      this.payload.pageNumber = pageNumber
+      this.queryHelper.setRouterQuery('page', pageNumber)
+      this.callForSearch()
+    },
+    sortChanged({ order, prop } = {}) {
+      //generic
+      this.payload.ascending = order === 'ascending'
+      this.payload.orderBy = prop
+      this.callForSearch()
+    },
+    serverSideSizeChanged(pageSize = 10) {
+      //generic
+      this.payload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
+      this.callForSearch()
+    },
+    resetPageNumber() {
+      //generic
+      this.payload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
+    },
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
+    isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
+      return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)
+    },
+    handleChangeIsSettingsOpen(val) {
+      if (val) {
+        this.isShowExtended = false
+      }
+    },
+    handleSearchChange(searchFilter = {}, filterActive = false) {
+      //generic
+      this.payload.filter.FilterGroups[1].FilterItems = [
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForSearch()
+    },
     callForSearch() {
       this.loading = true
       getLookupListByTypeIdList({ typeidlist: [2, 3] })
@@ -263,11 +431,19 @@ export default {
         .finally(() => {
           searchCompanies(this.payload)
             .then((response) => {
+              const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+
+              this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+              this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+              this.serverSideProps.pageNumber = pageNumber
+              //this.queryHelper.setRouterQuery('page', pageNumber)
+
               this.tableData =
                 response.data.data.hasOwnProperty('results') &&
                 response.data.data.results.length > 0
                   ? response.data.data.results
                   : []
+              this.dialogWidth = this.tableData.length > 1000 ? '750' : '650'
             })
             .catch(() => {
               this.tableData = []

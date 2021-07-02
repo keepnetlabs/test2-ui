@@ -62,7 +62,7 @@ export default {
     return {
       months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       empty: {
-        message: "There isn't any reported emails yet."
+        message: 'You do not have any reported emails'
       },
       isLoading: true,
       axiosPayload: {

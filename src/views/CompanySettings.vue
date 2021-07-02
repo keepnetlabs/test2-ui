@@ -27,6 +27,17 @@
               ref="refWhitelabeling"
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
           /></el-tab-pane>
+          <el-tab-pane label="Proxy Settings" name="proxy-settings" id="proxy-settings-content">
+            <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
+          </el-tab-pane>
+          <el-tab-pane
+            v-if="checkPermissions('companies/saml-settings/search', 'POST')"
+            label="SAML Settings"
+            name="saml-settings"
+            id="saml-settings-content"
+          >
+            <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
+          /></el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -40,18 +51,22 @@ import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
 import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
+import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
+import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'CompanySettings',
   components: {
+    SamlSettings,
     SMTPSettings,
     NotificationTemplates,
     CustomApi,
-    WhiteLabeling
+    WhiteLabeling,
+    ProxySettings
   },
   data() {
     return {
       tab: 'smtp-settings',
-      tabItems: ['SMTP Settings', 'Notification Templates', 'Rest API'],
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
       },
@@ -64,6 +79,9 @@ export default {
     }
   },
   methods: {
+    checkPermissions(permission, type) {
+      return checkPermission(permission, type)
+    },
     changeTabStatus(status) {
       this.tab = status
     },
@@ -79,10 +97,19 @@ export default {
         'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
       )
+    },
+    changeTabByRoute() {
+      const { $route: { query } = {} } = this
+      if (!query || !query.tab) return
+      this.tab = query.tab
+      this.$nextTick(() => {
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template&', ''))
+      })
     }
   },
   created() {
     this.getPermissions()
+    this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {
     const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs

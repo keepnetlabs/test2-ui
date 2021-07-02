@@ -135,7 +135,7 @@
               </div>
               <div class="columns-row__body" v-else>
                 <div class="card-footer no-data-text">
-                  Add-in isn’t installed at any users’ account, yet
+                  Add-in isn’t installed at any users’ account
                 </div>
               </div>
               <div
@@ -332,7 +332,7 @@
               </div>
               <div class="columns-row__body" v-else>
                 <div class="card-footer no-data-text">
-                  You haven’t saved any work, yet
+                  You haven’t saved any work
                 </div>
               </div>
               <div class="bg-image">
@@ -964,7 +964,7 @@ export default {
       ],
       iEmpty: {
         message: labels.NoRulesConfigured,
-        btn: labels.CreateNewRule,
+        btn: labels.New,
         icon: 'mdi-plus',
         id: 'btn-empty--incident-responder-rules'
       },
@@ -1027,7 +1027,7 @@ export default {
       },
       iEmpty: {
         message: labels.NoInvestigation,
-        btn: labels.StartNewInvestigation,
+        btn: labels.New,
         icon: 'mdi-plus',
         id: 'btn-empty--incident-responder-investigation'
       },
@@ -2738,8 +2738,7 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            const tableData = results
-            this.reportedEmailsData = tableData || []
+            this.reportedEmailsData = results || []
             if (this.selectedCluster) {
               this.$nextTick(() => {
                 this.$refs.refReportedEmails.$refs.elTableRef.columns[1].width = 360

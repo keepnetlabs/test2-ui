@@ -28,7 +28,7 @@
                 <div style="max-width: 180px; height: 60px;">
                   <img
                     id="img--login-main-logo"
-                    style="height: 100%;"
+                    style="height: 100%; max-width: 100%;"
                     :src="loginWhiteLabel.mainLogoUrl"
                   />
                 </div>
@@ -42,10 +42,12 @@
                         : `Welcome To ${loginWhiteLabel.brandName}`
                     }}
                   </div>
-                  <div id="text--login-description" class="login-desc">
+                  <div id="text--login-description" class="login-desc mb-14">
                     {{
                       isSessionExpired
                         ? 'Your session has been timed out. Please log in.'
+                        : showPasswordField
+                        ? `Enter password for ${email}`
                         : 'Please Login'
                     }}
                   </div>
@@ -99,41 +101,33 @@
                           @submit="(event) => event.preventDefault()"
                           v-model.trim="validEmail"
                           autocomplete="off"
-                          ref="email"
+                          :ref="showPasswordField ? 'password' : 'email'"
                         >
-                          <label
-                            id="text--login-username"
-                            class="new-password-wrapper__label p-0 mb-2"
-                            >Username</label
-                          >
                           <v-text-field
+                            v-if="!showPasswordField"
                             id="input--login-email"
                             :type="'email'"
                             name="email"
                             ref="email"
                             v-model.trim="email"
-                            :rules="[rules.required, rules.email, rules.max, rules.controlEmail]"
+                            :rules="[
+                              rules.required,
+                              rules.min,
+                              rules.email,
+                              rules.max,
+                              rules.controlEmail
+                            ]"
                             class="username-field"
                             required
-                            label="Username"
+                            label="Username or email"
                             outlined
                             @keyup.enter="toNext"
                             :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
                             autocomplete="disabled"
                           ></v-text-field>
-                        </v-form>
-                      </v-col>
-                    </v-row>
-                    <v-row align="center" justify="center">
-                      <v-col class="pt-0 pl-0 pr-0" md="6" sm="12">
-                        <v-form
-                          @submit="(event) => event.preventDefault()"
-                          v-model.trim="validPassword"
-                          ref="password"
-                        >
-                          <label class="new-password-wrapper__label p-0 mb-2">Password</label>
                           <v-text-field
+                            v-else
                             id="input--login-password"
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
@@ -153,13 +147,14 @@
                         </v-form>
                       </v-col>
                     </v-row>
-                    <v-row align="center" justify="center">
-                      <v-col class="pl-0 pt-1 pr-2 pb-0" md="6" xs="12">
+                    <v-row v-if="showPasswordField" align="center" justify="center">
+                      <v-col class="pl-0 pt-0 pr-2 pb-0" md="6" xs="12">
                         <div class="login-remember d-flex">
                           <v-checkbox
                             v-model.trim="rememberMe"
                             id="input--is-remember-me"
                             :label="`Remember`"
+                            style="visibility: hidden;"
                             class="remember-me-check"
                             hide-details
                             dense
@@ -188,16 +183,28 @@
                     @expired="onCaptchaExpired"
                   ></vue-recaptcha>
                 </div>
-                <v-card-actions class="justify-center login-button">
+                <v-card-actions class="justify-center login-button mt-0">
                   <v-btn
                     color="blue"
                     id="btn--login-continue"
                     class="pl-4 white--text login-btn"
+                    :style="isSamlLoading ? { width: '260px' } : ''"
                     rounded
-                    @click="onLoginClicked"
+                    :loading="isSamlLoading"
+                    @click="handleContinueClick"
                   >
-                    CONTINUE
+                    {{ isSamlLoading ? 'REDIRECTING FOR SSO LOGIN' : 'CONTINUE' }}
                     <v-icon right dark>mdi-arrow-right</v-icon>
+                    <template #loader>
+                      <span style="font-size: 14px; font-weight: 600; text-transform: capitalize;">
+                        REDIRECTING FOR SSO LOGIN
+                      </span>
+                      <img
+                        src="../assets/img/spinner.svg"
+                        class="add-in-settings__spinner"
+                        alt="spinner"
+                      />
+                    </template>
                   </v-btn>
                 </v-card-actions>
               </div>
@@ -477,7 +484,7 @@
                   ref="refMfaCantLogin"
                 />
               </div>
-              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber)">
+              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber) || showPasswordField">
                 <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick()">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
@@ -500,7 +507,10 @@ import {
   cantLogin,
   createPasswordByToken,
   getMfaQRCode,
+  getSaml,
   loginAction,
+  loginWithSaml,
+  loginWithUsername,
   resetPassword,
   resetPasswordByToken,
   setMFA
@@ -520,6 +530,7 @@ import MFASetup from '@/components/MFA/MFASetup'
 import MFACantLogin from '@/components/MFA/MFACantLogin'
 import MFALogin from '@/components/MFA/MFALogin'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
+import { getSystemUserSettings } from '@/api/settings'
 export default {
   name: 'Login',
   components: {
@@ -535,7 +546,9 @@ export default {
     return {
       showMfaMessage: false,
       mfaSetupErrorText: null,
+      isSamlLoading: false,
       phoneNumber: null,
+      showPasswordField: false,
       recoveryCode: null,
       mfaDetails: null,
       mfaSetupDetails: null,
@@ -591,6 +604,7 @@ export default {
   },
   beforeCreate() {},
   created() {
+    this.pageNumber = 1
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
     this.$store.dispatch('whitelabel/resetState')
     if (this.$route.query && this.$route.query.mfaRequired) {
@@ -602,6 +616,27 @@ export default {
       }
       //this.$router.replace('/login') login change
     }
+    if (this.$route.query.authcode && !this.$route.query.bypasssaml) {
+      const { authcode, uid } = this.$route.query
+      const newAuthCode = encodeURIComponent(authcode)
+      const username = uid
+      this.isSamlLoading = true
+      loginWithSaml({ authcode: newAuthCode, username })
+        .then((response) => {
+          this.onSuccessLogin({}, response)
+        })
+        .catch((err) => {
+          this.onErrorLogin({}, err)
+        })
+        .finally(() => {
+          setTimeout(() => {
+            if (this && this.isSamlLoading) {
+              this.isSamlLoading = false
+            }
+          }, 2000)
+        })
+    }
+
     if (localStorage.getItem('isRemember')) {
       this.rememberMe = localStorage.getItem('isRemember')
       this.$vlf.getItem('username', (err, username = '') => {
@@ -634,6 +669,12 @@ export default {
         })
       } else if (this.$route.query && !!this.$route.query.CommunityId) {
         this.$router.push(`/threat-sharing/${this.$route.query.CommunityId}`)
+      } else if (this.$route.query && !!this.$route.query.investigationDetailsResourceId) {
+        this.$router.push(
+          `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
+        )
+      } else if (this.$route.query && !!this.$route.query.analysisDetailsResourceId) {
+        this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
       } else if (this.$route.query) {
         if (this.$route.query.cp) {
           this.pageNumber = 5
@@ -645,7 +686,14 @@ export default {
           this.resetType = 'resetPassword'
         }
       } else {
-        this.$router.push('/')
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push('/')
+          })
       }
     } else if (this.$route.query) {
       if (this.$route.query.cp) {
@@ -725,6 +773,44 @@ export default {
       setSnackStatus: 'common/setSnackStatus',
       twoStepLogin: 'login/twoStepLogin'
     }),
+    handleContinueClick() {
+      if (this.showPasswordField) {
+        this.onLoginClicked()
+      } else {
+        if (this.$refs.email.validate()) {
+          const payload = {
+            username: this.email
+          }
+          if (
+            this.$route.query &&
+            this.$route.query.bypasssaml &&
+            this.$route.query.bypasssaml === 'true'
+          ) {
+            payload.bypassSaml = true
+          }
+          loginWithUsername(payload)
+            .then((response) => {
+              this.clearError()
+              const {
+                data: { data }
+              } = response
+              if (data.authenticationTypeId === 1) {
+                this.showPasswordField = true
+              } else if (data.authenticationTypeId === 2) {
+                const anchor = document.createElement('a')
+                anchor.href = data.redirectUrl
+                anchor.click()
+              }
+            })
+            .catch((e) => {
+              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+              this.$store.commit('common/SET_ERROR_MESSAGE', e.response.data.message, {
+                root: true
+              })
+            })
+        }
+      }
+    },
     onCantLoginButtonClick() {
       let payload = {
         email: this.email,
@@ -804,151 +890,12 @@ export default {
         .catch(() => {})
     },
     loginAction(payload) {
-      let _this = this
-
       loginAction(payload)
         .then((response) => {
-          let isSessionExpired = payload.sessionExpired
-          this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
-          AuthenticationService.setToken(
-            response.data.access_token,
-            response.data.expiredIn || 9999999999999,
-            response.data.status || 1
-          )
-          if (response.data.status === 3) {
-            this.$store.commit('SET_PAGE_NUMBER', 4)
-          } else {
-            this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
-          }
-          if (payload.sessionExpired) {
-            getCompanyList().then((response) => {
-              const result = response.data.data && response.data.data
-              this.$store.commit('SET_DROPDOWN_COMPANIES', result)
-            })
-          }
-          if (isSessionExpired) {
-            let token = JSON.parse(localStorage.getItem('auth-token')).token
-            let tokenData = jwt_decode(token)
-            let currentUserData = setGlobalUserData(tokenData)
-            localStorage.setItem('userData', JSON.stringify(currentUserData))
-            localStorage.setItem('selectedCompanyName', currentUserData.name)
-            localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
-            if (
-              currentUserData &&
-              currentUserData.role &&
-              currentUserData.role.name !== 'CompanyAdmin'
-            ) {
-              this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
-            }
-            let payload = {
-              currentUserData: currentUserData,
-              isSelectCompany: false,
-              permissions: tokenData.Permission
-            }
-            this.$store.commit('SET_CURRENTUSER', payload)
-            this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
-              location.reload()
-            })
-          }
-          if (
-            (_this.$route.query &&
-              !!_this.$route.query.communityResourceId &&
-              !!_this.$route.query.communityPostResourceId) ||
-            !!_this.$route.query['amp;communityPostResourceId']
-          ) {
-            this.pageNumber = 1
-            _this.$router.push(
-              `/community/${_this.$route.query.communityResourceId}?postId=${
-                _this.$route.query.communityPostResourceId ||
-                _this.$route.query['amp;communityPostResourceId']
-              }`
-            )
-          } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
-            this.pageNumber = 1
-            _this.$router.push(
-              `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
-            )
-          } else if (this.$route.query && !!this.$route.query.showInvitation) {
-            this.pageNumber = 1
-            this.$router.push({
-              path: `/threat-sharing`,
-              query: { showInvitation: this.$route.query.showInvitation }
-            })
-          } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
-            _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
-          } else if (_this.$route.query) {
-            if (_this.$route.query.cp) {
-              _this.pageNumber = 5
-              _this.token = _this.getToken('cp', window.location.href)
-              _this.resetType = 'createPassword'
-            } else if (_this.$route.query.rp) {
-              _this.pageNumber = 5
-              _this.token = _this.getToken('rp', window.location.href)
-              _this.resetType = 'resetPassword'
-            } else if (!indexStore.getters['common/getSessionCheck']) {
-              this.pageNumber = 1
-              _this.$router.push('/')
-            } else {
-              this.pageNumber = 1
-              _this.$router.push('/')
-            }
-          } else if (!indexStore.getters['common/getSessionCheck']) {
-            this.pageNumber = 1
-            _this.$router.push('/')
-          } else {
-            this.pageNumber = 1
-            _this.$router.push('/')
-          }
-
-          setTimeout(() => {
-            if (_this.rememberMe) {
-              this.$vlf.setItem('username', _this.email)
-              localStorage.setItem('isRemember', _this.rememberMe)
-            } else {
-              localStorage.removeItem('username')
-              localStorage.removeItem('password')
-              localStorage.removeItem('isRemember')
-              this.$vlf.removeItem('username')
-              this.$vlf.removeItem('password')
-            }
-          }, 500)
+          this.onSuccessLogin(payload, response)
         })
         .catch((error) => {
-          if (
-            error.response.data &&
-            error.response.data.mfa &&
-            error.response.data.mfa.StatusId === 1
-          ) {
-            this.pageNumber = 8
-          } else if (
-            error.response.data &&
-            error.response.data.mfa &&
-            error.response.data.mfa.StatusId === 0
-          ) {
-            this.mfaDetails = error.response.data.mfa
-            this.pageNumber = 6
-          } else {
-            this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
-            if (error.response && error.response.status === 401) {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              this.$store.commit(
-                'common/SET_ERROR_MESSAGE',
-                error.response.data.errors[0].message,
-                {
-                  root: true
-                }
-              )
-            } else {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              let content =
-                error.response.data && error.response.data.error_description
-                  ? error.response.data.error_description
-                  : error.response.data.Message
-                  ? error.response.data.Message
-                  : 'Unknown Error Occured !!!'
-              this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
-            }
-          }
+          this.onErrorLogin(payload, error)
         })
         .finally(() => {
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
@@ -956,9 +903,207 @@ export default {
           })
         })
     },
+    onSuccessLogin(payload, response) {
+      let _this = this
+      let isSessionExpired = payload.sessionExpired
+      this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
+      AuthenticationService.setToken(
+        response.data.access_token,
+        response.data.expiredIn || 9999999999999,
+        response.data.status || 1
+      )
+      if (response.data.status === 3) {
+        this.$store.commit('SET_PAGE_NUMBER', 4)
+      } else {
+        this.$store.commit('EMPTY_LOGIN_ATTEMPT', 0)
+      }
+      if (payload.sessionExpired) {
+        getCompanyList().then((response) => {
+          const result = response.data.data && response.data.data
+          this.$store.commit('SET_DROPDOWN_COMPANIES', result)
+        })
+      }
+      if (isSessionExpired) {
+        let token = JSON.parse(localStorage.getItem('auth-token')).token
+        let tokenData = jwt_decode(token)
+        let currentUserData = setGlobalUserData(tokenData)
+        localStorage.setItem('userData', JSON.stringify(currentUserData))
+        localStorage.setItem('selectedCompanyName', currentUserData.name)
+        localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
+        if (
+          currentUserData &&
+          currentUserData.role &&
+          currentUserData.role.name !== 'CompanyAdmin'
+        ) {
+          this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
+        }
+        let payload = {
+          currentUserData: currentUserData,
+          isSelectCompany: false,
+          permissions: tokenData.Permission
+        }
+        this.$store.commit('SET_CURRENTUSER', payload)
+        this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+          location.reload()
+        })
+      }
+      if (
+        (_this.$route.query &&
+          !!_this.$route.query.communityResourceId &&
+          !!_this.$route.query.communityPostResourceId) ||
+        !!_this.$route.query['amp;communityPostResourceId']
+      ) {
+        this.pageNumber = 1
+        _this.$router.push(
+          `/community/${_this.$route.query.communityResourceId}?postId=${
+            _this.$route.query.communityPostResourceId ||
+            _this.$route.query['amp;communityPostResourceId']
+          }`
+        )
+      } else if (_this.$route.query && !!_this.$route.query.CommunityRequestId) {
+        this.pageNumber = 1
+        _this.$router.push(
+          `/threat-sharing?CommunityRequestId=${_this.$route.query.CommunityRequestId}`
+        )
+      } else if (this.$route.query && !!this.$route.query.investigationDetailsResourceId) {
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push(
+              `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
+            )
+            this.pageNumber = 1
+          })
+      } else if (this.$route.query && !!this.$route.query.analysisDetailsResourceId) {
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
+            this.pageNumber = 1
+          })
+      } else if (this.$route.query && !!this.$route.query.showInvitation) {
+        this.pageNumber = 1
+        this.$router.push({
+          path: `/threat-sharing`,
+          query: { showInvitation: this.$route.query.showInvitation }
+        })
+      } else if (_this.$route.query && !!_this.$route.query.CommunityId) {
+        _this.$router.push(`/community/${_this.$route.query.CommunityId}`)
+      } else if (_this.$route.query) {
+        if (_this.$route.query.cp) {
+          _this.pageNumber = 5
+          _this.token = _this.getToken('cp', window.location.href)
+          _this.resetType = 'createPassword'
+        } else if (_this.$route.query.rp) {
+          _this.pageNumber = 5
+          _this.token = _this.getToken('rp', window.location.href)
+          _this.resetType = 'resetPassword'
+        } else if (!indexStore.getters['common/getSessionCheck']) {
+          getSystemUserSettings()
+            .then((response) => {
+              localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+              localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+            })
+            .finally(() => {
+              this.$router.push('/')
+            })
+        } else {
+          getSystemUserSettings()
+            .then((response) => {
+              localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+              localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+            })
+            .finally(() => {
+              this.$router.push('/')
+              this.pageNumber = 1
+            })
+        }
+      } else if (!indexStore.getters['common/getSessionCheck']) {
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push('/')
+            this.pageNumber = 1
+          })
+      } else {
+        getSystemUserSettings()
+          .then((response) => {
+            localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)
+            localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
+          })
+          .finally(() => {
+            this.$router.push('/')
+            this.pageNumber = 1
+          })
+      }
+
+      setTimeout(() => {
+        if (_this.rememberMe) {
+          this.$vlf.setItem('username', _this.email)
+          localStorage.setItem('isRemember', _this.rememberMe)
+        } else {
+          localStorage.removeItem('username')
+          localStorage.removeItem('password')
+          localStorage.removeItem('isRemember')
+          this.$vlf.removeItem('username')
+          this.$vlf.removeItem('password')
+        }
+      }, 500)
+    },
+    onErrorLogin(payload, error) {
+      let _this = this
+      if (
+        error.response.data &&
+        error.response.data.mfa &&
+        error.response.data.mfa.StatusId === 1
+      ) {
+        this.pageNumber = 8
+      } else if (
+        error.response.data &&
+        error.response.data.mfa &&
+        error.response.data.mfa.StatusId === 0
+      ) {
+        this.mfaDetails = error.response.data.mfa
+        this.pageNumber = 6
+      } else {
+        this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
+        if (error.response && error.response.status === 401) {
+          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          this.$store.commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
+            root: true
+          })
+        } else {
+          this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
+          let content =
+            error.response.data && error.response.data.error_description
+              ? error.response.data.error_description
+              : error.response.data.Message
+              ? error.response.data.Message
+              : 'Unknown Error Occured !!!'
+          this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
+        }
+      }
+    },
     onBackButtonClick() {
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
+      this.showPasswordField = false
+      if (this.pageNumber === 1) {
+        this.$nextTick(() => {
+          if (this.$refs && this.$refs.email) {
+            this.$refs.email.validate()
+          }
+        })
+      }
       if (this.pageNumber === 7) {
         this.pageNumber = 6
       } else if (this.pageNumber === 9) {
@@ -1051,23 +1196,13 @@ export default {
     onLoginClicked() {
       const mainUrl = this.$router.currentRoute
       const _this = this
-
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
-      if (
-        this.$refs.email.validate() &&
-        this.$refs.password.validate() &&
-        this.wrongLoginAttempt < 3
-      ) {
-        // this.isLoading = true
+      if (this.$refs.password.validate() && this.wrongLoginAttempt < 3) {
         let payload = { email: this.email, password: this.password, router: this.$router }
         this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
         this.loginAction(payload)
-      } else if (
-        this.$refs.email.validate() &&
-        this.$refs.password.validate &&
-        this.wrongLoginAttempt >= 3
-      ) {
+      } else if (this.$refs.password.validate() && this.wrongLoginAttempt >= 3) {
         if (window.grecaptcha.getResponse() == '') {
         } else {
           let payload = {

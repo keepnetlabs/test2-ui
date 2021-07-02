@@ -80,6 +80,7 @@ import { checkPermission } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import labels from '@/model/constants/labels'
 export default {
   name: 'People',
   components: {
@@ -231,7 +232,7 @@ export default {
         ],
         empty: {
           message: 'You do not have any System Users',
-          btn: 'Create a New System User',
+          btn: labels.New,
           id: 'btn-empty--system-users-people',
           icon: 'mdi-plus'
         },
@@ -542,10 +543,11 @@ export default {
       this.selectedDeleteRow = row
       this.toggleShowDeleteSystemUserModal()
     },
-    callForDeleteUser({ resourceId = '' } = {}) {
+    callForDeleteUser(row = {}) {
       this.deleteButtonDisabled = true
-      deleteSystemUser(resourceId)
+      deleteSystemUser(row.resourceId)
         .then(() => {
+          this.$refs.refSystemUsersList.unSelectRow(row)
           this.toggleShowDeleteSystemUserModal()
           this.callForListSystemUsers()
         })

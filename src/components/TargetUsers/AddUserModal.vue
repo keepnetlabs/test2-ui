@@ -81,6 +81,8 @@
               popper-class="filter__date-picker"
               :key="item.name"
               v-bind="getDatePickerProps(item)"
+              :format="getTimeZone() || 'yyyy/MM/dd HH:mm'"
+              :valueFormat="getTimeZone() || `yyyy/MM/dd HH:mm`"
               :type="item.fieldDataType === 'DateTime' ? 'datetime' : 'date'"
             />
             <template v-if="item.isRequired">
@@ -176,6 +178,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
+import { getTimeZone } from '@/utils/functions'
 export default {
   name: 'AddUserModal',
   components: {
@@ -249,6 +252,9 @@ export default {
     }
   },
   methods: {
+    getTimeZone() {
+      return getTimeZone()
+    },
     closeOverlay() {
       this.$emit('closeAddUserModal')
     },
@@ -363,11 +369,14 @@ export default {
         customFields: keys.reduce((acc, key) => {
           const item = this.customFields.find((item) => item.resourceId === key)
           let value = this.customFieldsModels[key]
+          let timestampValue = ''
           if (item.fieldDataType === 'Boolean') {
             value = this.setStringBoolean(value)
+          } else if (['Date', 'DateTime'].includes(item.fieldDataType)) {
+            timestampValue = value
           }
           if (!(value === null || value === undefined || value === '')) {
-            acc.push({ resourceId: key, value })
+            acc.push({ resourceId: key, value, timestampValue })
           }
 
           return acc
@@ -425,9 +434,11 @@ export default {
       const editedData = { ...this.editData }
       const customFieldProp = 'customFieldValues'
       const customFields = editedData[customFieldProp]
-      for (let { resourceId, value, name, dataType } of customFields) {
+      for (let { resourceId, value, name, dataType, timestampValue } of customFields) {
         if (dataType === 'Boolean') {
           value = this.getBooleanValue(value)
+        } else if (['Date', 'DateTime'].includes(dataType)) {
+          value = timestampValue
         }
         this.$set(this.customFieldsModels, resourceId, value)
         delete editedData[name]

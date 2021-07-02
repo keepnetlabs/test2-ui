@@ -503,14 +503,15 @@ export default {
         cc: 'Enter an email address',
         bcc: 'Enter an email address',
         subject: 'Enter a subject',
-        from_name: 'Enter a from name',
+        senderName: 'Enter a from name',
         url: 'Enter a domain name',
         keyword: 'Enter a keyword',
         size: 'Enter size',
         name: 'Enter a file name(case sensitive)',
         sha512: 'Enter a sha512 key',
         md5: 'Enter a md5 key',
-        extension: 'Enter an file extension'
+        extension: 'Enter an file extension',
+        regex: 'Enter a regular expression'
       },
       scanTypes: [],
       checkboxError: false,
@@ -539,12 +540,9 @@ export default {
       ],
       actions: [
         { actionLabel: 'No action', actionValue: 'NoAction' },
-        { actionLabel: 'Delete Email', actionValue: 'Delete' },
-        {
-          actionLabel: 'Delete Email and Notify User',
-          actionValue: 'DeleteAndNotify'
-        },
-        { actionLabel: 'Notify user only', actionValue: 'Warning' }
+        { actionLabel: 'Notify user only', actionValue: 'Warning' },
+        { actionLabel: 'Move to trash', actionValue: 'MoveToTrash' },
+        { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
       filterList: [{}],
       sources: [],
@@ -560,7 +558,7 @@ export default {
             { label: 'CC', id: 'cc' },
             { label: 'BCC', id: 'bcc' },
             { label: 'IP Address', id: 'ip' },
-            { label: 'Sender Name', id: 'from_name' }
+            { label: 'Sender Name', id: 'senderName' }
           ]
         },
         {
@@ -569,7 +567,8 @@ export default {
           isDefaultExpanded: true,
           children: [
             { label: 'URL', id: 'url' },
-            { label: 'Keyword', id: 'keyword' }
+            { label: 'Keyword', id: 'keyword' },
+            { label: 'Regex', id: 'regex' }
           ]
         },
         {
@@ -686,7 +685,7 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
         )
         return rules
-      } else if (option === 'from_name') {
+      } else if (option === 'senderName') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
@@ -747,6 +746,11 @@ export default {
           (v) => Validations.extension(v, labels.InvalidExtension)
         )
         return rules
+      } else if (option === 'regex') {
+        rules.push(
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.Regex, 10))
+        )
       }
       return rules
     },
@@ -836,11 +840,12 @@ export default {
             senderName: null
           }
         ]
+
         let bodyData = [
           {
             url: null,
             keyword: null,
-            isRegex: false
+            regex: null
           }
         ]
         let attachmentsData = [
@@ -970,7 +975,7 @@ export default {
                 })
               }
               break
-            case 'from_name':
+            case 'senderName':
               if (
                 !headersData[headersData.length - 1].senderName &&
                 headersData[headersData.length - 1].senderName != this.filterList[index].text
@@ -1102,7 +1107,19 @@ export default {
                 })
               }
               break
-
+            case 'regex':
+              if (
+                !bodyData[bodyData.length - 1].regex &&
+                bodyData[bodyData.length - 1].regex !== this.filterList[index].text
+              ) {
+                bodyData.filter((s) => s.regex == null)[0].regex = this.filterList[index].text
+              } else {
+                bodyData.push({
+                  url: null,
+                  keyword: null,
+                  regex: this.filterList[index].text
+                })
+              }
             default:
               break
           }

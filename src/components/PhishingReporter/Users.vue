@@ -43,7 +43,6 @@
       :resizable="resizable"
       :sizeable="true"
       :table="tableOptions.table"
-      @handleEdit="handleEdit"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
       @columnFilterChanged="columnFilterChanged"
@@ -135,6 +134,7 @@ export default {
     return {
       PROPERTY_STORE,
       isLoading: true,
+      isInit: true,
       isRestoredOrClearedFilters: false,
       tableOptions: {
         isColumnFilterActive: false,
@@ -192,7 +192,7 @@ export default {
             property: PROPERTY_STORE.ADDINSTATUSNAME,
             align: 'center',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.STATUS),
+            label: getStoreValue(PROPERTY_STORE.ADDINSTATUSNAME),
             fixed: false,
             sortable: true,
             show: true,
@@ -203,7 +203,14 @@ export default {
               style: {
                 maxWidth: '110px'
               }
-            }
+            },
+            filterableType: 'select',
+            filterableItems: [
+              'Online',
+              'Offline',
+              'Disabled',
+              { text: 'Not Installed', value: 'NotInstalled' }
+            ]
           },
           {
             property: PROPERTY_STORE.LASTSEEN,
@@ -231,7 +238,14 @@ export default {
             show: true,
             type: 'slot',
             isEditable: true,
-            width: 160
+            width: 160,
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Not Installed', value: 'NotInstalled' },
+              'Online',
+              'Offline',
+              'Error/Uninstalled'
+            ]
           },
           {
             property: PROPERTY_STORE.HOSTNAME,
@@ -264,7 +278,7 @@ export default {
           }
         ],
         empty: {
-          message: 'No Users',
+          message: labels.EmptyPhishingReporter,
           id: 'btn-empty--phishing-reporter-users'
         },
         rowActions: [
@@ -421,10 +435,11 @@ export default {
       value = typeof value == 'string' ? value : value.toString()
       return value.length === 1 ? `0${value}` : `${value}`
     },
-    handleEdit(rows) {},
-    handleAdd(row) {},
     callForPhishingReporterUser() {
       this.isLoading = true
+      if (!this.isInit) {
+        this.$emit('callForPhishingReporterSummary')
+      }
       searchPhishingReporterUser(this.requestBody)
         .then((response) => {
           const {
@@ -456,10 +471,12 @@ export default {
           if (this.isRestoredOrClearedFilters) {
             this.isRestoredOrClearedFilters = false
           }
+          this.isInit = false
         })
     },
     exportPhishingReporterUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
+        const filter = JSON.parse(JSON.stringify(this.requestBody.filter))
         const payload = {
           orderBy: this.requestBody.orderBy,
           ascending: this.requestBody.ascending,
@@ -467,7 +484,15 @@ export default {
           pageSize: pageSize,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.requestBody.filter
+          filter
+        }
+        if (!reportAllPages) {
+          payload.filter.FilterGroups[0].FilterItems.push({
+            FieldName: 'ResourceId',
+            Operator: 'Include',
+            Value: this.tableOptions.table.map((row) => row.resourceId).join(',')
+          })
+          payload.pageNumber = 1
         }
         exportPhishingReporterUserList(payload)
           .then((response) => {
@@ -485,8 +510,8 @@ export default {
     callForDeletePhishingReporterUser() {
       deletePhishingReporterUser(this.selectedRow.resourceId)
         .then(() => {
+          this.$refs.refUsersList.unSelectRow(this.selectedRow)
           this.callForPhishingReporterUser()
-          this.$emit('callForPhishingReporterSummary')
         })
         .catch(() => {})
     },
