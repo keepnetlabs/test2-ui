@@ -1193,8 +1193,8 @@ export default {
             ServiceUrl: apiData.serviceUrl,
             ExchangeVersionLookupResourceId: apiData.ewsSchemaVersionLookupResourceId,
             AccountType: apiData.accountType,
-            Username: apiData.username,
-            Password: apiData.password,
+            Username: apiData.userName,
+            Password: '********************',
             Email: apiData.email,
             XAnchorMailBoxHeader: apiData.xAnchorMailBoxHeader,
             TargetGroupResourceIdList: apiData.targetGroupResourceIdList,
@@ -1356,6 +1356,9 @@ export default {
   padding: 11px 16px 16px 16px;
   min-height: 80vh;
 
+  .v-menu__content.theme--light.menuable__content__active.k-select__menu.menu--ews-target-users {
+    z-index: 999999 !important;
+  }
   &__no-data {
     &__header {
       font-size: 24px !important;
