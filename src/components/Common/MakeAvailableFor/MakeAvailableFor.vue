@@ -12,6 +12,7 @@
         'make-available-for',
         { 'k-treeselect--error': !isAvailableForValid }
       ]"
+      :style="isInfiniteLoading && { pointerEvents: 'none' }"
       :value="value"
       :loading="true"
       :options="treeSelectOptions"
