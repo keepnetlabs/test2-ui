@@ -112,7 +112,7 @@ import {
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-
+import labels from '@/model/constants/labels'
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
 import QueryHelperForTable from '@/helper-classes/query-helper'
