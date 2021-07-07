@@ -17,6 +17,7 @@
       </template>
     </app-modal>
     <remove-modal
+      v-if="isShowRemoveModal"
       :is-show="isShowRemoveModal"
       :selectedRow="selectedRow"
       :save-disable="removeModalDisable"
