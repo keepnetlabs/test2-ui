@@ -1025,4 +1025,85 @@ describe('Datatable test cases suite', () => {
     //expecting text to be rendered
     expect(cell.find('span').text()).toEqual('155')
   })
+  it('Extended View', async () => {
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      columns: MOCKS.EXTENDED_VIEW_COLUMNS,
+      extendedViewOptions: MOCKS.EXTENDED_VIEW_OPTIONS,
+      extendedViewValue: [],
+      extendedViewLoading: false,
+      rowActions: MOCKS.EXTENDED_VIEW_ROW_ACTIONS
+    })
+    const { wrapper } = datatableWrapper
+    await wrapper.setProps({
+      table: MOCKS.EXTENDED_VIEW_TABLE_DATA,
+      isServerSide: true,
+      serverSideEvents: { pagination: true, search: true, sort: true }
+    })
+    //getting first row
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting edit button
+    const editButton = firstRow.find('button')
+    //clicking edit button on table
+    await editButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    const emittedEvent = wrapper.emitted()[CONSTANTS.CUSTOM_EVENTS.EXTENDED_VIEW_EDIT]
+    expect(emittedEvent).toBeTruthy()
+    await wrapper.setProps({
+      extendedViewValue: JSON.parse(JSON.stringify(emittedEvent[0][0].selected))
+    })
+    //getting extended view
+    const extendedView = wrapper.find('#container--extended-view')
+    //expecting extendedView Rendered
+    expect(extendedView.exists()).toBe(true)
+    //expecting header text to be Some Email
+    expect(extendedView.find('.edit-popup__header').text()).toContain('Some Email')
+    //getting extendedViewBody
+    const extendedViewBody = extendedView.find('.edit-popup__body')
+    //checking is exists
+    expect(extendedViewBody.exists()).toBe(true)
+    //checking subject(text)
+    expect(extendedViewBody.find('#label--extended-view-singular-Subject-0').exists()).toBe(true)
+    expect(extendedViewBody.find('#text--extended-view-singular-value-Subject-0').exists()).toBe(
+      true
+    )
+    //checking result(tag)
+    expect(extendedViewBody.find('#label--extended-view-singular-Result-4').exists()).toBe(true)
+    expect(extendedViewBody.find('#container--extended-view-item-Result-4 .k-badge').exists()).toBe(
+      true
+    )
+    //getting footer
+    const extendedViewFooter = extendedView.find('.edit-popup__footer')
+    //checking is exists
+    expect(extendedViewFooter.exists()).toBe(true)
+    //checking first value is equal to 2021/07/04 20:24
+    expect(extendedViewFooter.find('#text--extended-view-footer-value-0').text()).toEqual(
+      '2021/07/04 20:24'
+    )
+    //checking is second value is equal to 2021/07/04 20:41
+    expect(extendedViewFooter.find('#text--extended-view-footer-value-1').text()).toEqual(
+      '2021/07/04 20:41'
+    )
+    //clicking extended view edit mode
+    await extendedView
+      .find('.edit-popup__edit-actions #btn-edit--extended-view')
+      .trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    console.log(extendedView.html())
+    //checking result has select
+    const resultContainer = extendedView.find('#container--extended-view-item-Result-4')
+    //checking has input
+    const resultInput = resultContainer.find('.v-select__selection.v-select__selection--comma')
+    expect(resultInput.exists()).toBe(true)
+    //Checking value is Undetected
+    expect(resultInput.text()).toContain('Undetected')
+    //checking status (select)
+    const statusContainer = extendedView.find('#container--extended-view-item-Status-5')
+    const statusInput = statusContainer.find('.v-select__selection.v-select__selection--comma')
+    expect(statusInput.exists()).toBe(true)
+    //checking value (select)
+    expect(statusInput.text()).toContain('Open')
+    //checking notes (textarea)
+    const notesContainer = extendedView.find('#container--extended-view-item-Notes-7')
+    //expecting rendered
+    expect(notesContainer.find('.v-textarea').exists()).toBe(true)
+  })
 })
