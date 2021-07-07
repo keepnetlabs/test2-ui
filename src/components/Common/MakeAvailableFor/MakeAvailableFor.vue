@@ -12,12 +12,25 @@
         'make-available-for',
         { 'k-treeselect--error': !isAvailableForValid }
       ]"
+      :style="isInfiniteLoading && { pointerEvents: 'none' }"
       :value="value"
-      @input="handleInputChange"
+      :loading="true"
       :options="treeSelectOptions"
       :disabled="disabled"
       @close="validateAvailableFor"
-    />
+      @open="handleMenuOpen"
+      @input="handleInputChange"
+    >
+      <template #after-list>
+        <v-progress-circular
+          v-if="isInfiniteLoading"
+          style="position: absolute; left: 46%; margin-top: -31%;"
+          :size="50"
+          color="primary"
+          indeterminate
+        />
+      </template>
+    </Treeselect>
     <div
       v-if="isAvailableForValidated && !isAvailableForValid"
       class="v-text-field__details checkbox-error"
@@ -49,6 +62,7 @@ import { searchAvailableFor } from '@/api/smtpSettings'
 import labels from '@/model/constants/labels'
 import { COMMON_PROPS } from '@/model/constants/commonConstants'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import infiniteScroll from '@/directives/infinite-scroll'
 export default {
   name: 'MakeAvailableFor.vue',
   components: {
@@ -59,15 +73,22 @@ export default {
     value: Array,
     disabled: Boolean
   },
+  directives: {
+    'infinite-scroll': infiniteScroll
+  },
   data() {
     return {
       labels,
       isAvailableForProps: COMMON_PROPS.AVAILABLEFOR,
       isAvailableForValid: true,
+      isInfiniteLoading: false,
+      menuElement: 'null',
       isAvailableForValidated: false,
+      maximumApiCount: 1,
+      apiCount: 0,
       searchAvailableForPayload: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 25,
         orderBy: 'CreateTime',
         ascending: false
       },
@@ -102,34 +123,66 @@ export default {
     this.callForSearchAvailableFor()
   },
   methods: {
-    callForSearchAvailableFor() {
-      searchAvailableFor(this.searchAvailableForPayload).then((response) => {
-        const { data: { data = {} } = {} } = response
-        const { companies = {}, groups = {} } = data
-        this.$set(this.treeSelectOptions, 3, {
-          ...this.treeSelectOptions[3],
-          children: companies.results.map((item) => {
-            return {
-              id: item['companyResourceId'],
-              label: item.companyName,
-              resourceId: item['companyResourceId'],
-              type: 'Company',
-              isDisabled: this.treeSelectionStatus
-            }
-          })
-        })
-        this.$set(this.treeSelectOptions, 2, {
-          ...this.treeSelectOptions[2],
-          children: groups.results.map((item) => {
-            return {
-              id: item.resourceId,
-              label: item.name,
-              type: 'Group',
-              isDisabled: this.treeSelectionStatus
-            }
-          })
+    handleMenuOpen() {
+      this.$nextTick(() => {
+        this.menuElement = document
+          .getElementById('input--make-available-for')
+          .querySelector('.vue-treeselect__menu')
+        this.menuElement.addEventListener('scroll', ({ target }) => {
+          const { scrollTop, scrollHeight, offsetHeight } = target
+          const { isInfiniteLoading, maximumApiCount, apiCount } = this
+          if (
+            scrollTop - (scrollHeight - offsetHeight) < 10 &&
+            scrollTop - (scrollHeight - offsetHeight) > -10 &&
+            !isInfiniteLoading &&
+            apiCount < maximumApiCount
+          ) {
+            this.handleInfiniteLoading()
+          }
         })
       })
+    },
+    callForSearchAvailableFor() {
+      searchAvailableFor(this.searchAvailableForPayload)
+        .then((response) => {
+          const { data: { data = {} } = {} } = response
+          const { companies = {}, groups = {} } = data
+          if (this.apiCount === 0) {
+            this.maximumApiCount = Math.max(companies.totalNumberOfPages, groups.totalNumberOfPages)
+          }
+          this.apiCount++
+          this.$set(this.treeSelectOptions, 3, {
+            ...this.treeSelectOptions[3],
+            children: companies.results.map((item) => {
+              return {
+                id: item['companyResourceId'],
+                label: item.companyName,
+                resourceId: item['companyResourceId'],
+                type: 'Company',
+                isDisabled: this.treeSelectionStatus
+              }
+            })
+          })
+          this.$set(this.treeSelectOptions, 2, {
+            ...this.treeSelectOptions[2],
+            children: groups.results.map((item) => {
+              return {
+                id: item.resourceId,
+                label: item.name,
+                type: 'Group',
+                isDisabled: this.treeSelectionStatus
+              }
+            })
+          })
+        })
+        .finally(() => {
+          this.isInfiniteLoading = false
+        })
+    },
+    handleInfiniteLoading() {
+      this.searchAvailableForPayload.pageSize += 25
+      this.isInfiniteLoading = true
+      this.callForSearchAvailableFor()
     },
     handleInputChange(newVal) {
       let oldVal = this.value

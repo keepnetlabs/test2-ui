@@ -17,6 +17,7 @@
       </template>
     </app-modal>
     <remove-modal
+      v-if="isShowRemoveModal"
       :is-show="isShowRemoveModal"
       :selectedRow="selectedRow"
       :save-disable="removeModalDisable"
@@ -112,7 +113,7 @@ import {
 import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-
+import labels from '@/model/constants/labels'
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
 import QueryHelperForTable from '@/helper-classes/query-helper'
@@ -238,9 +239,9 @@ export default {
       },
       iEmpty: {
         id: 'btn-empty--company-group-detail',
-        message: 'No company defined',
-        btn: 'ADD A COMPANY',
-        icon: 'mdi-account-plus'
+        message: labels.EmptyCompany,
+        btn: labels.New,
+        icon: 'mdi-plus'
       },
       addButton: {
         show: true,

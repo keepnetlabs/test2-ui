@@ -11,7 +11,8 @@ export default {
     COLUMN_FILTER: 'columnFilterChanged',
     CLUSTER: 'clusterChanged',
     BULLETED: 'handleListBulleted',
-    SERVER_SIDE_PAGE_CHANGED: 'server-side-page-number-changed'
+    SERVER_SIDE_PAGE_CHANGED: 'server-side-page-number-changed',
+    EXTENDED_VIEW_EDIT: 'onEditClick'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',

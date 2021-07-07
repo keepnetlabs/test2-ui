@@ -285,8 +285,8 @@ export default {
         pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,
-          btn: labels.AddAnIntegration,
-          icon: 'mdi-account-plus',
+          btn: labels.New,
+          icon: 'mdi-plus',
           id: 'btn-empty--integrations'
         },
         addButton: {

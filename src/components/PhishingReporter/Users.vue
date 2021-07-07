@@ -278,7 +278,7 @@ export default {
           }
         ],
         empty: {
-          message: 'No Users',
+          message: labels.EmptyPhishingReporter,
           id: 'btn-empty--phishing-reporter-users'
         },
         rowActions: [

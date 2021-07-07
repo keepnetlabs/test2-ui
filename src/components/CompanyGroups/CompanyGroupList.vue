@@ -73,10 +73,10 @@ import Datatable from '../../components/DataTable'
 import { deleteCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '../../api/company'
 import DeleteModal from './DeleteModal'
 import {
-  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '../../model/constants/commonConstants'
+import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission } from '@/utils/functions'
 import QueryHelperForTable from '@/helper-classes/query-helper'
@@ -151,9 +151,9 @@ export default {
         },
         iEmpty: {
           id: 'btn-empty--company-group',
-          message: 'No company groups defined',
-          btn: 'ADD A COMPANY GROUP',
-          icon: 'mdi-account-plus'
+          message: labels.EmptyCompanyGroups,
+          btn: labels.New,
+          icon: 'mdi-plus'
         },
         addButton: {
           show: true,

@@ -621,7 +621,7 @@ export default {
 <style lang="scss">
 .permission-logs {
   width: 100%;
-  min-height: 90vh;
+  //min-height: 90vh;
   &__container {
     border-radius: 20px !important;
     background: white;

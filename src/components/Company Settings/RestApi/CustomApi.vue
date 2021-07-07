@@ -216,7 +216,7 @@ export default {
         empty: {
           message: labels.EmptyCustomApiMessage,
           subMes: labels.SubMesCustomApiMessage,
-          btn: labels.NewCustomApiBtnMessage,
+          btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--rest-api'
         },

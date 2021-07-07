@@ -13,13 +13,16 @@
   >
     <template v-slot:app-dialog-body>
       <DataTable
-        :loading="loading"
-        :selectable="true"
-        is-server-side
-        :table="tableData"
-        :count-row="5"
         id="companies-data-table"
         ref="refDataList"
+        row-key="companyName"
+        refName="companyList"
+        selectable
+        is-server-side
+        :show-filter-options="false"
+        :loading="loading"
+        :table="tableData"
+        :count-row="5"
         :addButton="tableOptions.addButton"
         :columns="tableOptions.columns"
         :download-button="{ show: false }"
@@ -27,10 +30,7 @@
         :filterable="true"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :options="true"
-        :pageSizes="tableOptions.pageSizes"
         :selectEvent="tableOptions.selectEvent"
-        :refName="'companyList'"
-        row-key="companyName"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
         @handleSelectionChange="handleSelectionChange"
@@ -80,10 +80,10 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
+import { checkPermission } from '@/utils/functions'
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
 import { getLookupListByTypeIdList } from '@/api/common'
-import QueryHelperForTable from '@/helper-classes/query-helper'
+
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'AddCompaniesToCompanyGroup',
@@ -104,7 +104,7 @@ export default {
     return {
       labels,
       saveDisable: false,
-      loading: false,
+      loading: true,
       selectedArray: [],
       dialogWidth: '650',
       tableData: [],
@@ -190,9 +190,9 @@ export default {
           download: false
         },
         iEmpty: {
-          message: 'No company defined',
-          btn: 'ADD A COMPANY',
-          icon: 'mdi-account-plus'
+          message: labels.EmptyCompany,
+          btn: labels.New,
+          icon: 'mdi-plus'
         },
         addButton: {
           show: false,
@@ -230,7 +230,7 @@ export default {
       },
       payload: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 5,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -259,44 +259,11 @@ export default {
   },
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    this.setQueryValuesToPayload(this.$route.query)
+
     this.getDefaultFilterAndSearch()
-    this.getLookUpDatas()
+    this.callForSearch()
   },
   methods: {
-    getLookUpDatas() {
-      getLookupListByTypeIdList({ typeidlist: [2, 3] })
-        .then((response) => {
-          const res = response.data.data
-          this.$set(
-            this.tableOptions.columns[1],
-            'filterableItems',
-            res
-              .filter((item) => item.genericCodeTypeId === 2)
-              .map((item) => ({ text: item.name, value: item.resourceId }))
-          )
-          this.$set(
-            this.tableOptions.columns[2],
-            'filterableItems',
-            res
-              .filter((item) => item.genericCodeTypeId === 3)
-              .map((item) => ({ text: item.name, value: item.resourceId }))
-          )
-        })
-        .finally(() => this.callForSearch())
-    },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.payload.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_LIST, JSON.stringify(tableSettings))
     },
@@ -317,7 +284,7 @@ export default {
     },
     handleRestoreDefaultSearch() {
       this.getDefaultFilterAndSearch()
-      this.getLookUpDatas()
+      this.callForSearch()
     },
     handleClearFilters() {
       this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
@@ -325,7 +292,7 @@ export default {
       this.$refs.refDataList.filterValues = {}
       this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
       localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.ADD_COMPANY_LIST)
-      this.getLookUpDatas()
+      this.callForSearch()
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -361,7 +328,6 @@ export default {
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.payload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSearch()
     },
     sortChanged({ order, prop } = {}) {
@@ -375,15 +341,12 @@ export default {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForSearch()
     },
     resetPageNumber() {
       //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -432,12 +395,9 @@ export default {
           searchCompanies(this.payload)
             .then((response) => {
               const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-
               this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
               this.serverSideProps.totalNumberOfPages = totalNumberOfPages
               this.serverSideProps.pageNumber = pageNumber
-              //this.queryHelper.setRouterQuery('page', pageNumber)
-
               this.tableData =
                 response.data.data.hasOwnProperty('results') &&
                 response.data.data.results.length > 0

@@ -190,7 +190,7 @@ export default {
         empty: {
           message: labels.EmptySamlTable,
           subMes: labels.EmptySamlTableSub,
-          btn: labels.EmptySamlTableButton,
+          btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--saml-settings'
         },
