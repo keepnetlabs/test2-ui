@@ -12,7 +12,8 @@ export default {
     CLUSTER: 'clusterChanged',
     BULLETED: 'handleListBulleted',
     SERVER_SIDE_PAGE_CHANGED: 'server-side-page-number-changed',
-    EXTENDED_VIEW_EDIT: 'onEditClick'
+    EXTENDED_VIEW_EDIT: 'onEditClick',
+    ADD_BUTTON: ''
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',

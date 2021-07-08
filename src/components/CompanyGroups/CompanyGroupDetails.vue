@@ -31,6 +31,7 @@
       @changeStatus="handleStatusAddGroupToModal"
     />
     <create-item-modal
+      v-if="showCreateNewGroupWithCompany"
       :is-show="showCreateNewGroupWithCompany"
       :selectedRow="selectedRow"
       :forCompany="forCompany"
