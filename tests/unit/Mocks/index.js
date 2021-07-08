@@ -423,5 +423,10 @@ export default {
         showOnlyPreview: true
       }
     ]
+  },
+  PERMISSIONS: {
+    UPDATE: { hasPermission: false },
+    DELETE: { hasPermission: false },
+    CREATE: { hasPermission: false }
   }
 }
