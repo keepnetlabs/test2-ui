@@ -1106,4 +1106,84 @@ describe('Datatable test cases suite', () => {
     //expecting rendered
     expect(notesContainer.find('.v-textarea').exists()).toBe(true)
   })
+
+  it('Row Actions Disabled Case(Permissions)', async () => {
+    const { PERMISSIONS } = MOCKS
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      rowActions: [
+        {
+          name: 'Edit',
+          icon: 'mdi-pencil',
+          action: 'editAction',
+          id: 'btn-edit--smtp-settings-row-actions',
+          disabled: !PERMISSIONS.UPDATE.hasPermission
+        },
+        {
+          name: 'Delete',
+          icon: 'mdi-delete',
+          action: 'deleteAction',
+          id: 'btn-delete-unit-test-row-actions',
+          disabled: !PERMISSIONS.DELETE.hasPermission
+        }
+      ]
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          number: 155
+        }
+      ]
+    })
+    //getting firstRow
+    const firstRow = wrapper.find('.el-table__fixed-body-wrapper .el-table__row')
+    //getting RowActionsButtons
+    const rowActionsButtons = firstRow.findAll('button')
+    //getting edit button
+    const editButton = rowActionsButtons.at(0)
+    //checking is edit button is disabled because of no permission
+    expect(editButton.classes('v-btn--disabled')).toBe(true)
+    //getting delete button.
+    const deleteButton = rowActionsButtons.at(1)
+    //checking is delete button is disabled because of no permission
+    expect(deleteButton.classes('v-btn--disabled')).toBe(true)
+  })
+
+  it('New Buttons Disabled Case(Permissions)', async () => {
+    const { PERMISSIONS } = MOCKS
+    const datatableWrapper = new DataTableWrapper(localVue, store, {
+      loading: false,
+      addButton: {
+        show: true,
+        action: 'addUnitTestAction',
+        tooltip: 'Add Unit test',
+        id: 'btn-add--unit-test',
+        disabled: !PERMISSIONS.CREATE.hasPermission
+      }
+    })
+    const { wrapper } = datatableWrapper
+    //setting data
+    await wrapper.setProps({
+      table: [
+        {
+          number: 155
+        }
+      ]
+    })
+
+    //getting button new
+    const newButton = wrapper.find('.button-new')
+    //expecting is rendered
+    expect(newButton.exists()).toBe(true)
+    //checking is disabled
+    expect(newButton.classes('v-btn--disabled')).toBe(true)
+    //clicking button
+    await newButton.trigger(CONSTANTS.EVENT_TYPES.CLICK)
+    //checking is event throwed
+    const emittedEvent = wrapper.emitted()
+    //it is disabled it shouldnt throw event
+    expect(emittedEvent['addUnitTestAction']).toBe(undefined)
+  })
 })
