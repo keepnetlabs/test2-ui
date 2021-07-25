@@ -92,6 +92,7 @@ export const LABEL_STORE = {
   ANALYSISENGINE: 'Service',
   CREATEDBY: 'Created By',
   NO_INTEGRATIONS: 'You do not have any integrations',
+  NO_EMAIL_TEMPLATES: 'You do not have any templates',
   NO_RULES_CONFIGURED: 'You do not have any rules',
   NO_TARGET_GROUPS_DEFINED: 'You do not have any target groups',
   NO_TARGET_USER_ADDED: 'You do not have any users',
@@ -149,6 +150,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  TAGS: 'tags',
   ADDINSTATUSNAME: 'addInStatusName',
   ANALYSISENGINEPERMALINK: 'analysisEnginePermalink',
   CLIENTID: 'clientId',
@@ -251,7 +253,9 @@ export const PROPERTY_STORE = {
   PORT: 'port',
   AuthenticationTypeId: 'authenticationTypeId',
   AuthenticationTypeName: 'authenticationTypeName',
-  ISDEFAULT: 'isDefault'
+  ISDEFAULT: 'isDefault',
+  TEMPLATENAME: 'TemplateName',
+  DIFFICULTY: 'difficultyName'
 }
 
 export const TABLE_SETTINGS_KEYS = {
@@ -277,7 +281,8 @@ export const TABLE_SETTINGS_KEYS = {
   TARGET_USERS_GROUPS: 'TargetUsersGroupsTableSettings',
   TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings',
   SAML_SETTINGS: 'SamlSettingsTableSettings',
-  PROXY_SETTINGS: 'ProxySettingsTableSettings'
+  PROXY_SETTINGS: 'ProxySettingsTableSettings',
+  EMAILTEMPLATES: 'EmailTemplates'
 }
 
 export function getStoreValue(key, type) {
@@ -400,7 +405,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   INVESTIGATIONSFOLDER: 'InvestigationsFolder',
   INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers',
   SAMLSETTINGS: 'SamlSettings',
-  PROXY_SETTINGS: 'ProxySettings'
+  PROXY_SETTINGS: 'ProxySettings',
+  EMAILTEMPLATES: 'EmailTemplates'
 }
 
 export const INTEGRATION_TYPES = {

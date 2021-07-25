@@ -1185,7 +1185,7 @@ export default {
       }
     },
     toNext() {
-      this.$refs.password.$el[1].focus()
+      this.handleContinueClick()
     },
     onTwoStepLogin() {
       this.twoStepLogin({

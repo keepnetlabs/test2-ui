@@ -29,6 +29,7 @@ import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
+import PhishingSimulator from '@/views/PhishingSimulator'
 
 Vue.use(Router)
 
@@ -204,6 +205,25 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Companies'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/phishing-scenarios',
+          name: 'Phishing Scenarios',
+          component: PhishingSimulator,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+            next()
+          },
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard'
           },
           props: true,
           params: true
