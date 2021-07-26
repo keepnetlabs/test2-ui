@@ -272,6 +272,38 @@
           >
             <app-router-item icon="mdi-flag" title="Threat Sharing" />
           </router-link>
+
+          <v-list-group
+            prepend-icon="mdi-hook"
+            id="btn--link-navigator-menu-phishing-simulator-list-group"
+            no-action
+            :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorPermissions]"
+            v-if="checkPhishingSimulatorPermissions()"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Phishing Simulator</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['phishing-simulator/email-templates|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/phishing-scenarios"
+                  id="btn--link-navigator-menu-phishing-scenario"
+                  class="menu-link-default"
+                  :class="[routerName === 'Phishing Scenarios' && 'active-link']"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Phishing Scenarios</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+
           <v-list-group
             prepend-icon="mdi-flash"
             id="btn--link-navigator-menu-incident-responder-list-group"
@@ -291,7 +323,11 @@
                   'ir/dashboard/running-investigations|GET',
                   'companies/roi-settings|GET',
                   'ir/dashboard/top-rules|GET',
-                  'notified-emails/search|POST'
+                  'notified-emails/search|POST',
+                  'is/dashboard/summary|POST',
+                  'is/dashboard/search-log|POST',
+                  'is/dashboard/search-stats|POST',
+                  'notify/result|POST'
                 ])
               "
             >
@@ -378,6 +414,32 @@
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Mail Configurations</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="
+                checkPermissionMultiple([
+                  'is/dashboard/summary|POST',
+                  'is/dashboard/search-log|POST',
+                  'is/dashboard/search-stats|POST',
+                  'notify/result|POST'
+                ])
+              "
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/sandbox"
+                  id="btn--link-navigator-menu-sandbox"
+                  :class="[
+                    'menu-link-default',
+                    routerName === 'Sandbox Integration' && 'active-link'
+                  ]"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Sandbox Integration</span>
                   </v-list-item-title>
                 </router-link>
               </v-list-item-content>
@@ -1097,6 +1159,17 @@ export default {
           routerName === 'Investigation Details'
       }
     },
+    getPhishingSimulatorPermissions() {
+      const routerName = this.routerName
+      return {
+        'primary--text active-menu-parent':
+          routerName === 'Phishing Simulator' ||
+          routerName === 'Email Templates' ||
+          routerName === 'Phishing Scenarios',
+        'un-selected-list-item':
+          routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
+      }
+    },
     getCommunityName() {
       let _this = this
       _this.communityId = localStorage.getItem('communityResourceIdForRedirect')
@@ -1385,6 +1458,9 @@ export default {
         'mail-configurations/search|POST'
       ])
     },
+    checkPhishingSimulatorPermissions() {
+      return checkPermissionMultiple(['phishing-simulator/email-templates|POST'])
+    },
     deleteTSVuexData() {
       let communitiesData = null
       this.$store.dispatch('communities/setCommunities', {
@@ -1552,6 +1628,14 @@ export default {
 }
 </script>
 <style lang="scss">
+.mdi-hook {
+  transform: scaleX(-1);
+}
+.hook-menu {
+  .v-list-group__header__prepend-icon {
+    transform: rotate(-25deg);
+  }
+}
 .layout-container {
   .user-name-dropdown__content {
     .v-list-item__title {

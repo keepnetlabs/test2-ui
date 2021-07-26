@@ -261,7 +261,7 @@ export default {
           this.$emit('closeOverlayWithUpdate')
         })
         .catch((error) => {
-          this.$store.dispatch(
+          /*this.$store.dispatch(
             'common/createSnackBar',
             {
               color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
@@ -274,7 +274,7 @@ export default {
               icon: 'mdi-alert'
             },
             { root: true }
-          )
+          )*/
         })
         .finally(() => {
           this.saveDisable = false

@@ -38,7 +38,7 @@
         <v-row align="center" justify="center">
           <v-col class="pl-0 pt-1 pb-0" md="6" xs="12">
             <div class="verification-code-wrapper__remember d-flex">
-              <v-checkbox
+              <!--<v-checkbox
                 v-model.trim="rememberMeOnThisDevice"
                 id="input--is-remember-be-on-this-device"
                 :label="`Remember me on this device`"
@@ -47,7 +47,7 @@
                 dense
                 color="#2196f3"
               >
-              </v-checkbox>
+              </v-checkbox> -->
 
               <div @click="resendMessageButtonClick" class="verification-code-wrapper__cant-login">
                 <span v-if="!showCount">Resend message</span>
