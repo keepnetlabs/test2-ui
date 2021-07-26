@@ -30,6 +30,7 @@ import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
 import PhishingSimulator from '@/views/PhishingSimulator'
+import Sandbox from '@/views/Sandbox'
 
 Vue.use(Router)
 
@@ -418,6 +419,27 @@ const router = new Router({
           path: '/mailConfiguration',
           name: 'Mail Configurations',
           component: MailConfiguration,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+
+            next()
+          },
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Incident Responder'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/sandbox',
+          name: 'Sandbox Integration',
+          component: Sandbox,
           beforeEnter: (to, from, next) => {
             //checkPermission()
 

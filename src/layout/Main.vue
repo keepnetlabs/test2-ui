@@ -323,7 +323,11 @@
                   'ir/dashboard/running-investigations|GET',
                   'companies/roi-settings|GET',
                   'ir/dashboard/top-rules|GET',
-                  'notified-emails/search|POST'
+                  'notified-emails/search|POST',
+                  'is/dashboard/summary|POST',
+                  'is/dashboard/search-log|POST',
+                  'is/dashboard/search-stats|POST',
+                  'notify/result|POST'
                 ])
               "
             >
@@ -410,6 +414,32 @@
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Mail Configurations</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="
+                checkPermissionMultiple([
+                  'is/dashboard/summary|POST',
+                  'is/dashboard/search-log|POST',
+                  'is/dashboard/search-stats|POST',
+                  'notify/result|POST'
+                ])
+              "
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/sandbox"
+                  id="btn--link-navigator-menu-sandbox"
+                  :class="[
+                    'menu-link-default',
+                    routerName === 'Sandbox Integration' && 'active-link'
+                  ]"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Sandbox Integration</span>
                   </v-list-item-title>
                 </router-link>
               </v-list-item-content>

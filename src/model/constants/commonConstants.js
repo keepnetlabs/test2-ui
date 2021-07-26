@@ -282,7 +282,9 @@ export const TABLE_SETTINGS_KEYS = {
   TARGET_USERS_GROUP_USERS: 'TargetUsersGroupUsersSettings',
   SAML_SETTINGS: 'SamlSettingsTableSettings',
   PROXY_SETTINGS: 'ProxySettingsTableSettings',
-  EMAILTEMPLATES: 'EmailTemplates'
+  EMAILTEMPLATES: 'EmailTemplates',
+  SANDBOX: 'Sandbox',
+  SANDBOXSTATS: 'SandboxStats'
 }
 
 export function getStoreValue(key, type) {
@@ -406,7 +408,10 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   INVESTIGATIONSTARGETUSERS: 'InvestigationsTargetUsers',
   SAMLSETTINGS: 'SamlSettings',
   PROXY_SETTINGS: 'ProxySettings',
-  EMAILTEMPLATES: 'EmailTemplates'
+  EMAILTEMPLATES: 'EmailTemplates',
+  SANDBOX: 'Sandbox',
+  sandbox: 'Sandbox',
+  SANDBOXSTATS: 'SandboxStats'
 }
 
 export const INTEGRATION_TYPES = {
