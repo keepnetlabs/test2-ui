@@ -335,7 +335,9 @@ export const labels = {
   EmptySmtpSettingsSub: 'Create your first SMTP Setting',
   EmptyNotificationTemplate: 'You do not have any notification templates',
   EmptyNotificationTemplateSub: 'Create your first notification template',
-  EmptyProxy: 'You do not have any proxy settings'
+  EmptyProxy: 'You do not have any proxy settings',
+  DIFFICULTY: 'Difficulty',
+  Preview: 'Preview'
 }
 
 export default labels

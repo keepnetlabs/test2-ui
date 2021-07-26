@@ -234,7 +234,7 @@ export default {
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
-      this.isAvailableForValid = !!value.length
+      this.isAvailableForValid = value && !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
     getAvailableForListFromBackend(list = []) {

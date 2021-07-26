@@ -66,6 +66,17 @@
         @input="$emit('update:fromAddress', $event)"
       />
     </div>
+    <div class="email-template__item" v-if="isPhishingTemplate">
+      <label>Attach File</label>
+      <k-file-upload
+        id="input--email-template-upload"
+        hint="Only jpg, png, gif, bmp files. Max. file size 2MB"
+        ref="refFileUpload"
+        :value="AttachmentFiles"
+        @inputFile="onFileChanged"
+        :size="2"
+      />
+    </div>
     <v-divider class="email-template__divider mb-6" />
     <v-btn
       id="btn-edit--notification-template-email-template"
@@ -192,21 +203,26 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapGetters } from 'vuex'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 export default {
   name: 'EmailTemplate',
   components: {
     GrapesNewsletterModal,
     AppModal,
-    InputEmail
+    InputEmail,
+    KFileUpload
   },
   props: [
     'fromAddress',
     'fromName',
     'subject',
     'template',
+    'AttachmentFiles',
     'activeBlockManagerComponents',
     'isEdit',
-    'editItemsDisabled'
+    'editItemsDisabled',
+    'isPhishingTemplate',
+    'setAttachmentFile'
   ],
   data() {
     return {
@@ -231,6 +247,9 @@ export default {
     this.defaultTemplate = JSON.parse(JSON.stringify(this.$refs.refPreview.outerHTML))
   },
   methods: {
+    onFileChanged(file) {
+      this.$emit('setAttachmentFile', file)
+    },
     changeTabStatus(index) {
       this.tab = index
     },

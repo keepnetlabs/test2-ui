@@ -37,7 +37,7 @@
             <div class="verification-code-wrapper__remember d-flex">
               <v-checkbox
                 v-model.trim="rememberMeOnThisDevice"
-                :label="`Remember me on this device`"
+                :label="`Don't ask again on this computer`"
                 class="remember-me-check"
                 hide-details
                 dense

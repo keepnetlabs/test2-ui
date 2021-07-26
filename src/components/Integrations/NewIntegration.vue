@@ -1137,7 +1137,11 @@ export default {
       display: none;
     }
   }
-
+  &__select {
+    .v-menu__content {
+      z-index: 900000 !important;
+    }
+  }
   .v-list-item {
     //margin-bottom: 1px;
   }
