@@ -1,5 +1,5 @@
 <template>
-  <div id="sandbox">
+  <div id="sandboxStats">
     <data-table
       id="sandbox-stats-data-table"
       ref="refsandboxStatsList"
@@ -22,7 +22,9 @@
       :stored-table-settings="storedTableSettings"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
-      @downloadEvent="exportSandboxList"
+      @downloadEvent="exportSandboxStats"
+      @handleDownloadButtonClick="handleSandboxStatsDownloadButtonClick"
+      :is-show-download-modal="isSandboxStatsDownloadModal"
       @paginationChangedEvent="paginationChangedEvent($event)"
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
@@ -42,7 +44,6 @@
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :hideActionOptions="true"
     ></data-table>
   </div>
 </template>
@@ -62,7 +63,7 @@ import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-import { exportSandboxLog, exportSandboxStats, getSandboxLog, getSandboxStats } from '@/api/sandbox'
+import { exportSandboxStats, getSandboxLog, getSandboxStats } from '@/api/sandbox'
 import { getIntegrationTypes } from '@/api/integrations'
 export default {
   name: 'sandboxStats',
@@ -71,6 +72,7 @@ export default {
   },
   data() {
     return {
+      isSandboxStatsDownloadModal: false,
       integrationTypesEnum: [
         { name: 'VirusTotal', value: 1 },
         { name: 'FortiNet', value: 2 },
@@ -104,10 +106,7 @@ export default {
             label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'date',
-            filterableCustomFieldName: 'companyName',
-            fixed: 'left'
+            type: 'text'
           },
           {
             property: 'analysisEngineTypeId',
@@ -118,18 +117,7 @@ export default {
             show: true,
             type: 'text',
             fixed: false,
-            width: 240,
-            filterableType: 'select',
-            filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: [
-              { text: 'VirusTotal', value: 1 },
-              { text: 'FortiNet', value: 2 },
-              { text: 'Vmray', value: 3 },
-              { text: 'Ibm X-Force', value: 4 },
-              { text: 'SpamHouseZen', value: 5 },
-              { text: 'GoogleSafeBrowser', value: 6 },
-              { text: 'CustomIntegration', value: 7 }
-            ]
+            width: 240
           },
           {
             property: 'scanType',
@@ -184,8 +172,7 @@ export default {
           }
         ],
         downloadButton: {
-          show: true,
-          disabled: !this.checkPermissions('analysis-engines/search/export', 'POST')
+          show: true
         },
         selectEvent: {
           clipboard: true,
@@ -209,6 +196,42 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'TotalRequest',
+                  Operator: '>'
+                },
+                {
+                  Value: '',
+                  FieldName: 'HarmfulRequest',
+                  Operator: '='
+                },
+                {
+                  Value: '',
+                  FieldName: 'UndetectedRequest',
+                  Operator: '='
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [
                 {
                   Value: '',
@@ -349,6 +372,9 @@ export default {
     }
   },
   methods: {
+    handleSandboxStatsDownloadButtonClick() {
+      this.isSandboxStatsDownloadModal = true
+    },
     getDatatableListWhenFilterChange(company, integration, date) {
       const isArray = Array.isArray(date)
       this.bodyData = {
@@ -411,6 +437,11 @@ export default {
                 {
                   Value: company,
                   FieldName: 'CompanyName',
+                  Operator: company ? 'Include' : 'Contains'
+                },
+                {
+                  Value: company,
+                  FieldName: 'ClientResourceId',
                   Operator: company ? 'Include' : 'Contains'
                 },
                 {
@@ -532,8 +563,8 @@ export default {
         this.bodyData.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.sandboxStatsList.filterValues = savedFilter.filterValues
-          this.$refs.sandboxStatsList.columnKey = `column-key${Math.random()
+          this.$refs.refsandboxStatsList.filterValues = savedFilter.filterValues
+          this.$refs.refsandboxStatsList.columnKey = `column-key${Math.random()
             .toString()
             .substring(0, 5)}`
         })
@@ -543,8 +574,8 @@ export default {
     handleClearFilters() {
       this.isRestoredOrClearedFilters = true
       this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.sandboxStatsList.filterValues = {}
-      this.$refs.sandboxStatsList.columnKey = `column-key${Math.random()
+      this.$refs.refsandboxStatsList.filterValues = {}
+      this.$refs.refsandboxStatsList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
       localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SANDBOXSTATS)
@@ -594,7 +625,7 @@ export default {
       this.getDatatableList()
     },
     handleAdd() {},
-    exportSandboxList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportSandboxStats({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -614,6 +645,7 @@ export default {
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`
             link.click()
+            this.isSandboxStatsDownloadModal = false
           })
           .catch((error) => {})
       })
@@ -723,19 +755,6 @@ export default {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SANDBOXSTATS))
   },
   mounted() {
-    /*getIntegrationTypes()
-      .then((response) => {
-        this.$set(
-          this.tableOptions.columns[2],
-          'filterableItems',
-          response.data.data.map((item) => {
-            return { value: item.resourceId, text: item.name }
-          })
-        )
-      })
-      .finally(() => {
-        this.getDefaultFilterAndSearch()
-      })*/
     this.getDefaultFilterAndSearch()
   }
 }

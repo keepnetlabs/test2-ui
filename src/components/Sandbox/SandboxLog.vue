@@ -1,7 +1,7 @@
 <template>
   <div id="sandbox">
     <data-table
-      id="sandbox-data-table"
+      id="sandbox-data-table-log"
       ref="refsandboxList"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -26,6 +26,8 @@
       @paginationChangedEvent="paginationChangedEvent($event)"
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
+      @handleDownloadButtonClick="handleSandboxLogDownloadButtonClick"
+      :isShowDownloadModal="isSandboxLogDownloadModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
@@ -42,7 +44,6 @@
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :hideActionOptions="true"
     ></data-table>
   </div>
 </template>
@@ -71,6 +72,7 @@ export default {
   },
   data() {
     return {
+      isSandboxLogDownloadModal: false,
       integrationTypesEnum: [
         { name: 'VirusTotal', value: 1 },
         { name: 'FortiNet', value: 2 },
@@ -115,9 +117,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            width: 240,
-            filterableType: 'text',
-            filterableCustomFieldName: 'companyName'
+            width: 240
           },
           {
             property: 'analysisEngineTypeId',
@@ -128,18 +128,7 @@ export default {
             show: true,
             type: 'text',
             fixed: false,
-            width: 240,
-            filterableType: 'select',
-            filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: [
-              { text: 'VirusTotal', value: 1 },
-              { text: 'FortiNet', value: 2 },
-              { text: 'Vmray', value: 3 },
-              { text: 'Ibm X-Force', value: 4 },
-              { text: 'SpamHouseZen', value: 5 },
-              { text: 'GoogleSafeBrowser', value: 6 },
-              { text: 'CustomIntegration', value: 7 }
-            ]
+            width: 240
           },
           {
             property: 'scanType',
@@ -184,8 +173,7 @@ export default {
           }
         ],
         downloadButton: {
-          show: true,
-          disabled: !this.checkPermissions('analysis-engines/search/export', 'POST')
+          show: true
         },
         selectEvent: {
           clipboard: true,
@@ -219,6 +207,11 @@ export default {
                   Value: '',
                   FieldName: 'CompanyName',
                   Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'ClientResourceId',
+                  Operator: 'Include'
                 },
                 {
                   FieldName: 'CreateTime',
@@ -255,6 +248,11 @@ export default {
                   Value: '',
                   FieldName: 'CompanyName',
                   Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'ClientResourceId',
+                  Operator: 'Include'
                 },
                 {
                   FieldName: 'CreateTime',
@@ -304,6 +302,11 @@ export default {
                   Operator: 'Contains'
                 },
                 {
+                  Value: '',
+                  FieldName: 'ClientResourceId',
+                  Operator: 'Include'
+                },
+                {
                   FieldName: 'CreateTime',
                   Operator: 'Contains',
                   Value: ''
@@ -340,6 +343,11 @@ export default {
                   Operator: 'Contains'
                 },
                 {
+                  Value: '',
+                  FieldName: 'ClientResourceId',
+                  Operator: 'Include'
+                },
+                {
                   FieldName: 'CreateTime',
                   Operator: 'Contains',
                   Value: ''
@@ -369,6 +377,9 @@ export default {
     }
   },
   methods: {
+    handleSandboxLogDownloadButtonClick() {
+      this.isSandboxLogDownloadModal = true
+    },
     getDatatableListWhenFilterChange(company, integration, date) {
       const isArray = Array.isArray(date)
       this.bodyData = {
@@ -390,6 +401,11 @@ export default {
                 {
                   Value: company,
                   FieldName: 'CompanyName',
+                  Operator: company ? 'Include' : 'Contains'
+                },
+                {
+                  Value: company,
+                  FieldName: 'ClientResourceId',
                   Operator: company ? 'Include' : 'Contains'
                 },
                 {
@@ -426,6 +442,11 @@ export default {
                 {
                   Value: '',
                   FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'ClientResourceId',
                   Operator: 'Contains'
                 },
                 {
@@ -640,6 +661,7 @@ export default {
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`
             link.click()
+            this.isSandboxLogDownloadModal = false
           })
           .catch((error) => {})
       })
