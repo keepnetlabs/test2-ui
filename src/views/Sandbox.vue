@@ -2,6 +2,150 @@
   <div class="sandbox">
     <div class="incident-responder-parent">
       <div class="incident-responder">
+        <div class="pa-2">
+          <div class="search-wrapper">
+            <div>
+              <v-select
+                :items="companyItem"
+                :placeholder="'Company'"
+                outlined
+                class="edit-select"
+                max-width="100"
+                v-model="companyValue"
+                hide-details
+                clearable
+                item-text="name"
+                :menu-props="{ offsetY: true }"
+                item-value="resourceId"
+                :disabled="incidentLoading"
+                id="sandbox-company-select"
+                @change="changeCompanyData"
+              />
+            </div>
+            <div>
+              <k-select
+                v-model.trim="analysisEngineTypeResourceId"
+                id="input--integration-type"
+                class="edit-select"
+                :items="integrationTypesEnum"
+                dense
+                item-text="name"
+                item-value="name"
+                outlined
+                placeholder="Select integration type"
+                persistent-hint
+                @change="changeEngineType"
+                clearable
+              ></k-select>
+            </div>
+            <div class="d-flex p-relative">
+              <k-select
+                v-model.trim="filteredDateValueSelect"
+                id="input--date-picker-select-integration-type"
+                class="edit-select"
+                :items="filteredDateValueSelectValues"
+                dense
+                item-text="name"
+                item-value="value"
+                outlined
+                placeholder="Select integration type"
+                persistent-hint
+                @input="changeDateValueSelect('constant')"
+                clearable
+              ></k-select>
+              <div
+                v-if="filteredDateValueSelect === 'custom' && menuOpen"
+                class="absolute-date-filter"
+                id="input--date-picker-select-main-div"
+                @blur="changeBlurValue($event)"
+                tabindex="1"
+                :style="filteredSelectValueDate === 'between' ? 'width: 400px' : ''"
+              >
+                <v-select
+                  :items="dateFilterItems"
+                  id="focus-date"
+                  dense
+                  height="40"
+                  outlined
+                  required
+                  v-model="filteredSelectValueDate"
+                  :menu-props="{ offsetY: true }"
+                  placeholder="Select an option"
+                  :key="$store.state.auth.user.userCompany.timeZone"
+                  @blur="changeBlurValue($event)"
+                ></v-select>
+                <InputDate
+                  v-model="filteredDateValue"
+                  type="datetime"
+                  ref="refPicker"
+                  style="width: 100%; max-width: 260px; margin-bottom: 14px;"
+                  @change="changeDateValue"
+                  @blur="changeBlurValue($event)"
+                  v-if="filteredSelectValueDate !== 'between'"
+                />
+                <InputDate
+                  v-if="filteredSelectValueDate === 'between'"
+                  v-model="filteredDateValueRange"
+                  ref="refPicker2"
+                  type="datetimerange"
+                  style="margin-bottom: 14px;"
+                  @change="handleChangeBetweenDatepicker"
+                />
+                <div class="filter__footer" tabindex="2" @blur="changeBlurValue($event)">
+                  <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
+                    Clear
+                  </v-btn>
+                  <v-btn
+                    :disabled="getFilterButtonDisabled"
+                    text
+                    class="filter__footer-button"
+                    color="#2196f3"
+                    @click="handleFilter"
+                  >
+                    Filter
+                  </v-btn>
+                </div>
+              </div>
+            </div>
+            <div v-if="false">
+              <v-menu
+                v-model="menuModel"
+                bottom
+                offset-y
+                nudge-bottom="12"
+                content-class="filter-options__menu-content"
+                class="filter-options__menu"
+              >
+                <template #activator="{ on }">
+                  <div
+                    v-on="on"
+                    :class="['filter-options', { 'filter-options--menu-active': menuModel }]"
+                  >
+                    <v-icon
+                      :class="[
+                        'filter-options__icon',
+                        { 'filter-options--active-filter': isActive }
+                      ]"
+                      >mdi-filter-variant</v-icon
+                    >
+                    <span :class="['filter-options__text', { 'filter-options--active': isActive }]"
+                      >Filtering Options</span
+                    >
+                  </div>
+                </template>
+                <v-list>
+                  <v-list-item
+                    @click="handleListItemClick(item)"
+                    :key="item"
+                    v-for="item in listItems"
+                  >
+                    <v-list-item-title>{{ item }}</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+          </div>
+        </div>
         <div class="columns-row">
           <CardLoading
             :loading="incidentLoading"
@@ -150,10 +294,10 @@
           </CardLoading>
         </div>
         <div class="mt-4 pa-2">
-          <SandboxLog />
+          <SandboxLog ref="sandboxLog" />
         </div>
         <div class="mt-4 pa-2">
-          <SandboxStats />
+          <SandboxStats ref="sandboxStats" />
         </div>
       </div>
     </div>
@@ -161,24 +305,37 @@
 </template>
 
 <script>
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getTimeZoneForMoment } from '@/utils/functions'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import { getSandboxSummaryData } from '@/api/sandbox'
 import SandboxLog from '@/components/Sandbox/SandboxLog'
 import SandboxStats from '@/components/Sandbox/SandboxStats'
+import { getCompanyListForThreatSharing, getMyCompanies } from '@/api/company'
+import InputDate from '@/components/Common/Inputs/InputDate'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import { getIntegrationTypes } from '@/api/integrations'
+import {
+  COMMON_CONSTANTS,
+  INTEGRATION_LABELS,
+  INTEGRATION_TYPES
+} from '@/model/constants/commonConstants'
 
 export default {
   name: 'Sandbox',
   components: {
     CardLoading,
     SandboxLog,
-    SandboxStats
+    SandboxStats,
+    InputDate,
+    KSelect
   },
   data() {
     return {
+      getFilterButtonDisabled: false,
       incidentLoading: true,
       labels,
+      search: null,
       summaryOptions: {
         filter: {
           Condition: 'AND',
@@ -198,7 +355,7 @@ export default {
                 },
                 {
                   FieldName: 'CreateTime',
-                  Operator: 'Contains',
+                  Operator: '>=',
                   Value: ''
                 }
               ],
@@ -207,13 +364,344 @@ export default {
           ]
         }
       },
-      summaryData: {}
+      summaryData: {},
+      companyValue: null,
+      companyItem: [],
+      filteredDateValue: null,
+      filteredDateValueRange: null,
+      filteredDateValueSelect: '',
+      menuOpen: false,
+      filteredDateValueSelectValues: [
+        { name: 'All time', value: '' },
+        {
+          name: 'Yesterday',
+          value: this.$moment(Date.now()).subtract(1, 'day').format(getTimeZoneForMoment())
+        },
+        {
+          name: 'Last Week',
+          value: this.$moment(Date.now()).subtract(7, 'days').format(getTimeZoneForMoment())
+        },
+        {
+          name: 'Last Month',
+          value: this.$moment(Date.now()).subtract(1, 'month').format(getTimeZoneForMoment())
+        },
+        {
+          name: 'Last 30 days',
+          value: this.$moment(Date.now()).subtract(29, 'days').format(getTimeZoneForMoment())
+        },
+        { name: 'Custom', value: 'custom' }
+      ],
+      analysisEngineTypeResourceId: null,
+      integrationTypes: [],
+      menuModel: false,
+      listItems: [...COMMON_CONSTANTS.FILTER_OPTIONS],
+      isActive: false,
+
+      filterableOptions: {
+        default() {
+          return { exactDate: true, after: true, before: true, between: true, showSelect: true }
+        }
+      },
+      dateFilterItems: [
+        { text: 'After', value: '>=' },
+        { text: 'Before', value: '<=' },
+        { text: 'Between', value: 'between' }
+      ],
+      filteredSelectValueDate: '>=',
+      integrationTypesEnum: [
+        { name: 'VirusTotal', value: 1 },
+        { name: 'FortiNet', value: 2 },
+        { name: 'Vmray', value: 3 },
+        { name: 'Ibm X-Force', value: 4 },
+        { name: 'SpamHouseZen', value: 5 },
+        { name: 'GoogleSafeBrowser', value: 6 },
+        { name: 'Custom Integration', value: 7 }
+      ],
+      scanTypesEnum: [
+        { name: 'Url', value: 1 },
+        { name: 'Attachment', value: 2 },
+        { name: 'Ip', value: 3 },
+        { name: 'Hash', value: 4 }
+      ]
     }
   },
   created() {
+    this.companyValue = localStorage.getItem('sandboxCompany')
+    this.analysisEngineTypeResourceId = localStorage.getItem('sandboxIntegration')
+    this.filteredDateValueSelect = localStorage.getItem('sandboxDate')
+    let dateValue = localStorage.getItem('sandboxDateOption')
+    if (Array.isArray(dateValue)) {
+      this.filteredDateValueRange = dateValue
+    } else {
+      this.filteredDateValue = dateValue
+    }
+
     this.getSummaryData()
+    getMyCompanies().then((response) => (this.companyItem = response.data.data))
   },
   methods: {
+    setFilterOptions() {
+      localStorage.setItem('sandboxCompany', this.companyValue)
+      localStorage.setItem('sandboxIntegration', this.analysisEngineTypeResourceId)
+      localStorage.setItem('sandboxDate', this.filteredDateValueSelect)
+      localStorage.setItem(
+        'sandboxDateOption',
+        this.filteredSelectValueDate !== 'between'
+          ? this.filteredDateValue || this.filteredDateValueSelect
+          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      )
+    },
+    handleListItemClick(value) {
+      switch (value) {
+        case 'Set as default filter':
+          this.setFilterOptions()
+          break
+        case 'Restore default filter':
+          this.setFilterOptions()
+          break
+        case 'Clear filters':
+          localStorage.removeItem('sandboxCompany')
+          localStorage.removeItem('sandboxIntegration')
+          localStorage.removeItem('sandboxDate')
+          localStorage.removeItem('sandboxDateOption')
+          break
+      }
+    },
+    clearFilter() {
+      this.menuOpen = false
+      this.filteredDateValueSelect = ''
+    },
+    handleFilter() {
+      let value =
+        this.filteredSelectValueDate !== 'between'
+          ? this.filteredDateValue || this.filteredDateValueSelect
+          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      if (this.filteredDateValueSelect === 'custom')
+        this.filteredDateValueSelectValues[5].name = value
+      this.menuOpen = false
+      if (this.filteredSelectValueDate === 'between') {
+        this.summaryOptions = {
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [
+                  {
+                    Value: this.analysisEngineTypeResourceId,
+                    FieldName: 'AnalysisEngineTypeId',
+                    Operator: 'Include'
+                  },
+                  {
+                    Value: this.companyValue,
+                    FieldName: 'ClientResourceId',
+                    Operator: 'Include'
+                  },
+                  {
+                    FieldName: 'CreateTime',
+                    Operator: '>=',
+                    Value: value[0]
+                  },
+                  {
+                    FieldName: 'CreateTime',
+                    Operator: '<=',
+                    Value: value[1]
+                  }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
+        }
+      } else {
+        this.summaryOptions = {
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [
+                  {
+                    Value: this.analysisEngineTypeResourceId,
+                    FieldName: 'AnalysisEngineTypeId',
+                    Operator: 'Include'
+                  },
+                  {
+                    Value: this.companyValue,
+                    FieldName: 'ClientResourceId',
+                    Operator: 'Include'
+                  },
+                  {
+                    FieldName: 'CreateTime',
+                    Operator: this.filteredSelectValueDate,
+                    Value: value
+                  }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
+        }
+      }
+
+      const dateFilterValueForTables =
+        this.filteredSelectValueDate === 'between'
+          ? [
+              {
+                FieldName: 'CreateTime',
+                Operator: '>=',
+                Value: value[0]
+              },
+              {
+                FieldName: 'CreateTime',
+                Operator: '<=',
+                Value: value[1]
+              }
+            ]
+          : {
+              FieldName: 'CreateTime',
+              Operator: this.filteredSelectValueDate,
+              Value: value
+            }
+
+      this.$refs.sandboxLog.getDatatableListWhenFilterChange(
+        this.companyValue,
+        this.analysisEngineTypeResourceId
+          ? this.integrationTypesEnum.find(
+              (item) => item.name === this.analysisEngineTypeResourceId
+            ).value
+          : '',
+        dateFilterValueForTables
+      )
+      this.$refs.sandboxStats.getDatatableListWhenFilterChange(
+        this.companyValue,
+        this.analysisEngineTypeResourceId
+          ? this.integrationTypesEnum.find(
+              (item) => item.name === this.analysisEngineTypeResourceId
+            ).value
+          : '',
+        dateFilterValueForTables
+      )
+
+      this.getSummaryData()
+    },
+    changeBlurValue(e) {
+      if (e.currentPlacement !== 'bottom-start') this.menuOpen = !!e.relatedTarget
+    },
+    changeDateValueSelect(isConstant) {
+      if (!!isConstant) {
+        this.filteredDateValue = null
+        this.filteredDateValueRange = []
+      }
+      if (this.filteredDateValueSelect === 'custom') {
+        this.menuOpen = true
+        setTimeout(() => {
+          document.getElementById('focus-date').focus()
+        }, 200)
+        return false
+      } else {
+        this.filteredSelectValueDate = '>='
+        this.filteredDateValueSelectValues[5].name = 'Custom'
+      }
+
+      this.$set(
+        this.summaryOptions.filter.FilterGroups[0].FilterItems[2],
+        'Value',
+        this.filteredDateValueSelect || ''
+      )
+
+      this.handleFilter()
+    },
+    handleChangeBetweenDatepicker() {},
+    changeDateValue() {
+      if (this.menuOpen) return false
+      this.$set(
+        this.summaryOptions.filter.FilterGroups[0].FilterItems[2],
+        'Value',
+        this.filteredDateValue || ''
+      )
+      this.getSummaryData()
+    },
+    changeCompanyData() {
+      this.$set(
+        this.summaryOptions.filter.FilterGroups[0].FilterItems[1],
+        'Value',
+        this.companyValue || ''
+      )
+      this.$refs.sandboxLog.getDatatableListWhenFilterChange(
+        this.companyValue,
+        this.analysisEngineTypeResourceId
+          ? this.integrationTypesEnum.find(
+              (item) => item.name === this.analysisEngineTypeResourceId
+            ).value
+          : '',
+        this.filteredSelectValueDate !== 'between'
+          ? this.filteredDateValue || this.filteredDateValueSelect
+          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      )
+      this.$refs.sandboxStats.getDatatableListWhenFilterChange(
+        this.companyValue,
+        this.analysisEngineTypeResourceId
+          ? this.integrationTypesEnum.find(
+              (item) => item.name === this.analysisEngineTypeResourceId
+            ).value
+          : '',
+        this.filteredSelectValueDate !== 'between'
+          ? this.filteredDateValue || this.filteredDateValueSelect
+          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      )
+      this.getSummaryData()
+    },
+    changeEngineType() {
+      this.$set(
+        this.summaryOptions.filter.FilterGroups[0].FilterItems[0],
+        'Value',
+        this.analysisEngineTypeResourceId || ''
+      )
+      this.getSummaryData()
+      this.$refs.sandboxLog.getDatatableListWhenFilterChange(
+        this.companyValue,
+        this.analysisEngineTypeResourceId
+          ? this.integrationTypesEnum.find(
+              (item) => item.name === this.analysisEngineTypeResourceId
+            ).value
+          : '',
+        this.filteredSelectValueDate !== 'between'
+          ? this.filteredDateValue || this.filteredDateValueSelect
+          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      )
+      this.$refs.sandboxStats.getDatatableListWhenFilterChange(
+        this.companyValue,
+        this.analysisEngineTypeResourceId
+          ? this.integrationTypesEnum.find(
+              (item) => item.name === this.analysisEngineTypeResourceId
+            ).value
+          : '',
+        this.filteredSelectValueDate !== 'between'
+          ? this.filteredDateValue || this.filteredDateValueSelect
+          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+      )
+    },
+    getFriendlyName(name) {
+      let label
+      switch (name) {
+        case INTEGRATION_TYPES.FORTINET:
+          label = INTEGRATION_LABELS.FORTINET
+          break
+        case INTEGRATION_TYPES.VIRUSTOTAL:
+          label = INTEGRATION_LABELS.VIRUSTOTAL
+          break
+        case INTEGRATION_TYPES.VMRAY:
+          label = INTEGRATION_LABELS.VMRAY
+          break
+        case INTEGRATION_TYPES.IBMXFORCE:
+          label = INTEGRATION_LABELS.IBMXFORCE
+          break
+        default:
+          return
+      }
+      return label
+    },
     getSummaryData() {
       this.incidentLoading = true
       getSandboxSummaryData(this.summaryOptions)
@@ -233,6 +721,17 @@ export default {
 
 <style lang="scss">
 .sandbox {
+  .absolute-date-filter {
+    position: absolute;
+    top: 68px;
+    background: white;
+    width: 251px;
+    padding: 15px;
+    z-index: 9;
+    border-radius: 8px;
+    box-shadow: 0px 1px 10px 0px rgb(0 0 0 / 20%), 0px 0px 0px 0px rgb(0 0 0 / 14%),
+      0px 0px 0px 0px rgb(0 0 0 / 12%) !important;
+  }
   .incident-analysis {
     background: #f56c6c;
   }
@@ -241,6 +740,80 @@ export default {
   }
   .dashboard-cards-loading {
     height: 150px;
+  }
+  .search-wrapper {
+    background: #ffffff;
+    border-radius: 8px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding: 4px 8px;
+    margin-right: 0px;
+    .edit-select {
+      max-width: 227px;
+      .v-text-field__details {
+        display: none;
+      }
+    }
+    .el-date-editor {
+      margin-bottom: 0 !important;
+    }
+
+    > div {
+      padding-right: 10px;
+    }
+
+    .filter-icon {
+      color: rgba(0, 0, 0, 0.34) !important;
+      cursor: pointer;
+    }
+  }
+  .filter {
+    &__icon {
+      float: right;
+      font-size: 20px;
+      order: 1;
+      margin-top: 7px;
+    }
+    &__body-container {
+      background-color: white;
+      padding: 20px 20px 0 20px;
+      position: relative;
+    }
+    &__footer {
+      display: flex;
+      margin-right: -13px;
+      justify-content: flex-end;
+      position: sticky;
+      bottom: 0;
+      padding-bottom: 0 !important;
+
+      &-button {
+        font-family: 'Open Sans', sans-serif !important;
+        font-size: 14px;
+        font-weight: 600;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.71;
+        letter-spacing: normal;
+      }
+    }
+
+    &__text {
+      margin-top: -13px;
+    }
+
+    &__textfield {
+      border-radius: 8px;
+      border: solid 1px rgba(0, 0, 0, 0.16);
+      background-color: #ffffff;
+    }
+
+    &__footer {
+      background: #fff;
+      padding: 10px 0;
+    }
   }
   .incident-responder-parent {
     .incident-responder {

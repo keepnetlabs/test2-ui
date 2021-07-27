@@ -22,7 +22,7 @@
       :stored-table-settings="storedTableSettings"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
-      @downloadEvent="exportSandboxList"
+      @downloadEvent="exportSandboxLog"
       @paginationChangedEvent="paginationChangedEvent($event)"
       :dataLength="tableData && tableData.totalNumberOfRecords"
       :requestParams="bodyData"
@@ -42,6 +42,7 @@
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :hideActionOptions="true"
     ></data-table>
   </div>
 </template>
@@ -61,7 +62,7 @@ import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-import { getSandboxLog } from '@/api/sandbox'
+import { exportSandboxLog, getSandboxLog } from '@/api/sandbox'
 import { getIntegrationTypes } from '@/api/integrations'
 export default {
   name: 'sandbox',
@@ -70,6 +71,21 @@ export default {
   },
   data() {
     return {
+      integrationTypesEnum: [
+        { name: 'VirusTotal', value: 1 },
+        { name: 'FortiNet', value: 2 },
+        { name: 'Vmray', value: 3 },
+        { name: 'Ibm X-Force', value: 4 },
+        { name: 'SpamHouseZen', value: 5 },
+        { name: 'GoogleSafeBrowser', value: 6 },
+        { name: 'CustomIntegration', value: 7 }
+      ],
+      scanTypesEnum: [
+        { name: 'Url', value: 1 },
+        { name: 'Attachment', value: 2 },
+        { name: 'Ip', value: 3 },
+        { name: 'Hash', value: 4 }
+      ],
       integrationTypes: [],
       loading: true,
       labels,
@@ -89,15 +105,13 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date',
-            filterableCustomFieldName: 'createTime',
             fixed: 'left'
           },
           {
             property: PROPERTY_STORE.COMPANYNAME,
             align: 'left',
             editable: false,
-            label: labels.IntegrationName,
+            label: labels.CompanyName,
             sortable: true,
             show: true,
             type: 'text',
@@ -117,7 +131,15 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: this.integrationTypes
+            filterableItems: [
+              { text: 'VirusTotal', value: 1 },
+              { text: 'FortiNet', value: 2 },
+              { text: 'Vmray', value: 3 },
+              { text: 'Ibm X-Force', value: 4 },
+              { text: 'SpamHouseZen', value: 5 },
+              { text: 'GoogleSafeBrowser', value: 6 },
+              { text: 'CustomIntegration', value: 7 }
+            ]
           },
           {
             property: 'scanType',
@@ -127,8 +149,13 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            filterableCustomFieldName: 'scanType'
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Url', value: 1 },
+              { text: 'Attachment', value: 2 },
+              { text: 'Ip', value: 3 },
+              { text: 'Hash', value: 4 }
+            ]
           },
           {
             property: 'details',
@@ -182,12 +209,74 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [],
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'Details',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Status',
+                  Operator: 'Contains'
+                }
+              ],
               FilterGroups: []
             },
             {
-              Condition: 'AND',
-              FilterItems: [],
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'Details',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Status',
+                  Operator: 'Contains'
+                }
+              ],
               FilterGroups: []
             }
           ]
@@ -203,12 +292,74 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [],
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'Details',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Status',
+                  Operator: 'Contains'
+                }
+              ],
               FilterGroups: []
             },
             {
               Condition: 'OR',
-              FilterItems: [],
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'Details',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Status',
+                  Operator: 'Contains'
+                }
+              ],
               FilterGroups: []
             }
           ]
@@ -218,6 +369,136 @@ export default {
     }
   },
   methods: {
+    getDatatableListWhenFilterChange(company, integration, date) {
+      const isArray = Array.isArray(date)
+      this.bodyData = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'Status',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  Value: integration,
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: integration ? 'Include' : 'Contains'
+                },
+                {
+                  Value: company,
+                  FieldName: 'CompanyName',
+                  Operator: company ? 'Include' : 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: isArray ? date[0].Operator : date ? date.Operator : 'Contains',
+                  Value: isArray ? date[0].Value : date ? date.Value : ''
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'Details',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Status',
+                  Operator: 'Contains'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'CompanyName',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'Details',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Status',
+                  Operator: 'Contains'
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      if (isArray)
+        this.bodyData.filter.FilterGroups[0].FilterItems.push({
+          Value: date[1].Value,
+          FieldName: 'CreateTime',
+          Operator: date[1].Operator
+        })
+      this.defaultRequestBody = JSON.parse(JSON.stringify(this.bodyData))
+      this.loading = true
+
+      getSandboxLog(this.bodyData)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+
+          let { results = [] } = data
+          results = results.map((resultItem) => {
+            return {
+              ...resultItem,
+              analysisEngineTypeId: this.integrationTypesEnum.find(
+                (item) => resultItem.analysisEngineTypeId === item.value
+              ).name,
+              scanType: this.scanTypesEnum.find((item) => item.value === resultItem.scanType).name
+            }
+          })
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
+
+          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+
+          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.loading = false))
+    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SANDBOX, JSON.stringify(tableSettings))
     },
@@ -339,23 +620,23 @@ export default {
       this.getDatatableList()
     },
     handleAdd() {},
-    exportSandboxList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportSandboxLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
+          orderBy: 'CompanyName',
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportReportedEmails(payload)
+        exportSandboxLog(payload)
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `sandbox.${
+            link.download = `sandboxLog.${
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`
             link.click()
@@ -374,7 +655,18 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
+
+          let { results = [] } = data
+          results = results.map((resultItem) => {
+            return {
+              ...resultItem,
+              analysisEngineTypeId: this.integrationTypesEnum.find(
+                (item) => resultItem.analysisEngineTypeId === item.value
+              ).name,
+              scanType: this.scanTypesEnum.find((item) => item.value === resultItem.scanType).name
+            }
+          })
+          console.log(this.tableData)
           this.tableData = results
           this.totalNumberOfRecords = totalNumberOfRecords
 
@@ -458,7 +750,7 @@ export default {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SANDBOX))
   },
   mounted() {
-    getIntegrationTypes()
+    /*getIntegrationTypes()
       .then((response) => {
         this.$set(
           this.tableOptions.columns[2],
@@ -470,7 +762,8 @@ export default {
       })
       .finally(() => {
         this.getDefaultFilterAndSearch()
-      })
+      })*/
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>

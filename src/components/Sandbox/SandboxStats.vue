@@ -42,6 +42,7 @@
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :hideActionOptions="true"
     ></data-table>
   </div>
 </template>
@@ -61,7 +62,7 @@ import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-import { getSandboxStats } from '@/api/sandbox'
+import { exportSandboxLog, exportSandboxStats, getSandboxLog, getSandboxStats } from '@/api/sandbox'
 import { getIntegrationTypes } from '@/api/integrations'
 export default {
   name: 'sandboxStats',
@@ -70,6 +71,21 @@ export default {
   },
   data() {
     return {
+      integrationTypesEnum: [
+        { name: 'VirusTotal', value: 1 },
+        { name: 'FortiNet', value: 2 },
+        { name: 'Vmray', value: 3 },
+        { name: 'Ibm X-Force', value: 4 },
+        { name: 'SpamHouseZen', value: 5 },
+        { name: 'GoogleSafeBrowser', value: 6 },
+        { name: 'CustomIntegration', value: 7 }
+      ],
+      scanTypesEnum: [
+        { name: 'Url', value: 1 },
+        { name: 'Attachment', value: 2 },
+        { name: 'Ip', value: 3 },
+        { name: 'Hash', value: 4 }
+      ],
       integrationTypes: [],
       loading: true,
       labels,
@@ -105,7 +121,15 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: this.integrationTypes
+            filterableItems: [
+              { text: 'VirusTotal', value: 1 },
+              { text: 'FortiNet', value: 2 },
+              { text: 'Vmray', value: 3 },
+              { text: 'Ibm X-Force', value: 4 },
+              { text: 'SpamHouseZen', value: 5 },
+              { text: 'GoogleSafeBrowser', value: 6 },
+              { text: 'CustomIntegration', value: 7 }
+            ]
           },
           {
             property: 'scanType',
@@ -115,8 +139,14 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            filterableCustomFieldName: 'scanType'
+            filterableType: 'select',
+            filterableCustomFieldName: 'scanType',
+            filterableItems: [
+              { text: 'Url', value: 1 },
+              { text: 'Attachment', value: 2 },
+              { text: 'Ip', value: 3 },
+              { text: 'Hash', value: 4 }
+            ]
           },
           {
             property: 'totalRequest',
@@ -126,7 +156,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
+            filterableType: 'number',
             filterableCustomFieldName: 'totalRequest'
           },
           {
@@ -137,7 +167,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
+            filterableType: 'number',
             filterableCustomFieldName: 'harmfulRequest'
           },
           {
@@ -150,7 +180,7 @@ export default {
             show: true,
             hasTooltip: true,
             type: 'text',
-            filterableType: 'text'
+            filterableType: 'number'
           }
         ],
         downloadButton: {
@@ -183,7 +213,7 @@ export default {
                 {
                   Value: '',
                   FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Include'
+                  Operator: 'Contains'
                 },
                 {
                   Value: '',
@@ -192,7 +222,7 @@ export default {
                 },
                 {
                   FieldName: 'ScanType',
-                  Operator: 'Include',
+                  Operator: 'Contains',
                   Value: ''
                 },
                 {
@@ -224,12 +254,12 @@ export default {
                 {
                   Value: '',
                   FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Include'
+                  Operator: 'Contains'
                 },
                 {
                   Value: '',
                   FieldName: 'ClientResourceId',
-                  Operator: 'Include'
+                  Operator: 'Contains'
                 },
                 {
                   FieldName: 'CreateTime',
@@ -256,7 +286,7 @@ export default {
                 {
                   Value: '',
                   FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Include'
+                  Operator: 'Contains'
                 },
                 {
                   Value: '',
@@ -265,7 +295,7 @@ export default {
                 },
                 {
                   FieldName: 'ScanType',
-                  Operator: 'Include',
+                  Operator: 'Contains',
                   Value: ''
                 },
                 {
@@ -297,12 +327,12 @@ export default {
                 {
                   Value: '',
                   FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Include'
+                  Operator: 'Contains'
                 },
                 {
                   Value: '',
                   FieldName: 'ClientResourceId',
-                  Operator: 'Include'
+                  Operator: 'Contains'
                 },
                 {
                   FieldName: 'CreateTime',
@@ -319,6 +349,126 @@ export default {
     }
   },
   methods: {
+    getDatatableListWhenFilterChange(company, integration, date) {
+      const isArray = Array.isArray(date)
+      this.bodyData = {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'TotalRequest',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'ClientResourceId',
+                  Operator: 'Contains'
+                },
+                {
+                  FieldName: 'ScanType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  Value: '',
+                  FieldName: 'TotalRequest',
+                  Operator: '>'
+                },
+                {
+                  Value: '',
+                  FieldName: 'HarmfulRequest',
+                  Operator: '='
+                },
+                {
+                  Value: '',
+                  FieldName: 'UndetectedRequest',
+                  Operator: '='
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        },
+        FilterSummary: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  Value: integration,
+                  FieldName: 'AnalysisEngineTypeId',
+                  Operator: integration ? 'Include' : 'Contains'
+                },
+                {
+                  Value: company,
+                  FieldName: 'CompanyName',
+                  Operator: company ? 'Include' : 'Contains'
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: isArray ? date[0].Operator : date ? date.Operator : 'Contains',
+                  Value: isArray ? date[0].Value : date ? date.Value : ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      if (isArray)
+        this.bodyData.FilterSummary.FilterGroups[0].FilterItems.push({
+          Value: date[1].Value,
+          FieldName: 'CreateTime',
+          Operator: date[1].Operator
+        })
+      this.defaultRequestBody = JSON.parse(JSON.stringify(this.bodyData))
+      this.loading = true
+
+      getSandboxStats(this.bodyData)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+
+          let { results = [] } = data
+          results = results.map((resultItem) => {
+            return {
+              ...resultItem,
+              analysisEngineTypeId: this.integrationTypesEnum.find(
+                (item) => resultItem.analysisEngineTypeId === item.value
+              ).name,
+              scanType: this.scanTypesEnum.find((item) => item.value === resultItem.scanType).name
+            }
+          })
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
+
+          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
+            this.showAllRecords = true
+          }
+
+          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
+            this.showAllRecords = false
+          }
+        })
+        .catch(() => {
+          this.tableData = []
+        })
+        .finally(() => (this.loading = false))
+    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SANDBOXSTATS, JSON.stringify(tableSettings))
     },
@@ -449,18 +599,18 @@ export default {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: 'CreateTime',
+          orderBy: 'TotalRequest',
           ascending: false,
           reportAllPages,
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportReportedEmails(payload)
+        exportSandboxStats(payload)
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
             link.href = window.URL.createObjectURL(data)
-            link.download = `sandbox.${
+            link.download = `sandboxStats.${
               exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
             }`
             link.click()
@@ -470,6 +620,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true
+      let _this = this
       getSandboxStats(this.bodyData)
         .then((response) => {
           const {
@@ -479,7 +630,16 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          const { results = [] } = data
+          let { results = [] } = data
+          results = results.map((resultItem) => {
+            return {
+              ...resultItem,
+              analysisEngineTypeId: this.integrationTypesEnum.find(
+                (item) => resultItem.analysisEngineTypeId === item.value
+              ).name,
+              scanType: this.scanTypesEnum.find((item) => item.value === resultItem.scanType).name
+            }
+          })
           this.tableData = results
           this.totalNumberOfRecords = totalNumberOfRecords
 
@@ -563,7 +723,7 @@ export default {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SANDBOXSTATS))
   },
   mounted() {
-    getIntegrationTypes()
+    /*getIntegrationTypes()
       .then((response) => {
         this.$set(
           this.tableOptions.columns[2],
@@ -575,7 +735,8 @@ export default {
       })
       .finally(() => {
         this.getDefaultFilterAndSearch()
-      })
+      })*/
+    this.getDefaultFilterAndSearch()
   }
 }
 </script>
