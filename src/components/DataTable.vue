@@ -107,7 +107,7 @@
               :hideActionOptions="hideActionOptions"
             />
           </div>
-          <div class="table-settings" v-if="options && !hideActionOptions">
+          <div class="table-settings" v-if="options">
             <v-btn
               class="clust-btn btn-hover mr-1"
               :color="!selectedCluster ? '#2196f3' : '#757575'"
