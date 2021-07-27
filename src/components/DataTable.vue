@@ -5,7 +5,7 @@
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
-      v-if="options && downloadButton.show && isWantToDownload"
+      v-if="options && downloadButton.show && isWantToDownload && isShowDownloadModal"
       :download="download"
       :title="downloadModalTitle"
     />
@@ -1011,6 +1011,9 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    isShowDownloadModal: {
+      default: false
+    },
     showPageSize: {
       type: Boolean,
       required: false,
@@ -1984,6 +1987,7 @@ export default {
      * @param item --> String
      */
     handleDownloadButtonClick(item = '') {
+      this.$emit('handleDownloadButtonClick')
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
     },
