@@ -460,15 +460,15 @@ export default {
       this.analysisEngineTypeResourceId =
         localStorage.getItem('sandboxIntegration').split(',') || ''
     //this.filteredDateValueSelect = localStorage.getItem('sandboxDate') //select
-    if (localStorage.getItem('sandboxDateFormat'))
+    if (localStorage.getItem('sandboxDateValue'))
       this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
-    if (localStorage.getItem('sandboxDateFormat'))
+    if (localStorage.getItem('sandboxDateValue'))
       this.filteredDateValueSelect = {
         name: localStorage.getItem('sandboxDateOption'),
         value: 'custom'
       }
     let dateValue = localStorage.getItem('sandboxDateOption')
-    localStorage.setItem('sandboxFilteredSelectValueDate', this.filteredSelectValueDate) //between
+    //localStorage.setItem('sandboxFilteredSelectValueDate', this.filteredSelectValueDate) //between
     if (this.filteredSelectValueDate === 'between') {
       this.filteredDateValueRange = dateValue.split(',')
     } else {
@@ -502,16 +502,21 @@ export default {
   },
   methods: {
     setFilterOptions() {
-      localStorage.setItem('sandboxCompany', this.companyValue.toString())
-      localStorage.setItem('sandboxIntegration', this.analysisEngineTypeResourceId.toString())
-      localStorage.setItem('sandboxDateValue', this.filteredDateValueSelect.value)
-      localStorage.setItem('sandboxDateFormat', this.filteredSelectValueDate)
-      localStorage.setItem(
-        'sandboxDateOption',
-        this.filteredSelectValueDate !== 'between'
-          ? this.filteredDateValue || this.filteredDateValueSelect.value
-          : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
-      )
+      if (this.companyValue) localStorage.setItem('sandboxCompany', this.companyValue.toString())
+      if (this.analysisEngineTypeResourceId)
+        localStorage.setItem('sandboxIntegration', this.analysisEngineTypeResourceId.toString())
+      if (this.filteredDateValueSelect.value)
+        localStorage.setItem('sandboxDateValue', this.filteredDateValueSelect.value)
+      if (this.filteredDateValueSelect.value)
+        localStorage.setItem('sandboxDateFormat', this.filteredSelectValueDate)
+      if (this.filteredDateValueSelect.value) {
+        localStorage.setItem(
+          'sandboxDateOption',
+          this.filteredSelectValueDate !== 'between'
+            ? this.filteredDateValue || this.filteredDateValueSelect.value
+            : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
+        )
+      }
     },
     handleListItemClick(value) {
       switch (value) {
@@ -528,7 +533,6 @@ export default {
           localStorage.removeItem('sandboxDateOption')
           localStorage.removeItem('sandboxCompany')
           localStorage.removeItem('sandboxIntegration')
-          localStorage.removeItem('sandboxDateFormat')
           localStorage.removeItem('sandboxDateFormat')
           localStorage.removeItem('sandboxDateOption')
           localStorage.removeItem('sandboxFilteredSelectValueDate')
