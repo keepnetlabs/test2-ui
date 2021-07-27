@@ -5,7 +5,7 @@
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
       @changeDownloadModalStatus="changeDownloadModalStatus"
-      v-if="options && downloadButton.show && isWantToDownload"
+      v-if="options && downloadButton.show && isWantToDownload && isShowDownloadModal"
       :download="download"
       :title="downloadModalTitle"
     />
@@ -107,7 +107,7 @@
               :hideActionOptions="hideActionOptions"
             />
           </div>
-          <div class="table-settings" v-if="options && !hideActionOptions">
+          <div class="table-settings" v-if="options">
             <v-btn
               class="clust-btn btn-hover mr-1"
               :color="!selectedCluster ? '#2196f3' : '#757575'"
@@ -1011,6 +1011,9 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    isShowDownloadModal: {
+      default: false
+    },
     showPageSize: {
       type: Boolean,
       required: false,
@@ -1984,6 +1987,7 @@ export default {
      * @param item --> String
      */
     handleDownloadButtonClick(item = '') {
+      this.$emit('handleDownloadButtonClick')
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
     },

@@ -337,7 +337,7 @@ export default {
   },
   watch: {
     filteredDateRangeValue(newVal) {
-      console.log(newVal)
+      //console.log(newVal)
     },
     menu(newVal) {
       if (newVal) {
