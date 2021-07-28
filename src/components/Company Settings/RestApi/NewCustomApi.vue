@@ -176,7 +176,23 @@
             </button>
           </div>
         </form-group>
-        <form-group title="Status">
+
+        <form-group title="Client Role" class-name="ip-restriction mt-4">
+          <v-select
+            :items="roleItems"
+            outlined
+            class="input-select standard-height"
+            placeholder="Select role"
+            item-text="name"
+            item-value="resourceId"
+            v-model="formValues.roleResourceIdList"
+            hide-details
+            required
+            :rules="[(v) => Validations.required(v, labels.Required)]"
+          >
+          </v-select>
+        </form-group>
+        <form-group title="Status" class-name="mt-4">
           <v-switch
             v-model="formValues.status"
             id="input--rest-api-status"
@@ -202,6 +218,7 @@ import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import * as validations from '../../../utils/validations'
+import { getSystemUsersRole } from '@/api/systemUsers'
 
 export default {
   name: 'NewCustomApi',
@@ -229,7 +246,9 @@ export default {
       saveDisable: false,
       labels,
       formValues: new RestApiModel(),
-      Validations
+      Validations,
+      roleItems: [],
+      systemUserFormData: null
     }
   },
   computed: {
@@ -263,6 +282,7 @@ export default {
     }
   },
   created() {
+    this.getRoles()
     if (this.selectedRow && this.selectedRow.resourceId) {
       getRestApi(this.selectedRow.resourceId).then((response) => {
         const { data: { data = {} } = {} } = response
@@ -271,6 +291,51 @@ export default {
     }
   },
   methods: {
+    getRoles() {
+      let payload = {
+        pageNumber: 1,
+        pageSize: 1000,
+        orderBy: 'RoleName',
+        ascending: true,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      let allRoles = []
+      let availableRoles = []
+
+      getSystemUsersRole(payload).then((response) => {
+        allRoles = response.data.data
+        availableRoles = []
+        availableRoles = allRoles
+        this.roleItems = availableRoles.map((item) => {
+          return {
+            name: item.name,
+            resourceId: item.resourceId
+          }
+        })
+        if (!this.selectedRow) {
+          this.formValues.roleResourceIdList =
+            availableRoles &&
+            availableRoles.length &&
+            availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
+              .resourceId
+        }
+      })
+    },
+
     closeOverlay() {
       this.$emit('closeOverlay')
     },
@@ -289,6 +354,9 @@ export default {
             data.allowedIpAddresses.map((item) => {
               return { name: '', value: item }
             })
+        }
+        if (key === 'roleResourceIdList') {
+          this.formValues[key] = data.roleResourceIdList[0]
         } else {
           this.formValues[key] = data[key]
         }
@@ -324,7 +392,8 @@ export default {
         this.saveDisable = true
         let values = {
           ...this.formValues,
-          allowedIpAddresses: this.formValues.allowedIpAddresses.map((item) => item.value)
+          allowedIpAddresses: this.formValues.allowedIpAddresses.map((item) => item.value),
+          roleResourceIdList: this.formValues.roleResourceIdList.split()
         }
         if (!values.allowedIpAddresses[0]) values.allowedIpAddresses = []
         if (!values.hasIpAddressRestriction) values.allowedIpAddresses = []

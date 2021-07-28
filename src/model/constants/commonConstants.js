@@ -418,13 +418,19 @@ export const INTEGRATION_TYPES = {
   VMRAY: 'Vmray',
   FORTINET: 'FortiNet',
   VIRUSTOTAL: 'VirusTotal',
-  IBMXFORCE: 'IBM X-Force'
+  IBMXFORCE: 'IBM X-Force',
+  GOOGLESAFEBROWSER: 'GoogleSafeBrowser',
+  SPAMHOUSE: 'SpamHouse',
+  CUSTOMINTEGRATION: 'Custom Integration'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
-  IBMXFORCE: 'IBM X-Force'
+  IBMXFORCE: 'IBM X-Force',
+  CUSTOMINTEGRATION: 'Custom Integration',
+  SPAMHOUSE: 'SPAMHOUSE',
+  GOOGLESAFEBROWSER: ' Google Safe Browser'
 }
 
 export const PHISHING_REPORTER_FILTERABLE_ITEMS = [

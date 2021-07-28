@@ -182,7 +182,26 @@
           title="SAML Configuration For Your Identity Provider"
           sub-title="Share information below with your identity provider"
         >
+          <form-group-horizontal-content class="mt-2 align-baseline" :label="'Download Metadata'">
+            <div class="download">
+              <v-btn
+                outlined
+                rounded
+                color="#2196F3"
+                class="btn-domain-add ml-10"
+                @click="downloadMetadata"
+              >
+                <v-icon left>mdi-download</v-icon>
+                DOWNLOAD METADATA</v-btn
+              >
+            </div>
+          </form-group-horizontal-content>
         </form-group>
+        <div class="mt-2" style="display: flex; align-items: center; max-width: 648px;">
+          <v-divider />
+          <span style="font-size: 14px; color: #383b41; margin: 0 16px;"> or</span>
+          <v-divider />
+        </div>
         <div class="saml-settings-disabled-area">
           <form-group-horizontal-content class="mt-2" :label="labels.IdPEntityID">
             <input-with-copy-to-clipboard copyKey="entityID" @on-copy="handleCopyToClipboard">
@@ -314,6 +333,7 @@ import * as Validations from '@/utils/validations'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
 import {
   createSamlSetting,
+  exportSamlSettings,
   getDefaultSamlSettings,
   getSamlSetting,
   parseMetadata,
@@ -327,6 +347,7 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import { mapGetters } from 'vuex'
 import { getSystemUsersRole } from '@/api/systemUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import { downloadExportedFile } from '@/utils/helperFunctions'
 export default {
   name: 'NewSamlSettings',
   components: {
@@ -420,6 +441,57 @@ export default {
     this.callForGetDefaultSettings()
   },
   methods: {
+    downloadMetadata() {
+      let payload = {
+        pageNumber: 1,
+        pageSize: 5000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        reportAllPages: true,
+        exportType: 'XML',
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'Status',
+                  Operator: 'Include',
+                  Value: '0,1'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'Name',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'Status',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
+      }
+      exportSamlSettings(payload).then((response) => {
+        const { data } = response
+        downloadExportedFile(data, 'SAML Settings', 'XML')
+      })
+    },
     callForSamlSetting() {
       getSamlSetting(this.selectedRow.resourceId).then((response) => {
         const {

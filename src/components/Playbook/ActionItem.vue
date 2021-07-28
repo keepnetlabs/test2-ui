@@ -1112,7 +1112,7 @@ export default {
                 {
                   FieldName: 'categoryResourceId',
                   Operator: 'Include',
-                  Value: 'SMnpwDBjAFN9'
+                  Value: ''
                 }
               ],
               FilterGroups: []
