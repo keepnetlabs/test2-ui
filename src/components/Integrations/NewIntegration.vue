@@ -121,7 +121,42 @@
               @input="handleApiKeyChange"
             ></v-text-field>
           </form-group>
-          <v-list-item class="px-0" v-if="isVmrayOrVirusTotal || isIbmXForce">
+          <form-group :title="labels.ClientId" has-hint v-if="isCustomIntegration">
+            <div class="copy-to-clipboard__container">
+              <v-text-field
+                :placeholder="labels.GeneratedClientId"
+                id="input--integration-client-id"
+                outlined
+                dense
+                hint="*Required"
+                persistent-hint
+                class="auth-key__textfield"
+                v-model.trim="formValues.clientId"
+                required
+                :rules="[nameValidation.required, nameValidation.empty]"
+              ></v-text-field>
+            </div>
+          </form-group>
+          <form-group :title="labels.ClientSecret" has-hint v-if="isCustomIntegration">
+            <div class="copy-to-clipboard__container">
+              <v-text-field
+                v-model.trim="formValues.clientSecret"
+                id="input--integration-client-secret"
+                :placeholder="labels.GeneratedClientSecret"
+                outlined
+                dense
+                hint="*Required"
+                persistent-hint
+                class="auth-key__textfield"
+                required
+                :rules="[nameValidation.required, nameValidation.empty]"
+              ></v-text-field>
+            </div>
+          </form-group>
+          <v-list-item
+            class="px-0"
+            v-if="isVmrayOrVirusTotal || isIbmXForce || isGoogleSafeBrowser"
+          >
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 API Key
@@ -434,6 +469,18 @@
               </div>
             </v-list-item-content>
           </v-list-item>
+          <form-group title="Sender Ip" class-name="mt-4">
+            <div>
+              <v-checkbox
+                v-model="formValues.isSendIp"
+                id="input--integration-is-send-ip"
+                label="Scan sender IP address"
+                color="#2196f3"
+                style="margin-top: 2px;"
+                :disabled="!selectedIntegrationType.isSendIp && !isCustomIntegration"
+              ></v-checkbox>
+            </div>
+          </form-group>
           <v-list-item class="px-0 mt-6 mb-6">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -451,16 +498,6 @@
                 label="Scan file hashes"
                 :disabled="!selectedIntegrationType.isSendFileHash"
               ></v-checkbox>
-              <div>
-                <v-checkbox
-                  v-model="formValues.isSendIp"
-                  id="input--integration-is-send-ip"
-                  label="Scan sender IP address"
-                  color="#2196f3"
-                  style="margin-top: 2px;"
-                  :disabled="!selectedIntegrationType.isSendIp"
-                ></v-checkbox>
-              </div>
               <div>
                 <v-checkbox
                   v-model="formValues.isUploadExecutableFile"
@@ -629,7 +666,9 @@ export default {
         isHideUrlParameter: false,
         uploadFileTypes: [],
         name: null,
-        apiUrl: null
+        apiUrl: null,
+        clientId: null,
+        clientSecret: null
       },
       selectedIntegrationType: {
         isSendUrl: false,
@@ -688,6 +727,15 @@ export default {
     isIbmXForce() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE
     },
+    isCustomIntegration() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION
+    },
+    isGoogleSafeBrowser() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.GOOGLESAFEBROWSER
+    },
+    isSpamHouse() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.SPAMHOUSE
+    },
     isFortiNetConnectionDisabled() {
       const { userName, password, apiUrl } = this.formValues
       return !(userName && password && apiUrl)
@@ -723,6 +771,15 @@ export default {
           break
         case INTEGRATION_TYPES.IBMXFORCE:
           label = INTEGRATION_LABELS.IBMXFORCE
+          break
+        case INTEGRATION_TYPES.SPAMHOUSE:
+          label = INTEGRATION_LABELS.SPAMHOUSE
+          break
+        case INTEGRATION_TYPES.CUSTOMINTEGRATION:
+          label = INTEGRATION_LABELS.CUSTOMINTEGRATION
+          break
+        case INTEGRATION_TYPES.GOOGLESAFEBROWSER:
+          label = INTEGRATION_LABELS.GOOGLESAFEBROWSER
           break
         default:
           return
@@ -839,7 +896,8 @@ export default {
       const isValidForm = refForm.validate()
       if (isValidForm) {
         this.saveDisable = true
-        this.testConnection(true)
+        //this.testConnection(true)
+        this.saveIntegration()
       } else {
         return this.$nextTick(() => {
           const el = refForm.$el.querySelector('.error--text')
@@ -855,7 +913,10 @@ export default {
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
-          INTEGRATION_TYPES.IBMXFORCE
+          INTEGRATION_TYPES.IBMXFORCE,
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.SPAMHOUSE,
+          INTEGRATION_TYPES.CUSTOMINTEGRATION
         ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
@@ -926,7 +987,10 @@ export default {
           [
             INTEGRATION_TYPES.VIRUSTOTAL,
             INTEGRATION_TYPES.VMRAY,
-            INTEGRATION_TYPES.IBMXFORCE
+            INTEGRATION_TYPES.IBMXFORCE,
+            INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+            INTEGRATION_TYPES.SPAMHOUSE,
+            INTEGRATION_TYPES.CUSTOMINTEGRATION
           ].includes(this.selectedIntegrationType.name)
         ) {
           response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
@@ -999,7 +1063,10 @@ export default {
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
-          INTEGRATION_TYPES.IBMXFORCE
+          INTEGRATION_TYPES.IBMXFORCE,
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.SPAMHOUSE,
+          INTEGRATION_TYPES.CUSTOMINTEGRATION
         ].includes(this.selectedIntegrationType.name)
       ) {
         for (let i = 0; i < this.formValues.apiKeys.length; i++) {
@@ -1086,6 +1153,13 @@ export default {
           this.formValues.userName = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
+      } else if (name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
+        if (this.formValues.apiUrl) {
+          this.formValues.apiUrl = ''
+          this.formValues.clientId = ''
+          this.formValues.clientSecret = ''
+          this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
+        }
       } else {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''
@@ -1132,6 +1206,9 @@ export default {
 }
 
 .new-integration {
+  .menuable__content__active.k-select__menu {
+    z-index: 99999999 !important;
+  }
   .edit-select {
     .v-input__append-inner {
       display: none;
