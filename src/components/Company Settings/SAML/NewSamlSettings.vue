@@ -442,55 +442,12 @@ export default {
   },
   methods: {
     downloadMetadata() {
-      let payload = {
-        pageNumber: 1,
-        pageSize: 5000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        reportAllPages: true,
-        exportType: 'XML',
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  FieldName: 'Status',
-                  Operator: 'Include',
-                  Value: '0,1'
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  FieldName: 'Name',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'Status',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  FieldName: 'CreateTime',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      exportSamlSettings(payload).then((response) => {
-        const { data } = response
-        downloadExportedFile(data, 'SAML Settings', 'XML')
-      })
+      window
+        .open(
+          `${APP_CONFIG.VUE_APP_APP_API_TEST}/companies/saml-settings/download-metadata`,
+          '_blank'
+        )
+        .focus()
     },
     callForSamlSetting() {
       getSamlSetting(this.selectedRow.resourceId).then((response) => {
