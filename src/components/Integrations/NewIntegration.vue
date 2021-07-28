@@ -131,7 +131,7 @@
                 hint="*Required"
                 persistent-hint
                 class="auth-key__textfield"
-                v-model.trim="formValues.clientId"
+                v-model.trim="formValues.apiKey"
                 required
                 :rules="[nameValidation.required, nameValidation.empty]"
               ></v-text-field>
@@ -140,7 +140,7 @@
           <form-group :title="labels.ClientSecret" has-hint v-if="isCustomIntegration">
             <div class="copy-to-clipboard__container">
               <v-text-field
-                v-model.trim="formValues.clientSecret"
+                v-model.trim="formValues.password"
                 id="input--integration-client-secret"
                 :placeholder="labels.GeneratedClientSecret"
                 outlined
@@ -667,8 +667,7 @@ export default {
         uploadFileTypes: [],
         name: null,
         apiUrl: null,
-        clientId: null,
-        clientSecret: null
+        apiKey: null
       },
       selectedIntegrationType: {
         isSendUrl: false,
@@ -835,6 +834,14 @@ export default {
             resourceId: this.formValues.resourceId
           }
         ]
+      } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
+        data.apiCredentials = [
+          {
+            apiKey: this.formValues.apiKey,
+            password: this.formValues.password,
+            resourceId: this.formValues.resourceId
+          }
+        ]
       }
 
       delete data.apiKeys
@@ -989,8 +996,7 @@ export default {
             INTEGRATION_TYPES.VMRAY,
             INTEGRATION_TYPES.IBMXFORCE,
             INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-            INTEGRATION_TYPES.SPAMHOUSE,
-            INTEGRATION_TYPES.CUSTOMINTEGRATION
+            INTEGRATION_TYPES.SPAMHOUSE
           ].includes(this.selectedIntegrationType.name)
         ) {
           response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
@@ -1002,6 +1008,11 @@ export default {
         } else if (this.selectedIntegrationType.name === 'FortiNet') {
           const { userName, password, resourceId } = response['data'].data['apiCredentials'][0]
           response.data.data.userName = userName
+          response.data.data.password = password
+          response.data.data.resourceId = resourceId
+        } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
+          const { apiKey, password, resourceId } = response['data'].data['apiCredentials'][0]
+          response.data.data.apiKey = apiKey
           response.data.data.password = password
           response.data.data.resourceId = resourceId
         }
@@ -1156,8 +1167,8 @@ export default {
       } else if (name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''
-          this.formValues.clientId = ''
-          this.formValues.clientSecret = ''
+          this.formValues.apiKey = ''
+          this.formValues.password = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
       } else {
