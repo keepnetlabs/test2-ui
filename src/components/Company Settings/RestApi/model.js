@@ -7,6 +7,7 @@ class RestApiModel {
     this.statusId = 1
     this.hasIpAddressRestriction = false
     this.allowedIpAddresses = [{ value: '', name: '' }]
+    this.roleResourceIdList = []
   }
 }
 
