@@ -92,6 +92,12 @@ export function getBtnStatusColor(type) {
       return '#757575'
     case 'not running':
       return '#f56c6c'
+    case 'easy':
+      return 'rgba(33, 113, 36, 1)'
+    case 'medium':
+      return 'rgba(17, 115, 193, 1)'
+    case 'hard':
+      return 'rgba(184, 58, 58, 1)'
     default:
       return '#00bcd4'
   }
@@ -195,6 +201,12 @@ export function getDataTableFieldLabel(field = '') {
       return 'Waiting Response'
     case 'unknown':
       return 'N/A'
+    case 'Easy':
+      return 'Easy'
+    case 'Medium':
+      return 'Medium'
+    case 'Hard':
+      return 'Hard'
     default:
       return defField
   }
