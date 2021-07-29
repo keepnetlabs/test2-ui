@@ -129,8 +129,8 @@
                         'filter-options__icon',
                         {
                           'filter-options--active-filter':
-                            companyValue.length ||
-                            analysisEngineTypeResourceId.length ||
+                            (companyValue && companyValue.length) ||
+                            (analysisEngineTypeResourceId && analysisEngineTypeResourceId.length) ||
                             (filteredDateValueSelect && filteredDateValueSelect.value)
                         }
                       ]"
@@ -141,8 +141,8 @@
                         'filter-options__text',
                         {
                           'filter-options--active':
-                            companyValue.length ||
-                            analysisEngineTypeResourceId.length ||
+                            (companyValue && companyValue.length) ||
+                            (analysisEngineTypeResourceId && analysisEngineTypeResourceId.length) ||
                             (filteredDateValueSelect && filteredDateValueSelect.value)
                         }
                       ]"
