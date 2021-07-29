@@ -607,6 +607,28 @@ export default {
     padding: 24px !important;
   }
 }
+.new-email-template__footer-btn-cancel {
+  color: #ff5252 !important;
+  border: 1px solid #ff5252 !important;
+  box-shadow: none !important;
+  caret-color: #ff5252 !important;
+  font-weight: 600 !important;
+}
+.new-email-template__footer-btn-back {
+  color: #00bcd4 !important;
+  border: 1px solid #00bcd4 !important;
+  caret-color: #00bcd4 !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+.new-email-template__footer-btn-next {
+  background-color: rgb(33, 150, 243) !important;
+  border-color: rgb(33, 150, 243) !important;
+  caret-color: #00bcd4 !important;
+  font-weight: 600 !important;
+
+  color: white !important;
+}
 .new-email-template {
   &__overlay {
     .v-overlay__content {
