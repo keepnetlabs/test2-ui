@@ -1988,6 +1988,7 @@ export default {
      */
     handleDownloadButtonClick(item = '') {
       this.$emit('handleDownloadButtonClick')
+      this.isShowDownloadModal = true
       this.downloadModalTitle = item
       this.changeDownloadModalStatus(true)
     },
