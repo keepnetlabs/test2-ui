@@ -256,7 +256,7 @@ export default {
             label: labels.DIFFICULTY,
             sortable: true,
             show: true,
-            type: 'text',
+            type: 'status',
             filterableType: 'select',
             filterableItems: [
               { text: 'Easy', value: 'mT0CeYGgKsVb' },
