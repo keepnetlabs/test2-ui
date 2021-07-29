@@ -157,6 +157,13 @@
                 :rules="[nameValidation.required, nameValidation.empty]"
               ></v-text-field>
             </div>
+            <div
+              v-if="customIntegrationTestLoadingStatus === 'failed'"
+              class="connection-error-state"
+              style="top: 73px;"
+            >
+              <span> {{ customIntegrationTestLoadingStatusMessage }}</span>
+            </div>
           </form-group>
           <v-list-item
             class="px-0"
@@ -716,6 +723,7 @@ export default {
     return {
       customIntegrationTestLoading: false,
       customIntegrationTestLoadingStatus: null,
+      customIntegrationTestLoadingStatusMessage: null,
       saveDisable: false,
       showPassword: false,
       errorMessageOfApiKey: '',
@@ -1220,6 +1228,7 @@ export default {
         this.customIntegrationTestLoading = true
         this.customIntegrationTestLoadingStatus = 'loading'
         this.loadingState.push('loading')
+        this.customIntegrationTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
           .then((response) => {
             this.saveDisable = false
@@ -1228,6 +1237,8 @@ export default {
           .catch((error) => {
             this.saveDisable = false
             this.customIntegrationTestLoadingStatus = 'failed'
+            this.customIntegrationTestLoadingStatusMessage =
+              error.response.data.message || error.response.data.Message
           })
           .finally(() => {
             this.loadingState.shift('loading')
