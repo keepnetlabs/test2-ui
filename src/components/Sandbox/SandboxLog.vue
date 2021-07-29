@@ -190,7 +190,7 @@ export default {
       bodyData: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'Status',
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
           Condition: 'AND',
@@ -283,7 +283,7 @@ export default {
       defaultRequestBody: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'Status',
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
           Condition: 'AND',
@@ -385,7 +385,7 @@ export default {
       this.bodyData = {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'Status',
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
           Condition: 'AND',
