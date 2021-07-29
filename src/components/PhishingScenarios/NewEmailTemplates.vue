@@ -1,5 +1,15 @@
 <template>
-  <app-modal :status="status" icon-name="mdi-file" title="New Email Template">
+  <app-modal
+    :status="status"
+    icon-name="mdi-file"
+    :title="
+      !isEdit
+        ? 'New Email Template'
+        : isDuplicate
+        ? 'Duplicate Email Template'
+        : 'Edit Email Template'
+    "
+  >
     <template v-slot:overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -340,6 +350,10 @@ export default {
     isEdit: {
       type: Boolean
     },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
     emailTemplateId: {
       type: String
     }
@@ -385,7 +399,7 @@ export default {
             ? getAvailableForValues(this.nonEditableAvailableForRequests)
             : null
         }
-        if (this.isEdit) {
+        if (this.isEdit && !this.isDuplicate) {
           updatePhishingEmailTemplate(payload, this.emailTemplateId).then((response) => {
             this.$emit('changeNewEmailTemplateModalStatus', false, true)
           })
@@ -565,6 +579,7 @@ export default {
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = response.data.data
+        this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             response.data.data.availableForList

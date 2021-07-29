@@ -127,11 +127,25 @@
                     <v-icon
                       :class="[
                         'filter-options__icon',
-                        { 'filter-options--active-filter': isActive }
+                        {
+                          'filter-options--active-filter':
+                            companyValue.length ||
+                            analysisEngineTypeResourceId.length ||
+                            (filteredDateValueSelect && filteredDateValueSelect.value)
+                        }
                       ]"
                       >mdi-filter-variant</v-icon
                     >
-                    <span :class="['filter-options__text', { 'filter-options--active': isActive }]"
+                    <span
+                      :class="[
+                        'filter-options__text',
+                        {
+                          'filter-options--active':
+                            companyValue.length ||
+                            analysisEngineTypeResourceId.length ||
+                            (filteredDateValueSelect && filteredDateValueSelect.value)
+                        }
+                      ]"
                       >Filtering Options</span
                     >
                   </div>

@@ -12,6 +12,7 @@
         :status="modalStatus"
         :emailTemplateId="emailTemplateId"
         :isEdit="isEdit"
+        :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
         @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       />
@@ -128,7 +129,7 @@
               }-0-${Math.random().toString().substring(2)}`"
               class="sub-menu-el"
               :disabled="tableOptions.rowActions[1].disabled"
-              @click="handleEdit(scope.row)"
+              @click="handleEdit(scope.row, false)"
             >
               <v-list-item-title @click="() => {}">
                 <v-icon class="pr-3">{{ 'mdi-pencil' }}</v-icon>
@@ -142,7 +143,7 @@
               class="sub-menu-el"
               :disabled="tableOptions.rowActions[2].disabled"
             >
-              <v-list-item-title @click="handleDuplicate(scope.row)">
+              <v-list-item-title @click="handleEdit(scope.row, true)">
                 <v-icon class="pr-3">mdi-content-copy</v-icon>
                 <span>Duplicate</span>
               </v-list-item-title>
@@ -205,6 +206,7 @@ export default {
       editableFormValues: {},
       loading: true,
       isEdit: false,
+      isDuplicate: false,
       emailTemplateId: null,
       labels,
       showAllRecords: false,
@@ -564,10 +566,11 @@ export default {
         })
         .catch((error) => {})
     },
-    handleEdit(row) {
+    handleEdit(row, isDuplicate) {
       this.editableFormValues = row
       this.modalStatus = true
       this.isEdit = true
+      this.isDuplicate = isDuplicate
       this.emailTemplateId = row.resourceId
     },
     handleDisable(row) {
@@ -585,10 +588,12 @@ export default {
       this.modalStatus = status
       this.emailTemplateId = null
       this.isEdit = false
+      this.isDuplicate = false
       if (restart) {
         this.editableFormValues = {}
         this.emailTemplateId = null
         this.isEdit = false
+        this.isDuplicate = false
         this.getDatatableList()
       }
     },
