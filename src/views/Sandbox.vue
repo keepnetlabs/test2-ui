@@ -538,7 +538,27 @@ export default {
           this.setFilterOptions()
           break
         case 'Restore default filter':
-          this.setFilterOptions()
+          if (localStorage.getItem('sandboxCompany'))
+            this.companyValue = localStorage.getItem('sandboxCompany').split(',') || ''
+          if (localStorage.getItem('sandboxIntegration'))
+            this.analysisEngineTypeResourceId =
+              localStorage.getItem('sandboxIntegration').split(',') || ''
+          //this.filteredDateValueSelect = localStorage.getItem('sandboxDate') //select
+          if (localStorage.getItem('sandboxDateValue'))
+            this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
+          if (localStorage.getItem('sandboxDateValue'))
+            this.filteredDateValueSelect = {
+              name: localStorage.getItem('sandboxDateOption'),
+              value: 'custom'
+            }
+          let dateValue = localStorage.getItem('sandboxDateOption')
+          //localStorage.setItem('sandboxFilteredSelectValueDate', this.filteredSelectValueDate) //between
+          if (this.filteredSelectValueDate === 'between') {
+            this.filteredDateValueRange = dateValue.split(',')
+          } else {
+            this.filteredDateValue = dateValue
+          }
+          this.handleFilter()
           break
         case 'Clear filters':
           localStorage.removeItem('sandboxCompany')
