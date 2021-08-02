@@ -2114,11 +2114,8 @@ export default {
         this.setRenderedColumns()
       } else {
         this.columns.forEach((col) => {
-          if (!renderedColumns.find((property) => property === col.property)) {
-            col.show = false
-          } else {
-            col.show = true
-          }
+          col.show = renderedColumns.find((property) => property === col.property)
+          this.renderedColumns = renderedColumns
         })
       }
     },
