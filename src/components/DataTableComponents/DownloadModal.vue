@@ -46,11 +46,12 @@
           >{{ labels.Cancel }}</v-btn
         >
         <v-btn
+          :key="downloadButtonKey"
           class="mr-n4 download-modal__button"
           @click="downloadEvent"
           color="#2196f3"
           text
-          :disabled="!downloadType.some((i) => i === true)"
+          :disabled="getDisabledStatusOfDelete"
           >DOWNLOAD</v-btn
         >
       </div>
@@ -83,7 +84,20 @@ export default {
   data() {
     return {
       labels,
-      downloadType: [false, false, false]
+      downloadType: [false, false, false],
+      downloadButtonKey: `button-key${Math.random().toString().substring(0, 5)}`
+    }
+  },
+  computed: {
+    getDisabledStatusOfDelete: {
+      get() {
+        return !this.downloadType.some((i) => i)
+      }
+    }
+  },
+  watch: {
+    downloadType() {
+      this.downloadButtonKey = `button-key${Math.random().toString().substring(0, 5)}`
     }
   },
   methods: {
