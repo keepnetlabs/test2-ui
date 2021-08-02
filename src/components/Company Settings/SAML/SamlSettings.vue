@@ -67,7 +67,7 @@
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import DataTable from '@/components/DataTable'
 import labels from '@/model/constants/labels'
-import { deleteSamlSettings, exportSamlSettings, searchSamlSettings } from '@/api/samlSettings'
+import { exportSamlSettings, searchSamlSettings } from '@/api/samlSettings'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -241,6 +241,7 @@ export default {
         .finally(() => (this.loading = false))
     },
     columnFilterChanged(filter = {}) {
+      this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
@@ -282,7 +283,11 @@ export default {
         )
         return column.filterableType
       })
-      filterItems[1].FieldName = 'Status'
+      filterItems.forEach((filter) => {
+        if (filter.FieldName === 'StatusName') {
+          filter.FieldName = 'Status'
+        }
+      })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive

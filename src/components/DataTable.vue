@@ -672,7 +672,7 @@
                         :id="`${rowActions[ind].id}-${
                           scope.$index
                         }-${ind}-${Math.random().toString().substring(2)}`"
-                        class="sub-menu-el"
+                        class="sub-menu-el datatable-row-action-list"
                       >
                         <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
                           <v-icon class="pr-3">{{ act.icon }}</v-icon>
@@ -2114,11 +2114,8 @@ export default {
         this.setRenderedColumns()
       } else {
         this.columns.forEach((col) => {
-          if (!renderedColumns.find((property) => property === col.property)) {
-            col.show = false
-          } else {
-            col.show = true
-          }
+          col.show = renderedColumns.find((property) => property === col.property)
+          this.renderedColumns = renderedColumns
         })
       }
     },
@@ -3000,6 +2997,17 @@ export default {
 </script>
 
 <style lang="scss">
+.datatable-row-action-list {
+  padding: 0 !important;
+  line-height: inherit !important;
+  min-height: 24px !important;
+  .v-list-item__title {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+  }
+}
 .dataTableText-validation-error {
   font-size: 9px;
   font-weight: normal;
