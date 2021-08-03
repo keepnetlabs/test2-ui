@@ -43,7 +43,7 @@
           </div>
           <div style="position: relative;" v-click-outside="handleSearchCompanyFocusOut">
             <v-text-field
-              v-model="searchedCompanyText"
+              v-model.trim="searchedCompanyText"
               id="input--switch-account-search-company"
               outlined
               hide-details
@@ -372,8 +372,7 @@ export default {
     isSwitchDialogOpen(newVal, oldVal) {
       if (newVal) {
       }
-    },
-    searchedCompanyText(val) {}
+    }
   }
 }
 </script>
