@@ -910,7 +910,7 @@ export default {
           emailDateRangeType: 'ThreeDays'
         }
       }
-      //this.checkMarkAsAndStatusDisability()
+      this.checkMarkAsAndAnalyzeDisability()
       this.$forceUpdate()
     },
     addAction(actionVal = null) {
@@ -963,11 +963,11 @@ export default {
 
       const length = this.actions.length
       this.actionsValues[length - 1] = nextAvailableAction
-      //this.checkMarkAsAndStatusDisability()
+      this.checkMarkAsAndAnalyzeDisability()
       this.$forceUpdate()
       return this.actions.length
     },
-    checkMarkAsAndStatusDisability() {
+    checkMarkAsAndAnalyzeDisability() {
       const checkFindedItem = (type) => this.actionsValues.find((item) => item.val === type)
       const setDisabledValue = (value1, value2, index) => {
         if (value1 && !value2) {
@@ -975,12 +975,12 @@ export default {
         }
       }
       const markAs = checkFindedItem('markAs')
-      const status = checkFindedItem('status')
+      const status = checkFindedItem('analyze')
       if (!markAs && !status) {
         this.act.actionTypes[0].disabled = false
-        this.act.actionTypes[4].disabled = false
+        this.act.actionTypes[1].disabled = false
       } else {
-        setDisabledValue(markAs, status, 4)
+        setDisabledValue(markAs, status, 1)
         setDisabledValue(status, markAs, 0)
       }
     },
@@ -1067,7 +1067,7 @@ export default {
         this.actions.splice(newIndex, 1)
         this.actionsValues.splice(index, 1)
       }
-      //this.checkMarkAsAndStatusDisability()
+      this.checkMarkAsAndAnalyzeDisability()
     },
     updateAnalysisEngines() {
       if (this.analysisEngines.length > 0 && this.editedPlaybookActionAnalyzers) {
