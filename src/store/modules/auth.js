@@ -11,7 +11,8 @@ const auth = {
     companyName: '',
     userRoleName: '',
     logoUrl: '',
-    selectedCompanyName: ''
+    selectedCompanyName: '',
+    selectedCompanyId: ''
   },
   getters: {
     userGetter: (state) => state.user
@@ -22,6 +23,7 @@ const auth = {
         let data = payload.currentUserData
         state.user = data
         state.companyName = data.userCompany.name
+        state.selectedCompanyId = data.userCompany.id
         state.selectedCompanyName =
           localStorage.getItem('selectedCompanyName') ||
           localStorage.getItem('companyName') ||

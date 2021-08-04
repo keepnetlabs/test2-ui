@@ -1374,8 +1374,12 @@ export default {
     this.baseUrl = `${window.location.origin}`
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
-        //this.getMenus()
         this.getCurrentUser() //@iceman login
+        //adding resourceId to fullstory
+        if (this.$FullStory) {
+          this.$FullStory.identify(this.$store.state['auth'].user.id)
+          this.$FullStory.setUserVars({ companyId: this.$store.state['auth'].selectedCompanyId })
+        }
         this.$store.dispatch('whitelabel/callForData')
         this.$store.dispatch('whitelabel/callForSystemVersion')
         this.callForLicenseCheck()

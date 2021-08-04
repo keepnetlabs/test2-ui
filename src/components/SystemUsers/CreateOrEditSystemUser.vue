@@ -264,10 +264,11 @@ export default {
             resourceId: item.resourceId
           }
         })
+
         this.formValues.roleResourceIdList =
           availableRoles &&
           availableRoles.length &&
-          availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
+          availableRoles.find((role) => role.name === 'Company Admin').resourceId
       }
     })
   }
