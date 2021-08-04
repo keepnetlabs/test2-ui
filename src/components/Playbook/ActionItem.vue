@@ -880,6 +880,9 @@ export default {
         this.targetUserType[index] = null
         this.tarUsers[index] = null
       }
+      if (oldValue.val === 'markAs' && value.val === 'analyze') {
+        this.playbookAction.markType = ''
+      }
 
       if (value.val === 'status') {
         this.playbookActionStatus.actionStatusType = 'Open'
@@ -1204,13 +1207,12 @@ export default {
     editedActions(val) {
       this.playbookAction = val
       if (val.markType && val.markType !== 'Unknown') {
-        this.addAction()
+        this.addAction('markAs')
       }
       if (val.tags.length > 0) {
         this.addAction('tag')
       }
     },
-
     editedNotifications(val) {
       val.map((item) => {
         this.addAction('notify')
