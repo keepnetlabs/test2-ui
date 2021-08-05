@@ -688,7 +688,6 @@ export default {
               scanType: this.scanTypesEnum.find((item) => item.value === resultItem.scanType).name
             }
           })
-          console.log(this.tableData)
           this.tableData = results
           this.totalNumberOfRecords = totalNumberOfRecords
 

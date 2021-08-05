@@ -12,11 +12,10 @@
         'make-available-for',
         { 'k-treeselect--error': !isAvailableForValid }
       ]"
-      :style="isInfiniteLoading && { pointerEvents: 'none' }"
       :value="value"
-      :loading="true"
       :options="treeSelectOptions"
       :disabled="disabled"
+      :load-options="loadOptions"
       @close="validateAvailableFor"
       @open="handleMenuOpen"
       @input="handleInputChange"
@@ -56,7 +55,7 @@
 </template>
 
 <script>
-import Treeselect from '@riophae/vue-treeselect'
+import Treeselect, { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { searchAvailableFor } from '@/api/smtpSettings'
 import labels from '@/model/constants/labels'
@@ -92,37 +91,16 @@ export default {
         orderBy: 'CreateTime',
         ascending: false
       },
-      treeSelectOptions: [
-        {
-          id: 'MyCompanyOnly',
-          label: 'My company only',
-          type: 'MyCompanyOnly',
-          resourceId: null
-        },
-        {
-          id: 'AllCompanies',
-          label: 'All companies',
-          type: 'AllCompanies',
-          resourceId: null
-        },
-        {
-          id: 'Group',
-          label: 'Company Groups',
-          children: []
-        },
-        {
-          id: 'Company',
-          label: 'Companies',
-          children: []
-        }
-      ],
+      treeSelectOptions: null,
       treeSelectionStatus: false
     }
   },
-  created() {
-    this.callForSearchAvailableFor()
-  },
   methods: {
+    loadOptions({ action, callback }) {
+      this.callForSearchAvailableFor().then((d) => {
+        callback()
+      })
+    },
     handleMenuOpen() {
       this.$nextTick(() => {
         this.menuElement = document
@@ -143,8 +121,33 @@ export default {
       })
     },
     callForSearchAvailableFor() {
-      searchAvailableFor(this.searchAvailableForPayload)
+      return searchAvailableFor(this.searchAvailableForPayload)
         .then((response) => {
+          debugger
+          this.treeSelectOptions = [
+            {
+              id: 'MyCompanyOnly',
+              label: 'My company only',
+              type: 'MyCompanyOnly',
+              resourceId: null
+            },
+            {
+              id: 'AllCompanies',
+              label: 'All companies',
+              type: 'AllCompanies',
+              resourceId: null
+            },
+            {
+              id: 'Group',
+              label: 'Company Groups',
+              children: []
+            },
+            {
+              id: 'Company',
+              label: 'Companies',
+              children: []
+            }
+          ]
           const { data: { data = {} } = {} } = response
           const { companies = {}, groups = {} } = data
           if (this.apiCount === 0) {

@@ -1087,7 +1087,7 @@ describe('Datatable test cases suite', () => {
     await extendedView
       .find('.edit-popup__edit-actions #btn-edit--extended-view')
       .trigger(CONSTANTS.EVENT_TYPES.CLICK)
-    console.log(extendedView.html())
+
     //checking result has select
     const resultContainer = extendedView.find('#container--extended-view-item-Result-4')
     //checking has input
