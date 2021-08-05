@@ -151,7 +151,11 @@
                   >Define criteria for the investigation. Emails that match any of the criteria will
                   be found</label
                 >
-                <div class="filter-item" v-for="(list, index) in filterList" :key="index">
+                <div
+                  class="filter-item"
+                  v-for="(list, index) in filterList"
+                  :key="list.opton + index"
+                >
                   <div class="filter-item__selectbox">
                     <Treeselect
                       v-model="list.option"
