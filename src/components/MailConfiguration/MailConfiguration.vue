@@ -1215,8 +1215,10 @@ export default {
             applicationId: apiData.applicationId,
             applicationSecret: apiData.applicationSecret,
             directoryId: apiData.directoryId,
-            email: apiData.email
+            email: apiData.email,
+            resourceId: selectedRow.resourceId
           }
+          this.editData = this.formValues
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
