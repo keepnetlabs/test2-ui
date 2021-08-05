@@ -336,9 +336,6 @@ export default {
     }
   },
   watch: {
-    filteredDateRangeValue(newVal) {
-      //console.log(newVal)
-    },
     menu(newVal) {
       if (newVal) {
         this.$emit('update:isSettingsOpened', false)
