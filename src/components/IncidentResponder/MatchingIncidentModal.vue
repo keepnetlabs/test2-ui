@@ -35,6 +35,7 @@
               :empty="empty"
               :server-side-props="serverSideProps"
               :server-side-events="{ pagination: true, search: true, sort: true }"
+              :download-button="{ show: false }"
               @refreshAction="callForMatchingIncident"
               @columnFilterChanged="columnFilterChanged"
               @columnFilterCleared="columnFilterCleared"

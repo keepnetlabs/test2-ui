@@ -119,11 +119,53 @@ export default {
   methods: {
     callForRecentlyPostedThreats() {
       const payload = {
-        postedCompanyResourceId: localStorage.getItem('companyResourceId'),
+        postedCompanyResourceId: '',
         pageNumber: 1,
         pageSize: 5,
         orderBy: 'PostedTime',
-        ascending: false
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  Value: '',
+                  FieldName: 'Title',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Description',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'DiscoveryAndDetection',
+                  Operator: 'Contains'
+                },
+                {
+                  Value: '',
+                  FieldName: 'Scope',
+                  Operator: 'Contains'
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'CategoryResourceId',
+                  Operator: 'Include',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       }
       getIncidentList(payload)
         .then((response) => {

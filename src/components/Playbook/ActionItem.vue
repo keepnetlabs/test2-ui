@@ -141,6 +141,7 @@
             item-text="name"
             item-value="val"
             @input="setAvailableItems($event, actionsValues[index], index)"
+            @click="handleActionSelectClick(actionsValues[index])"
           />
         </v-col>
         <v-col v-if="actionsValues[index].val === 'markAs'" md="2">
@@ -564,6 +565,10 @@ export default {
     }
   },
   methods: {
+    handleActionSelectClick({ val }) {
+      if (val === 'markAs') this.act.actionTypes[1].disabled = false
+      else if (val === 'analyze') this.act.actionTypes[0].disabled = false
+    },
     getDynamicCheckboxProps(engine = {}, index = 0, type = '') {
       const props = {}
       switch (type) {
@@ -917,6 +922,7 @@ export default {
       this.$forceUpdate()
     },
     addAction(actionVal = null) {
+      this.checkMarkAsAndAnalyzeDisability()
       let nextAvailableAction
       if (actionVal) {
         nextAvailableAction = this.act.actionTypes.find((item) => item.val === actionVal)
