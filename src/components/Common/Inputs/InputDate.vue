@@ -31,13 +31,13 @@ export default {
       default: 'date'
     },
     defaultTime: {
-      default: () => ['12:00:00']
+      default: () => ['00:00:00']
     }
   },
   created() {
     this.format = getTimeZone() || 'yyyy/MM/dd HH:mm'
     this.valueFormat = getTimeZone() || `yyyy/MM/dd HH:mm`
-    if (this._props.type === 'datetimerange') this.defaultTime = ['12:00:00', '23:59:00']
+    if (this._props.type === 'datetimerange') this.defaultTime = ['00:00:00', '23:59:00']
   }
 }
 </script>
