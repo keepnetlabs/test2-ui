@@ -768,7 +768,8 @@ export default {
                 ]
                 break
               case 'date':
-                filterableProps['filterableType'] = 'date'
+                filterableProps['filterableType'] = 'dateOnly'
+                filterableProps['type'] = 'date'
                 break
               case 'datetime':
                 filterableProps['filterableType'] = 'date'

@@ -83,7 +83,19 @@
               v-bind="getDatePickerProps(item)"
               :format="getTimeZone() || 'yyyy/MM/dd HH:mm'"
               :valueFormat="getTimeZone() || `yyyy/MM/dd HH:mm`"
-              :type="item.fieldDataType === 'DateTime' ? 'datetime' : 'date'"
+              :type="'datetime'"
+              v-if="item.fieldDataType === 'DateTime'"
+            />
+            <InputDate
+              v-model.trim="customFieldsModels[item.resourceId]"
+              :id="`input--target-user-custom-field-${item.name}`"
+              popper-class="filter__date-picker"
+              :key="item.name"
+              v-bind="getDatePickerProps(item)"
+              :format="getTimeZone(true) || 'yyyy/MM/dd'"
+              :valueFormat="getTimeValueFormatZone(true) || `yyyy/MM/dd`"
+              :type="'date'"
+              v-if="item.fieldDataType === 'Date'"
             />
             <template v-if="item.isRequired">
               <div class="v-text-field__details checkbox-error" v-if="validatePicker(item)">
@@ -178,7 +190,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
-import { getTimeZone } from '@/utils/functions'
+import { getTimeZone, getTimeValueFormatZone } from '@/utils/functions'
 export default {
   name: 'AddUserModal',
   components: {
@@ -252,8 +264,11 @@ export default {
     }
   },
   methods: {
-    getTimeZone() {
-      return getTimeZone()
+    getTimeZone(isDate) {
+      return getTimeZone(isDate)
+    },
+    getTimeValueFormatZone(isDate) {
+      return getTimeValueFormatZone(isDate)
     },
     closeOverlay() {
       this.$emit('closeAddUserModal')
