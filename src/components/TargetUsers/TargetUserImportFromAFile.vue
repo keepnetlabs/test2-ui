@@ -969,6 +969,33 @@ export default {
           let customFields
           if (data.length) {
             customFields = data[0].customFields.map((item) => {
+              const filterableProps = {}
+              switch (item.dataType.toLowerCase()) {
+                case 'string':
+                  filterableProps['filterableType'] = 'text'
+                  break
+                case 'email':
+                  filterableProps['filterableType'] = 'text'
+                  break
+                case 'number':
+                  filterableProps['filterableType'] = 'text'
+                  break
+                case 'boolean':
+                  filterableProps['filterableType'] = 'select'
+                  filterableProps['filterableItems'] = [
+                    { text: 'Yes', value: 1 },
+                    { text: 'No', value: 0 }
+                  ]
+                  break
+                case 'date':
+                  filterableProps['filterableType'] = 'dateOnly'
+                  break
+                case 'datetime':
+                  filterableProps['filterableType'] = 'date'
+                  break
+                default:
+                  break
+              }
               let itemObj = {
                 property: item.name,
                 align: 'left',
@@ -984,9 +1011,8 @@ export default {
                 hideSort: true,
                 filterable: true,
                 customFieldName: item.name,
-                filterableType: 'text',
-                FilterableItems: 'Yes',
-                isCustom: true
+                isCustom: true,
+                ...filterableProps
               }
               return itemObj
             })

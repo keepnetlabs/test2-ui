@@ -471,6 +471,7 @@
             >
               <template slot-scope="scope">
                 <data-table-text :col="col" :scope="scope" v-if="col.type === 'text'" />
+                <data-table-date :col="col" :scope="scope" v-if="col.type === 'date'" />
                 <data-table-text-array :col="col" :scope="scope" v-if="col.type === 'textArray'" />
                 <data-table-colorful-text
                   :col="col"
@@ -948,6 +949,7 @@
 <script>
 import Vue from 'vue'
 import DataTableText from './DataTableComponents/DataTableText'
+import DataTableDate from './DataTableComponents/DataTableDate'
 import DataTableTextArray from './DataTableComponents/DataTableTextArray'
 import DataTableArray from './DataTableComponents/DataTableArray'
 import DataTableAttachment from './DataTableComponents/DataTableAttachment'
@@ -1005,7 +1007,8 @@ export default {
     DataTableSmallBadge,
     DatatableTextWithBadge,
     DatatableLoading,
-    DataTableTextArray
+    DataTableTextArray,
+    DataTableDate
   },
   directives: {
     'row-color-handler': RowColorHandler

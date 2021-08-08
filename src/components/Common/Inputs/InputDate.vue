@@ -29,9 +29,6 @@ export default {
     },
     type: {
       default: 'date'
-    },
-    defaultTime: {
-      default: () => ['00:00:00']
     }
   },
   created() {

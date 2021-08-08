@@ -134,6 +134,42 @@
           :key="`${$store.state.auth.user.userCompany.timeZone}2`"
         />
       </template>
+      <template v-if="filterableType === 'dateOnly'">
+        <v-select
+          :items="dateFilterItems"
+          dense
+          height="40"
+          outlined
+          required
+          v-model="filteredSelectValueDate"
+          :menu-props="{ offsetY: true }"
+          placeholder="Select an option"
+          :key="$store.state.auth.user.userCompany.timeZone"
+          v-if="filterableOptions.showSelect"
+        ></v-select>
+        <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
+        <InputDate
+          v-if="filteredSelectValueDate !== 'between'"
+          v-model="filteredDateValue"
+          type="date"
+          ref="refPicker"
+          style="width: 100%; max-width: 260px; margin-bottom: 14px;"
+          :key="`${$store.state.auth.user.userCompany.timeZone}1`"
+          :format="getTimeZone(true) || 'yyyy/MM/dd HH:mm'"
+          :valueFormat="getTimeZone(true) || `yyyy/MM/dd HH:mm`"
+        />
+        <InputDate
+          v-if="filteredSelectValueDate === 'between'"
+          v-model="filteredDateRangeValue"
+          ref="refPicker2"
+          type="daterange"
+          style="margin-bottom: 14px;"
+          :format="getTimeZone(true) || 'yyyy/MM/dd HH:mm'"
+          :valueFormat="getTimeZone(true) || `yyyy/MM/dd HH:mm`"
+          @change="handleChangeBetweenDatepicker"
+          :key="`${$store.state.auth.user.userCompany.timeZone}2`"
+        />
+      </template>
       <template v-if="filterableType === 'select'">
         <div>
           <v-text-field
@@ -202,8 +238,8 @@
 <script>
 import InputDate from '@/components/Common/Inputs/InputDate'
 import { getTimeZoneForMoment } from '@/utils/functions'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppDialog from '@/components/AppDialog'
+import { getTimeZone } from '@/utils/functions'
 export default {
   name: 'DataTableFilter',
   components: { InputDate, AppDialog },
@@ -366,6 +402,9 @@ export default {
     }
   },
   methods: {
+    getTimeZone(isDate) {
+      return getTimeZone(isDate)
+    },
     closeDialog() {
       this.status = false
     },
@@ -466,7 +505,7 @@ export default {
         })
         this.emitValue(this.filterValue, this.filteredSelectValueNumber, this.fieldName)
       }
-      if (this.filterableType === 'date') {
+      if (this.filterableType === 'date' || this.filterableType === 'dateOnly') {
         if (this.filteredSelectValueDate === 'between') {
           this.$emit('handleFilterColumn', [
             {
