@@ -5,6 +5,10 @@ export function getIntegrationList(payload) {
   return testRequest.post(`${API_URL}/search`, payload)
 }
 
+export function getProxyItems(payload) {
+  return testRequest.post(`/companies/proxy-settings/search`, payload)
+}
+
 export function exportReportedEmails(payload) {
   return testRequest.post(`${API_URL}/search/export`, payload, {
     responseType: 'blob'

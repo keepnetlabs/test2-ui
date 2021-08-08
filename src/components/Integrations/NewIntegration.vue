@@ -482,6 +482,101 @@
               </div>
             </div>
           </form-group>
+
+          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__label">
+                Proxy
+              </v-list-item-title>
+              <div class="max-width__form new-integration__api-key__combobox">
+                <v-autocomplete
+                  v-model="formValues.proxyResourceId"
+                  id="input--new-integration-proxy"
+                  :items="proxyItems"
+                  no-data-text="No proxy displayed"
+                  :search-input.sync="search"
+                  class="company-groups-select-company mt-2"
+                  autocomplete="off"
+                  item-value="resourceId"
+                  item-text="name"
+                  outlined
+                  persistent-hint
+                  placeholder="Select proxy"
+                  :loading="proxyLoading"
+                  :hide-no-data="proxyLoading"
+                >
+                  <template v-slot:progress>
+                    <k-select-loading v-show="proxyLoading" />
+                  </template>
+                </v-autocomplete>
+                <div
+                  id="integration-api-key-footer-test-connection-proxy"
+                  class="test-connection p-relative"
+                  style="text-align: right;"
+                >
+                  <span
+                    style="text-align: right; cursor: pointer;"
+                    :class="{
+                      'new-integration__api-key__disabled-text':
+                        proxyTestLoadingStatus === 'loading'
+                    }"
+                    @click="getProxyTestConnection"
+                  >
+                    <v-icon
+                      v-if="proxyTestLoadingStatus === 'loading'"
+                      :id="`btn--integration-api-key-loading-${index}`"
+                      class="ml-1 loading-spin"
+                      color="#00bcd4"
+                      left
+                      medium
+                      :class="{
+                        'new-integration__api-key__disabled-text':
+                          proxyTestLoadingStatus === 'loading'
+                      }"
+                      >mdi-rotate-left </v-icon
+                    >{{
+                      proxyTestLoadingStatus === 'loading'
+                        ? 'TESTING CONNECTION'
+                        : 'TEST CONNECTION'
+                    }}</span
+                  >
+                  <div
+                    v-if="proxyTestLoadingStatus === 'failed'"
+                    :id="`btn--integration-api-key-see-error-message-${index}`"
+                    class="connection-error-state"
+                    style="top: -23px;"
+                  >
+                    <span>{{ proxyTestStatusMessage }}</span>
+                  </div>
+                  <div class="new-integration__api-keys__connection-status">
+                    <v-icon
+                      v-if="proxyTestLoadingStatus === 'success'"
+                      :id="`btn--integration-api-key-check-${index}`"
+                      class="ml-1"
+                      color="#43a047"
+                      left
+                      medium
+                      style="top: -66px;"
+                      >mdi-check
+                    </v-icon>
+                    <div
+                      v-if="proxyTestLoadingStatus === 'failed'"
+                      style="top: -60px; position: absolute; right: -10px;"
+                    >
+                      <button
+                        :id="`btn--integration-api-key-retry-${index}`"
+                        class="retry-button"
+                        @click="getProxyTestConnection"
+                      >
+                        RETRY
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+
           <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
@@ -690,7 +785,8 @@ import {
   getIntegrationDetails,
   getIntegrationTypes,
   testAnalysis,
-  updateIntegration
+  updateIntegration,
+  getProxyItems
 } from '@/api/integrations'
 import { INTEGRATION_TYPES, INTEGRATION_LABELS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
@@ -701,6 +797,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
+import KSelectLoading from '@/components/KSelectLoading'
 export default {
   name: 'NewIntegration',
   components: {
@@ -708,7 +805,8 @@ export default {
     KSelect,
     FormGroup,
     AppModal,
-    AppModalBodyHeader
+    AppModalBodyHeader,
+    KSelectLoading
   },
   props: {
     showModal: {
@@ -721,6 +819,11 @@ export default {
   },
   data() {
     return {
+      proxyTestStatusMessage: null,
+      proxyTestLoadingStatus: 'initial',
+      proxyLoading: false,
+      proxyItems: [],
+      search: null,
       customIntegrationTestLoading: false,
       customIntegrationTestLoadingStatus: null,
       customIntegrationTestLoadingStatusMessage: null,
@@ -749,7 +852,8 @@ export default {
         name: null,
         apiUrl: null,
         apiKey: null,
-        apiCreditionalResourceId: null
+        apiCreditionalResourceId: null,
+        proxyResourceId: null
       },
       selectedIntegrationType: {
         isSendUrl: false,
@@ -793,6 +897,64 @@ export default {
         required: (v) => Validations.required(v),
         format: (v) => Validations.startsWithSpace(v),
         maxLength: (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage('Api key', 256))
+      },
+      proxyBodyData: {
+        pageNumber: 1,
+        pageSize: 100,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [
+                {
+                  FieldName: 'IsDefault',
+                  Operator: 'Include',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
+                {
+                  FieldName: 'Name',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'Address',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'Port',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'AuthenticationType',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'CreateTime',
+                  Operator: 'Contains',
+                  Value: ''
+                },
+                {
+                  FieldName: 'IsDefault',
+                  Operator: 'Contains',
+                  Value: ''
+                }
+              ],
+              FilterGroups: []
+            }
+          ]
+        }
       }
     }
   },
@@ -823,6 +985,7 @@ export default {
     }
   },
   created() {
+    this.getProxyItems(null, true)
     getIntegrationTypes()
       .then((response) => {
         const {
@@ -838,6 +1001,46 @@ export default {
     this.getFileTypes()
   },
   methods: {
+    getProxyTestConnection() {
+      if (this.proxyTestLoadingStatus === 'loading') return false
+      this.proxyTestLoadingStatus = 'loading'
+      const payload = {
+        proxyResourceId: this.formValues.proxyResourceId,
+        apiCredential: {
+          proxyResourceId: this.formValues.proxyResourceId
+        }
+      }
+      testAnalysis(this.formValues.proxyResourceId, payload)
+        .then(() => {
+          this.proxyTestLoadingStatus = 'success'
+        })
+        .catch((error) => {
+          this.proxyTestLoadingStatus = 'failed'
+          this.proxyTestStatusMessage = error.response.data.message || error.response.data.Message
+        })
+        .finally(() => {})
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
+    getProxyItems(searchValue = '', isDefault) {
+      this.debounce(() => {
+        if (!isDefault) this.proxyLoading = true
+        this.proxyBodyData.filter.FilterGroups[1].FilterItems[0].Value = searchValue
+        getProxyItems(this.proxyBodyData)
+          .then((response) => {
+            this.proxyItems = response.data.data.results
+          })
+          .finally(() => {
+            if (!isDefault) this.proxyLoading = false
+          })
+      }, 500)
+    },
     getFriendlyName(name) {
       let label
       switch (name) {
@@ -1304,6 +1507,11 @@ export default {
         this.integrationTypes.find(
           (item) => item.resourceId === val.analysisEngineTypeResourceId
         ) || {}
+    },
+    search(newVal, oldVal) {
+      if (newVal !== oldVal) {
+        this.getProxyItems(newVal)
+      }
     }
   }
 }
