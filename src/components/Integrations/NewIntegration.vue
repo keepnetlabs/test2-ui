@@ -104,6 +104,7 @@
               item-value="resourceId"
               outlined
               placeholder="Select integration type"
+              :disabled="integrationTypeDisabled"
               @input="handleIntegrationTypeChange"
             ></k-select>
           </form-group>
@@ -829,6 +830,7 @@ export default {
       customIntegrationTestLoadingStatusMessage: null,
       saveDisable: false,
       showPassword: false,
+      integrationTypeDisabled: false,
       errorMessageOfApiKey: '',
       isShowErrorMessage: false,
       labels,
@@ -1094,6 +1096,8 @@ export default {
     },
     saveIntegration() {
       const data = { ...this.formValues }
+      this.integrationTypeDisabled = true
+
       if (
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
@@ -1104,7 +1108,8 @@ export default {
         data.apiKeys = data.apiKeys.map((i) => i.value)
         data.apiCredentials = data.apiKeys.map((i) => {
           const obj = {
-            apiKey: i
+            apiKey: i,
+            resourceId: data.analysisEngineTypeResourceId
           }
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
             obj['password'] = this.formValues.password
@@ -1116,7 +1121,7 @@ export default {
           {
             userName: this.formValues.userName,
             password: this.formValues.password,
-            resourceId: this.formValues.resourceId
+            resourceId: this.formValues.analysisEngineTypeResourceId
           }
         ]
       } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
@@ -1124,7 +1129,7 @@ export default {
           {
             apiKey: this.formValues.apiKey,
             password: this.formValues.password,
-            resourceId: this.formValues.resourceId
+            resourceId: this.formValues.analysisEngineTypeResourceId
           }
         ]
       }
@@ -1142,6 +1147,9 @@ export default {
           .catch(() => {
             this.saveDisable = false
           })
+          .finally(() => {
+            this.integrationTypeDisabled = false
+          })
       } else {
         createIntegration(data)
           .then(() => {
@@ -1150,6 +1158,7 @@ export default {
           })
           .finally(() => {
             this.saveDisable = false
+            this.integrationTypeDisabled = false
           })
       }
     },
