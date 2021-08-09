@@ -123,7 +123,6 @@ export default {
     callForSearchAvailableFor() {
       return searchAvailableFor(this.searchAvailableForPayload)
         .then((response) => {
-          debugger
           this.treeSelectOptions = [
             {
               id: 'MyCompanyOnly',
