@@ -181,7 +181,9 @@ export default {
         vm.tab = 1
       } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
         vm.tab = 1
-        vm.$refs.tsCommunities.subTabSelected('tab-2')
+        setTimeout(() => {
+          vm.$refs.tsCommunities.subTabSelected('tab-2')
+        }, 1250)
       }
       if (
         !vm.checkPermissions('community-posts/search', 'POST') &&

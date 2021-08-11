@@ -338,11 +338,16 @@
           <div class="ts-like mt-1">
             <v-btn
               :id="'threat-sharing-single-post-like' + post.communityPostResourceId"
-              disabled
               text
               x-small
               icon
               color="grey"
+              @click="
+                postDetails && !postDetails.isLikedByUser
+                  ? userLikePost(post.communityPostResourceId, post.communityResourceId)
+                  : userUnlikePost(post.communityPostResourceId, post.communityResourceId)
+              "
+              style="cursor: pointer;"
             >
               <v-icon>mdi-thumb-up</v-icon>
             </v-btn>
@@ -756,7 +761,7 @@
                         <div class="detail-part-item__text">
                           Link:
                           <span class="detail-part-item__hide-overflow">
-                            {{ el.name }} {{ el.url }}
+                            {{ el.url }}
                           </span>
                         </div>
                       </div>
