@@ -154,10 +154,11 @@
                 <div
                   class="filter-item"
                   v-for="(list, index) in filterList"
-                  :key="list.opton + index"
+                  :key="`${list.option}-${index}`"
                 >
                   <div class="filter-item__selectbox">
                     <Treeselect
+                      :key="index"
                       v-model="list.option"
                       :id="`input--investigation-search-criteria-${list.option}-${index}`"
                       disable-branch-nodes
@@ -190,7 +191,7 @@
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
-                      :key="index + list.option"
+                      :key="index"
                       :id="`input--investigation-search-criteria-value-${list.option}-${index}`"
                       :placeholder="
                         placeholders[list.option]
