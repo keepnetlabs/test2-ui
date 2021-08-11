@@ -1005,6 +1005,12 @@ export default {
           _this.token = _this.getToken('rp', window.location.href)
           _this.resetType = 'resetPassword'
         } else if (!indexStore.getters['common/getSessionCheck']) {
+          let token = JSON.parse(localStorage.getItem('auth-token')).token
+          let tokenData = jwt_decode(token)
+          let currentUserData = setGlobalUserData(tokenData)
+          localStorage.setItem('userData', JSON.stringify(currentUserData))
+          localStorage.setItem('selectedCompanyName', currentUserData.name)
+          localStorage.setItem('selectedCompanyRequestId', currentUserData.id)
           getSystemUserSettings()
             .then((response) => {
               localStorage.setItem('selectedDateFormat', response.data.data.dateFormat)

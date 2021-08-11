@@ -246,6 +246,7 @@
                     ref="refPicker"
                     :picker-options="pickerOptions"
                     :rules="[]"
+                    :defaultTime="['00:00:00', '23:59:00']"
                   />
                   <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
                     <transition appear name="bounce">
