@@ -29,7 +29,8 @@ export default {
     },
     type: {
       default: 'date'
-    }
+    },
+    defaultTime: {}
   },
   created() {
     this.format = getTimeZone() || 'yyyy/MM/dd HH:mm'
