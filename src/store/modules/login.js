@@ -32,6 +32,9 @@ const login = {
           const favIcon = document.querySelector('link[rel="icon"]')
           favIcon.href = payload['faviconUrl']
           state.loginWhiteLabel[key] = payload['faviconUrl']
+        } else if (key === 'brandName' && payload[key]) {
+          document.title = payload[key]
+          state.loginWhiteLabel[key] = payload[key]
         } else {
           state.loginWhiteLabel[key] = payload[key]
         }
