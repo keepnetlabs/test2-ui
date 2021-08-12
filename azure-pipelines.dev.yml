@@ -20,6 +20,9 @@ steps:
 
 - script: yarn run lint
   displayName: 'yarn lint'
+
+- script: yarn unit:test
+  displayName: 'yarn lint'
   
 - script: yarn run build
   displayName: 'yarn build'
