@@ -21,7 +21,7 @@ steps:
 - script: yarn run lint
   displayName: 'yarn lint'
 
-- script: yarn unit:test
+- script: yarn test:unit
   displayName: 'yarn test'
   
 - script: yarn run build
