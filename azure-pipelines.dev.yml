@@ -22,7 +22,7 @@ steps:
   displayName: 'yarn lint'
 
 - script: yarn unit:test
-  displayName: 'yarn lint'
+  displayName: 'yarn test'
   
 - script: yarn run build
   displayName: 'yarn build'
