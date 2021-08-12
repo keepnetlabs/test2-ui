@@ -20,6 +20,11 @@ steps:
 
 - script: yarn run lint
   displayName: 'yarn lint'
+
+- script: yarn test:unit
+  displayName: 'yarn test'
+  failOnStderr: true,
+  continueOnError: false
   
 - script: yarn run build
   displayName: 'yarn build'

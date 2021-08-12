@@ -484,7 +484,7 @@
             </div>
           </form-group>
 
-          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
+          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]" v-if="false">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 Proxy
