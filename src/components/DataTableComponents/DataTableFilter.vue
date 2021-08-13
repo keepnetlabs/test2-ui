@@ -395,6 +395,14 @@ export default {
       }
       return acc
     }, [])
+    if (this.defaultDate) {
+      this.isFilterActive = true
+      this.this.emitValue(
+        ...this.filteredDateRangeValue,
+        this.filteredSelectValueDate,
+        this.fieldName
+      )
+    }
   },
   beforeDestroy() {
     if (this.isFilterActive) {
@@ -584,6 +592,7 @@ export default {
       return true
     },
     getFilterButtonDisabled() {
+      debugger
       switch (this.filterableType) {
         case 'text':
           return this.checkTextFilterButtonIsDisabled
