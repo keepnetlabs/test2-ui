@@ -610,7 +610,9 @@ export default {
         format: (v) => Validations.startsWithSpace(v)
       },
       targetUsers: {
-        required: (v) => Validations.required(v)
+        required: (v) => {
+          return v.length ? Validations.required(v) : labels.Required
+        }
       },
       checkboxRule: {
         required: (v) => this.sources.find((item) => item.type)
@@ -650,6 +652,7 @@ export default {
     },
     handleTargetUserTypeChange() {
       this.targetUsersValue = []
+      this.$refs.form.resetValidation()
     },
     handleChangeFilterListItem() {
       this.$nextTick(() => {
