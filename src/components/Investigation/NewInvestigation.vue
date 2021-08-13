@@ -1405,6 +1405,9 @@ export default {
               label: 'Phishing'
             })
         })
+      if (!this.filterList.length) {
+        this.filterList.push({})
+      }
       this.investgationName = `Manual Investigation - ${this.$moment(Date.now()).format(
         getTimeZoneForMoment()
       )}`
