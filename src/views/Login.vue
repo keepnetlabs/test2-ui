@@ -51,6 +51,22 @@
                         : 'Please Login'
                     }}
                   </div>
+                  <div v-if="!!mfaLoginErrors.length" class="login-error-container">
+                    <div class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div id="text--multifactor-message-error" class="login-error-message pr-1">
+                        <p>
+                          Required fields cannot be acquired from SAML integration. Please contact
+                          your system administrator.
+                        </p>
+                        <ul>
+                          <li v-for="item in mfaLoginErrors" :key="item">{{ item }}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                   <div v-if="isErrorActive" class="login-error-container">
                     <div v-if="isErrorActive" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
@@ -544,6 +560,8 @@ export default {
   },
   data() {
     return {
+      showMfaLoginError: false,
+      mfaLoginErrors: [],
       showMfaMessage: false,
       mfaSetupErrorText: null,
       isSamlLoading: false,
@@ -705,6 +723,9 @@ export default {
         this.token = this.getToken('rp', window.location.href)
         this.resetType = 'resetPassword'
       }
+    }
+    if (this.$route.query?.saml_error) {
+      this.mfaLoginErrors = this.$route.query?.saml_error_data.split(',')
     }
   },
   mounted() {
@@ -1466,7 +1487,7 @@ export default {
     flex-direction: row;
     align-items: center;
     overflow: auto;
-    max-height: 100px;
+    max-height: 120px;
     .login-error-icon {
       i {
         font-size: 24px !important;

@@ -438,7 +438,7 @@ const router = new Router({
         },
         {
           path: '/sandbox',
-          name: 'Sandbox Integration',
+          name: 'Cross Company Integration',
           component: Sandbox,
           beforeEnter: (to, from, next) => {
             //checkPermission()

@@ -435,11 +435,11 @@
                   id="btn--link-navigator-menu-sandbox"
                   :class="[
                     'menu-link-default',
-                    routerName === 'Sandbox Integration' && 'active-link'
+                    routerName === 'Cross Company Integration' && 'active-link'
                   ]"
                 >
                   <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Sandbox Integration</span>
+                    <span class="menu-item-span">Cross Company Integration</span>
                   </v-list-item-title>
                 </router-link>
               </v-list-item-content>
@@ -2335,6 +2335,7 @@ export default {
       background-color: #e3f2fd !important;
       border-left: unset !important;
       border-color: unset !important;
+      width: 91%;
     }
   }
 
