@@ -17,6 +17,7 @@
     "@sentry/browser": "^5.27.1",
     "@sentry/integrations": "^5.27.1",
     "@sentry/tracing": "^5.27.1",
+    "@sum.cumo/vue-browserupdate": "^3.0.1",
     "axios": "^0.19.0",
     "babel-polyfill": "^6.26.0",
     "chart.js": "^2.9.3",

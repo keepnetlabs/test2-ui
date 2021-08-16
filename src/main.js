@@ -1,5 +1,6 @@
 import 'babel-polyfill'
 import Vue from 'vue'
+import VueBrowserUpdate from '@sum.cumo/vue-browserupdate'
 import VueTour from 'vue-tour'
 import App from './App.vue'
 import router from './router/index'
@@ -107,6 +108,13 @@ if (isCloud) {
       }
     })
 }
+
+Vue.use(VueBrowserUpdate, {
+  options: {
+    insecure: true,
+    unsupported: true
+  }
+})
 
 Vue.use(VueTour)
 Vue.use(require('vue-moment'))
