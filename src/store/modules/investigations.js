@@ -123,9 +123,7 @@ const investigations = {
       if (obj.id) {
         return await investigationDetailsListFunction(obj.data, obj.id)
           .then((response) => {
-            const result = response.data
-
-            commit('SET_INVESTIGATIONDETAILSLISTDATA', result)
+            commit('SET_INVESTIGATIONDETAILSLISTDATA', response.data)
             return response
           })
           .catch((error) => {
@@ -147,7 +145,7 @@ const investigations = {
       if (id) {
         await getInvestigationDetailsDataFunction(id).then((response) => {
           const result = response.data
-
+          console.log('result', result)
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
       }
