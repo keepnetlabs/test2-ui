@@ -736,6 +736,36 @@
                         {{ investigationDetailsData.endDate }}
                       </div>
                     </div>
+                    <div
+                      id="card--investigation-details-trigger"
+                      class="investigation-details__container__content--right-menu__summary__item mt-2"
+                    >
+                      <div
+                        class="investigation-details__container__content--right-menu__summary__item--text-header"
+                      >
+                        TRIGGER:
+                      </div>
+                      <div
+                        class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
+                      >
+                        {{ investigationDetailsData.investigationType }}
+                      </div>
+                    </div>
+                    <div
+                      id="card--investigation-details-trigger"
+                      class="investigation-details__container__content--right-menu__summary__item mt-2"
+                    >
+                      <div
+                        class="investigation-details__container__content--right-menu__summary__item--text-header"
+                      >
+                        SOURCE:
+                      </div>
+                      <div
+                        class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
+                      >
+                        {{ getInvestigationSource }}
+                      </div>
+                    </div>
                   </div>
                   <div
                     class="investigation-details__container__content--right-menu__summary__item--action-button-container"
@@ -2473,7 +2503,12 @@ export default {
       investigationDetailsListData: 'investigations/getInvestigationDetailsListGetter', // for stats getters,
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
-    })
+    }),
+    getInvestigationSource() {
+      return this.investigationDetailsData.scanTypes.reduce((acc, { scanType }, ind) => {
+        return `${acc}${ind > 0 ? ', ' : ''}${scanType}`
+      }, '')
+    }
   },
   watch: {
     statsAndMenuData(val) {
