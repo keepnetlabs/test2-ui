@@ -13,7 +13,8 @@ export default {
     BULLETED: 'handleListBulleted',
     SERVER_SIDE_PAGE_CHANGED: 'server-side-page-number-changed',
     EXTENDED_VIEW_EDIT: 'onEditClick',
-    ADD_BUTTON: ''
+    ADD_BUTTON: '',
+    INPUT: 'input'
   },
   SELECTORS: {
     REFRESH_BUTTON: '[id*="btn-refresh--table"] button',
