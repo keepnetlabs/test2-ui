@@ -592,7 +592,6 @@ export default {
       return true
     },
     getFilterButtonDisabled() {
-      debugger
       switch (this.filterableType) {
         case 'text':
           return this.checkTextFilterButtonIsDisabled
