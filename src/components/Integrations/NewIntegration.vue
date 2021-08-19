@@ -329,7 +329,7 @@
                     </v-icon>
                   </div>
                   <div
-                    v-else
+                    v-else-if="!loadingState.length"
                     id="integration-api-key-footer-test-connection"
                     :class="{
                       'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
@@ -483,8 +483,37 @@
               </div>
             </div>
           </form-group>
+          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
+            <v-list-item-content>
+              <v-list-item-title class="new-integration__label">
+                Tags
+              </v-list-item-title>
+              <v-list-item-subtitle class="new-integration__api-key__subtitle">
+                Use enter key to use tags
+              </v-list-item-subtitle>
+              <div class="max-width__form new-integration__api-key__combobox">
+                <k-select
+                  v-model.trim="formValues.tags"
+                  type="combobox"
+                  id="input--integration-tags"
+                  :items="[]"
+                  :return-object="false"
+                  class="edit-select standard-height mt-2"
+                  deletable-chips
+                  dense
+                  item-text="name"
+                  multiple
+                  outlined
+                  persistent-hint
+                  placeholder="Enter Tag"
+                  small-chips
+                  @input="handleTagItemChange"
+                />
+              </div>
+            </v-list-item-content>
+          </v-list-item>
 
-          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]" v-if="false">
+          <v-list-item :class="['px-0']">
             <v-list-item-content>
               <v-list-item-title class="new-integration__label">
                 Proxy
@@ -503,17 +532,12 @@
                   outlined
                   persistent-hint
                   placeholder="Select proxy"
-                  :loading="proxyLoading"
-                  :hide-no-data="proxyLoading"
-                >
-                  <template v-slot:progress>
-                    <k-select-loading v-show="proxyLoading" />
-                  </template>
-                </v-autocomplete>
+                ></v-autocomplete>
                 <div
                   id="integration-api-key-footer-test-connection-proxy"
                   class="test-connection p-relative"
                   style="text-align: right;"
+                  v-if="false"
                 >
                   <span
                     style="text-align: right; cursor: pointer;"
@@ -574,36 +598,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-            </v-list-item-content>
-          </v-list-item>
-
-          <v-list-item :class="['px-0', { 'mt-3': isVmrayOrVirusTotal }]">
-            <v-list-item-content>
-              <v-list-item-title class="new-integration__label">
-                Tags
-              </v-list-item-title>
-              <v-list-item-subtitle class="new-integration__api-key__subtitle">
-                Use enter key to use tags
-              </v-list-item-subtitle>
-              <div class="max-width__form new-integration__api-key__combobox">
-                <k-select
-                  v-model.trim="formValues.tags"
-                  type="combobox"
-                  id="input--integration-tags"
-                  :items="[]"
-                  :return-object="false"
-                  class="edit-select standard-height mt-2"
-                  deletable-chips
-                  dense
-                  item-text="name"
-                  multiple
-                  outlined
-                  persistent-hint
-                  placeholder="Enter Tag"
-                  small-chips
-                  @input="handleTagItemChange"
-                />
               </div>
             </v-list-item-content>
           </v-list-item>
@@ -798,7 +792,6 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
-import KSelectLoading from '@/components/KSelectLoading'
 export default {
   name: 'NewIntegration',
   components: {
@@ -806,8 +799,7 @@ export default {
     KSelect,
     FormGroup,
     AppModal,
-    AppModalBodyHeader,
-    KSelectLoading
+    AppModalBodyHeader
   },
   props: {
     showModal: {
@@ -1109,7 +1101,8 @@ export default {
         data.apiCredentials = data.apiKeys.map((i) => {
           const obj = {
             apiKey: i,
-            resourceId: data.analysisEngineTypeResourceId
+            resourceId: data.analysisEngineTypeResourceId,
+            proxyResourceId: this.formValues.proxyResourceId
           }
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
             obj['password'] = this.formValues.password
@@ -1121,7 +1114,8 @@ export default {
           {
             userName: this.formValues.userName,
             password: this.formValues.password,
-            resourceId: this.formValues.analysisEngineTypeResourceId
+            resourceId: this.formValues.analysisEngineTypeResourceId,
+            proxyResourceId: this.formValues.proxyResourceId
           }
         ]
       } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
@@ -1129,7 +1123,8 @@ export default {
           {
             apiKey: this.formValues.apiKey,
             password: this.formValues.password,
-            resourceId: this.formValues.analysisEngineTypeResourceId
+            resourceId: this.formValues.analysisEngineTypeResourceId,
+            proxyResourceId: this.formValues.proxyResourceId
           }
         ]
       }
@@ -1169,7 +1164,8 @@ export default {
         apiCredential: {
           userName: this.formValues.userName,
           password: this.formValues.password,
-          resourceId: this.formValues.resourceId
+          resourceId: this.formValues.resourceId,
+          proxyResourceId: this.formValues.proxyResourceId
         }
       }
       testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
@@ -1302,22 +1298,35 @@ export default {
           ].includes(this.selectedIntegrationType.name)
         ) {
           response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
-            return { value: item.apiKey, status: null, resourceId: item.resourceId }
+            return {
+              value: item.apiKey,
+              status: null,
+              resourceId: item.resourceId,
+              proxyResourceId: item.proxyResourceId
+            }
           })
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
             response.data.data.password = response['data'].data['apiCredentials'][0].password
+            response.data.data.proxyResourceId =
+              response['data'].data['apiCredentials'][0].proxyResourceId
           }
         } else if (this.selectedIntegrationType.name === 'FortiNet') {
-          const { userName, password, resourceId } = response['data'].data['apiCredentials'][0]
+          const { userName, password, resourceId, proxyResourceId } = response['data'].data[
+            'apiCredentials'
+          ][0]
           response.data.data.userName = userName
           response.data.data.password = password
           response.data.data.resourceId = resourceId
+          response.data.data.proxyResourceId = proxyResourceId
         } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
-          const { apiKey, password, resourceId } = response['data'].data['apiCredentials'][0]
+          const { apiKey, password, resourceId, proxyResourceId } = response['data'].data[
+            'apiCredentials'
+          ][0]
           response.data.data.apiKey = apiKey
           response.data.data.password = password
           response.data.data.resourceId = resourceId
           response.data.data.apiCreditionalResourceId = resourceId
+          response.data.data.proxyResourceId = proxyResourceId
         }
         delete response['data'].data['apiCredentials']
         this.formValues = response['data'].data
@@ -1390,7 +1399,8 @@ export default {
             apiUrl: this.formValues.apiUrl,
             apiCredential: {
               apiKey: item.value,
-              resourceId: item.resourceId
+              resourceId: item.resourceId,
+              proxyResourceId: this.formValues.proxyResourceId
             }
           }
           if (this.isIbmXForce) {
@@ -1434,7 +1444,8 @@ export default {
           apiCredential: {
             apiKey: this.formValues.apiKey,
             resourceId: this.formValues.apiCreditionalResourceId,
-            password: this.formValues.password
+            password: this.formValues.password,
+            proxyResourceId: this.formValues.proxyResourceId
           }
         }
         this.customIntegrationTestLoading = true
@@ -1443,6 +1454,7 @@ export default {
         this.customIntegrationTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
           .then((response) => {
+            debugger
             this.saveDisable = false
             this.customIntegrationTestLoadingStatus = 'success'
           })
