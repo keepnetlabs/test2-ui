@@ -801,7 +801,7 @@ export default {
       item.map((i) => {
         i[key] = value ? value.join(',') : value
       })
-      this.multipleEditModels[key] = value
+      this.multipleEditModels[key] = value.substring(0, 20)
     },
     getCheckboxStatus(prop) {
       return this.hasOneMoreCheckboxValue(prop)
