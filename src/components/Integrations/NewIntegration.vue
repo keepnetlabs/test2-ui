@@ -1454,7 +1454,6 @@ export default {
         this.customIntegrationTestLoadingStatusMessage = null
         testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
           .then((response) => {
-            debugger
             this.saveDisable = false
             this.customIntegrationTestLoadingStatus = 'success'
           })

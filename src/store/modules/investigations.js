@@ -145,7 +145,6 @@ const investigations = {
       if (id) {
         await getInvestigationDetailsDataFunction(id).then((response) => {
           const result = response.data
-          console.log('result', result)
           commit('SET_INVESTIGATIONDETAILSDATA', result)
         })
       }
