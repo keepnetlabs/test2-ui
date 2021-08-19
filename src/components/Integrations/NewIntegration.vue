@@ -1029,6 +1029,11 @@ export default {
         getProxyItems(this.proxyBodyData)
           .then((response) => {
             this.proxyItems = response.data.data.results
+            if (isDefault) {
+              this.formValues.proxyResourceId = response.data.data.results.find(
+                (item) => item.isDefault === 'Yes'
+              ).resourceId
+            }
           })
           .finally(() => {
             if (!isDefault) this.proxyLoading = false
