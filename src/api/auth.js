@@ -23,6 +23,7 @@ export function loginAction(payload) {
   params.append('mfa_code', payload.code || '')
   params.append('remember_this_device', payload.rememberMeOnThisDevice || '')
   params.append('recovery_code', payload.recovery_code || '')
+  params.append('captchaResponse', payload.captchaResponse || '')
   return authTestRequest.post('connect/token', params, {
     loading: true,
     headers: {

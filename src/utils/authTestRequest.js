@@ -43,6 +43,7 @@ authTestService.interceptors.response.use(
   },
   (error) => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+    store.dispatch('common/setReCaptcha', error?.response?.data?.enforceCaptcha)
     if (!error.response) {
       return Promise.reject(error)
     } else if (error.response && error.response.status !== 404) {
