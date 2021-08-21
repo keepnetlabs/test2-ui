@@ -190,7 +190,7 @@
                     </v-row>
                   </div>
                 </v-card-text>
-                <div v-if="wrongLoginAttempt > 2" class="captcha-wrapper">
+                <div v-if="getReCaptcha" class="captcha-wrapper">
                   <vue-recaptcha
                     :sitekey="recaptcha"
                     :loadRecaptchaScript="true"
@@ -560,6 +560,7 @@ export default {
   },
   data() {
     return {
+      verifiedCaptchaResponse: null,
       showMfaLoginError: false,
       mfaLoginErrors: [],
       showMfaMessage: false,
@@ -614,7 +615,7 @@ export default {
           return v === this.newPassword || "'New password' and 'Confirm password' do not match"
         }
       },
-      recaptcha: '6LfA498UAAAAACJkiU-j27rjI3KBL0nl95yVcdj9',
+      recaptcha: '6Lc_yQEcAAAAAFy5Dc3_b8O5_fa8Dzv_VmRNs94D',
       validEmail: false,
       validPassword: false,
       validReset: false
@@ -755,7 +756,8 @@ export default {
       getSnackStatus: 'common/getSnackStatus',
       getColor: 'common/getColor',
       isErrorActive: 'common/getErrorStatus',
-      loginWhiteLabel: 'login/loginWhiteLabel'
+      loginWhiteLabel: 'login/loginWhiteLabel',
+      getReCaptcha: 'common/getReCaptcha'
     }),
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
@@ -911,6 +913,9 @@ export default {
         .catch(() => {})
     },
     loginAction(payload) {
+      if (this.verifiedCaptchaResponse) {
+        payload.captchaResponse = this.verifiedCaptchaResponse
+      }
       loginAction(payload)
         .then((response) => {
           this.onSuccessLogin(payload, response)
@@ -1226,28 +1231,17 @@ export default {
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
       if (this.$refs.password.validate() && this.wrongLoginAttempt < 3) {
-        let payload = { email: this.email, password: this.password, router: this.$router }
+        let payload = {
+          email: this.email,
+          password: this.password,
+          router: this.$router
+        }
         this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.ENABLELOADER, { root: true })
         this.loginAction(payload)
-      } else if (this.$refs.password.validate() && this.wrongLoginAttempt >= 3) {
-        if (window.grecaptcha.getResponse() == '') {
-        } else {
-          let payload = {
-            email: this.email,
-            password: this.password,
-            router: this.$router
-          }
-          this.loginAction(payload)
-          this.$refs.recaptcha.reset()
-        }
       }
     },
-    onCaptchaVerified() {
-      /*this.$store.dispatch('login/loginAction', {
-        email: this.email,
-        password: this.password,
-        router: this.$router
-      })*/
+    onCaptchaVerified(response) {
+      this.verifiedCaptchaResponse = response
     },
     onCaptchaExpired() {
       this.captchaVerified = false

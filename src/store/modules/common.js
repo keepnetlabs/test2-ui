@@ -12,7 +12,8 @@ const common = {
     errorState: false,
     downloadModalStatus: false,
     timezones: [],
-    sessionCheck: false
+    sessionCheck: false,
+    isReCaptcha: false
   },
   getters: {
     getMenuStatus: (state) => state.menuStatus,
@@ -22,6 +23,7 @@ const common = {
     getColor: (state) => state.snackbarColor,
     getErrors: (state) => state.errors,
     getErrorStatus: (state) => state.errorState,
+    getReCaptcha: (state) => state.isReCaptcha,
     getDownloadModalStatus: (state) => state.downloadModalStatus,
     getTimezones: (state) => state.timezones,
     getSessionCheck: (state) => state.sessionCheck
@@ -44,6 +46,9 @@ const common = {
     },
     SET_ERROR_MESSAGE(state, payload) {
       state.errors = payload
+    },
+    SET_RE_CAPTCHA(state, payload) {
+      state.isReCaptcha = payload
     },
     SET_ERROR_STATE(state, payload) {
       state.errorState = payload
@@ -75,6 +80,9 @@ const common = {
     },
     setErrorMessage({ commit }, payload) {
       commit('SET_ERROR_MESSAGE', payload)
+    },
+    setReCaptcha({ commit }, payload) {
+      commit('SET_RE_CAPTCHA', payload)
     },
     activateLoader({ commit }, payload) {
       commit('SET_IS_LOADING', payload)
