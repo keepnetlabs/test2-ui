@@ -1288,7 +1288,7 @@ export default {
         property: 'scanType',
         align: 'center',
         editable: false,
-        label: getStoreValue('scanType'),
+        label: getStoreValue('source'),
         fixed: false,
         sortable: true,
         show: true,
@@ -1383,7 +1383,7 @@ export default {
         property: 'scanType',
         align: 'center',
         editable: false,
-        label: getStoreValue('scanType'),
+        label: getStoreValue('source'),
         fixed: false,
         sortable: true,
         show: true,
@@ -2505,9 +2505,9 @@ export default {
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
     getInvestigationSource() {
-      return this.investigationDetailsData.scanTypes.reduce((acc, { scanType }, ind) => {
-        return `${acc}${ind > 0 ? ', ' : ''}${scanType}`
-      }, '')
+      return this.investigationDetailsData.scanConfigurationDetails
+        .map((item) => item.type)
+        .toString()
     }
   },
   watch: {
