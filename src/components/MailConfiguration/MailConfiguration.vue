@@ -369,26 +369,34 @@
       </template>
     </app-modal>
     <app-modal
-      :status="statusGsuite"
-      @closeOverlay="statusGsuite = false"
-      :icon-name="'mdi-book-search'"
-      :title="'Create GSuite Mail Configuration'"
       className="mail-configuration__modal"
       title-id="text--create-gsuite-mail-configuration-modal-title"
-      v-if="false"
+      icon-name="mdi-book-search-outline"
+      :status="statusGoogleWorkSpace"
+      :title="labels.GoogleWorkSpaceTitle"
+      @closeOverlay="statusGoogleWorkSpace = false"
     >
       <template v-slot:overlay-body>
         <v-form ref="gsuiteConfiguration">
-          <app-modal-body-header
-            title="New GSuite Mail Configuration"
-            sub-title="Select filters and date options to start an investigation"
-          />
+          <app-modal-body-header :title="labels.GoogleWorkSpaceTitle">
+            <template #subtitle>
+              <div>
+                {{ labels.GoogleWorkSpaceSubTitle }}
+                <a
+                  href="https://support.google.com/a/answer/7378726?hl=en"
+                  target="_blank"
+                  style="color: #1173c1; cursor: pointer; text-decoration: none;"
+                  >{{ labels.HowToCredJSON }}</a
+                >
+              </div>
+            </template>
+          </app-modal-body-header>
           <form-group title="Name" has-hint>
             <v-text-field
               placeholder="O365 Mail Configuration"
               outlined
               dense
-              v-model.trim="gsuite.name"
+              v-model.trim="googleWorkSpaceForm.name"
               :rules="[(v) => validations.required(v, 'Required')]"
               hint="*Required"
               persistent-hint
@@ -401,7 +409,7 @@
               placeholder="Enter Credential JSON"
               outlined
               dense
-              v-model.trim="gsuite.json"
+              v-model.trim="googleWorkSpaceForm.json"
               :rules="[(v) => validations.required(v, 'Required')]"
               hint="*Required"
               persistent-hint
@@ -409,12 +417,12 @@
               height="40"
             ></v-text-field>
           </form-group>
-          <form-group title="Email Address" has-hint>
+          <form-group title="Test Email Address" has-hint>
             <v-text-field
               placeholder="user@company.com"
               outlined
               dense
-              v-model.trim="gsuite.email"
+              v-model.trim="googleWorkSpaceForm.email"
               :rules="[
                 (v) => validations.required(v, 'Required'),
                 (v) => validations.mail(v, 'Invalid  email address')
@@ -424,6 +432,21 @@
               id="email"
               height="40"
             ></v-text-field>
+          </form-group>
+          <form-group :title="labels.TestConnection">
+            <div class="ldap-info__status">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="#2196f3"
+                class="ldap-info__btn"
+                style="font-weight: 600;"
+                @click="handleGsuiteTestConnection"
+              >
+                {{ labels.TestConnection }}
+              </v-btn>
+            </div>
           </form-group>
         </v-form>
       </template>
@@ -435,7 +458,7 @@
             outlined
             rounded
             color="error"
-            @click="statusGsuite = false"
+            @click="statusGoogleWorkSpace = false"
             >{{ labels.Cancel }}</v-btn
           >
         </div>
@@ -540,7 +563,11 @@
               </v-tooltip>
             </template>
             <v-list>
-              <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
+              <v-list-item
+                :key="item"
+                @click="handleAddMailConfiguration(item)"
+                v-for="item in mailConfigurationTypes"
+              >
                 <v-list-item-title
                   class="add-users__title"
                   :id="`item--mail-configuration-${item}`"
@@ -567,16 +594,20 @@
             <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
             <div class="mail-configuration__no-data__buttons">
               <div
-                v-if="false"
+                id="btn-empty--mail-configurations-google-workspace"
                 class="mail-configuration__no-data__buttons--button"
-                @click="statusGsuite = true"
+                @click="statusGoogleWorkSpace = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon
-                ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
+                ><img
+                  style="margin-bottom: -4px;"
+                  alt="outlook"
+                  src="../../assets/img/google-workspace.png"
+                />
               </div>
               <div
                 id="btn-empty--mail-configurations-office-365"
-                class="mail-configuration__no-data__buttons--button"
+                class="mail-configuration__no-data__buttons--button ml-4"
                 @click="status = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
@@ -661,13 +692,9 @@ export default {
     totalNumberOfRecords: 0,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
-    gsuite: {
-      name: null,
-      json: null,
-      email: null
-    },
+    googleWorkSpaceForm: {},
     deletedItem: null,
-    statusGsuite: null,
+    statusGoogleWorkSpace: false,
     deleteDialogId: null,
     deleteDialog: null,
     deleteDialogName: null,
@@ -818,7 +845,7 @@ export default {
         }
       ]
     },
-    addUsersItems: ['O365', 'EWS'],
+    mailConfigurationTypes: ['Gsuite', 'O365', 'EWS'],
     validations: validations,
     requestBody: {
       pageNumber: 1,
@@ -870,6 +897,7 @@ export default {
         this.ewsFormValues.TargetGroupResourceIdList = []
       }
     },
+    handleGsuiteTestConnection() {},
     cancelEWS() {
       this.ewsStatus = false
       this.ewsInitialFormValues = null
@@ -1139,9 +1167,13 @@ export default {
     closeImportModal() {
       this.isWantToImportFile = false
     },
-    handleAddUsers(item) {
+    handleAddMailConfiguration(item) {
       switch (item) {
-        case this.addUsersItems[0]:
+        case this.mailConfigurationTypes[0]:
+          this.googleWorkSpaceForm = {}
+          this.statusGoogleWorkSpace = true
+          break
+        case this.mailConfigurationTypes[1]:
           this.formValues = {
             name: null,
             applicationId: null,
@@ -1154,7 +1186,7 @@ export default {
           this.saveButtonDisabled = false
           this.status = true
           break
-        case this.addUsersItems[1]:
+        case this.mailConfigurationTypes[2]:
           this.ewsFormValues = {
             Name: null,
             ServiceUrl: null,
