@@ -934,7 +934,7 @@ export default {
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
             root: true
           })
-          this.$refs?.recaptcha.reset()
+          this.$refs?.recaptcha?.reset()
         })
     },
     onSuccessLogin(payload, response) {
