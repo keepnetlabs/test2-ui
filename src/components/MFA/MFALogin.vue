@@ -90,9 +90,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import VueRecaptcha from 'vue-recaptcha'
 export default {
   name: 'MFALogin',
+  components: {
+    VueRecaptcha
+  },
   computed: {
     ...mapGetters({
       getErrors: 'common/getErrors',
