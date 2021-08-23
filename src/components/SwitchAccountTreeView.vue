@@ -39,7 +39,7 @@
             <template #label="{item}">
               <span
                 :id="`switch-account-item-label-${item.name}`"
-                style="cursor: pointer;"
+                style="cursor: pointer; display: inline-block; width: 100%;"
                 @click="handleTreeViewChange(item)"
                 >{{ item.name }}</span
               >
