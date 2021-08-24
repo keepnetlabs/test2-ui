@@ -1,7 +1,7 @@
 <template>
   <div :class="wrapperClasses">
-    <div>
-      <img src="../../assets/img/gsuite-logo.png" alt="g-suite-logo" />
+    <div style="display: flex; align-items: center;">
+      <img src="../../assets/img/google-workspace.png" alt="g-suite-logo" />
     </div>
     <div>
       <img
