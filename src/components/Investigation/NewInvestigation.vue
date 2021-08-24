@@ -803,6 +803,17 @@ export default {
     onCancelClicked() {
       this.$emit('closeAdd')
     },
+    filterData(data = []) {
+      return data.reduce((acc, item) => {
+        if (
+          Object.keys(item).some((key) => {
+            return item[key]
+          })
+        )
+          acc.push(item)
+        return acc
+      }, [])
+    },
     onCreateClicked() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
@@ -1134,11 +1145,11 @@ export default {
           }
         }
         // cerate new body data for api call
-
+        debugger
         const newInvestigationObj = {
-          headers: headersData,
-          bodies: bodyData,
-          attachments: attachmentsData,
+          headers: this.filterData(headersData),
+          bodies: this.filterData(bodyData),
+          attachments: this.filterData(attachmentsData),
           isScanEnterpriseVault: false,
           name: this.investgationName,
           startDate: this.date[0],

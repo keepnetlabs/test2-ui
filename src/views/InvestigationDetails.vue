@@ -2505,9 +2505,10 @@ export default {
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
     getInvestigationSource() {
-      return this.investigationDetailsData.scanConfigurationDetails
-        .map((item) => item.type)
-        .toString()
+      return (
+        this.investigationDetailsData.scanConfigurationDetails &&
+        this.investigationDetailsData.scanConfigurationDetails.map((item) => item.type).join(', ')
+      )
     }
   },
   watch: {
