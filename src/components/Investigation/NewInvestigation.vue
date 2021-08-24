@@ -1145,7 +1145,7 @@ export default {
           }
         }
         // cerate new body data for api call
-        debugger
+
         const newInvestigationObj = {
           headers: this.filterData(headersData),
           bodies: this.filterData(bodyData),

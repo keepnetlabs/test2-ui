@@ -33,15 +33,28 @@
             <v-btn
               id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
               class="white--text btn-util btn-download-add-in"
+              style="margin-left: 5px !important;"
               color="#2196f3"
               rounded
+              :loading="googleWorkSpaceSpinnerStatus"
+              @click="callForGenerateGoogleWorkSpaceAddIn"
             >
               <v-icon left>mdi-download</v-icon>
               Download
+              <template v-slot:loader>
+                <img
+                  src="../../assets/img/spinner.svg"
+                  class="add-in-settings__spinner"
+                  alt="spinner"
+                />
+                <span style="font-size: 14px; text-transform: capitalize;">
+                  Generating...
+                </span>
+              </template>
             </v-btn>
             <v-btn
               id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
-              class="white--text btn-util btn-download-add-in"
+              class="white--text btn-util btn-download-add-in ml-5"
               style="margin-left: -6px;"
               color="#2196f3"
               rounded
@@ -143,6 +156,7 @@ import {
   downloadDiagnosticTool,
   downloadOutlookAddIn,
   generateDiagnosticTool,
+  generateGoogleWorkSpaceAddIn,
   generateO365AddIn,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
@@ -157,7 +171,31 @@ export default {
     Logos,
     DiagnosticTool
   },
+  data() {
+    return {
+      outlookSpinnerStatus: false,
+      diagnosticToolSpinnerStatus: false,
+      downloadOutlookAddInTimeout: null,
+      diagnosticToolAddInTimeout: null,
+      gmailSpinnerStatus: false,
+      googleWorkSpaceSpinnerStatus: false
+    }
+  },
   methods: {
+    callForGenerateGoogleWorkSpaceAddIn() {
+      this.googleWorkSpaceSpinnerStatus = true
+      generateGoogleWorkSpaceAddIn()
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `GoogleWorkspaceAddIn.zip`
+          link.click()
+        })
+        .finally(() => {
+          this.googleWorkSpaceSpinnerStatus = false
+        })
+    },
     callForGenerateOutlookAddIn() {
       this.outlookSpinnerStatus = true
       generateOutlookAddIn()
@@ -245,15 +283,6 @@ export default {
         clearTimeout(this.downloadOutlookAddInTimeout)
         this.downloadOutlookAddInTimeout = null
       }
-    }
-  },
-  data() {
-    return {
-      outlookSpinnerStatus: false,
-      diagnosticToolSpinnerStatus: false,
-      downloadOutlookAddInTimeout: null,
-      diagnosticToolAddInTimeout: null,
-      gmailSpinnerStatus: false
     }
   }
 }
