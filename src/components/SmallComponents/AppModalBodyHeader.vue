@@ -4,9 +4,11 @@
       <v-list-item-title class="app-modal-body-header__title">
         {{ title }}
       </v-list-item-title>
-      <v-list-item-subtitle class="app-modal-body-header__sub-title">
-        {{ subTitle }}
-      </v-list-item-subtitle>
+      <slot name="subtitle">
+        <v-list-item-subtitle class="app-modal-body-header__sub-title">
+          {{ subTitle }}
+        </v-list-item-subtitle>
+      </slot>
     </v-list-item-content>
   </v-list-item>
 </template>

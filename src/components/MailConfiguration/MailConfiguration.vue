@@ -369,26 +369,38 @@
       </template>
     </app-modal>
     <app-modal
-      :status="statusGsuite"
-      @closeOverlay="statusGsuite = false"
-      :icon-name="'mdi-book-search'"
-      :title="'Create GSuite Mail Configuration'"
       className="mail-configuration__modal"
       title-id="text--create-gsuite-mail-configuration-modal-title"
-      v-if="false"
+      icon-name="mdi-book-search-outline"
+      :status="statusGoogleWorkSpace"
+      :title="getGoogleWorkSpaceTitle"
+      @closeOverlay="statusGoogleWorkSpace = false"
     >
       <template v-slot:overlay-body>
-        <v-form ref="gsuiteConfiguration">
-          <app-modal-body-header
-            title="New GSuite Mail Configuration"
-            sub-title="Select filters and date options to start an investigation"
-          />
+        <v-form ref="googleWorkSpaceConfigurationForm">
+          <app-modal-body-header :title="getGoogleWorkSpaceTitle">
+            <template #subtitle>
+              <div>
+                {{
+                  `${isGoogleWorkSpaceEdit ? labels.Edit : 'Create a new'} ${
+                    labels.GoogleWorkSpaceSubTitle
+                  }`
+                }}
+                <a
+                  href="https://doc.keepnetlabs.com/technical-guide/phishing-incident-responder/api-settings/gsuite-api-configuration-guide"
+                  target="_blank"
+                  style="color: #1173c1; cursor: pointer; text-decoration: none;"
+                  >{{ labels.HowToCredJSON }}</a
+                >
+              </div>
+            </template>
+          </app-modal-body-header>
           <form-group title="Name" has-hint>
             <v-text-field
               placeholder="O365 Mail Configuration"
               outlined
               dense
-              v-model.trim="gsuite.name"
+              v-model.trim="googleWorkSpaceForm.name"
               :rules="[(v) => validations.required(v, 'Required')]"
               hint="*Required"
               persistent-hint
@@ -401,22 +413,22 @@
               placeholder="Enter Credential JSON"
               outlined
               dense
-              v-model.trim="gsuite.json"
-              :rules="[(v) => validations.required(v, 'Required')]"
+              v-model.trim="googleWorkSpaceForm.authJson"
+              :rules="[(v) => validations.required(v, labels.Required)]"
               hint="*Required"
               persistent-hint
               id="json"
               height="40"
             ></v-text-field>
           </form-group>
-          <form-group title="Email Address" has-hint>
+          <form-group title="Test Email Address" has-hint>
             <v-text-field
               placeholder="user@company.com"
               outlined
               dense
-              v-model.trim="gsuite.email"
+              v-model.trim="googleWorkSpaceForm.email"
               :rules="[
-                (v) => validations.required(v, 'Required'),
+                (v) => validations.required(v, labels.Required),
                 (v) => validations.mail(v, 'Invalid  email address')
               ]"
               hint="*Required"
@@ -424,6 +436,21 @@
               id="email"
               height="40"
             ></v-text-field>
+          </form-group>
+          <form-group :title="labels.TestConnection">
+            <div class="ldap-info__status">
+              <v-btn
+                outlined
+                rounded
+                medium
+                color="#2196f3"
+                class="ldap-info__btn"
+                style="font-weight: 600;"
+                @click="handleGoogleWorkspaceTestConnection"
+              >
+                {{ labels.TestConnection }}
+              </v-btn>
+            </div>
           </form-group>
         </v-form>
       </template>
@@ -435,7 +462,7 @@
             outlined
             rounded
             color="error"
-            @click="statusGsuite = false"
+            @click="cancelGoogleWorkSpace"
             >{{ labels.Cancel }}</v-btn
           >
         </div>
@@ -445,6 +472,8 @@
             class="playbook-rule-form__button white--text"
             rounded
             color="#2196f3"
+            :disabled="isGoogleWorkSpaceButtonDisabled"
+            @click="handleSubmitGoogleWorkspace"
           >
             {{ labels.Save }}
           </v-btn>
@@ -459,6 +488,7 @@
       title-id="text--mail-configuration-delete-popup-title"
       subtitle-id="text--mail-configuration-delete-popup-subtitle"
       :status="deleteDialog"
+      @changeStatus="closeDeleteDialog"
     >
       <template v-slot:app-dialog-body>
         {{ deleteDialogName }} will be deleted and removed from all integrations.
@@ -496,7 +526,7 @@
         :setClassName="setCellClassName"
         @syncUser="handleSyncUser"
         @delete="handleDelete"
-        @editTargetUsers="handleEditTargetUsers"
+        @editTargetUsers="handleEditMailConfiguration"
         @onEmptyBtnClicked="status = true"
         :is-downloadable="true"
         @downloadEvent="exportMailConfigurationList"
@@ -540,7 +570,11 @@
               </v-tooltip>
             </template>
             <v-list>
-              <v-list-item :key="item" @click="handleAddUsers(item)" v-for="item in addUsersItems">
+              <v-list-item
+                :key="item"
+                @click="handleAddMailConfiguration(item)"
+                v-for="item in mailConfigurationTypes"
+              >
                 <v-list-item-title
                   class="add-users__title"
                   :id="`item--mail-configuration-${item}`"
@@ -567,16 +601,20 @@
             <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
             <div class="mail-configuration__no-data__buttons">
               <div
-                v-if="false"
+                id="btn-empty--mail-configurations-google-workspace"
                 class="mail-configuration__no-data__buttons--button"
-                @click="statusGsuite = true"
+                @click="statusGoogleWorkSpace = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon
-                ><img alt="outlook" src="../../assets/img/gsuite-logo.png" />
+                ><img
+                  style="margin-bottom: -4px;"
+                  alt="outlook"
+                  src="../../assets/img/google-workspace.png"
+                />
               </div>
               <div
                 id="btn-empty--mail-configurations-office-365"
-                class="mail-configuration__no-data__buttons--button"
+                class="mail-configuration__no-data__buttons--button ml-4"
                 @click="status = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
@@ -602,7 +640,6 @@
 import Datatable from '../../components/DataTable'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import {
-  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   PROPERTY_STORE,
@@ -612,15 +649,19 @@ import AppModal from '../AppModal'
 import AppDialog from '../AppDialog'
 import {
   createEWS,
+  createGoogleWorkSpace,
   createO365,
   deleteEWS,
+  deleteGoogleWorkSpace,
   deleteO365,
   exportMailConfiguration,
   getEWSMailData,
   getExchangeVersions,
+  getGoogleWorkSpace,
   getMailConfigurationList,
   getO365MailData,
   updateEWS,
+  updateGoogleWorkSpace,
   updateO365
 } from '@/api/mailConfiguration'
 import * as validations from '@/utils/validations'
@@ -652,22 +693,30 @@ export default {
   computed: {
     getTitle() {
       return this.editData ? 'Edit O365 Mail Configuration' : 'Create O365 Mail Configuration'
+    },
+    getGoogleWorkSpaceTitle() {
+      return this.isGoogleWorkSpaceEdit
+        ? `${labels.Edit} ${labels.GoogleWorkSpaceTitle}`
+        : `${labels.New} ${labels.GoogleWorkSpaceTitle}`
     }
   },
   data: () => ({
     labels,
+    isGoogleWorkSpaceEdit: false,
     delaySaveFunction: false,
     showAllRecords: false,
+    isGoogleWorkSpaceButtonDisabled: false,
     totalNumberOfRecords: 0,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
-    gsuite: {
-      name: null,
-      json: null,
-      email: null
+    selectedGoogleWorkSpaceResourceId: '',
+    googleWorkSpaceForm: {
+      name: '',
+      authJson: '',
+      email: ''
     },
     deletedItem: null,
-    statusGsuite: null,
+    statusGoogleWorkSpace: false,
     deleteDialogId: null,
     deleteDialog: null,
     deleteDialogName: null,
@@ -818,7 +867,7 @@ export default {
         }
       ]
     },
-    addUsersItems: ['O365', 'EWS'],
+    mailConfigurationTypes: ['Google Workspace', 'O365', 'EWS'],
     validations: validations,
     requestBody: {
       pageNumber: 1,
@@ -870,6 +919,31 @@ export default {
         this.ewsFormValues.TargetGroupResourceIdList = []
       }
     },
+    afterSuccessCreateOrUpdateGoogleWorkSpace() {
+      this.statusGoogleWorkSpace = false
+      this.resetGoogleWorkSpaceForm()
+      this.getTableData()
+      this.selectedGoogleWorkSpaceResourceId = ''
+    },
+    handleSubmitGoogleWorkspace() {
+      if (this.$refs.googleWorkSpaceConfigurationForm.validate()) {
+        this.isGoogleWorkSpaceButtonDisabled = true
+        if (this.isGoogleWorkSpaceEdit) {
+          updateGoogleWorkSpace(this.googleWorkSpaceForm, this.selectedGoogleWorkSpaceResourceId)
+            .then(this.afterSuccessCreateOrUpdateGoogleWorkSpace)
+            .finally(() => {
+              this.isGoogleWorkSpaceButtonDisabled = false
+            })
+        } else {
+          createGoogleWorkSpace(this.googleWorkSpaceForm)
+            .then(this.afterSuccessCreateOrUpdateGoogleWorkSpace)
+            .finally(() => {
+              this.isGoogleWorkSpaceButtonDisabled = false
+            })
+        }
+      }
+    },
+    handleGoogleWorkspaceTestConnection() {},
     cancelEWS() {
       this.ewsStatus = false
       this.ewsInitialFormValues = null
@@ -1029,6 +1103,12 @@ export default {
           this.closeDeleteDialog()
           this.getTableData()
         })
+      } else if (this.deleteItemType === 'GSuite') {
+        deleteGoogleWorkSpace(this.deleteDialogId).then(() => {
+          this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
+          this.closeDeleteDialog()
+          this.getTableData()
+        })
       } else {
         deleteO365(this.deleteDialogId).then(() => {
           this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
@@ -1069,6 +1149,18 @@ export default {
         email: null
       }
       this.initialFormValues = null
+    },
+    cancelGoogleWorkSpace() {
+      this.statusGoogleWorkSpace = false
+      this.resetGoogleWorkSpaceForm()
+      this.isGoogleWorkSpaceEdit = false
+    },
+    resetGoogleWorkSpaceForm() {
+      this.googleWorkSpaceForm = {
+        name: '',
+        authJson: '',
+        email: ''
+      }
     },
     getTableData() {
       this.loading = true
@@ -1139,9 +1231,12 @@ export default {
     closeImportModal() {
       this.isWantToImportFile = false
     },
-    handleAddUsers(item) {
+    handleAddMailConfiguration(item) {
       switch (item) {
-        case this.addUsersItems[0]:
+        case this.mailConfigurationTypes[0]:
+          this.statusGoogleWorkSpace = true
+          break
+        case this.mailConfigurationTypes[1]:
           this.formValues = {
             name: null,
             applicationId: null,
@@ -1154,7 +1249,7 @@ export default {
           this.saveButtonDisabled = false
           this.status = true
           break
-        case this.addUsersItems[1]:
+        case this.mailConfigurationTypes[2]:
           this.ewsFormValues = {
             Name: null,
             ServiceUrl: null,
@@ -1184,7 +1279,8 @@ export default {
       this.isWantToShowAddUsersModal = false
       this.callForTargetUsers()
     },
-    handleEditTargetUsers(selectedRow) {
+    handleEditMailConfiguration(selectedRow) {
+      console.log(selectedRow)
       if (selectedRow.platform === 'Exchange') {
         getEWSMailData(selectedRow.resourceId).then((response) => {
           const apiData = response.data.data
@@ -1206,6 +1302,20 @@ export default {
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
           this.ewsStatus = true
+        })
+      } else if (selectedRow.platform === 'GSuite') {
+        getGoogleWorkSpace(selectedRow.resourceId).then((response) => {
+          const apiData = response.data.data
+          this.googleWorkSpaceForm = {
+            name: apiData.name,
+            authJson: apiData.authJson,
+            email: apiData.email
+          }
+          this.isGoogleWorkSpaceEdit = true
+          this.isTestConnectionWorkedBefore = false
+          this.saveButtonDisabled = false
+          this.statusGoogleWorkSpace = true
+          this.selectedGoogleWorkSpaceResourceId = selectedRow.resourceId
         })
       } else {
         getO365MailData(selectedRow.resourceId).then((response) => {
