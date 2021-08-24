@@ -50,6 +50,11 @@ export function exportPhishingReporterDownloadHistory(payload) {
 export function generateOutlookAddIn() {
   return testRequest.get('/phishing-reporter/generate/outlook-addin')
 }
+export function generateGoogleWorkSpaceAddIn() {
+  return testRequest.get('/phishing-reporter/generate/gsuite-addin', {
+    responseType: 'blob'
+  })
+}
 
 export function downloadOutlookAddIn(id) {
   return testRequest.get(`/phishing-reporter/download/outlook-addin/${id}`, {
