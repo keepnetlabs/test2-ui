@@ -325,6 +325,7 @@ export default {
   data() {
     return {
       isActionButtonDisabled: false,
+      isWhiteLabelLoading: false,
       isResetToDefaultActionButtonDisabled: false,
       resetToDefaultWhiteLabelingDialogStatus: false,
       formValues: {
@@ -355,9 +356,6 @@ export default {
     }
   },
   computed: {
-    isWhiteLabelLoading() {
-      return this.$store.state['whitelabel'].loading
-    },
     getActionButtonDisabled() {
       return this.isActionButtonDisabled || !this.PERMISSIONS['UPDATE'].hasPermission
     },
@@ -378,31 +376,16 @@ export default {
       return DELETE.hasPermission
     }
   },
-  watch: {
-    '$store.state.whitelabel.loading'(loading) {
-      this.loadDatas(loading)
-    }
-  },
   created() {
     const { GET } = this.PERMISSIONS
-    if (GET.hasPermission) {
-      this.loadDatas(this.$store.state.whitelabel.loading)
-    }
     if (this.isCompanyConfigure) {
-      getWhiteLabel({
+      this.callForData({
         overrideCompanyId: true,
         headers: { 'X-IR-COMPANY-ID': this.createdCompanyId },
         loading: true
-      }).then((response) => {
-        const payload = response.data.data
-        this.configureCompanyWhitelabelingResourceId = payload.resourceId
-        delete payload.resourceId
-        for (const key of Object.keys(payload)) {
-          if (key !== 'systemVersion') {
-            this.formValues[key] = payload[key]
-          }
-        }
       })
+    } else if (GET.hasPermission) {
+      this.callForData()
     }
   },
   methods: {
@@ -411,15 +394,6 @@ export default {
     },
     getImagePreview(url) {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
-    },
-    loadDatas(loading = true) {
-      if (!loading && !this.isCompanyConfigure) {
-        const state = JSON.parse(JSON.stringify(this.$store.state.whitelabel))
-        delete state.loading
-        for (const key of Object.keys(state)) {
-          this.formValues[key] = state[key]
-        }
-      }
     },
     mainDomainCustomValidation(value = '') {
       if (value.startsWith('http') || value.startsWith('https')) {
@@ -447,11 +421,18 @@ export default {
       const { refForm } = this.$refs
       const { UPDATE } = this.PERMISSIONS
       if (UPDATE.hasPermission) {
+        debugger
         if (refForm.validate()) {
           this.isActionButtonDisabled = true
           this.$store
-            .dispatch('whitelabel/updateData', this.formValues)
-            .finally(() => (this.isActionButtonDisabled = false))
+            .dispatch('whitelabel/updateData', {
+              ...this.formValues,
+              resourceId: this.configureCompanyWhitelabelingResourceId
+            })
+            .finally(() => {
+              this.isActionButtonDisabled = false
+              this.callForData()
+            })
         } else {
           return this.$nextTick(() => {
             const el = refForm.$el.querySelector('.error--text')
@@ -471,6 +452,23 @@ export default {
           this.isResetToDefaultActionButtonDisabled = false
         })
       }
+    },
+    callForData(config) {
+      this.isWhiteLabelLoading = true
+      getWhiteLabel(config)
+        .then((response) => {
+          const payload = response.data.data
+          this.configureCompanyWhitelabelingResourceId = payload.resourceId
+          delete payload.resourceId
+          for (const key of Object.keys(payload)) {
+            if (key !== 'systemVersion') {
+              this.formValues[key] = payload[key]
+            }
+          }
+        })
+        .finally(() => {
+          this.isWhiteLabelLoading = false
+        })
     }
   }
 }

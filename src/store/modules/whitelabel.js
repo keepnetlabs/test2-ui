@@ -1,7 +1,7 @@
 import {
   deleteWhiteLabel,
   getSystemVersion,
-  getWhiteLabel,
+  resolveWhiteLabel,
   updateWhiteLabel
 } from '@/api/whitelabel'
 
@@ -105,7 +105,7 @@ const whitelabel = {
   actions: {
     callForData(context = {}) {
       context.commit('TOGGLE_LOADING', true)
-      getWhiteLabel()
+      resolveWhiteLabel()
         .then((response) => {
           context.commit('SET_DATA', response.data.data)
         })
