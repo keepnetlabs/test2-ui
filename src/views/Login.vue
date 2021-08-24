@@ -474,6 +474,7 @@
                   :rememberMeOnThisDevice="rememberMeOnThisDevice"
                   @onCantLoginButtonClick="onCantLoginButtonClick"
                   @verificationCodeLogin="verificationCodeLogin"
+                  :recaptcha="recaptcha"
                   :rules="rules"
                   ref="refMfaLogin"
                 />
@@ -847,7 +848,12 @@ export default {
         })
         .catch(() => {})
     },
-    verificationCodeLogin(isCantLogin, verificationCode, rememberMeOnThisDevice) {
+    verificationCodeLogin(
+      isCantLogin,
+      verificationCode,
+      rememberMeOnThisDevice,
+      verifiedCaptchaResponse
+    ) {
       let payload = {
         email: this.email,
         password: this.password,
@@ -855,7 +861,8 @@ export default {
         recovery_code: isCantLogin ? verificationCode : '',
         code: isCantLogin ? '' : verificationCode,
         rememberMeOnThisDevice: rememberMeOnThisDevice,
-        skipMfa: 'forced'
+        skipMfa: 'forced',
+        captchaResponse: verifiedCaptchaResponse
       }
       if (this.pageNumber === 8) {
         if (this.$refs.refMfaLogin.$refs.refMfaLoginForm.validate()) {
@@ -927,6 +934,7 @@ export default {
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
             root: true
           })
+          this.$refs?.recaptcha?.reset()
         })
     },
     onSuccessLogin(payload, response) {

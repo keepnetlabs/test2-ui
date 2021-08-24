@@ -56,13 +56,30 @@
         </v-row>
       </div>
     </v-card-text>
+    <div v-if="getReCaptcha" class="captcha-wrapper">
+      <vue-recaptcha
+        :sitekey="recaptcha"
+        :loadRecaptchaScript="true"
+        ref="recaptcha"
+        @verify="onCaptchaVerified"
+        @expired="onCaptchaExpired"
+      ></vue-recaptcha>
+    </div>
     <v-card-actions class="justify-center">
       <v-btn
         id="btn--login-continue"
         color="blue"
         class="pl-4 white--text"
         rounded
-        @click="$emit('verificationCodeLogin', false, verificationCode, rememberMeOnThisDevice)"
+        @click="
+          $emit(
+            'verificationCodeLogin',
+            false,
+            verificationCode,
+            rememberMeOnThisDevice,
+            verifiedCaptchaResponse
+          )
+        "
       >
         Continue
         <v-icon right dark>mdi-arrow-right</v-icon>
@@ -73,16 +90,28 @@
 
 <script>
 import { mapGetters } from 'vuex'
-
+import VueRecaptcha from 'vue-recaptcha'
 export default {
   name: 'MFALogin',
+  components: {
+    VueRecaptcha
+  },
   computed: {
     ...mapGetters({
       getErrors: 'common/getErrors',
-      isErrorActive: 'common/getErrorStatus'
+      isErrorActive: 'common/getErrorStatus',
+      getReCaptcha: 'common/getReCaptcha'
     })
   },
+  data() {
+    return {
+      verifiedCaptchaResponse: null
+    }
+  },
   props: {
+    recaptcha: {
+      required: false
+    },
     validReset: {
       required: false
     },
@@ -101,6 +130,15 @@ export default {
 
     rules: {
       required: false
+    }
+  },
+  methods: {
+    onCaptchaVerified(response) {
+      this.verifiedCaptchaResponse = response
+    },
+    onCaptchaExpired() {
+      this.captchaVerified = false
+      this.$refs.recaptcha.reset()
     }
   }
 }
