@@ -5,6 +5,10 @@ export function getWhiteLabel(config = {}) {
   return testRequest.get('/whitelabeling', config)
 }
 
+export function resolveWhiteLabel(config = {}) {
+  return testRequest.get('/whitelabeling/resolve-whitelabeling', config)
+}
+
 export function getWhiteLabelByUrl(payload = {}) {
   return testRequest.post('/whitelabeling/by-url', payload, {
     loading: true
