@@ -1,7 +1,6 @@
 import {
   deleteWhiteLabel,
   getSystemVersion,
-  getWhiteLabel,
   resolveWhiteLabel,
   updateWhiteLabel
 } from '@/api/whitelabel'
