@@ -106,6 +106,39 @@ export function checkDeleteEmail(payload) {
 export function checkInboxAccess(payload) {
   return testRequest.post(`mail-configurations/o365/check-inbox-access`, payload)
 }
+
+export function checkApiConnectivityGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-api-connectivity`, payload)
+}
+
+export function checkPrivilegesGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-privileges-access`, payload)
+}
+
+export function checkAllUsersAccessGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-all-users-access`, payload)
+}
+
+export function checkEmailAccessGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-email-access`, payload)
+}
+
+export function checkCreateNewCategoryGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-create-new-category`, payload)
+}
+
+export function checkUpdateCategoryGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-update-category`, payload)
+}
+
+export function checkDeleteEmailGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-delete-email`, payload)
+}
+
+export function checkInboxAccessGoogleWorkspace(payload) {
+  return testRequest.post(`mail-configurations/gsuite/check-inbox-access`, payload)
+}
+
 export function checkApiConnectivityEWS(payload) {
   return testRequest.post(`mail-configurations/ews/check-api-connectivity`, payload)
 }

@@ -421,7 +421,6 @@ export default {
       const { refForm } = this.$refs
       const { UPDATE } = this.PERMISSIONS
       if (UPDATE.hasPermission) {
-        debugger
         if (refForm.validate()) {
           this.isActionButtonDisabled = true
           this.$store
