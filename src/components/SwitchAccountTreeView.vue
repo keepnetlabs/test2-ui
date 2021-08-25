@@ -39,7 +39,13 @@
             <template #label="{item}">
               <span
                 :id="`switch-account-item-label-${item.name}`"
-                style="cursor: pointer; display: inline-block; width: 100%;"
+                style="
+                  cursor: pointer;
+                  height: 32px;
+                  display: flex;
+                  align-items: center;
+                  padding-left: 6px;
+                "
                 @click="handleTreeViewChange(item)"
                 >{{ item.name }}</span
               >
@@ -101,6 +107,9 @@ export default {
   visibility: hidden;
   & * {
     transition: none !important;
+  }
+  .v-treeview-node__prepend {
+    margin-right: 0;
   }
 }
 .switch-account__select-footer {
