@@ -439,17 +439,14 @@
           </form-group>
           <form-group :title="labels.TestConnection">
             <div class="ldap-info__status">
-              <v-btn
-                outlined
-                rounded
-                medium
-                color="#2196f3"
-                class="ldap-info__btn"
-                style="font-weight: 600;"
-                @click="handleGoogleWorkspaceTestConnection"
-              >
-                {{ labels.TestConnection }}
-              </v-btn>
+              <TestConnectionGoogleWorkspace
+                ref="testConnectionGoogleWorkspace"
+                :values="googleWorkSpaceForm"
+                :isValidate="isValidateGoogleWorkSpace"
+                :isEdit="googleWorkSpaceEditData"
+                @testConnectionValues="testConnectionGoogleWorkspaceValues"
+                @loading="isGoogleWorkSpaceButtonDisabled = false"
+              />
             </div>
           </form-group>
         </v-form>
@@ -676,9 +673,11 @@ import QueryHelperForTable from '@/helper-classes/query-helper'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import { getTargetGroups } from '@/api/targetUsers'
+import TestConnectionGoogleWorkspace from '@/components/MailConfiguration/TestConnectionGoogleWorkspace'
 export default {
   name: 'MailConfiguration',
   components: {
+    TestConnectionGoogleWorkspace,
     AppDialogFooter,
     Datatable,
     AppModal,
@@ -723,6 +722,7 @@ export default {
     deleteItemType: null,
     editData: null,
     ewsEditData: null,
+    googleWorkSpaceEditData: null,
     storedTableSettings: null,
     formValues: {
       name: null,
@@ -748,6 +748,7 @@ export default {
     },
     initialFormValues: null,
     ewsInitialFormValues: null,
+    googleWorkSpaceInitialValues: null,
     status: false,
     ewsStatus: false,
     isWantToImportFile: false,
@@ -926,21 +927,46 @@ export default {
       this.selectedGoogleWorkSpaceResourceId = ''
     },
     handleSubmitGoogleWorkspace() {
-      if (this.$refs.googleWorkSpaceConfigurationForm.validate()) {
+      if (
+        JSON.stringify(this.googleWorkSpaceForm) !==
+          JSON.stringify(this.googleWorkSpaceInitialValues) &&
+        this.googleWorkSpaceEditData
+      ) {
+        this.isTestConnectionWorkedBefore = false
+      }
+      if (
+        this.$refs.googleWorkSpaceConfigurationForm.validate() &&
+        this.isTestConnectionWorkedBefore
+      ) {
         this.isGoogleWorkSpaceButtonDisabled = true
         if (this.isGoogleWorkSpaceEdit) {
           updateGoogleWorkSpace(this.googleWorkSpaceForm, this.selectedGoogleWorkSpaceResourceId)
             .then(this.afterSuccessCreateOrUpdateGoogleWorkSpace)
             .finally(() => {
               this.isGoogleWorkSpaceButtonDisabled = false
+              this.googleWorkSpaceEditData = null
             })
         } else {
           createGoogleWorkSpace(this.googleWorkSpaceForm)
             .then(this.afterSuccessCreateOrUpdateGoogleWorkSpace)
             .finally(() => {
               this.isGoogleWorkSpaceButtonDisabled = false
+              this.googleWorkSpaceEditData = null
             })
         }
+      } else if (
+        this.$refs.googleWorkSpaceConfigurationForm.validate() &&
+        !this.isTestConnectionWorkedBefore
+      ) {
+        this.isGoogleWorkSpaceButtonDisabled = true
+        this.$refs.testConnectionGoogleWorkspace.testConnection(true)
+        setTimeout(() => {
+          let el = this.$el.querySelector('.test-connection__testing-content__item')
+          scrollToComponent(el)
+        }, 50)
+      } else {
+        const el = this.$refs.ewsMailConfiguration.$el
+        scrollToComponent(el)
       }
     },
     handleGoogleWorkspaceTestConnection() {},
@@ -1081,6 +1107,17 @@ export default {
         }
       }
     },
+    testConnectionGoogleWorkspaceValues(isSuccess, isSave) {
+      if (isSuccess) {
+        this.isTestConnectionWorkedBefore = true
+        this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
+        if (isSave && !this.delaySaveFunction) {
+          this.$nextTick(() => {
+            this.handleSubmitGoogleWorkspace()
+          })
+        }
+      }
+    },
     handleAllRecordsClick() {
       this.requestBody.pageSize = 75000
       this.showAllRecords = false
@@ -1090,6 +1127,12 @@ export default {
       if (this.ewsStatus)
         return this.$refs.ewsMailConfiguration && this.$refs.ewsMailConfiguration.validate()
       return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
+    },
+    isValidateGoogleWorkSpace() {
+      return (
+        this.$refs.googleWorkSpaceConfigurationForm &&
+        this.$refs.googleWorkSpaceConfigurationForm.validate()
+      )
     },
     closeDeleteDialog() {
       this.deleteDialog = false
@@ -1235,6 +1278,8 @@ export default {
       switch (item) {
         case this.mailConfigurationTypes[0]:
           this.statusGoogleWorkSpace = true
+          this.googleWorkSpaceEditData = null
+          this.isTestConnectionWorkedBefore = false
           break
         case this.mailConfigurationTypes[1]:
           this.formValues = {
@@ -1311,6 +1356,11 @@ export default {
             authJson: apiData.authJson,
             email: apiData.email
           }
+          this.googleWorkSpaceEditData = {
+            ...this.googleWorkSpaceForm,
+            resourceId: selectedRow.resourceId
+          }
+          this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
           this.isGoogleWorkSpaceEdit = true
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
