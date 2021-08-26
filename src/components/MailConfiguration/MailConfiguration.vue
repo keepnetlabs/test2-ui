@@ -409,7 +409,7 @@
             ></v-text-field>
           </form-group>
           <form-group title="Credential JSON" has-hint>
-            <v-text-field
+            <v-textarea
               placeholder="Enter Credential JSON"
               outlined
               dense
@@ -417,9 +417,11 @@
               :rules="[(v) => validations.required(v, labels.Required)]"
               hint="*Required"
               persistent-hint
-              id="json"
-              height="40"
-            ></v-text-field>
+              id="input--mail-configuration-json-credential"
+              rows="2"
+              no-resize
+              height="160"
+            ></v-textarea>
           </form-group>
           <form-group title="Test Email Address" has-hint>
             <v-text-field
@@ -1146,7 +1148,7 @@ export default {
           this.closeDeleteDialog()
           this.getTableData()
         })
-      } else if (this.deleteItemType === 'GSuite') {
+      } else if (this.deleteItemType === 'Google Workspace' || this.deleteItemType === 'GSuite') {
         deleteGoogleWorkSpace(this.deleteDialogId).then(() => {
           this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
           this.closeDeleteDialog()
@@ -1348,7 +1350,7 @@ export default {
           this.saveButtonDisabled = false
           this.ewsStatus = true
         })
-      } else if (selectedRow.platform === 'GSuite') {
+      } else if (selectedRow.platform === 'GSuite' || selectedRow.platform === 'Google Workspace') {
         getGoogleWorkSpace(selectedRow.resourceId).then((response) => {
           const apiData = response.data.data
           this.googleWorkSpaceForm = {
