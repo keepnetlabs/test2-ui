@@ -761,9 +761,38 @@
                         SOURCE:
                       </div>
                       <div
-                        class="investigation-details__container__content--right-menu__summary__item--text-content ml-2"
+                        class="investigation-details__container__content--right-menu__summary__item--text-content ml-2 d-flex flex-row"
                       >
-                        {{ getInvestigationSource }}
+                        <div
+                          class="mr-2 align-center d-flex"
+                          v-if="getGoogleData && getGoogleData.length"
+                        >
+                          <img
+                            src="../assets/img/Google.png"
+                            alt="g-suite-logo"
+                            style="width: 16px; margin-right: 2px;"
+                          />
+                          {{ getGoogleData.toString() }}
+                        </div>
+                        <div
+                          class="mr-2 align-center d-flex"
+                          v-if="getOfficeData && getOfficeData.length"
+                        >
+                          <img
+                            src="../assets/img/Office.png"
+                            alt="outlook-logo"
+                            style="width: 16px; margin-right: 2px;"
+                          />
+                          {{ getOfficeData.toString() }}
+                        </div>
+                        <div v-if="getWordData && getWordData.length" class="align-center d-flex">
+                          <img
+                            src="../assets/img/Word.png"
+                            alt="office-logo"
+                            style="width: 16px; margin-right: 2px;"
+                          />
+                          {{ getWordData.toString() }}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -2504,10 +2533,31 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
-    getInvestigationSource() {
+    getGoogleData() {
       return (
-        this.investigationDetailsData.scanConfigurationDetails &&
-        this.investigationDetailsData.scanConfigurationDetails.map((item) => item.type).join(', ')
+        this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
+          if (item.type === 'O365') acc.push(item.mailConfigurationName)
+          return acc
+        }, [])
+      )
+    },
+    getOfficeData() {
+      return (
+        this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
+          if (item.type === 'Outlook') acc.push(item.mailConfigurationName)
+          return acc
+        }, [])
+      )
+    },
+    getWordData() {
+      return (
+        this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
+          if (item.type === 'Exchange') acc.push(item.mailConfigurationName)
+          return acc
+        }, [])
       )
     }
   },
