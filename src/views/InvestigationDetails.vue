@@ -1501,7 +1501,7 @@ export default {
       this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
-      this.resetPageNumber()
+      this.resetPageNumberForTargetUsers()
       this.isColumnFilterActive = filterActive
       this.refreshDatatable()
     },
