@@ -196,7 +196,7 @@
         </span>
       </div>
       <div>
-        Date: {{ uploadRespond.sentTime }}
+        Date: {{ uploadRespond.sentTime || findDate }}
         <br />
       </div>
     </div>
@@ -209,6 +209,11 @@ export default {
   props: {
     uploadRespond: {
       required: true
+    }
+  },
+  computed: {
+    findDate() {
+      return this.uploadRespond?.headers?.find((item) => item.key === 'Date').value
     }
   }
 }
