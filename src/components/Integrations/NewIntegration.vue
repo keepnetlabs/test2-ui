@@ -532,6 +532,7 @@
                   outlined
                   persistent-hint
                   placeholder="Select proxy"
+                  @click="() => (proxyItems = defaultProxyItems)"
                 ></v-autocomplete>
                 <div
                   id="integration-api-key-footer-test-connection-proxy"
@@ -816,6 +817,7 @@ export default {
       proxyTestLoadingStatus: 'initial',
       proxyLoading: false,
       proxyItems: [],
+      defaultProxyItems: [],
       search: null,
       customIntegrationTestLoading: false,
       customIntegrationTestLoadingStatus: null,
@@ -980,19 +982,6 @@ export default {
   },
   created() {
     this.getProxyItems(null, true)
-    getIntegrationTypes()
-      .then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.integrationTypes = data.map((item) => {
-          return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
-        })
-      })
-      .finally(() => {
-        if (this.integrationId) this.updateVModel(this.integrationId)
-      })
-    this.getFileTypes()
   },
   methods: {
     getProxyTestConnection() {
@@ -1028,15 +1017,39 @@ export default {
         this.proxyBodyData.filter.FilterGroups[1].FilterItems[0].Value = searchValue
         getProxyItems(this.proxyBodyData)
           .then((response) => {
-            this.proxyItems = response.data.data.results
+            let proxyItems = response.data.data.results
+            proxyItems.unshift({
+              name: 'no proxy',
+              resourceId: ''
+            })
+            this.proxyItems = proxyItems
             if (isDefault) {
-              this.formValues.proxyResourceId = response.data.data.results.find(
-                (item) => item.isDefault === 'Yes'
-              ).resourceId
+              this.defaultProxyItems = JSON.parse(JSON.stringify(proxyItems))
+              if (!this.integrationId) {
+                this.formValues.proxyResourceId = response.data.data.results.find(
+                  (item) => item.isDefault === 'Yes'
+                ).resourceId
+              }
             }
           })
           .finally(() => {
-            if (!isDefault) this.proxyLoading = false
+            if (!isDefault) {
+              this.proxyLoading = false
+            } else {
+              getIntegrationTypes()
+                .then((response) => {
+                  const {
+                    data: { data }
+                  } = response
+                  this.integrationTypes = data.map((item) => {
+                    return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
+                  })
+                })
+                .finally(() => {
+                  if (this.integrationId) this.updateVModel(this.integrationId)
+                })
+              this.getFileTypes()
+            }
           })
       }, 500)
     },
@@ -1099,7 +1112,8 @@ export default {
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
-          INTEGRATION_TYPES.IBMXFORCE
+          INTEGRATION_TYPES.IBMXFORCE,
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER
         ].includes(this.selectedIntegrationType.name)
       ) {
         data.apiKeys = data.apiKeys.map((i) => i.value)
@@ -1112,6 +1126,7 @@ export default {
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
             obj['password'] = this.formValues.password
           }
+
           return obj
         })
       } else if (this.selectedIntegrationType.name === 'FortiNet') {
@@ -1335,6 +1350,11 @@ export default {
         }
         delete response['data'].data['apiCredentials']
         this.formValues = response['data'].data
+        if (!this.formValues.proxyResourceId) {
+          this.formValues.proxyResourceId = this.defaultProxyItems.find(
+            (item) => item.isDefault === 'Yes'
+          ).resourceId
+        }
       })
     },
     resetValues() {
