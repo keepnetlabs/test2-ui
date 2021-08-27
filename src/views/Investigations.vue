@@ -459,14 +459,9 @@ export default {
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
-      const _this = this
-
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, this.bodyData)
-      })
+      this.getInvestigationList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
-      const _this = this
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
@@ -474,9 +469,7 @@ export default {
         totalNumberOfRecords: this.tableData.totalNumberOfRecords
       }
 
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
-      })
+      this.getInvestigationList()
     },
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
@@ -509,13 +502,9 @@ export default {
         }
       }
 
-      const _this = this
       this.loading = true
 
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
-        this.loading = false
-      })
+      this.getInvestigationList()
     },
     columnFilterCleared(fieldName) {
       let items = []
@@ -526,31 +515,20 @@ export default {
       })
 
       this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
-      const _this = this
       this.loading = true
       if (this.$route.name === 'Investigations') {
-        this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-          this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
-          this.loading = false
-        })
+        this.getInvestigationList()
       }
 
       this.isColumnFilterActive = this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     searchChangedEvent({ filter }) {
       this.bodyData = { ...this.bodyData, filter }
-      const _this = this
-
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.$refs.investigationTable.loadWithDataArray(_this.tableData.data, _this.bodyData)
-      })
+      this.getInvestigationList()
     },
     refreshDatatable() {
       this.loading = true
-
-      this.$store.dispatch('investigations/getInvestigationList', this.bodyData).finally(() => {
-        this.loading = false
-      })
+      this.getInvestigationList()
     },
     onAddClose(resp) {
       // set mobile vision
@@ -622,12 +600,12 @@ export default {
         .finally(() => {
           this.loading = false
           this.tableData.data = this.tableData.data || []
+          this.$refs.investigationTable.$forceUpdate()
         })
         .then((response) => {
           const {
             data: { data }
           } = response
-
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
