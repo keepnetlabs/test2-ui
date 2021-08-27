@@ -210,7 +210,10 @@ export default {
               INTEGRATION_TYPES.FORTINET,
               INTEGRATION_TYPES.VIRUSTOTAL,
               INTEGRATION_TYPES.VMRAY,
-              INTEGRATION_TYPES.IBMXFORCE
+              INTEGRATION_TYPES.IBMXFORCE,
+              INTEGRATION_TYPES.SPAMHOUSE,
+              INTEGRATION_TYPES.CUSTOMINTEGRATION,
+              INTEGRATION_TYPES.GOOGLESAFEBROWSER
             ]
           },
           {
