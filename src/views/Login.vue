@@ -616,7 +616,7 @@ export default {
           return v === this.newPassword || "'New password' and 'Confirm password' do not match"
         }
       },
-      recaptcha: '6Lc_yQEcAAAAAFy5Dc3_b8O5_fa8Dzv_VmRNs94D',
+      recaptcha: APP_CONFIG.VUE_APP_RECAPTCHA_SITEKEY,
       validEmail: false,
       validPassword: false,
       validReset: false
