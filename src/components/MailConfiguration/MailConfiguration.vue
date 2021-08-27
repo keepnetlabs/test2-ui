@@ -1148,7 +1148,11 @@ export default {
           this.closeDeleteDialog()
           this.getTableData()
         })
-      } else if (this.deleteItemType === 'Google Workspace' || this.deleteItemType === 'GSuite') {
+      } else if (
+        this.deleteItemType === 'Google Workspace' ||
+        this.deleteItemType === 'GSuite' ||
+        this.deleteItemType === 'GoogleWorkspace'
+      ) {
         deleteGoogleWorkSpace(this.deleteDialogId).then(() => {
           this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
           this.closeDeleteDialog()
@@ -1350,7 +1354,11 @@ export default {
           this.saveButtonDisabled = false
           this.ewsStatus = true
         })
-      } else if (selectedRow.platform === 'GSuite' || selectedRow.platform === 'Google Workspace') {
+      } else if (
+        selectedRow.platform === 'GSuite' ||
+        selectedRow.platform === 'Google Workspace' ||
+        selectedRow.platform === 'GoogleWorkspace'
+      ) {
         getGoogleWorkSpace(selectedRow.resourceId).then((response) => {
           const apiData = response.data.data
           this.googleWorkSpaceForm = {
