@@ -768,7 +768,7 @@
                           v-if="getGoogleData && getGoogleData.length"
                         >
                           <img
-                            src="../assets/img/Google.png"
+                            src="../assets/img/google@2x.png"
                             alt="g-suite-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
@@ -779,19 +779,33 @@
                           v-if="getOfficeData && getOfficeData.length"
                         >
                           <img
-                            src="../assets/img/Office.png"
+                            src="../assets/img/outlook@2x.png"
                             alt="outlook-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
                           {{ getOfficeData.toString() }}
                         </div>
-                        <div v-if="getWordData && getWordData.length" class="align-center d-flex">
+                        <div
+                          v-if="getWordData && getWordData.length"
+                          class="align-center d-flex mr-2"
+                        >
                           <img
-                            src="../assets/img/Word.png"
+                            src="../assets/img/O365@2x.png"
                             alt="office-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
                           {{ getWordData.toString() }}
+                        </div>
+                        <div
+                          v-if="getExchangeData && getExchangeData.length"
+                          class="align-center d-flex"
+                        >
+                          <img
+                            src="../assets/img/exchange@2x.png"
+                            alt="office-logo"
+                            style="width: 16px; margin-right: 2px;"
+                          />
+                          {{ getExchangeData.toString() }}
                         </div>
                       </div>
                     </div>
@@ -2537,7 +2551,7 @@ export default {
       return (
         this.investigationDetailsData &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
-          if (item.type === 'O365') acc.push(item.mailConfigurationName)
+          if (item.type === 'GSuite') acc.push(item.mailConfigurationName)
           return acc
         }, [])
       )
@@ -2552,6 +2566,15 @@ export default {
       )
     },
     getWordData() {
+      return (
+        this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
+          if (item.type === 'O365') acc.push(item.mailConfigurationName)
+          return acc
+        }, [])
+      )
+    },
+    getExchangeData() {
       return (
         this.investigationDetailsData &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
