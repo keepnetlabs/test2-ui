@@ -21,6 +21,7 @@ const APP_CONFIG = (() => {
     VUE_APP_WEB_API_TEST: 'https://dev-api.devkeepnet.com/api',
     VUE_APP_API_KEY: '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX',
     VUE_APP_AUTH_API_TEST: 'https://dev-api.devkeepnet.com',
-    VUE_APP_APP_API_TEST: 'https://dev-api.devkeepnet.com/api'
+    VUE_APP_APP_API_TEST: 'https://dev-api.devkeepnet.com/api',
+    VUE_APP_RECAPTCHA_SITEKEY: '6LfSWikcAAAAAIU4AtHzGDkC_0g2uIOsijvBTKcC'
   }
 })()
