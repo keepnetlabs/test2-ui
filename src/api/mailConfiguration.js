@@ -10,7 +10,7 @@ export function getMailConfigurationList(payload) {
 }
 
 export function deleteGoogleWorkSpace(resourceId = '') {
-  return testRequest.delete(`mail-configurations/gsuite/${resourceId}`, {
+  return testRequest.delete(`mail-configurations/googleworkspace/${resourceId}`, {
     loading: true,
     snackbar: COMMON_SNACKBAR
   })
@@ -51,21 +51,21 @@ export function createEWS(payload) {
 }
 
 export function createGoogleWorkSpace(payload = {}) {
-  return testRequest.post('mail-configurations/gsuite', payload, {
+  return testRequest.post('mail-configurations/googleworkspace', payload, {
     loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
 
 export function updateGoogleWorkSpace(payload = {}, resourceId = '') {
-  return testRequest.put(`mail-configurations/gsuite/${resourceId}`, payload, {
+  return testRequest.put(`mail-configurations/googleworkspace/${resourceId}`, payload, {
     loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
 
 export function getGoogleWorkSpace(resourceId = '') {
-  return testRequest.get(`mail-configurations/gsuite/${resourceId}`, { loading: true })
+  return testRequest.get(`mail-configurations/googleworkspace/${resourceId}`, { loading: true })
 }
 
 export function updateEWS(payload, url) {
