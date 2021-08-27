@@ -420,7 +420,7 @@ export const INTEGRATION_TYPES = {
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IBM X-Force',
   GOOGLESAFEBROWSER: 'Google Safe Browsing',
-  SPAMHOUSE: 'SpamHouse',
+  SPAMHOUSE: 'SpamHaus',
   CUSTOMINTEGRATION: 'Custom Integration'
 }
 export const INTEGRATION_LABELS = {
