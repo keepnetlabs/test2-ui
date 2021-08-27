@@ -1860,6 +1860,7 @@ export default {
       max-width: 150px;
       max-height: 48px;
       margin: 24px 24px 16px;
+      min-height: 48px;
       &__logo {
         max-height: 48px;
       }
