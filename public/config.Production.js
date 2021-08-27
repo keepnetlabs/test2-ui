@@ -21,6 +21,7 @@ const APP_CONFIG = (() => {
     VUE_APP_WEB_API_TEST: '#{knl_api_address}#/api',
     VUE_APP_API_KEY: '#{knl_api_key}#',
     VUE_APP_AUTH_API_TEST: '#{knl_api_address}#',
-    VUE_APP_APP_API_TEST: '#{knl_api_address}#/api'
+    VUE_APP_APP_API_TEST: '#{knl_api_address}#/api',
+    VUE_APP_RECAPTCHA_SITEKEY: '#{knl_recaptcha_sitekey}#'
   }
 })()
