@@ -419,7 +419,7 @@ export const INTEGRATION_TYPES = {
   FORTINET: 'FortiNet',
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IBM X-Force',
-  GOOGLESAFEBROWSER: 'GoogleSafeBrowser',
+  GOOGLESAFEBROWSER: 'Google Safe Browsing',
   SPAMHOUSE: 'SpamHouse',
   CUSTOMINTEGRATION: 'Custom Integration'
 }
