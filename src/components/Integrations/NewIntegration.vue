@@ -1019,7 +1019,7 @@ export default {
           .then((response) => {
             let proxyItems = response.data.data.results
             proxyItems.unshift({
-              name: 'no proxy',
+              name: 'No proxy',
               resourceId: ''
             })
             this.proxyItems = proxyItems
