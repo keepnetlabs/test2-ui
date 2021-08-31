@@ -1207,8 +1207,7 @@ export default {
                 ]
               }
             },
-            show: true,
-            showOnlyPreview: true
+            show: true
           }
         ]
       },

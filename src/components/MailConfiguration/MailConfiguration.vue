@@ -795,7 +795,9 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150
+          width: 150,
+          filterableType: 'select',
+          filterableItems: ['GoogleWorkspace', 'O365', 'Exchange']
         },
         {
           property: PROPERTY_STORE.EMAIL,
@@ -804,7 +806,8 @@ export default {
           label: getStoreValue(PROPERTY_STORE.EMAIL),
           sortable: true,
           show: true,
-          type: 'text'
+          type: 'text',
+          filterableType: 'text'
         },
         {
           property: 'statusName',
@@ -819,7 +822,9 @@ export default {
             style: {
               maxWidth: '100px'
             }
-          }
+          },
+          filterableType: 'select',
+          filterableItems: ['Running', 'Not Running']
         },
         {
           property: PROPERTY_STORE.CREATETIME,
@@ -830,7 +835,8 @@ export default {
           show: true,
           fixed: false,
           type: 'text',
-          width: 180
+          width: 180,
+          filterableType: 'date'
         }
       ],
       defaultColumns: [
