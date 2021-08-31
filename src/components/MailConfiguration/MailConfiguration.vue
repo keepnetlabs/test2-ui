@@ -1282,13 +1282,15 @@ export default {
       this.isWantToImportFile = false
     },
     handleAddMailConfiguration(item) {
-      switch (item) {
-        case this.mailConfigurationTypes[0]:
+      /*
+      case this.mailConfigurationTypes[0]:
           this.statusGoogleWorkSpace = true
           this.googleWorkSpaceEditData = null
           this.isTestConnectionWorkedBefore = false
           break
-        case this.mailConfigurationTypes[1]:
+       */
+      switch (item) {
+        case this.mailConfigurationTypes[0]:
           this.formValues = {
             name: null,
             applicationId: null,
@@ -1301,7 +1303,7 @@ export default {
           this.saveButtonDisabled = false
           this.status = true
           break
-        case this.mailConfigurationTypes[2]:
+        case this.mailConfigurationTypes[1]:
           this.ewsFormValues = {
             Name: null,
             ServiceUrl: null,
