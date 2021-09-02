@@ -148,7 +148,6 @@ import {
   getIntegrationList
 } from '@/api/integrations'
 import {
-  COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
@@ -607,8 +606,7 @@ export default {
 
       filterPayload = [...items]
       this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForGetUserRoles()
-
+      this.getDatatableList()
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     }
