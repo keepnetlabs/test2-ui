@@ -39,16 +39,16 @@
                 <span class="checkbox-text-dialog">Select All</span>
               </div>
               <div class="analyze__main__select-row-inline">
-                <span type="button" class="analyze__main__select-row-inline__button__title">
+                <span class="analyze__main__select-row-inline__button__title">
                   Hash
                 </span>
-                <span type="button" class="analyze__main__select-row-inline__button__title">
+                <span class="analyze__main__select-row-inline__button__title">
                   File
                 </span>
-                <span type="button" class="analyze__main__select-row-inline__button__title">
+                <span class="analyze__main__select-row-inline__button__title">
                   Url
                 </span>
-                <span type="button" class="analyze__main__select-row-inline__button__title">
+                <span class="analyze__main__select-row-inline__button__title">
                   IP
                 </span>
               </div>
@@ -817,7 +817,7 @@ export default {
             ? analysisEngineType.isSendFile
             : engine.selected
           this.analysisEngines[index].isCheckSenderIP = engine.selected
-            ? analysisEngineType.isCheckSenderIP
+            ? analysisEngineType.isSendIp
             : engine.selected
         } else {
           this.analysisEngines[index].isCheckUrl = engine.selected
