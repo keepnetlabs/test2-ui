@@ -3729,4 +3729,7 @@ export default {
     min-width: 328px;
   }
 }
+#text--extended-view-singular-value-Notes-7 {
+  white-space: initial;
+}
 </style>
