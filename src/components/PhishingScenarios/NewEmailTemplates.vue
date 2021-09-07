@@ -161,6 +161,7 @@
                         :from-address.sync="formValues.fromAddress"
                         :from-name.sync="formValues.fromName"
                         :attachment-files.sync="formValues.attachmentFiles"
+                        :attachmentFilesFromApi.sync="formValues.attachmentFilesFromApi"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
                         :is-edit="!!isEdit"
@@ -324,7 +325,8 @@ export default {
         fromName: null,
         subject: null,
         template: null,
-        attachmentFiles: []
+        attachmentFiles: [],
+        attachmentFilesFromApi: []
       },
       commonRules: {
         hint: '*Required',
@@ -594,6 +596,9 @@ export default {
         }
         if (this.formValues.attachments) {
           this.formValues.attachmentFiles = this.formValues.attachments
+          this.formValues.attachmentFilesFromApi = JSON.parse(
+            JSON.stringify(this.formValues.attachments)
+          )
         }
       })
     }

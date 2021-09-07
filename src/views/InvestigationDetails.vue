@@ -1302,7 +1302,7 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
-        width: 260,
+        minWidth: 260,
         cellPadding: 8
       },
       {
@@ -1325,7 +1325,7 @@ export default {
         sortable: true,
         show: true,
         type: 'attachment',
-        width: 120
+        minWidth: 120
       },
       {
         property: 'scanType',
@@ -1336,7 +1336,7 @@ export default {
         sortable: true,
         show: true,
         type: 'service',
-        width: 120,
+        minWidth: 120,
         filterableType: 'select',
         filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
       },
@@ -1347,7 +1347,7 @@ export default {
         type: 'textWithBadge',
         show: true,
         label: 'Filtered By',
-        width: 160,
+        minWidth: 160,
         cellPadding: 8,
         hasMapper: true
       },
@@ -1358,7 +1358,7 @@ export default {
         hideSort: true,
         label: 'Status',
         show: true,
-        width: 280,
+        minWidth: 280,
         type: 'slot'
       }
     ],
@@ -1373,7 +1373,7 @@ export default {
         show: true,
         type: 'text',
         filterableType: 'text',
-        width: 260
+        minWidth: 260
       },
       {
         property: 'userStatus',
@@ -1385,7 +1385,7 @@ export default {
         show: true,
         type: 'detected',
         filterableType: 'select',
-        width: 150,
+        minWidth: 150,
         filterableItems: ['Online', 'Offline']
       },
 
@@ -1397,7 +1397,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        width: 140,
+        minWidth: 140,
         type: 'text'
       },
       {
@@ -1407,7 +1407,7 @@ export default {
         label: getStoreValue(PROPERTY_STORE.LASTSEEN),
         fixed: false,
         sortable: true,
-        width: 180,
+        minWidth: 180,
         show: true,
         type: 'text'
       },
@@ -1419,7 +1419,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        width: 150,
+        minWidth: 150,
         type: 'badge'
       },
       {
@@ -1430,7 +1430,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        width: 180,
+        minWidth: 180,
         type: 'service',
         filterableType: 'select',
         filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
