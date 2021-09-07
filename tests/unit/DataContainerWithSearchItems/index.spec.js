@@ -9,10 +9,10 @@ describe('Data container with search items test cases suite', () => {
     expect(wrapper.find('.data-container-with-search__content').exists()).toBe(true)
   })
   it('Adding value and control', async () => {
-    const { wrapper } = new DataContainerWithSearch(localVue, { value: [] })
+    const { wrapper } = new DataContainerWithSearch(localVue, { value: ['asasas'] })
     //adding value
-    wrapper.vm.value = ['deneme']
-    await wrapper.vm.$nextTick()
+    await wrapper.setProps({ value: ['Gürkan'] })
+    console.log(wrapper.html())
     //checking is rendering
     expect(wrapper.find('.v-virtual-scroll__container').exists()).toBe(true)
   })
@@ -23,6 +23,5 @@ describe('Data container with search items test cases suite', () => {
     await inputWrapper.trigger('keyup')
     //checking is data writed to the dom
     expect(inputWrapper.element.value).toBe('custom data')
-    console.log(wrapper.html())
   })
 })
