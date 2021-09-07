@@ -229,7 +229,7 @@ export default {
             fixed: 'left',
             width: 240,
             filterableType: 'text',
-            filterableCustomFieldName: 'TemplateName'
+            filterableCustomFieldName: 'Name'
           },
           {
             property: PROPERTY_STORE.CATEGORYNAME,
@@ -242,7 +242,7 @@ export default {
             fixed: false,
             width: 240,
             filterableType: 'select',
-            filterableCustomFieldName: 'categoryName',
+            filterableCustomFieldName: 'CategoryResourceId',
             filterableItems: [
               { text: 'Click Only', value: 'WNZt0sCVCWB3' },
               { text: 'Data Submission', value: 'DYC0gugxJMjT' },
@@ -264,7 +264,7 @@ export default {
               { text: 'Hard', value: 'c4LCGEB9MayB' }
             ],
             width: 180,
-            filterableCustomFieldName: PROPERTY_STORE.DIFFICULTY
+            filterableCustomFieldName: 'DifficultyResourceId'
           },
           {
             property: PROPERTY_STORE.CREATEDBY,
