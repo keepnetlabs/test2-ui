@@ -1340,7 +1340,6 @@ export default {
       this.callForTargetUsers()
     },
     handleEditMailConfiguration(selectedRow) {
-      console.log(selectedRow)
       if (selectedRow.platform === 'Exchange') {
         getEWSMailData(selectedRow.resourceId).then((response) => {
           const apiData = response.data.data

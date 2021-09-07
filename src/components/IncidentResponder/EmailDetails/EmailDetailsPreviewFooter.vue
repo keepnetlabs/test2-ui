@@ -6,14 +6,9 @@
         v-for="(att, ind) of mailDetails.attachments"
         :key="att.resourceId"
         :id="`text--email-details-preview__attachment-${ind}`"
-        class="attachment red-attach"
-        :class="[
-          att.isFlagged ? 'red-attach' : '',
-          !att.isFlagged ? 'blue-attach' : '',
-          !att.isHidden ? 'clean-attach' : ''
-        ]"
+        :class="`attachment ${getClass(att['analysisList'])}`"
       >
-        <div v-if="att.isFlagged" class="attach-icon red-icon">
+        <div v-if="getIsAnalysisMalicious(att['analysisList'])" class="attach-icon red-icon">
           <v-icon color="white" style="font-size: 20px;">mdi-alert</v-icon>
         </div>
         <div v-else class="attach-icon blue-icon">
@@ -52,6 +47,19 @@ export default {
       type: Object
     }
   },
-  emits: ['on-attachment-click']
+  emits: ['on-attachment-click'],
+  methods: {
+    getClass(analysisList = []) {
+      return this.getIsAnalysisMalicious(analysisList) ? 'red-attach' : 'blue-attach'
+    },
+    getIsAnalysisMalicious(analysisList = []) {
+      return (
+        analysisList.length &&
+        analysisList.some(({ result }) => {
+          return ['Malicious', 'Phishing'].includes(result)
+        })
+      )
+    }
+  }
 }
 </script>
