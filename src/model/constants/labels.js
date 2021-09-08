@@ -11,6 +11,7 @@ export const labels = {
   CompanyGroupNameSecondLower: 'Company group name',
   BatchImport: 'Batch Import',
   BatchImportPopupSubtitle: 'Import multiple domains separated by line-break or comma',
+  BatchImportPopupIpAddressSubtitle: 'Import multiple IP address separated by line-break or comma',
   CommunityName: 'Community Name',
   CompanyId: 'Company ID',
   CertificateName: 'Certificate Name',
@@ -57,6 +58,7 @@ export const labels = {
   NewClient: 'New Client',
   URLS: 'URLs',
   URLSSubtitle: 'Exclude URLs that are found inside email’s body from analysis',
+  IPAddressesSubtitle: 'Exclude IP adresses that are found inside email’s body from analysis',
   WhiteLabelingSubTitle:
     'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
   WhiteListingSubTitle:

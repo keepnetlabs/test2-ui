@@ -11,6 +11,7 @@
         :id="item.id"
         :name="item.name"
         :label="item.label"
+        :form-data="formData"
       >
         <component :is="item.component" />
       </el-tab-pane>
@@ -24,6 +25,7 @@ import labels from '@/model/constants/labels'
 import AdvancedSettingsURLs from '@/components/Integrations/AdvancedSettings/AdvancedSettingsURLs'
 import AdvancedSettingsIpAddresses from '@/components/Integrations/AdvancedSettings/AdvancedSettingsIpAddresses'
 import AdvancedSettingsAttachments from '@/components/Integrations/AdvancedSettings/AdvancedSettingsAttachments'
+import { getAnalysisExclusions } from '@/api/integrations'
 export default {
   name: 'AdvancedSettings',
   components: { CompanySettingsHeader },
@@ -51,7 +53,16 @@ export default {
           id: `${labels.Attachments.toLowerCase()}-content`,
           component: AdvancedSettingsAttachments
         }
-      ]
+      ],
+      formData: []
+    }
+  },
+  created() {
+    this.getAnalysisExclusions()
+  },
+  methods: {
+    async getAnalysisExclusions() {
+      const response = await getAnalysisExclusions()
     }
   }
 }

@@ -1,28 +1,25 @@
 <template>
-  <section id="advanced-settings-url">
+  <article id="advanced-settings-ip-addresses">
     <BatchImportPopup
       v-if="isBatchImportPopupOpen"
+      :subtitle="labels.BatchImportPopupIpAddressSubtitle"
       :status="isBatchImportPopupOpen"
       @on-close="toggleBatchImportPopup"
       @on-confirm="handleBatchImport"
     />
     <DataContainerWithSearchInput
       ref="refSearchInput"
-      :labels="{ title: labels.URLS, subtitle: labels.URLSSubtitle }"
-      @on-add-click="handleUrlAdd"
+      :labels="{ title: labels.IpAddresses, subtitle: labels.IPAddressesSubtitle }"
+      @on-add-click="handleIpAddressesAdd"
     >
       <template #search-input>
-        <InputUrl
-          id="input--advanced-settings-url"
-          placeholder="Enter URL"
-          v-model.trim="urlSearch"
-        />
+        <InputIpAddress id="input--advanced-settings-ip-addresses" v-model.trim="ipAddressSearch" />
       </template>
     </DataContainerWithSearchInput>
     <DataContainerWithSearch
       v-if="dataContainerWithSearchItems.length"
       v-model.trim="dataContainerWithSearchItems"
-      :text-field-rules="[...COMMON_CONSTANTS.DEFAULT_URL_RULES]"
+      :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
     />
     <button
       id="btn-import--advanced-settings-url"
@@ -43,48 +40,48 @@
     >
       {{ labels.SaveChanges }}
     </v-btn>
-  </section>
+  </article>
 </template>
 
 <script>
-import DataContainerWithSearchInput from '@/components/Common/Others/DataContainerWithSearchInput'
-import InputUrl from '@/components/Common/Inputs/InputUrl'
-import labels from '@/model/constants/labels'
-import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import DataContainerWithSearchInput from '@/components/Common/Others/DataContainerWithSearchInput'
+import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
+import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
+import * as Validations from '@/utils/validations'
+import labels from '@/model/constants/labels'
 export default {
-  name: 'AdvancedSettingsURLs',
-  components: { BatchImportPopup, DataContainerWithSearch, InputUrl, DataContainerWithSearchInput },
-  props: {
-    formData: {
-      type: Object
-    }
+  name: 'AdvancedSettingsIpAddresses',
+  components: {
+    DataContainerWithSearch,
+    InputIpAddress,
+    DataContainerWithSearchInput,
+    BatchImportPopup
   },
   data() {
     return {
-      urlSearch: '',
-      dataContainerWithSearchItems: [],
+      Validations,
       isBatchImportPopupOpen: false,
+      ipAddressSearch: '',
+      dataContainerWithSearchItems: [],
       isActionButtonDisabled: false,
-      labels,
-      COMMON_CONSTANTS
+      labels
     }
   },
   methods: {
-    handleUrlAdd() {
-      this.dataContainerWithSearchItems.unshift(this.urlSearch)
-      this.resetUrlSearch()
-    },
-    resetUrlSearch() {
-      this.urlSearch = ''
-    },
     handleBatchImport(data = []) {
       if (!data.length) return
       this.dataContainerWithSearchItems.unshift(...data)
     },
     toggleBatchImportPopup() {
       this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
+    },
+    handleIpAddressesAdd() {
+      this.dataContainerWithSearchItems.unshift(this.ipAddressSearch)
+      this.resetIpAddresses()
+    },
+    resetIpAddresses() {
+      this.ipAddressSearch = ''
     },
     handleSaveChanges() {
       if (this.dataContainerWithSearchItems.length) {
