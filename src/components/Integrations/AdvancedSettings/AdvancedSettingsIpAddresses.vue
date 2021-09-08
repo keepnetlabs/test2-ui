@@ -58,6 +58,11 @@ export default {
     DataContainerWithSearchInput,
     BatchImportPopup
   },
+  props: {
+    formData: {
+      type: Array
+    }
+  },
   data() {
     return {
       Validations,

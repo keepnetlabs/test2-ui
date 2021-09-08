@@ -19,6 +19,7 @@ export const labels = {
   AllowedDomains: 'Allowed Domains',
   CopyToClipboard: 'Copy to Clipboard',
   Attachments: 'Attachments',
+  AttachmentsSubtitle: 'Exclude email attachments by file type from analysis',
   SamlSettings: 'SAML Settings',
   IdPEntityID: 'Idp Entity ID',
   Skip: 'Skip',

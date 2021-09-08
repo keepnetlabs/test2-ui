@@ -58,7 +58,7 @@ export default {
   components: { BatchImportPopup, DataContainerWithSearch, InputUrl, DataContainerWithSearchInput },
   props: {
     formData: {
-      type: Object
+      type: Array
     }
   },
   data() {
