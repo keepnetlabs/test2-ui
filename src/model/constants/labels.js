@@ -17,6 +17,7 @@ export const labels = {
   SamlName: 'SAML Name',
   AllowedDomains: 'Allowed Domains',
   CopyToClipboard: 'Copy to Clipboard',
+  Attachments: 'Attachments',
   SamlSettings: 'SAML Settings',
   IdPEntityID: 'Idp Entity ID',
   Skip: 'Skip',
@@ -54,6 +55,8 @@ export const labels = {
   NextSteps: 'Next Steps',
   EditClient: 'Edit Client',
   NewClient: 'New Client',
+  URLS: 'URLs',
+  URLSSubtitle: 'Exclude URLs that are found inside email’s body from analysis',
   WhiteLabelingSubTitle:
     'Change branding and white labeling settings. Changes logos, urls, email addresses globally.  Skip to use system settings.',
   WhiteListingSubTitle:
@@ -73,6 +76,7 @@ export const labels = {
   CompanyNameSecondLower: 'Company name',
   SenderName: 'Sender name',
   Title: 'Title',
+  IpAddresses: 'IP Addresses',
   ReAnalyze: 'Re-analyze',
   SHA512: 'SHA512',
   SHA1: 'SHA1',
@@ -163,6 +167,9 @@ export const labels = {
   BrandNameSubTitle: 'Your users and customers will see the platform under this brand name',
   MainDomain: 'Main Domain',
   Domain: 'Domain',
+  AdvancedSettings: 'Advanced Settings',
+  AdvancedSettingsSubTitle:
+    'You can exclude domains, URLs, IP addresses , attachment extensions from the analysis process',
   MainDomainSubTitle: 'Your company’s web domain',
   MainDomainPlaceHolder: 'Enter domain',
   MainLogo: 'Main Logo',

@@ -4,9 +4,15 @@
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Integrations" name="integrations" id="integrations-content"
-              ><integration
-            /></el-tab-pane>
+            <el-tab-pane
+              v-for="item in tabItems"
+              :key="item.name"
+              :id="item.id"
+              :name="item.name"
+              :label="item.label"
+            >
+              <component :is="item.component" />
+            </el-tab-pane>
           </el-tabs>
         </v-card>
       </v-col>
@@ -16,6 +22,8 @@
 
 <script>
 import Integrations from '../components/Integrations/Integrations'
+import labels from '@/model/constants/labels'
+import AdvancedSettings from '@/components/Integrations/AdvancedSettings/AdvancedSettings'
 export default {
   name: 'Integrations',
   components: {
@@ -23,7 +31,22 @@ export default {
   },
   data() {
     return {
-      tab: 'integrations'
+      tab: 'integrations',
+      tabItems: [
+        {
+          label: 'Integrations',
+          name: 'integrations',
+          id: 'integrations-content',
+          component: Integrations
+        },
+        {
+          label: labels.AdvancedSettings,
+          name: labels.AdvancedSettings.toLowerCase().replace(/\s/gi, ''),
+          id: `${labels.AdvancedSettings.toLowerCase()}-content`,
+          component: AdvancedSettings
+        }
+      ],
+      labels
     }
   },
   methods: {
