@@ -11,7 +11,7 @@
               :name="item.name"
               :label="item.label"
             >
-              <component :is="item.component" />
+              <component v-if="item.name === tab" :is="item.component" />
             </el-tab-pane>
           </el-tabs>
         </v-card>
