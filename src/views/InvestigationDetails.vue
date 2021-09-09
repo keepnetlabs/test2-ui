@@ -1422,7 +1422,8 @@ export default {
         minWidth: 150,
         type: 'badge',
         filterableType: 'select',
-        filterableItems: ['Completed', 'Interrupted', 'Running']
+        filterableItems: ['Completed', 'Interrupted', 'Running'],
+        errorStateFor: true
       },
       {
         property: 'scanType',
