@@ -1420,17 +1420,6 @@ export default {
         sortable: true,
         show: true,
         minWidth: 150,
-        type: 'badge'
-      },
-      {
-        property: 'Status',
-        align: 'center',
-        editable: false,
-        label: 'Status',
-        fixed: false,
-        sortable: true,
-        show: true,
-        minWidth: 150,
         type: 'badge',
         filterableType: 'select',
         filterableItems: ['Completed', 'Interrupted', 'Running']
