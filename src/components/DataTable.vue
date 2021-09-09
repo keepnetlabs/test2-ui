@@ -513,6 +513,8 @@
                     :col="col"
                     :text="getDataTableFieldLabel(scope.row[col.property])"
                     v-if="scope.row && scope.row[col.property]"
+                    :isErrorState="col.errorStateFor"
+                    :errorStateValue="scope.row.scanResultMessage"
                   />
                   <span v-else>
                     {{ col.emptyText || '' }}
