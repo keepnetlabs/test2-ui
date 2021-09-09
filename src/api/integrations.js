@@ -64,3 +64,13 @@ export function testAnalysis(id, payload) {
 export function searchNotifiedMail(payload) {
   return testRequest.post(`notified-emails/search`, payload)
 }
+
+export function getAnalysisExclusions() {
+  return testRequest.get(`analysis-engines/analysis-exclusions`)
+}
+
+export function updateAnalysisExclusions(payload = {}) {
+  return testRequest.put(`analysis-engines/analysis-exclusions`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

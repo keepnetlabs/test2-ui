@@ -3030,6 +3030,13 @@ export default {
   letter-spacing: normal;
   color: #f56c6c;
 }
+.v-menu__content.theme--light.menuable__content__active.data-table-filter__date-picker {
+  &-select {
+    &-menu {
+      z-index: 9999999999 !important;
+    }
+  }
+}
 </style>
 <!--
   DataTable COMPONENT

@@ -1420,7 +1420,9 @@ export default {
         sortable: true,
         show: true,
         minWidth: 150,
-        type: 'badge'
+        type: 'badge',
+        filterableType: 'select',
+        filterableItems: ['Completed', 'Interrupted', 'Running']
       },
       {
         property: 'scanType',
