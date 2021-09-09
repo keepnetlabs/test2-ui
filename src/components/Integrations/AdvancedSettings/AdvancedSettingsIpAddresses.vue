@@ -19,6 +19,8 @@
     <DataContainerWithSearch
       v-if="dataContainerWithSearchItems.length"
       v-model.trim="dataContainerWithSearchItems"
+      text-field-error-message="This Ip address is not valid!"
+      text-field-placeholder="Enter an Ip address"
       :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
     />
     <button
@@ -73,7 +75,24 @@ export default {
       labels
     }
   },
+  watch: {
+    formData(val = []) {
+      this.setFormDataToIpAddresses(val)
+    }
+  },
+  created() {
+    this.setFormDataToIpAddresses()
+  },
   methods: {
+    setFormDataToIpAddresses(val = this.formData) {
+      this.dataContainerWithSearchItems = val.reduce((acc, item) => {
+        const { exclusionType, value } = item
+        if (exclusionType === 'IP') {
+          acc.push(value)
+        }
+        return acc
+      }, [])
+    },
     handleBatchImport(data = []) {
       if (!data.length) return
       this.dataContainerWithSearchItems.unshift(...data)
@@ -90,7 +109,11 @@ export default {
     },
     handleSaveChanges() {
       if (this.dataContainerWithSearchItems.length) {
-        //todo let the create
+        const payload = this.dataContainerWithSearchItems.reduce((acc, item) => {
+          acc.push({ attachmentExtensionType: null, exclusionType: 'IP', value: item })
+          return acc
+        }, [])
+        this.$emit('on-submit', payload, 'IP')
       }
     }
   }

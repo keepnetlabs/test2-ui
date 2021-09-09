@@ -11,9 +11,14 @@
         :id="item.id"
         :name="item.name"
         :label="item.label"
-        :form-data="formData"
       >
-        <component :is="item.component" />
+        <DatatableLoading v-if="isLoading" class="mt-5" :loading="isLoading" />
+        <component
+          v-else-if="!isLoading && tab === item.name"
+          :is="item.component"
+          :form-data="formData"
+          @on-submit="handleSubmit"
+        />
       </el-tab-pane>
     </el-tabs>
   </section>
@@ -25,14 +30,16 @@ import labels from '@/model/constants/labels'
 import AdvancedSettingsURLs from '@/components/Integrations/AdvancedSettings/AdvancedSettingsURLs'
 import AdvancedSettingsIpAddresses from '@/components/Integrations/AdvancedSettings/AdvancedSettingsIpAddresses'
 import AdvancedSettingsAttachments from '@/components/Integrations/AdvancedSettings/AdvancedSettingsAttachments'
-import { getAnalysisExclusions } from '@/api/integrations'
+import { getAnalysisExclusions, updateAnalysisExclusions } from '@/api/integrations'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'AdvancedSettings',
-  components: { CompanySettingsHeader },
+  components: { DatatableLoading, CompanySettingsHeader },
   data() {
     return {
       labels,
       tab: labels.URLS.toLowerCase(),
+      isLoading: false,
       tabItems: [
         {
           label: labels.URLS,
@@ -61,8 +68,32 @@ export default {
     this.getAnalysisExclusions()
   },
   methods: {
-    async getAnalysisExclusions() {
-      const response = await getAnalysisExclusions()
+    getAnalysisExclusions() {
+      this.setLoading(true)
+      getAnalysisExclusions()
+        .then(({ data: { data } }) => {
+          console.log(data)
+          const { exclusionItems } = data
+          this.formData = exclusionItems
+        })
+        .finally(this.setLoading)
+    },
+    handleSubmit(payload = {}, key = null) {
+      console.log('payload', payload)
+      const newPayload = { exclusionItems: [...this.removeKeysFromData(key), ...payload] }
+      this.setLoading(true)
+      updateAnalysisExclusions(newPayload)
+        .then((response) => {
+          this.getAnalysisExclusions()
+        })
+        .finally(this.setLoading)
+    },
+    setLoading(value = false) {
+      this.isLoading = value
+    },
+    removeKeysFromData(key) {
+      const copyOfData = JSON.parse(JSON.stringify(this.formData))
+      return copyOfData.filter(({ exclusionType }) => exclusionType !== key)
     }
   }
 }

@@ -68,3 +68,7 @@ export function searchNotifiedMail(payload) {
 export function getAnalysisExclusions() {
   return testRequest.get(`analysis-engines/analysis-exclusions`)
 }
+
+export function updateAnalysisExclusions(payload = {}) {
+  return testRequest.put(`analysis-engines/analysis-exclusions`, payload)
+}
