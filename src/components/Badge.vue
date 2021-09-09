@@ -1,20 +1,44 @@
 <template functional>
-  <v-btn
-    v-bind="$options.getDynamicProps(props)"
-    v-on="props.listeners"
-    style="cursor: default;"
-    :id="props.id"
-    :ripple="false"
-    :class="[
-      'k-badge',
-      props.fullWidth ? 'full-width' : '',
-      $options.getBadgeSize(props.size, props),
-      props.className,
-      { 'k-badge--default': !props.outline }
-    ]"
-  >
-    {{ props.text }}
-  </v-btn>
+  <div>
+    <v-tooltip bottom v-if="props.isErrorState">
+      <template v-slot:activator="{ on }">
+        <v-btn
+          v-bind="$options.getDynamicProps(props)"
+          v-on="on"
+          style="cursor: default;"
+          :id="props.id"
+          :ripple="false"
+          :class="[
+            'k-badge',
+            props.fullWidth ? 'full-width' : '',
+            $options.getBadgeSize(props.size, props),
+            props.className,
+            { 'k-badge--default': !props.outline }
+          ]"
+        >
+          {{ props.text }}
+        </v-btn>
+      </template>
+      <span>{{ props.errorStateValue }}</span>
+    </v-tooltip>
+    <v-btn
+      v-else
+      v-bind="$options.getDynamicProps(props)"
+      v-on="props.listeners"
+      style="cursor: default;"
+      :id="props.id"
+      :ripple="false"
+      :class="[
+        'k-badge',
+        props.fullWidth ? 'full-width' : '',
+        $options.getBadgeSize(props.size, props),
+        props.className,
+        { 'k-badge--default': !props.outline }
+      ]"
+    >
+      {{ props.text }}
+    </v-btn>
+  </div>
 </template>
 
 <script>
@@ -57,6 +81,12 @@ export default {
     outline: {
       type: Boolean,
       default: true
+    },
+    isErrorState: {
+      default: false
+    },
+    errorStateValue: {
+      default: ''
     }
   },
   getBadgeSize(val) {
