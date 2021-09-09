@@ -53,6 +53,7 @@ import labels from '@/model/constants/labels'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { getFormData, setFormData } from '@/components/Integrations/AdvancedSettings/util'
 export default {
   name: 'AdvancedSettingsURLs',
   components: { BatchImportPopup, DataContainerWithSearch, InputUrl, DataContainerWithSearchInput },
@@ -71,7 +72,18 @@ export default {
       COMMON_CONSTANTS
     }
   },
+  watch: {
+    formData(val = []) {
+      this.setFormDataToURL(val)
+    }
+  },
+  created() {
+    this.setFormDataToURL()
+  },
   methods: {
+    setFormDataToURL(val = this.formData) {
+      this.dataContainerWithSearchItems = getFormData(val, 'URL')
+    },
     handleUrlAdd() {
       this.dataContainerWithSearchItems.unshift(this.urlSearch)
       this.resetUrlSearch()
@@ -88,7 +100,8 @@ export default {
     },
     handleSaveChanges() {
       if (this.dataContainerWithSearchItems.length) {
-        //todo let the create
+        const payload = setFormData(this.dataContainerWithSearchItems, 'URL')
+        this.$emit('on-submit', payload, 'URL')
       }
     }
   }

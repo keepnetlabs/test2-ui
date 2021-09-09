@@ -52,6 +52,7 @@ import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import { getFormData, setFormData } from '@/components/Integrations/AdvancedSettings/util'
 export default {
   name: 'AdvancedSettingsIpAddresses',
   components: {
@@ -85,13 +86,7 @@ export default {
   },
   methods: {
     setFormDataToIpAddresses(val = this.formData) {
-      this.dataContainerWithSearchItems = val.reduce((acc, item) => {
-        const { exclusionType, value } = item
-        if (exclusionType === 'IP') {
-          acc.push(value)
-        }
-        return acc
-      }, [])
+      this.dataContainerWithSearchItems = getFormData(val, 'IP')
     },
     handleBatchImport(data = []) {
       if (!data.length) return
@@ -109,10 +104,7 @@ export default {
     },
     handleSaveChanges() {
       if (this.dataContainerWithSearchItems.length) {
-        const payload = this.dataContainerWithSearchItems.reduce((acc, item) => {
-          acc.push({ attachmentExtensionType: null, exclusionType: 'IP', value: item })
-          return acc
-        }, [])
+        const payload = setFormData(this.dataContainerWithSearchItems, 'IP')
         this.$emit('on-submit', payload, 'IP')
       }
     }
