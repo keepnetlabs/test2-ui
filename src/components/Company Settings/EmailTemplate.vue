@@ -66,7 +66,7 @@
         @input="$emit('update:fromAddress', $event)"
       />
     </div>
-    <div class="email-template__item" v-if="isPhishingTemplate">
+    <div class="align-start d-flex email-template__item" v-if="isPhishingTemplate">
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
@@ -76,6 +76,19 @@
         @inputFile="onFileChanged"
         :size="2"
       />
+      <div class="email-template__attachment-list">
+        <div
+          v-for="item in attachmentFilesFromApi"
+          :key="item.fileName"
+          class="preview-attch-wrapper"
+        >
+          <div class="attachment-wrapper">
+            <div class="attachment blue-attach" :id="'email-template-' + item.fileName">
+              <AttachmentsPreview :att="item" :isEmailTemplate="true" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <v-divider class="email-template__divider mb-6" />
     <v-btn
@@ -204,13 +217,15 @@ import * as Validations from '@/utils/validations'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import AttachmentsPreview from '../ThreadSharing/AttachmentsPreview'
 export default {
   name: 'EmailTemplate',
   components: {
     GrapesNewsletterModal,
     AppModal,
     InputEmail,
-    KFileUpload
+    KFileUpload,
+    AttachmentsPreview
   },
   props: [
     'fromAddress',
@@ -222,7 +237,8 @@ export default {
     'isEdit',
     'editItemsDisabled',
     'isPhishingTemplate',
-    'setAttachmentFile'
+    'setAttachmentFile',
+    'attachmentFilesFromApi'
   ],
   data() {
     return {
@@ -306,6 +322,15 @@ export default {
 <style lang="scss">
 .email-template {
   max-width: 100% !important;
+  &__attachment-list {
+    margin-left: 8px;
+    .attachment {
+      height: 44px;
+      .attach-icon {
+        height: 44px !important;
+      }
+    }
+  }
   .v-window {
     margin-right: 24px;
     padding-bottom: 16px;
