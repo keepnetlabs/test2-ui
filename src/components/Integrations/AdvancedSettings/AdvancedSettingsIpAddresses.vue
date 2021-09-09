@@ -103,10 +103,8 @@ export default {
       this.ipAddressSearch = ''
     },
     handleSaveChanges() {
-      if (this.dataContainerWithSearchItems.length) {
-        const payload = setFormData(this.dataContainerWithSearchItems, 'IP')
-        this.$emit('on-submit', payload, 'IP')
-      }
+      const payload = setFormData(this.dataContainerWithSearchItems, 'IP')
+      this.$emit('on-submit', payload, 'IP')
     }
   }
 }

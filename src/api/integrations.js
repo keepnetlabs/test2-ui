@@ -70,5 +70,7 @@ export function getAnalysisExclusions() {
 }
 
 export function updateAnalysisExclusions(payload = {}) {
-  return testRequest.put(`analysis-engines/analysis-exclusions`, payload)
+  return testRequest.put(`analysis-engines/analysis-exclusions`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }

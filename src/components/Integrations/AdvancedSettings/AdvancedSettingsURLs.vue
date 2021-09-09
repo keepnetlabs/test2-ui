@@ -99,10 +99,8 @@ export default {
       this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
     },
     handleSaveChanges() {
-      if (this.dataContainerWithSearchItems.length) {
-        const payload = setFormData(this.dataContainerWithSearchItems, 'URL')
-        this.$emit('on-submit', payload, 'URL')
-      }
+      const payload = setFormData(this.dataContainerWithSearchItems, 'URL')
+      this.$emit('on-submit', payload, 'URL')
     }
   }
 }

@@ -21,14 +21,14 @@
         id="input--advanced-settings-attachment-office"
         color="#2196f3"
         label="Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)"
-        value="Office"
+        value="MSOffice"
       />
       <v-checkbox
         v-model="values"
         id="input--advanced-settings-attachment-portable"
         color="#2196f3"
         label="Portable executable files (exe, .dll, .sys, etc.)"
-        value="Portable"
+        value="PEExtensions"
       />
       <v-btn
         id="btn-save--advanced-settings-url"
@@ -58,6 +58,7 @@ export default {
       type: Array
     }
   },
+
   data() {
     return {
       labels,
@@ -65,8 +66,36 @@ export default {
       values: []
     }
   },
+  watch: {
+    formData(val = []) {
+      this.setFormDataToAttachment(val)
+    }
+  },
+  created() {
+    this.setFormDataToAttachment()
+  },
   methods: {
-    handleSaveChanges() {}
+    handleSaveChanges() {
+      const payload = this.createPayload()
+      this.$emit('on-submit', payload, 'AttacmentExtension')
+    },
+    setFormDataToAttachment(val = this.formData) {
+      this.values = val.reduce((acc, item) => {
+        const { attachmentExtensionType, exclusionType } = item
+        if (exclusionType === 'AttacmentExtension') acc.push(attachmentExtensionType)
+        return acc
+      }, [])
+    },
+    createPayload() {
+      return this.values.reduce((acc, item) => {
+        acc.push({
+          attachmentExtensionType: item,
+          exclusionType: 'AttacmentExtension',
+          value: null
+        })
+        return acc
+      }, [])
+    }
   }
 }
 </script>
