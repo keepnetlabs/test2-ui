@@ -72,7 +72,6 @@ export default {
       this.setLoading(true)
       getAnalysisExclusions()
         .then(({ data: { data } }) => {
-          console.log(data)
           const { exclusionItems } = data
           this.formData = exclusionItems
         })

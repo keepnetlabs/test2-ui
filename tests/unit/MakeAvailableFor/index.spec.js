@@ -33,7 +33,6 @@ describe('Data container with search items test cases suite', () => {
     const { wrapper } = new MakeAvailableFor(localVue)
     //focusing input
     await wrapper.find('.vue-treeselect').trigger('focus')
-    console.log(wrapper.vm)
     //expecting menu is open
     expect(wrapper.find('.vue-treeselect--open-below').exists()).toBe(true)
   })
