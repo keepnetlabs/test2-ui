@@ -55,6 +55,7 @@
               v-model="getItems[index]"
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
+              :text-field-error-message="textFieldErrorMessage"
               @on-delete="handleItemDelete"
             />
           </template>
@@ -81,6 +82,10 @@ export default {
     textFieldPlaceholder: {
       type: String,
       default: 'Enter Domain name'
+    },
+    textFieldErrorMessage: {
+      type: String,
+      default: 'This Domain is not valid!'
     },
     textFieldRules: {
       type: Array,

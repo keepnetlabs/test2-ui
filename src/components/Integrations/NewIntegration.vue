@@ -1020,7 +1020,7 @@ export default {
             let proxyItems = response.data.data.results
             proxyItems.unshift({
               name: 'No proxy',
-              resourceId: ''
+              resourceId: '382e06ccbbde'
             })
             this.proxyItems = proxyItems
             if (isDefault) {

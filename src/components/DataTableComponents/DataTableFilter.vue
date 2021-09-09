@@ -104,16 +104,20 @@
       </template>
       <template v-if="filterableType === 'date'">
         <v-select
+          v-if="filterableOptions.showSelect"
+          class="data-table-filter__date-picker-select"
           :items="dateFilterItems"
           dense
           height="40"
           outlined
           required
           v-model="filteredSelectValueDate"
-          :menu-props="{ offsetY: true }"
+          :menu-props="{
+            offsetY: true,
+            contentClass: 'data-table-filter__date-picker-select-menu'
+          }"
           placeholder="Select an option"
           :key="$store.state.auth.user.userCompany.timeZone"
-          v-if="filterableOptions.showSelect"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
@@ -669,8 +673,6 @@ export default {
       border: solid 1px rgba(0, 0, 0, 0.16);
     }
   }
-}
-.data-table-filter__date-picker {
 }
 .datatable-filter-header {
   font-family: 'Open Sans', sans-serif;

@@ -797,7 +797,11 @@ export default {
           type: 'text',
           width: 150,
           filterableType: 'select',
-          filterableItems: ['GoogleWorkspace', 'O365', 'Exchange']
+          filterableItems: [
+            { text: 'Google Workspace', value: 'GoogleWorkspace' },
+            'O365',
+            'Exchange'
+          ]
         },
         {
           property: PROPERTY_STORE.EMAIL,

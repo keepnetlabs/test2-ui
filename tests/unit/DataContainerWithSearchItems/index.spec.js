@@ -12,7 +12,6 @@ describe('Data container with search items test cases suite', () => {
     const { wrapper } = new DataContainerWithSearch(localVue, { value: ['asasas'] })
     //adding value
     await wrapper.setProps({ value: ['Gürkan'] })
-    console.log(wrapper.html())
     //checking is rendering
     expect(wrapper.find('.v-virtual-scroll__container').exists()).toBe(true)
   })

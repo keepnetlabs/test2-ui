@@ -8,7 +8,7 @@
     size="big"
     :status="status"
     :title="labels.BatchImport"
-    :subtitle="labels.BatchImportPopupSubtitle"
+    :subtitle="subtitle"
     @changeStatus="handleCloseDialog"
   >
     <template v-slot:app-dialog-body>
@@ -43,6 +43,10 @@ export default {
   props: {
     status: {
       type: Boolean
+    },
+    subtitle: {
+      type: String,
+      default: labels.BatchImportPopupSubtitle
     }
   },
   emits: ['on-confirm', 'on-close'],

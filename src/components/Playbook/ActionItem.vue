@@ -765,7 +765,7 @@ export default {
               ...item,
               isCheckUrl: val,
               isCheckHash: val,
-              isCheckFile: false,
+              isCheckFile: val,
               isCheckSenderIP: val,
               selected: val
             }
@@ -777,7 +777,7 @@ export default {
                 ...item,
                 isCheckUrl: val,
                 isCheckHash: val,
-                isCheckFile: false,
+                isCheckFile: val,
                 isCheckSenderIP: val,
                 selected: val
               }
@@ -787,7 +787,7 @@ export default {
             ...item,
             isCheckUrl: val,
             isCheckHash: val,
-            isCheckFile: false,
+            isCheckFile: val,
             isCheckSenderIP: val,
             selected: val
           }

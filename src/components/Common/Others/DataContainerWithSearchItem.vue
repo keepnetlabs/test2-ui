@@ -34,7 +34,7 @@
         <template #activator="{ on }">
           <v-icon v-on="on" class="mr-8" color="#F56C6C">mdi-alert-circle</v-icon>
         </template>
-        This Domain is not valid!
+        {{ textFieldErrorMessage }}
       </v-tooltip>
       <v-btn
         text
@@ -67,6 +67,10 @@ export default {
     textFieldPlaceholder: {
       type: String,
       default: 'Enter Domain name'
+    },
+    textFieldErrorMessage: {
+      type: String,
+      default: 'This Domain is not valid!'
     },
     textFieldRules: {
       type: Array,
