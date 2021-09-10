@@ -900,7 +900,6 @@
                 :selectEvent="selectEvent"
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
-                :clusterItems="clusterItems"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                 @sendInvestigationdetailsWarningMessage="
                   sendInvestigationdetailsWarningMessage($event)
@@ -1002,7 +1001,6 @@
                 :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
-                :clusterItems="clusterItems"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
                 @sendInvestigationdetailsWarningMessage="
                   sendInvestigationdetailsWarningMessage($event)
@@ -1336,9 +1334,14 @@ export default {
         sortable: true,
         show: true,
         type: 'service',
-        minWidth: 120,
+        width: 160,
         filterableType: 'select',
-        filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
+        filterableItems: [
+          'Outlook',
+          'O365',
+          'Exchange',
+          { text: 'Google Workspace', value: 'GoogleWorkspace' }
+        ]
       },
       {
         property: 'filterTags',
@@ -1436,7 +1439,12 @@ export default {
         minWidth: 180,
         type: 'service',
         filterableType: 'select',
-        filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
+        filterableItems: [
+          'Outlook',
+          'O365',
+          'Exchange',
+          { text: 'Google Workspace', value: 'GSuite' }
+        ]
       },
       {
         property: 'analyzedMailCount',
@@ -1463,24 +1471,6 @@ export default {
         name: 'Send user a warning message',
         icon: 'mdi-alert',
         action: 'sendWarningMessage'
-      }
-    ],
-
-    clusterItems: [
-      {
-        name: 'Name',
-        action: 'nameCluster',
-        seledted: false
-      },
-      {
-        name: 'City',
-        action: 'cityCluster',
-        seledted: false
-      },
-      {
-        name: 'Address',
-        action: 'addressCluster',
-        seledted: false
       }
     ],
     addUsers: {
@@ -1855,43 +1845,6 @@ export default {
         return 100
       }
       return Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100)
-    },
-    getIconColor(status) {
-      let retValue
-      switch (status) {
-        case 'Running':
-        case 'Completed':
-          retValue = '#43a047'
-          break
-        case 'CompletedWithError':
-        case 'ItemNotFound':
-          retValue = '#f56c6c'
-          break
-        default:
-          break
-      }
-      return retValue
-    },
-    getInboxStatus(status) {
-      return getDataTableFieldLabel(status)
-    },
-    getIconName(status) {
-      let retValue
-      switch (status) {
-        case 'Running':
-          retValue = 'mdi-check-circle'
-          break
-        case 'Completed':
-          retValue = 'mdi-check-underline-circle'
-          break
-        case 'CompletedWithError':
-        case 'ItemNotFound':
-          retValue = 'mdi-alert-circle'
-          break
-        default:
-          break
-      }
-      return retValue
     },
     getTooltipText(action) {
       let retValue = ''
@@ -2554,7 +2507,7 @@ export default {
       return (
         this.investigationDetailsData &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
-          if (item.type === 'GSuite') acc.push(item.mailConfigurationName)
+          if (item.type === 'GoogleWorkspace') acc.push(item.mailConfigurationName)
           return acc
         }, [])
       )
@@ -2651,10 +2604,6 @@ export default {
     this.serverSidePropsForTargetUsers.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
     this.getDefaultFilterAndSearch()
-  },
-  mounted() {
-    // triggered to relevant action at investigations.js
-    //this.$store.dispatch("investigations/getInvestigationList", this.bodyData);
   }
 }
 </script>
