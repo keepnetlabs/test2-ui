@@ -23,6 +23,7 @@ export const labels = {
   SamlSettings: 'SAML Settings',
   IdPEntityID: 'Idp Entity ID',
   TenantUserCount: 'Tenant Users',
+  SelectEmailTemplateTitle: 'Select Email Template',
   Skip: 'Skip',
   YesConfigure: 'Yes, Configure',
   SamlConfigurationFor: 'SAML Configuration For',
