@@ -116,7 +116,6 @@
 import DataTable from '../components/DataTable'
 import {
   COMMON_CONSTANTS,
-  getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -182,6 +181,19 @@ export default {
             show: true,
             type: 'number',
             width: 120,
+            filterableType: 'number',
+            emptyText: 0
+          },
+          {
+            property: PROPERTY_STORE.TENANTUSERCOUNT,
+            align: 'center',
+            editable: false,
+            label: labels.TenantUserCount,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'number',
+            width: 160,
             filterableType: 'number',
             emptyText: 0
           },

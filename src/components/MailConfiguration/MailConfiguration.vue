@@ -600,7 +600,6 @@
             <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
             <div class="mail-configuration__no-data__buttons">
               <div
-                v-if="false"
                 id="btn-empty--mail-configurations-google-workspace"
                 class="mail-configuration__no-data__buttons--button"
                 @click="statusGoogleWorkSpace = true"
@@ -881,7 +880,7 @@ export default {
         }
       ]
     },
-    mailConfigurationTypes: ['O365', 'EWS'],
+    mailConfigurationTypes: ['Google Workspace', 'O365', 'EWS'],
     validations: validations,
     requestBody: {
       pageNumber: 1,
@@ -1293,14 +1292,15 @@ export default {
     },
     handleAddMailConfiguration(item) {
       /*
-      case this.mailConfigurationTypes[0]:
+
+       */
+      switch (item) {
+        case this.mailConfigurationTypes[0]:
           this.statusGoogleWorkSpace = true
           this.googleWorkSpaceEditData = null
           this.isTestConnectionWorkedBefore = false
           break
-       */
-      switch (item) {
-        case this.mailConfigurationTypes[0]:
+        case this.mailConfigurationTypes[1]:
           this.formValues = {
             name: null,
             applicationId: null,
@@ -1313,7 +1313,7 @@ export default {
           this.saveButtonDisabled = false
           this.status = true
           break
-        case this.mailConfigurationTypes[1]:
+        case this.mailConfigurationTypes[2]:
           this.ewsFormValues = {
             Name: null,
             ServiceUrl: null,
