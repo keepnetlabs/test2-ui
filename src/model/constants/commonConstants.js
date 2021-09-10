@@ -155,6 +155,7 @@ export const PROPERTY_STORE = {
   ANALYSISENGINEPERMALINK: 'analysisEnginePermalink',
   CLIENTID: 'clientId',
   COMPANYID: 'companyId',
+  TENANTUSERCOUNT: 'tenantUserCount',
   DIRECTORYID: 'directoryId',
   APPLICATIONID: 'applicationId',
   APPLICATIONSECRET: 'applicationSecret',
