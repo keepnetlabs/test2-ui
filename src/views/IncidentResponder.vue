@@ -2031,6 +2031,7 @@ export default {
       getEmailTypesAndEmailTemplates().then((response) => {
         const [emailTemplatesResponse, templateTypesResponse] = response
         this.emailTemplates = emailTemplatesResponse.data.data.results
+        this.emailTemplates[0].isDefault = true
         this.templateTypes = templateTypesResponse
       })
     },
