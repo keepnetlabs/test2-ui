@@ -24,6 +24,7 @@
                 :key="item.resourceId"
                 :item="item"
                 :is-selected="value === item[valueKey]"
+                :is-default="item.isDefault"
                 @on-item-click="handleItemClick"
               />
             </slot>
