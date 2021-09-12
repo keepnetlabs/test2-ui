@@ -310,36 +310,52 @@
             </template>
           </CardLoading>
         </div>
-        <div class="mt-4 pa-2">
-          <v-card>
-            <div class="header">
-              <div class="title">
-                <h2>
-                  Stats
-                </h2>
-                <p class="">
-                  Generic statistics for client and service providers
-                </p>
-              </div>
+        <v-tabs
+          id="tab-sandbox"
+          v-model="tab"
+          background-color="white"
+          class="pl-4 pr-4"
+          color="basil"
+        >
+          <v-tab id="tab-stats">Stats</v-tab>
+          <v-tab id="tab-logs">Logs</v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
+          <v-tab-item>
+            <div class="mt-4 pa-2">
+              <v-card>
+                <div class="header">
+                  <div class="title">
+                    <h2>
+                      Stats
+                    </h2>
+                    <p class="">
+                      Generic statistics for client and service providers
+                    </p>
+                  </div>
+                </div>
+                <SandboxStats ref="sandboxStats" />
+              </v-card>
             </div>
-            <SandboxStats ref="sandboxStats" />
-          </v-card>
-        </div>
-        <div class="mt-4 pa-2">
-          <v-card>
-            <div class="header">
-              <div class="title">
-                <h2>
-                  Logs
-                </h2>
-                <p class="">
-                  All actions and results from client requests
-                </p>
-              </div>
+          </v-tab-item>
+          <v-tab-item>
+            <div class="mt-4 pa-2">
+              <v-card>
+                <div class="header">
+                  <div class="title">
+                    <h2>
+                      Logs
+                    </h2>
+                    <p class="">
+                      All actions and results from client requests
+                    </p>
+                  </div>
+                </div>
+                <SandboxLog ref="sandboxLog" />
+              </v-card>
             </div>
-            <SandboxLog ref="sandboxLog" />
-          </v-card>
-        </div>
+          </v-tab-item>
+        </v-tabs-items>
       </div>
     </div>
   </div>
@@ -378,6 +394,7 @@ export default {
       incidentLoading: true,
       labels,
       search: null,
+      tab: 0,
       summaryOptions: {
         filter: {
           Condition: 'AND',
@@ -457,7 +474,7 @@ export default {
         { name: 'Ibm X-Force', value: 4 },
         { name: 'SpamHouseZen', value: 5 },
         { name: 'GoogleSafeBrowser', value: 6 },
-        { name: 'Custom Integration', value: 7 }
+        { name: 'Cross Company Integration', value: 7 }
       ],
       scanTypesEnum: [
         { name: 'Url', value: 1 },
@@ -674,7 +691,7 @@ export default {
               Value: value
             }
 
-      this.$refs.sandboxLog.getDatatableListWhenFilterChange(
+      this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue ? this.companyValue.toString() : '',
         this.analysisEngineTypeResourceId
           ? this.analysisEngineTypeResourceId
@@ -685,7 +702,7 @@ export default {
           : '',
         dateFilterValueForTables
       )
-      this.$refs.sandboxStats.getDatatableListWhenFilterChange(
+      this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue ? this.companyValue.toString() : '',
         this.analysisEngineTypeResourceId
           ? this.analysisEngineTypeResourceId
@@ -742,7 +759,7 @@ export default {
         'Value',
         this.companyValue.toString() || ''
       )
-      this.$refs.sandboxLog.getDatatableListWhenFilterChange(
+      this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
         this.analysisEngineTypeResourceId
           ? this.analysisEngineTypeResourceId
@@ -755,7 +772,7 @@ export default {
           ? this.filteredDateValue || this.filteredDateValueSelect.value
           : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
       )
-      this.$refs.sandboxStats.getDatatableListWhenFilterChange(
+      this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
         this.analysisEngineTypeResourceId
           ? this.analysisEngineTypeResourceId
@@ -776,7 +793,7 @@ export default {
         'Value',
         this.analysisEngineTypeResourceId.toString() || ''
       )
-      this.$refs.sandboxLog.getDatatableListWhenFilterChange(
+      this.$refs?.sandboxLog?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
         this.analysisEngineTypeResourceId
           ? this.analysisEngineTypeResourceId
@@ -789,7 +806,7 @@ export default {
           ? this.filteredDateValue || this.filteredDateValueSelect.value
           : [this.filteredDateValueRange[0], this.filteredDateValueRange[1]]
       )
-      this.$refs.sandboxStats.getDatatableListWhenFilterChange(
+      this.$refs?.sandboxStats?.getDatatableListWhenFilterChange(
         this.companyValue.toString(),
         this.analysisEngineTypeResourceId
           ? this.analysisEngineTypeResourceId
@@ -1520,6 +1537,15 @@ export default {
 
     .table.investigations {
       padding: 0 !important;
+    }
+  }
+  #tab-sandbox {
+    .v-slide-group__content {
+      border-bottom: 2px solid #e4e7ed;
+    }
+    .v-tabs-slider-wrapper {
+      color: #2196f3;
+      bottom: -2px;
     }
   }
 }

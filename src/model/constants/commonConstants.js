@@ -422,14 +422,14 @@ export const INTEGRATION_TYPES = {
   IBMXFORCE: 'IBM X-Force',
   GOOGLESAFEBROWSER: 'Google Safe Browsing',
   SPAMHOUSE: 'Zen Spamhaus',
-  CUSTOMINTEGRATION: 'Custom Integration'
+  CUSTOMINTEGRATION: 'Cross Company Integration'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',
   FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IBM X-Force',
-  CUSTOMINTEGRATION: 'Custom Integration',
+  CUSTOMINTEGRATION: 'Cross Company Integration',
   SPAMHOUSE: 'SPAMHOUSE',
   GOOGLESAFEBROWSER: ' Google Safe Browser'
 }

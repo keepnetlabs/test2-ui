@@ -24,6 +24,7 @@ import cssParser from 'grapesjs-parser-postcss'
 import { setGrapesjsStyle } from '../Newsletter/assets/css/grapesStyle'
 import exampleComponent from '../Newsletter/components/exampleComponent'
 import exampleComponent2 from '../Newsletter/components/exampleComponent2'
+import amazonTemplate from '../Newsletter/components/amazonTemplate'
 import to from '../Newsletter/mergedTexts/to'
 import toName from '../Newsletter/mergedTexts/toName'
 import subject from '../Newsletter/mergedTexts/subject'
@@ -70,6 +71,7 @@ export default {
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('exampleComponent2', exampleComponent2)
+      blockManager.add('amazonTemplate', amazonTemplate)
       blockManager.add('to', to)
       blockManager.add('toName', toName)
       blockManager.add('subject', subject)
