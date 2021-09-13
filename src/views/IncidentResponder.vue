@@ -1968,7 +1968,7 @@ export default {
       const template = this.emailTemplates.find(
         (item) => item.resourceId === this.selectedTemplateResourceId
       )
-      return template && template.name
+      return template && `${template.name} ${template.isDefault ? `(${labels.Default})` : ''}`
     }
   },
   mounted() {
@@ -2630,7 +2630,9 @@ export default {
           getNotifiedEmail(selections[0].resourceId)
             .then((response) => {
               const selectedItem = response.data.data
-              this.selectedTemplateResourceId = selectedItem.notificationTemplateResourceId
+
+              this.selectedTemplateResourceId =
+                selectedItem.notificationTemplateResourceId || this.emailTemplates[0].resourceId
               this.defaultSelectedTemplateResourceId = this.selectedTemplateResourceId
               this.extendedView.isNotify = selectedItem.isNotifyUser
               this.extendedView.customMessage = selectedItem.customMessage
