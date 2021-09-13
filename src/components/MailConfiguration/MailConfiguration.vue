@@ -109,8 +109,8 @@
           <form-group title="Domain Selection">
             <k-select
               :items="domainList"
-              custom-menu-class="menu--ews-exchange-version"
-              placeholder="Select Exchange Version"
+              custom-menu-class="menu--domain"
+              placeholder="Select Domain"
               dense
               deletable-chips
               autocomplete="off"
