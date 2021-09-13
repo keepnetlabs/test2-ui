@@ -15,6 +15,7 @@ export const labels = {
   CommunityName: 'Community Name',
   CompanyId: 'Company ID',
   CertificateName: 'Certificate Name',
+  Default: 'Default',
   SamlName: 'SAML Name',
   AllowedDomains: 'Allowed Domains',
   CopyToClipboard: 'Copy to Clipboard',
