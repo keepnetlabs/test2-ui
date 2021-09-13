@@ -302,6 +302,23 @@
                 </router-link>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              v-if="checkPermissionMultiple(['phishing-simulator/dns-services/search|POST'])"
+            >
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/services"
+                  id="btn--link-navigator-menu-phishing-dns-service"
+                  class="menu-link-default"
+                  :class="[routerName === 'DNSs and Domains' && 'active-link']"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">DNSs and Domains</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
 
           <v-list-group
@@ -493,7 +510,7 @@
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
               v-if="
-                this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
+                this.$store.state.auth.userRoleName !== 'Company Admin' &&
                 checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST'])
               "
             >
@@ -1165,7 +1182,8 @@ export default {
         'primary--text active-menu-parent':
           routerName === 'Phishing Simulator' ||
           routerName === 'Email Templates' ||
-          routerName === 'Phishing Scenarios',
+          routerName === 'Phishing Scenarios' ||
+          routerName === 'DNSs and Domains',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
       }
@@ -1183,11 +1201,7 @@ export default {
         : ''
     },
     isReturnMainAccountVisible() {
-      if (
-        this.$store.state.auth.userRoleName === 'CompanyAdmin' ||
-        this.$store.state.auth.userRoleName === 'Company Admin'
-      )
-        return false
+      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
       let recFunction = () => {
         if (
           !localStorage.getItem('companyResourceId') ||
@@ -1198,7 +1212,7 @@ export default {
       }
       recFunction()
       return (
-        this.$store.state.auth.userRoleName !== 'CompanyAdmin' &&
+        this.$store.state.auth.userRoleName !== 'Company Admin' &&
         localStorage.getItem('companyResourceId') !==
           localStorage.getItem('selectedCompanyRequestId')
       )
@@ -1503,7 +1517,8 @@ export default {
     setDropdownDivider(item) {
       if (item.value === 'switchCompany') {
         return (
-          this.$store.state.auth.userRoleName !== 'CompanyAdmin' && !this.isReturnMainAccountVisible
+          this.$store.state.auth.userRoleName !== 'Company Admin' &&
+          !this.isReturnMainAccountVisible
         )
       } else if (item.value === 'returnToMainAccount') {
         return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
@@ -1513,7 +1528,7 @@ export default {
     },
     setDropdownVisibility(item) {
       if (item.value === 'switchCompany') {
-        return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+        return this.$store.state.auth.userRoleName !== 'Company Admin'
       } else if (item.value === 'returnToMainAccount') {
         return item.value === 'returnToMainAccount' && this.isReturnMainAccountVisible
       } else {

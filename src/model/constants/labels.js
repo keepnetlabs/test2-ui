@@ -353,7 +353,9 @@ export const labels = {
   EmptyNotificationTemplateSub: 'Create your first notification template',
   EmptyProxy: 'You do not have any proxy settings',
   DIFFICULTY: 'Difficulty',
-  Preview: 'Preview'
+  Preview: 'Preview',
+  CreatedBy: 'Created By',
+  dnsServiceProviderName: 'Service Provider'
 }
 
 export default labels
