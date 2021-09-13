@@ -1515,7 +1515,8 @@ export default {
       this.getTableData()
 
       this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
+        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1 ||
+        this.requestBody.filter.FilterGroups[1].FilterItems.length >= 1
     },
     handleSyncUser(scope) {
       this.selectedSyncIndex = scope.$index
