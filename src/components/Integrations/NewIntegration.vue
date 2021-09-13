@@ -1019,6 +1019,10 @@ export default {
           .then((response) => {
             let proxyItems = response.data.data.results
             proxyItems.unshift({
+              name: 'Default proxy',
+              resourceId: ''
+            })
+            proxyItems.unshift({
               name: 'No proxy',
               resourceId: '382e06ccbbde'
             })
@@ -1029,6 +1033,9 @@ export default {
                 this.formValues.proxyResourceId = response.data.data.results.find(
                   (item) => item.isDefault === 'Yes'
                 ).resourceId
+                if (!this.formValues.proxyResourceId) {
+                  this.formValues.proxyResourceId = ''
+                }
               }
             }
           })
