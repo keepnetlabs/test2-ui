@@ -9,6 +9,15 @@
         @on-close-dialog="toggleShowReAnalyzeDialog"
         @on-confirm="initDatas"
       />
+      <SelectEmailTemplateModal
+        v-if="isShowEmailTemplateModal"
+        :status="isShowEmailTemplateModal"
+        :template-types="templateTypes"
+        :email-templates="emailTemplates"
+        :selected-template="selectedTemplateResourceId"
+        @on-close="toggleEmailTemplateModal"
+        @on-confirm="handleConfirmSelectedEmailTemplate"
+      />
       <app-dialog
         size="big"
         icon="mdi-cog"
@@ -590,6 +599,10 @@
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
                 ></v-checkbox>
+                <div class="incident-responder-extended-view-is-notify-sub-label">
+                  Email Template: {{ getEmailTemplateName }}
+                  <span @click="handleEmailTemplateChange">Change</span>
+                </div>
               </div>
               <div class="row-edit-div">
                 <v-checkbox
@@ -748,6 +761,10 @@
                   v-model="extendedView.isNotify"
                   @change="handleIsNotify"
                 ></v-checkbox>
+                <div class="incident-responder-extended-view-is-notify-sub-label">
+                  Email Template: {{ getEmailTemplateName }}
+                  <span @click="handleEmailTemplateChange">Change</span>
+                </div>
               </div>
               <div class="row-edit-div">
                 <v-checkbox
@@ -813,7 +830,6 @@
 </template>
 <script>
 import {
-  getMatchingIncidents,
   getRoiSettings,
   getRunningInvestigations,
   getTopRules,
@@ -821,13 +837,13 @@ import {
   updateNotifiedEmail,
   updateNotifiedEmailBulk,
   updateRoiSettings
-} from '../api/incidentResponder'
+} from '@/api/incidentResponder'
 import {
   checkPermission,
   getDataTableFieldLabel,
   handleIsSafari,
   setSafariClusterFix
-} from '../utils/functions'
+} from '@/utils/functions'
 import DataTableColorfulText from '../components/DataTableComponents/DataTableColorfulText'
 import { exportNotifiedEmails, getNotifiedEmail } from '../api/notifiedEmail'
 import Datatable from '../components/DataTable'
@@ -835,7 +851,6 @@ import NewInvestigation from '../components/Investigation/NewInvestigation'
 import AppModal from '@/components/AppModal'
 import { mapActions, mapGetters } from 'vuex'
 import {
-  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
@@ -854,8 +869,11 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
+import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
+import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
 export default {
   components: {
+    SelectEmailTemplateModal,
     MatchingIncidentModal,
     ReAnalyzeIncidentDialog,
     TheRecordsButton,
@@ -875,8 +893,11 @@ export default {
   },
 
   data: () => ({
+    isShowEmailTemplateModal: false,
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
+    emailTemplates: [],
+    templateTypes: [],
     mailDetails: {
       name: '',
       resourceId: ''
@@ -885,6 +906,8 @@ export default {
     totalNumberOfRecordsMatchingPopup: 0,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
+    selectedTemplateResourceId: '',
+    defaultSelectedTemplateResourceId: '',
     labels,
     clusteredRow: null,
     storedReportedEmailTableSettings: null,
@@ -1940,6 +1963,12 @@ export default {
     },
     getSelectedMatchingIncidentsSubtitle() {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
+    },
+    getEmailTemplateName() {
+      const template = this.emailTemplates.find(
+        (item) => item.resourceId === this.selectedTemplateResourceId
+      )
+      return template && template.name
     }
   },
   mounted() {
@@ -1965,6 +1994,7 @@ export default {
         return setSafariClusterFix(obj, 'subject')
       }
     }
+    this.getEmailTypesAndEmailTemplates()
     window.addEventListener('resize', this.addQuery)
   },
   beforeDestroy() {
@@ -1994,6 +2024,24 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleEmailTemplateChange() {
+      this.toggleEmailTemplateModal()
+    },
+    getEmailTypesAndEmailTemplates() {
+      getEmailTypesAndEmailTemplates().then((response) => {
+        const [emailTemplatesResponse, templateTypesResponse] = response
+        this.emailTemplates = emailTemplatesResponse.data.data.results
+        this.emailTemplates[0].isDefault = true
+        this.templateTypes = templateTypesResponse
+      })
+    },
+    toggleEmailTemplateModal() {
+      this.isShowEmailTemplateModal = !this.isShowEmailTemplateModal
+    },
+    handleConfirmSelectedEmailTemplate(resourceId = '') {
+      this.selectedTemplateResourceId = resourceId
+      this.toggleEmailTemplateModal()
+    },
     getReportedEmailPersistentStateAndLoad() {
       if (this.isLoadState) {
         const persistentStateContainer = this.isPersistentState()
@@ -2418,7 +2466,10 @@ export default {
       this.callForSearchNotifiedMail()
     },
     extendedViewDisableChanger() {
-      return JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView)
+      return (
+        JSON.stringify(this.defaultExtendedViewValues) === JSON.stringify(this.extendedView) &&
+        this.selectedTemplateResourceId === this.defaultSelectedTemplateResourceId
+      )
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.emails.isColumnFilterActive = columnFilterActive
@@ -2579,6 +2630,8 @@ export default {
           getNotifiedEmail(selections[0].resourceId)
             .then((response) => {
               const selectedItem = response.data.data
+              this.selectedTemplateResourceId = selectedItem.notificationTemplateResourceId
+              this.defaultSelectedTemplateResourceId = this.selectedTemplateResourceId
               this.extendedView.isNotify = selectedItem.isNotifyUser
               this.extendedView.customMessage = selectedItem.customMessage
               this.extendedView.isMessage = selectedItem.customMessage ? true : false
@@ -2823,6 +2876,7 @@ export default {
             payload[key] = this.extendedView.customMessage
           }
         }
+        payload.notificationTemplateResourceId = this.selectedTemplateResourceId
 
         updateNotifiedEmailBulk(payload).finally(() => {
           this.callForGetRunningInvestigations()
@@ -2842,7 +2896,8 @@ export default {
           tag: tag || '',
           note: item.note || '',
           isNotifyUser: this.extendedView.isNotify,
-          customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : ''
+          customMessage: this.extendedView.isMessage ? this.extendedView.customMessage : '',
+          notificationTemplateResourceId: this.selectedTemplateResourceId
         }
         updateNotifiedEmail(item.resourceId, payload).then(() => {
           this.callForGetRunningInvestigations()
@@ -2891,7 +2946,6 @@ export default {
     handleReportedEmailInvestigate(row) {
       getNotifiedEmail(row.resourceId).then((response) => {
         this.selectedEmail = response.data.data
-
         this.isWantToAddNewInvestigation = true
       })
     },
@@ -3731,5 +3785,18 @@ export default {
 }
 #text--extended-view-singular-value-Notes-7 {
   white-space: initial;
+}
+.incident-responder-extended-view-is-notify-sub-label {
+  font-size: 9px;
+  line-height: 12px;
+  color: rgba(56, 59, 65, 0.72);
+  margin-left: 32px;
+  span {
+    margin-left: 8px;
+    color: #2196f3;
+    font-size: inherit !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+  }
 }
 </style>

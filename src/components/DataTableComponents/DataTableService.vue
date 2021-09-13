@@ -10,7 +10,7 @@
       <img
         alt="gsuite"
         src="../../assets/img/Google.png"
-        v-if="scope.row[col.property] === 'GSuite'"
+        v-if="['GSuite', 'GoogleWorkspace', 'Google Workspace'].includes(scope.row[col.property])"
       />
       <img
         alt="exchange"

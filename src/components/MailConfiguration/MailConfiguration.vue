@@ -48,6 +48,7 @@
               persistent-hint
               autocomplete="disabled"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
           </form-group>
           <form-group title="Application Secret" has-hint>
@@ -66,6 +67,7 @@
               ]"
               autocomplete="disabled"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
           </form-group>
           <form-group title="Directory (tenant) ID" has-hint>
@@ -83,6 +85,7 @@
               persistent-hint
               autocomplete="disabled"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
           </form-group>
           <form-group title="Test Email Address" has-hint>
@@ -100,7 +103,31 @@
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
               ]"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
+          </form-group>
+          <form-group title="Domain Selection">
+            <k-select
+              :items="domainList"
+              custom-menu-class="menu--ews-exchange-version"
+              placeholder="Select Exchange Version"
+              dense
+              deletable-chips
+              autocomplete="off"
+              small-chips
+              outlined
+              v-model.trim="formValues.allowedDomains"
+              item-value="resourceId"
+              item-text="name"
+              class="pop-up-card__invite-member"
+              multiple
+              :disabled="
+                !formValues.applicationId ||
+                !formValues.applicationSecret ||
+                !formValues.directoryId ||
+                !formValues.email
+              "
+            ></k-select>
           </form-group>
 
           <v-list-item class="add-user-overlay__list-item">
@@ -600,7 +627,6 @@
             <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
             <div class="mail-configuration__no-data__buttons">
               <div
-                v-if="false"
                 id="btn-empty--mail-configurations-google-workspace"
                 class="mail-configuration__no-data__buttons--button"
                 @click="statusGoogleWorkSpace = true"
@@ -655,6 +681,7 @@ import {
   deleteGoogleWorkSpace,
   deleteO365,
   exportMailConfiguration,
+  getDomainList,
   getEWSMailData,
   getExchangeVersions,
   getGoogleWorkSpace,
@@ -727,12 +754,14 @@ export default {
     ewsEditData: null,
     googleWorkSpaceEditData: null,
     storedTableSettings: null,
+    domainList: [],
     formValues: {
       name: null,
       applicationId: null,
       applicationSecret: null,
       directoryId: null,
-      email: null
+      email: null,
+      allowedDomains: []
     },
     exchangeVersions: [],
     targetGroupsList: [],
@@ -881,7 +910,7 @@ export default {
         }
       ]
     },
-    mailConfigurationTypes: ['O365', 'EWS'],
+    mailConfigurationTypes: ['Google Workspace', 'O365', 'EWS'],
     validations: validations,
     requestBody: {
       pageNumber: 1,
@@ -928,6 +957,22 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    getDomainList() {
+      if (
+        !!this.formValues?.applicationId &&
+        !!this.formValues?.applicationSecret &&
+        !!this.formValues?.directoryId &&
+        !!this.formValues?.email
+      ) {
+        const payload = {
+          applicationId: this.formValues?.applicationId,
+          applicationSecret: this.formValues?.applicationSecret,
+          directoryId: this.formValues?.directoryId,
+          email: this.formValues?.email
+        }
+        getDomainList(payload).then((response) => (this.domainList = response.data.data))
+      }
+    },
     handleGroupTypeChange() {
       if (this.ewsFormValues.IsAllTargetGroupsSelected) {
         this.ewsFormValues.TargetGroupResourceIdList = []
@@ -1293,27 +1338,29 @@ export default {
     },
     handleAddMailConfiguration(item) {
       /*
-      case this.mailConfigurationTypes[0]:
+
+       */
+      switch (item) {
+        case this.mailConfigurationTypes[0]:
           this.statusGoogleWorkSpace = true
           this.googleWorkSpaceEditData = null
           this.isTestConnectionWorkedBefore = false
           break
-       */
-      switch (item) {
-        case this.mailConfigurationTypes[0]:
+        case this.mailConfigurationTypes[1]:
           this.formValues = {
             name: null,
             applicationId: null,
             applicationSecret: null,
             directoryId: null,
-            email: null
+            email: null,
+            allowedDomains: []
           }
           this.editData = null
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
           this.status = true
           break
-        case this.mailConfigurationTypes[1]:
+        case this.mailConfigurationTypes[2]:
           this.ewsFormValues = {
             Name: null,
             ServiceUrl: null,
@@ -1398,8 +1445,10 @@ export default {
             applicationSecret: apiData.applicationSecret,
             directoryId: apiData.directoryId,
             email: apiData.email,
-            resourceId: selectedRow.resourceId
+            resourceId: selectedRow.resourceId,
+            allowedDomains: apiData.allowedDomains
           }
+          this.getDomainList()
           this.editData = this.formValues
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isTestConnectionWorkedBefore = false

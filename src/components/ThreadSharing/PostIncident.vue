@@ -238,7 +238,7 @@
               </k-select>
               <div class="input-header mb-6">- or -</div>
               <div class="input-header">Upload Email</div>
-              <div class="input-sub">.eml or .msg files only.</div>
+              <div class="input-sub">Analyze an email file</div>
               <div class="upload-wrapper">
                 <k-file-upload
                   ref="refFileUpload"
@@ -248,7 +248,8 @@
                   @clear="clearUpload"
                   :on-upload-progress="onUploadProgress"
                   id="threat-sharing-upload-post-incident"
-                  :size="200"
+                  hint="Only eml and msg files. Max. file size 30MB"
+                  :size="30"
                 />
                 <!-- <div
                   class="v-input up-btn v-input--dense theme--light v-text-field v-text-field--is-booted v-text-field--placeholder"
@@ -290,7 +291,7 @@
                 id="post-first-error"
                 v-if="selectedEmail || msgEmlFile == null"
                 class="select-error"
-                >Please select an incident or upload an email. Max. file size 200MB</span
+                >Please select an incident or upload an email</span
               >
             </div>
             <div id="post-first-preview-container" class="mt-2" v-else-if="selectedEmail">

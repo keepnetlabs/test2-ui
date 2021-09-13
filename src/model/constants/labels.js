@@ -22,6 +22,8 @@ export const labels = {
   AttachmentsSubtitle: 'Exclude email attachments by file type from analysis',
   SamlSettings: 'SAML Settings',
   IdPEntityID: 'Idp Entity ID',
+  TenantUserCount: 'Tenant Users',
+  SelectEmailTemplateTitle: 'Select Email Template',
   Skip: 'Skip',
   YesConfigure: 'Yes, Configure',
   SamlConfigurationFor: 'SAML Configuration For',

@@ -164,6 +164,12 @@ export function getExchangeVersions(payload = { typeName: 'Exchange Versions', t
   return testRequest.post(`lookups`, payload)
 }
 
+export function getDomainList(payload) {
+  return testRequest.post(`mail-configurations/o365/list-related-domains`, payload, {
+    loading: true
+  })
+}
+
 export function getO365MailData(id) {
   return testRequest.get(`mail-configurations/o365/${id}`, { loading: true })
 }
