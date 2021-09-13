@@ -310,13 +310,7 @@
             </template>
           </CardLoading>
         </div>
-        <v-tabs
-          id="tab-sandbox"
-          v-model="tab"
-          background-color="white"
-          class="pl-4 pr-4"
-          color="basil"
-        >
+        <v-tabs id="tab-sandbox" v-model="tab" background-color="white" color="basil">
           <v-tab id="tab-stats">Stats</v-tab>
           <v-tab id="tab-logs">Logs</v-tab>
         </v-tabs>
@@ -1542,6 +1536,7 @@ export default {
   #tab-sandbox {
     .v-slide-group__content {
       border-bottom: 2px solid #e4e7ed;
+      padding: 0 16px;
     }
     .v-tabs-slider-wrapper {
       color: #2196f3;
