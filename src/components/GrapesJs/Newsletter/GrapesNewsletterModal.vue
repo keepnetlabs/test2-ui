@@ -20,6 +20,7 @@ import './assets/css/grapesjsstyle.scss'
 import 'grapesjs-plugin-forms'
 import exampleComponent from './components/exampleComponent'
 import exampleComponent2 from './components/exampleComponent2'
+import amazonTemplate from './components/amazonTemplate'
 import to from './mergedTexts/to'
 import toName from './mergedTexts/toName'
 import subject from './mergedTexts/subject'
@@ -55,6 +56,7 @@ export default {
         return {
           exampleComponent: exampleComponent,
           exampleComponent2: exampleComponent2,
+          amazonTemplate: amazonTemplate,
           to: to,
           toName: toName,
           subject: subject,
@@ -273,6 +275,7 @@ export default {
       })
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)
+      blockManager.add('amazonTemplate', amazonTemplate)
 
       let pn = this.editor.Panels
       pn.getButton('options', 'sw-visibility').set('active', 0)

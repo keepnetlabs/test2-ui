@@ -1518,7 +1518,7 @@ export default {
         this.formValues.password = ''
       } else if (name === INTEGRATION_TYPES.VMRAY) {
         if (this.formValues.apiUrl) {
-          this.formValues.apiUrl = ''
+          this.formValues.apiUrl = 'https://cloud.vmray.com'
         }
         if (!this.formValues.apiKeys) {
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
@@ -1527,17 +1527,21 @@ export default {
         this.formValues.password = ''
       } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
         if (this.formValues.apiUrl) {
-          this.formValues.apiUrl = ''
+          this.formValues.apiUrl = 'exchange.xforce.ibmcloud.com'
           this.formValues.userName = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
       } else if (name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
         if (this.formValues.apiUrl) {
-          this.formValues.apiUrl = ''
+          this.formValues.apiUrl = 'https://dev-api.devkeepnet.com'
           this.formValues.apiKey = ''
           this.formValues.password = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
+      } else if (name === INTEGRATION_TYPES.GOOGLESAFEBROWSER) {
+        this.formValues.apiUrl = 'https://www.google.com'
+      } else if (name === INTEGRATION_TYPES.SPAMHOUSE) {
+        this.formValues.apiUrl = 'zen.spamhaus.org'
       } else {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''

@@ -48,6 +48,7 @@
               persistent-hint
               autocomplete="disabled"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
           </form-group>
           <form-group title="Application Secret" has-hint>
@@ -66,6 +67,7 @@
               ]"
               autocomplete="disabled"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
           </form-group>
           <form-group title="Directory (tenant) ID" has-hint>
@@ -83,6 +85,7 @@
               persistent-hint
               autocomplete="disabled"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
           </form-group>
           <form-group title="Test Email Address" has-hint>
@@ -100,7 +103,31 @@
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
               ]"
               height="40"
+              @change="getDomainList"
             ></v-text-field>
+          </form-group>
+          <form-group title="Domain Selection">
+            <k-select
+              :items="domainList"
+              custom-menu-class="menu--ews-exchange-version"
+              placeholder="Select Exchange Version"
+              dense
+              deletable-chips
+              autocomplete="off"
+              small-chips
+              outlined
+              v-model.trim="formValues.allowedDomains"
+              item-value="resourceId"
+              item-text="name"
+              class="pop-up-card__invite-member"
+              multiple
+              :disabled="
+                !formValues.applicationId ||
+                !formValues.applicationSecret ||
+                !formValues.directoryId ||
+                !formValues.email
+              "
+            ></k-select>
           </form-group>
 
           <v-list-item class="add-user-overlay__list-item">
@@ -654,6 +681,7 @@ import {
   deleteGoogleWorkSpace,
   deleteO365,
   exportMailConfiguration,
+  getDomainList,
   getEWSMailData,
   getExchangeVersions,
   getGoogleWorkSpace,
@@ -726,12 +754,14 @@ export default {
     ewsEditData: null,
     googleWorkSpaceEditData: null,
     storedTableSettings: null,
+    domainList: [],
     formValues: {
       name: null,
       applicationId: null,
       applicationSecret: null,
       directoryId: null,
-      email: null
+      email: null,
+      allowedDomains: []
     },
     exchangeVersions: [],
     targetGroupsList: [],
@@ -927,6 +957,22 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    getDomainList() {
+      if (
+        !!this.formValues?.applicationId &&
+        !!this.formValues?.applicationSecret &&
+        !!this.formValues?.directoryId &&
+        !!this.formValues?.email
+      ) {
+        const payload = {
+          applicationId: this.formValues?.applicationId,
+          applicationSecret: this.formValues?.applicationSecret,
+          directoryId: this.formValues?.directoryId,
+          email: this.formValues?.email
+        }
+        getDomainList(payload).then((response) => (this.domainList = response.data.data))
+      }
+    },
     handleGroupTypeChange() {
       if (this.ewsFormValues.IsAllTargetGroupsSelected) {
         this.ewsFormValues.TargetGroupResourceIdList = []
@@ -1306,7 +1352,8 @@ export default {
             applicationId: null,
             applicationSecret: null,
             directoryId: null,
-            email: null
+            email: null,
+            allowedDomains: []
           }
           this.editData = null
           this.isTestConnectionWorkedBefore = false
@@ -1398,8 +1445,10 @@ export default {
             applicationSecret: apiData.applicationSecret,
             directoryId: apiData.directoryId,
             email: apiData.email,
-            resourceId: selectedRow.resourceId
+            resourceId: selectedRow.resourceId,
+            allowedDomains: apiData.allowedDomains
           }
+          this.getDomainList()
           this.editData = this.formValues
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isTestConnectionWorkedBefore = false

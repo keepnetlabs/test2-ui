@@ -182,7 +182,7 @@ export default {
         },
         pageSizes: [5, 10, 25],
         empty: {
-          message: 'No Sandbox Stats'
+          message: 'No stats available'
         }
       },
       modalStatus: false,

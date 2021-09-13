@@ -1183,7 +1183,11 @@ export default {
         : ''
     },
     isReturnMainAccountVisible() {
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
+      if (
+        this.$store.state.auth.userRoleName === 'CompanyAdmin' ||
+        this.$store.state.auth.userRoleName === 'Company Admin'
+      )
+        return false
       let recFunction = () => {
         if (
           !localStorage.getItem('companyResourceId') ||
