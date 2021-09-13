@@ -1253,6 +1253,7 @@ export default {
         directoryId: null,
         email: null
       }
+      this.domainList = []
       this.initialFormValues = null
     },
     cancelGoogleWorkSpace() {

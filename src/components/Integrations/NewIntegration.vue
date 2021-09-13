@@ -1527,7 +1527,7 @@ export default {
         this.formValues.password = ''
       } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
         if (this.formValues.apiUrl) {
-          this.formValues.apiUrl = 'exchange.xforce.ibmcloud.com'
+          this.formValues.apiUrl = 'https://exchange.xforce.ibmcloud.com'
           this.formValues.userName = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
@@ -1539,9 +1539,9 @@ export default {
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
       } else if (name === INTEGRATION_TYPES.GOOGLESAFEBROWSER) {
-        this.formValues.apiUrl = 'https://www.google.com'
+        this.formValues.apiUrl = 'https://safebrowsing.googleapis.com'
       } else if (name === INTEGRATION_TYPES.SPAMHOUSE) {
-        this.formValues.apiUrl = 'zen.spamhaus.org'
+        this.formValues.apiUrl = 'https://zen.spamhaus.org'
       } else {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''
