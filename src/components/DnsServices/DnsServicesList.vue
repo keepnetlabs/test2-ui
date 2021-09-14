@@ -5,6 +5,7 @@
       :status="modalStatus"
       @changeStatus="changeStatus"
       :resourceId="resourceId"
+      :isEdit="isEdit"
     />
     <DeleteServiceModal
       :status="showDeleteModal"
@@ -58,7 +59,7 @@
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      @addAction="modalStatus = true"
+      @addAction="handleAdd"
     >
     </data-table>
   </div>
@@ -388,9 +389,13 @@ export default {
     },
     handleEdit(row, isDuplicate) {
       this.resourceId = row.resourceId
+      this.isEdit = true
       this.modalStatus = true
     },
-    handleAdd() {},
+    handleAdd() {
+      this.isEdit = false
+      this.modalStatus = true
+    },
     exportDnsService({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
