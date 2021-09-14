@@ -218,6 +218,9 @@ export default {
       }
     },
     setTreeSelectOptions(isDisabled = false) {
+      if (!this.treeSelectOptions) {
+        return
+      }
       this.$set(this.treeSelectOptions, 2, {
         ...this.treeSelectOptions[2],
         children: this.treeSelectOptions[2].children.map((item) => {
