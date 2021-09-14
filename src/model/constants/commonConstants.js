@@ -285,7 +285,8 @@ export const TABLE_SETTINGS_KEYS = {
   PROXY_SETTINGS: 'ProxySettingsTableSettings',
   EMAILTEMPLATES: 'EmailTemplates',
   SANDBOX: 'Sandbox',
-  SANDBOXSTATS: 'SandboxStats'
+  SANDBOXSTATS: 'SandboxStats',
+  DNSSERVICELIST: 'DNSServiceList'
 }
 
 export function getStoreValue(key, type) {
@@ -412,7 +413,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   EMAILTEMPLATES: 'EmailTemplates',
   SANDBOX: 'Sandbox',
   sandbox: 'Sandbox',
-  SANDBOXSTATS: 'SandboxStats'
+  SANDBOXSTATS: 'SandboxStats',
+  DNSSERVICELIST: 'DNSServiceList'
 }
 
 export const INTEGRATION_TYPES = {
