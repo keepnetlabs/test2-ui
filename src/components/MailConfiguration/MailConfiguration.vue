@@ -958,7 +958,6 @@ export default {
   }),
   methods: {
     getDomainList(selectedRow) {
-      console.log(selectedRow)
       if (
         !!this.formValues?.applicationId &&
         !!this.formValues?.applicationSecret &&
