@@ -12,7 +12,7 @@ export function testConnection(payload, id) {
   return testRequest.post(`phishing-simulator/dns-services/${id}/test`, payload)
 }
 
-export function updateDnsServiceList(payload) {
+export function updateDnsServiceList(payload, id) {
   return testRequest.put(`phishing-simulator/dns-services/${id}`, payload, { loading: true })
 }
 

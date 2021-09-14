@@ -159,12 +159,16 @@ export default {
     status,
     resourceId: {
       required: false
+    },
+    isEdit: {
+      required: false
     }
   },
   created() {
-    if (this.resourceId) {
+    if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDnsService(this.resourceId).then((res) => {
+        debugger
         this.formValues = res.data.data
         this.formValues.dnsServiceProviderTypeId.toString()
       })
@@ -219,7 +223,15 @@ export default {
   methods: {
     testConnectionValues() {},
     canceldns() {
-      this.$emit('changeStatus')
+      ;(this.formValues = {
+        dnsServiceProviderTypeId: null,
+        dnsServiceProviderName: null,
+        username: null,
+        password: null,
+        AvailableForRequests: [],
+        resourceId: null
+      }),
+        this.$emit('changeStatus')
     },
     submit() {
       this.saveButtonDisabled = true
@@ -241,15 +253,21 @@ export default {
             : null
         }
         if (this.isEdit && !this.isDuplicate) {
-          updateDnsServiceList(payload, this.resourceId).then((response) => {
-            this.$emit('changeStatus', false, true)
-            this.saveButtonDisabled = false
-          })
+          updateDnsServiceList(payload, this.resourceId)
+            .then((response) => {
+              this.$emit('changeStatus', false, true)
+            })
+            .finally(() => {
+              this.saveButtonDisabled = false
+            })
         } else {
-          createDnsServiceList(payload).then((response) => {
-            this.$emit('changeStatus', false, true)
-            this.saveButtonDisabled = false
-          })
+          createDnsServiceList(payload)
+            .then((response) => {
+              this.$emit('changeStatus', false, true)
+            })
+            .finally(() => {
+              this.saveButtonDisabled = false
+            })
         }
       } else {
         this.saveButtonDisabled = false
