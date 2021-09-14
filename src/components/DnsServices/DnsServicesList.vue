@@ -1,8 +1,8 @@
 <template>
   <div id="dnsServiceList">
     <NewEditDnsService
-      :status="modalStatus"
       v-if="modalStatus"
+      :status="modalStatus"
       @changeStatus="changeStatus"
       :resourceId="resourceId"
       :isEdit="isEdit"
@@ -253,6 +253,7 @@ export default {
   methods: {
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
+      if (!value) this.resourceId = ''
       if (restart) {
         this.getDatatableList()
       }
