@@ -31,6 +31,7 @@ import Widgets from '@/views/Widgets'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
 import PhishingSimulator from '@/views/PhishingSimulator'
 import Sandbox from '@/views/Sandbox'
+import DnsServices from '@/views/DnsServices'
 
 Vue.use(Router)
 
@@ -214,6 +215,25 @@ const router = new Router({
           path: '/phishing-scenarios',
           name: 'Phishing Scenarios',
           component: PhishingSimulator,
+          beforeEnter: (to, from, next) => {
+            //checkPermission()
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
+            //checkPermission()
+            next()
+          },
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/services',
+          name: 'DNSs and Domains',
+          component: DnsServices,
           beforeEnter: (to, from, next) => {
             //checkPermission()
             next()

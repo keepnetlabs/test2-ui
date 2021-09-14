@@ -957,7 +957,8 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
-    getDomainList() {
+    getDomainList(selectedRow) {
+      console.log(selectedRow)
       if (
         !!this.formValues?.applicationId &&
         !!this.formValues?.applicationSecret &&
@@ -968,7 +969,8 @@ export default {
           applicationId: this.formValues?.applicationId,
           applicationSecret: this.formValues?.applicationSecret,
           directoryId: this.formValues?.directoryId,
-          email: this.formValues?.email
+          email: this.formValues?.email,
+          resourceId: selectedRow?.resourceId
         }
         getDomainList(payload).then((response) => (this.domainList = response.data.data))
       }
@@ -1449,7 +1451,7 @@ export default {
             resourceId: selectedRow.resourceId,
             allowedDomains: apiData.allowedDomains
           }
-          this.getDomainList()
+          this.getDomainList(selectedRow)
           this.editData = this.formValues
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isTestConnectionWorkedBefore = false
