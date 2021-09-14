@@ -1,10 +1,11 @@
 <template>
   <div id="dnsServiceList">
     <NewEditDnsService
-      :status="modalStatus"
       v-if="modalStatus"
+      :status="modalStatus"
       @changeStatus="changeStatus"
       :resourceId="resourceId"
+      :isEdit="isEdit"
     />
     <DeleteServiceModal
       :status="showDeleteModal"
@@ -58,7 +59,7 @@
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      @addAction="modalStatus = true"
+      @addAction="handleAdd"
     >
     </data-table>
   </div>
@@ -252,6 +253,7 @@ export default {
   methods: {
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
+      if (!value) this.resourceId = ''
       if (restart) {
         this.getDatatableList()
       }
@@ -387,9 +389,13 @@ export default {
     },
     handleEdit(row, isDuplicate) {
       this.resourceId = row.resourceId
+      this.isEdit = true
       this.modalStatus = true
     },
-    handleAdd() {},
+    handleAdd() {
+      this.isEdit = false
+      this.modalStatus = true
+    },
     exportDnsService({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {

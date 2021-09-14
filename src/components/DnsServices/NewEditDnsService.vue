@@ -134,17 +134,14 @@ import labels from '@/model/constants/labels'
 import AppModal from '../AppModal'
 import TestConnection from './TestConnection'
 import companyName from '@/components/GrapesJs/Newsletter/mergedTexts/companyName'
-import { getAvailableForValues } from '@/utils/helperFunctions'
-import { createPhishingEmailTemplate, updatePhishingEmailTemplate } from '@/api/phishingsimulator'
+import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
 import * as Validations from '@/utils/validations'
-import * as validations from '@/utils/validations'
 export default {
   name: 'NewEditDnsService',
   components: {
@@ -159,30 +156,29 @@ export default {
     status,
     resourceId: {
       required: false
+    },
+    isEdit: {
+      required: false
     }
   },
   created() {
-    if (this.resourceId) {
+    if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDnsService(this.resourceId).then((res) => {
-        this.formValues = res.data.data
+        this.formValues = JSON.parse(JSON.stringify(res.data.data))
+        delete this.formValues.availableForList
         this.formValues.dnsServiceProviderTypeId.toString()
+        if (this.$refs.refMakeAvailableFor) {
+          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            res.data.data.availableForList
+          )
+        } else {
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
+            res.data.data.availableForList
+          )
+        }
       })
     }
-    setTimeout(() => {
-      if (this.$refs.refMakeAvailableFor) {
-        this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-          response.data.data.availableForList
-        )
-      } else {
-        this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-          response.data.data.availableForList
-        )
-      }
-      if (this.formValues.AvailableForRequests) {
-        this.formValues.availableForRequests = this.formValues.AvailableForRequests
-      }
-    }, 300)
   },
   data() {
     return {
@@ -193,7 +189,7 @@ export default {
         dnsServiceProviderName: null,
         username: null,
         password: null,
-        AvailableForRequests: [],
+        availableForRequests: [],
         resourceId: null
       },
       nonEditableAvailableForRequests: [],
@@ -219,7 +215,15 @@ export default {
   methods: {
     testConnectionValues() {},
     canceldns() {
-      this.$emit('changeStatus')
+      ;(this.formValues = {
+        dnsServiceProviderTypeId: null,
+        dnsServiceProviderName: null,
+        username: null,
+        password: null,
+        AvailableForRequests: [],
+        resourceId: null
+      }),
+        this.$emit('changeStatus')
     },
     submit() {
       this.saveButtonDisabled = true
@@ -232,7 +236,7 @@ export default {
       if (this.$refs.dnsForm.validate() && isValid) {
         let payload = {
           ...this.formValues,
-          AvailableForRequests: this.showMakeAvailableFor
+          availableForRequests: this.showMakeAvailableFor
             ? this.$refs.refMakeAvailableFor.getAvailableForValues(
                 this.formValues.availableForRequests
               )
@@ -241,15 +245,21 @@ export default {
             : null
         }
         if (this.isEdit && !this.isDuplicate) {
-          updateDnsServiceList(payload, this.resourceId).then((response) => {
-            this.$emit('changeStatus', false, true)
-            this.saveButtonDisabled = false
-          })
+          updateDnsServiceList(payload, this.resourceId)
+            .then((response) => {
+              this.$emit('changeStatus', false, true)
+            })
+            .finally(() => {
+              this.saveButtonDisabled = false
+            })
         } else {
-          createDnsServiceList(payload).then((response) => {
-            this.$emit('changeStatus', false, true)
-            this.saveButtonDisabled = false
-          })
+          createDnsServiceList(payload)
+            .then((response) => {
+              this.$emit('changeStatus', false, true)
+            })
+            .finally(() => {
+              this.saveButtonDisabled = false
+            })
         }
       } else {
         this.saveButtonDisabled = false
