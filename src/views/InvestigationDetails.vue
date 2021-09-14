@@ -1336,7 +1336,12 @@ export default {
         type: 'service',
         width: 160,
         filterableType: 'select',
-        filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
+        filterableItems: [
+          'Outlook',
+          'O365',
+          'Exchange',
+          { text: 'Google Workspace', value: 'GoogleWorkspace' }
+        ]
       },
       {
         property: 'filterTags',
@@ -1434,7 +1439,12 @@ export default {
         minWidth: 180,
         type: 'service',
         filterableType: 'select',
-        filterableItems: ['Outlook', 'O365', 'Exchange', 'GSuite']
+        filterableItems: [
+          'Outlook',
+          'O365',
+          'Exchange',
+          { text: 'Google Workspace', value: 'GSuite' }
+        ]
       },
       {
         property: 'analyzedMailCount',
