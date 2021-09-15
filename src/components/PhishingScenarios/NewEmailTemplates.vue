@@ -210,6 +210,7 @@
           color="#2196f3"
           rounded
           v-if="step === 2"
+          :disabled="isSubmitDisabled"
         >
           {{ labels.Save }}
         </v-btn>
@@ -308,6 +309,7 @@ export default {
   },
   data() {
     return {
+      isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
@@ -390,6 +392,7 @@ export default {
       this.step -= 1
     },
     submit() {
+      this.isSubmitDisabled = true
       if (this.$refs.refEmailTemplateContent.validate()) {
         let payload = {
           ...this.formValues,
@@ -402,17 +405,26 @@ export default {
             : null
         }
         if (this.isEdit && !this.isDuplicate) {
-          updatePhishingEmailTemplate(payload, this.emailTemplateId).then((response) => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
-          })
+          updatePhishingEmailTemplate(payload, this.emailTemplateId)
+            .then((response) => {
+              this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            })
+            .finally(() => {
+              this.isSubmitDisabled = false
+            })
         } else {
-          createPhishingEmailTemplate(payload).then((response) => {
-            this.$emit('changeNewEmailTemplateModalStatus', false, true)
-          })
+          createPhishingEmailTemplate(payload)
+            .then((response) => {
+              this.$emit('changeNewEmailTemplateModalStatus', false, true)
+            })
+            .finally(() => {
+              this.isSubmitDisabled = false
+            })
         }
       } else {
         const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
+        this.isSubmitDisabled = false
       }
     },
 

@@ -66,7 +66,7 @@
         @input="$emit('update:fromAddress', $event)"
       />
     </div>
-    <div class="align-start d-flex email-template__item" v-if="isPhishingTemplate">
+    <div class="d-flex email-template__item" v-if="isPhishingTemplate">
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
