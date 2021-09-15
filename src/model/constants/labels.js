@@ -7,6 +7,7 @@ export const labels = {
   },
   ApiKey: 'API Key',
   AnalysisDate: 'Analysis Date',
+  InvalidURLS: 'There are invalid URLs',
   AddCompaniesToCompanyGroupSubtitle: 'Select companies to add',
   CompanyGroupNameSecondLower: 'Company group name',
   BatchImport: 'Batch Import',

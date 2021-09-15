@@ -4,14 +4,15 @@
       <span v-if="!isEdit" :style="!isValid && { color: '#B83A3A' }">{{ value }}</span>
       <v-form v-else ref="refForm">
         <v-text-field
-          v-model="textFieldValue"
           ref="refTextField"
           id="input--saml-settings-domain-to-add"
           dense
           hide-details
+          :value="textFieldValue"
           :class="[!isValid && 'data-container-with-search-item__text-field--error']"
           :placeholder="textFieldPlaceholder"
           :rules="textFieldRules"
+          @input="handleTextFieldChange"
         ></v-text-field>
       </v-form>
     </div>
@@ -80,6 +81,9 @@ export default {
       type: String,
       default: 'This Domain is not valid!'
     },
+    textFieldDefaultValue: {
+      type: String
+    },
     textFieldRules: {
       type: Array,
       default: () => [
@@ -91,7 +95,7 @@ export default {
   },
   data() {
     return {
-      textFieldValue: this.value,
+      textFieldValue: this.textFieldDefaultValue || this.value,
       validations,
       labels
     }
@@ -108,6 +112,10 @@ export default {
         this.$emit('input', this.textFieldValue, this.value, this.index)
       }
     },
+    handleTextFieldChange(val) {
+      this.textFieldValue = val
+      this.$emit('update:text-field-default-value', val)
+    },
     handleCancelClick() {
       this.changeIsEdit()
       this.textFieldValue = this.value
@@ -119,7 +127,7 @@ export default {
       })
     },
     changeIsEdit(val = false) {
-      this.$emit('update:isEdit', val)
+      this.$emit('update:is-edit', val)
     }
   }
 }

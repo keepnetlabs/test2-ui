@@ -2,6 +2,7 @@
   <article id="advanced-settings-ip-addresses">
     <BatchImportPopup
       v-if="isBatchImportPopupOpen"
+      text-area-placeholder="192.168.1.1"
       :subtitle="labels.BatchImportPopupIpAddressSubtitle"
       :status="isBatchImportPopupOpen"
       @on-close="toggleBatchImportPopup"
@@ -19,8 +20,10 @@
     <DataContainerWithSearch
       v-if="dataContainerWithSearchItems.length"
       v-model.trim="dataContainerWithSearchItems"
+      ref="dataContainerWithSearch"
       text-field-error-message="This Ip address is not valid!"
       text-field-placeholder="Enter an Ip address"
+      invalid-message="There are invalid entries, please change them."
       :text-field-rules="[(v) => Validations.ip(v), (v) => Validations.startsWithSpace(v)]"
     />
     <button
@@ -103,6 +106,8 @@ export default {
       this.ipAddressSearch = ''
     },
     handleSaveChanges() {
+      if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
+        return
       const payload = setFormData(this.dataContainerWithSearchItems, 'IP')
       this.$emit('on-submit', payload, 'IP')
     }
