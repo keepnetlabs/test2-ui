@@ -55,17 +55,10 @@
           ></k-select>
         </form-group>
         <form-group title="Email" has-hint>
-          <v-text-field
+          <InputEmail
             placeholder="Enter Email"
-            outlined
-            class="new-client__textfield new-client__api-key__textfield mt-2"
-            v-model="formValues.username"
-            required
-            height="40"
-            :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Email, 64))
-            ]"
+            v-model.trim="formValues.username"
+            :required="true"
           />
         </form-group>
         <form-group title="API Key" has-hint>
@@ -142,6 +135,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
 import * as Validations from '@/utils/validations'
+import InputEmail from '@/components/Common/Inputs/InputEmail'
 export default {
   name: 'NewEditDnsService',
   components: {
@@ -150,7 +144,8 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     MakeAvailableFor,
-    KSelect
+    KSelect,
+    InputEmail
   },
   props: {
     status,
