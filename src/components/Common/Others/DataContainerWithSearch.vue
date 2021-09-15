@@ -49,18 +49,38 @@
     </div>
     <div class="data-container-with-search__content">
       <slot name="content">
-        <v-virtual-scroll :key="scrollKey" max-height="300" item-height="48" :items="getItems">
+        <v-virtual-scroll
+          v-if="getItems.length"
+          :key="scrollKey"
+          max-height="300"
+          item-height="48"
+          :items="getItems"
+        >
           <template #default="{item,index}">
             <data-container-with-search-item
-              v-model="getItems[index]"
+              :key="getItems[index].key"
+              :value="getItems[index].val"
+              :index="index"
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
               :text-field-error-message="textFieldErrorMessage"
+              :text-field-default-value.sync="getItems[index].textFieldDefaultValue"
+              :is-edit.sync="getItems[index].isEdit"
               @on-delete="handleItemDelete"
+              @input="handleInputChange"
             />
           </template>
         </v-virtual-scroll>
       </slot>
+    </div>
+    <div class="data-container-with-search__error">
+      <transition appear name="bounce" v-if="!isAllValid">
+        <div class="v-messages theme--light error--text" role="alert">
+          <div class="v-messages__wrapper">
+            <div class="v-messages__message" style="padding-left: 10px;">{{ invalidMessage }}</div>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -108,15 +128,21 @@ export default {
     maxHeight: {
       type: String,
       default: '373px'
+    },
+    invalidMessage: {
+      type: String,
+      default: labels.InvalidURLS
     }
   },
   data() {
     return {
       isFilterChecked: false,
+      isAllValid: true,
       isFilterActive: false,
       isMenuOpen: false,
       search: '',
-      scrollKey: 'scroll-key-aksaks'
+      scrollKey: 'scroll-key-aksaks',
+      options: []
     }
   },
   computed: {
@@ -125,25 +151,62 @@ export default {
     },
     getItems() {
       const items = this.search
-        ? this.value.filter((item) => item.includes(this.search))
-        : this.value
+        ? this.options.filter((item) => item.val.includes(this.search))
+        : this.options
       return this.isFilterActive
-        ? items.filter((item) => !this.textFieldRules.every((func) => func(item) === true))
+        ? items.filter((item) => !this.textFieldRules.every((func) => func(item.val) === true))
         : items
     }
   },
   watch: {
     value() {
+      this.setOptions()
+      this.checkAllValid()
       this.$nextTick(() => {
         this.scrollKey = `scroll-key${Math.random().toString().substring(0, 5)}`
       })
     }
   },
+  created() {
+    this.setOptions('push')
+  },
   methods: {
+    handleInputChange(newVal = '', oldVal, index) {
+      const item = this.getItems[index]
+      item.val = newVal
+      const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
+      this.value[indexOfOldValue] = newVal
+      this.$set(item, 'isEdit', false)
+      item.key = Math.random().toString(8)
+      this.checkAllValid()
+    },
+    checkAllValid() {
+      this.isAllValid = this.value.every((value) =>
+        this.textFieldRules.every((func) => func(value) === true)
+      )
+    },
+    setOptions(funcName = 'unshift') {
+      this.value.forEach((val) => {
+        if (!this.options.find((item) => item.val === val)) this.addItemToOptions(val, funcName)
+      })
+    },
+    addItemToOptions(val, funcName = 'unshift') {
+      this.options[funcName]({
+        val,
+        key: Math.random().toString(8),
+        isEdit: false,
+        textFieldDefaultValue: val
+      })
+    },
     handleItemDelete(item = '') {
-      const index = this.value.indexOf(item)
+      const index = this.options.findIndex((option) => option.val === item)
       if (index === -1) return
-      this.value.splice(index, 1)
+      this.options.splice(index, 1)
+      this.value.splice(
+        this.value.findIndex((val) => val === item),
+        1
+      )
+      this.checkAllValid()
     },
     handleFilter() {
       this.setCommonProperties(true)
@@ -191,6 +254,14 @@ export default {
   }
   &__content {
     background: #fafafa;
+  }
+  &__error {
+    position: absolute;
+    margin-top: 4px;
+    margin-left: -4px;
+    font-size: 9px;
+    line-height: 12px;
+    color: #f56c6c;
   }
 }
 </style>

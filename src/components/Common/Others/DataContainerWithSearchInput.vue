@@ -4,7 +4,7 @@
     :title="labels.title"
     :sub-title="labels.subtitle"
   >
-    <v-form ref="refForm" onSubmit="return false;">
+    <v-form v-model="isValid" lazy-validation ref="refForm" onSubmit="return false;">
       <div class="copy-to-clipboard__container saml-domain">
         <slot name="search-input">
           <v-text-field
@@ -21,7 +21,7 @@
           outlined
           rounded
           color="#2196F3"
-          class="btn-domain-add ml-10"
+          :class="['btn-domain-add ml-10', { 'btn-data-container-invalid': !isValid }]"
           @click="handleAddClick"
         >
           <v-icon left>mdi-plus</v-icon>
@@ -46,6 +46,11 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      isValid: true
+    }
+  },
   methods: {
     handleAddClick() {
       if (this.validateForm()) {
@@ -61,3 +66,9 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.btn-data-container-invalid {
+  color: #757575 !important;
+  border-color: #757575;
+}
+</style>

@@ -18,8 +18,8 @@
         dense
         rows="2"
         no-resize
-        placeholder="Enter Custom Header"
         height="150"
+        :placeholder="textAreaPlaceholder"
       ></v-textarea>
     </template>
     <template v-slot:app-dialog-footer>
@@ -47,6 +47,9 @@ export default {
     subtitle: {
       type: String,
       default: labels.BatchImportPopupSubtitle
+    },
+    textAreaPlaceholder: {
+      type: String
     }
   },
   emits: ['on-confirm', 'on-close'],
