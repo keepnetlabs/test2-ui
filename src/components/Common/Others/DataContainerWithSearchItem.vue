@@ -41,8 +41,11 @@
       <v-btn
         text
         color="#2196f3"
-        class="k-dialog__button mr-5"
         :disabled="!isValid"
+        :class="[
+          'k-dialog__button mr-5',
+          { 'data-container-with-search-item__button--error': !isValid }
+        ]"
         @click="handleActionButtonClick"
       >
         {{ labels.Save }}
@@ -156,6 +159,11 @@ export default {
   }
   &__text-field--error .v-text-field__slot input {
     color: #b83a3a !important;
+  }
+  &__button--error.v-btn.v-btn--disabled {
+    font-weight: 600;
+    font-size: 14px;
+    color: #757575 !important;
   }
 }
 #app .data-container-with-search-item__text-field--error .v-text-field__slot input {
