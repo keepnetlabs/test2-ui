@@ -4,12 +4,15 @@
       <span v-if="!isEdit" :style="!isValid && { color: '#B83A3A' }">{{ value }}</span>
       <v-form v-else ref="refForm">
         <v-text-field
-          v-model="textFieldValue"
+          ref="refTextField"
           id="input--saml-settings-domain-to-add"
-          :placeholder="textFieldPlaceholder"
           dense
           hide-details
+          :value="textFieldValue"
+          :class="[!isValid && 'data-container-with-search-item__text-field--error']"
+          :placeholder="textFieldPlaceholder"
           :rules="textFieldRules"
+          @input="handleTextFieldChange"
         ></v-text-field>
       </v-form>
     </div>
@@ -39,8 +42,11 @@
       <v-btn
         text
         color="#2196f3"
-        class="k-dialog__button mr-5"
         :disabled="!isValid"
+        :class="[
+          'k-dialog__button mr-5',
+          { 'data-container-with-search-item__button--error': !isValid }
+        ]"
         @click="handleActionButtonClick"
       >
         {{ labels.Save }}
@@ -64,6 +70,9 @@ export default {
     index: {
       type: Number
     },
+    isEdit: {
+      type: Boolean
+    },
     textFieldPlaceholder: {
       type: String,
       default: 'Enter Domain name'
@@ -71,6 +80,9 @@ export default {
     textFieldErrorMessage: {
       type: String,
       default: 'This Domain is not valid!'
+    },
+    textFieldDefaultValue: {
+      type: String
     },
     textFieldRules: {
       type: Array,
@@ -83,8 +95,7 @@ export default {
   },
   data() {
     return {
-      isEdit: false,
-      textFieldValue: this.value,
+      textFieldValue: this.textFieldDefaultValue || this.value,
       validations,
       labels
     }
@@ -98,15 +109,25 @@ export default {
   methods: {
     handleActionButtonClick() {
       if (this.$refs.refForm.validate()) {
-        this.$emit('input', this.textFieldValue)
-        this.isEdit = false
+        this.$emit('input', this.textFieldValue, this.value, this.index)
       }
     },
+    handleTextFieldChange(val) {
+      this.textFieldValue = val
+      this.$emit('update:text-field-default-value', val)
+    },
     handleCancelClick() {
-      this.isEdit = false
+      this.changeIsEdit()
+      this.textFieldValue = this.value
     },
     handleEditClick() {
-      this.isEdit = true
+      this.changeIsEdit(true)
+      this.$nextTick(() => {
+        this.$refs.refTextField.focus()
+      })
+    },
+    changeIsEdit(val = false) {
+      this.$emit('update:is-edit', val)
     }
   }
 }
@@ -148,5 +169,16 @@ export default {
       visibility: hidden !important;
     }
   }
+  &__text-field--error .v-text-field__slot input {
+    color: #b83a3a !important;
+  }
+  &__button--error.v-btn.v-btn--disabled {
+    font-weight: 600;
+    font-size: 14px;
+    color: #757575 !important;
+  }
+}
+#app .data-container-with-search-item__text-field--error .v-text-field__slot input {
+  color: #b83a3a !important;
 }
 </style>

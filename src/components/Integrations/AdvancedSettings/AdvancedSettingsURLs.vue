@@ -2,6 +2,7 @@
   <section id="advanced-settings-url">
     <BatchImportPopup
       v-if="isBatchImportPopupOpen"
+      text-area-placeholder="https://subdomain.domain.com"
       :status="isBatchImportPopupOpen"
       @on-close="toggleBatchImportPopup"
       @on-confirm="handleBatchImport"
@@ -22,6 +23,7 @@
     <DataContainerWithSearch
       v-if="dataContainerWithSearchItems.length"
       v-model.trim="dataContainerWithSearchItems"
+      ref="dataContainerWithSearch"
       :text-field-rules="[...COMMON_CONSTANTS.DEFAULT_URL_RULES]"
     />
     <button
@@ -99,6 +101,8 @@ export default {
       this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
     },
     handleSaveChanges() {
+      if (this.$refs.dataContainerWithSearch && !this.$refs.dataContainerWithSearch.isAllValid)
+        return
       const payload = setFormData(this.dataContainerWithSearchItems, 'URL')
       this.$emit('on-submit', payload, 'URL')
     }
