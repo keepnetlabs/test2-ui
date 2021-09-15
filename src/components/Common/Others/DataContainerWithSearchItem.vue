@@ -5,10 +5,12 @@
       <v-form v-else ref="refForm">
         <v-text-field
           v-model="textFieldValue"
+          ref="refTextField"
           id="input--saml-settings-domain-to-add"
-          :placeholder="textFieldPlaceholder"
           dense
           hide-details
+          :class="[!isValid && 'data-container-with-search-item__text-field--error']"
+          :placeholder="textFieldPlaceholder"
           :rules="textFieldRules"
         ></v-text-field>
       </v-form>
@@ -104,9 +106,13 @@ export default {
     },
     handleCancelClick() {
       this.isEdit = false
+      this.textFieldValue = this.value
     },
     handleEditClick() {
       this.isEdit = true
+      this.$nextTick(() => {
+        this.$refs.refTextField.focus()
+      })
     }
   }
 }
@@ -148,5 +154,11 @@ export default {
       visibility: hidden !important;
     }
   }
+  &__text-field--error .v-text-field__slot input {
+    color: #b83a3a !important;
+  }
+}
+#app .data-container-with-search-item__text-field--error .v-text-field__slot input {
+  color: #b83a3a !important;
 }
 </style>
