@@ -263,37 +263,15 @@
                 </div>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item class="edit-industry-area mt-2 pb-0 pa-0">
+            <v-list-item class="mt-2 pb-0 pa-0">
               <v-list-item-content class>
                 <label id="label--investigation-select-sources" class="edit-labels"
                   >Select Sources</label
                 >
                 <label id="label--investigation-select-sources-sub" class="edit-sub-labels"
-                  >Select sources to investigate with conditions above</label
+                  >Select mail configurations to conduct this investigation in</label
                 >
-                <div class="select-sources flex">
-                  <v-checkbox
-                    v-for="(item, index) in sources"
-                    :id="`input--investigation-sources-${item['mailConfigurationName']}-${index}`"
-                    :key="index"
-                    class="v-input--checkbox"
-                    v-model="scanTypes"
-                    :label="item['mailConfigurationName']"
-                    :value="item"
-                    @change="checkCheckboxValidation()"
-                    color="#2196f3"
-                  ></v-checkbox>
-                  <div
-                    class="v-text-field__details checkbox-error checkbox-error__position"
-                    v-if="checkboxError"
-                  >
-                    <div class="v-messages theme--light error--text" role="alert">
-                      <div class="v-messages__wrapper">
-                        <div class="v-messages__message">Required</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <MailConfigurationSelectSources v-model="scanTypes" />
               </v-list-item-content>
             </v-list-item>
 
@@ -391,15 +369,16 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
-import { getInvestigationScanTypes } from '@/api/investigations'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import { getTimeZoneForMoment, scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import * as Validations from '@/utils/validations'
+import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
 export default {
   components: {
+    MailConfigurationSelectSources,
     KSelect,
     AppModalBodyHeader,
     AppModal,
@@ -551,7 +530,6 @@ export default {
         { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
       filterList: [{}],
-      sources: [],
       filterListOption: [
         {
           label: 'Header',
@@ -613,9 +591,6 @@ export default {
         required: (v) => {
           return v.length ? Validations.required(v) : labels.Required
         }
-      },
-      checkboxRule: {
-        required: (v) => this.sources.find((item) => item.type)
       }
     }
   },
@@ -817,23 +792,12 @@ export default {
     onCreateClicked() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
+
       this.isSubmitted = true
       if (this.date.length < 1) {
         this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
-        let isCheckboxEmpty = this.scanTypes.length === 0
-        if (isCheckboxEmpty) {
-          this.checkboxError = true
-          this.$nextTick(() => {
-            const el = this.$refs.form.$el.querySelector('.date-row')
-            scrollToComponent(el)
-          })
-          return false
-        } else {
-          this.checkboxError = false
-        }
-
         if (!this.isDateValid) {
           this.$nextTick(() => {
             const el = this.$refs.form.$el.querySelector('.date-row')
@@ -1144,8 +1108,7 @@ export default {
               break
           }
         }
-        // cerate new body data for api call
-
+        // crate new body data for api call
         const newInvestigationObj = {
           headers: this.filterData(headersData),
           bodies: this.filterData(bodyData),
@@ -1161,10 +1124,7 @@ export default {
               ? this.targetUsersValue.map((item) => item.resourceId)
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
-          scanTypes: this.scanTypes.map((item) => {
-            const { type, mailConfigurationResourceId } = item
-            return { type, mailConfigurationResourceId }
-          }),
+          scanTypes: this.scanTypes,
           autoAction: {
             type: this.selectedAction,
             isPermanentDelete: false,
@@ -1238,13 +1198,14 @@ export default {
     },
     checkIsEdit() {
       if (this.isEdit) {
-        let _this = this
-
+        console.log(this.investigationDetailsData.scanConfigurationDetails)
         this.investgationName = this.investigationDetailsData.name
         //this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
-
+        this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
+          ({ mailConfigurationResourceId, type }) => ({ mailConfigurationResourceId, type })
+        )
         //this.date.push(this.investigationDetailsData.endDate)
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -
@@ -1263,13 +1224,6 @@ export default {
             (item) => item.targetUser
           )
         }
-
-        this.scanTypes = _this.investigationDetailsData.scanConfigurationDetails.map((item) => {
-          if (item.type.toLowerCase() == 'outlook') {
-            item['mailConfigurationName'] = 'Outlook'
-          }
-          return item
-        })
         const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
           for (let [key, value] of Object.entries(item)) {
             if (value && key != 'resourceId') {
@@ -1313,18 +1267,6 @@ export default {
     getTargetGroups().then((response) => {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
-    })
-    getInvestigationScanTypes().then((response) => {
-      const {
-        data: { data }
-      } = response
-      this.sources = data.map((item) => {
-        if (item.type.toLowerCase() === 'outlook') {
-          item['mailConfigurationName'] = 'Outlook'
-        }
-        return item
-      })
-      this.checkIsEdit()
     })
     this.checkIsEdit()
     if (this.selectedMail) {
@@ -1715,29 +1657,19 @@ export default {
   }
 
   .edit-labels {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 20px;
     font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-    padding-bottom: 3px;
+    font-size: 20px;
+    line-height: 24px;
+    color: #383b41;
   }
 
   .edit-sub-labels {
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
     font-style: normal;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    margin-bottom: 0 !important;
-    padding-bottom: 14px;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 21px;
+    color: #383b41;
+    padding-bottom: 8px;
   }
 
   .edit-privacy-buttons {

@@ -196,18 +196,7 @@
         </v-list-item>
       </v-col>
       <v-col md="6">
-        <div class="select-sources d-flex" style="flex-wrap: wrap;">
-          <v-checkbox
-            v-for="(item, index) in sources"
-            :id="`input--action-investigate-sources-${getParentIndex}-${index}`"
-            :key="index"
-            v-model="scanTypes"
-            class="v-input--checkbox mr-4"
-            color="#2196f3"
-            :label="item['mailConfigurationName']"
-            :value="item"
-          ></v-checkbox>
-        </div>
+        <MailConfigurationSelectSources v-model="scanTypes" />
       </v-col>
     </v-row>
     <v-row align="center" class="mb-4">
@@ -320,13 +309,13 @@ import {
   getTargetGroupsByName,
   getTargetUsersByEmail
 } from '../../api/targetUsers'
-import { getInvestigationScanTypes } from '@/api/investigations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
+import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
 
 export default {
   name: 'Investigate',
-  components: { KSelect },
+  components: { MailConfigurationSelectSources, KSelect },
   props: {
     act: {
       type: Object
@@ -342,9 +331,7 @@ export default {
       default: () => {
         return {
           isCreatedByAnalyzer: false,
-          scanTypes: [
-            { type: 'Outlook', mailConfigurationResourceId: null, mailConfigurationName: 'Outlook' }
-          ],
+          scanTypes: [],
           filters: [],
           targetUserType: 'AllUsers',
           targetUsers: [],
@@ -379,7 +366,7 @@ export default {
         newVal.splice(0, 1)
       }
     },
-    scanTypes(newVal, oldVal) {
+    scanTypes(newVal) {
       this.investigateData.scanTypes = newVal.map((item) => {
         const { type, mailConfigurationResourceId } = item
         return { type, mailConfigurationResourceId }
@@ -433,7 +420,6 @@ export default {
       defaultUserGroupItems: [],
       timeout: null,
       targetUserType: 'AllUsers',
-      sources: [],
       validations: {
         required,
         minLength,
@@ -495,18 +481,8 @@ export default {
       this.userGroupsItems = response.data.data
       this.defaultUserGroupItems = response.data.data
     })
-    getInvestigationScanTypes().then((response) => {
-      const {
-        data: { data }
-      } = response
-      this.sources = data.map((item) => {
-        if (item.type.toLowerCase() === 'outlook') {
-          item['mailConfigurationName'] = 'Outlook'
-        }
-        return item
-      })
-      this.scanTypes = JSON.parse(JSON.stringify(this.investigateData.scanTypes))
-    })
+    this.scanTypes = JSON.parse(JSON.stringify(this.investigateData.scanTypes))
+
     this.callForGetTargetUsersItems(
       {
         pageNumber: 1,
@@ -517,9 +493,6 @@ export default {
       },
       true
     )
-  },
-  updated() {}
+  }
 }
 </script>
-
-<style lang="scss"></style>
