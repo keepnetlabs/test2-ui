@@ -14,7 +14,7 @@
       />
       <img
         alt="exchange"
-        src="../../assets/img/office365_logo.png"
+        src="../../assets/img/exchange@3x.png"
         v-if="scope.row[col.property] === 'Exchange'"
       />
       <span class="ml-2">{{ scope.row[col.property] }}</span>

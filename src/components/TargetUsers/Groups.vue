@@ -527,7 +527,6 @@ export default {
     },
     handleDelete(selectedRow) {
       this.changeDeleteGroupModalStatus(true)
-      this.getDefaultFilterAndSearch()
       this.selectedRow = selectedRow
     },
     exportTargetGroupsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {

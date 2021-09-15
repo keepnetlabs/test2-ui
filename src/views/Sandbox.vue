@@ -853,6 +853,9 @@ export default {
 </script>
 
 <style lang="scss">
+.el-picker-panel.el-date-picker {
+  z-index: 9 !important;
+}
 .sandbox {
   .k-table__wrapper .card {
     box-shadow: none !important;
