@@ -148,22 +148,20 @@ export default {
   }
 
   &__title {
-    font-size: 24px;
-    opacity: 0.9;
-    font-weight: normal;
+    font-size: 20px;
+    font-weight: 600;
     line-height: 1.29 !important;
     letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
+    color: #383b41 !important;
   }
 
   &__subtitle {
     font-size: 14px;
-    opacity: 0.9;
     font-weight: normal;
     line-height: 1.5 !important;
     letter-spacing: normal;
     margin-bottom: 24px;
-    color: rgba(0, 0, 0, 0.87) !important;
+    color: #383b41 !important;
   }
   &__container {
     padding: 0 16px 24px 16px !important;
