@@ -1233,9 +1233,11 @@ export default {
     left: 0;
     bottom: 0;
     width: 100%;
-    z-index: 100000;
+    z-index: 1000;
   }
-
+  .v-input .v-list-item {
+    max-width: 100% !important;
+  }
   .v-list-item {
     padding: 0;
     max-width: 554px !important;
