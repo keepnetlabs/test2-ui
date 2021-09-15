@@ -69,6 +69,9 @@ export default {
     index: {
       type: Number
     },
+    isEdit: {
+      type: Boolean
+    },
     textFieldPlaceholder: {
       type: String,
       default: 'Enter Domain name'
@@ -88,7 +91,6 @@ export default {
   },
   data() {
     return {
-      isEdit: false,
       textFieldValue: this.value,
       validations,
       labels
@@ -103,19 +105,21 @@ export default {
   methods: {
     handleActionButtonClick() {
       if (this.$refs.refForm.validate()) {
-        this.$emit('input', this.textFieldValue)
-        this.isEdit = false
+        this.$emit('input', this.textFieldValue, this.value, this.index)
       }
     },
     handleCancelClick() {
-      this.isEdit = false
+      this.changeIsEdit()
       this.textFieldValue = this.value
     },
     handleEditClick() {
-      this.isEdit = true
+      this.changeIsEdit(true)
       this.$nextTick(() => {
         this.$refs.refTextField.focus()
       })
+    },
+    changeIsEdit(val = false) {
+      this.$emit('update:isEdit', val)
     }
   }
 }

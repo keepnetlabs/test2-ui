@@ -49,14 +49,24 @@
     </div>
     <div class="data-container-with-search__content">
       <slot name="content">
-        <v-virtual-scroll :key="scrollKey" max-height="300" item-height="48" :items="getItems">
+        <v-virtual-scroll
+          v-if="getItems.length"
+          :key="scrollKey"
+          max-height="300"
+          item-height="48"
+          :items="getItems"
+        >
           <template #default="{item,index}">
             <data-container-with-search-item
-              v-model="getItems[index]"
+              :key="getItems[index].key"
+              :value="getItems[index].val"
+              :index="index"
               :text-field-rules="textFieldRules"
               :text-field-placeholder="textFieldPlaceholder"
               :text-field-error-message="textFieldErrorMessage"
+              :is-edit.sync="getItems[index].isEdit"
               @on-delete="handleItemDelete"
+              @input="handleInputChange"
             />
           </template>
         </v-virtual-scroll>
@@ -116,7 +126,8 @@ export default {
       isFilterActive: false,
       isMenuOpen: false,
       search: '',
-      scrollKey: 'scroll-key-aksaks'
+      scrollKey: 'scroll-key-aksaks',
+      options: []
     }
   },
   computed: {
@@ -125,25 +136,49 @@ export default {
     },
     getItems() {
       const items = this.search
-        ? this.value.filter((item) => item.includes(this.search))
-        : this.value
+        ? this.options.filter((item) => item.val.includes(this.search))
+        : this.options
       return this.isFilterActive
-        ? items.filter((item) => !this.textFieldRules.every((func) => func(item) === true))
+        ? items.filter((item) => !this.textFieldRules.every((func) => func(item.val)))
         : items
     }
   },
   watch: {
     value() {
+      this.setOptions()
       this.$nextTick(() => {
         this.scrollKey = `scroll-key${Math.random().toString().substring(0, 5)}`
       })
     }
   },
+  created() {
+    this.setOptions()
+  },
   methods: {
+    handleInputChange(newVal = '', oldVal, index) {
+      const item = this.getItems[index]
+      item.val = newVal
+      const indexOfOldValue = this.value.findIndex((val) => val === oldVal)
+      this.value[indexOfOldValue] = newVal
+      this.$set(item, 'isEdit', false)
+      item.key = Math.random().toString(8)
+    },
+    setOptions() {
+      this.value.forEach((val) => {
+        if (!this.options.find((item) => item.val === val)) this.addItemToOptions(val)
+      })
+    },
+    addItemToOptions(val) {
+      this.options.unshift({ val, key: Math.random().toString(8), isEdit: false })
+    },
     handleItemDelete(item = '') {
-      const index = this.value.indexOf(item)
+      const index = this.options.findIndex((option) => option.val === item)
       if (index === -1) return
-      this.value.splice(index, 1)
+      this.options.splice(index, 1)
+      this.value.splice(
+        this.value.findIndex((val) => val === item),
+        1
+      )
     },
     handleFilter() {
       this.setCommonProperties(true)
