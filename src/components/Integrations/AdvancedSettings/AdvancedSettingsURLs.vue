@@ -74,14 +74,14 @@ export default {
   },
   watch: {
     formData(val = []) {
-      this.setFormDataToURL(val)
+      this.setFormData(val)
     }
   },
   created() {
-    this.setFormDataToURL()
+    this.setFormData()
   },
   methods: {
-    setFormDataToURL(val = this.formData) {
+    setFormData(val = this.formData) {
       this.dataContainerWithSearchItems = getFormData(val, 'URL')
     },
     handleUrlAdd() {
