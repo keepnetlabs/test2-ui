@@ -1227,7 +1227,6 @@ export default {
     },
     checkIsEdit() {
       if (this.isEdit) {
-        console.log(this.investigationDetailsData.scanConfigurationDetails)
         this.investgationName = this.investigationDetailsData.name
         //this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
