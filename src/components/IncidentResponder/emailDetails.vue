@@ -434,6 +434,7 @@ import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDeta
 import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
 import { scrollToComponent } from '@/utils/functions'
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
+import labels from '@/model/constants/labels'
 
 export default {
   components: {
@@ -481,6 +482,15 @@ export default {
             }
           },
           width: 170
+        },
+        {
+          property: PROPERTY_STORE.REASON,
+          editable: false,
+          label: labels.Reason,
+          fixed: false,
+          show: true,
+          width: 200,
+          type: 'text'
         },
         {
           property: PROPERTY_STORE.ISSENDFILEHASH,
