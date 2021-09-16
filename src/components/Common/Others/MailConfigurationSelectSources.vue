@@ -12,8 +12,8 @@
     small-chips
     deletable-chips
     autocomplete="disabled"
-    item-value="resourceId"
-    item-text="name"
+    item-value="mailConfigurationResourceId"
+    item-text="mailConfigurationName"
     :slots="{ item: true }"
     :items="options"
     :item-disabled="checkIsItemDisabled"
@@ -27,7 +27,8 @@
           {
             'mail-configuration-select-sources__item-container--disabled':
               item.statusName === 'Not Running',
-            'mail-configuration-select-sources__item-container--first': item.name === 'All'
+            'mail-configuration-select-sources__item-container--first':
+              item.mailConfigurationName === 'All'
           }
         ]"
       >
@@ -36,16 +37,21 @@
           color="#2196f3"
           class="mt-n1"
           :input-value="
-            !!value.some((source) => source.mailConfigurationResourceId === item.resourceId)
+            !!value.some(
+              (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
+            )
           "
         />
         <div class="mail-configuration-select-sources__item">
           <div class="mail-configuration-select-sources__item-left">
-            {{ item.name }}
+            {{ item.mailConfigurationName }}
           </div>
-          <div class="mail-configuration-select-sources__item-right" v-if="item.name !== 'All'">
+          <div
+            class="mail-configuration-select-sources__item-right"
+            v-if="item.mailConfigurationName !== 'All'"
+          >
             <div class="mail-configuration-select-sources__item-right-platform">
-              {{ item.platform }}
+              {{ item.type }}
             </div>
             <div>
               <v-btn style="display: none;" />
@@ -54,7 +60,7 @@
                 className="mail-configuration-select-sources__badge"
                 :id="`badge--mail-configuration-select-sources-${index}`"
                 :outline="false"
-                :text="getDataTableFieldLabel(item.statusName)"
+                :text="'Running'"
                 :color="getBtnStatusColor(item.statusName)"
               />
             </div>
@@ -71,9 +77,9 @@
 <script>
 import Badge from '@/components/Badge'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getMailConfigurationList } from '@/api/mailConfiguration'
 import { getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import labels from '@/model/constants/labels'
+import { getInvestigationScanTypes } from '@/api/investigations'
 export default {
   name: 'MailConfigurationSelectSources',
   components: {
@@ -97,34 +103,21 @@ export default {
   },
   methods: {
     callForOptions() {
-      getMailConfigurationList({
-        pageNumber: 1,
-        pageSize: 75000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }).then((response) => {
+      getInvestigationScanTypes().then((response) => {
         const {
           data: { data }
         } = response
-        this.options = data.results
+        this.options = data.map((item) => {
+          if (item.type.toLowerCase() === 'outlook') {
+            item['mailConfigurationName'] = 'Outlook'
+          }
+          return item
+        })
         if (this.value.length) {
           this.selectedSources = this.options.filter((item) =>
-            this.value.find((val) => val.mailConfigurationResourceId === item.resourceId)
+            this.value.find(
+              (val) => val.mailConfigurationResourceId === item.mailConfigurationResourceId
+            )
           )
         }
       })
@@ -141,9 +134,9 @@ export default {
     handleInputChange(val = {}) {
       this.$emit(
         'input',
-        val.map(({ resourceId, platform }) => ({
-          mailConfigurationResourceId: resourceId,
-          type: platform
+        val.map(({ mailConfigurationResourceId, type }) => ({
+          mailConfigurationResourceId: mailConfigurationResourceId,
+          type
         }))
       )
     }

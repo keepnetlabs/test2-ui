@@ -2562,7 +2562,6 @@ export default {
     investigationDetailsListData(val) {
       this.loading = false
       vm.$forceUpdate()
-      console.log('val', val)
       this.investigationDetailsList = val.results || []
       if (this.$refs.refInvestigationListData) {
         this.investigationDetailsList = val.results || []
