@@ -191,6 +191,7 @@
                   </div>
                   <div class="filter-item__input">
                     <v-text-field
+                      v-model.trim="list.text"
                       :key="index"
                       :id="`input--investigation-search-criteria-value-${list.option}-${index}`"
                       :placeholder="
@@ -204,9 +205,9 @@
                         { 'edit-name-textfield__flagged': list.isFlagged }
                       ]"
                       :rules="getSearchCriteriaItemRules(list.option)"
-                      v-model.trim="list.text"
-                      required
                       :label="list.isFlagged ? list.label : ''"
+                      :error-messages="errorMessages[index]"
+                      @input="handleInputSingularityChange(list, index)"
                     ></v-text-field>
                   </div>
                   <div class="filter-item__delete-button">
@@ -216,7 +217,7 @@
                       left
                       class="ml-2"
                       v-if="filterList.length > 1"
-                      @click="filterList.splice(index, 1)"
+                      @click="handleDeleteListItem(index)"
                       >mdi-close</v-icon
                     >
                   </div>
@@ -376,6 +377,7 @@ import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import * as Validations from '@/utils/validations'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
+import Singularity from '@/utils/singularity'
 export default {
   components: {
     MailConfigurationSelectSources,
@@ -397,6 +399,9 @@ export default {
       if (newVal[0] === '') {
         newVal.splice(0, 1)
       }
+    },
+    filterList() {
+      this.checkAllSingularity()
     },
     searchTargetUsersGroupsValue(val) {
       if (val && val.length >= 3) {
@@ -442,6 +447,7 @@ export default {
       defaultUserGroupItems: [],
       searchTargetUsersSpecificValue: '',
       specificUserItems: [],
+      errorMessages: [],
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -503,6 +509,7 @@ export default {
       investgationName: `Manual Investigation - ${this.$moment(Date.now()).format(
         getTimeZoneForMoment()
       )}`,
+      singularity: new Singularity(),
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
@@ -605,8 +612,35 @@ export default {
     'isIr'
   ],
   methods: {
+    checkAllSingularity() {
+      this.filterList.forEach((item, index) => this.checkSingularity(item, index))
+    },
+    handleInputSingularityChange(list, index) {
+      this.checkSingularity({ ...list }, index)
+      this.checkAllSingularity()
+    },
     changeSearchCriteria(item) {
       item.text = null
+    },
+    handleDeleteListItem(index) {
+      this.filterList.splice(index, 1)
+      this.errorMessages.splice(index, 1)
+    },
+    checkSingularity(list = {}, index = 0) {
+      if (!list.option && !list.text) return
+      let message = ''
+      if (
+        this.filterList.find(
+          (item, itemIndex) =>
+            item.text &&
+            item.text === list.text &&
+            item.option === list.option &&
+            index !== itemIndex &&
+            itemIndex < index
+        )
+      )
+        message = `There is already ${list.option} with same value`
+      this.$set(this.errorMessages, index, message)
     },
     actionChanged() {
       this.warningMessage = ''
@@ -628,11 +662,6 @@ export default {
     handleTargetUserTypeChange() {
       this.targetUsersValue = []
       this.$refs.form.resetValidation()
-    },
-    handleChangeFilterListItem() {
-      this.$nextTick(() => {
-        this.$refs.form.validate()
-      })
     },
     getSearchCriteriaItemRules(option = '') {
       const rules = []
@@ -798,7 +827,7 @@ export default {
         this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
-        if (!this.isDateValid) {
+        if (!this.isDateValid || this.errorMessages.some((item) => item)) {
           this.$nextTick(() => {
             const el = this.$refs.form.$el.querySelector('.date-row')
             scrollToComponent(el)
