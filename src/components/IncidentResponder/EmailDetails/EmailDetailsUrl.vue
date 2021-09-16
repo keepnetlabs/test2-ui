@@ -86,7 +86,7 @@
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">
                   <a
                     :id="`btn-see-details--email-details-url-${index}`"
-                    :href="scope.row.analysisEnginePermalink"
+                    :href="scope.row['analysisEnginePermalink']"
                     target="_blank"
                     class="attachments-table__link"
                     >See Details</a
@@ -164,6 +164,15 @@ export default {
             }
           },
           hasTooltip: true
+        },
+        {
+          property: PROPERTY_STORE.REASON,
+          editable: false,
+          label: labels.Reason,
+          fixed: false,
+          show: true,
+          width: 200,
+          type: 'text'
         },
         {
           property: 'analysisEnginePermalink',
