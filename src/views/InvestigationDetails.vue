@@ -236,7 +236,7 @@
                         <v-tooltip
                           v-if="
                             statsAndMenuData &&
-                            statsAndMenuData.status == 'Running' &&
+                            statsAndMenuData.status === 'Running' &&
                             statsAndMenuData.estimatedTime
                           "
                           bottom
@@ -883,14 +883,15 @@
             <DatatableLoading :loading="loading" v-if="loading" />
             <div v-show="activeMenu !== 'targetUsers'">
               <datatable
-                :is-column-filter-active="isColumnFilterActive"
+                v-show="showEmails"
                 id="investigationDetailsList"
-                :refName="'investigationDetailsListTable'"
                 ref="refInvestigationListData"
+                rowKey="resourceId"
+                just-compare-row-key
+                :is-column-filter-active="isColumnFilterActive"
+                :refName="'investigationDetailsListTable'"
                 :columns="columns"
                 :table="investigationDetailsList"
-                :show-all-records="showAllRecordsFolder"
-                :total-number-of-records="totalNumberOfRecordsFolder"
                 :pageSizes="pageSizes"
                 :selectable="true"
                 :filterable="true"
@@ -908,7 +909,6 @@
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
                 @downloadEvent="exportInvestigationEmails"
-                v-show="showEmails"
                 @columnFilterChanged="columnFilterChanged"
                 @columnFilterCleared="columnFilterCleared"
                 @refreshAction="refreshDatatable"
@@ -997,7 +997,6 @@
                 :options="true"
                 :total-number-of-records="totalNumberOfRecordsTargetUser"
                 :empty="iEmpty"
-                :show-all-records="showAllRecordsTargetUser"
                 :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
@@ -1103,11 +1102,11 @@ import {
   getStoreValue,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
-} from '../model/constants/commonConstants'
+} from '@/model/constants/commonConstants'
 import AppDialog from '../components/AppDialog'
-import { exportInvestigationEmailList, exportInvestigationUserList } from '../api/incidentResponder'
+import { exportInvestigationEmailList, exportInvestigationUserList } from '@/api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
-import { getDataTableFieldLabel, getTimeZoneForMoment } from '../utils/functions'
+import { getTimeZoneForMoment } from '@/utils/functions'
 import { required, trim } from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
@@ -1132,9 +1131,7 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
-    showAllRecordsTargetUser: false,
     totalNumberOfRecordsTargetUser: 0,
-    showAllRecordsFolder: false,
     storedTableDetailsList: null,
     storedTableTargetUser: null,
     totalNumberOfRecordsFolder: 0,
@@ -1733,12 +1730,10 @@ export default {
     },
     handleAllRecordsTargetUsersClick() {
       this.investigationTargetUsersListBodyData.pageSize = 75000
-      this.showAllRecordsTargetUser = false
       this.refreshDatatable()
     },
     handleAllRecordsInboxClick() {
       this.investigationListBodyData.pageSize = 75000
-      this.showAllRecordsFolder = false
       this.refreshDatatable()
     },
     getActionStatusOptions(
@@ -2126,11 +2121,15 @@ export default {
       }
     },
     menuClick(menu) {
+      if (menu !== this.activeMenu && menu !== 'targetUsers') {
+        this.$nextTick(() => {
+          this.$refs.refInvestigationListData.$refs.elTableRef &&
+            this.$refs.refInvestigationListData.$refs.elTableRef.clearSelection()
+        })
+      }
       this.activeMenu = menu
       this.showTargetUsersDetails = false
       this.showEmails = false
-      this.investigationDetailsList = []
-
       if (menu !== 'targetUsers') {
         this.loading = true
         let dataBody = this.investigationListBodyData
@@ -2170,44 +2169,16 @@ export default {
       this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
       this.serverSidePropsForTargetUsers.pageNumber = pageNumber
       this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
-      if (
-        this.investigationTargetUsersListBodyData.pageSize === 1000 &&
-        this.totalNumberOfRecordsTargetUser > 1000
-      ) {
-        this.showAllRecordsTargetUser = true
-      }
-      if (
-        this.totalNumberOfRecordsTargetUser <= 1000 &&
-        this.investigationTargetUsersListBodyData.pageSize === 1000
-      ) {
-        this.showAllRecordsTargetUser = false
-      }
     },
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
         const {
           data: { data }
         } = response
-        this.totalNumberOfRecordsFolder = totalNumberOfRecords
         const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
         this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
         this.serverSideProps.totalNumberOfPages = totalNumberOfPages
         this.serverSideProps.pageNumber = pageNumber
-        const { results = [] } = data
-        this.tableData = results
-        this.totalNumberOfRecords = totalNumberOfRecords
-        if (
-          this.investigationListBodyData.pageSize === 1000 &&
-          this.totalNumberOfRecordsFolder > 1000
-        ) {
-          this.showAllRecordsFolder = true
-        }
-        if (
-          this.totalNumberOfRecordsFolder <= 1000 &&
-          this.investigationListBodyData.pageSize === 1000
-        ) {
-          this.showAllRecordsFolder = false
-        }
       }
     },
     restartStopInvestigationData() {
@@ -2506,6 +2477,7 @@ export default {
     getGoogleData() {
       return (
         this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
           if (item.type === 'GoogleWorkspace') acc.push(item.mailConfigurationName)
           return acc
@@ -2515,6 +2487,7 @@ export default {
     getOfficeData() {
       return (
         this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
           if (item.type === 'Outlook') acc.push(item.mailConfigurationName)
           return acc
@@ -2524,6 +2497,7 @@ export default {
     getWordData() {
       return (
         this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
           if (item.type === 'O365') acc.push(item.mailConfigurationName)
           return acc
@@ -2533,6 +2507,7 @@ export default {
     getExchangeData() {
       return (
         this.investigationDetailsData &&
+        this.investigationDetailsData.scanConfigurationDetails &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
           if (item.type === 'Exchange') acc.push(item.mailConfigurationName)
           return acc
@@ -2587,6 +2562,7 @@ export default {
     investigationDetailsListData(val) {
       this.loading = false
       vm.$forceUpdate()
+      console.log('val', val)
       this.investigationDetailsList = val.results || []
       if (this.$refs.refInvestigationListData) {
         this.investigationDetailsList = val.results || []

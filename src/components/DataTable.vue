@@ -1019,6 +1019,10 @@ export default {
     isShowDownloadModal: {
       default: false
     },
+    justCompareRowKey: {
+      type: Boolean,
+      default: false
+    },
     showPageSize: {
       type: Boolean,
       required: false,
@@ -1780,9 +1784,11 @@ export default {
         dataRef = this.getAllItems(dataRef, [], false, false)
       }
       const selectedItems = dataRef.filter((item) => {
-        return this.multipleSelection.find(
-          (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-        )
+        return this.multipleSelection.find((selectedItem) => {
+          return this.justCompareRowKey
+            ? selectedItem[this.rowKey] === item[this.rowKey]
+            : JSON.stringify(item) === JSON.stringify(selectedItem)
+        })
       })
       const comparedSelectionObj = this.isServerSide ? selectedItems : this.multipleSelection
       if (this.isSelectedAll && comparedSelectionObj.length === this.totalLength) {
