@@ -74,3 +74,7 @@ export function updateAnalysisExclusions(payload = {}) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getAnalysisEngineFormOptions() {
+  return testRequest.get('analysis-engines/form-details')
+}
