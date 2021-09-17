@@ -377,7 +377,6 @@ import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import * as Validations from '@/utils/validations'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
-import Singularity from '@/utils/singularity'
 export default {
   components: {
     MailConfigurationSelectSources,
@@ -497,7 +496,7 @@ export default {
         senderName: 'Enter a from name',
         url: 'Enter a domain name',
         keyword: 'Enter a keyword',
-        size: 'Enter size',
+        size: 'Enter file size(byte)',
         name: 'Enter a file name(case sensitive)',
         sha512: 'Enter a sha512 key',
         md5: 'Enter a md5 key',
@@ -509,7 +508,6 @@ export default {
       investgationName: `Manual Investigation - ${this.$moment(Date.now()).format(
         getTimeZoneForMoment()
       )}`,
-      singularity: new Singularity(),
       isDateValid: true,
       targetUserType: 'AllUsers',
       targetUsersValue: '',
