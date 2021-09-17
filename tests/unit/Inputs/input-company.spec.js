@@ -1,5 +1,6 @@
 import { createLocalVue, mount } from '@vue/test-utils'
 import TestInputCompanyWrapper from '@/components/TestHelpers/TestInputCompanyWrapper'
+import InputHelper from '../Objects/InputHelper'
 
 describe('Input company component', () => {
   const localVue = createLocalVue()
@@ -30,25 +31,22 @@ describe('Input company component', () => {
       localVue
     })
     const textInput = wrapper.find('input')
+    const inputHelper = new InputHelper()
 
-    const addData = async (value) => {
-      textInput.element.value = value
-      wrapper.vm.value = textInput.element.value
-      await textInput.trigger('click')
-      await wrapper.vm.$nextTick()
-    }
     //checking cannot start empty space
-    await addData(' custom data')
+    await inputHelper.addData(' my custom input company data', textInput, wrapper)
     expect(
       wrapper.find('.v-messages__message').text().includes('Cannot start with space')
     ).toBeTruthy()
     //checking length
-    await addData(
-      'custom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom datacustom data'
+    await inputHelper.addData(
+      'my custom input company datamy custom input company data my custom input company data my custom input company data my custom input company data my custom input company data my custom input company data ',
+      textInput,
+      wrapper
     )
     expect(wrapper.find('.v-messages__message').text().includes('cannot exceed')).toBeTruthy()
     //checking required
-    await addData('')
+    await inputHelper.addData('', textInput, wrapper)
 
     await expect(wrapper.find('.v-messages__message').text().includes('Required')).toBeTruthy()
   })
