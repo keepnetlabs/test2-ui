@@ -777,12 +777,11 @@
 <script>
 import {
   createIntegration,
-  getFileTypes,
   getIntegrationDetails,
-  getIntegrationTypes,
   testAnalysis,
   updateIntegration,
-  getProxyItems
+  getProxyItems,
+  getAnalysisEngineFormOptions
 } from '@/api/integrations'
 import { INTEGRATION_TYPES, INTEGRATION_LABELS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
@@ -981,9 +980,37 @@ export default {
     }
   },
   created() {
-    this.getProxyItems(null, true)
+    this.getFormOptions()
   },
   methods: {
+    getFormOptions() {
+      this.proxyLoading = true
+      getAnalysisEngineFormOptions().then((response) => {
+        const { engineTypes, lookups, proxies } = response.data.data
+        this.integrationTypes = engineTypes.data.map((item) => {
+          return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
+        })
+        this.uploadFileTypes = lookups.data.map((item) => {
+          switch (item.name) {
+            case 'Archive':
+              return { text: 'Archive files (.zip, .rar)', value: item.name }
+            case 'Image':
+              return { text: 'Image files (.jpg, .png, .gif, .bmp)', value: item.name }
+            case 'Microsoft Office':
+              return {
+                text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
+                value: item.name
+              }
+            case 'Other':
+              return { text: 'Other', value: item.name }
+            default:
+              return { text: item.name, value: item.name }
+          }
+        })
+        this.addProxyItems(proxies.data.results, true)
+      })
+      if (this.integrationId) this.updateVModel(this.integrationId)
+    },
     getProxyTestConnection() {
       if (this.proxyTestLoadingStatus === 'loading') return false
       this.proxyTestLoadingStatus = 'loading'
@@ -1018,47 +1045,35 @@ export default {
         getProxyItems(this.proxyBodyData)
           .then((response) => {
             let proxyItems = response.data.data.results
-            proxyItems.unshift({
-              name: 'Default proxy',
-              resourceId: ''
-            })
-            proxyItems.unshift({
-              name: 'No proxy',
-              resourceId: '382e06ccbbde'
-            })
-            this.proxyItems = proxyItems
-            if (isDefault) {
-              this.defaultProxyItems = JSON.parse(JSON.stringify(proxyItems))
-              if (!this.integrationId) {
-                this.formValues.proxyResourceId = response.data.data.results.find(
-                  (item) => item.isDefault === 'Yes'
-                ).resourceId
-                if (!this.formValues.proxyResourceId) {
-                  this.formValues.proxyResourceId = ''
-                }
-              }
-            }
+            this.addProxyItems(proxyItems, isDefault)
           })
           .finally(() => {
             if (!isDefault) {
               this.proxyLoading = false
-            } else {
-              getIntegrationTypes()
-                .then((response) => {
-                  const {
-                    data: { data }
-                  } = response
-                  this.integrationTypes = data.map((item) => {
-                    return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
-                  })
-                })
-                .finally(() => {
-                  if (this.integrationId) this.updateVModel(this.integrationId)
-                })
-              this.getFileTypes()
             }
           })
       }, 500)
+    },
+    addProxyItems(proxyItems, isDefault) {
+      proxyItems.unshift({
+        name: 'Default proxy',
+        resourceId: ''
+      })
+      proxyItems.unshift({
+        name: 'No proxy',
+        resourceId: '382e06ccbbde'
+      })
+      this.proxyItems = proxyItems
+      if (isDefault) {
+        this.defaultProxyItems = JSON.parse(JSON.stringify(proxyItems))
+        if (!this.integrationId) {
+          const item = proxyItems.find((item) => item.isDefault === 'Yes')
+          this.formValues.proxyResourceId = item ? item.resourceId : ''
+          if (!this.formValues.proxyResourceId) {
+            this.formValues.proxyResourceId = ''
+          }
+        }
+      }
     },
     getFriendlyName(name) {
       let label
@@ -1262,32 +1277,7 @@ export default {
       }
     },
     saveButtonClickOnConfirmModal() {
-      if (!this.uploadFileTypes.length) this.getFileTypes()
       this.showConfirmModal = false
-    },
-    getFileTypes() {
-      getFileTypes().then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.uploadFileTypes = data.map((item) => {
-          switch (item.name) {
-            case 'Archive':
-              return { text: 'Archive files (.zip, .rar)', value: item.name }
-            case 'Image':
-              return { text: 'Image files (.jpg, .png, .gif, .bmp)', value: item.name }
-            case 'Microsoft Office':
-              return {
-                text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
-                value: item.name
-              }
-            case 'Other':
-              return { text: 'Other', value: item.name }
-            default:
-              return { text: item.name, value: item.name }
-          }
-        })
-      })
     },
     addApiKey() {
       this.isTestConnectionDisabled = true
