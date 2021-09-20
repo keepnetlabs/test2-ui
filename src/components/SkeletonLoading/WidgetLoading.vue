@@ -3,7 +3,7 @@
     :loading="loading"
     v-bind="attrs"
     type="table-heading,table-tbody"
-    class="data-table-loading"
+    class="data-table-loading widget-loading"
     ><slot name="skeleton-content"></slot
   ></v-skeleton-loader>
 </template>
