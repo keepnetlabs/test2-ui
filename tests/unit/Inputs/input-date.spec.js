@@ -1,6 +1,6 @@
 import { createLocalVue, mount } from '@vue/test-utils'
 import InputDate from '@/components/Common/Inputs/InputDate'
-describe('Input company component', () => {
+describe('Input date component', () => {
   const localVue = createLocalVue()
 
   it('Check is rendering', () => {
