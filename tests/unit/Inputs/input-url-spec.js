@@ -2,7 +2,7 @@ import { createLocalVue, mount } from '@vue/test-utils'
 import TestInputURLWrapper from '@/components/TestHelpers/TestInputURLWrapper'
 import InputHelper from '../Objects/InputHelper'
 
-describe('Input company component', () => {
+describe('Input URL component', () => {
   const localVue = createLocalVue()
 
   it('Check is rendering', () => {
