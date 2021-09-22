@@ -22,7 +22,6 @@ describe('MFA Login component', () => {
 
   it('Check props and actions', async () => {
     const { wrapper } = new MFALogin(localVue)
-    console.log('wrapper', wrapper.html())
     //checking is input required
     const input = wrapper.find('input')
     input.element.value = 'custom data'
@@ -40,7 +39,7 @@ describe('MFA Login component', () => {
 
     //checking on cant login
     const checkboxWrapper = wrapper.find('.verification-code-wrapper__remember')
-    console.log(checkboxWrapper.html())
+
     expect(checkboxWrapper.exists()).toBeTruthy()
     //clicking checkbox
     await checkboxWrapper.find('.verification-code-wrapper__cant-login').trigger('click')
