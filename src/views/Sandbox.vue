@@ -78,6 +78,13 @@
                   @blur="changeBlurValue($event)"
                 ></v-select>
                 <InputDate
+                  v-if="filteredSelectValueDate === 'between'"
+                  v-model="filteredDateValueRange"
+                  ref="refPicker2"
+                  type="datetimerange"
+                  @change="handleChangeBetweenDatepicker"
+                />
+                <InputDate
                   v-model="filteredDateValue"
                   type="datetime"
                   ref="refPicker"
@@ -86,14 +93,7 @@
                   @blur="changeBlurValue($event)"
                   v-if="filteredSelectValueDate !== 'between'"
                 />
-                <InputDate
-                  v-if="filteredSelectValueDate === 'between'"
-                  v-model="filteredDateValueRange"
-                  ref="refPicker2"
-                  type="datetimerange"
-                  style="margin-bottom: 14px;"
-                  @change="handleChangeBetweenDatepicker"
-                />
+
                 <div class="filter__footer" tabindex="2" @blur="changeBlurValue($event)">
                   <v-btn text class="filter__footer-button" color="#f56c6c" @click="clearFilter">
                     Clear
