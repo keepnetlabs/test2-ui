@@ -29,7 +29,6 @@ describe('Input Copy with clipboard component', () => {
       }
     })
     //expecting component is rendering
-    console.log(wrapper.html())
     expect(wrapper.find('.k-form-group__title').text()).toContain('Custom title')
 
     //clicking button
@@ -37,7 +36,6 @@ describe('Input Copy with clipboard component', () => {
     await wrapper.find('button').trigger('click')
     //is event throwed
     const emittedEvent = wrapper.emitted()['on-copy']
-    console.log('emittedEvent', emittedEvent)
     expect(emittedEvent.length).toBe(1)
     //comparing value
     expect(emittedEvent[0][0]).toEqual('id')
