@@ -1,8 +1,9 @@
 <template>
   <v-skeleton-loader
-    :loading="loading"
     v-bind="attrs"
+    :loading="loading"
     type="table-heading, list-item-two, list-item, list-item, list-item"
+    class="three-row-loading"
     ><slot name="skeleton-content"></slot></v-skeleton-loader
 ></template>
 

@@ -1,5 +1,9 @@
 <template>
-  <v-skeleton-loader :loading="loading" v-bind="attrs" type="list-item-avatar-two-line"
+  <v-skeleton-loader
+    v-bind="attrs"
+    type="list-item-avatar-two-line"
+    class="phishing-reporter-top-bar-loading"
+    :loading="loading"
     ><slot name="skeleton-content"></slot></v-skeleton-loader
 ></template>
 
