@@ -1,7 +1,7 @@
 import { createLocalVue } from '@vue/test-utils'
 import MakeAvailableFor from '../Objects/MakeAvailableFor'
 
-describe('Data container with search items test cases suite', () => {
+describe('Make available for test cases suite', () => {
   const localVue = createLocalVue()
   it('Check render', () => {
     const { wrapper } = new MakeAvailableFor(localVue)
