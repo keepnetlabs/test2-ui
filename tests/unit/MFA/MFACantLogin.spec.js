@@ -29,9 +29,7 @@ describe('MFA Cant Login component', () => {
 
   it('Check actions and props', async () => {
     const { wrapper } = new MFACantLogin(localVue)
-
     //clicking checkbox
-
     const checkbox = wrapper.find('.v-input__control .v-input__slot')
     await checkbox.trigger('click')
     //chechking resend sms
