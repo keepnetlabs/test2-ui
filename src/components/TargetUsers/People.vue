@@ -38,6 +38,12 @@
       ref="targetUserFromAFile"
       :companyLicense="companyLicense"
     />
+    <TargetUsersViewTargetUserGroups
+      v-if="isShowingTargetUserViewTargetGroups"
+      :item="selectedUserToViewGroups"
+      :status="isShowingTargetUserViewTargetGroups"
+      @on-close="toggleShowingTargetUserViewTargetGroups"
+    />
     <datatable
       ref="refPeopleTable"
       id="target-users-people-data-table"
@@ -79,6 +85,7 @@
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
       @on-table-settings-change="handleSetRenderedColumns"
+      @viewUserGroups="handleViewUserGroups"
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -198,10 +205,12 @@ import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 import { checkPermission } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
 
 export default {
   name: 'People',
   components: {
+    TargetUsersViewTargetUserGroups,
     CustomFieldsModal,
     DeleteUserModal,
     Datatable,
@@ -217,6 +226,7 @@ export default {
   emits: ['call-for-company-licenses'],
   data: () => ({
     labels,
+    selectedUserToViewGroups: null,
     payload: {
       pageNumber: 1,
       pageSize: 10,
@@ -261,6 +271,7 @@ export default {
       }
     },
     isWantToImportFile: false,
+    isShowingTargetUserViewTargetGroups: false,
     tableData: [],
     loading: true,
     isMultipleDelete: false,
@@ -414,6 +425,12 @@ export default {
           action: 'deleteAction',
           id: 'btn-delete--target-users-people-row-actions',
           disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
+        },
+        {
+          name: 'View user’s groups',
+          icon: 'mdi-account-supervisor-outline',
+          action: 'viewUserGroups',
+          id: 'btn-view--target-users-people-row-actions'
         }
       ]
     },
@@ -439,6 +456,14 @@ export default {
         })
       }
       this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    handleViewUserGroups(selectedRow = {}) {
+      console.log(selectedRow)
+      this.selectedUserToViewGroups = selectedRow
+      this.toggleShowingTargetUserViewTargetGroups()
+    },
+    toggleShowingTargetUserViewTargetGroups() {
+      this.isShowingTargetUserViewTargetGroups = !this.isShowingTargetUserViewTargetGroups
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE, JSON.stringify(tableSettings))

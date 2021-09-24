@@ -68,8 +68,10 @@ export default {
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (from.name === 'Target Group Users') {
-        vm.tab = 'target-users--group'
-        vm.isLoadState = true
+        if (from.params.tab !== 'people') {
+          vm.tab = 'target-users--group'
+          vm.isLoadState = true
+        }
       }
     })
   },
