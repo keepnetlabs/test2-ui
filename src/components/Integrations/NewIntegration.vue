@@ -277,7 +277,7 @@
               <div
                 id="integration-api-key-footer"
                 class="new-integration__api-key__footer"
-                :style="[isIbmXForce || (isCustomIntegration && { justifyContent: 'flex-end' })]"
+                :style="[(isIbmXForce || isCustomIntegration) && { justifyContent: 'flex-end' }]"
               >
                 <div
                   v-if="!isIbmXForce && !isCustomIntegration"
@@ -443,6 +443,7 @@
                     :class="{
                       'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                     }"
+                    :style="{ justifyContent: 'flex-end', display: 'flex' }"
                     class="test-connection p-relative text-left"
                   >
                     TEST CONNECTION
@@ -1343,8 +1344,7 @@ export default {
       const isValidForm = refForm.validate()
       if (isValidForm) {
         this.saveDisable = true
-        //this.testConnection(true)
-        this.saveIntegration()
+        this.testConnection(true)
       } else {
         return this.$nextTick(() => {
           const el = refForm.$el.querySelector('.error--text')
@@ -1432,10 +1432,15 @@ export default {
               proxyResourceId: item.proxyResourceId
             }
           })
+          response['data'].data.apiKeys = response['data'].data.apiKeys.length
+            ? response['data'].data.apiKeys
+            : [{ value: '', status: null, resourceId: null }]
+
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
-            response.data.data.password = response['data'].data['apiCredentials'][0].password
-            response.data.data.proxyResourceId =
-              response['data'].data['apiCredentials'][0].proxyResourceId
+            response.data.data.password = response['data'].data['apiCredentials'].length
+              ? response['data'].data['apiCredentials'][0].password
+              : ''
+            response.data.data.proxyResourceId = response['data'].data.proxyResourceId
           }
         } else if (this.selectedIntegrationType.name === 'FortiNet') {
           const { userName, password, resourceId, proxyResourceId } = response['data'].data[

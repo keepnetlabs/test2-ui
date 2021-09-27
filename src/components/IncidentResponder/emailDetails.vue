@@ -518,7 +518,8 @@ export default {
           show: true,
           fixed: false,
           type: 'slot',
-          hideSort: true
+          hideSort: true,
+          minWidth: 150
         }
       ]
     },
