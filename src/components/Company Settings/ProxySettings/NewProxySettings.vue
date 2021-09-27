@@ -28,7 +28,6 @@
             dense
             hint="*Required"
             persistent-hint
-            @input="saveDisable = true"
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
@@ -117,7 +116,6 @@
             class="mt-n3 mb-1"
             color="#2196f3"
             label="Make this setting default"
-            @input="saveDisable = true"
           />
         </form-group>
         <form-group title="Test Connection" sub-title="Enter a domain to test connection">
@@ -382,6 +380,7 @@ export default {
   created() {
     if (this.isEdit && this.resourceId) {
       this.callForGetProxySettings()
+      this.saveDisable = false
     }
   }
 }

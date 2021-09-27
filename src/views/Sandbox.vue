@@ -574,15 +574,12 @@ export default {
           this.handleFilter()
           break
         case 'Clear filters':
-          localStorage.removeItem('sandboxCompany')
-          localStorage.removeItem('sandboxIntegration')
-          localStorage.removeItem('sandboxDate')
-          localStorage.removeItem('sandboxDateOption')
-          localStorage.removeItem('sandboxCompany')
-          localStorage.removeItem('sandboxIntegration')
-          localStorage.removeItem('sandboxDateFormat')
-          localStorage.removeItem('sandboxDateOption')
-          localStorage.removeItem('sandboxFilteredSelectValueDate')
+          this.companyValue = ''
+          this.analysisEngineTypeResourceId = null
+          this.filteredDateValue = null
+          this.filteredDateValueRange = null
+          this.filteredDateValueSelect = { name: 'All Time', value: '' }
+          this.handleFilter()
           break
       }
     },
