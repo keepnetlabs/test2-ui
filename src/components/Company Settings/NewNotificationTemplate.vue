@@ -38,6 +38,7 @@
             :disabled="!!selectedItem || editItemsDisabled"
             outlined
             placeholder="Select Option"
+            @change="changeTemplateType"
           />
         </form-group>
         <form-group title="SMTP" has-hint>
@@ -70,6 +71,7 @@
             :template.sync="formValues.template"
             :is-edit="!!selectedItem"
             @handleEditHtmlTemplate="formValues.template = $event"
+            v-if="!reRender"
           />
         </form-group>
       </v-form>
@@ -176,6 +178,7 @@ export default {
   },
   data() {
     return {
+      reRender: false,
       labels,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -286,6 +289,16 @@ export default {
     })
   },
   methods: {
+    changeTemplateType(resId) {
+      let htmlTemplate = this.categoryItems.find((item) => item.value === resId)?.template
+      const logoKey = '{COMPANYLOGO}'
+      const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+      this.formValues.template = htmlTemplate.replaceAll(logoKey, logoUrl)
+      this.reRender = true
+      setTimeout(() => {
+        this.reRender = false
+      }, 1)
+    },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
         const [categories, smtpSettings] = response
@@ -294,7 +307,7 @@ export default {
         } = categories
         const { data: { data: smtpSettingsData = {} } = {} } = smtpSettings
         this.categoryItems = categoriesData.map((category) => {
-          return { text: category.name, value: category.resourceId }
+          return { text: category.name, value: category.resourceId, template: category?.template }
         })
         this.smtpItems = smtpSettingsData.results.map((smtpItem) => {
           return { text: smtpItem.name, value: smtpItem.resourceId }

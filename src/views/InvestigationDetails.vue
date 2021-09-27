@@ -1289,6 +1289,17 @@ export default {
         filterableType: 'text'
       },
       {
+        property: 'senderName',
+        editable: false,
+        label: 'Sender Name',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        minWidth: 260,
+        filterableType: 'text'
+      },
+      {
         property: 'recipient',
         align: 'left',
         editable: false,
@@ -1388,7 +1399,17 @@ export default {
         minWidth: 150,
         filterableItems: ['Online', 'Offline']
       },
-
+      {
+        property: 'senderName',
+        editable: false,
+        label: 'Sender Name',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        minWidth: 260,
+        filterableType: 'text'
+      },
       {
         property: 'duration',
         align: 'left',

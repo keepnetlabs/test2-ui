@@ -1,6 +1,6 @@
 <template functional>
   <div>
-    <v-tooltip bottom v-if="props.isErrorState">
+    <v-tooltip bottom v-if="props.isErrorState && props.errorStateValue">
       <template v-slot:activator="{ on }">
         <v-btn
           v-bind="$options.getDynamicProps(props)"

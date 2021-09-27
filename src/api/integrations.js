@@ -48,7 +48,7 @@ export function deleteIntegration(id) {
 }
 
 export function getIntegrationDetails(id) {
-  return testRequest.get(`${API_URL}/${id}`)
+  return testRequest.get(`${API_URL}/${id}`, { loading: true })
 }
 
 export function updateIntegration(id, payload) {
