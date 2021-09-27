@@ -364,7 +364,7 @@ export default {
   },
   methods: {
     setAttachmentFile(file) {
-      this.formValues.attachmentFiles.push(file)
+      this.formValues.attachmentFiles = file
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
