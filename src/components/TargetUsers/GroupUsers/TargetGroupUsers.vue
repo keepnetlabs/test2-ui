@@ -74,7 +74,8 @@ export default {
       selectedRow: null,
       showAddToAnExistingGroupModal: false,
       showAddUsersModal: false,
-      showRemoveUserModal: false
+      showRemoveUserModal: false,
+      from: ''
     }
   },
   computed: {
@@ -93,6 +94,7 @@ export default {
       $route: { params }
     } = this
     if (params && params.id) {
+      if (params.from) this.from = params.from
       this.resourceId = params.id
       this.callForGetTargetUserCustomFieldsByCompanyId()
       if (!params.label) {
@@ -103,6 +105,10 @@ export default {
     } else {
       this.handleRouteBackToTargetUsers()
     }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.from === 'people') from.params.tab = 'people'
+    next()
   },
   methods: {
     callForGetTargetUserCustomFieldsByCompanyId() {
@@ -150,7 +156,11 @@ export default {
       this.toggleShowRemoveUserModal()
     },
     handleRouteBackToTargetUsers() {
-      this.$router.push({ name: 'Target Users', params: { tab: 'second' } })
+      const { params = {} } = this.$route
+      this.$router.push({
+        name: 'Target Users',
+        params: { tab: params.from === 'people' ? 'people' : 'second' }
+      })
     },
     handleSelectedRow(row = []) {
       this.selectedRow = row

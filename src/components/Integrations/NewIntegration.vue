@@ -389,6 +389,111 @@
               </div>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item class="px-0" v-if="isSpamHouse">
+            <v-list-item-content>
+              <div
+                id="integration-api-key-footer-spam"
+                class="new-integration__api-key__footer"
+                :style="{ justifyContent: 'flex-start', marginTop: '-20px' }"
+              >
+                <div
+                  :class="{
+                    'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                  }"
+                  class="new-integration__api-key__text p-relative"
+                  style="width: 100%;"
+                  :style="[loadingState.length && { cursor: 'default' }]"
+                  @click="testConnection(false)"
+                >
+                  <div
+                    id="integration-api-key-footer-testing-connection-api"
+                    v-if="loadingState.length"
+                    class="test-connection new-integration__api-key__disabled-text text-left"
+                    style="cursor: default !important;"
+                  >
+                    <v-icon
+                      class="ml-1 loading-spin"
+                      color="#00bcd4"
+                      left
+                      medium
+                      disabled
+                      style="cursor: default !important;"
+                      >mdi-rotate-left
+                    </v-icon>
+                    TESTING CONNECTION
+                  </div>
+                  <div v-if="spamHouseTestLoading">
+                    <v-icon
+                      class="ml-1 loading-spin"
+                      color="#00bcd4"
+                      left
+                      medium
+                      style="
+                        cursor: default !important;
+                        position: absolute;
+                        top: -66px;
+                        right: -45px;
+                      "
+                      >mdi-rotate-left
+                    </v-icon>
+                  </div>
+                  <div
+                    v-else-if="!loadingState.length"
+                    id="integration-api-key-footer-test-connection-spam"
+                    :class="{
+                      'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                    }"
+                    class="test-connection p-relative text-left"
+                  >
+                    TEST CONNECTION
+                    <div
+                      v-if="isSpamHouse && spamHouseTestLoading === 'failed'"
+                      :id="`btn--integration-api-key-see-error-message-${index}`"
+                      class="connection-error-state"
+                    >
+                      <span>{{ getErrorMessageOfApiKey(item) }}</span>
+                      <span
+                        v-if="isShowSeeMore(item)"
+                        style="cursor: pointer;"
+                        @click="showErrorMessage(item)"
+                        >See error message</span
+                      >
+                    </div>
+                    <div
+                      v-if="isSpamHouse && spamHouseTestLoadingStatus"
+                      class="new-integration__api-keys__connection-status"
+                    >
+                      <v-icon
+                        v-if="isSpamHouse && spamHouseTestLoadingStatus === 'success'"
+                        :id="`btn--integration-api-key-check-${index}`"
+                        class="ml-1 spamHouseSuccess"
+                        color="#43a047"
+                        left
+                        medium
+                        style="top: -75px;"
+                        >mdi-check
+                      </v-icon>
+                      <div
+                        v-if="isSpamHouse && spamHouseTestLoadingStatus === 'failed'"
+                        style="top: -73px; position: absolute; right: -10px;"
+                      >
+                        <button
+                          :id="`btn--integration-api-key-retry-${index}`"
+                          :class="{
+                            'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
+                          }"
+                          class="retry-button"
+                          @click="retryTestConnection(item)"
+                        >
+                          RETRY
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
           <form-group title="Username" has-hint v-if="isFortiNet">
             <v-text-field
               v-model.trim="formValues.userName"
@@ -821,6 +926,9 @@ export default {
       customIntegrationTestLoading: false,
       customIntegrationTestLoadingStatus: null,
       customIntegrationTestLoadingStatusMessage: null,
+      spamHouseTestLoading: false,
+      spamHouseTestLoadingStatus: null,
+      spamHouseTestLoadingStatusMessage: null,
       saveDisable: false,
       showPassword: false,
       integrationTypeDisabled: false,
@@ -1253,8 +1361,7 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-          INTEGRATION_TYPES.SPAMHOUSE
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER
         ].includes(this.selectedIntegrationType.name) &&
         this.formValues.apiUrl &&
         this.formValues.apiKeys[0] &&
@@ -1264,7 +1371,10 @@ export default {
       ) {
         return false
       } else {
-        if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
+        if (
+          this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION ||
+          this.selectedIntegrationType.name === INTEGRATION_TYPES.SPAMHOUSE
+        ) {
           if (
             this.formValues.apiUrl.length > 0 &&
             typeof this.apiUrlRules.format(this.formValues.apiUrl) !== 'string'
@@ -1409,8 +1519,7 @@ export default {
           INTEGRATION_TYPES.VIRUSTOTAL,
           INTEGRATION_TYPES.VMRAY,
           INTEGRATION_TYPES.IBMXFORCE,
-          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-          INTEGRATION_TYPES.SPAMHOUSE
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER
         ].includes(this.selectedIntegrationType.name)
       ) {
         for (let i = 0; i < this.formValues.apiKeys.length; i++) {
@@ -1489,6 +1598,35 @@ export default {
             this.loadingState.shift('loading')
             if (isSave && !this.loadingState.length) this.saveIntegration()
             this.customIntegrationTestLoading = false
+          })
+      } else if (this.isSpamHouse) {
+        let payload = {
+          apiUrl: this.formValues.apiUrl,
+          apiCredential: {
+            apiUrl: this.formValues.apiUrl,
+            resourceId: this.formValues.apiCreditionalResourceId,
+            proxyResourceId: this.formValues.proxyResourceId
+          }
+        }
+        this.spamHouseTestLoading = true
+        this.spamHouseTestLoadingStatus = 'loading'
+        this.loadingState.push('loading')
+        this.spamHouseTestLoadingStatusMessage = null
+        testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
+          .then((response) => {
+            this.saveDisable = false
+            this.spamHouseTestLoadingStatus = 'success'
+          })
+          .catch((error) => {
+            this.saveDisable = false
+            this.spamHouseTestLoadingStatus = 'failed'
+            this.spamHouseTestLoadingStatusMessage =
+              error.response.data.message || error.response.data.Message
+          })
+          .finally(() => {
+            this.loadingState.shift('loading')
+            if (isSave && !this.loadingState.length) this.saveIntegration()
+            this.spamHouseTestLoading = false
           })
       }
     },

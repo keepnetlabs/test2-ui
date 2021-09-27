@@ -304,7 +304,7 @@ export default {
       extendedViewValue: [],
       tableCredientials: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -325,7 +325,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -620,6 +620,7 @@ export default {
   },
 
   created() {
+    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     if (this.isLoadState) {
       const tableState =
         this.$store.state['datatable'].tables['Groups'] &&
@@ -650,19 +651,22 @@ export default {
             }
           }
         }
+        this.queryHelper.setRouterQuery('page', tableState.serverSideProps.pageNumber)
+        this.queryHelper.setRouterQuery('size', tableState.serverSideProps.pageSize)
         this.tableState = { persistentState: tableState }
       }
     } else {
+      this.queryHelper.setDefaultValues()
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS)
       )
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.setQueryValuesToPayload(this.$route.query)
-      this.tableOptions.pageSize = size
-      this.tableOptions.pageNumber = page
+    }
+    this.queryHelper.controlRouteQuery()
+    const { page, size } = this.queryHelper.returnQueryValues()
+    this.setQueryValuesToPayload(this.$route.query)
+    this.tableOptions.pageSize = size
+    this.tableOptions.pageNumber = page
+    if (!this.isLoadState) {
       this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }

@@ -269,6 +269,7 @@ export const TABLE_SETTINGS_KEYS = {
   PLAYBOOK: 'PlaybookTableSettings',
   MAILCONFIGURATION: 'MailConfigurationTableSettings',
   PHISHINGREPORTER: 'PhishingReporterTableSettings',
+  TARGET_USERS_VIEW_USER_GROUPS: 'targetUsersViewUserGroupsTableSettings',
   TARGET_USERS_PEOPLE: 'TargetUsersPeopleTableSettings',
   COMPANY_LIST: 'CompanyListTableSettings',
   COMPANY_GROUP_LIST: 'CompanyGroupListTableSettings',
@@ -414,7 +415,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   SANDBOX: 'Sandbox',
   sandbox: 'Sandbox',
   SANDBOXSTATS: 'SandboxStats',
-  DNSSERVICELIST: 'DNSServiceList'
+  DNSSERVICELIST: 'DNSServiceList',
+  TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups'
 }
 
 export const INTEGRATION_TYPES = {

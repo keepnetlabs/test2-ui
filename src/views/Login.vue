@@ -77,6 +77,16 @@
                       </div>
                     </div>
                   </div>
+                  <div v-if="isShowSamlError" class="login-error-container">
+                    <div v-if="isShowSamlError" class="login-error-wrapper">
+                      <div class="login-error-icon dark pr-2">
+                        <v-icon dark color="#f56c6c">mdi-close-circle</v-icon>
+                      </div>
+                      <div id="text--login-saml-error" class="login-error-message pr-1">
+                        {{ samlErrorMessage }}
+                      </div>
+                    </div>
+                  </div>
                   <div v-if="showMfaMessage" class="login-error-container">
                     <div class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
@@ -562,6 +572,8 @@ export default {
   data() {
     return {
       verifiedCaptchaResponse: null,
+      isShowSamlError: false,
+      samlErrorMessage: '',
       showMfaLoginError: false,
       mfaLoginErrors: [],
       showMfaMessage: false,
@@ -622,7 +634,6 @@ export default {
       validReset: false
     }
   },
-  beforeCreate() {},
   created() {
     this.pageNumber = 1
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
@@ -634,7 +645,13 @@ export default {
       } else {
         this.$router.replace('/login')
       }
-      //this.$router.replace('/login') login change
+    }
+
+    if (this.$route.query && this.$route.query['saml_error']) {
+      this.samlErrorMessage = this.$route.query['saml_error_data']
+        ? this.$route.query['saml_error_data']
+        : this.$route.query['saml_error']
+      this.isShowSamlError = true
     }
     if (this.$route.query.authcode && !this.$route.query.bypasssaml) {
       const { authcode, uid } = this.$route.query
@@ -725,9 +742,6 @@ export default {
         this.token = this.getToken('rp', window.location.href)
         this.resetType = 'resetPassword'
       }
-    }
-    if (this.$route.query?.saml_error) {
-      this.mfaLoginErrors = this.$route.query?.saml_error_data.split(',')
     }
   },
   mounted() {
@@ -1234,10 +1248,10 @@ export default {
       })
     },
     onLoginClicked() {
-      const mainUrl = this.$router.currentRoute
-      const _this = this
       this.isPasswordStep5Complete = false
       this.isMfaAuthenticated = false
+      this.isShowSamlError = false
+      this.samlErrorMessage = ''
       if (this.$refs.password.validate() && this.wrongLoginAttempt < 3) {
         let payload = {
           email: this.email,

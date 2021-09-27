@@ -16,6 +16,7 @@ export const labels = {
   CommunityName: 'Community Name',
   CompanyId: 'Company ID',
   CertificateName: 'Certificate Name',
+  NoTargetUserGroups: 'You do not have entered any groups',
   Default: 'Default',
   SamlName: 'SAML Name',
   AllowedDomains: 'Allowed Domains',

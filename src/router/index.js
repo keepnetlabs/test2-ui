@@ -175,7 +175,6 @@ const router = new Router({
           component: Companies,
           beforeEnter: (to, from, next) => {
             //checkPermission()
-
             next()
           },
           beforeRouteUpdate: (to, from, next) => {
