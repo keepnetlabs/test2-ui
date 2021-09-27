@@ -4,26 +4,24 @@
     v-if="status"
     @closeOverlay="status = false"
     :icon-name="'mdi-book-search'"
-    :title="
-      status && resourceId ? 'Edit DNS Provider Integration' : 'Create New DNS Provider Integration'
-    "
+    :title="status && resourceId ? 'Edit Domain' : 'Create New Domain'"
     className="mail-configuration__modal"
-    ref="mail-configuration__modal"
-    title-id="text--create-dns-mail-configuration-modal-title"
+    ref="domain__modal"
+    title-id="text--create-domain-modal-title"
   >
     <template v-slot:overlay-body>
-      <v-form ref="dnsForm">
+      <v-form ref="domainForm">
         <app-modal-body-header
-          :title="'Integrate with a DNS Provider'"
-          sub-title="Create a DNS provider integration for phishing domains"
+          :title="'New Domain'"
+          sub-title="Create a phishing domain for your phishing landing pages"
         />
-        <form-group title="DNS Name" has-hint>
+        <form-group title="Domain" has-hint>
           <v-text-field
-            placeholder="Enter DNS name"
-            id="input--dns-name"
+            placeholder="Enter Domain"
+            id="input--domain"
             outlined
             dense
-            v-model.trim="formValues.dnsServiceProviderName"
+            v-model.trim="formValues.domain"
             :rules="[
               (v) => validations.required(v, labels.Required),
               (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
@@ -33,45 +31,96 @@
             height="40"
           ></v-text-field>
         </form-group>
-        <form-group title="Service Type">
+        <form-group title="Record Type">
           <k-select
-            :items="providerTypes"
+            :items="domainData.recordTypes"
             custom-menu-class="menu--provider"
-            placeholder="Select Service Type"
+            placeholder="Select Record Type"
             dense
             deletable-chips
             autocomplete="off"
             outlined
-            v-model.trim="formValues.dnsServiceProviderTypeId"
+            v-model="formValues.recordTypeId"
             item-value="value"
             item-text="text"
             class="pop-up-card__invite-member"
-            :rules="[(v) => validations.required(v, labels.Required)]"
-            hint="*Required"
-            reuired
             persistent-hint
           ></k-select>
         </form-group>
-        <form-group title="Email" has-hint>
-          <InputEmail
-            placeholder="Enter Email"
-            v-model.trim="formValues.username"
-            :required="true"
-          />
-        </form-group>
-        <form-group title="API Key" has-hint>
-          <v-text-field
-            placeholder="Enter API Key from your provider"
+        <form-group title="DNS Service">
+          <k-select
+            :items="domainData.dnsServiceProviders"
+            custom-menu-class="menu--provider"
+            placeholder="Select DNS Service"
+            dense
+            deletable-chips
+            autocomplete="off"
             outlined
-            class="new-client__textfield new-client__api-key__textfield mt-2"
-            v-model="formValues.password"
-            required
-            height="40"
+            v-model="formValues.dnsServiceProviderId"
+            item-value="value"
+            item-text="text"
+            class="pop-up-card__invite-member"
+          ></k-select>
+        </form-group>
+        <form-group title="DNS Record" has-hint>
+          <v-text-field
+            placeholder="Enter DNS Record"
+            id="input--domain"
+            outlined
+            dense
+            v-model.trim="formValues.dnsRecord"
             :rules="[
               (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.IpAddress, 64))
             ]"
-          />
+            hint="*Required"
+            persistent-hint
+            height="40"
+          ></v-text-field>
+        </form-group>
+        <form-group title="Proxy Status">
+          <div class="d-flex">
+            <v-checkbox
+              v-for="item in domainData.proxyStatuses"
+              v-model="formValues.proxyStatusId"
+              :key="item.value"
+              color="#2196f3"
+              :value="item.value"
+              :label="item.text"
+              class="mr-4"
+            >
+            </v-checkbox>
+          </div>
+        </form-group>
+        <form-group title="Schema">
+          <div class="d-flex">
+            <v-checkbox
+              v-for="item in domainData.urlSchemas"
+              v-model="formValues.urlSchemaTypeId"
+              :key="item.value"
+              color="#2196f3"
+              :value="item.value"
+              :label="item.text"
+              class="mr-4"
+            >
+            </v-checkbox>
+          </div>
+        </form-group>
+        <form-group title="Zone ID" has-hint sub-title="Enter Cloudflare Zone ID">
+          <v-text-field
+            placeholder="Enter Zone ID"
+            id="input--domain"
+            outlined
+            dense
+            v-model.trim="formValues.zoneId"
+            :rules="[
+              (v) => validations.required(v, labels.Required),
+              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.ZoneID, 64))
+            ]"
+            hint="*Required"
+            persistent-hint
+            height="40"
+          ></v-text-field>
         </form-group>
         <make-available-for
           v-if="isRenderMakeAvailableFor"
@@ -81,14 +130,7 @@
         />
 
         <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content class="test-connection-wrapper">
-            <TestConnection
-              :values="formValues"
-              ref="testConnection"
-              @testConnectionValues="testConnectionValues"
-              @loading="saveButtonDisabled = false"
-            />
-          </v-list-item-content>
+          <v-list-item-content class="test-connection-wrapper"> </v-list-item-content>
         </v-list-item>
       </v-form>
     </template>
@@ -100,7 +142,7 @@
           outlined
           rounded
           color="error"
-          @click="canceldns"
+          @click="cancelDomain"
           >{{ labels.Cancel }}</v-btn
         >
       </div>
@@ -123,8 +165,6 @@
 <script>
 import labels from '@/model/constants/labels'
 import AppModal from '../AppModal'
-import TestConnection from './TestConnection'
-import companyName from '@/components/GrapesJs/Newsletter/mergedTexts/companyName'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
@@ -133,17 +173,15 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
 import * as Validations from '@/utils/validations'
-import InputEmail from '@/components/Common/Inputs/InputEmail'
+import { createDomain, getDomainEditData, updateDomain, updateDomains } from '@/api/domains'
 export default {
   name: 'NewEditDnsService',
   components: {
     AppModal,
-    TestConnection,
     AppModalBodyHeader,
     FormGroup,
     MakeAvailableFor,
-    KSelect,
-    InputEmail
+    KSelect
   },
   props: {
     status,
@@ -152,15 +190,22 @@ export default {
     },
     isEdit: {
       required: false
+    },
+    domainData: {
+      required: false
     }
   },
   created() {
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
-      getDnsService(this.resourceId).then((res) => {
+      getDomainEditData(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
+        this.formValues.recordTypeId = this.formValues.recordTypeId.toString()
+        this.formValues.proxyStatusId = this.formValues.proxyStatusId.toString()
+        this.formValues.zoneId = this.formValues.zoneId.toString()
+        this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId.toString()
+        this.formValues.dnsServiceProviderId = this.formValues.dnsServiceProviderId.toString()
         delete this.formValues.availableForList
-        this.formValues.dnsServiceProviderTypeId.toString()
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             res.data.data.availableForList
@@ -176,13 +221,16 @@ export default {
   data() {
     return {
       isValidate: null,
-      providerTypes: [{ text: 'Cloudflare', value: 1 }],
       formValues: {
-        dnsServiceProviderTypeId: null,
-        dnsServiceProviderName: null,
-        username: null,
-        password: null,
-        availableForRequests: [],
+        domain: null,
+        recordTypeId: null,
+        dnsServiceProviderId: null,
+        dnsRecord: null,
+        proxyStatusId: null,
+        urlSchemaTypeId: null,
+        zoneId: null,
+        availableForRequests: null,
+        active: true,
         resourceId: null
       },
       nonEditableAvailableForRequests: [],
@@ -206,17 +254,20 @@ export default {
     }
   },
   methods: {
-    testConnectionValues() {},
-    canceldns() {
-      ;(this.formValues = {
-        dnsServiceProviderTypeId: null,
-        dnsServiceProviderName: null,
-        username: null,
-        password: null,
-        AvailableForRequests: [],
+    cancelDomain() {
+      this.formValues = {
+        domain: null,
+        recordTypeId: null,
+        dnsServiceProviderId: null,
+        dnsRecord: null,
+        proxyStatusId: null,
+        urlSchemaTypeId: null,
+        zoneId: null,
+        availableForRequests: null,
+        active: true,
         resourceId: null
-      }),
-        this.$emit('changeStatus')
+      }
+      this.$emit('changeStatus')
     },
     submit() {
       this.saveButtonDisabled = true
@@ -226,19 +277,10 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
-      if (this.$refs.dnsForm.validate() && isValid) {
-        let payload = {
-          ...this.formValues,
-          availableForRequests: this.showMakeAvailableFor
-            ? this.$refs.refMakeAvailableFor.getAvailableForValues(
-                this.formValues.availableForRequests
-              )
-            : companyName === this.$store.state.auth
-            ? getAvailableForValues(this.nonEditableAvailableForRequests)
-            : null
-        }
+      let payload = this.formValues
+      if (this.$refs.domainForm.validate() && isValid) {
         if (this.isEdit && !this.isDuplicate) {
-          updateDnsServiceList(payload, this.resourceId)
+          updateDomain(payload, this.resourceId)
             .then((response) => {
               this.$emit('changeStatus', false, true)
             })
@@ -246,7 +288,7 @@ export default {
               this.saveButtonDisabled = false
             })
         } else {
-          createDnsServiceList(payload)
+          createDomain(payload)
             .then((response) => {
               this.$emit('changeStatus', false, true)
             })
@@ -256,7 +298,7 @@ export default {
         }
       } else {
         this.saveButtonDisabled = false
-        const el = this.$refs.dnsForm.$el.querySelector('.v-messages__message')
+        const el = this.$refs.domainForm.$el.querySelector('.v-messages__message')
         scrollToComponent(el)
       }
     },
