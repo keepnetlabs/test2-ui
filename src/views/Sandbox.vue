@@ -79,19 +79,21 @@
                 ></v-select>
                 <InputDate
                   v-if="filteredSelectValueDate === 'between'"
+                  popper-class="sandbox__date-picker"
                   v-model="filteredDateValueRange"
                   ref="refPicker2"
                   type="datetimerange"
                   @change="handleChangeBetweenDatepicker"
                 />
                 <InputDate
+                  v-if="filteredSelectValueDate !== 'between'"
                   v-model="filteredDateValue"
+                  popper-class="sandbox__date-picker"
                   type="datetime"
                   ref="refPicker"
                   style="width: 100%; max-width: 260px; margin-bottom: 14px;"
                   @change="changeDateValue"
                   @blur="changeBlurValue($event)"
-                  v-if="filteredSelectValueDate !== 'between'"
                 />
 
                 <div class="filter__footer" tabindex="2" @blur="changeBlurValue($event)">
@@ -853,9 +855,6 @@ export default {
 </script>
 
 <style lang="scss">
-.el-picker-panel.el-date-picker {
-  z-index: 9 !important;
-}
 .sandbox {
   .k-table__wrapper .card {
     box-shadow: none !important;
@@ -1546,5 +1545,8 @@ export default {
       bottom: -2px;
     }
   }
+}
+.sandbox__date-picker.el-picker-panel {
+  z-index: 1000 !important;
 }
 </style>
