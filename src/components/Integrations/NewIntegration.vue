@@ -443,6 +443,7 @@
                     :class="{
                       'new-integration__api-key__disabled-text': getTestConnectionDisableStatus()
                     }"
+                    :style="{ justifyContent: 'flex-end', display: 'flex' }"
                     class="test-connection p-relative text-left"
                   >
                     TEST CONNECTION
