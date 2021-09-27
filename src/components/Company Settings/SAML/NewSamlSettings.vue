@@ -289,16 +289,16 @@
         </div>
         <form-group-horizontal-content label="Default Role">
           <k-select
-            v-model.trim="formValues.roleResourceIdList"
-            id="input--sytem-user-role"
+            v-model.trim="formValues.defaultRoleResourceId"
+            :key="roleSelectKey"
+            id="input--saml-settings-system-user-role"
             placeholder="Select Option"
             outlined
             dense
-            :items="roleItems"
             hint="*Required"
             persistent-hint
-            item-text="name"
-            item-value="resourceId"
+            :return-object="false"
+            :items="roleItems"
           />
         </form-group-horizontal-content>
         <form-group :title="labels.EnableSAMLSSO">
@@ -329,11 +329,9 @@ import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
-import * as Validations from '@/utils/validations'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
 import {
   createSamlSetting,
-  exportSamlSettings,
   getDefaultSamlSettings,
   getSamlSetting,
   parseMetadata,
@@ -347,7 +345,6 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import { mapGetters } from 'vuex'
 import { getSystemUsersRole } from '@/api/systemUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { downloadExportedFile } from '@/utils/helperFunctions'
 export default {
   name: 'NewSamlSettings',
   components: {
@@ -389,6 +386,7 @@ export default {
       isCertificateTextDisabled: false,
       resourceId: null,
       certificateText: '',
+      roleSelectKey: 'key-akskasksak',
       isBatchImportPopupOpen: false,
       saveDisable: false,
       dataContainerWithSearchItems: [],
@@ -410,7 +408,7 @@ export default {
         enableSAMLSSO: true,
         domain: [],
         domainToAdd: '',
-        roleResourceIdList: []
+        defaultRoleResourceId: ''
       }
     }
   },
@@ -437,8 +435,8 @@ export default {
     if (this.isEdit && this.selectedRow) {
       this.callForSamlSetting()
     }
-    this.callForRoles()
     this.callForGetDefaultSettings()
+    this.callForRoles()
   },
   methods: {
     downloadMetadata() {
@@ -465,7 +463,8 @@ export default {
           resourceId,
           statusId,
           idPEntityID,
-          idPCertificateFileContent
+          idPCertificateFileContent,
+          defaultRoleResourceId
         } = data
         this.formValues.entityID = entityID
         this.formValues.idPEntityID = idPEntityID
@@ -476,19 +475,19 @@ export default {
         this.resourceId = resourceId
         this.formValues.enableSAMLSSO = !!statusId
         this.formValues.domain = domain
+        this.formValues.defaultRoleResourceId = defaultRoleResourceId
         this.dataContainerWithSearchItems = domain.concat()
         this.certificateText = idPCertificateFileContent
         if (this.certificateText) {
           this.isCertificateTextDisabled = true
         }
+        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
       })
     },
     callForRoles() {
-      let allRoles = []
-      let availableRoles = []
       getSystemUsersRole({
         pageNumber: 1,
-        pageSize: 1000,
+        pageSize: 10000,
         orderBy: 'RoleName',
         ascending: true,
         filter: {
@@ -507,34 +506,14 @@ export default {
           ]
         }
       }).then((response) => {
-        allRoles = response.data.data
-        availableRoles = allRoles
-        //this.isedit gelecek roller gelince.
-        if (false) {
-          allRoles &&
-            allRoles.find((item) => {
-              return item.name === roles
-            }).resourceId
-          availableRoles = allRoles
-          this.roleItems = availableRoles.map((item) => {
-            let data = {
-              name: item.name,
-              resourceId: item.resourceId
-            }
-            return data
-          })
-        } else {
-          this.roleItems = availableRoles.map((item) => {
-            return {
-              name: item.name,
-              resourceId: item.resourceId
-            }
-          })
-          this.formValues.roleResourceIdList =
-            availableRoles &&
-            availableRoles.length &&
-            availableRoles.find((role) => role.name === 'CompanyAdmin').resourceId
+        const { data } = response.data
+        this.roleItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+        if (!this.isEdit && !this.selectedRow) {
+          this.formValues.defaultRoleResourceId = data.find(
+            (role) => role.name === labels.CompanyAdmin
+          )?.resourceId
         }
+        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
       })
     },
     handleBatchImportClick() {
@@ -545,6 +524,7 @@ export default {
         const {
           data: { data }
         } = response
+        delete data.defaultRoleResourceId
         for (const key of Object.keys(data)) {
           this.formValues[key] = data[key]
         }
@@ -610,7 +590,8 @@ export default {
           entityID,
           enableSAMLSSO,
           idPEntityID,
-          file
+          file,
+          defaultRoleResourceId
         } = this.formValues
         const formData = {
           name,
@@ -621,6 +602,7 @@ export default {
           entityID,
           statusId: Number(enableSAMLSSO),
           file,
+          defaultRoleResourceId,
           domain: this.dataContainerWithSearchItems
         }
         this.saveDisable = true

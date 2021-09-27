@@ -133,7 +133,7 @@ export default {
       isEdit: false,
       isDeletePopupOpen: false,
       loading: false,
-      selectedRow: {},
+      selectedRow: null,
       tableData: [],
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
@@ -333,7 +333,7 @@ export default {
     },
     handleEditOrNewFormSuccess() {
       this.selectedRow = null
-      this.resource = null
+      this.isEdit = false
       this.callForSamlSettings()
       this.toggleNewSamlSettingsModalStatus()
     },
@@ -362,6 +362,7 @@ export default {
     },
     toggleNewSamlSettingsModalStatus(isEdit = false) {
       this.isEdit = isEdit
+      if (!this.isEdit) this.selectedRow = null
       this.isEditOrNewModalOpen = !this.isEditOrNewModalOpen
     },
     exportSamlSettings(downloadTypes = {}) {
