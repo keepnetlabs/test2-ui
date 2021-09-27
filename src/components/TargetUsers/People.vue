@@ -458,7 +458,6 @@ export default {
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     handleViewUserGroups(selectedRow = {}) {
-      console.log(selectedRow)
       this.selectedUserToViewGroups = selectedRow
       this.toggleShowingTargetUserViewTargetGroups()
     },

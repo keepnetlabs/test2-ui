@@ -15,6 +15,7 @@ export const labels = {
   BatchImportPopupIpAddressSubtitle: 'Import multiple IP address separated by line-break or comma',
   CommunityName: 'Community Name',
   CompanyId: 'Company ID',
+  CompanyAdmin: 'Company Admin',
   CertificateName: 'Certificate Name',
   NoTargetUserGroups: 'You do not have entered any groups',
   Default: 'Default',
