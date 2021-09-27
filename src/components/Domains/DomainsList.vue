@@ -134,7 +134,8 @@ export default {
             width: 240,
             hasTooltip: true,
             type: 'text',
-            filterableType: 'text'
+            filterableType: 'select',
+            filterableItems: []
           },
           {
             property: 'dnsRecord',
@@ -171,7 +172,10 @@ export default {
             width: 240,
             type: 'status',
             filterableType: 'select',
-            filterableItems: [{ text: 'Cloudflare', value: '1' }]
+            filterableItems: [
+              { text: 'Online', value: '1' },
+              { text: 'Offline', value: '2' }
+            ]
           },
           {
             property: PROPERTY_STORE.CREATETIME,
@@ -545,6 +549,11 @@ export default {
   created() {
     getDomainData().then((response) => {
       this.domainData = response.data.data
+      this.$set(
+        this.tableOptions.columns[1],
+        'filterableItems',
+        this.domainData.dnsServiceProviders
+      )
     })
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
