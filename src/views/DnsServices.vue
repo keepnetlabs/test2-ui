@@ -4,6 +4,9 @@
       <v-col class="pl-0 dnsServices__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
+            <el-tab-pane label="Domains" name="Domains" id="domains-content"
+              ><DomainsList
+            /></el-tab-pane>
             <el-tab-pane label="DNS Services" name="DNSServices" id="dns-services-content"
               ><DnsServiceList
             /></el-tab-pane>
@@ -16,14 +19,16 @@
 
 <script>
 import DnsServiceList from '@/components/DnsServices/DnsServicesList'
+import DomainsList from '@/components/Domains/DomainsList'
 export default {
-  name: 'DnsServices',
+  name: 'DNSandDomains',
   components: {
-    DnsServiceList
+    DnsServiceList,
+    DomainsList
   },
   data() {
     return {
-      tab: 'DNSServices'
+      tab: 'Domains'
     }
   },
   methods: {
