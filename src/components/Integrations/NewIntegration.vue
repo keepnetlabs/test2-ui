@@ -277,7 +277,7 @@
               <div
                 id="integration-api-key-footer"
                 class="new-integration__api-key__footer"
-                :style="[isIbmXForce || (isCustomIntegration && { justifyContent: 'flex-end' })]"
+                :style="[(isIbmXForce || isCustomIntegration) && { justifyContent: 'flex-end' }]"
               >
                 <div
                   v-if="!isIbmXForce && !isCustomIntegration"
