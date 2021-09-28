@@ -1681,7 +1681,7 @@ export default {
       } else if (name === INTEGRATION_TYPES.GOOGLESAFEBROWSER) {
         this.formValues.apiUrl = 'https://safebrowsing.googleapis.com'
       } else if (name === INTEGRATION_TYPES.SPAMHOUSE) {
-        this.formValues.apiUrl = 'https://zen.spamhaus.org'
+        this.formValues.apiUrl = 'zen.spamhaus.org'
       } else {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = ''

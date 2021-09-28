@@ -163,13 +163,13 @@ export default {
           },
           {
             property: 'status',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: labels.Status,
             sortable: true,
             show: true,
             fixed: false,
-            width: 240,
+            width: 160,
             type: 'status',
             filterableType: 'select',
             filterableItems: [

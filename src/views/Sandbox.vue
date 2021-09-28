@@ -78,7 +78,7 @@
                   @blur="changeBlurValue($event)"
                 ></v-select>
                 <InputDate
-                  v-if="filteredSelectValueDate === 'between'"
+                  v-show="filteredSelectValueDate === 'between'"
                   popper-class="sandbox__date-picker"
                   v-model="filteredDateValueRange"
                   ref="refPicker2"
@@ -86,7 +86,7 @@
                   @change="handleChangeBetweenDatepicker"
                 />
                 <InputDate
-                  v-if="filteredSelectValueDate !== 'between'"
+                  v-show="filteredSelectValueDate !== 'between'"
                   v-model="filteredDateValue"
                   popper-class="sandbox__date-picker"
                   type="datetime"
@@ -120,6 +120,7 @@
                 nudge-bottom="12"
                 content-class="filter-options__menu-content"
                 class="filter-options__menu"
+                absolute
               >
                 <template #activator="{ on }">
                   <div
