@@ -243,7 +243,6 @@ export default {
             fixed: false,
             width: 240,
             filterableType: 'select',
-            filterableCustomFieldName: 'CategoryResourceId',
             filterableItems: [
               { text: 'Click Only', value: 'WNZt0sCVCWB3' },
               { text: 'Data Submission', value: 'DYC0gugxJMjT' },
@@ -252,7 +251,7 @@ export default {
           },
           {
             property: 'difficulty',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: labels.DIFFICULTY,
             sortable: true,
@@ -264,8 +263,7 @@ export default {
               { text: 'Medium', value: 'Z5XeVlpw6Dps' },
               { text: 'Hard', value: 'c4LCGEB9MayB' }
             ],
-            width: 180,
-            filterableCustomFieldName: 'DifficultyResourceId'
+            width: 180
           },
           {
             property: PROPERTY_STORE.CREATEDBY,
@@ -560,7 +558,7 @@ export default {
       getLandingPageTemplatePreviewContent(id)
         .then((response) => {
           const data = response.data.data
-          this.selectedTemplateHeader = data.landingPages[0].name
+          this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages[0].content
           this.isTemplateDetails = true
         })

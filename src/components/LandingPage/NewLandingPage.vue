@@ -171,16 +171,7 @@
                         <v-text-field
                           v-model.trim="formValues.subDomain"
                           required
-                          :rules="[
-                            (v) => validations.required(v, labels.Required),
-                            (v) =>
-                              validations.maxLength(
-                                v,
-                                256,
-                                labels.getMaxLengthMessage(labels.Domain, 256)
-                              ),
-                            (v) => validations.domain(v, labels.InvalidDomainName)
-                          ]"
+                          :rules="[(v) => validations.required(v, labels.Required)]"
                           placeholder="Enter subdomain"
                           hint="*Required"
                           outlined
@@ -199,6 +190,8 @@
                           label="domain"
                           class="same-width"
                           placeholder="Select domain record"
+                          required
+                          :rules="[(v) => validations.required(v, labels.Required)]"
                           @change="changeDisabledLabel"
                         ></v-select>
                         <v-select
@@ -482,12 +475,11 @@ export default {
   },
   methods: {
     changeDisabledLabel() {
-      debugger
       this.disabledLabel = `${
         this.landingPageData.urlSchemaTypes.find(
           (item) => item.value == this.formValues.urlSchemaTypeId.toString()
         ).text
-      }${
+      }${this.formValues.subDomain || 'subDomain'}.${this.formValues.subDomain || 'subDomain'}.${
         this.landingPageData.domainRecords.find(
           (item) => item.value == this.formValues.domainRecordId.toString()
         )?.text || 'noDomain'
@@ -728,7 +720,7 @@ export default {
           this.landingPageData.urlSchemaTypes.find(
             (item) => item.value == this.formValues.urlSchemaTypeId.toString()
           ).text
-        }${
+        }${this.formValues.subDomain || 'subDomain'}.${
           this.landingPageData.domainRecords.find(
             (item) => item.value == this.formValues.domainRecordId.toString()
           )?.text || 'noDomain'
