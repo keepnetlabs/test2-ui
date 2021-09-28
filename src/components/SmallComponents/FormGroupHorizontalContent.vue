@@ -22,6 +22,17 @@ export default {
   align-items: center;
   justify-content: space-between;
   margin-top: -4px;
+  &--left {
+    display: flex;
+    flex-direction: column;
+    margin-top: -12px !important;
+    span {
+      font-weight: normal;
+      font-size: 9px;
+      line-height: 12px;
+      color: #383b41;
+    }
+  }
   > *:first-child {
     flex-basis: 50%;
     margin-top: -15px;

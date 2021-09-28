@@ -287,7 +287,11 @@
             </input-with-copy-to-clipboard>
           </form-group-horizontal-content>
         </div>
-        <form-group-horizontal-content label="Default Role">
+        <div class="form-group-horizontal-content">
+          <div class="form-group-horizontal-content--left">
+            <label class="form-group-horizontal-content__label">Default Role</label>
+            <span>Assign this role to new synced users</span>
+          </div>
           <k-select
             v-model.trim="formValues.defaultRoleResourceId"
             :key="roleSelectKey"
@@ -300,7 +304,8 @@
             :return-object="false"
             :items="roleItems"
           />
-        </form-group-horizontal-content>
+        </div>
+
         <form-group :title="labels.EnableSAMLSSO">
           <v-switch
             v-model="formValues.enableSAMLSSO"
