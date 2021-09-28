@@ -1,20 +1,20 @@
 <template>
   <app-dialog
     icon="mdi-delete"
-    title="Delete Domain?"
-    subtitle="The Domain will deleted permanently"
-    title-id="text--dns-delete-popup-title"
-    subtitle-id="text--dns-delete-popup-subtitle"
+    title="Delete Landing Page Template?"
+    subtitle="Landing Page will deleted permanently"
+    title-id="text--email-landing-page-delete-popup-title"
+    subtitle-id="text--email-landing-page-delete-popup-subtitle"
     :status="status"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedDomain && selectedDomain.domain }} will be deleted and removed from domains.
+      {{ selectedEmailTemplate && selectedEmailTemplate.name }} will be deleted.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
-        cancel-button-id="btn-cancel--integrations-popup"
-        confirm-button-id="btn-delete--integrations-popup"
+        cancel-button-id="btn-cancel--email-landing-page-popup"
+        confirm-button-id="btn-delete--email-landing-page-popup"
         type="delete"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
@@ -26,6 +26,8 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { getEmailTemplatePreviewContent, deleteEmailTemplate } from '@/api/phishingsimulator'
+import { deleteLandingPage } from '@/api/landingPage'
 export default {
   name: 'DeleteIntegration',
   components: {
@@ -36,15 +38,20 @@ export default {
     status: {
       type: Boolean
     },
-    selectedIntegration: {},
-    selectedDomain: null
+    selectedEmailTemplate: {
+      type: Object
+    }
   },
   methods: {
     closeModal() {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      this.$emit('handleDelete', this.selectedDomain)
+      deleteLandingPage(this.selectedEmailTemplate.resourceId)
+        .then((response) => {
+          this.$emit('handleSuccessDeleteAction')
+        })
+        .catch((error) => {})
       this.closeModal()
     }
   }

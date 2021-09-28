@@ -288,7 +288,8 @@ export const TABLE_SETTINGS_KEYS = {
   SANDBOX: 'Sandbox',
   SANDBOXSTATS: 'SandboxStats',
   DNSSERVICELIST: 'DNSServiceList',
-  DOMAINS: 'Domains'
+  DOMAINS: 'Domains',
+  LANDINGPAGES: 'LandingPages'
 }
 
 export function getStoreValue(key, type) {
@@ -418,7 +419,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   SANDBOXSTATS: 'SandboxStats',
   DNSSERVICELIST: 'DNSServiceList',
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
-  DOMAINS: 'Domains'
+  DOMAINS: 'Domains',
+  LANDINGPAGES: 'LandingPages'
 }
 
 export const INTEGRATION_TYPES = {

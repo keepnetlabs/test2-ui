@@ -528,8 +528,17 @@
                     :color="getBtnStatusColor(scope.row[col.property])"
                     :full-width="col.fullWidth"
                     v-bind="col.props"
-                    v-if="scope.row && (scope.row['status'] || scope.row['difficultyName'])"
-                    :text="getDataTableFieldLabel(scope.row.status || scope.row['difficultyName'])"
+                    v-if="
+                      scope.row &&
+                      (scope.row['status'] ||
+                        scope.row['difficultyName'] ||
+                        scope.row['difficulty'])
+                    "
+                    :text="
+                      getDataTableFieldLabel(
+                        scope.row.status || scope.row['difficultyName'] || scope.row['difficulty']
+                      )
+                    "
                   />
                   <span v-else>
                     {{ col.emptyText || '' }}
