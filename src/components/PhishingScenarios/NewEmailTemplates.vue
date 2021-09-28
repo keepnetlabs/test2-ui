@@ -128,7 +128,7 @@
                 <make-available-for
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
-                  v-model="formValues.availableForRequests"
+                  v-model="availableForRequests"
                   :disabled="!showMakeAvailableFor"
                 />
               </v-form>
@@ -313,6 +313,7 @@ export default {
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
+      availableForRequests: [],
       labels,
       step: 1,
       Validations: Validations,
@@ -322,7 +323,6 @@ export default {
         categoryResourceId: 'WNZt0sCVCWB3',
         tags: null,
         difficultyResourceId: 'mT0CeYGgKsVb',
-        availableForRequests: null,
         fromAddress: null,
         fromName: null,
         subject: null,
@@ -378,7 +378,7 @@ export default {
     nextStep() {
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
-        this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        this.$refs.refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (this.$refs.refFormStep1.validate() && isValid) {
@@ -396,10 +396,8 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate()) {
         let payload = {
           ...this.formValues,
-          AvailableForRequests: this.showMakeAvailableFor
-            ? this.$refs.refMakeAvailableFor.getAvailableForValues(
-                this.formValues.availableForRequests
-              )
+          availableForRequests: this.showMakeAvailableFor
+            ? this.$refs.refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
             : companyName === this.$store.state.auth
             ? getAvailableForValues(this.nonEditableAvailableForRequests)
             : null
@@ -596,16 +594,13 @@ export default {
         this.formValues.name = `${this.formValues.name}`
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
-          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             response.data.data.availableForList
           )
         } else {
           this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
             response.data.data.availableForList
           )
-        }
-        if (this.formValues.availableForRequests) {
-          this.formValues.availableForRequests = this.formValues.availableForRequests
         }
         if (this.formValues.attachments) {
           this.formValues.attachmentFiles = this.formValues.attachments
