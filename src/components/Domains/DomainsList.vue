@@ -547,14 +547,18 @@ export default {
     }
   },
   created() {
-    getDomainData().then((response) => {
-      this.domainData = response.data.data
-      this.$set(
-        this.tableOptions.columns[1],
-        'filterableItems',
-        this.domainData.dnsServiceProviders
-      )
-    })
+    getDomainData()
+      .then((response) => {
+        this.domainData = response.data.data
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          this.domainData.dnsServiceProviders
+        )
+      })
+      .finally(() => {
+        this.getDefaultFilterAndSearch()
+      })
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
@@ -564,9 +568,7 @@ export default {
     this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DOMAINS))
   },
-  mounted() {
-    this.getDefaultFilterAndSearch()
-  }
+  mounted() {}
 }
 </script>
 
