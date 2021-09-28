@@ -73,7 +73,7 @@ export default {
         password: this.values.password,
         resourceId: this.values.resourceId
       }
-      testConnection(payload)
+      testConnection(payload, this.values.resourceId)
         .then((response) => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
