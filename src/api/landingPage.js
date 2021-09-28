@@ -4,14 +4,12 @@ import { getMergedTags } from '@/api/company'
 
 export function updateLandingPage(payload, id) {
   return testRequest.put(`phishing-simulator/landing-page-template/${id}`, payload, {
-    headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
   })
 }
 
 export function createLandingPage(payload) {
   return testRequest.post(`phishing-simulator/landing-page-template`, payload, {
-    headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
   })
 }
