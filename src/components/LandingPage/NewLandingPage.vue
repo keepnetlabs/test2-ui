@@ -178,6 +178,7 @@
                           dense
                           persistent-hint
                           class="same-width"
+                          @change="changeDisabledLabel"
                         />
                         <v-select
                           :items="landingPageData.domainRecords"
