@@ -3799,6 +3799,7 @@ export default {
     font-size: inherit !important;
     font-weight: 600 !important;
     cursor: pointer;
+    min-width: 40px;
   }
 }
 </style>
