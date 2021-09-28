@@ -205,6 +205,7 @@
                           persistent-hint
                           class="same-width"
                           placeholder="Select path type"
+                          @input="changeDisabledLabel"
                         ></v-select>
                         <v-select
                           :items="landingPageData.extensionTypes"
@@ -216,6 +217,7 @@
                           persistent-hint
                           class="same-width"
                           placeholder="Select extension type"
+                          @input="changeDisabledLabel"
                         ></v-select>
                         <v-select
                           :items="landingPageData.parameterTypes"
@@ -247,11 +249,11 @@
                             ref="refEmailTemplate"
                             :active-block-manager-components="activeBlockManagerComponents"
                             :edit-items-disabled="editItemsDisabled"
-                            :template.sync="formValues.landingPages[0].Content"
+                            :template.sync="formValues.landingPages[0].content"
                             :is-edit="!!isEdit"
                             :is-phishing-template="true"
                             @setAttachmentFile="setAttachmentFile"
-                            @handleEditHtmlTemplate="formValues.landingPages[0].Content = $event"
+                            @handleEditHtmlTemplate="formValues.landingPages[0].ontent = $event"
                             :onlyGrapes="true"
                           />
                         </el-tab-pane>
@@ -421,9 +423,9 @@ export default {
         tags: [],
         landingPages: [
           {
-            Name: 'Page1',
-            Order: 1,
-            Content:
+            name: 'Page1',
+            order: 1,
+            content:
               '<table bgcolor="#FFFFFF" cellpadding="0" cellspacing="0" role="presentation" valign="top" width="100%" id="i1t0e" class="nl-container" style="box-sizing: border-box; line-height: inherit; table-layout: fixed; vertical-align: top; min-width: 320px; Margin: 0 auto; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #FFFFFF; width: 100%;"><tbody id="ick8f" style="box-sizing: border-box; line-height: inherit;"><tr valign="top" id="icxow" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; vertical-align: top;"><td valign="top" id="i6sbf" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; word-break: break-word; vertical-align: top;"><!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color:#FFFFFF"><![endif]--><div id="i6s7i" style="box-sizing: border-box; line-height: inherit; background-color: transparent;"><div id="ivfzk" class="block-grid" style="box-sizing: border-box; line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 595px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;"><div id="i3puj" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;"><!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:595px"><tr class="layout-full-width" style="background-color:transparent"><![endif]--><!--[if (mso)|(IE)]><td align="center" width="595" style="background-color:transparent;width:595px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:5px; padding-bottom:5px;"><![endif]--><div id="in56t" class="col num12" style="box-sizing: border-box; line-height: inherit; min-width: 320px; max-width: 595px; display: table-cell; vertical-align: top; width: 595px;"><div id="iu1pg" style="box-sizing: border-box; line-height: inherit; width: 100%;"><!--[if (!mso)&(!IE)]><!--><div id="if6si" style="box-sizing: border-box; line-height: inherit; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top: 5px; padding-bottom: 5px; padding-right: 0px; padding-left: 0px;"><!--<![endif]--><table border="0" cellpadding="0" cellspacing="0" role="presentation" valign="top" width="100%" id="ih2ff" class="divider" style="box-sizing: border-box; line-height: inherit; table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; min-width: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;"><tbody id="i6t0o" style="box-sizing: border-box; line-height: inherit;"><tr valign="top" id="is7wf" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; vertical-align: top;"><td valign="top" id="ix3uz" class="divider_inner" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; word-break: break-word; vertical-align: top; min-width: 100%; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; padding-top: 30px; padding-right: 30px; padding-bottom: 30px; padding-left: 30px;"><table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" valign="top" width="100%" id="ijbof" class="divider_content" style="box-sizing: border-box; line-height: inherit; table-layout: fixed; vertical-align: top; border-spacing: 0; border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-top: 1px solid transparent; width: 100%;"><tbody id="i32pw" style="box-sizing: border-box; line-height: inherit;"><tr valign="top" id="ihlja" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; vertical-align: top;"><td valign="top" id="igpzz" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; word-break: break-word; vertical-align: top; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">&nbsp;\n' +
               '                                          </td></tr></tbody></table></td></tr></tbody></table><!--[if (!mso)&(!IE)]><!--></div><!--<![endif]--></div></div><!--[if (mso)|(IE)]></td></tr></table><![endif]--><!--[if (mso)|(IE)]></td></tr></table></td></tr></table><![endif]--></div></div></div><div id="i67l3" style="box-sizing: border-box; line-height: inherit; background-color: transparent;"><div id="i5c5j" class="block-grid mixed-two-up" style="box-sizing: border-box; line-height: inherit; Margin: 0 auto; min-width: 320px; max-width: 595px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; background-color: transparent;"><div id="ivld2" style="box-sizing: border-box; line-height: inherit; border-collapse: collapse; display: table; width: 100%; background-color: transparent;"><!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:transparent;"><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:595px"><tr class="layout-full-width" style="background-color:transparent"><![endif]--><!--[if (mso)|(IE)]><td align="center" width="396" style="background-color:transparent;width:396px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:15px;"><![endif]--><div id="iyznl" class="col num8" style="box-sizing: border-box; line-height: inherit; display: table-cell; vertical-align: top; min-width: 320px; max-width: 392px; width: 396px;"><div id="iqgsy" style="box-sizing: border-box; line-height: inherit; width: 100%;"><!--[if (!mso)&(!IE)]><!--><div id="iikw8" style="box-sizing: border-box; line-height: inherit; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top: 0px; padding-bottom: 15px; padding-right: 0px; padding-left: 0px;"><!--<![endif]--><!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 10px; padding-left: 10px; padding-top: 10px; padding-bottom: 10px; font-family: Arial, sans-serif"><![endif]--><div id="ix4yh" style="box-sizing: border-box; color: #1f1f1f; font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif; line-height: 1.2; padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;"><div id="i63cw" style="box-sizing: border-box; line-height: 1.2; font-size: 12px; font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif; color: #1f1f1f; mso-line-height-alt: 14px;"><p id="idi9f" style="box-sizing: border-box; font-size: 14px; line-height: 1.2; word-break: break-word; font-family: Arial, \'Helvetica Neue\', Helvetica, sans-serif; mso-line-height-alt: 17px; margin: 0; border-radius: 0 0 0 0; border: 0 solid rgb(31, 31, 31);"><strong id="ia2ak" style="box-sizing: border-box; line-height: inherit;"><span id="izcvj" style="box-sizing: border-box; line-height: inherit; font-size: 28px; border-radius: 0 0 0 0; border: 0 solid rgb(31, 31, 31);">Create Account</span></strong></p></div></div><!--[if mso]></td></tr></table><![endif]--><!--[if (!mso)&(!IE)]><!--></div><!--<![endif]--></div></div><!--[if (mso)|(IE)]></td></tr></table><![endif]--><!--[if (mso)|(IE)]></td><td align="center" width="198" style="background-color:transparent;width:198px; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent;" valign="top"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding-right: 0px; padding-left: 0px; padding-top:0px; padding-bottom:0px;"><![endif]--><div id="i9285" class="col num4" style="box-sizing: border-box; line-height: inherit; display: table-cell; vertical-align: top; max-width: 320px; min-width: 196px; width: 198px;"><div id="iixxj" style="box-sizing: border-box; line-height: inherit; width: 100%;"><!--[if (!mso)&(!IE)]><!--><div id="igmib" style="box-sizing: border-box; line-height: inherit; border-top: 0px solid transparent; border-left: 0px solid transparent; border-bottom: 0px solid transparent; border-right: 0px solid transparent; padding-top: 0px; padding-bottom: 0px; padding-right: 0px; padding-left: 0px;"><!--<![endif]--><div id="ityh6" class="mobile_hide" style="box-sizing: border-box; line-height: inherit;"><div align="right" id="i79ch" class="img-container right fixedwidth" style="box-sizing: border-box; line-height: inherit; padding-right: 5px; padding-left: 5px;"><!--[if mso]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr style="line-height:0px"><td style="padding-right: 5px;padding-left: 5px;" align="right"><![endif]--><div id="izrof" style="box-sizing: border-box; font-size: 1px; line-height: 20px;">&nbsp;\n' +
               '                                </div><img align="right" alt="Alternate text" border="0" src="https://www.keepnetlabs.com/Home/Logos/Keepnet-Logos/Icon.png" title="Alternate text" width="37" id="io86q" class="right fixedwidth" style="box-sizing: border-box; line-height: inherit; text-decoration: none; -ms-interpolation-mode: bicubic; border: 0; height: auto; width: 100%; max-width: 30px; float: none; display: block;"><div id="iip9h" style="box-sizing: border-box; font-size: 1px; line-height: 15px;">&nbsp;\n' +
@@ -484,6 +486,14 @@ export default {
         this.landingPageData.domainRecords.find(
           (item) => item.value == this.formValues.domainRecordId.toString()
         )?.text || 'noDomain'
+      }/${
+        this.landingPageData.pathTypes.find(
+          (item) => item.value == this.formValues.pathTypeId.toString()
+        )?.text || 'noPath'
+      }${
+        this.landingPageData.extensionTypes.find(
+          (item) => item.value == this.formValues.extensionTypeId.toString()
+        )?.text || 'noExtension'
       }?${
         this.landingPageData.parameterTypes.find(
           (item) => item.value == this.formValues.parameterTypeId.toString()
@@ -725,6 +735,14 @@ export default {
           this.landingPageData.domainRecords.find(
             (item) => item.value == this.formValues.domainRecordId.toString()
           )?.text || 'noDomain'
+        }/${
+          this.landingPageData.pathTypes.find(
+            (item) => item.value == this.formValues.pathTypeId.toString()
+          )?.text || 'noPath'
+        }${
+          this.landingPageData.extensionTypes.find(
+            (item) => item.value == this.formValues.extensionTypeId.toString()
+          )?.text || 'noExtension'
         }?${
           this.landingPageData.parameterTypes.find(
             (item) => item.value == this.formValues.parameterTypeId.toString()
