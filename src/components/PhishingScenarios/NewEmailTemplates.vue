@@ -593,7 +593,8 @@ export default {
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = response.data.data
-        this.formValues.name = `${this.formValues.name} - Copy`
+        this.formValues.name = `${this.formValues.name}`
+        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             response.data.data.availableForList
@@ -603,8 +604,8 @@ export default {
             response.data.data.availableForList
           )
         }
-        if (this.formValues.AvailableForRequests) {
-          this.formValues.availableForRequests = this.formValues.AvailableForRequests
+        if (this.formValues.availableForRequests) {
+          this.formValues.availableForRequests = this.formValues.availableForRequests
         }
         if (this.formValues.attachments) {
           this.formValues.attachmentFiles = this.formValues.attachments
