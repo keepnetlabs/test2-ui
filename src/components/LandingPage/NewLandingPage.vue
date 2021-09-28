@@ -769,7 +769,8 @@ export default {
         this.formValues.extensionTypeId = this.formValues.extensionTypeId.toString()
         this.formValues.parameterTypeId = this.formValues.parameterTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
-        this.formValues.name = `${this.formValues.name} - Copy`
+        this.formValues.name = `${this.formValues.name}`
+        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             response.data.data.availableForList
