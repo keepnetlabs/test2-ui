@@ -80,30 +80,31 @@
         </form-group>
         <form-group title="Proxy Status">
           <div class="d-flex">
-            <v-checkbox
-              v-for="item in domainData.proxyStatuses"
-              v-model="formValues.proxyStatusId"
-              :key="item.value"
-              color="#2196f3"
-              :value="item.value"
-              :label="item.text"
-              class="mr-4"
-            >
-            </v-checkbox>
+            <v-radio-group v-model.trim="formValues.proxyStatusId" row>
+              <v-radio
+                v-for="item in domainData.proxyStatuses"
+                :key="item.value"
+                color="#2196f3"
+                :value="item.value"
+                :label="item.text"
+                class="mr-4"
+              />
+            </v-radio-group>
           </div>
         </form-group>
         <form-group title="Schema">
           <div class="d-flex">
-            <v-checkbox
-              v-for="item in domainData.urlSchemas"
-              v-model="formValues.urlSchemaTypeId"
-              :key="item.value"
-              color="#2196f3"
-              :value="item.value"
-              :label="item.text"
-              class="mr-4"
-            >
-            </v-checkbox>
+            <v-radio-group v-model.trim="formValues.urlSchemaTypeId" row>
+              <v-radio
+                v-for="item in domainData.urlSchemas"
+                :key="item.value"
+                color="#2196f3"
+                :value="item.value"
+                :label="item.text"
+                class="mr-4"
+                :disabled="formValues.proxyStatusId == 2"
+              />
+            </v-radio-group>
           </div>
         </form-group>
         <form-group title="Zone ID" has-hint sub-title="Enter Cloudflare Zone ID">
@@ -199,7 +200,6 @@ export default {
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDomainEditData(this.resourceId).then((res) => {
-        debugger
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
         this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
         this.formValues.proxyStatusId = this.formValues.proxyStatusId?.toString()
@@ -312,4 +312,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.v-input--radio-group {
+  margin-top: 0 !important;
+}
+</style>
