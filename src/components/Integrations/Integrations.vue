@@ -9,6 +9,7 @@
       v-if="modalStatus"
     >
       <new-integration
+        v-if="modalStatus"
         :showModal="modalStatus"
         :integrationId="integrationId"
         @closeOverlay="changeModalStatus"
