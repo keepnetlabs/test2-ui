@@ -603,8 +603,8 @@ export default {
             response.data.data.availableForList
           )
         }
-        if (this.formValues.AvailableForRequests) {
-          this.formValues.availableForRequests = this.formValues.AvailableForRequests
+        if (this.formValues.availableForRequests) {
+          this.formValues.availableForRequests = this.formValues.availableForRequests
         }
         if (this.formValues.attachments) {
           this.formValues.attachmentFiles = this.formValues.attachments
