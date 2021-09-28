@@ -7,6 +7,9 @@
             <el-tab-pane label="Email Templates" name="emailTemplates" id="emailTemplates-content"
               ><EmailTemplates
             /></el-tab-pane>
+            <el-tab-pane label="Landing Page Templates" name="landingPage" id="landing-page-content"
+              ><LandingPageList />
+            </el-tab-pane>
           </el-tabs>
         </v-card>
       </v-col>
@@ -16,10 +19,12 @@
 
 <script>
 import EmailTemplates from '../components/PhishingScenarios/EmailTemplates'
+import LandingPageList from '../components/LandingPage/LandingPageList'
 export default {
   name: 'PhishingSimulator',
   components: {
-    EmailTemplates: EmailTemplates
+    EmailTemplates,
+    LandingPageList
   },
   data() {
     return {

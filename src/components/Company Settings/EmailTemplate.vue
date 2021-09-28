@@ -19,7 +19,7 @@
         />
       </template>
     </app-modal>
-    <div class="email-template__item">
+    <div class="email-template__item" v-if="!onlyGrapes">
       <label>Subject</label>
       <v-text-field
         id="input--notification-template-subject"
@@ -38,7 +38,7 @@
         @input="$emit('update:subject', $event)"
       ></v-text-field>
     </div>
-    <div class="email-template__item">
+    <div v-if="!onlyGrapes" class="email-template__item">
       <label>From Name</label>
       <v-text-field
         id="input--notification-template-sender-name"
@@ -57,7 +57,7 @@
         @input="$emit('update:fromName', $event)"
       ></v-text-field>
     </div>
-    <div class="email-template__item">
+    <div v-if="!onlyGrapes" class="email-template__item">
       <label>From Email</label>
       <InputEmail
         id="input--notification-template-from-email"
@@ -66,7 +66,7 @@
         @input="$emit('update:fromAddress', $event)"
       />
     </div>
-    <div class="d-flex email-template__item" v-if="isPhishingTemplate">
+    <div class="d-flex email-template__item" v-if="isPhishingTemplate && !onlyGrapes">
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
@@ -90,7 +90,7 @@
         </div>
       </div>
     </div>
-    <v-divider class="email-template__divider mb-6" />
+    <v-divider v-if="!onlyGrapes" class="email-template__divider mb-6" />
     <v-btn
       id="btn-edit--notification-template-email-template"
       :disabled="editItemsDisabled"
@@ -238,7 +238,8 @@ export default {
     'editItemsDisabled',
     'isPhishingTemplate',
     'setAttachmentFile',
-    'attachmentFilesFromApi'
+    'attachmentFilesFromApi',
+    'onlyGrapes'
   ],
   data() {
     return {
