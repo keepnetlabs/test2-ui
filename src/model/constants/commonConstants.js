@@ -430,7 +430,8 @@ export const INTEGRATION_TYPES = {
   IBMXFORCE: 'IBM X-Force',
   GOOGLESAFEBROWSER: 'Google Safe Browsing',
   SPAMHOUSE: 'Zen Spamhaus',
-  CUSTOMINTEGRATION: 'Cross Company Integration'
+  CUSTOMINTEGRATION: 'Cross Company Integration',
+  ROKSIT: 'Roksit'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',
