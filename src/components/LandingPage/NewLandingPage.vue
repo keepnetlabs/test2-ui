@@ -484,7 +484,7 @@ export default {
         this.landingPageData.domainRecords.find(
           (item) => item.value == this.formValues.domainRecordId.toString()
         )?.text || 'noDomain'
-      }/${
+      }?${
         this.landingPageData.parameterTypes.find(
           (item) => item.value == this.formValues.parameterTypeId.toString()
         ).text
@@ -725,7 +725,7 @@ export default {
           this.landingPageData.domainRecords.find(
             (item) => item.value == this.formValues.domainRecordId.toString()
           )?.text || 'noDomain'
-        }/${
+        }?${
           this.landingPageData.parameterTypes.find(
             (item) => item.value == this.formValues.parameterTypeId.toString()
           ).text
