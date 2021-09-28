@@ -251,7 +251,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.DIFFICULTY,
-            align: 'left',
+            align: 'center',
             editable: false,
             label: labels.DIFFICULTY,
             sortable: true,
