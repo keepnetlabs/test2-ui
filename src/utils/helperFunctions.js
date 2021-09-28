@@ -6,10 +6,12 @@ export function getAvailableForListFromBackend(list = []) {
       label = 'My company only'
       resourceId = null
       isDisabled = true
+      id = 'MyCompanyOnly'
     } else if (typeName === 'AllCompanies') {
       label = 'All companies'
       resourceId = null
       isDisabled = true
+      id = 'AllCompanies'
     } else {
       label = targetName
       isDisabled = false
