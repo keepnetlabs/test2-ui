@@ -153,20 +153,20 @@
                       title="Phishing Link"
                       class-name="email-template mt-2 p-4"
                       sub-title="Create a phishing link for users to click and be directed to the landing pageZ"
-                      onsubmit="return false"
                     >
                       <div class="d-flex" style="max-width: 980px;">
                         <v-select
                           :items="landingPageData.urlSchemaTypes"
                           item-disabled="disabled"
                           item-text="text"
-                          :value="formValues.urlSchemaTypeId"
                           item-value="value"
+                          v-model="formValues.urlSchemaTypeId"
                           outlined
                           persistent-hint
                           class="same-width"
                           style="max-width: 96px;"
                           placeholder="Select URL schema"
+                          @change="changeDisabledLabel"
                         ></v-select>
                         <v-text-field
                           v-model.trim="formValues.subDomain"
@@ -192,19 +192,20 @@
                           :items="landingPageData.domainRecords"
                           item-disabled="disabled"
                           item-text="text"
-                          :value="formValues.domainRecordId"
+                          v-model="formValues.domainRecordId"
                           item-value="value"
                           outlined
                           persistent-hint
                           label="domain"
                           class="same-width"
                           placeholder="Select domain record"
+                          @change="changeDisabledLabel"
                         ></v-select>
                         <v-select
                           :items="landingPageData.pathTypes"
                           item-disabled="disabled"
                           item-text="text"
-                          :value="formValues.pathTypeId"
+                          v-model="formValues.pathTypeId"
                           item-value="value"
                           outlined
                           persistent-hint
@@ -215,7 +216,7 @@
                           :items="landingPageData.extensionTypes"
                           item-disabled="disabled"
                           item-text="text"
-                          :value="formValues.extensionTypeId"
+                          v-model="formValues.extensionTypeId"
                           item-value="value"
                           outlined
                           persistent-hint
@@ -226,7 +227,7 @@
                           :items="landingPageData.parameterTypes"
                           item-disabled="disabled"
                           item-text="text"
-                          :value="formValues.parameterTypeId"
+                          v-model="formValues.parameterTypeId"
                           item-value="value"
                           outlined
                           persistent-hint
@@ -234,6 +235,7 @@
                           class="same-width"
                           style="max-width: 107px;"
                           placeholder="Select Parameter"
+                          @change="changeDisabledLabel"
                         ></v-select>
                       </div>
                       <div style="max-width: 980px;">
@@ -241,7 +243,7 @@
                           outlined
                           dense
                           persistent-hint
-                          label="Your link is"
+                          v-model="disabledLabel"
                           disabled
                         />
                       </div>
@@ -388,7 +390,7 @@ import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
-import { createLandingPage, getLandingPageTemplate } from '@/api/landingPage'
+import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 
 export default {
   name: 'NewEmailTemplates',
@@ -401,6 +403,7 @@ export default {
   },
   data() {
     return {
+      disabledLabel: null,
       tab: 'page1',
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
@@ -478,6 +481,22 @@ export default {
     }
   },
   methods: {
+    changeDisabledLabel() {
+      debugger
+      this.disabledLabel = `${
+        this.landingPageData.urlSchemaTypes.find(
+          (item) => item.value == this.formValues.urlSchemaTypeId.toString()
+        ).text
+      }${
+        this.landingPageData.domainRecords.find(
+          (item) => item.value == this.formValues.domainRecordId.toString()
+        )?.text || 'noDomain'
+      }/${
+        this.landingPageData.parameterTypes.find(
+          (item) => item.value == this.formValues.parameterTypeId.toString()
+        ).text
+      }=`
+    },
     setAttachmentFile(file) {
       this.formValues.attachmentFiles = file
     },
@@ -520,7 +539,7 @@ export default {
             : null
         }
         if (this.isEdit && !this.isDuplicate) {
-          updatePhishingEmailTemplate(payload, this.emailTemplateId)
+          updateLandingPage(payload, this.emailTemplateId)
             .then((response) => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
@@ -697,6 +716,34 @@ export default {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
+  mounted() {
+    this.$watch(
+      (vm) => [
+        vm.formValues.urlSchemaTypeId,
+        vm.formValues.domainRecordId,
+        vm.formValues.parameterTypeId
+      ],
+      (val) => {
+        this.disabledLabel = `${
+          this.landingPageData.urlSchemaTypes.find(
+            (item) => item.value == this.formValues.urlSchemaTypeId.toString()
+          ).text
+        }${
+          this.landingPageData.domainRecords.find(
+            (item) => item.value == this.formValues.domainRecordId.toString()
+          )?.text || 'noDomain'
+        }/${
+          this.landingPageData.parameterTypes.find(
+            (item) => item.value == this.formValues.parameterTypeId.toString()
+          ).text
+        }=`
+      },
+      {
+        immediate: true, // run immediately
+        deep: true // detects changes inside objects. not needed here, but maybe in other cases
+      }
+    )
+  },
   created() {
     this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0].value
     this.formValues.domainRecordId = this.landingPageData.domainRecords[0].value
@@ -721,6 +768,7 @@ export default {
         this.formValues.pathTypeId = this.formValues.pathTypeId.toString()
         this.formValues.extensionTypeId = this.formValues.extensionTypeId.toString()
         this.formValues.parameterTypeId = this.formValues.parameterTypeId.toString()
+        this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
