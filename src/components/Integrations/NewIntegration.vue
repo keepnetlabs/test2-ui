@@ -168,7 +168,13 @@
           </form-group>
           <v-list-item
             class="px-0"
-            v-if="isVmrayOrVirusTotal || isIbmXForce || isGoogleSafeBrowser || isCustomIntegration"
+            v-if="
+              isVmrayOrVirusTotal ||
+              isIbmXForce ||
+              isGoogleSafeBrowser ||
+              isCustomIntegration ||
+              isRoksit
+            "
           >
             <v-list-item-content>
               <v-list-item-title class="new-integration__label" v-if="!isCustomIntegration">
@@ -277,10 +283,12 @@
               <div
                 id="integration-api-key-footer"
                 class="new-integration__api-key__footer"
-                :style="[(isIbmXForce || isCustomIntegration) && { justifyContent: 'flex-end' }]"
+                :style="[
+                  (isIbmXForce || isCustomIntegration || isRoksit) && { justifyContent: 'flex-end' }
+                ]"
               >
                 <div
-                  v-if="!isIbmXForce && !isCustomIntegration"
+                  v-if="!isIbmXForce && !isCustomIntegration && !isRoksit"
                   id="integration-api-key-footer-add-api-key"
                   class="new-integration__api-key__footer-left-side"
                   @click="addApiKey"
@@ -918,6 +926,7 @@ export default {
   },
   data() {
     return {
+      isRoksitTestingConnection: false,
       proxyTestStatusMessage: null,
       proxyTestLoadingStatus: 'initial',
       proxyLoading: false,
@@ -1074,6 +1083,9 @@ export default {
     isIbmXForce() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE
     },
+    isRoksit() {
+      return this.selectedIntegrationType.name === INTEGRATION_TYPES.ROKSIT
+    },
     isCustomIntegration() {
       return this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION
     },
@@ -1094,8 +1106,11 @@ export default {
   methods: {
     getFormOptions() {
       this.proxyLoading = true
-      getAnalysisEngineFormOptions().then((response) => {
-        const { engineTypes, lookups, proxies } = response.data.data
+      const promises = []
+      promises.push(getAnalysisEngineFormOptions())
+      if (this.integrationId) promises.push(this.callForData(this.integrationId))
+      Promise.all(promises).then((response) => {
+        const { engineTypes, lookups, proxies } = response[0].data.data
         this.integrationTypes = engineTypes.data.map((item) => {
           return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
         })
@@ -1117,8 +1132,8 @@ export default {
           }
         })
         this.addProxyItems(proxies.data.results, true)
+        if (response[1]) this.updateModels(response[1])
       })
-      if (this.integrationId) this.updateVModel(this.integrationId)
     },
     getProxyTestConnection() {
       if (this.proxyTestLoadingStatus === 'loading') return false
@@ -1238,7 +1253,6 @@ export default {
     saveIntegration() {
       const data = { ...this.formValues }
       this.integrationTypeDisabled = true
-
       if (
         [
           INTEGRATION_TYPES.VIRUSTOTAL,
@@ -1274,6 +1288,14 @@ export default {
           {
             apiKey: this.formValues.apiKey,
             password: this.formValues.password,
+            resourceId: this.formValues.analysisEngineTypeResourceId,
+            proxyResourceId: this.formValues.proxyResourceId
+          }
+        ]
+      } else if (this.isRoksit) {
+        data.apiCredentials = [
+          {
+            apiKey: this.formValues.apiKeys[0].value,
             resourceId: this.formValues.analysisEngineTypeResourceId,
             proxyResourceId: this.formValues.proxyResourceId
           }
@@ -1336,6 +1358,35 @@ export default {
           this.isFortiNetConnectionSended = true
         })
     },
+    testRoksitConnection(isSave) {
+      this.isRoksitTestingConnection = true
+      this.formValues.apiKeys[0].status = 'loading'
+      this.loadingState.push('loading')
+      testAnalysis(this.formValues.analysisEngineTypeResourceId, {
+        apiUrl: this.formValues.apiUrl,
+        apiCredential: {
+          apiKey: this.formValues.apiKeys[0].value,
+          resourceId: this.formValues.apiKeys[0].resourceId,
+          proxyResourceId: this.formValues.proxyResourceId
+        }
+      })
+        .then((response) => {
+          if (response.data.status === 'FAILED') {
+            this.formValues.apiKeys[0].status = 'failed'
+            this.formValues.apiKeys[0].errorMessage = response.data.message
+          } else {
+            if (isSave) this.saveIntegration()
+            this.formValues.apiKeys[0].status = 'success'
+          }
+        })
+        .catch(() => {
+          this.formValues.apiKeys[0].status = 'failed'
+        })
+        .finally(() => {
+          this.isRoksitTestingConnection = false
+          this.loadingState.shift('loading')
+        })
+    },
     handleTagItemChange(value) {
       value[value.length - 1] = value[value.length - 1].substring(0, 20)
     },
@@ -1382,6 +1433,12 @@ export default {
             return false
           }
           return true
+        } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.ROKSIT) {
+          return !(
+            this.formValues.apiKeys[0] &&
+            this.formValues.apiKeys[0].value &&
+            this.formValues.apiKeys[0].value.length
+          )
         }
         return true
       }
@@ -1408,66 +1465,68 @@ export default {
       this.formValues.isUploadOtherFileType = false
       this.showConfirmModal = false
     },
-    updateVModel(id) {
-      getIntegrationDetails(id).then((response) => {
-        this.selectedIntegrationType =
-          this.integrationTypes.find(
-            (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
-          ) || {}
-
-        if (
-          [
-            INTEGRATION_TYPES.VIRUSTOTAL,
-            INTEGRATION_TYPES.VMRAY,
-            INTEGRATION_TYPES.IBMXFORCE,
-            INTEGRATION_TYPES.GOOGLESAFEBROWSER,
-            INTEGRATION_TYPES.SPAMHOUSE
-          ].includes(this.selectedIntegrationType.name)
-        ) {
-          response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
-            return {
-              value: item.apiKey,
-              status: null,
-              resourceId: item.resourceId,
-              proxyResourceId: item.proxyResourceId
-            }
-          })
-          response['data'].data.apiKeys = response['data'].data.apiKeys.length
-            ? response['data'].data.apiKeys
-            : [{ value: '', status: null, resourceId: null }]
-
-          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
-            response.data.data.password = response['data'].data['apiCredentials'].length
-              ? response['data'].data['apiCredentials'][0].password
-              : ''
-            response.data.data.proxyResourceId = response['data'].data.proxyResourceId
+    callForData(id) {
+      return getIntegrationDetails(id)
+    },
+    updateModels(response = {}) {
+      this.selectedIntegrationType =
+        this.integrationTypes.find(
+          (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
+        ) || {}
+      if (
+        [
+          INTEGRATION_TYPES.VIRUSTOTAL,
+          INTEGRATION_TYPES.VMRAY,
+          INTEGRATION_TYPES.IBMXFORCE,
+          INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+          INTEGRATION_TYPES.SPAMHOUSE,
+          INTEGRATION_TYPES.ROKSIT
+        ].includes(this.selectedIntegrationType.name)
+      ) {
+        response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
+          return {
+            value: item.apiKey,
+            status: null,
+            resourceId: item.resourceId,
+            proxyResourceId: item.proxyResourceId
           }
-        } else if (this.selectedIntegrationType.name === 'FortiNet') {
-          const { userName, password, resourceId, proxyResourceId } = response['data'].data[
-            'apiCredentials'
-          ][0]
-          response.data.data.userName = userName
-          response.data.data.password = password
-          response.data.data.resourceId = resourceId
-          response.data.data.proxyResourceId = proxyResourceId
-        } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
-          const { apiKey, password, resourceId, proxyResourceId } = response['data'].data[
-            'apiCredentials'
-          ][0]
-          response.data.data.apiKey = apiKey
-          response.data.data.password = password
-          response.data.data.resourceId = resourceId
-          response.data.data.apiCreditionalResourceId = resourceId
-          response.data.data.proxyResourceId = proxyResourceId
+        })
+
+        response['data'].data.apiKeys = response['data'].data.apiKeys.length
+          ? response['data'].data.apiKeys
+          : [{ value: '', status: null, resourceId: null }]
+
+        if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+          response.data.data.password = response['data'].data['apiCredentials'].length
+            ? response['data'].data['apiCredentials'][0].password
+            : ''
+          response.data.data.proxyResourceId = response['data'].data.proxyResourceId
         }
-        delete response['data'].data['apiCredentials']
-        this.formValues = response['data'].data
-        if (!this.formValues.proxyResourceId) {
-          this.formValues.proxyResourceId = this.defaultProxyItems.find(
-            (item) => item.isDefault === 'Yes'
-          ).resourceId
-        }
-      })
+      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+        const { userName, password, resourceId, proxyResourceId } = response['data'].data[
+          'apiCredentials'
+        ][0]
+        response.data.data.userName = userName
+        response.data.data.password = password
+        response.data.data.resourceId = resourceId
+        response.data.data.proxyResourceId = proxyResourceId
+      } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
+        const { apiKey, password, resourceId, proxyResourceId } = response['data'].data[
+          'apiCredentials'
+        ][0]
+        response.data.data.apiKey = apiKey
+        response.data.data.password = password
+        response.data.data.resourceId = resourceId
+        response.data.data.apiCreditionalResourceId = resourceId
+        response.data.data.proxyResourceId = proxyResourceId
+      }
+      delete response['data'].data['apiCredentials']
+      this.formValues = response['data'].data
+      if (!this.formValues.proxyResourceId) {
+        this.formValues.proxyResourceId = this.defaultProxyItems.find(
+          (item) => item.isDefault === 'Yes'
+        )?.resourceId
+      }
     },
     resetValues() {
       this.formValues = {
@@ -1574,6 +1633,8 @@ export default {
         }
       } else if (this.selectedIntegrationType.name === 'FortiNet') {
         this.testFortiNetConnection(true)
+      } else if (this.isRoksit) {
+        this.testRoksitConnection(isSave)
       } else if (this.isCustomIntegration) {
         let payload = {
           apiUrl: this.formValues.apiUrl,
@@ -1656,6 +1717,8 @@ export default {
         }
         this.formValues.userName = ''
         this.formValues.password = ''
+      } else if (name === INTEGRATION_TYPES.ROKSIT) {
+        this.formValues.apiUrl = 'https://reputation.roksit.com/api/query/'
       } else if (name === INTEGRATION_TYPES.VMRAY) {
         if (this.formValues.apiUrl) {
           this.formValues.apiUrl = 'https://cloud.vmray.com'
