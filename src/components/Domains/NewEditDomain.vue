@@ -199,12 +199,13 @@ export default {
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDomainEditData(this.resourceId).then((res) => {
+        debugger
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
-        this.formValues.recordTypeId = this.formValues.recordTypeId.toString()
-        this.formValues.proxyStatusId = this.formValues.proxyStatusId.toString()
-        this.formValues.zoneId = this.formValues.zoneId.toString()
-        this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId.toString()
-        this.formValues.dnsServiceProviderId = this.formValues.dnsServiceProviderId.toString()
+        this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
+        this.formValues.proxyStatusId = this.formValues.proxyStatusId?.toString()
+        this.formValues.zoneId = this.formValues.zoneId?.toString()
+        this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId?.toString()
+        this.formValues.dnsServiceProviderId = this.formValues.dnsServiceProviderId?.toString()
         delete this.formValues.availableForList
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
