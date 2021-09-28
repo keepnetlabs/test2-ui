@@ -418,6 +418,7 @@
                     v-if="loadingState.length"
                     class="test-connection new-integration__api-key__disabled-text text-left"
                     style="cursor: default !important;"
+                    :style="{ justifyContent: 'flex-end', display: 'flex' }"
                   >
                     <v-icon
                       class="ml-1 loading-spin"
