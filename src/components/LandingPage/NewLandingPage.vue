@@ -178,6 +178,7 @@
                           dense
                           persistent-hint
                           class="same-width"
+                          @input="changeDisabledLabel"
                         />
                         <v-select
                           :items="landingPageData.domainRecords"
@@ -479,11 +480,11 @@ export default {
         this.landingPageData.urlSchemaTypes.find(
           (item) => item.value == this.formValues.urlSchemaTypeId.toString()
         ).text
-      }${this.formValues.subDomain || 'subDomain'}.${this.formValues.subDomain || 'subDomain'}.${
+      }${this.formValues.subDomain || 'subDomain'}.${
         this.landingPageData.domainRecords.find(
           (item) => item.value == this.formValues.domainRecordId.toString()
         )?.text || 'noDomain'
-      }/${
+      }?${
         this.landingPageData.parameterTypes.find(
           (item) => item.value == this.formValues.parameterTypeId.toString()
         ).text
@@ -724,7 +725,7 @@ export default {
           this.landingPageData.domainRecords.find(
             (item) => item.value == this.formValues.domainRecordId.toString()
           )?.text || 'noDomain'
-        }/${
+        }?${
           this.landingPageData.parameterTypes.find(
             (item) => item.value == this.formValues.parameterTypeId.toString()
           ).text
