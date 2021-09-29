@@ -261,6 +261,7 @@
                           persistent-hint
                           v-model="disabledLabel"
                           disabled
+                          label="Your link is"
                         />
                       </div>
                       <el-tabs v-model="tab" class="landing-page-tab-content">
