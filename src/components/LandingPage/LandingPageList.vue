@@ -700,6 +700,16 @@ export default {
   },
   created() {
     getLandingPageFormDetails().then((response) => {
+      this.$set(
+        this.tableOptions.columns[1],
+        'filterableItems',
+        response.data.data.methodTypes.map((item) => item.text)
+      )
+      this.$set(
+        this.tableOptions.columns[2],
+        'filterableItems',
+        response.data.data.difficultyTypes.map((item) => item.text)
+      )
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
       const { page, size } = this.queryHelper.returnQueryValues()
@@ -710,22 +720,11 @@ export default {
       this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
       getLookups('Phishing Simulator Categories').then((response) => {
         this.methodItems = response.data.data
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          this.methodItems.map((item) => item.name)
-        )
-        this.tableKey = `key-${Math.random().toString().substring(5)}`
       })
       getLookups('Phishing Simulator Difficulties').then((response) => {
         this.difficultyItems = response.data.data
-        this.$set(
-          this.tableOptions.columns[2],
-          'filterableItems',
-          this.difficultyItems.map((item) => item.name)
-        )
-        this.tableKey = `key-${Math.random().toString().substring(5)}`
       })
+      this.tableKey = `key-${Math.random().toString().substring(5)}`
       this.landingPageData = response.data.data
     })
   },
