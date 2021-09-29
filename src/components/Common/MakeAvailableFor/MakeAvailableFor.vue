@@ -273,5 +273,16 @@ export default {
       fill: #e0e0e0 !important;
     }
   }
+  .vue-treeselect__control .vue-treeselect__control-arrow-container {
+    margin-right: 12px;
+    svg {
+      color: rgba(0, 0, 0, 0.54) !important;
+      fill: rgba(0, 0, 0, 0.54) !important;
+      path {
+        color: rgba(0, 0, 0, 0.54) !important;
+        fill: rgba(0, 0, 0, 0.54) !important;
+      }
+    }
+  }
 }
 </style>
