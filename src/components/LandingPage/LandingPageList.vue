@@ -236,7 +236,7 @@ export default {
             property: 'method',
             align: 'left',
             editable: false,
-            label: 'method',
+            label: 'Method',
             sortable: true,
             show: true,
             type: 'text',
@@ -244,9 +244,9 @@ export default {
             width: 240,
             filterableType: 'select',
             filterableItems: [
-              { text: 'Click Only', value: 'WNZt0sCVCWB3' },
-              { text: 'Data Submission', value: 'DYC0gugxJMjT' },
-              { text: 'Attachment', value: '7dLrW2kdBTDs' }
+              { text: 'Click Only', value: 'Click Only' },
+              { text: 'Data Submission', value: 'Data Submission' },
+              { text: 'Attachment', value: 'Attachment' }
             ]
           },
           {
@@ -259,9 +259,9 @@ export default {
             type: 'status',
             filterableType: 'select',
             filterableItems: [
-              { text: 'Easy', value: 'mT0CeYGgKsVb' },
-              { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-              { text: 'Hard', value: 'c4LCGEB9MayB' }
+              { text: 'Easy', value: 'Easy' },
+              { text: 'Medium', value: 'Medium' },
+              { text: 'Hard', value: 'Hard' }
             ],
             width: 180
           },
@@ -713,27 +713,21 @@ export default {
   },
   created() {
     getLandingPageFormDetails().then((response) => {
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.controlRouteQuery()
+      const { page, size } = this.queryHelper.returnQueryValues()
+      this.setQueryValuesToPayload(this.$route.query)
+      this.bodyData.pageSize = size
+      this.bodyData.pageNumber = page
+      this.serverSideProps.pageSize = size
+      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
+      getLookups('Phishing Simulator Categories').then((response) => {
+        this.methodItems = response.data.data
+      })
+      getLookups('Phishing Simulator Difficulties').then((response) => {
+        this.difficultyItems = response.data.data
+      })
       this.landingPageData = response.data.data
-      this.$set(this.tableOptions.columns[1], 'filterableItems', this.landingPageData.methodTypes)
-      this.$set(
-        this.tableOptions.columns[2],
-        'filterableItems',
-        this.landingPageData.difficultyTypes
-      )
-    })
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.bodyData.pageSize = size
-    this.bodyData.pageNumber = page
-    this.serverSideProps.pageSize = size
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
-    getLookups('Phishing Simulator Categories').then((response) => {
-      this.methodItems = response.data.data
-    })
-    getLookups('Phishing Simulator Difficulties').then((response) => {
-      this.difficultyItems = response.data.data
     })
   },
   mounted() {

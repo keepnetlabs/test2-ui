@@ -1,7 +1,7 @@
 <template>
   <form-group
     :title="labels.MakeAvailableFor"
-    :sub-title="labels.MakeAvailableForSubtitle"
+    :sub-title="subTitle || labels.MakeAvailableForSubtitle"
     has-hint
   >
     <Treeselect
@@ -70,7 +70,9 @@ export default {
   },
   props: {
     value: Array,
-    disabled: Boolean
+    disabled: Boolean,
+    subTitle: String,
+    placeholder: String
   },
   directives: {
     'infinite-scroll': infiniteScroll
@@ -248,6 +250,9 @@ export default {
     getAvailableForValues(data) {
       return getAvailableForValues(data)
     }
+  },
+  mounted() {
+    if (this.placeholder) this.isAvailableForProps.placeholder = this.placeholder
   }
 }
 </script>

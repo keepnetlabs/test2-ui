@@ -134,8 +134,7 @@ export default {
             width: 240,
             hasTooltip: true,
             type: 'text',
-            filterableType: 'select',
-            filterableItems: []
+            filterableType: 'text'
           },
           {
             property: 'dnsRecord',
@@ -173,8 +172,8 @@ export default {
             type: 'status',
             filterableType: 'select',
             filterableItems: [
-              { text: 'Online', value: '1' },
-              { text: 'Offline', value: '2' }
+              { text: 'Online', value: 'Online' },
+              { text: 'Offline', value: 'Offline' }
             ]
           },
           {
@@ -547,18 +546,6 @@ export default {
     }
   },
   created() {
-    getDomainData()
-      .then((response) => {
-        this.domainData = response.data.data
-        this.$set(
-          this.tableOptions.columns[1],
-          'filterableItems',
-          this.domainData.dnsServiceProviders
-        )
-      })
-      .finally(() => {
-        this.getDefaultFilterAndSearch()
-      })
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
@@ -567,6 +554,7 @@ export default {
     this.bodyData.pageNumber = page
     this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DOMAINS))
+    this.getDefaultFilterAndSearch()
   },
   mounted() {}
 }
