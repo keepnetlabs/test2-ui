@@ -185,8 +185,7 @@ export default {
             show: true,
             type: 'date',
             filterableType: 'date',
-            width: 180,
-            filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
+            width: 180
           }
         ],
         rowActions: [
