@@ -55,6 +55,7 @@
       v-if="checkPermissions('phishing-simulator/landing-page-template', 'POST')"
       id="landingPage-data-table"
       ref="refLandingPageList"
+      :key="tableKey"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
@@ -202,6 +203,7 @@ export default {
   },
   data() {
     return {
+      tableKey: `key-${Math.random().toString().substring(5)}`,
       landingPageData: null,
       methodItems: [],
       difficultyItems: [],
@@ -242,7 +244,7 @@ export default {
             type: 'text',
             fixed: false,
             width: 240,
-            filterableType: 'text'
+            filterableType: 'select'
           },
           {
             property: 'difficulty',
@@ -252,7 +254,7 @@ export default {
             sortable: true,
             show: true,
             type: 'status',
-            filterableType: 'text',
+            filterableType: 'select',
             width: 180
           },
           {
@@ -665,20 +667,15 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
+          elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
         })
       } else {
         const elem = filter
-        elem.FieldName = filter.FieldName.slice(0, 1).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
       }
       this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
       this.getDatatableList()
@@ -703,6 +700,16 @@ export default {
   },
   created() {
     getLandingPageFormDetails().then((response) => {
+      this.$set(
+        this.tableOptions.columns[1],
+        'filterableItems',
+        response.data.data.methodTypes.map((item) => item.text)
+      )
+      this.$set(
+        this.tableOptions.columns[2],
+        'filterableItems',
+        response.data.data.difficultyTypes.map((item) => item.text)
+      )
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.controlRouteQuery()
       const { page, size } = this.queryHelper.returnQueryValues()
@@ -717,6 +724,7 @@ export default {
       getLookups('Phishing Simulator Difficulties').then((response) => {
         this.difficultyItems = response.data.data
       })
+      this.tableKey = `key-${Math.random().toString().substring(5)}`
       this.landingPageData = response.data.data
     })
   },
