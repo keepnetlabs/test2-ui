@@ -546,6 +546,10 @@ export default {
     }
   },
   created() {
+    getDomainData().then((response) => {
+      this.domainData = response.data.data
+      this.getDefaultFilterAndSearch()
+    })
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
@@ -554,7 +558,6 @@ export default {
     this.bodyData.pageNumber = page
     this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DOMAINS))
-    this.getDefaultFilterAndSearch()
   },
   mounted() {}
 }
