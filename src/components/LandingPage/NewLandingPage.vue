@@ -93,7 +93,7 @@
                           <div class="mail-configuration-select-sources__item-right-platform">
                             {{
                               item.text === 'Click-Only'
-                                ? 'See who falls for phishing links'
+                                ? 'Send a trackable macro file'
                                 : item.text === 'Data Submission'
                                 ? 'Gather information from users'
                                 : 'Send a trackable macro file '
