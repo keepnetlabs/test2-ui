@@ -76,14 +76,33 @@
                     :items="landingPageData.methodTypes"
                     item-disabled="disabled"
                     item-text="text"
-                    :value="formValues.methodTypeId"
+                    v-model="formValues.methodTypeId"
                     item-value="value"
                     outlined
                     v-bind="commonRules"
                     hint="*Required"
                     required
                     persistent-hint
-                  ></v-select>
+                  >
+                    <template #item="{item}">
+                      <div :class="['mail-configuration-select-sources__item-container']">
+                        <div class="mail-configuration-select-sources__item">
+                          <div class="mail-configuration-select-sources__item-left">
+                            {{ item.text }}
+                          </div>
+                          <div class="mail-configuration-select-sources__item-right-platform">
+                            {{
+                              item.text === 'Click-Only'
+                                ? 'See who falls for phishing links'
+                                : item.text === 'Data Submission'
+                                ? 'Gather information from users'
+                                : 'Send a trackable macro file '
+                            }}
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </v-select>
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template" class-name="mt-6">
                   <k-select
@@ -130,6 +149,8 @@
                   ref="refMakeAvailableFor"
                   v-model="availableForRequests"
                   :disabled="!showMakeAvailableFor"
+                  :subTitle="'Select companies that should see this landing page template in their libraries'"
+                  :placeholder="'Select companies or company groups'"
                 />
               </v-form>
             </div>
@@ -152,7 +173,7 @@
                     <form-group
                       title="Phishing Link"
                       class-name="email-template mt-2 p-4"
-                      sub-title="Create a phishing link for users to click and be directed to the landing pageZ"
+                      sub-title="Create a phishing link for users to click and be directed to the landing page"
                     >
                       <div class="d-flex" style="max-width: 980px;">
                         <v-select
@@ -188,7 +209,7 @@
                           item-value="value"
                           outlined
                           persistent-hint
-                          label="domain"
+                          label="Domain"
                           class="same-width"
                           placeholder="Select domain record"
                           required
@@ -229,7 +250,6 @@
                           persistent-hint
                           label="Parameter"
                           class="same-width"
-                          style="max-width: 107px;"
                           placeholder="Select Parameter"
                           @change="changeDisabledLabel"
                         ></v-select>
