@@ -242,12 +242,7 @@ export default {
             type: 'text',
             fixed: false,
             width: 240,
-            filterableType: 'select',
-            filterableItems: [
-              { text: 'Click Only', value: 'Click Only' },
-              { text: 'Data Submission', value: 'Data Submission' },
-              { text: 'Attachment', value: 'Attachment' }
-            ]
+            filterableType: 'text'
           },
           {
             property: 'difficulty',
@@ -257,12 +252,7 @@ export default {
             sortable: true,
             show: true,
             type: 'status',
-            filterableType: 'select',
-            filterableItems: [
-              { text: 'Easy', value: 'Easy' },
-              { text: 'Medium', value: 'Medium' },
-              { text: 'Hard', value: 'Hard' }
-            ],
+            filterableType: 'text',
             width: 180
           },
           {
