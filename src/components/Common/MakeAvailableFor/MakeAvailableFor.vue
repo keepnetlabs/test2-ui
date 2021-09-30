@@ -1,5 +1,6 @@
 <template>
   <form-group
+    v-if="showMakeAvailableFor"
     :title="labels.MakeAvailableFor"
     :sub-title="subTitle || labels.MakeAvailableForSubtitle"
     has-hint
@@ -19,6 +20,7 @@
       @close="validateAvailableFor"
       @open="handleMenuOpen"
       @input="handleInputChange"
+      @search-change="handleSearchChange"
     >
       <template #after-list>
         <v-progress-circular
@@ -55,7 +57,7 @@
 </template>
 
 <script>
-import Treeselect, { LOAD_ROOT_OPTIONS } from '@riophae/vue-treeselect'
+import Treeselect from '@riophae/vue-treeselect'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import { searchAvailableFor } from '@/api/smtpSettings'
 import labels from '@/model/constants/labels'
@@ -97,12 +99,22 @@ export default {
       treeSelectionStatus: false
     }
   },
+  computed: {
+    showMakeAvailableFor() {
+      return this.getRole !== labels.CompanyAdmin
+    },
+    getRole() {
+      //this.$store.state?.auth?.userRoleName
+      return this.$store.state?.auth?.userRoleName
+    }
+  },
   methods: {
-    loadOptions({ action, callback }) {
-      this.callForSearchAvailableFor().then((d) => {
+    loadOptions({ callback }) {
+      this.callForSearchAvailableFor().then(() => {
         callback()
       })
     },
+    handleSearchChange(val) {},
     handleMenuOpen() {
       this.$nextTick(() => {
         this.menuElement = document
@@ -241,13 +253,19 @@ export default {
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
-      this.isAvailableForValid = value && !!value.length
+      this.isAvailableForValid =
+        this.getRole === labels.CompanyAdmin ? true : value && !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
     getAvailableForListFromBackend(list = []) {
       return getAvailableForListFromBackend(list)
     },
     getAvailableForValues(data) {
+      //If role is company admin return just company admin
+      if (this.getRole === labels.CompanyAdmin)
+        return [
+          { id: 'MyCompanyOnly', label: 'My company only', resourceId: null, type: 'MyCompanyOnly' }
+        ]
       return getAvailableForValues(data)
     }
   },

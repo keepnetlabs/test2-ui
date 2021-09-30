@@ -157,7 +157,6 @@
           />
         </form-group>
         <make-available-for
-          v-if="showMakeAvailableFor"
           v-model="formValues.availableForRequests"
           ref="refMakeAvailableFor"
           class="mb-2"
@@ -337,9 +336,6 @@ export default {
       ]
       if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
       return rules
-    },
-    showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
   methods: {
@@ -377,14 +373,9 @@ export default {
           customHeader,
           availableForRequests
         } = this.formValues
-        const { companyName, selectedCompanyName } = this.$store.state.auth
         const payload = {
           name,
-          availableForRequests: this.showMakeAvailableFor
-            ? refMakeAvailableFor.getAvailableForValues(availableForRequests)
-            : companyName === selectedCompanyName
-            ? getAvailableForValues(this.nonEditableAvailableForRequests)
-            : null,
+          availableForRequests: refMakeAvailableFor.getAvailableForValues(availableForRequests),
           serverAddress,
           serverPort,
           userName,
