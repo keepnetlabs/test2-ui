@@ -123,12 +123,7 @@
             height="40"
           ></v-text-field>
         </form-group>
-        <make-available-for
-          v-if="isRenderMakeAvailableFor"
-          ref="refMakeAvailableFor"
-          v-model="formValues.availableForRequests"
-          :disabled="!showMakeAvailableFor"
-        />
+        <make-available-for ref="refMakeAvailableFor" v-model="availableForRequests" />
 
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content class="test-connection-wrapper"> </v-list-item-content>
@@ -208,7 +203,7 @@ export default {
         this.formValues.dnsServiceProviderId = this.formValues.dnsServiceProviderId?.toString()
         delete this.formValues.availableForList
         if (this.$refs.refMakeAvailableFor) {
-          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             res.data.data.availableForList
           )
         } else {
@@ -222,6 +217,7 @@ export default {
   data() {
     return {
       isValidate: null,
+      availableForRequests: [],
       formValues: {
         domain: null,
         recordTypeId: null,
@@ -230,7 +226,6 @@ export default {
         proxyStatusId: null,
         urlSchemaTypeId: null,
         zoneId: null,
-        availableForRequests: null,
         active: true,
         resourceId: null
       },
@@ -238,20 +233,6 @@ export default {
       labels,
       validations: Validations,
       saveButtonDisabled: false
-    }
-  },
-  computed: {
-    isRenderMakeAvailableFor() {
-      if (this.editItemsDisabled) {
-        return false
-      }
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-        return !!this.selectedItem
-      }
-      return true
-    },
-    showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
   methods: {
@@ -275,14 +256,17 @@ export default {
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
-      let payload = this.formValues
+      let payload = {
+        ...this.formValues,
+        availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
+      }
       if (this.$refs.domainForm.validate() && isValid) {
         if (this.isEdit && !this.isDuplicate) {
           updateDomain(payload, this.resourceId)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeStatus', false, true)
             })
             .finally(() => {
