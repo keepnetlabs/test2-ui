@@ -89,5 +89,42 @@ export default {
       hasPermission: false,
       method: 'DELETE'
     }
+  },
+  PROXY_SETTINGS_PERMISSIONS: {
+    SEARCH: {
+      url: 'companies/proxy-settings/search',
+      hasPermission: false,
+      method: 'POST'
+    },
+    DELETE: {
+      url: 'companies/proxy-settings/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    },
+    GET: {
+      url: 'companies/proxy-settings/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    CREATE: {
+      url: 'companies/proxy-settings',
+      hasPermission: false,
+      method: 'POST'
+    },
+    EXPORT: {
+      url: 'companies/proxy-settings/search/export',
+      hasPermission: false,
+      method: 'POST'
+    },
+    TEST: {
+      url: 'companies/proxy-settings/test',
+      hasPermission: false,
+      method: 'POST'
+    },
+    UPDATE: {
+      url: 'companies/proxy-settings/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    }
   }
 }
