@@ -475,6 +475,7 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            v-if="checkCompanyPermissions()"
             id="btn--link-navigator-menu-company-list-group"
             prepend-icon="mdi-briefcase-variant"
             no-action
@@ -760,11 +761,8 @@ import AuthenticationService from '../services/authentication'
 import 'grapesjs/dist/css/grapes.min.css'
 import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
-import AppDialog from '../components/AppDialog'
-import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
-import { updatePassword } from '../api/auth'
 import Breadcrumb from '@/components/Breadcrumb'
-import { checkPermission, checkPermissionMultiple } from '../utils/functions'
+import { checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
 import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
@@ -1433,6 +1431,16 @@ export default {
     }),
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
+    },
+    checkCompanyPermissions() {
+      return [
+        this.checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST']),
+        this.checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST']),
+        this.checkPermissionMultiple(['companies/smtp-settings/search|POST', 'roles/search|POST']),
+        this.checkPermissionMultiple(['companies/smtp-settings/search|POST', 'roles/search|POST']),
+        this.checkPermissionMultiple(['system-users/search|POST']),
+        this.checkPermissionMultiple(['audit-logs|POST'])
+      ].some((isPermission) => isPermission)
     },
     changePasswordChange() {
       this.openPasswordChange = !this.openPasswordChange
