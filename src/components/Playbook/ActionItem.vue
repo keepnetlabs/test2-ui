@@ -830,7 +830,7 @@ export default {
     getAnalysisEngine() {
       const payload = {
         pageNumber: 1,
-        pageSize: 500,
+        pageSize: 1000,
         orderBy: 'CreateTime',
         ascending: true,
         filter: {
@@ -838,7 +838,13 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
-              FilterItems: [],
+              FilterItems: [
+                {
+                  FieldName: 'Status',
+                  Value: 'Active',
+                  Operator: 'Include'
+                }
+              ],
               FilterGroups: []
             }
           ]
