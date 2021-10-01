@@ -753,7 +753,7 @@
               </div>
             </v-list-item-content>
           </v-list-item>
-          <form-group title="Sender Ip" class-name="mt-4">
+          <form-group title="Sender IP" class-name="mt-4">
             <div>
               <v-checkbox
                 v-model="formValues.isSendIp"

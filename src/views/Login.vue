@@ -124,13 +124,15 @@
                     <v-row align="center" justify="center">
                       <v-col class="pt-0 pl-0 pr-0 pb-4" md="6" sm="12">
                         <v-form
-                          @submit="(event) => event.preventDefault()"
                           v-model.trim="validEmail"
                           autocomplete="off"
+                          data-recording-ignore="mask"
                           :ref="showPasswordField ? 'password' : 'email'"
+                          @submit="(event) => event.preventDefault()"
                         >
                           <v-text-field
                             v-if="!showPasswordField"
+                            data-recording-ignore="mask"
                             id="input--login-email"
                             :type="'email'"
                             name="email"
@@ -155,6 +157,7 @@
                           <v-text-field
                             v-else
                             id="input--login-password"
+                            data-recording-ignore="mask"
                             :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                             :rules="[rules.required, rules.min]"
                             :type="show1 ? '' : 'password'"
@@ -371,7 +374,7 @@
                               id="input--login-new-password"
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                               :type="show2 ? '' : 'password'"
-                              @click:append="show2 = !show2"
+                              data-recording-ignore="mask"
                               v-model.trim="newPassword"
                               placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
@@ -386,6 +389,7 @@
                               :class="{ 'input-error': isErrorActive }"
                               validate-on-blur
                               autocomplete="disabled"
+                              @click:append="show2 = !show2"
                             ></v-text-field>
                           </div>
                           <div>
@@ -400,6 +404,7 @@
                             <v-text-field
                               v-model.trim="reNewPassword"
                               id="input--login-confirm-password"
+                              data-recording-ignore="mask"
                               :rules="[
                                 rules.required,
                                 rules.minPassword,

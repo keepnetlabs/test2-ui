@@ -837,6 +837,36 @@
                         Duplicate
                       </v-btn>
                     </div>
+                    <div
+                      id="btn-auto-refresh-trigger--investigation-details-card"
+                      class="investigation-details__container__content--right-menu__summary__item--action-button"
+                      v-if="isRunning"
+                    >
+                      <v-menu offset-y transition="scale-transition">
+                        <template v-slot:activator="{ on }">
+                          <v-btn icon color="blue" v-on="on" style="border-color: red;">
+                            <v-icon>mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
+                        <div>
+                          <v-list dense flat class="notification-wrapper__v-list">
+                            <v-list-item-group color="primary">
+                              <v-list-item @click="setAutoRefresh()">
+                                <v-list-item-content>
+                                  <v-list-item-title
+                                    >{{ isAutoRefreshActive ? '' : 'Enable' }} Auto-Refresh every 15
+                                    seconds</v-list-item-title
+                                  >
+                                </v-list-item-content>
+                                <v-list-item-icon>
+                                  <v-icon v-if="isAutoRefreshActive">mdi-check</v-icon>
+                                </v-list-item-icon>
+                              </v-list-item>
+                            </v-list-item-group>
+                          </v-list>
+                        </div>
+                      </v-menu>
+                    </div>
                   </div>
                 </div>
                 <div
@@ -1131,6 +1161,10 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    isAutoRefreshActive: true,
+    loopInterval: null,
+    isRunning: false,
+    loop: null,
     totalNumberOfRecordsTargetUser: 0,
     storedTableDetailsList: null,
     storedTableTargetUser: null,
@@ -1354,12 +1388,13 @@ export default {
       {
         property: 'emailLastAction',
         align: 'left',
-        sortable: false,
-        hideSort: true,
+        sortable: true,
+        hideSort: false,
         label: 'Status',
         show: true,
         minWidth: 280,
-        type: 'slot'
+        type: 'slot',
+        filterableType: 'text'
       }
     ],
     columnsTargetUsers: [
@@ -1514,6 +1549,13 @@ export default {
     serverSidePropsForTargetUsers: new ServerSideProps()
   }),
   methods: {
+    setAutoRefresh() {
+      this.isAutoRefreshActive = !this.isAutoRefreshActive
+      console.log(this.isAutoRefreshActive)
+      if (this.isAutoRefreshActive) {
+        this.refreshDatatable()
+      }
+    },
     serverSideSizeChangedForTargetUsers(pageSize = 10) {
       //generic
       this.investigationTargetUsersListBodyData.pageSize = pageSize
@@ -1624,7 +1666,8 @@ export default {
       }
       this.refreshDatatable()
     },
-    handleClearFilters() {
+    handleClearFilters(isAutoTrue) {
+      if (!isAutoTrue) return false
       this.isRestoredOrClearedFilters = true
       this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
       this.$refs.refInvestigationListData.filterValues = {}
@@ -2201,13 +2244,15 @@ export default {
             })
         })
     },
-    refreshDatatable() {
+    refreshDatatable(isAuto) {
       this.leftMenuLoading = true
       this.topMenuLoading = true
       this.loading = true
+
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
+          this.isRunning = this.statsAndMenuData.status === 'Running'
           this.$store
             .dispatch('investigations/getInvestigationDetailsData', this.$route.params.id)
             .finally(() => {
@@ -2229,6 +2274,15 @@ export default {
                   this.leftMenuLoading = false
                   this.topMenuLoading = false
                   this.loading = false
+                  if (
+                    this.isRunning &&
+                    this.$route.name === 'Investigation Details' &&
+                    this.isAutoRefreshActive
+                  ) {
+                    setTimeout(() => {
+                      this.handleClearFilters(this.isAutoRefreshActive)
+                    }, 15000)
+                  }
                 })
             })
         })
@@ -2578,11 +2632,21 @@ export default {
     this.serverSidePropsForTargetUsers.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
     this.getDefaultFilterAndSearch()
+  },
+  beforeDestroy() {
+    this.isRunning = false
+    this.isAutoRefreshActive = false
   }
 }
 </script>
 <style lang="scss">
 .investigation-details-wrapper {
+  .investigation-details__container__content--right-menu__summary__item--action-button-container {
+    .v-btn--icon {
+      border: 1px solid #2196f3 !important;
+      margin: 8px;
+    }
+  }
   .table-wrapper {
     .table-search {
       @media (max-width: 1150px) {

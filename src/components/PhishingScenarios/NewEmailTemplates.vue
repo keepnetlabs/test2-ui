@@ -129,7 +129,6 @@
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
                   v-model="availableForRequests"
-                  :disabled="!showMakeAvailableFor"
                 />
               </v-form>
             </div>
@@ -393,14 +392,18 @@ export default {
     },
     submit() {
       this.isSubmitDisabled = true
-      if (this.$refs.refEmailTemplateContent.validate()) {
+      let isValid = true
+      const { refMakeAvailableFor } = this.$refs
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        isValid = refMakeAvailableFor.isAvailableForValid
+      }
+      if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
-          availableForRequests: this.showMakeAvailableFor
-            ? this.$refs.refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
-            : companyName === this.$store.state.auth
-            ? getAvailableForValues(this.nonEditableAvailableForRequests)
-            : null
+          availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
+            this.availableForRequests
+          )
         }
         if (this.isEdit && !this.isDuplicate) {
           updatePhishingEmailTemplate(payload, this.emailTemplateId)
@@ -568,16 +571,7 @@ export default {
 
   computed: {
     isRenderMakeAvailableFor() {
-      if (this.editItemsDisabled) {
-        return false
-      }
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-        return !!this.selectedItem
-      }
-      return true
-    },
-    showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+      return !this.editItemsDisabled
     }
   },
   created() {

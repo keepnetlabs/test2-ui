@@ -55,9 +55,8 @@
           ></v-textarea>
         </form-group>
         <make-available-for
-          v-if="showMakeAvailableFor"
           ref="refMakeAvailableForNewPermissions"
-          v-model="formValues.availableForRequests"
+          v-model="availableForRequests"
           class="mb-2"
           :key="availableForKey"
         />
@@ -159,10 +158,10 @@ export default {
       saveDisable: false,
       open: [],
       showNoData: false,
+      availableForRequests: [],
       formValues: {
         name: null,
         description: null,
-        availableForRequests: [],
         permissionResourceIdList: []
       },
       validations: validations,
@@ -208,17 +207,14 @@ export default {
       ]
       if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
       return rules
-    },
-    showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     }
   },
   methods: {
     submit() {
       const { refForm, refMakeAvailableForNewPermissions } = this.$refs
       let isValid = true
-      if (this.showMakeAvailableFor && refMakeAvailableForNewPermissions) {
-        refMakeAvailableForNewPermissions.validateAvailableFor(this.formValues.availableForRequests)
+      if (refMakeAvailableForNewPermissions) {
+        refMakeAvailableForNewPermissions.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableForNewPermissions.isAvailableForValid
       }
       if (refForm.validate() && isValid) {
@@ -226,11 +222,9 @@ export default {
         const payload = {
           Name: this.formValues.name,
           Description: this.formValues.description,
-          AvailableForRequests: !this.showMakeAvailableFor
-            ? []
-            : this.formValues.availableForRequests.map((item) => {
-                return { Type: item.type, ResourceId: item.id }
-              }),
+          AvailableForRequests: refMakeAvailableForNewPermissions.getAvailableForValues(
+            this.availableForRequests
+          ),
           PermissionResourceIdList: this.formValues.permissionResourceIdList
         }
         if (this.isEdit) {
@@ -260,22 +254,6 @@ export default {
         .then(() => {
           this.$emit('closeOverlayWithUpdate')
         })
-        .catch((error) => {
-          /*this.$store.dispatch(
-            'common/createSnackBar',
-            {
-              color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
-              message:
-                (error.response.data &&
-                  error.response.data.validationMessages &&
-                  error.response.data.validationMessages[0]) ||
-                error.response.data.message ||
-                error.response.data.Message,
-              icon: 'mdi-alert'
-            },
-            { root: true }
-          )*/
-        })
         .finally(() => {
           this.saveDisable = false
         })
@@ -289,12 +267,10 @@ export default {
       this.formValues = this.permissionEditData
       let _this = this
       this.$nextTick(() => {
-        if (this.showMakeAvailableFor) {
-          _this.formValues.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
-            _this.permissionEditData.availableForList
-          )
-          this.availableForKey = 'updatedKey'
-        }
+        _this.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+          _this.permissionEditData.availableForList
+        )
+        this.availableForKey = 'updatedKey'
       })
     }
   }

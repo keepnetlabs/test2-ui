@@ -73,12 +73,7 @@
             ]"
           />
         </form-group>
-        <make-available-for
-          v-if="isRenderMakeAvailableFor"
-          ref="refMakeAvailableFor"
-          v-model="formValues.availableForRequests"
-          :disabled="!showMakeAvailableFor"
-        />
+        <make-available-for v-model="availableForRequests" ref="refMakeAvailableFor" />
 
         <v-list-item class="add-user-overlay__list-item">
           <v-list-item-content class="test-connection-wrapper">
@@ -162,7 +157,7 @@ export default {
         delete this.formValues.availableForList
         this.formValues.dnsServiceProviderTypeId.toString()
         if (this.$refs.refMakeAvailableFor) {
-          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+          this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             res.data.data.availableForList
           )
         } else {
@@ -177,12 +172,12 @@ export default {
     return {
       isValidate: null,
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
+      availableForRequests: [],
       formValues: {
         dnsServiceProviderTypeId: null,
         dnsServiceProviderName: null,
         username: null,
         password: null,
-        availableForRequests: [],
         resourceId: null
       },
       nonEditableAvailableForRequests: [],
@@ -191,51 +186,31 @@ export default {
       saveButtonDisabled: false
     }
   },
-  computed: {
-    isRenderMakeAvailableFor() {
-      if (this.editItemsDisabled) {
-        return false
-      }
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-        return !!this.selectedItem
-      }
-      return true
-    },
-    showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
-    }
-  },
   methods: {
     testConnectionValues() {},
     canceldns() {
-      ;(this.formValues = {
+      this.formValues = {
         dnsServiceProviderTypeId: null,
         dnsServiceProviderName: null,
         username: null,
         password: null,
-        AvailableForRequests: [],
+        availableForRequests: [],
         resourceId: null
-      }),
-        this.$emit('changeStatus')
+      }
+      this.$emit('changeStatus')
     },
     submit() {
       this.saveButtonDisabled = true
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
       if (this.$refs.dnsForm.validate() && isValid) {
         let payload = {
           ...this.formValues,
-          availableForRequests: this.showMakeAvailableFor
-            ? this.$refs.refMakeAvailableFor.getAvailableForValues(
-                this.formValues.availableForRequests
-              )
-            : companyName === this.$store.state.auth
-            ? getAvailableForValues(this.nonEditableAvailableForRequests)
-            : null
+          availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
         }
         if (this.isEdit && !this.isDuplicate) {
           updateDnsServiceList(payload, this.resourceId)

@@ -58,7 +58,6 @@
           v-if="isRenderMakeAvailableFor"
           ref="refMakeAvailableFor"
           v-model="formValues.availableForRequests"
-          :disabled="!showMakeAvailableFor"
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
           <email-template
@@ -241,17 +240,8 @@ export default {
         ? labels.EditNotificationTemplateSubtitle
         : labels.NewNotificationTemplateSubtitle
     },
-    showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
-    },
     isRenderMakeAvailableFor() {
-      if (this.editItemsDisabled) {
-        return false
-      }
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') {
-        return !!this.selectedItem
-      }
-      return true
+      return !this.editItemsDisabled
     }
   },
   watch: {
@@ -463,17 +453,14 @@ export default {
         isValid = refMakeAvailableFor.isAvailableForValid
       }
       if (refForm.validate() && isValid) {
-        const { companyName, selectedCompanyName } = this.$store.state.auth
         this.saveDisable = true
         const payload = {
           ...this.formValues,
-          availableForRequests: this.showMakeAvailableFor
-            ? refMakeAvailableFor.getAvailableForValues(this.formValues.availableForRequests)
-            : companyName === selectedCompanyName
-            ? getAvailableForValues(this.nonEditableAvailableForRequests)
-            : null
+          availableForRequests: refMakeAvailableFor.getAvailableForValues(
+            this.formValues.availableForRequests
+          )
         }
-        const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
+
         if (
           document.querySelectorAll('[data-title="Company Logo"]') &&
           document.querySelectorAll('[data-title="Company Logo"]').length

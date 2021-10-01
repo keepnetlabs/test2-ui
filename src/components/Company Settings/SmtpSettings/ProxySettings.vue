@@ -124,6 +124,11 @@ export default {
     NewProxySettings,
     DeleteProxySettings
   },
+  props: {
+    PERMISSIONS: {
+      type: Object
+    }
+  },
   data() {
     return {
       tableData: [],
@@ -237,14 +242,14 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             id: 'btn-edit--proxy-settings-row-actions',
-            disabled: false
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--proxy-settings-row-actions',
-            disabled: false
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
         empty: {
@@ -252,14 +257,14 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--proxy-settings',
-          disabled: false
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
           action: 'addNewProxySetting',
           tooltip: 'Add Proxy Setting',
           id: 'btn-add--proxy-settings',
-          disabled: false
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },
       newProxyModalStatus: false,
@@ -380,11 +385,11 @@ export default {
       this.showAllRecords = false
       this.callForSearchProxySettings()
     },
-    getDisabledStatusOfEdit({ isOwner } = {}) {
-      //return this.tableOptions.rowActions[0].disabled || !isOwner
+    getDisabledStatusOfEdit() {
+      return this.tableOptions.rowActions[0].disabled
     },
-    getDisabledStatusOfDelete({ isOwner } = {}) {
-      //return this.tableOptions.rowActions[1].disabled || !isOwner
+    getDisabledStatusOfDelete() {
+      return this.tableOptions.rowActions[1].disabled
     },
     exportProxySettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
@@ -430,6 +435,8 @@ export default {
       this.deleteProxyModalStatus = !this.deleteProxyModalStatus
     },
     callForSearchProxySettings() {
+      const { SEARCH } = this.PERMISSIONS
+      if (!SEARCH.hasPermission) return
       this.loading = true
       searchProxySettings(this.bodyOptions)
         .then((response) => {

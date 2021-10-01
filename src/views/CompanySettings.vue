@@ -27,8 +27,20 @@
               ref="refWhitelabeling"
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
           /></el-tab-pane>
-          <el-tab-pane label="Proxy Settings" name="proxy-settings" id="proxy-settings-content">
-            <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
+          <el-tab-pane
+            v-if="
+              PERMISSIONS.PROXY_SETTINGS_PERMISSIONS.SEARCH &&
+              PERMISSIONS.PROXY_SETTINGS_PERMISSIONS.SEARCH.hasPermission
+            "
+            label="Proxy Settings"
+            name="proxy-settings"
+            id="proxy-settings-content"
+          >
+            <proxy-settings
+              v-if="tab === 'proxy-settings'"
+              ref="refProxySettings"
+              :PERMISSIONS="PERMISSIONS.PROXY_SETTINGS_PERMISSIONS"
+            ></proxy-settings>
           </el-tab-pane>
           <el-tab-pane
             v-if="checkPermissions('companies/saml-settings/search', 'POST')"
@@ -74,7 +86,9 @@ export default {
         SMTP_SETTINGS_PERMISSIONS: {},
         NOTIFICATION_TEMPLATES_PERMISSIONS: {},
         REST_API_PERMISSIONS: {},
-        WHITE_LABEL_PERMISSIONS: {}
+        WHITE_LABEL_PERMISSIONS: {},
+        PROXY_SETTINGS_PERMISSIONS: {},
+        SAML_SETTINGS_PERMISSIONS: {}
       }
     }
   },
@@ -86,7 +100,11 @@ export default {
       this.tab = status
     },
     getPermissions() {
-      const { SMTP_SETTINGS_PERMISSIONS, WHITE_LABEL_PERMISSIONS } = PERMISSIONS
+      const {
+        SMTP_SETTINGS_PERMISSIONS,
+        WHITE_LABEL_PERMISSIONS,
+        PROXY_SETTINGS_PERMISSIONS
+      } = PERMISSIONS
       this.$set(
         this.PERMISSIONS,
         'SMTP_SETTINGS_PERMISSIONS',
@@ -96,6 +114,11 @@ export default {
         this.PERMISSIONS,
         'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
+      )
+      this.$set(
+        this.PERMISSIONS,
+        'PROXY_SETTINGS_PERMISSIONS',
+        getPermissionsOfAllItems(PROXY_SETTINGS_PERMISSIONS)
       )
     },
     changeTabByRoute() {

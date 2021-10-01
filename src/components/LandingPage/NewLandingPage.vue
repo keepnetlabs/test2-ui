@@ -145,9 +145,8 @@
                   </v-radio-group>
                 </form-group>
                 <make-available-for
-                  v-if="isRenderMakeAvailableFor"
-                  ref="refMakeAvailableFor"
                   v-model="availableForRequests"
+                  ref="refMakeAvailableFor"
                   :disabled="!showMakeAvailableFor"
                   :subTitle="'Select companies that should see this landing page template in their libraries'"
                   :placeholder="'Select companies or company groups'"
@@ -550,18 +549,22 @@ export default {
     },
     submit() {
       this.isSubmitDisabled = true
-      if (this.$refs.refEmailTemplateContent.validate()) {
+      let isValid = true
+      const { refMakeAvailableFor } = this.$refs
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        isValid = refMakeAvailableFor.isAvailableForValid
+      }
+      if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
-          availableForRequests: this.showMakeAvailableFor
-            ? this.$refs.refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
-            : companyName === this.$store.state.auth
-            ? getAvailableForValues(this.nonEditableAvailableForRequests)
-            : null
+          availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
+            this.availableForRequests
+          )
         }
         if (this.isEdit && !this.isDuplicate) {
           updateLandingPage(payload, this.emailTemplateId)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
