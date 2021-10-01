@@ -113,11 +113,7 @@
                 :uploadRespond="mailDetails"
               />
               <div class="border-for-header"></div>
-              <k-shadow-frame
-                style="word-break: break-all;"
-                id="sframe"
-                v-bind:content="mailDetails.htmlBody"
-              />
+              <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
               <div class="border-for-header mt-8 mb-3"></div>
               <email-details-preview-footer
                 v-if="!!mailDetails.attachments.length"
@@ -323,7 +319,6 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     border-color: #f56c6d !important;
     background-color: #f3e1e5 !important;
     text-decoration: none !important;
-
     position: relative;
   text-decoration: none !important;
   border-bottom: 0 solid;
@@ -354,7 +349,7 @@ Vue.customElement('k-shadow-frame', KShadowFrame, {
     opacity: 0;
     z-index: 99999;
     visibility: hidden;
-    border-radius: 4px;
+   border-radius: 4px;
     line-height: 1.33;
     min-height: 24px;
     background: #6d6d6d !important;
@@ -1607,6 +1602,9 @@ export default {
           line-height: 1.58;
           letter-spacing: normal;
           color: rgba(0, 0, 0, 0.87);
+          white-space: nowrap;
+          overflow: hidden !important;
+          text-overflow: ellipsis;
         }
       }
 
@@ -2155,8 +2153,8 @@ export default {
 .email-preview__attachment-container {
   display: flex;
   justify-content: space-between;
-  width: 100%;
   align-items: center;
+  width: calc(100% - 20px);
   &-menu {
     border-radius: 20px !important;
     box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
