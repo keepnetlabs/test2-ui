@@ -1,19 +1,19 @@
 import { createLocalVue, mount } from '@vue/test-utils'
-import TestBubble from '@/components/TestHelpers/TestBubble'
+import TestLine from '@/components/TestHelpers/TestLine'
 import 'jest-canvas-mock'
 
-describe('Bubble component', () => {
+describe('Line component', () => {
   const localVue = createLocalVue()
   it('Check render', () => {
-    const wrapper = mount(TestBubble, { localVue })
+    const wrapper = mount(TestLine, { localVue })
     //checking component rendered
-    expect(wrapper.find('#bubble-chart').exists()).toBe(true)
+    expect(wrapper.find('#line-chart').exists()).toBe(true)
     //checking subclass
     expect(wrapper.find('.chartjs-render-monitor').exists()).toBe(true)
   })
 
   it('Check props', () => {
-    const wrapper = mount(TestBubble, { localVue })
+    const wrapper = mount(TestLine, { localVue })
 
     //checking props
 
