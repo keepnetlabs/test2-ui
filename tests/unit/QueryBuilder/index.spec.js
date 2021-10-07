@@ -18,7 +18,9 @@ describe('Query Builder test cases suite', () => {
       }
     })
     //check maxDepth Prop
-    console.log('wrapper', wrapper.find('#test-query-builder').attributes())
-    //expect(wrapper.find('#test-query-builder').attributes().maxDepth).toEqual('5')
+    const attributes = wrapper.find('#test-query-builder').attributes()
+    expect(attributes['max-depth']).toEqual('5')
+    //check classes
+    expect(attributes['class']).toEqual('w-100')
   })
 })

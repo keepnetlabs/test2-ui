@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
+import QueryBuilderGroup from '@/components/Common/QueryBuilder/CustomGroup'
 export default {
   name: 'TestQueryBuilder',
   props: {
