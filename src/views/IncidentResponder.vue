@@ -539,6 +539,7 @@
             @restore-default-search="handleRestoreDefaultSearchReportedEmailClustered"
             @clear-filters="handleClearFiltersReportedEmailClustered"
             @on-table-settings-change="handleSetRenderedColumnsClusteredReportedEmail"
+            @on-extended-view-status-change="handleOnExtendedViewStatusChange"
           >
             <template #table-search-left-side>
               <v-btn
@@ -697,6 +698,7 @@
             @restore-default-search="handleRestoreDefaultSearchReportedEmail"
             @clear-filters="handleClearFiltersReportedEmail"
             @on-table-settings-change="handleSetRenderedColumnsReportedEmail"
+            @on-extended-view-status-change="handleOnExtendedViewStatusChange"
           >
             <template v-slot:datatable-custom-column="{ scope, col }">
               <template
@@ -891,8 +893,8 @@ export default {
       type: Boolean
     }
   },
-
   data: () => ({
+    waitingItemForApiItems: [],
     isShowEmailTemplateModal: false,
     dynamicReportedEmailProps: null,
     dynamicClusterProps: null,
@@ -2024,6 +2026,12 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    handleOnExtendedViewStatusChange(status) {
+      if (!status) {
+        this.extendedViewValue = []
+        this.waitingItemForApiItems = []
+      }
+    },
     handleEmailTemplateChange() {
       this.toggleEmailTemplateModal()
     },
@@ -2621,25 +2629,24 @@ export default {
         return false
       }
     },
-    onEditClick({ selected: selections, isEditPopupOpen }) {
+    onEditClick({ selected: selections, isEditPopupOpen, isMultiple, isSelectedAllEver }) {
       if (isEditPopupOpen && selections.length) {
         this.extendedViewLoading = true
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
-        if (selections.length === 1) {
+        if (selections.length === 1 && (!isMultiple || !this.extendedViewValue.length)) {
           getNotifiedEmail(selections[0].resourceId)
             .then((response) => {
               const selectedItem = response.data.data
-
               this.selectedTemplateResourceId =
                 selectedItem.notificationTemplateResourceId || this.emailTemplates[0].resourceId
               this.defaultSelectedTemplateResourceId = this.selectedTemplateResourceId
               this.extendedView.isNotify = selectedItem.isNotifyUser
               this.extendedView.customMessage = selectedItem.customMessage
-              this.extendedView.isMessage = selectedItem.customMessage ? true : false
+              this.extendedView.isMessage = !!selectedItem.customMessage
               this.defaultExtendedViewValues.isNotify = selectedItem.isNotifyUser
               this.defaultExtendedViewValues.customMessage = selectedItem.customMessage
-              this.defaultExtendedViewValues.isMessage = selectedItem.customMessage ? true : false
+              this.defaultExtendedViewValues.isMessage = !!selectedItem.customMessage
               this.extendedViewValue = [
                 {
                   ...selectedItem,
@@ -2652,70 +2659,62 @@ export default {
             })
             .finally(() => (this.extendedViewLoading = false))
           this.hasMultipleNoteValue = false
-        } else if (selections.length > 1) {
+        } else if (selections.length > 1 || isMultiple) {
           const rows = []
           let index = 0
 
           this.extendedViewLoading = true
           const promises = []
-          selections.map(() => {
-            promises.push(getNotifiedEmail(selections[index].resourceId))
-            index++
+          if (!isSelectedAllEver) {
+            const removedItems = this.extendedViewValue.filter(
+              (extendedViewItem) =>
+                !selections.find(({ resourceId }) => resourceId === extendedViewItem.resourceId)
+            )
+            if (removedItems.length) {
+              removedItems.forEach((removedItem) => {
+                const index = this.extendedViewValue.findIndex(
+                  (item) => item.resourceId === removedItem.resourceId
+                )
+                this.waitingItemForApiItems.splice(
+                  this.waitingItemForApiItems.indexOf(removedItem.resourceId),
+                  1
+                )
+
+                this.extendedViewValue.splice(index, 1)
+              })
+              if (this.extendedViewValue.length) {
+                this.compareAndChangeExtendedViewParams(this.extendedViewValue)
+              }
+            }
+          }
+
+          const newItems = selections.filter(
+            (item) =>
+              !this.extendedViewValue.find(
+                (extendedViewItem) => extendedViewItem.resourceId === item.resourceId
+              )
+          )
+
+          newItems.map((item) => {
+            if (!this.waitingItemForApiItems.includes(item.resourceId)) {
+              if (!isSelectedAllEver) {
+                this.waitingItemForApiItems.push(item.resourceId)
+              }
+              promises.push(getNotifiedEmail(item.resourceId))
+              index++
+            }
           })
           Promise.all(promises)
             .then((responses) => {
               responses.forEach((response, ind) => {
-                const selectedItem = response.data.data
-                rows.push({
-                  ...selectedItem,
-                  resourceId: selections[ind].resourceId,
-                  reportedBy: selections[ind].reportedBy,
-                  matchingPlaybooks: selections[ind].matchingPlaybooks,
-                  source: selections[ind].source
-                })
-                if (index === selections.length) {
-                  const note = rows[0].note
-                  rows.map((item) => {
-                    if (item.note !== note) {
-                      this.hasMultipleNoteValue = true
-                    }
-                  })
-                  const sets = {
-                    isNotifyUser: new Set(),
-                    customMessage: new Set()
-                  }
-                  rows.forEach((item) => {
-                    sets.isNotifyUser.add(item.isNotifyUser)
-                    sets.customMessage.add(item.customMessage)
-                  })
-                  if (sets.isNotifyUser.size === 1) {
-                    this.extendedView.isNotify = sets.isNotifyUser.has(true)
-                  } else {
-                    this.extendedView.isNotify = true
-                  }
-                  if (this.extendedView.isNotify) {
-                    if (sets.customMessage.size === 1) {
-                      if (sets.customMessage.has('')) {
-                        this.extendedView.isMessage = false
-                        this.extendedView.customMessage = ''
-                      } else {
-                        this.extendedView.isMessage = true
-                        this.extendedView.customMessage = [...sets.customMessage][0]
-                      }
-                    } else {
-                      this.extendedView.isMessage = true
-                      this.extendedView.customMessage = ''
-                      this.isCustomMessageMultiple = true
-                    }
-                  } else {
-                    this.extendedView.isMessage = false
-                    this.extendedView.customMessage = ''
-                  }
-                  this.defaultExtendedViewValues.isNotify = this.extendedView.isNotify
-                  this.defaultExtendedViewValues.customMessage = this.extendedView.customMessage
-                  this.defaultExtendedViewValues.isMessage = this.extendedView.isMessage
-                  this.extendedViewValue = rows
-                }
+                this.setExtendedViewValue(
+                  response.data.data,
+                  rows,
+                  newItems,
+                  ind === responses.length - 1,
+                  ind,
+                  selections
+                )
               })
             })
             .finally(() => {
@@ -2730,7 +2729,71 @@ export default {
           this.defaultExtendedViewValues.isNotify = true
           this.hasMultipleNoteValue = false
         }
+      } else {
+        this.extendedViewValue = []
       }
+    },
+    setExtendedViewValue(selectedItem, rows, selections, shouldRender, ind, allSelections) {
+      rows.push({
+        ...selectedItem,
+        resourceId: selections[ind].resourceId,
+        reportedBy: selections[ind].reportedBy,
+        matchingPlaybooks: selections[ind].matchingPlaybooks,
+        source: selections[ind].source
+      })
+      const index = this.waitingItemForApiItems.indexOf(selections[ind].resourceId)
+      if (index > -1) this.waitingItemForApiItems.splice(index, 1)
+
+      if (shouldRender) {
+        this.compareAndChangeExtendedViewParams(rows, allSelections)
+      }
+    },
+    compareAndChangeExtendedViewParams(rows = [], allSelections) {
+      if (allSelections && allSelections.length !== rows.length) {
+        rows = [...this.extendedViewValue, ...rows]
+      }
+      const note = rows[0].note
+      rows.map((item) => {
+        if (item.note !== note) {
+          this.hasMultipleNoteValue = true
+        }
+      })
+      const sets = {
+        isNotifyUser: new Set(),
+        customMessage: new Set()
+      }
+      rows.forEach((item) => {
+        sets.isNotifyUser.add(item.isNotifyUser)
+        sets.customMessage.add(item.customMessage)
+      })
+      if (sets.isNotifyUser.size === 1) {
+        this.extendedView.isNotify = sets.isNotifyUser.has(true)
+      } else {
+        this.extendedView.isNotify = true
+      }
+      if (this.extendedView.isNotify) {
+        if (sets.customMessage.size === 1) {
+          if (sets.customMessage.has('')) {
+            this.extendedView.isMessage = false
+            this.extendedView.customMessage = ''
+          } else {
+            this.extendedView.isMessage = true
+            this.extendedView.customMessage = [...sets.customMessage][0]
+          }
+        } else {
+          this.extendedView.isMessage = true
+          this.extendedView.customMessage = ''
+          this.isCustomMessageMultiple = true
+        }
+      } else {
+        this.extendedView.isMessage = false
+        this.extendedView.customMessage = ''
+      }
+      this.defaultExtendedViewValues.isNotify = this.extendedView.isNotify
+      this.defaultExtendedViewValues.customMessage = this.extendedView.customMessage
+      this.defaultExtendedViewValues.isMessage = this.extendedView.isMessage
+
+      this.extendedViewValue = rows
     },
     closeNewInvestigationModal(value) {
       if (value) {
