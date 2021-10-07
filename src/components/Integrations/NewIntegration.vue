@@ -1335,11 +1335,11 @@ export default {
       this.isFortiNetTestingConnection = true
       const payload = {
         apiUrl: this.formValues.apiUrl,
+        proxyResourceId: this.formValues.proxyResourceId,
         apiCredential: {
           userName: this.formValues.userName,
           password: this.formValues.password,
-          resourceId: this.formValues.resourceId,
-          proxyResourceId: this.formValues.proxyResourceId
+          resourceId: this.formValues.resourceId
         }
       }
       testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
@@ -1365,10 +1365,10 @@ export default {
       this.loadingState.push('loading')
       testAnalysis(this.formValues.analysisEngineTypeResourceId, {
         apiUrl: this.formValues.apiUrl,
+        proxyResourceId: this.formValues.proxyResourceId,
         apiCredential: {
           apiKey: this.formValues.apiKeys[0].value,
-          resourceId: this.formValues.apiKeys[0].resourceId,
-          proxyResourceId: this.formValues.proxyResourceId
+          resourceId: this.formValues.apiKeys[0].resourceId
         }
       })
         .then((response) => {
@@ -1593,10 +1593,10 @@ export default {
           this.loadingState.push('loading')
           let payload = {
             apiUrl: this.formValues.apiUrl,
+            proxyResourceId: this.formValues.proxyResourceId,
             apiCredential: {
               apiKey: item.value,
-              resourceId: item.resourceId,
-              proxyResourceId: this.formValues.proxyResourceId
+              resourceId: item.resourceId
             }
           }
           if (this.isIbmXForce) {
@@ -1639,11 +1639,11 @@ export default {
       } else if (this.isCustomIntegration) {
         let payload = {
           apiUrl: this.formValues.apiUrl,
+          proxyResourceId: this.formValues.proxyResourceId,
           apiCredential: {
             apiKey: this.formValues.apiKey,
             resourceId: this.formValues.apiCreditionalResourceId,
-            password: this.formValues.password,
-            proxyResourceId: this.formValues.proxyResourceId
+            password: this.formValues.password
           }
         }
         this.customIntegrationTestLoading = true
@@ -1669,10 +1669,10 @@ export default {
       } else if (this.isSpamHouse) {
         let payload = {
           apiUrl: this.formValues.apiUrl,
+          proxyResourceId: this.formValues.proxyResourceId,
           apiCredential: {
             apiUrl: this.formValues.apiUrl,
-            resourceId: this.formValues.apiCreditionalResourceId,
-            proxyResourceId: this.formValues.proxyResourceId
+            resourceId: this.formValues.apiCreditionalResourceId
           }
         }
         this.spamHouseTestLoading = true
