@@ -1551,7 +1551,6 @@ export default {
   methods: {
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
-      console.log(this.isAutoRefreshActive)
       if (this.isAutoRefreshActive) {
         this.refreshDatatable()
       }

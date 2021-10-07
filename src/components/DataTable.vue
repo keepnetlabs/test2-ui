@@ -1452,7 +1452,8 @@ export default {
       renderedTotalLength: 0,
       totalLength,
       isFirstOpenSettings: false,
-      isDownloadMenuOpen: false
+      isDownloadMenuOpen: false,
+      isMultipleEdit: false
     }
   },
   watch: {
@@ -1563,6 +1564,9 @@ export default {
           }
         })
       }
+    },
+    isWantToEditRow(val) {
+      this.$emit('on-extended-view-status-change', val)
     },
     tableData(data) {
       this.calculateAllSelected()
@@ -2034,6 +2038,7 @@ export default {
       return name === this.selectedCluster
     },
     handleMultipleSelectedEdits() {
+      this.isMultipleEdit = true
       this.extendedViewStyle = {
         top: `${48}px`
       }
@@ -2049,7 +2054,8 @@ export default {
           selected: selections,
           isEditPopupOpen: true,
           excludedResourceIdList: this.excludedResourceIdList,
-          isSelectedAllEver: this.isSelectedAllEver
+          isSelectedAllEver: this.isSelectedAllEver,
+          isMultiple: true
         })
         this.isWantToEditRow = true
         this.isSettingsOpened = false
@@ -2558,16 +2564,24 @@ export default {
       return ''
     },
     handleSelectionChange(val) {
+      //setting selections
       this.multipleSelection = val
+      //is no selection close edit modal
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
+      //is there server side selection
       const serverSideSelectionParams = {}
       if (this.isServerSideSelection) {
         serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
         serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
       }
+      //emitting event
       this.$emit('handleSelectionChange', val, ...Object.values(serverSideSelectionParams))
+      //is there multipleEdit check that
+      if (this.isWantToEditRow && this.isMultipleEdit) {
+        this.handleMultipleSelectedEdits()
+      }
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
       for (let row of rows) {
@@ -2936,6 +2950,7 @@ export default {
       this.$refs.elTableRef.toggleRowSelection(row, false)
     },
     handleEdit(selections, index) {
+      this.isMultipleEdit = false
       if (index > -1) {
         this.extendedViewStyle = {
           top: `${index * 48}px`
