@@ -664,7 +664,7 @@ export default {
         }
       }
     })
-    if (this.isLoadState) {
+    if (false) {
       const tableState =
         this.$store.state['datatable'].tables['Investigations'] &&
         this.$store.state['datatable'].tables['Investigations'].tableState

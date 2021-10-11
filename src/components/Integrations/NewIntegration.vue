@@ -1113,7 +1113,11 @@ export default {
       Promise.all(promises).then((response) => {
         const { engineTypes, lookups, proxies } = response[0].data.data
         this.integrationTypes = engineTypes.data.map((item) => {
-          return { ...item, userFriendlyName: this.getFriendlyName(item.name) }
+          return {
+            ...item,
+            userFriendlyName: this.getFriendlyName(item.name),
+            name: item.name === INTEGRATION_TYPES.ROKSIT ? INTEGRATION_LABELS.CyberXRay : item.name
+          }
         })
         this.uploadFileTypes = lookups.data.map((item) => {
           switch (item.name) {
@@ -1223,6 +1227,9 @@ export default {
           break
         case INTEGRATION_TYPES.GOOGLESAFEBROWSER:
           label = INTEGRATION_LABELS.GOOGLESAFEBROWSER
+          break
+        case INTEGRATION_TYPES.ROKSIT:
+          label = INTEGRATION_LABELS.CyberXRay
           break
         default:
           return
@@ -1721,7 +1728,7 @@ export default {
       } else if (name === INTEGRATION_TYPES.ROKSIT) {
         this.formValues.apiUrl = 'https://reputation.roksit.com/api/query/'
       } else if (name === INTEGRATION_TYPES.VMRAY) {
-        if (this.formValues.apiUrl) {
+        if (this.formValues) {
           this.formValues.apiUrl = 'https://cloud.vmray.com'
         }
         if (!this.formValues.apiKeys) {
@@ -1730,13 +1737,13 @@ export default {
         this.formValues.userName = ''
         this.formValues.password = ''
       } else if (name === INTEGRATION_TYPES.IBMXFORCE) {
-        if (this.formValues.apiUrl) {
+        if (this.formValues) {
           this.formValues.apiUrl = 'https://exchange.xforce.ibmcloud.com'
           this.formValues.userName = ''
           this.$set(this.formValues, 'apiKeys', [{ value: '', status: null, resourceId: null }])
         }
       } else if (name === INTEGRATION_TYPES.CUSTOMINTEGRATION) {
-        if (this.formValues.apiUrl) {
+        if (this.formValues) {
           this.formValues.apiUrl = 'https://dev-api.devkeepnet.com'
           this.formValues.apiKey = ''
           this.formValues.password = ''
@@ -1747,7 +1754,7 @@ export default {
       } else if (name === INTEGRATION_TYPES.SPAMHOUSE) {
         this.formValues.apiUrl = 'zen.spamhaus.org'
       } else {
-        if (this.formValues.apiUrl) {
+        if (this.formValues) {
           this.formValues.apiUrl = ''
         }
       }
