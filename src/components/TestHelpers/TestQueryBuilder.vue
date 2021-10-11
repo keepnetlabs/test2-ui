@@ -7,7 +7,7 @@
     :labels="label"
     :rules="rules"
   >
-    <template v-slot:default="slotProps">
+    <template v-if="hasSlot" v-slot:default="slotProps">
       <v-form ref="refStep2Form" lazy-validation>
         <query-builder-group ref="queryBuilderGroup" v-bind="slotProps" :query.sync="query" />
       </v-form>
@@ -17,6 +17,7 @@
 
 <script>
 import QueryBuilderGroup from '@/components/Common/QueryBuilder/CustomGroup'
+import VueQueryBuilder from 'vue-query-builder'
 export default {
   name: 'TestQueryBuilder',
   props: {
@@ -26,10 +27,15 @@ export default {
     },
     defaultQuery: {
       type: Object
+    },
+    hasSlot: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
-    QueryBuilderGroup
+    QueryBuilderGroup,
+    VueQueryBuilder
   },
   data() {
     return {
