@@ -1551,7 +1551,6 @@ export default {
   methods: {
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
-      console.log(this.isAutoRefreshActive)
       if (this.isAutoRefreshActive) {
         this.refreshDatatable()
       }
@@ -2177,29 +2176,11 @@ export default {
         let dataBody = this.investigationListBodyData
         dataBody.pageNumber = 1
         dataBody.filter.FilterGroups[0].FilterItems[0].Value = menu
-        this.refreshDatatable()
+        this.getDatatableByMenuClick()
       } else {
         this.leftMenuLoading = true
         this.loading = true
-        this.$store
-          .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
-          .finally(() => {
-            this.$store
-              .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
-                data: this.defaultInvestigationTargetUsersListBodyData,
-                id: this.$route.params.id
-              })
-              .then((response) => {
-                this.adjustTargetUserShowRecords(response)
-              })
-              .finally(() => {
-                this.showTargetUsersDetails = true
-                this.loading = false
-                this.leftMenuLoading = false
-                this.loading = false
-                vm.$forceUpdate()
-              })
-          })
+        this.getDatatableByMenuClick()
       }
     },
     adjustTargetUserShowRecords(response = {}) {
@@ -2244,7 +2225,49 @@ export default {
             })
         })
     },
-    refreshDatatable(isAuto) {
+    getDatatableByMenuClick() {
+      this.leftMenuLoading = true
+      this.topMenuLoading = true
+      this.loading = true
+
+      this.$store
+        .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
+        .finally(() => {
+          this.isRunning = this.statsAndMenuData.status === 'Running'
+          this.$store
+            .dispatch('investigations/getInvestigationDetailsData', this.$route.params.id)
+            .finally(() => {
+              this.$store
+                .dispatch('investigations/getInvestigationDetailsListData', {
+                  data: this.investigationListBodyData,
+                  id: this.$route.params.id
+                })
+                .then((response) => {
+                  this.adjustInboxShowRecords(response)
+                })
+                .finally(() => {
+                  this.calculateProgressData()
+                  this.showEmails = false
+                  this.showTargetUsersDetails = false
+                  this.showTargetUsersDetails = this.activeMenu === 'targetUsers'
+                  this.showEmails = this.activeMenu !== 'targetUsers'
+                  this.$forceUpdate()
+                  this.leftMenuLoading = false
+                  this.topMenuLoading = false
+                  this.loading = false
+                })
+            })
+        })
+      this.$store
+        .dispatch('investigations/getInvestigationDetailsTargetUsersListData', {
+          data: this.investigationTargetUsersListBodyData,
+          id: this.$route.params.id
+        })
+        .then((response) => {
+          this.adjustTargetUserShowRecords(response)
+        })
+    },
+    refreshDatatable() {
       this.leftMenuLoading = true
       this.topMenuLoading = true
       this.loading = true

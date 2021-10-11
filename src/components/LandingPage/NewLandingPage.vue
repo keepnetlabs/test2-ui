@@ -92,7 +92,7 @@
                           </div>
                           <div class="mail-configuration-select-sources__item-right-platform">
                             {{
-                              item.text === 'Click-only'
+                              item.text === 'Click-Only'
                                 ? 'See who fails for phishing links'
                                 : item.text === 'Data Submission'
                                 ? 'Gather information from users'

@@ -443,7 +443,8 @@ export const INTEGRATION_LABELS = {
   IBMXFORCE: 'IBM X-Force',
   CUSTOMINTEGRATION: 'Cross Company Integration',
   SPAMHOUSE: 'SPAMHOUSE',
-  GOOGLESAFEBROWSER: ' Google Safe Browser'
+  GOOGLESAFEBROWSER: ' Google Safe Browser',
+  CyberXRay: 'Cyber X-Ray'
 }
 
 export const PHISHING_REPORTER_FILTERABLE_ITEMS = [
