@@ -1592,6 +1592,10 @@ export default {
   padding: 11px 16px 16px 16px;
   min-height: 80vh;
 
+  .v-input__append-inner {
+    display: block;
+  }
+
   .v-menu__content.theme--light.menuable__content__active.k-select__menu.menu--ews-target-users {
     z-index: 999999 !important;
   }

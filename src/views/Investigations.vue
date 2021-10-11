@@ -664,7 +664,7 @@ export default {
         }
       }
     })
-    if (this.isLoadState) {
+    if (false) {
       const tableState =
         this.$store.state['datatable'].tables['Investigations'] &&
         this.$store.state['datatable'].tables['Investigations'].tableState
@@ -699,7 +699,11 @@ export default {
             }
           }
         }
+        this.serverSideProps.pageNumber = tableState.serverSideProps.pageNumber
+        this.serverSideProps.pageSize = tableState.serverSideProps.pageSize
+        this.serverSideProps.orderBy = tableState.serverSideProps.orderBy
         this.tableState = { persistentState: tableState }
+        this.getInvestigationList()
       }
     } else {
       this.storedTableSettings = JSON.parse(
