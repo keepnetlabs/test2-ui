@@ -348,7 +348,7 @@ export default {
         },
         pageSizes: [5, 10, 25],
         empty: {
-          message: 'No Landing Page Template',
+          message: 'You do not have any landing page template',
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--landingPage'
