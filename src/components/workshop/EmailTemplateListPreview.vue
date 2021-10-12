@@ -7,6 +7,7 @@
       :title="selectedTemplateHeader"
       :subtitle="'Email Template Preview'"
       :size="'ultraMaximum'"
+      style="overflow: hidden;"
     >
       <template v-slot:app-dialog-body>
         <k-shadow-frame :content="templateHTML" :key="templateHTML + 'appDialog'" />
@@ -23,7 +24,7 @@
         </div>
       </template>
     </app-dialog>
-    <div class="emailTemplatePreview__container">
+    <div class="emailTemplatePreview__container" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main">
         <v-list-item class="k-dialog__header" :class="['k-dialog__header-max-height']">
           <div class="v-btn v-cart-icon-wrapper emailTemplatePreview-class">
@@ -114,11 +115,6 @@
                   >
                   </v-select>
                 </div>
-              </div>
-              <div class="filter-field filter-field-scenarios">
-                <v-icon right color="#2196f3" style="font-size: 24px; cursor: pointer;"
-                  >mdi-close-circle-outline</v-icon
-                >
               </div>
             </div>
           </div>
@@ -225,6 +221,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getSelectedEmailPreview, searchNotifiedMail } from '@/api/threadSharing'
 import AppDialog from '../AppDialog'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
+import { scrollToComponent } from '@/utils/functions'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
