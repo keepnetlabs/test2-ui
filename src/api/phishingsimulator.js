@@ -54,7 +54,7 @@ export function createPhishingEmailTemplate(payload) {
 }
 
 export function getEmailTemplatesList(payload) {
-  return testRequest.post(`phishing-simulator/email-templates/search`, payload)
+  return testRequest.post(`phishing-simulator/email-templates/search`, payload, { loading: true })
 }
 
 export function exportEmailTemplates(payload) {

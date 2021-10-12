@@ -5,6 +5,7 @@ export const labels = {
   getMinLengthMessage(val = '', length = 3) {
     return `${val} must have at least ${length} characters`
   },
+  FastLaunch: 'Fast Launch',
   ZoneID: 'Zone ID',
   ApiKey: 'API Key',
   AnalysisDate: 'Analysis Date',

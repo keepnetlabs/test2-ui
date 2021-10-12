@@ -10,10 +10,11 @@
     >
       <NewScenario
         :status="modalStatus"
-        :emailScenarioId="scenarioId"
+        :scenarioId="scenarioId"
         :isEdit="isEdit"
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
+        :scenarioDetailsLookup="scenarioDetailsLookup"
         @changeNewScenarioModalStatus="changeNewScenarioModalStatus"
       />
     </v-overlay>
@@ -29,10 +30,9 @@
       :status="isScenarioDetails"
       @changeStatus="isScenarioDetails = false"
       icon="mdi-eye"
-      :title="selectedScenarioHeader"
-      :subtitle="'Scenario Preview'"
+      :title="'Landing Page Template Preview'"
+      :subtitle="selectedScenarioHeader"
       :size="'ultraMaximum'"
-      :maxHeightSize="'600'"
     >
       <template v-slot:app-dialog-body>
         <k-shadow-frame :content="templateHTML" :key="templateHTML + 'appDialog'" />
@@ -51,7 +51,7 @@
     </app-dialog>
 
     <data-table
-      v-if="checkPermissions('phishing-simulator/email-templates', 'POST')"
+      v-if="checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')"
       id="scenarios-data-table"
       ref="refScenariosList"
       :loading="loading"
@@ -73,7 +73,6 @@
       :stored-table-settings="storedTableSettings"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
-      @disable="handleDisable"
       @onEmptyBtnClicked="modalStatus = true"
       @addAction="changeNewScenarioModalStatus(true)"
       @downloadEvent="exportScenario"
@@ -103,7 +102,6 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-btn
-              @click="handlePreview(scope.row)"
               :id="`btn-edit--scenarios-row-action-${
                 scope.$index
               }-${Math.random().toString().substring(2)}`"
@@ -138,11 +136,24 @@
               </v-list-item-title>
             </v-list-item>
             <v-list-item
+              :id="`btn-status--scenarios-row-action-${
+                scope.$index
+              }-0-${Math.random().toString().substring(2)}`"
+              class="sub-menu-el"
+              :disabled="tableOptions.rowActions[2].disabled"
+              @click="handlePreview(scope.row)"
+            >
+              <v-list-item-title @click="() => {}">
+                <v-icon class="pr-3">{{ 'mdi-eye' }}</v-icon>
+                <span>Preview</span>
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item
               :id="`btn-duplicate--scenarios-row-action-${
                 scope.$index
               }-1-${Math.random().toString().substring(2)}`"
               class="sub-menu-el"
-              :disabled="tableOptions.rowActions[2].disabled"
+              :disabled="tableOptions.rowActions[3].disabled"
             >
               <v-list-item-title @click="handleEdit(scope.row, true)">
                 <v-icon class="pr-3">mdi-content-copy</v-icon>
@@ -154,7 +165,7 @@
                 scope.$index
               }-1-${Math.random().toString().substring(3)}`"
               class="sub-menu-el"
-              :disabled="tableOptions.rowActions[3].disabled"
+              :disabled="tableOptions.rowActions[4].disabled"
             >
               <v-list-item-title @click="handleActionDelete(scope.row)">
                 <v-icon class="pr-3">mdi-delete</v-icon>
@@ -191,6 +202,14 @@ import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import {
+  deleteScenario,
+  exportScenarios,
+  getScenarioDataDetails,
+  getScenarioPreviewContent,
+  getScenariosList
+} from '@/api/scenarios'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
   name: 'EmailTemplates',
   components: {
@@ -201,6 +220,7 @@ export default {
   },
   data() {
     return {
+      scenarioDetailsLookup: null,
       methodItems: [],
       difficultyItems: [],
       editableFormValues: {},
@@ -222,61 +242,30 @@ export default {
             property: PROPERTY_STORE.NAME,
             align: 'left',
             editable: false,
-            label: labels.TemplateName,
+            label: 'Scenario Name',
             sortable: true,
             show: true,
             type: 'text',
             fixed: 'left',
             width: 240,
-            filterableType: 'text',
-            filterableCustomFieldName: 'Name'
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.CATEGORYNAME,
+            property: 'method',
             align: 'left',
             editable: false,
-            label: labels.Category,
+            label: 'Method',
             sortable: true,
             show: true,
             type: 'text',
             fixed: false,
             width: 240,
             filterableType: 'select',
-            filterableCustomFieldName: 'CategoryResourceId',
             filterableItems: [
               { text: 'Click Only', value: 'WNZt0sCVCWB3' },
               { text: 'Data Submission', value: 'DYC0gugxJMjT' },
               { text: 'Attachment', value: '7dLrW2kdBTDs' }
             ]
-          },
-          {
-            property: PROPERTY_STORE.DIFFICULTY,
-            align: 'center',
-            editable: false,
-            label: labels.DIFFICULTY,
-            sortable: true,
-            show: true,
-            type: 'status',
-            filterableType: 'select',
-            filterableItems: [
-              { text: 'Easy', value: 'mT0CeYGgKsVb' },
-              { text: 'Medium', value: 'Z5XeVlpw6Dps' },
-              { text: 'Hard', value: 'c4LCGEB9MayB' }
-            ],
-            width: 180,
-            filterableCustomFieldName: 'DifficultyResourceId'
-          },
-          {
-            property: PROPERTY_STORE.CREATEDBY,
-            align: 'left',
-            editable: false,
-            label: 'Created By',
-            sortable: true,
-            show: true,
-            type: 'text',
-            filterableType: 'text',
-            width: 180,
-            filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           },
           {
             property: PROPERTY_STORE.TAGS,
@@ -293,6 +282,33 @@ export default {
             filterableCustomFieldName: PROPERTY_STORE.TAGS
           },
           {
+            property: 'difficulty',
+            align: 'left',
+            editable: false,
+            label: labels.DIFFICULTY,
+            sortable: true,
+            show: true,
+            type: 'status',
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Easy', value: 'mT0CeYGgKsVb' },
+              { text: 'Medium', value: 'Z5XeVlpw6Dps' },
+              { text: 'Hard', value: 'c4LCGEB9MayB' }
+            ],
+            width: 180
+          },
+          {
+            property: PROPERTY_STORE.CREATEDBY,
+            align: 'left',
+            editable: false,
+            label: 'Created By',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text',
+            width: 180
+          },
+          {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
@@ -301,17 +317,16 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date',
-            filterableCustomFieldName: 'createTime'
+            filterableType: 'date'
           }
         ],
         rowActions: [
           {
-            name: labels.Preview,
-            icon: 'mdi-eye',
-            action: 'handlePreview',
+            name: labels.FastLaunch,
+            icon: 'mdi-send',
+            action: 'handleFastLaunch',
             disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
+              'phishing-simulator/phishing-scenario/preview/{resourceId}',
               'GET'
             )
           },
@@ -320,25 +335,31 @@ export default {
             icon: 'mdi-pencil',
             action: 'handleEdit',
             disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
+              'phishing-simulator/phishing-scenario/{resourceId}',
               'PUT'
             )
           },
           {
-            name: labels.Disable,
-            icon: 'mdi-content-copy',
-            action: 'disable',
+            name: labels.Preview,
+            icon: 'mdi-eye',
+            action: 'handlePreview',
             disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
-              'PUT'
+              'phishing-simulator/phishing-scenario/preview/{resourceId}',
+              'GET'
             )
+          },
+          {
+            name: 'Duplicate',
+            icon: 'mdi-eye',
+            action: 'handlePreview',
+            disabled: !this.checkPermissions('phishing-simulator/phishing-scenario', 'POST')
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
             disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
+              'phishing-simulator/phishing-scenario/{resourceId}',
               'DELETE'
             )
           }
@@ -346,7 +367,7 @@ export default {
         downloadButton: {
           show: true,
           disabled: !this.checkPermissions(
-            'phishing-simulator/email-templates/search/export',
+            'phishing-simulator/phishing-scenario/search/export',
             'POST'
           )
         },
@@ -368,7 +389,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          disabled: !this.checkPermissions('phishing-simulator/email-templates', 'POST')
+          disabled: !this.checkPermissions('phishing-simulator/phishing-scenario', 'POST')
         }
       },
       modalStatus: false,
@@ -549,18 +570,21 @@ export default {
     },
     handleDelete(row) {
       this.$refs.refScenariosList.$refs.elTableRef.toggleRowSelection(row, false)
-      deleteIntegration(row.resourceId).then(() => {
+      deleteScenario(row.resourceId).then(() => {
         this.getDatatableList()
       })
     },
+    handleFastLaunch() {},
     handlePreview(row) {
       const id = row.resourceId
-      getEmailTemplatePreviewContent(id)
+      getScenarioPreviewContent(id)
         .then((response) => {
           const data = response.data.data
-          this.selectedScenarioHeader = data.subject
-          this.templateHTML = data.template
+          /*     this.selectedScenarioHeader = data.landingPageTemplate.landingPages[0].name
+          this.templateHTML = data.landingPageTemplate.landingPages[0].content
           this.isScenarioDetails = true
+          */
+          window.open(data.landingPageTemplate.urlTemplate, '_blank').focus()
         })
         .catch((error) => {})
     },
@@ -570,16 +594,6 @@ export default {
       this.isEdit = true
       this.isDuplicate = isDuplicate
       this.scenarioId = row.resourceId
-    },
-    handleDisable(row) {
-      disableIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
-    },
-    handleEnable(row) {
-      enableIntegration(row.resourceId).then(() => {
-        this.getDatatableList()
-      })
     },
     handleAdd() {},
     changeNewScenarioModalStatus(status, restart) {
@@ -606,7 +620,7 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportEmailTemplates(payload)
+        exportScenarios(payload)
           .then((response) => {
             const { data } = response
             const link = document.createElement('a')
@@ -621,8 +635,8 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.checkPermissions('phishing-simulator/email-templates', 'POST')) {
-        getEmailTemplatesList(this.bodyData)
+      if (this.checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')) {
+        getScenariosList(this.bodyData)
           .then((response) => {
             const {
               data: { data }
@@ -657,61 +671,41 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.slice(0, 1).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
-      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName.toLowerCase() !== fieldName.toLowerCase()) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
       this.getDatatableList()
     }
   },
   created() {
+    getScenarioDataDetails()
+      .then((response) => {
+        this.scenarioDetailsLookup = response.data.data
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          response.data.data.methodTypes.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+        this.$set(
+          this.tableOptions.columns[3],
+          'filterableItems',
+          response.data.data.difficultyTypes.map((item) => {
+            return { text: item.text, value: item.text }
+          })
+        )
+      })
+      .finally(() => {
+        this.getDefaultFilterAndSearch()
+      })
     this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     this.queryHelper.controlRouteQuery()
     const { page, size } = this.queryHelper.returnQueryValues()
@@ -720,16 +714,8 @@ export default {
     this.bodyData.pageNumber = page
     this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SCENARIOS))
-    getLookups('Phishing Simulator Categories').then((response) => {
-      this.methodItems = response.data.data
-    })
-    getLookups('Phishing Simulator Difficulties').then((response) => {
-      this.difficultyItems = response.data.data
-    })
   },
-  mounted() {
-    this.getDefaultFilterAndSearch()
-  }
+  mounted() {}
 }
 </script>
 

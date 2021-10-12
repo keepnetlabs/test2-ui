@@ -1,20 +1,20 @@
 <template>
   <app-dialog
     icon="mdi-delete"
-    title="Delete Email Template?"
-    subtitle="Email template will deleted permanently"
-    title-id="text--email-template-delete-popup-title"
-    subtitle-id="text--email-template-delete-popup-subtitle"
+    title="Delete Scenario?"
+    subtitle="Scenario will deleted permanently"
+    title-id="text--scenario-delete-popup-title"
+    subtitle-id="text--scenario-delete-popup-subtitle"
     :status="status"
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ selectedEmailTemplate && selectedEmailTemplate.name }} will be deleted.
+      {{ selectedScenario && selectedScenario.name }} will be deleted.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
-        cancel-button-id="btn-cancel--email-template-popup"
-        confirm-button-id="btn-delete--email-template-popup"
+        cancel-button-id="btn-cancel--scenario-popup"
+        confirm-button-id="btn-delete--scenario-popup"
         type="delete"
         @handleClose="closeModal"
         @handleConfirm="handleDelete"
@@ -26,9 +26,9 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { getEmailTemplatePreviewContent, deleteEmailTemplate } from '@/api/phishingsimulator'
+import { deleteScenario } from '@/api/scenarios'
 export default {
-  name: 'DeleteIntegration',
+  name: 'DeleteScenario',
   components: {
     AppDialog,
     AppDialogFooter
@@ -37,7 +37,7 @@ export default {
     status: {
       type: Boolean
     },
-    selectedEmailTemplate: {
+    selectedScenario: {
       type: Object
     }
   },
@@ -46,7 +46,7 @@ export default {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteEmailTemplate(this.selectedEmailTemplate.resourceId)
+      deleteScenario(this.selectedScenario.resourceId)
         .then((response) => {
           this.$emit('handleSuccessDeleteAction')
         })

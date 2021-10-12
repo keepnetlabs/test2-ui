@@ -5,17 +5,17 @@
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
             <el-tab-pane label="Scenarios" name="scenarios" id="emailTemplates-scenarios">
-              <Scenarios />
+              <Scenarios v-if="tab === 'scenarios'" />
             </el-tab-pane>
             <el-tab-pane label="Email Templates" name="emailTemplates" id="emailTemplates-content">
-              <EmailTemplates />
+              <EmailTemplates v-if="tab === 'emailTemplates'" />
             </el-tab-pane>
             <el-tab-pane
               label="Landing Page Templates"
               name="landingPage"
               id="landing-page-content"
             >
-              <LandingPageList />
+              <LandingPageList v-if="tab === 'landingPage'" />
             </el-tab-pane>
           </el-tabs>
         </v-card>

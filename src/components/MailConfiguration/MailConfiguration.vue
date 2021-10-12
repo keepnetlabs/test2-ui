@@ -827,7 +827,7 @@ export default {
           width: 150,
           filterableType: 'select',
           filterableItems: [
-            { text: 'Google Workspace', value: 'GoogleWorkspace' },
+            { text: 'Google Workspace', value: 'Google Workspace' },
             'O365',
             'Exchange'
           ]

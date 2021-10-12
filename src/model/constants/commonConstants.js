@@ -434,7 +434,8 @@ export const INTEGRATION_TYPES = {
   GOOGLESAFEBROWSER: 'Google Safe Browsing',
   SPAMHOUSE: 'Zen Spamhaus',
   CUSTOMINTEGRATION: 'Cross Company Integration',
-  ROKSIT: 'Roksit'
+  ROKSIT: 'Cyber X-Ray',
+  CyberXRay: 'Cyber X-Ray'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',

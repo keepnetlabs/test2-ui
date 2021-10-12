@@ -5,10 +5,10 @@
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
             <el-tab-pane label="Domains" name="Domains" id="domains-content"
-              ><DomainsList
+              ><DomainsList v-if="tab === 'Domains'"
             /></el-tab-pane>
             <el-tab-pane label="DNS Services" name="DNSServices" id="dns-services-content"
-              ><DnsServiceList
+              ><DnsServiceList v-if="tab === 'DNSServices'"
             /></el-tab-pane>
           </el-tabs>
         </v-card>

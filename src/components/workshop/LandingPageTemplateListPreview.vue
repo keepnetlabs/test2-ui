@@ -1,11 +1,11 @@
 <template>
-  <div class="emailTemplatePreview">
+  <div class="landingPagePreview">
     <app-dialog
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
       icon="mdi-eye"
       :title="selectedTemplateHeader"
-      :subtitle="'Email Template Preview'"
+      :subtitle="'Landing Page Template Preview'"
       :size="'ultraMaximum'"
     >
       <template v-slot:app-dialog-body>
@@ -23,10 +23,10 @@
         </div>
       </template>
     </app-dialog>
-    <div class="emailTemplatePreview__container">
-      <div class="emailTemplatePreview__container-main">
+    <div class="landingPagePreview__container">
+      <div class="landingPagePreview__container-main">
         <v-list-item class="k-dialog__header" :class="['k-dialog__header-max-height']">
-          <div class="v-btn v-cart-icon-wrapper emailTemplatePreview-class">
+          <div class="v-btn v-cart-icon-wrapper landingPagePreview-class">
             <v-icon :color="'#2196f3'" class="ml-2" left medium>
               {{ 'mdi-information' }}
             </v-icon>
@@ -37,8 +37,8 @@
             >
           </div>
         </v-list-item>
-        <div class="emailTemplatePreview-title">Email Templates</div>
-        <div class="emailTemplatePreview-subtitle">
+        <div class="landingPagePreview-title">Email Templates</div>
+        <div class="landingPagePreview-subtitle">
           Select a template to view and edit. You can also create a template from scratch or upload
           an email
         </div>
@@ -62,8 +62,8 @@
             >{{ showAdvancedSearch ? 'Close Advanced Search' : 'Open Advanced Search' }}</span
           >
         </div>
-        <div class="emailTemplatePreview-content" v-if="showAdvancedSearch">
-          <div class="emailTemplatePreview-content--search">
+        <div class="landingPagePreview-content" v-if="showAdvancedSearch">
+          <div class="landingPagePreview-content--search">
             <div class="d-flex justify-space-between">
               <div class="d-flex">
                 <div>
@@ -71,7 +71,7 @@
                     @mouseover.native="hover = true"
                     placeholder="Search"
                     outlined
-                    class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
+                    class="filter-field filter-field-scenarios search-wrapper__search-filter"
                     v-model.trim="search"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
@@ -85,12 +85,12 @@
                 </div>
                 <div>
                   <v-select
-                    :items="methods"
+                    :items="scenarioDetailsLookup.methodTypes"
                     placeholder="Type"
                     item-disabled="disabled"
                     item-text="text"
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
-                    item-value="value"
+                    item-value="text"
                     outlined
                     persistent-hint
                     @change="getTemplatesForSearch"
@@ -100,12 +100,12 @@
                 </div>
                 <div>
                   <v-select
-                    :items="difficulties"
+                    :items="scenarioDetailsLookup.difficultyTypes"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
                     v-model="bodyData.filter.FilterGroups[0].FilterItems[1].value"
-                    item-value="value"
+                    item-value="text"
                     outlined
                     persistent-hint
                     @change="getTemplatesForSearch"
@@ -153,14 +153,14 @@
                   <div
                     class="template-list--item template-list--item__difficulty mr-8"
                     :class="
-                      item.difficultyName === 'Easy'
+                      item.difficulty === 'Easy'
                         ? 'difficulty-easy'
-                        : item.difficultyName === 'Medium'
+                        : item.difficulty === 'Medium'
                         ? 'difficulty-medium'
                         : 'difficulty-hard'
                     "
                   >
-                    {{ item.difficultyName }}
+                    {{ item.difficulty }}
                   </div>
                 </div>
 
@@ -201,12 +201,8 @@
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
                   <div>
-                    <span class="template-preview__text--title">From Name: </span>
-                    <span class="template-preview__text--body">{{ templateFromName }}</span>
-                  </div>
-                  <div>
-                    <span class="template-preview__text--title">From Email Address: </span>
-                    <span class="template-preview__text--body">{{ templateFromEmail }}</span>
+                    <span class="template-preview__text--title">URL: </span>
+                    <span class="template-preview__text--body">{{ templateURL }}</span>
                   </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
@@ -224,12 +220,12 @@
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getSelectedEmailPreview, searchNotifiedMail } from '@/api/threadSharing'
 import AppDialog from '../AppDialog'
-import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
+import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
 export default {
-  name: 'EmailTemplateListPreview',
+  name: 'LandingPageListPreview',
   props: {
     scenarioDetailsLookup: { required: true },
-    emailTemplateResourceId: { required: false }
+    landingPageTemplateResourceId: { required: false }
   },
   components: { Multipane, MultipaneResizer, AppDialog },
   data() {
@@ -261,20 +257,20 @@ export default {
             {
               Condition: 'AND',
               FilterItems: [
-                { value: '', FieldName: 'CategoryResourceId', Operator: 'Include' },
-                { value: '', FieldName: 'DifficultyResourceId', Operator: 'Include' }
+                { Value: '', FieldName: 'method', Operator: 'Include' },
+                { Value: '', FieldName: 'difficulty', Operator: 'Include' }
               ],
               FilterGroups: []
             },
             {
               Condition: 'OR',
               FilterItems: [
-                { FieldName: 'Name', Operator: 'Contains', value: '' },
-                { FieldName: 'CategoryName', Operator: 'Contains', value: '' },
-                { FieldName: 'DifficultyName', Operator: 'Contains', value: '' },
-                { FieldName: 'CreatedBy', Operator: 'Contains', value: '' },
-                { FieldName: 'Tags', Operator: 'Contains', value: '' },
-                { FieldName: 'CreateTime', Operator: 'Contains', value: '' }
+                { FieldName: 'Name', Operator: 'Contains', Value: '' },
+                { FieldName: 'Method', Operator: 'Contains', Value: '' },
+                { FieldName: 'Difficulty', Operator: 'Contains', Value: '' },
+                { FieldName: 'CreatedBy', Operator: 'Contains', Value: '' },
+                { FieldName: 'Tags', Operator: 'Contains', Value: '' },
+                { FieldName: 'CreateTime', Operator: 'Contains', Value: '' }
               ],
               FilterGroups: []
             }
@@ -286,13 +282,14 @@ export default {
       isTemplateDetails: null,
       selectedTemplateHeader: null,
       loadingTemplates: false,
-      selectedTemplateId: null,
+      selectedLandingPageId: null,
+      templateURL: null,
       selectedPreviousIndex: 0,
       selectChangeValue: null
     }
   },
   mounted() {
-    this.getTemplates(true, this.emailTemplateResourceId)
+    this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
     selectChange(item) {
@@ -302,44 +299,47 @@ export default {
         ],
         this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
       )
-      this.$emit('selectedEmailTemplateChange', this.selectChangeValue.id)
-      this.$emit('selectedEmailTemplateResourceId', this.selectChangeValue.resourceId)
+      this.$emit('selectedLandingPageChange', this.selectChangeValue.id)
+      this.$emit('selectedLandingPageTemplateResourceId', this.selectChangeValue.resourceId)
     },
     getTemplatesForSearch() {
       this.bodyData.pageSize = 10
       this.getTemplates(true)
     },
-    getTemplates(isInitial, emailTemplateResourceId) {
+    getTemplates(isInitial, landingPageTemplateResourceId) {
       this.loadingTemplates = true
-      //this.templateFromName = null
-      //this.templateFromEmail = null
-      getEmailTemplatesList(this.bodyData)
+      getLandingPageList(this.bodyData)
         .then((response) => {
-          const { data } = response
           if (!response.data.data.results.length) {
             this.listData = []
             this.templateHTML = null
           } else {
+            const { data } = response
             data.data.results = data.data.results.map((item) => {
               return { ...item, selected: false }
             })
             this.listData = data.data.results
-            if (!emailTemplateResourceId) {
+            if (!landingPageTemplateResourceId)
               this.listData[this.selectedPreviousIndex].selected = true
-            }
             if (isInitial) {
-              if (!!emailTemplateResourceId) {
+              if (!!landingPageTemplateResourceId) {
                 this.setSelectedTemplate(
                   this.listData[
-                    this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
+                    this.listData.findIndex(
+                      (item) => item.resourceId === landingPageTemplateResourceId
+                    )
                   ],
-                  this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
+                  this.listData.findIndex(
+                    (item) => item.resourceId === landingPageTemplateResourceId
+                  )
                 )
                 this.listData[
-                  this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
+                  this.listData.findIndex(
+                    (item) => item.resourceId === landingPageTemplateResourceId
+                  )
                 ].selected = true
               } else {
-                if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
+                if (!landingPageTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
               }
             }
           }
@@ -371,15 +371,14 @@ export default {
       this.listData[index].selected = true
       this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
-      this.$emit('selectedEmailTemplateChange', item.id)
-      this.$emit('selectedEmailTemplateResourceId', item.resourceId)
-      getEmailTemplatePreviewContent(item.resourceId)
+      this.$emit('selectedLandingPageChange', item.id)
+      this.$emit('selectedLandingPageTemplateResourceId', item.resourceId)
+      getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
           const { data } = response
-          this.selectedTemplateHeader = response.data.data.name
-          this.templateHTML = response.data.data.template
-          this.templateFromName = response.data.data.fromName
-          this.templateFromEmail = response.data.data.fromAddress
+          this.selectedTemplateHeader = response.data.data.landingPages[0].name
+          this.templateHTML = response.data.data.landingPages[0].content
+          this.templateURL = response.data.data.urlTemplate
         })
         .finally(() => {
           this.loadingTemplatePreview = false
@@ -409,7 +408,7 @@ export default {
         }, 500)
       }
     },
-    emailTemplateResourceId(newVal, oldVal) {
+    landingPageTemplateResourceId(newVal, oldVal) {
       this.selectChangeValue = newVal
     }
   }
@@ -417,7 +416,7 @@ export default {
 </script>
 
 <style lang="scss">
-.emailTemplatePreview {
+.landingPagePreview {
   .toggle-advanced-search {
     font-style: normal;
     font-weight: 600;
@@ -485,7 +484,7 @@ export default {
       width: 100%;
     }
   }
-  .emailTemplatePreview-class {
+  .landingPagePreview-class {
     box-shadow: 0 2px 20px 0 rgba(100, 181, 246, 0.5) !important;
     border: solid 1px rgba(100, 181, 246, 0.5) !important;
     background-color: #e3f2fd !important;
