@@ -162,7 +162,9 @@ export default {
             show: true,
             fixed: false,
             type: 'text',
-            width: 150
+            width: 150,
+            filterableType: 'text',
+            filterableCustomFieldName: 'Roles'
           },
           {
             property: PROPERTY_STORE.PHONENUMBER,
