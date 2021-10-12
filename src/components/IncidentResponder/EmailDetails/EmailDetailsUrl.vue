@@ -206,6 +206,8 @@ export default {
           return '#b83a3a'
         case 'Phishing':
           return '#b83a3a'
+        case 'Exclude':
+          return '#757575'
         default:
           return '#00bcd4'
       }
@@ -224,6 +226,14 @@ export default {
         }
         if (item.result === 'Undetected' && result !== 'Phishing' && result !== 'Malicious') {
           result = 'Undetected'
+        }
+        if (
+          item.result === 'Exclude' &&
+          result !== 'Undetected' &&
+          result !== 'Phishing' &&
+          result !== 'Malicious'
+        ) {
+          result = 'Exclude'
         }
       }
       return result
