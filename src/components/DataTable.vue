@@ -514,7 +514,7 @@
                     :text="getDataTableFieldLabel(scope.row[col.property])"
                     v-if="scope.row && scope.row[col.property]"
                     :isErrorState="col.errorStateFor"
-                    :errorStateValue="scope.row.scanResultMessage"
+                    :errorStateValue="scope.row['scanResultMessage']"
                   />
                   <span v-else>
                     {{ col.emptyText || '' }}
@@ -570,7 +570,7 @@
               </template>
 
               <template v-slot:header="{ column, $index }">
-                <v-tooltip bottom v-if="col.showHeaderTooltip">
+                <v-tooltip bottom v-if="col['showHeaderTooltip']">
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
@@ -2414,7 +2414,7 @@ export default {
       return this.columns.reduce((acc, filterItem) => {
         if (
           this.renderedColumns.find((property) => property === filterItem.property) &&
-          !filterItem.isCustomField
+          !filterItem['isCustomField']
         ) {
           acc.push({
             FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
@@ -2433,7 +2433,7 @@ export default {
           const filterItems = _this.columns.reduce((acc, filterItem) => {
             if (
               this.renderedColumns.find((property) => property === filterItem.property) &&
-              !filterItem.isCustomField
+              !filterItem['isCustomField']
             ) {
               const obj = {
                 FieldName:
@@ -2506,41 +2506,10 @@ export default {
         }, debounceTime)
       }
     },
-    addUsersAction(actionName, row) {
-      switch (actionName) {
-        case 'createCommunityFromMobileInfo':
-          this.$emit('createCommunityFromMobileInfo', true)
-          break
-        case 'stopInvestigationFunc':
-          this.$emit('stopInvestigationFunc', row)
-          break
-        case 'investigationDetails':
-          this.$emit('investigationDetails', row)
-          break
-        case 'deleteInvestigationDetails':
-          this.$emit('deleteInvestigationDetailsFunction', row)
-          break
-        case 'deleteAndNotifyInvestigationDetails':
-          this.$emit('deleteAndNotifyInvestigationDetailsFunction', row)
-          break
-        case 'sendWarningMessage':
-          this.$emit('sendInvestigationdetailsWarningMessage', row)
-          break
-        default:
-          break
-      }
-    },
     getColumnLabelClass(key) {
       if (key === 'priority' || key === 'status' || key === 'detected') {
         return 'popup__badge'
       }
-    },
-    getColumnLabel(key) {
-      const answer = this.columns.find((item) => {
-        return item['property'] === key
-      })
-
-      return (answer && answer.label) || key
     },
     toggleIsSettingsOpened() {
       if (this.isWantToEditRow) {
@@ -2563,6 +2532,14 @@ export default {
       }
       return ''
     },
+    getServerSideSelectionParams() {
+      const serverSideSelectionParams = {}
+      if (this.isServerSideSelection) {
+        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
+        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
+      }
+      return serverSideSelectionParams
+    },
     handleSelectionChange(val) {
       //setting selections
       this.multipleSelection = val
@@ -2570,14 +2547,12 @@ export default {
       if (this.multipleSelection.length === 0) {
         this.isWantToEditRow = false
       }
-      //is there server side selection
-      const serverSideSelectionParams = {}
-      if (this.isServerSideSelection) {
-        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
-        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
-      }
       //emitting event
-      this.$emit('handleSelectionChange', val, ...Object.values(serverSideSelectionParams))
+      this.$emit(
+        'handleSelectionChange',
+        val,
+        ...Object.values(this.getServerSideSelectionParams())
+      )
       //is there multipleEdit check that
       if (this.isWantToEditRow && this.isMultipleEdit) {
         this.handleMultipleSelectedEdits()
@@ -2857,21 +2832,9 @@ export default {
         case 'investigationDetails':
           this.$emit('investigationDetails', { row })
           break
-        case 'deleteInvestigationDetails':
-          this.$emit(
-            'deleteInvestigationDetailsFunction',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
-          )
-          break
         case 'deleteAndNotifyInvestigationDetails':
           this.$emit(
             'deleteAndNotifyInvestigationDetailsFunction',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
-          )
-          break
-        case 'sendWarningMessage':
-          this.$emit(
-            'sendInvestigationdetailsWarningMessage',
             this.multipleSelection.length > 0 ? this.multipleSelection : row
           )
           break
@@ -2990,7 +2953,11 @@ export default {
     handleDelete(selections) {
       switch (this.refName) {
         case 'investigationDetailsListTable':
-          this.$emit('deleteInvestigationDetailsFunction', selections)
+          this.$emit(
+            'deleteInvestigationDetails',
+            selections,
+            ...Object.values(this.getServerSideSelectionParams())
+          )
           break
         case 'rulesListTable':
           this.$emit('deleteFunction', selections)
@@ -3002,7 +2969,11 @@ export default {
       // You should handle the Delete row action in here
     },
     handleWarning(selections) {
-      this.rowAct('sendWarningMessage', selections)
+      this.$emit(
+        'sendInvestigationDetailsWarningMessage',
+        selections,
+        ...Object.values(this.getServerSideSelectionParams())
+      )
     },
     handleDeleteAndNotify(selections) {
       this.rowAct('deleteAndNotifyInvestigationDetails', selections)

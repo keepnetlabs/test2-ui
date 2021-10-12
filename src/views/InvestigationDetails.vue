@@ -71,7 +71,7 @@
           @changeStatus="isWantToWarn = false"
           icon="mdi-alert"
           :title="warningMessage"
-          subtitle="Type a message to reporting user"
+          :subtitle="warningMessageSubtitle"
           title-id="text--investigation-details-warning-message-popup-title"
           subtitle-id="text--investigation-details-warning-message-popup-subtitle"
           class-name="investigation-details__warning-modal"
@@ -918,6 +918,7 @@
                 ref="refInvestigationListData"
                 rowKey="resourceId"
                 just-compare-row-key
+                is-server-side-selection
                 :is-column-filter-active="isColumnFilterActive"
                 :refName="'investigationDetailsListTable'"
                 :columns="columns"
@@ -931,10 +932,8 @@
                 :selectEvent="selectEvent"
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
-                @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
-                @sendInvestigationdetailsWarningMessage="
-                  sendInvestigationdetailsWarningMessage($event)
-                "
+                @deleteInvestigationDetails="deleteInvestigationDetails"
+                @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetailsFunction="
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
@@ -1011,6 +1010,7 @@
               class="investigationDetails__target-users-table-container"
             >
               <datatable
+                v-if="showTargetUsersDetails"
                 :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
@@ -1030,12 +1030,6 @@
                 :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
-                @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
-                @sendInvestigationdetailsWarningMessage="
-                  sendInvestigationdetailsWarningMessage($event)
-                "
-                @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
-                v-if="showTargetUsersDetails"
                 @downloadEvent="exportTargetUsers"
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
@@ -1161,6 +1155,11 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    warningMessageSubtitle: 'Type a message to reporting user',
+    isInvestigationWarningSelectAll: false,
+    isInvestigationDeleteSelectAll: false,
+    investigationWarningExcludedResourceIdList: [],
+    investigationDeleteExcludedResourceIdList: [],
     isAutoRefreshActive: true,
     loopInterval: null,
     isRunning: false,
@@ -1501,7 +1500,7 @@ export default {
         id: 'btn-send-warning-message--investigation-details-row-actions',
         name: 'Send user a warning message',
         icon: 'mdi-alert',
-        action: 'sendWarningMessage'
+        action: 'sendInvestigationDetailsWarningMessage'
       }
     ],
     addUsers: {
@@ -2164,8 +2163,15 @@ export default {
     menuClick(menu) {
       if (menu !== this.activeMenu && menu !== 'targetUsers') {
         this.$nextTick(() => {
-          this.$refs.refInvestigationListData.$refs.elTableRef &&
-            this.$refs.refInvestigationListData.$refs.elTableRef.clearSelection()
+          const refTable = this.$refs.refInvestigationListData
+          if (refTable) {
+            if (refTable.$refs.elTableRef) {
+              refTable.$refs.elTableRef.clearSelection()
+            }
+            refTable.serverSideSelectionCount = 0
+            refTable.excludedResourceIdList = []
+            refTable.isSelectedAllEver = false
+          }
         })
       }
       this.activeMenu = menu
@@ -2331,7 +2337,9 @@ export default {
       // open new investigation overlay
       this.isWantToAddNewCommunity = true
     },
-    sendInvestigationdetailsWarningMessage(value, multi) {
+    sendInvestigationDetailsWarningMessage(value, excludedResourceIdList, isSelectedAllEver) {
+      this.isInvestigationWarningSelectAll = isSelectedAllEver
+      this.investigationWarningExcludedResourceIdList = excludedResourceIdList || []
       if (value && value.emailLastAction && value.emailLastAction.actionType === 'Warning') {
         this.notifyMessage = value.emailLastAction.warningMessage
       } else {
@@ -2339,10 +2347,11 @@ export default {
       }
 
       this.isWantToWarn = true
-      this.warningMessage =
+      this.warningMessageSubtitle =
         Array.isArray(value) && value.length && value.length > 1
-          ? 'Send a warning message for this email'
-          : 'Send a warning message for this email'
+          ? 'Type a message to reporting users'
+          : 'Type a message to reporting user'
+
       this.soloWarningMessageValue = value
     },
     isWantToWarnConfirm() {
@@ -2357,7 +2366,9 @@ export default {
           .dispatch('investigations/sendInvestigationWarningMessage', {
             data: {
               items: data,
-              warningMessage: this.notifyMessage
+              warningMessage: this.notifyMessage,
+              selectAll: !!this.isInvestigationWarningSelectAll,
+              excludedItems: this.investigationWarningExcludedResourceIdList
             },
             id: this.$route.params.id
           })
@@ -2368,9 +2379,15 @@ export default {
           })
       }
     },
-    deleteInvestigationDetailsFunction(value, multi) {
+    deleteInvestigationDetails(value, excludedResourceIdList, isSelectedAllEver) {
+      this.isInvestigationDeleteSelectAll = isSelectedAllEver
+      this.investigationDeleteExcludedResourceIdList = excludedResourceIdList || []
       let isArray = Array.isArray(value)
-      this.totalSelectedItemsCount = isArray ? value.length : 1
+      this.totalSelectedItemsCount = isArray
+        ? isSelectedAllEver
+          ? this.serverSideProps.totalNumberOfRecords - excludedResourceIdList.length
+          : value.length
+        : 1
       this.isWantToDelete = true
       this.deleteValue = value
     },
@@ -2387,6 +2404,8 @@ export default {
         const payload = {
           items: data,
           warningMessage: message,
+          selectAll: this.isInvestigationDeleteSelectAll,
+          excludedItems: this.investigationDeleteExcludedResourceIdList,
           isPermanentDelete: val
         }
         this.warnAndDeleteButtonDisabled = true
@@ -2403,7 +2422,9 @@ export default {
             data: {
               items: data,
               isNotify: !!message,
-              IsPermanentDelete: val,
+              isPermanentDelete: val,
+              selectAll: this.isInvestigationDeleteSelectAll,
+              excludedItems: this.investigationDeleteExcludedResourceIdList,
               warningMessage: message
             },
             id: this.$route.params.id
