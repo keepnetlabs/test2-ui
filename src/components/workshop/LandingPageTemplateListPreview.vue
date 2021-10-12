@@ -227,6 +227,7 @@ export default {
     scenarioDetailsLookup: { required: true },
     landingPageTemplateResourceId: { required: false }
   },
+
   components: { Multipane, MultipaneResizer, AppDialog },
   data() {
     return {
