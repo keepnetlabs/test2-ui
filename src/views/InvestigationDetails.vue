@@ -71,7 +71,7 @@
           @changeStatus="isWantToWarn = false"
           icon="mdi-alert"
           :title="warningMessage"
-          subtitle="Type a message to reporting user"
+          :subtitle="warningMessageSubtitle"
           title-id="text--investigation-details-warning-message-popup-title"
           subtitle-id="text--investigation-details-warning-message-popup-subtitle"
           class-name="investigation-details__warning-modal"
@@ -918,6 +918,7 @@
                 ref="refInvestigationListData"
                 rowKey="resourceId"
                 just-compare-row-key
+                is-server-side-selection
                 :is-column-filter-active="isColumnFilterActive"
                 :refName="'investigationDetailsListTable'"
                 :columns="columns"
@@ -932,9 +933,7 @@
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
-                @sendInvestigationdetailsWarningMessage="
-                  sendInvestigationdetailsWarningMessage($event)
-                "
+                @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetailsFunction="
                   deleteAndNotifyInvestigationDetailsFunction($event)
                 "
@@ -1031,9 +1030,7 @@
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
-                @sendInvestigationdetailsWarningMessage="
-                  sendInvestigationdetailsWarningMessage($event)
-                "
+                @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
                 v-if="showTargetUsersDetails"
                 @downloadEvent="exportTargetUsers"
@@ -1161,6 +1158,9 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
+    warningMessageSubtitle: 'Type a message to reporting user',
+    isInvestigationWarningSelectAll: false,
+    investigationWarningExcludedResourceIdList: [],
     isAutoRefreshActive: true,
     loopInterval: null,
     isRunning: false,
@@ -1501,7 +1501,7 @@ export default {
         id: 'btn-send-warning-message--investigation-details-row-actions',
         name: 'Send user a warning message',
         icon: 'mdi-alert',
-        action: 'sendWarningMessage'
+        action: 'sendInvestigationDetailsWarningMessage'
       }
     ],
     addUsers: {
@@ -2331,7 +2331,9 @@ export default {
       // open new investigation overlay
       this.isWantToAddNewCommunity = true
     },
-    sendInvestigationdetailsWarningMessage(value, multi) {
+    sendInvestigationDetailsWarningMessage(value, excludedResourceIdList, isSelectedAllEver) {
+      this.isInvestigationWarningSelectAll = isSelectedAllEver
+      this.investigationWarningExcludedResourceIdList = excludedResourceIdList || []
       if (value && value.emailLastAction && value.emailLastAction.actionType === 'Warning') {
         this.notifyMessage = value.emailLastAction.warningMessage
       } else {
@@ -2339,10 +2341,11 @@ export default {
       }
 
       this.isWantToWarn = true
-      this.warningMessage =
+      this.warningMessageSubtitle =
         Array.isArray(value) && value.length && value.length > 1
-          ? 'Send a warning message for this email'
-          : 'Send a warning message for this email'
+          ? 'Type a message to reporting users'
+          : 'Type a message to reporting user'
+
       this.soloWarningMessageValue = value
     },
     isWantToWarnConfirm() {
@@ -2357,7 +2360,9 @@ export default {
           .dispatch('investigations/sendInvestigationWarningMessage', {
             data: {
               items: data,
-              warningMessage: this.notifyMessage
+              warningMessage: this.notifyMessage,
+              selectAll: !!this.isInvestigationWarningSelectAll,
+              excludedResourceIdList: this.investigationWarningExcludedResourceIdList
             },
             id: this.$route.params.id
           })
