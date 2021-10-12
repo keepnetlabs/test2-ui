@@ -932,7 +932,7 @@
                 :selectEvent="selectEvent"
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
-                @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
+                @deleteInvestigationDetails="deleteInvestigationDetails"
                 @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetailsFunction="
                   deleteAndNotifyInvestigationDetailsFunction($event)
@@ -1010,6 +1010,7 @@
               class="investigationDetails__target-users-table-container"
             >
               <datatable
+                v-if="showTargetUsersDetails"
                 :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
@@ -1029,10 +1030,6 @@
                 :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
-                @deleteInvestigationDetailsFunction="deleteInvestigationDetailsFunction($event)"
-                @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
-                @deleteAndNotifyInvestigationDetails="deleteAndNotifyInvestigationDetails($event)"
-                v-if="showTargetUsersDetails"
                 @downloadEvent="exportTargetUsers"
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
@@ -1160,7 +1157,9 @@ export default {
   data: () => ({
     warningMessageSubtitle: 'Type a message to reporting user',
     isInvestigationWarningSelectAll: false,
+    isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
+    investigationDeleteExcludedResourceIdList: [],
     isAutoRefreshActive: true,
     loopInterval: null,
     isRunning: false,
@@ -2164,8 +2163,15 @@ export default {
     menuClick(menu) {
       if (menu !== this.activeMenu && menu !== 'targetUsers') {
         this.$nextTick(() => {
-          this.$refs.refInvestigationListData.$refs.elTableRef &&
-            this.$refs.refInvestigationListData.$refs.elTableRef.clearSelection()
+          const refTable = this.$refs.refInvestigationListData
+          if (refTable) {
+            if (refTable.$refs.elTableRef) {
+              refTable.$refs.elTableRef.clearSelection()
+            }
+            refTable.serverSideSelectionCount = 0
+            refTable.excludedResourceIdList = []
+            refTable.isSelectedAllEver = false
+          }
         })
       }
       this.activeMenu = menu
@@ -2373,9 +2379,15 @@ export default {
           })
       }
     },
-    deleteInvestigationDetailsFunction(value, multi) {
+    deleteInvestigationDetails(value, excludedResourceIdList, isSelectedAllEver) {
+      this.isInvestigationDeleteSelectAll = isSelectedAllEver
+      this.investigationDeleteExcludedResourceIdList = excludedResourceIdList || []
       let isArray = Array.isArray(value)
-      this.totalSelectedItemsCount = isArray ? value.length : 1
+      this.totalSelectedItemsCount = isArray
+        ? isSelectedAllEver
+          ? this.serverSideProps.totalNumberOfRecords - excludedResourceIdList.length
+          : value.length
+        : 1
       this.isWantToDelete = true
       this.deleteValue = value
     },
@@ -2392,6 +2404,8 @@ export default {
         const payload = {
           items: data,
           warningMessage: message,
+          selectAll: this.isInvestigationDeleteSelectAll,
+          excludedResourceIdList: this.investigationDeleteExcludedResourceIdList,
           isPermanentDelete: val
         }
         this.warnAndDeleteButtonDisabled = true
@@ -2408,7 +2422,9 @@ export default {
             data: {
               items: data,
               isNotify: !!message,
-              IsPermanentDelete: val,
+              isPermanentDelete: val,
+              selectAll: this.isInvestigationDeleteSelectAll,
+              excludedResourceIdList: this.investigationDeleteExcludedResourceIdList,
               warningMessage: message
             },
             id: this.$route.params.id

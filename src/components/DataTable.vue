@@ -514,7 +514,7 @@
                     :text="getDataTableFieldLabel(scope.row[col.property])"
                     v-if="scope.row && scope.row[col.property]"
                     :isErrorState="col.errorStateFor"
-                    :errorStateValue="scope.row.scanResultMessage"
+                    :errorStateValue="scope.row['scanResultMessage']"
                   />
                   <span v-else>
                     {{ col.emptyText || '' }}
@@ -570,7 +570,7 @@
               </template>
 
               <template v-slot:header="{ column, $index }">
-                <v-tooltip bottom v-if="col.showHeaderTooltip">
+                <v-tooltip bottom v-if="col['showHeaderTooltip']">
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
@@ -2414,7 +2414,7 @@ export default {
       return this.columns.reduce((acc, filterItem) => {
         if (
           this.renderedColumns.find((property) => property === filterItem.property) &&
-          !filterItem.isCustomField
+          !filterItem['isCustomField']
         ) {
           acc.push({
             FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
@@ -2433,7 +2433,7 @@ export default {
           const filterItems = _this.columns.reduce((acc, filterItem) => {
             if (
               this.renderedColumns.find((property) => property === filterItem.property) &&
-              !filterItem.isCustomField
+              !filterItem['isCustomField']
             ) {
               const obj = {
                 FieldName:
@@ -2832,12 +2832,6 @@ export default {
         case 'investigationDetails':
           this.$emit('investigationDetails', { row })
           break
-        case 'deleteInvestigationDetails':
-          this.$emit(
-            'deleteInvestigationDetailsFunction',
-            this.multipleSelection.length > 0 ? this.multipleSelection : row
-          )
-          break
         case 'deleteAndNotifyInvestigationDetails':
           this.$emit(
             'deleteAndNotifyInvestigationDetailsFunction',
@@ -2959,7 +2953,11 @@ export default {
     handleDelete(selections) {
       switch (this.refName) {
         case 'investigationDetailsListTable':
-          this.$emit('deleteInvestigationDetailsFunction', selections)
+          this.$emit(
+            'deleteInvestigationDetails',
+            selections,
+            ...Object.values(this.getServerSideSelectionParams())
+          )
           break
         case 'rulesListTable':
           this.$emit('deleteFunction', selections)
