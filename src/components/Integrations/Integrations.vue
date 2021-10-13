@@ -214,7 +214,8 @@ export default {
               INTEGRATION_TYPES.IBMXFORCE,
               INTEGRATION_TYPES.SPAMHOUSE,
               INTEGRATION_TYPES.CUSTOMINTEGRATION,
-              INTEGRATION_TYPES.GOOGLESAFEBROWSER
+              INTEGRATION_TYPES.GOOGLESAFEBROWSER,
+              INTEGRATION_TYPES.ROKSIT
             ]
           },
           {
