@@ -287,7 +287,12 @@
             </template>
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['phishing-simulator/email-templates|POST'])"
+              v-if="
+                checkPermissionMultiple([
+                  'phishing-simulator/email-templates|POST',
+                  'phishing-simulator/phishing-scenario/search|POST'
+                ])
+              "
             >
               <v-list-item-content class="menu-item-content">
                 <router-link
@@ -304,7 +309,12 @@
             </v-list-item>
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['phishing-simulator/dns-services/search|POST'])"
+              v-if="
+                checkPermissionMultiple([
+                  'phishing-simulator/dns-services/search|POST',
+                  'phishing-simulator/domain-records/search|POST'
+                ])
+              "
             >
               <v-list-item-content class="menu-item-content">
                 <router-link
@@ -338,7 +348,6 @@
               v-if="
                 checkPermissionMultiple([
                   'ir/dashboard/running-investigations|GET',
-                  'companies/roi-settings|GET',
                   'ir/dashboard/top-rules|GET',
                   'notified-emails/search|POST',
                   'is/dashboard/summary|POST',
@@ -1489,7 +1498,12 @@ export default {
       ])
     },
     checkPhishingSimulatorPermissions() {
-      return checkPermissionMultiple(['phishing-simulator/email-templates|POST'])
+      return checkPermissionMultiple([
+        'phishing-simulator/email-templates|POST',
+        'phishing-simulator/phishing-scenario/search|POST',
+        'phishing-simulator/dns-services/search|POST',
+        'phishing-simulator/domain-records/search|POST'
+      ])
     },
     deleteTSVuexData() {
       let communitiesData = null

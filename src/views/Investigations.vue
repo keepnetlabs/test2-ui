@@ -699,7 +699,11 @@ export default {
             }
           }
         }
+        this.serverSideProps.pageNumber = tableState.serverSideProps.pageNumber
+        this.serverSideProps.pageSize = tableState.serverSideProps.pageSize
+        this.serverSideProps.orderBy = tableState.serverSideProps.orderBy
         this.tableState = { persistentState: tableState }
+        this.getInvestigationList()
       }
     } else {
       this.storedTableSettings = JSON.parse(

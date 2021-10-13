@@ -1,6 +1,5 @@
 <template>
   <div class="workshop">
-    <EmailTemplateListPreview></EmailTemplateListPreview>
     <ExerciseListPreview></ExerciseListPreview>
     <PhishingScenarioPreview></PhishingScenarioPreview>
     <TargetUserListPreview></TargetUserListPreview>
@@ -18,8 +17,7 @@ export default {
   components: {
     PhishingScenarioPreview,
     TargetUserListPreview,
-    ExerciseListPreview,
-    EmailTemplateListPreview
+    ExerciseListPreview
   },
   data() {
     return {}

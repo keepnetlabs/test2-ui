@@ -1116,7 +1116,7 @@ export default {
           return {
             ...item,
             userFriendlyName: this.getFriendlyName(item.name),
-            name: item.name === INTEGRATION_TYPES.ROKSIT ? INTEGRATION_LABELS.CyberXRay : item.name
+            name: item.name
           }
         })
         this.uploadFileTypes = lookups.data.map((item) => {
