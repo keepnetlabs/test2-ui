@@ -234,7 +234,7 @@
                         <span class="summary-content__title">Difficulty</span
                         ><span class="summary-content__body">{{
                           scenarioDetailsLookup.difficultyTypes.find(
-                            (item) => item.value === formValues.difficultyTypeId
+                            (item) => item.value === generalDifficultyTypeId
                           ).text
                         }}</span>
                       </div>
@@ -776,6 +776,7 @@ export default {
             this.landingPageTemplateResourceId
           ).then((response) => {
             this.summaryData = response.data.data
+            this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
             this.step += 1
             console.log(prevStep, 'prevStep33')
             console.log(this.step, 'this.step33')
