@@ -18,7 +18,7 @@ export function updateScenario(payload, id) {
 }
 
 export function getScenario(id) {
-  return testRequest.get(`phishing-simulator/phishing-scenario/${id}`)
+  return testRequest.get(`phishing-simulator/phishing-scenario/${id}`, { loading: true })
 }
 
 export function exportScenarios(payload) {

@@ -26,23 +26,6 @@
     </app-dialog>
     <div class="emailTemplatePreview__container" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main">
-        <v-list-item class="k-dialog__header" :class="['k-dialog__header-max-height']">
-          <div class="v-btn v-cart-icon-wrapper emailTemplatePreview-class">
-            <v-icon :color="'#2196f3'" class="ml-2" left medium>
-              {{ 'mdi-information' }}
-            </v-icon>
-          </div>
-          <div>
-            <v-list-item-title class="k-dialog__title"
-              >Email Template List Preview</v-list-item-title
-            >
-          </div>
-        </v-list-item>
-        <div class="emailTemplatePreview-title">Email Templates</div>
-        <div class="emailTemplatePreview-subtitle">
-          Select a template to view and edit. You can also create a template from scratch or upload
-          an email
-        </div>
         <div class="d-flex justify-space-between align-center mb-4">
           <v-select
             :items="listData"
@@ -122,8 +105,7 @@
             <div
               class="pane"
               :style="{
-                width: '50%',
-                minWidth: '25%',
+                width: '25% !important',
                 pointerEvents: loadingTemplates ? 'none' : 'inherit'
               }"
               @scroll="handleScroll"
@@ -136,7 +118,7 @@
                 :class="{ 'template-list--selected': item['selected'] }"
               >
                 <div class="d-flex justify-space-between mb-2">
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column wrapWord">
                     <div class="template-list--item template-list--item__header">
                       {{ item.name }}
                     </div>
@@ -197,6 +179,10 @@
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
                   <div>
+                    <span class="template-preview__text--title">Subject: </span>
+                    <span class="template-preview__text--body">{{ templateSubject }}</span>
+                  </div>
+                  <div>
                     <span class="template-preview__text--title">From Name: </span>
                     <span class="template-preview__text--body">{{ templateFromName }}</span>
                   </div>
@@ -236,6 +222,7 @@ export default {
       listData: [],
       backupListData: [],
       templateFromName: null,
+      templateSubject: null,
       templateFromEmail: null,
       methods: [
         { text: 'Click Only', value: 'WNZt0sCVCWB3' },
@@ -368,6 +355,8 @@ export default {
       this.listData[index].selected = true
       this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
+      console.log(item.id)
+      console.log(item.resourceId)
       this.$emit('selectedEmailTemplateChange', item.id)
       this.$emit('selectedEmailTemplateResourceId', item.resourceId)
       getEmailTemplatePreviewContent(item.resourceId)
@@ -376,6 +365,7 @@ export default {
           this.selectedTemplateHeader = response.data.data.name
           this.templateHTML = response.data.data.template
           this.templateFromName = response.data.data.fromName
+          this.templateSubject = response.data.data.subject
           this.templateFromEmail = response.data.data.fromAddress
         })
         .finally(() => {
@@ -423,6 +413,11 @@ export default {
     text-transform: uppercase;
     color: #2196f3;
   }
+  .wrapWord {
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
   min-height: 80vh !important;
   padding-top: 10px;
   .difficulty-easy {
@@ -463,14 +458,9 @@ export default {
     }
   }
   &__container {
-    padding: 0 16px 24px 16px !important;
+    padding: 32px 120px 0 0 !important;
     width: 100%;
     &-main {
-      border-radius: 20px;
-      -webkit-box-shadow: 0 10px 15px -5px rgb(205 205 205 / 50%);
-      box-shadow: 0 10px 15px -5px rgb(205 205 205 / 50%);
-      background-color: #ffffff;
-      padding: 24px !important;
       .v-text-field__details {
         display: none;
       }
