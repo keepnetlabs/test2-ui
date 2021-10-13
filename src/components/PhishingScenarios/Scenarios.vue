@@ -35,6 +35,9 @@
       :size="'ultraMaximum'"
     >
       <template v-slot:app-dialog-body>
+        <p class="pl-1">
+          <span>Phishing URL:</span> <b>{{ selectedScenarioURL }}</b>
+        </p>
         <k-shadow-frame :content="templateHTML" :key="templateHTML + 'appDialog'" />
       </template>
       <template v-slot:app-dialog-footer>
@@ -580,11 +583,11 @@ export default {
       getScenarioPreviewContent(id)
         .then((response) => {
           const data = response.data.data
-          /*     this.selectedScenarioHeader = data.landingPageTemplate.landingPages[0].name
+          this.selectedScenarioHeader = data.landingPageTemplate.landingPages[0].name
+          this.selectedScenarioURL = data.landingPageTemplate.urlTemplate
           this.templateHTML = data.landingPageTemplate.landingPages[0].content
           this.isScenarioDetails = true
-          */
-          window.open(data.landingPageTemplate.urlTemplate, '_blank').focus()
+          //window.open(data.landingPageTemplate.urlTemplate, '_blank').focus()
         })
         .catch((error) => {})
     },

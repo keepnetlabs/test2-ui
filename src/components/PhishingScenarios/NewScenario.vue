@@ -133,27 +133,6 @@
                     placeholder="Enter tags and press enter key"
                   />
                 </form-group>
-                <form-group
-                  title="Difficulty"
-                  sub-title="Select a difficulty level for this scenario "
-                  class-name="mt-4 mb-10"
-                >
-                  <v-radio-group
-                    v-model="formValues.difficultyTypeId"
-                    class="send-welcome-email__radio-group"
-                    hide-details
-                    row
-                    persistent-hint
-                  >
-                    <v-radio
-                      v-for="item in scenarioDetailsLookup.difficultyTypes"
-                      :key="item.text"
-                      :value="item.value"
-                      :label="item.text"
-                      color="#2196f3"
-                    ></v-radio>
-                  </v-radio-group>
-                </form-group>
                 <make-available-for
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
@@ -848,6 +827,10 @@ export default {
         _this.formValues.name = `${this.formValues.name}`
         _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+        this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
+        this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
+        this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
+        this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(

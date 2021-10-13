@@ -26,23 +26,6 @@
     </app-dialog>
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
-        <v-list-item class="k-dialog__header" :class="['k-dialog__header-max-height']">
-          <div class="v-btn v-cart-icon-wrapper landingPagePreview-class">
-            <v-icon :color="'#2196f3'" class="ml-2" left medium>
-              {{ 'mdi-information' }}
-            </v-icon>
-          </div>
-          <div>
-            <v-list-item-title class="k-dialog__title"
-              >Email Template List Preview</v-list-item-title
-            >
-          </div>
-        </v-list-item>
-        <div class="landingPagePreview-title">Email Templates</div>
-        <div class="landingPagePreview-subtitle">
-          Select a template to view and edit. You can also create a template from scratch or upload
-          an email
-        </div>
         <div class="d-flex justify-space-between align-center mb-4">
           <v-select
             :items="listData"
@@ -122,8 +105,7 @@
             <div
               class="pane"
               :style="{
-                width: '50%',
-                minWidth: '25%',
+                width: '25%',
                 pointerEvents: loadingTemplates ? 'none' : 'inherit'
               }"
               @scroll="handleScroll"
@@ -136,7 +118,7 @@
                 :class="{ 'template-list--selected': item['selected'] }"
               >
                 <div class="d-flex justify-space-between mb-2">
-                  <div class="d-flex flex-column">
+                  <div class="d-flex flex-column wrapWord">
                     <div class="template-list--item template-list--item__header">
                       {{ item.name }}
                     </div>
@@ -415,6 +397,11 @@ export default {
 
 <style lang="scss">
 .landingPagePreview {
+  .wrapWord {
+    white-space: nowrap;
+    overflow: hidden !important;
+    text-overflow: ellipsis;
+  }
   .toggle-advanced-search {
     font-style: normal;
     font-weight: 600;
@@ -463,14 +450,9 @@ export default {
     }
   }
   &__container {
-    padding: 0 16px 24px 16px !important;
+    padding: 32px 120px 0 0 !important;
     width: 100%;
     &-main {
-      border-radius: 20px;
-      -webkit-box-shadow: 0 10px 15px -5px rgb(205 205 205 / 50%);
-      box-shadow: 0 10px 15px -5px rgb(205 205 205 / 50%);
-      background-color: #ffffff;
-      padding: 24px !important;
       .v-text-field__details {
         display: none;
       }
