@@ -368,6 +368,8 @@ export default {
       this.listData[index].selected = true
       this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
+      console.log(item.id)
+      console.log(item.resourceId)
       this.$emit('selectedEmailTemplateChange', item.id)
       this.$emit('selectedEmailTemplateResourceId', item.resourceId)
       getEmailTemplatePreviewContent(item.resourceId)
