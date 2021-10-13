@@ -99,6 +99,7 @@ export const LABEL_STORE = {
   NO_IP_ADDRESS_DEFINED: 'You do not have any IP Addresses',
   NO_NOTIFICATION_TEMPLATE_DEFINED: 'You do not have any notification templates',
   NO_AUDIT: 'You do not have any audit logs',
+  NO_SCENARIO: 'You do not have any scenarios',
   INDUSTRYNAME: 'Industry',
   LICENSETYPENAME: 'License Type',
   NUMBEROFUSERS: 'User Limit',
@@ -289,7 +290,8 @@ export const TABLE_SETTINGS_KEYS = {
   SANDBOXSTATS: 'SandboxStats',
   DNSSERVICELIST: 'DNSServiceList',
   DOMAINS: 'Domains',
-  LANDINGPAGES: 'LandingPages'
+  LANDINGPAGES: 'LandingPages',
+  SCENARIOS: 'Scenarios'
 }
 
 export function getStoreValue(key, type) {
@@ -420,7 +422,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   DNSSERVICELIST: 'DNSServiceList',
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
   DOMAINS: 'Domains',
-  LANDINGPAGES: 'LandingPages'
+  LANDINGPAGES: 'LandingPages',
+  SCENARIOS: 'Scenarios'
 }
 
 export const INTEGRATION_TYPES = {
@@ -431,7 +434,8 @@ export const INTEGRATION_TYPES = {
   GOOGLESAFEBROWSER: 'Google Safe Browsing',
   SPAMHOUSE: 'Zen Spamhaus',
   CUSTOMINTEGRATION: 'Cross Company Integration',
-  ROKSIT: 'Roksit'
+  ROKSIT: 'Cyber X-Ray',
+  CyberXRay: 'Cyber X-Ray'
 }
 export const INTEGRATION_LABELS = {
   VMRAY: 'VMRay',

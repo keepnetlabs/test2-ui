@@ -23,7 +23,9 @@ export function getLandingPageFormDetails() {
 }
 
 export function getLandingPageList(payload) {
-  return testRequest.post(`phishing-simulator/landing-page-template/search`, payload)
+  return testRequest.post(`phishing-simulator/landing-page-template/search`, payload, {
+    loading: true
+  })
 }
 
 export function exportLandingPage(payload) {

@@ -1,0 +1,976 @@
+<template>
+  <app-modal
+    :status="status"
+    icon-name="mdi-hook"
+    :title="
+      !isEdit
+        ? 'New Phishing Scenario'
+        : isDuplicate
+        ? 'Duplicate Phishing Scenario'
+        : 'Edit Phishing Scenario'
+    "
+  >
+    <template v-slot:overlay-body>
+      <v-stepper light v-model="step" class="k-stepper">
+        <v-stepper-header class="k-stepper__header">
+          <v-stepper-step class="k-stepper__step" :complete="step > 1" :step="1"
+            >Scenario Info</v-stepper-step
+          >
+          <v-divider class="k-stepper__divider" />
+          <v-stepper-step class="k-stepper__step" :complete="step > 2" :step="2"
+            >Email Template</v-stepper-step
+          >
+          <v-divider class="k-stepper__divider" />
+
+          <v-stepper-step class="k-stepper__step" :complete="step > 3" :step="3"
+            >Landing Page</v-stepper-step
+          >
+          <v-divider class="k-stepper__divider" />
+
+          <v-stepper-step class="k-stepper__step" :complete="step > 4" :step="4"
+            >Summary</v-stepper-step
+          >
+        </v-stepper-header>
+        <v-stepper-items class="k-stepper__items">
+          <v-stepper-content class="k-stepper__content" :step="1">
+            <div class="phishing-scenario-info">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-phishing-scenario__title">
+                    Scenario Info</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                    >Enter basic information about this scenario</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+
+              <v-form ref="refFormStep1" lazy-validation>
+                <form-group title="Template Name" has-hint class-name="mt-8">
+                  <v-text-field
+                    v-model.trim="formValues.name"
+                    v-bind="commonRules"
+                    id="input--new-phishing-scenarios-template-name"
+                    placeholder="Enter a name"
+                    hint="*Required"
+                    required
+                    outlined
+                    dense
+                    persistent-hint
+                    :disabled="editItemsDisabled"
+                  />
+                </form-group>
+                <form-group
+                  title="Description"
+                  sub-title="Describe the template briefly"
+                  class-name="mt-4"
+                >
+                  <v-textarea
+                    id="input--new-phishing-scenarios-description"
+                    outlined
+                    dense
+                    rows="2"
+                    no-resize
+                    placeholder="Description"
+                    height="100"
+                    v-model.trim="formValues.description"
+                    persistent-hint
+                  ></v-textarea>
+                </form-group>
+                <form-group
+                  title="Method"
+                  sub-title="Select the phishing technique for this scenario"
+                  class-name="mt-4"
+                >
+                  <v-select
+                    :items="scenarioDetailsLookup.methodTypes"
+                    item-disabled="disabled"
+                    item-text="text"
+                    :value="formValues.methodTypeId"
+                    item-value="value"
+                    outlined
+                    v-bind="commonRules"
+                    hint="*Required"
+                    required
+                    persistent-hint
+                  >
+                    <template #item="{item}">
+                      <div :class="['mail-configuration-select-sources__item-container']">
+                        <div class="mail-configuration-select-sources__item">
+                          <div class="mail-configuration-select-sources__item-left">
+                            {{ item.text }}
+                          </div>
+                          <div class="mail-configuration-select-sources__item-right-platform">
+                            {{
+                              item.text === 'Click-Only'
+                                ? 'See who fails for phishing links'
+                                : item.text === 'Data Submission'
+                                ? 'Gather information from users'
+                                : 'Send a trackable macro file '
+                            }}
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </v-select>
+                </form-group>
+                <form-group title="Tags" sub-title="Define tags for the scenario" class-name="mt-6">
+                  <k-select
+                    type="combobox"
+                    :id="`input--action-tags`"
+                    v-model="formValues.tags"
+                    :items="[]"
+                    chips
+                    deletable-chips
+                    outlined
+                    class="hide-caret"
+                    multiple
+                    dense
+                    persistent-hint
+                    small-chips
+                    :return-object="false"
+                    @input="handleTagItemChange"
+                    placeholder="Enter tags and press enter key"
+                  />
+                </form-group>
+                <form-group
+                  title="Difficulty"
+                  sub-title="Select a difficulty level for this scenario "
+                  class-name="mt-4 mb-10"
+                >
+                  <v-radio-group
+                    v-model="formValues.difficultyTypeId"
+                    class="send-welcome-email__radio-group"
+                    hide-details
+                    row
+                    persistent-hint
+                  >
+                    <v-radio
+                      v-for="item in scenarioDetailsLookup.difficultyTypes"
+                      :key="item.text"
+                      :value="item.value"
+                      :label="item.text"
+                      color="#2196f3"
+                    ></v-radio>
+                  </v-radio-group>
+                </form-group>
+                <make-available-for
+                  v-if="isRenderMakeAvailableFor"
+                  ref="refMakeAvailableFor"
+                  v-model="formValues.availableForRequests"
+                  sub-title="Select companies that should see this scenario in their libraries"
+                />
+              </v-form>
+            </div>
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content" :step="2">
+            <div class="email-settings">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-phishing-scenario__title">
+                    Select Email Template</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                    >Choose your email template</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <EmailTemplateListPreview
+                    v-if="step === 2"
+                    :scenarioDetailsLookup="scenarioDetailsLookup"
+                    ref="RefEmailTemplateListPreview"
+                    :emailTemplateResourceId="emailTemplateResourceId"
+                    @selectedEmailTemplateChange="selectedEmailTemplateChange"
+                    @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
+                  ></EmailTemplateListPreview>
+                </v-list-item-content>
+              </v-list-item>
+            </div>
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content" :step="3">
+            <div class="email-settings">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-phishing-scenario__title">
+                    Select Landing Page Template</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                    >Choose your landing page template</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <LandingPageListPreview
+                    v-if="step === 3"
+                    :scenarioDetailsLookup="scenarioDetailsLookup"
+                    ref="RefEmailTemplateListPreview"
+                    @selectedLandingPageChange="selectedLandingPageChange"
+                    @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
+                    :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                  ></LandingPageListPreview
+                ></v-list-item-content>
+              </v-list-item>
+            </div>
+          </v-stepper-content>
+          <v-stepper-content class="k-stepper__content summary-step" :step="4">
+            <div class="email-settings" v-if="step === 4">
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="new-phishing-scenario__title">
+                    Scenario Summary</v-list-item-title
+                  >
+                  <v-list-item-subtitle class="new-phishing-scenario__sub-title"
+                    >Preview what this scenario will look like</v-list-item-subtitle
+                  >
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <div class="summary">
+                    <div class="summary-header">
+                      <div style="color: #2196f3;">
+                        <v-icon :color="'#2196f3'" class="ml-2" left medium>
+                          {{ 'mdi-information' }}
+                        </v-icon>
+                        Scenario Info
+                      </div>
+                    </div>
+                    <div class="summary-content">
+                      <div class="summary-content-details">
+                        <span class="summary-content__title">Name</span
+                        ><span class="summary-content__body">{{ formValues.name }}</span>
+                      </div>
+                      <div class="summary-content-details">
+                        <span class="summary-content__title">Method</span
+                        ><span class="summary-content__body">{{
+                          scenarioDetailsLookup.methodTypes.find(
+                            (item) => item.value === formValues.methodTypeId
+                          ).text
+                        }}</span>
+                      </div>
+                      <div class="summary-content-details">
+                        <span class="summary-content__title">Difficulty</span
+                        ><span class="summary-content__body">{{
+                          scenarioDetailsLookup.difficultyTypes.find(
+                            (item) => item.value === formValues.difficultyTypeId
+                          ).text
+                        }}</span>
+                      </div>
+                    </div>
+                    <div class="summary-content__collapsable"></div>
+                  </div>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <div class="summary">
+                    <div class="summary-header">
+                      <div style="color: #2196f3;">
+                        <v-icon :color="'#2196f3'" class="ml-2" left medium>
+                          {{ 'mdi-email' }}
+                        </v-icon>
+                        Email that will be sent to users
+                      </div>
+                      <div>
+                        <v-btn
+                          rounded
+                          outlined
+                          color="#2196f3"
+                          @click="showTemplate1 = !showTemplate1"
+                          >Details
+                          <v-icon :color="'#2196f3'" class="ml-2" left medium>
+                            {{ showTemplate1 ? 'mdi-arrow-up' : 'mdi-arrow-down' }}
+                          </v-icon></v-btn
+                        >
+                      </div>
+                    </div>
+                    <div class="summary-content">
+                      <div class="d-flex justify-space-between">
+                        <div class="d-flex flex-column" v-if="!!summaryData">
+                          <div class="template-summary__title">
+                            {{ summaryData.emailTemplate.name }}
+                          </div>
+                          <div class="template-summary__sub-title mt-2">
+                            From: {{ summaryData.emailTemplate.fromAddress }}
+                          </div>
+                        </div>
+                        <div class="d-flex" v-if="!!summaryData">
+                          <v-chip
+                            class="template-list--item template-list--item__chip p mr-2"
+                            style="color: white;"
+                            :color="
+                              difficulties.find(
+                                (item) =>
+                                  item.value === summaryData.emailTemplate.difficultyResourceId
+                              ).text === 'Easy'
+                                ? '#217124'
+                                : difficulties.find(
+                                    (item) =>
+                                      item.value === summaryData.emailTemplate.difficultyResourceId
+                                  ).text === 'Medium'
+                                ? '#2196F3'
+                                : '#F56C6C'
+                            "
+                            v-if="!!summaryData"
+                          >
+                            {{
+                              difficulties.find(
+                                (item) =>
+                                  item.value === summaryData.emailTemplate.difficultyResourceId
+                              ).text
+                            }}
+                          </v-chip>
+                          <v-chip
+                            class="template-list--item template-list--item__chip p"
+                            v-if="!!summaryData"
+                          >
+                            {{
+                              methods.find(
+                                (item) =>
+                                  item.value === summaryData.emailTemplate.categoryResourceId
+                              ).text
+                            }}
+                          </v-chip>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="summary-content" style="border: none; padding-top: 0;">
+                      <div
+                        v-for="(att, ind) of summaryData.emailTemplate.attachments"
+                        :key="ind + att.name"
+                        class="preview-attch-wrapper"
+                      >
+                        <div class="attachment-wrapper">
+                          <div
+                            class="attachment blue-attach"
+                            :id="'single-post-attachments-' + att.name"
+                          >
+                            <v-tooltip bottom opacity="1" z-index="9999">
+                              <template v-slot:activator="{ on }">
+                                <div
+                                  v-on="on"
+                                  id="text--attachment-preview-no-flaged"
+                                  class="attach-icon blue-icon"
+                                >
+                                  <v-icon color="white" style="font-size: 20px;"
+                                    >mdi-paperclip</v-icon
+                                  >
+                                </div>
+                                <div
+                                  v-on="on"
+                                  id="text--attachment-preview-name"
+                                  class="file-name safari-hide-tooltip max-char pl-2"
+                                >
+                                  {{ att.fileName }}
+                                </div>
+                              </template>
+                              <span id="text--attachment-preview-tooltip-email-template">{{
+                                att.fileName
+                              }}</span>
+                            </v-tooltip>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="summary-content summary-content__collapsable"
+                      v-if="showTemplate1"
+                      style="border: none;"
+                    >
+                      <div class="summary-template">
+                        <k-shadow-frame v-bind:content="summaryData.emailTemplate.template" />
+                      </div>
+                    </div>
+                  </div>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <div class="summary">
+                    <div class="summary-header">
+                      <div style="color: #2196f3;">
+                        <v-icon :color="'#2196f3'" class="ml-2" left medium>
+                          {{ 'mdi-application' }}
+                        </v-icon>
+                        Landing Page for users who clicked the phishing link
+                      </div>
+                      <div>
+                        <v-btn
+                          rounded
+                          outlined
+                          color="#2196f3"
+                          @click="showTemplate2 = !showTemplate2"
+                          >Details
+                          <v-icon :color="'#2196f3'" class="ml-2" left medium>
+                            {{ showTemplate2 ? 'mdi-arrow-up' : 'mdi-arrow-down' }}
+                          </v-icon></v-btn
+                        >
+                      </div>
+                    </div>
+                    <div class="summary-content">
+                      <div class="d-flex justify-space-between">
+                        <div class="d-flex flex-column" v-if="!!summaryData">
+                          <div class="template-summary__title">
+                            {{ summaryData.landingPageTemplate.name }}
+                          </div>
+                          <div class="template-summary__sub-title mt-2">
+                            <b>URL:</b> {{ summaryData.landingPageTemplate.urlTemplate }}
+                          </div>
+                        </div>
+                        <div class="d-flex" v-if="!!summaryData">
+                          <v-chip
+                            class="template-list--item template-list--item__chip p mr-2"
+                            style="color: white;"
+                            :color="
+                              scenarioDetailsLookup.difficultyTypes.find(
+                                (item) =>
+                                  item.value ===
+                                  summaryData.landingPageTemplate.difficultyTypeId.toString()
+                              ).text === 'Easy'
+                                ? '#217124'
+                                : scenarioDetailsLookup.difficultyTypes.find(
+                                    (item) =>
+                                      item.value ===
+                                      summaryData.landingPageTemplate.difficultyTypeId.toString()
+                                  ).text === 'Medium'
+                                ? '#2196F3'
+                                : '#F56C6C'
+                            "
+                            v-if="!!summaryData"
+                          >
+                            {{
+                              scenarioDetailsLookup.difficultyTypes.find(
+                                (item) =>
+                                  item.value ===
+                                  summaryData.landingPageTemplate.difficultyTypeId.toString()
+                              ).text
+                            }}
+                          </v-chip>
+                          <v-chip
+                            class="template-list--item template-list--item__chip p"
+                            v-if="!!summaryData"
+                          >
+                            {{
+                              scenarioDetailsLookup.methodTypes.find(
+                                (item) =>
+                                  item.value ===
+                                  summaryData.landingPageTemplate.methodTypeId.toString()
+                              ).text
+                            }}
+                          </v-chip>
+                        </div>
+                      </div>
+                    </div>
+                    <div
+                      class="summary-content summary-content__collapsable"
+                      v-if="showTemplate2"
+                      style="border: none;"
+                    >
+                      <div class="summary-template">
+                        <k-shadow-frame
+                          v-bind:content="summaryData.landingPageTemplate.landingPages[0].content"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </v-list-item-content>
+              </v-list-item>
+            </div>
+          </v-stepper-content>
+        </v-stepper-items>
+      </v-stepper>
+    </template>
+    <template v-slot:overlay-footer>
+      <v-btn
+        @click="changeNewScenarioModalStatus"
+        class="new-phishing-scenario__footer-btn-cancel"
+        rounded
+      >
+        {{ labels.Cancel }}
+      </v-btn>
+      <div class="new-phishing-scenario__right-col">
+        <v-btn
+          @click="backStep(-1)"
+          class="new-phishing-scenario__footer-btn-back mr-4"
+          rounded
+          v-if="step > 1"
+        >
+          {{ labels.Back }}
+        </v-btn>
+        <v-btn
+          @click="nextStep(+1)"
+          class="new-phishing-scenario__footer-btn-next"
+          color="#2196f3"
+          rounded
+          v-if="step < 4"
+        >
+          {{ labels.Next }}
+        </v-btn>
+        <v-btn
+          @click="submit"
+          class="new-phishing-scenario__footer-btn-next"
+          color="#2196f3"
+          rounded
+          v-if="step === 4"
+          :disabled="isSubmitDisabled"
+        >
+          {{ labels.Save }}
+        </v-btn>
+      </div>
+    </template>
+  </app-modal>
+</template>
+
+<script>
+import AppModal from '../AppModal'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
+import * as Validations from '@/utils/validations'
+import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
+import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
+import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
+import KShadowFrame from '@/components/KShadowFrame'
+import { scrollToComponent } from '@/utils/functions'
+Vue.customElement('k-shadow-frame', KShadowFrame, {
+  shadow: true,
+  shadowCss: `
+ @import url('https://fonts.googleapis.com/css?family=Material+Icons');
+ @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
+ @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
+}
+.malicious-style,
+.malicious-link {
+     color: #f56c6d !important;
+    border-color: #f56c6d !important;
+    background-color: #f3e1e5 !important;
+    text-decoration: none !important;
+
+    position: relative;
+  text-decoration: none !important;
+  border-bottom: 0 solid;
+  position:relative;
+  .share-setting-text {
+    text-decoration: none !important;
+    text-decoration-color: transparent !important;
+    text-decoration-style: unset !important;
+    border: none !important;
+    border-bottom: transparent !important;
+    border-bottom-color: transparent !important;
+    border-image: none !important;
+    border-image-width: 0 !important;
+  }
+}
+[data-title]:hover:after {
+    opacity: 1;
+
+    visibility: visible;
+}
+[data-title]:after {
+     content: attr(data-title);
+    position: absolute;
+    padding: 4px 8px;
+    bottom: -40px;
+    left: 0;
+    white-space: nowrap;
+    opacity: 0;
+    z-index: 99999;
+    visibility: hidden;
+  border-radius: 4px;
+    line-height: 1.33;
+    min-height: 24px;
+    background: #6d6d6d !important;
+    color: rgba(255, 255, 255, 0.87) !important;
+    font-family: "Open Sans", sans-serif !important;
+    font-size: 12px;
+    text-decoration:none;
+        font-weight: normal;
+
+}
+[data-title] {
+    position: relative;
+}
+.malicious-style {
+   color: #bb2a45 !important;
+    border-color: #bb2a45 !important;
+    background-color: #f3e1e5 !important;
+
+  text-decoration: none !important;
+  border-bottom: 1px solid;
+  position:relative;
+      text-indent: 0;
+}
+
+.malicious-icon {
+ top: 0px;
+  background: transparent;
+  color: #f56c6c;
+  font-size: inherit !important;
+  padding: 0;
+}
+
+.red-malicious-alert {
+   color: #f56c6c !important;
+    caret-color: #f56c6c !important;
+    text-decoration: unset !important;
+    text-decoration-color: transparent !important;
+    font-size: inherit !important;
+    overflow: hidden;
+}
+
+.red-malicious-alert::before {
+  border: unset !important;
+}
+
+.hidden-icon-link {
+  background-color: #757575;
+  color: #ffffff;
+}
+
+.url-badge{
+  font-family: "Open Sans", sans-serif;
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    color: white;
+    background-color: #757575c2;
+    height: 10px;
+    width: 10px;
+    text-align: center;
+    border-radius: 30px;
+    font-size: 8px;
+    font-weight: 900;
+    line-height: 1.2 !important;
+}
+a{position:relative}
+ `
+})
+export default {
+  name: 'NewScenarios',
+  components: {
+    KSelect,
+    AppModal,
+    FormGroup,
+    MakeAvailableFor,
+    EmailTemplateListPreview,
+    LandingPageListPreview
+  },
+  data() {
+    return {
+      summaryData: {},
+      showTemplate1: false,
+      showTemplate2: false,
+      methods: [
+        { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+        { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+        { text: 'Attachment', value: '7dLrW2kdBTDs' }
+      ],
+      difficulties: [
+        { text: 'Easy', value: 'mT0CeYGgKsVb' },
+        { text: 'Medium', value: 'Z5XeVlpw6Dps' },
+        { text: 'Hard', value: 'c4LCGEB9MayB' }
+      ],
+      isSubmitDisabled: false,
+      activeBlockManagerComponents: {},
+      blockManagerComponents: {},
+      nonEditableAvailableForRequests: [],
+      availableForRequests: [],
+      labels,
+      step: 1,
+      Validations: Validations,
+      formValues: {
+        name: '',
+        description: '',
+        methodTypeId: '1',
+        difficultyTypeId: '1',
+        emailTemplateId: null,
+        landingPageTemplateId: null,
+        availableForRequests: [],
+        tags: []
+      },
+      commonRules: {
+        hint: '*Required',
+        persistentHint: true,
+        rules: [
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
+      },
+      editItemsDisabled: false,
+      methodItems: [],
+      difficultyItems: [],
+      emailTemplateResourceId: null,
+      landingPageTemplateResourceId: null
+    }
+  },
+  props: {
+    status: {
+      type: Boolean,
+      default: false
+    },
+    editableFormValues: {
+      required: false
+    },
+    isEdit: {
+      type: Boolean
+    },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
+    scenarioId: {
+      type: String
+    },
+    scenarioDetailsLookup: {
+      required: true
+    }
+  },
+  methods: {
+    selectedEmailTemplateResourceId(id) {
+      this.emailTemplateResourceId = id
+    },
+    selectedLandingPageTemplateResourceId(id) {
+      this.landingPageTemplateResourceId = id
+    },
+    selectedEmailTemplateChange(id) {
+      this.formValues.emailTemplateId = id
+    },
+    selectedLandingPageChange(id) {
+      this.formValues.landingPageTemplateId = id
+    },
+    setAttachmentFile(file) {
+      this.formValues.attachmentFiles = file
+    },
+    validateAvailableFor(value = {}) {
+      this.isAvailableForValidated = true
+      this.isAvailableForValid = !!value.length
+      this.$emit('validation', this.isAvailableForValid)
+    },
+    handleTagItemChange() {},
+    changeNewScenarioModalStatus() {
+      this.$emit('changeNewScenarioModalStatus', false)
+    },
+    nextStep() {
+      const prevStep = JSON.parse(JSON.stringify(this.step))
+      let isValid = true
+      if (this.$refs.refMakeAvailableFor) {
+        this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
+        isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
+      }
+      if (prevStep === 1) {
+        if (this.$refs.refFormStep1.validate() && isValid) {
+          this.step += 1
+        } else {
+          const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
+          scrollToComponent(el)
+        }
+      }
+      if (prevStep === 2) {
+        if (!!this.formValues.emailTemplateId) {
+          this.step += 1
+        }
+      }
+      if (prevStep === 3) {
+        if (!!this.formValues.landingPageTemplateId) {
+          getSummaryOfScenario(
+            this.emailTemplateResourceId,
+            this.landingPageTemplateResourceId
+          ).then((response) => {
+            this.summaryData = response.data.data
+            this.step += 1
+          })
+        }
+      }
+    },
+    backStep() {
+      this.step -= 1
+    },
+    submit() {
+      this.isSubmitDisabled = true
+      let isValid = true
+      const { refMakeAvailableFor } = this.$refs
+      if (refMakeAvailableFor) {
+        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        isValid = refMakeAvailableFor.isAvailableForValid
+      }
+      if (this.isEdit && !this.isDuplicate) {
+        updateScenario(this.formValues, this.scenarioId)
+          .then((response) => {
+            this.$emit('changeNewScenarioModalStatus', false, true)
+          })
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
+      } else {
+        createScenario(this.formValues)
+          .then((response) => {
+            this.$emit('changeNewScenarioModalStatus', false, true)
+          })
+          .finally(() => {
+            this.isSubmitDisabled = false
+          })
+      }
+    }
+  },
+
+  computed: {
+    isRenderMakeAvailableFor() {
+      return !this.editItemsDisabled
+    }
+  },
+  created() {
+    let _this = this
+    if (this.isEdit) {
+      getScenario(this.scenarioId).then((response) => {
+        _this.formValues = response.data.data
+        _this.formValues.name = `${this.formValues.name}`
+        _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
+        _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
+        if (this.$refs.refMakeAvailableFor) {
+          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+            response.data.data.availableForList
+          )
+        } else {
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
+            response.data.data.availableForList
+          )
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang="scss">
+.summary-step {
+  .summary-template {
+    border-top: 1px solid #b3d4fc;
+  }
+  .template-summary {
+    &__title {
+      font-style: normal;
+      font-weight: 600;
+      font-size: 20px;
+      line-height: 24px;
+      color: #383b41;
+    }
+    &__subtitle {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 16px;
+      line-height: 22px;
+      color: #383b41;
+    }
+  }
+  .summary {
+    max-width: calc(100% - 96px);
+    display: flex;
+    flex-flow: column;
+    margin-top: 32px;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    box-sizing: border-box;
+    border-radius: 12px;
+
+    &-header {
+      justify-content: space-between;
+      display: flex;
+      padding: 26px;
+      align-items: center;
+    }
+    &-content {
+      border-top: 1px solid #e0e0e0;
+      background: #fafafa;
+      border-radius: 0px 0px 12px 12px;
+      padding: 24px;
+      &__title {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 12px;
+        line-height: 19px;
+        color: #383b41;
+        width: 55px;
+        min-width: 55px;
+        max-width: 55px;
+        margin-right: 30px;
+        display: inline-block;
+      }
+      &__body {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 19px;
+        color: #383b41;
+      }
+      &-details {
+        padding: 10px;
+        border-bottom: 1px solid #e0e0e0;
+      }
+    }
+  }
+}
+.phishing-scenario {
+  .phishing-scenario__container {
+    padding: 24px !important;
+  }
+}
+.new-phishing-scenario__footer-btn-cancel {
+  color: #ff5252 !important;
+  border: 1px solid #ff5252 !important;
+  box-shadow: none !important;
+  caret-color: #ff5252 !important;
+  font-weight: 600 !important;
+}
+.new-phishing-scenario__footer-btn-back {
+  color: #00bcd4 !important;
+  border: 1px solid #00bcd4 !important;
+  caret-color: #00bcd4 !important;
+  box-shadow: none !important;
+  font-weight: 600 !important;
+}
+.new-phishing-scenario__footer-btn-next {
+  background-color: rgb(33, 150, 243) !important;
+  border-color: rgb(33, 150, 243) !important;
+  caret-color: #00bcd4 !important;
+  font-weight: 600 !important;
+
+  color: white !important;
+}
+.new-phishing-scenario {
+  &__overlay {
+    .v-overlay__content {
+      width: 100%;
+      height: 100%;
+      position: fixed;
+      left: 0;
+      top: 0;
+      overflow-y: auto;
+    }
+  }
+  &__title {
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    line-height: 31px;
+    color: #383b41;
+  }
+  &__sub-title {
+    font-family: Open Sans;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 21px !important;
+    color: #383b41 !important;
+  }
+}
+</style>
