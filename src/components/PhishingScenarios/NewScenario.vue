@@ -82,11 +82,12 @@
                   sub-title="Select the phishing technique for this scenario"
                   class-name="mt-4"
                 >
+                  {{ formValues.methodTypeId }}
                   <v-select
                     :items="scenarioDetailsLookup.methodTypes"
                     item-disabled="disabled"
                     item-text="text"
-                    :value="formValues.methodTypeId"
+                    v-model="formValues.methodTypeId"
                     item-value="value"
                     outlined
                     v-bind="commonRules"

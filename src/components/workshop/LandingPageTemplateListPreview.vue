@@ -156,11 +156,29 @@
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                 </div>
               </div>
-              <div v-if="this.search && !listData.length" class="pl-5 pt-5">
+              <div
+                v-if="
+                  !loadingTemplates &&
+                  !loadingTemplatePreview &&
+                  search &&
+                  !!search.length &&
+                  !listData.length
+                "
+                class="pl-5 pt-5"
+              >
                 Search criteria has no results
               </div>
-              <div v-if="!listData.length" class="pl-5 pt-5">
-                Search criteria has no results
+              <div
+                v-if="
+                  !loadingTemplates &&
+                  search &&
+                  !search.length &&
+                  !loadingTemplatePreview &&
+                  !listData.length
+                "
+                class="pl-5 pt-5"
+              >
+                You do not have Landing Page Template
               </div>
             </div>
             <multipane-resizer></multipane-resizer>
@@ -376,6 +394,7 @@ export default {
   watch: {
     search(newVal, oldVal) {
       let _this = this
+      this.loadingTemplates = true
       if (newVal != oldVal) {
         this.debounce(() => {
           this.bodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
