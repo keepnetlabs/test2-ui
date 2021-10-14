@@ -837,6 +837,7 @@
                         Duplicate
                       </v-btn>
                     </div>
+                    <!--
                     <div
                       id="btn-auto-refresh-trigger--investigation-details-card"
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
@@ -866,7 +867,7 @@
                           </v-list>
                         </div>
                       </v-menu>
-                    </div>
+                    </div>-->
                   </div>
                 </div>
                 <div
@@ -1160,7 +1161,7 @@ export default {
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
     investigationDeleteExcludedResourceIdList: [],
-    isAutoRefreshActive: true,
+    isAutoRefreshActive: false,
     loopInterval: null,
     isRunning: false,
     loop: null,
