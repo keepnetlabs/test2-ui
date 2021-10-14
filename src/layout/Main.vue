@@ -1488,7 +1488,6 @@ export default {
     checkIncidentResponderPermissions() {
       return checkPermissionMultiple([
         'ir/dashboard/running-investigations|GET',
-        'companies/roi-settings|GET',
         'ir/dashboard/top-rules|GET',
         'notified-emails/search|POST',
         'investigations/search|POST',
