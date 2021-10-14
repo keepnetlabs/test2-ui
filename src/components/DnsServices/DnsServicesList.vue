@@ -336,7 +336,6 @@ export default {
       this.$refs.refDnsServiceListList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.DNSSERVICELIST)
       this.getDatatableList()
     },
     handleRestoreDefaultSearch() {
@@ -521,8 +520,6 @@ export default {
     this.bodyData.pageNumber = page
     this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DNSSERVICELIST))
-  },
-  mounted() {
     this.getDefaultFilterAndSearch()
   }
 }

@@ -405,7 +405,6 @@ export default {
       this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
       this.$refs.refUsersList.filterValues = {}
       this.$refs.refUsersList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PHISHING_REPORTER)
       this.callForPhishingReporterUser()
     },
     handleRestoreDefaultSearch() {
