@@ -371,7 +371,6 @@ export default {
       this.$refs.refGroupDataList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_LIST)
       this.getTableData()
     },
     getDefaultFilterAndSearch() {

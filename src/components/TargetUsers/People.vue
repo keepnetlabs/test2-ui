@@ -473,7 +473,6 @@ export default {
       this.payload = JSON.parse(JSON.stringify(this.defaultRequestBody))
       this.$refs.refPeopleTable.filterValues = {}
       this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERS)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     handleRestoreDefaultSearch() {

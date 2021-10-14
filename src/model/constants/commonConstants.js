@@ -394,6 +394,7 @@ export const COMMON_SNACKBAR = {
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',
+  PERMISSION: 'PERMISSION',
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
   REPORTED_EMAIL: 'ReportedEmail',

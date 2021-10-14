@@ -410,7 +410,7 @@ export default {
       this.togglePermissionModalStatus()
     },
     getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.Permission))
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PERMISSION))
       if (savedFilter) {
         this.bodyData.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
@@ -473,7 +473,6 @@ export default {
       this.$refs.refPermissionList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.Permission)
       this.getDatatableList()
     },
     exportPermissionLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {
@@ -523,7 +522,7 @@ export default {
         FilterGroups: []
       }
       localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.Permission,
+        DEFAULT_SEARCH_CONTAINER_KEYS.PERMISSION,
         JSON.stringify({
           filter: copyOfFilter,
           filterValues

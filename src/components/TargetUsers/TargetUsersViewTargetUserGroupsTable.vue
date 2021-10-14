@@ -247,7 +247,6 @@ export default {
     handleClearFilters() {
       this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
       this.reRenderColumns({})
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.TARGETUSERSVIEWUSERGROUPS)
       this.callForData()
     },
     reRenderColumns(filterValues) {
