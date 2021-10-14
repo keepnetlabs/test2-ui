@@ -82,7 +82,6 @@
                   sub-title="Select the phishing technique for this scenario"
                   class-name="mt-4"
                 >
-                  {{ formValues.methodTypeId }}
                   <v-select
                     :items="scenarioDetailsLookup.methodTypes"
                     item-disabled="disabled"
