@@ -341,7 +341,6 @@ export default {
       this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
       this.$refs.refSamlSettings.filterValues = {}
       this.$refs.refSamlSettings.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.SAMLSETTINGS)
       this.callForSamlSettings()
     },
     setStoredTableSettings() {

@@ -1673,7 +1673,6 @@ export default {
       this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
       this.refreshDatatable()
     },
     handleRestoreDefaultSearch() {
@@ -1726,7 +1725,6 @@ export default {
       this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
       this.refreshDatatable()
     },
     handleRestoreDefaultSearchForTargetUsers() {

@@ -420,7 +420,6 @@ export default {
       this.tableCredientials = JSON.parse(JSON.stringify(this.defaultRequestBody))
       this.$refs.refRulesList.filterValues = {}
       this.$refs.refRulesList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.PLAYBOOKRULES)
       this.callForSearchPlaybook()
     },
     handleRestoreDefaultSearch() {

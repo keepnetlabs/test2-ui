@@ -339,7 +339,6 @@ export default {
       this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
       this.$refs.refAuditList.filterValues = {}
       this.$refs.refAuditList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.AUDIT)
       this.getDatatableList()
     },
     exportAuditLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {

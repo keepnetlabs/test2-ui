@@ -1706,11 +1706,12 @@ export default {
     },
     handleIntegrationTypeChange(val) {
       this.selectedIntegrationType = this.integrationTypes.find((item) => item.resourceId === val)
-      const { name, isSendFile, isSendFileHash, isSendUrl } = this.selectedIntegrationType
+      const { name, isSendFile, isSendFileHash, isSendUrl, isSendIp } = this.selectedIntegrationType
 
       this.formValues.isSendUrl = isSendUrl
       this.formValues.isSendFileHash = isSendFileHash
       this.formValues.isSendFile = isSendFile
+      this.formValues.isSendIp = isSendIp
 
       if (!isSendFile) {
         this.formValues.isUploadExecutableFile = false

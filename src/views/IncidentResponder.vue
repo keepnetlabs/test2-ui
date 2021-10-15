@@ -2439,7 +2439,6 @@ export default {
       this.$refs.refReportedEmails.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL)
       this.callForSearchNotifiedMail()
     },
     handleSetDefaultSearchReportedEmailClustered(search = '', filterValues = {}) {
@@ -2461,7 +2460,6 @@ export default {
         .toString()
         .substring(0, 5)}`
       this.setClusteredTableFilters()
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.REPORTED_EMAIL_CLUSTERED)
       this.callForClusteredTable()
     },
     handleListBulletedClick() {
