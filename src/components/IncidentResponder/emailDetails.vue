@@ -968,6 +968,7 @@ export default {
     font-weight: 600;
     line-height: 1.71;
     letter-spacing: normal;
+    word-break: break-all;
     color: rgba(0, 0, 0, 0.87) !important;
   }
 
