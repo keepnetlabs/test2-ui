@@ -135,7 +135,8 @@ export default {
             icon: 'mdi-delete',
             action: 'on-delete'
           }
-        ]
+        ],
+        serverSideEvents: { pagination: true, search: true, sort: true }
       }
     }
   },

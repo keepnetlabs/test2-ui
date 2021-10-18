@@ -1,6 +1,11 @@
 <template>
   <div class="campaign-manager" id="campaign-manager">
     <div class="campaign-manager__content">
+      <CampaignManagerAddOrEditModal
+        v-if="isShowAddOrEditCampaignManagerModal"
+        :status="isShowAddOrEditCampaignManagerModal"
+        @on-close="toggleAddCampaignManagerModal"
+      />
       <CampaignManagerParentTable
         v-show="!isItemTableShowing"
         :axiosPayload.sync="axiosPayload"
@@ -23,9 +28,14 @@
 import CampaignManagerParentTable from '@/components/CampaignManager/CampaignManagerParentTable'
 import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
+import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
 export default {
   name: 'CampaignManager',
-  components: { CampaignManagerItemTable, CampaignManagerParentTable },
+  components: {
+    CampaignManagerItemTable,
+    CampaignManagerParentTable,
+    CampaignManagerAddOrEditModal
+  },
   data() {
     return {
       axiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
@@ -70,6 +80,27 @@ export default {
     line-height: 25px;
     margin-left: 24px;
     margin-bottom: 24px;
+  }
+  &__target-groups {
+    max-width: 1100px;
+    .k-form-group__content {
+      display: flex;
+    }
+  }
+  &__close-advanced-search {
+    font-style: normal;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 0 8px !important;
+    margin-left: 24px;
+  }
+  &__advanced-search-container {
+  }
+  .k-stepper {
+    overflow: visible;
+    &__items {
+      overflow: visible;
+    }
   }
 }
 </style>
