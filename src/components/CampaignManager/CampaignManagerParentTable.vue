@@ -15,6 +15,7 @@
     :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
+    :row-actions="tableOptions.rowActions"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -41,6 +42,9 @@
         </div>
       </template>
     </template>
+    <template v-slot:datatable-row-actions="{ scope }">
+      <CampaignManagerRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
+    </template>
   </DataTable>
 </template>
 
@@ -55,6 +59,7 @@ import {
 } from '@/model/constants/commonConstants'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
+import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -62,7 +67,7 @@ const EMITS = {
 }
 export default {
   name: 'CampaignManagerParentTable',
-  components: { TheRecordsButton, DataTable },
+  components: { CampaignManagerRowActions, TheRecordsButton, DataTable },
   props: {
     axiosPayload: {
       type: Object
@@ -96,7 +101,33 @@ export default {
           btn: labels.New,
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus'
-        }
+        },
+        rowActions: [
+          {
+            name: labels.Edit,
+            id: 'btn-edit--row-actions-campaign-manager',
+            icon: 'mdi-pencil',
+            action: 'on-edit'
+          },
+          {
+            name: labels.Preview,
+            id: 'btn-preview--row-actions-campaign-manager',
+            icon: 'mdi-eye',
+            action: 'on-preview'
+          },
+          {
+            name: labels.Duplicate,
+            id: 'btn-duplicate--row-actions-campaign-manager',
+            icon: 'mdi-content-copy',
+            action: 'on-preview'
+          },
+          {
+            name: labels.Delete,
+            id: 'btn-delete--row-actions-campaign-manager',
+            icon: 'mdi-delete',
+            action: 'on-delete'
+          }
+        ]
       }
     }
   },
@@ -105,8 +136,16 @@ export default {
     this.setDefaultFilter()
     this.tableData = [
       {
+        resourceId: 'askjajsajsajs',
         name: 'Gurkan',
-        total: 5
+        total: 5,
+        actionStatus: 'paused'
+      },
+      {
+        resourceId: 'askjzsassaajsajsajs',
+        name: 'Gurkan2',
+        total: 1,
+        actionStatus: 'launch'
       }
     ]
   },
