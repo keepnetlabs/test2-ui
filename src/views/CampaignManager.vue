@@ -6,12 +6,14 @@
         :axiosPayload.sync="axiosPayload"
         :is-loading="isParentTableLoading"
         @on-record-button-click="handleOnRecordButtonClick"
+        @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
         :axiosPayload="axiosPayloadOfItem"
         :is-loading="isItemTableLoading"
         @on-back-click="handleOnBackClick"
+        @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
       />
     </div>
   </div>
@@ -30,7 +32,8 @@ export default {
       axiosPayloadOfItem: JSON.parse(JSON.stringify(axiosPayload)),
       isParentTableLoading: false,
       isItemTableLoading: false,
-      isItemTableShowing: false
+      isItemTableShowing: false,
+      isShowAddOrEditCampaignManagerModal: false
     }
   },
   methods: {
@@ -42,6 +45,9 @@ export default {
     },
     toggleItemTableShowing() {
       this.isItemTableShowing = !this.isItemTableShowing
+    },
+    toggleAddCampaignManagerModal() {
+      this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
     }
   }
 }

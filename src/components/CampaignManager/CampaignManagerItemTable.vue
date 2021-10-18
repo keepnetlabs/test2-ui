@@ -16,6 +16,8 @@
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
+    :add-button="tableOptions.addButton"
+    @on-add-button-click="toggleAddCampaignManagerModal"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -97,6 +99,12 @@ export default {
           btn: labels.New,
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus'
+        },
+        addButton: {
+          show: true,
+          action: 'on-add-button-click',
+          tooltip: 'Add a Campaign',
+          id: 'btn-add--item-campaign-manager'
         },
         rowActions: [
           {
@@ -250,6 +258,9 @@ export default {
     },
     handleBackClick() {
       this.$emit(EMITS.ON_BACK_CLICK)
+    },
+    toggleAddCampaignManagerModal() {
+      this.$emit('toggle-add-campaign-manager-modal')
     }
   }
 }
