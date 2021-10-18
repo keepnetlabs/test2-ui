@@ -2997,6 +2997,12 @@ export default {
       this.isSelectedAllEver = false
       this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
+    },
+    reRenderColumns(filterValues = {}) {
+      this.$nextTick(() => {
+        this.filterValues = filterValues
+        this.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      })
     }
   }
 }

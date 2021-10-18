@@ -329,6 +329,20 @@
                 </router-link>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/campaign-manager"
+                  id="btn--link-navigator-menu-phishing-dns-service"
+                  class="menu-link-default"
+                  :class="[routerName === 'Campaign Manager' && 'active-link']"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Campaign Manager</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
 
           <v-list-group

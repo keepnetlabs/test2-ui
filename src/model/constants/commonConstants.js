@@ -46,6 +46,13 @@ export const COMMON_CONSTANTS = {
     { text: 'UpdateMany', value: 4 },
     { text: 'DeleteMany', value: 5 }
   ],
+  CAMPAIGN_MANAGER_STATUS_ITEMS: [
+    labels.Completed,
+    labels.Running,
+    labels.Idle,
+    labels.Paused,
+    labels.Cancelled
+  ],
   FILTER_OPTIONS: ['Set as default filter', 'Restore default filter', 'Clear filters']
 }
 
@@ -152,6 +159,7 @@ export const LABEL_STORE = {
 
 export const PROPERTY_STORE = {
   TAGS: 'tags',
+  TARGET_USERS: 'TargetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
   ANALYSISENGINEPERMALINK: 'analysisEnginePermalink',
   CLIENTID: 'clientId',
@@ -257,11 +265,13 @@ export const PROPERTY_STORE = {
   AuthenticationTypeName: 'authenticationTypeName',
   ISDEFAULT: 'isDefault',
   TEMPLATENAME: 'TemplateName',
-  DIFFICULTY: 'difficultyName'
+  DIFFICULTY: 'difficultyName',
+  LASTLAUNCH: 'lastLaunch'
 }
 
 export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
+  CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
   INVESTIGATIONS: 'InvestigationsTableSettings',
   INVESTIGATION_DETAILS_TARGET_USER: 'InvestigationDetailsTargetUserTableSettings',
@@ -291,7 +301,8 @@ export const TABLE_SETTINGS_KEYS = {
   DNSSERVICELIST: 'DNSServiceList',
   DOMAINS: 'Domains',
   LANDINGPAGES: 'LandingPages',
-  SCENARIOS: 'Scenarios'
+  SCENARIOS: 'Scenarios',
+  LASTLAUNCH: 'lastLaunch'
 }
 
 export function getStoreValue(key, type) {
@@ -392,6 +403,7 @@ export const COMMON_SNACKBAR = {
 }
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
+  CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',
   PERMISSION: 'PERMISSION',
