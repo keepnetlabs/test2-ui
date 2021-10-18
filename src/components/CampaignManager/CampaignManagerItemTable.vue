@@ -6,7 +6,7 @@
     filterable
     options
     is-server-side
-    :refName="'campaignManagerTable'"
+    :refName="'campaignManagerItemTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
@@ -28,46 +28,47 @@
     @on-table-settings-change="handleSetRenderedColumns"
     @refreshAction="callForData"
   >
-    <template v-slot:datatable-custom-column="{ scope, col }">
-      <template v-if="scope.column.property === 'name'">
-        <div class="reported-email-subject__container">
-          <div class="reported-email-subject">
-            <span> {{ scope.row[col.property] }}</span>
-          </div>
-          <TheRecordsButton
-            :index="scope.$index"
-            :row="scope.row"
-            @on-click="handleRecordButtonClick"
-          />
-        </div>
-      </template>
+    <template #table-search-left-side>
+      <v-btn
+        id="btn-back--compaign-manager-clustered-table"
+        text
+        color="#2196f3"
+        class="clustered-table-back-btn"
+        @click="handleBackClick"
+      >
+        <v-icon left>mdi-arrow-left</v-icon> {{ labels.Back }}</v-btn
+      >
     </template>
     <template #datatable-row-actions="{ scope }">
-      <CampaignManagerRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
+      <CampaignManagerItemRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
+    </template>
+    <template #table-all-records>
+      <div class="campaign-manager__table-all-records">
+        {{ labels.InstancesOfCampaign }}: Gürkan
+      </div>
     </template>
   </DataTable>
 </template>
 
 <script>
-import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { COLUMNS } from '@/components/CampaignManager/utils'
+import labels from '@/model/constants/labels'
+import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
-import labels from '@/model/constants/labels'
-import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
+import DataTable from '@/components/DataTable'
+import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
+  ON_BACK_CLICK: 'on-back-click'
 }
 export default {
-  name: 'CampaignManagerParentTable',
-  components: { CampaignManagerRowActions, TheRecordsButton, DataTable },
+  name: 'CampaignManagerItemTable',
+  components: { CampaignManagerItemRowActions, DataTable },
   props: {
     axiosPayload: {
       type: Object
@@ -80,6 +81,7 @@ export default {
   emits: EMITS,
   data() {
     return {
+      labels,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
         ascending: 'ascending'
@@ -89,13 +91,7 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
-        columns: [
-          COLUMNS.CAMPAIGN_NAME,
-          COLUMNS.TARGET_USERS,
-          COLUMNS.STATUS,
-          COLUMNS.CREATE_TIME,
-          COLUMNS.LAST_LAUNCH
-        ],
+        columns: [COLUMNS.SCHEDULE, COLUMNS.TARGET_USERS, COLUMNS.STATUS, COLUMNS.CREATE_TIME],
         iEmpty: {
           message: labels.EmptyCampaignManager,
           btn: labels.New,
@@ -104,22 +100,10 @@ export default {
         },
         rowActions: [
           {
-            name: labels.Edit,
-            id: 'btn-edit--row-actions-campaign-manager',
-            icon: 'mdi-pencil',
-            action: 'on-edit'
-          },
-          {
-            name: labels.Preview,
-            id: 'btn-preview--row-actions-campaign-manager',
-            icon: 'mdi-eye',
-            action: 'on-preview'
-          },
-          {
-            name: labels.Duplicate,
-            id: 'btn-duplicate--row-actions-campaign-manager',
-            icon: 'mdi-content-copy',
-            action: 'on-preview'
+            name: labels.Stop,
+            id: 'btn-stop--row-actions-campaign-item-manager',
+            icon: 'mdi-stop',
+            action: 'on-stop'
           },
           {
             name: labels.Delete,
@@ -152,12 +136,12 @@ export default {
   methods: {
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
+        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE)
       )
     },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE)
       )
       if (!savedFilter) return
       const { filter, filterValues } = savedFilter
@@ -238,7 +222,7 @@ export default {
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
+        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
         JSON.stringify({
           filter: this.axiosPayload.filter,
           filterValues
@@ -260,12 +244,12 @@ export default {
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
+        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE,
         JSON.stringify(tableSettings)
       )
     },
-    handleRecordButtonClick(row) {
-      this.$emit(EMITS.ON_RECORD_BUTTON_CLICK, row)
+    handleBackClick() {
+      this.$emit(EMITS.ON_BACK_CLICK)
     }
   }
 }

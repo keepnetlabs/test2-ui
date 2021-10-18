@@ -43,6 +43,18 @@ export const COLUMNS = {
     parentRect: 'reported-email-subject',
     overrideWidth: true
   },
+  SCHEDULE: {
+    property: PROPERTY_STORE.SCHEDULE,
+    align: 'center',
+    editable: false,
+    label: labels.Schedule,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
   TARGET_USERS: {
     property: PROPERTY_STORE.TARGET_USERS,
     align: 'center',
@@ -88,4 +100,10 @@ export const COLUMNS = {
     type: 'text',
     filterableType: 'date'
   }
+}
+export const ACTION_STATUSES = {
+  LAUNCH: 'launch',
+  PAUSE: 'paused',
+  RESUME: 'resumed',
+  DELETE: 'delete'
 }

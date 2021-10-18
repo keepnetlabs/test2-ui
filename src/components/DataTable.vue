@@ -292,11 +292,13 @@
             </v-tooltip>
           </div>
         </div>
-        <data-table-load-all-records
-          v-if="isShowAllRecords"
-          :total-number-of-records="totalNumberOfRecords"
-          @on-all-records-button-click="$emit('on-all-records-button-click')"
-        />
+        <slot name="table-all-records">
+          <data-table-load-all-records
+            v-if="isShowAllRecords"
+            :total-number-of-records="totalNumberOfRecords"
+            @on-all-records-button-click="$emit('on-all-records-button-click')"
+          />
+        </slot>
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="getTableHeaderRender">
           <v-checkbox

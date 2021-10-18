@@ -188,6 +188,7 @@ export const PROPERTY_STORE = {
   EMAIL: 'email',
   DEPARTMENT: 'department',
   TITLE: 'title',
+  SCHEDULE: 'schedule',
   DESCRIPTION: 'description',
   STATUS: 'status',
   DIAGNOSTICTOOL: 'diagnosticToolStatus',
@@ -272,6 +273,7 @@ export const PROPERTY_STORE = {
 export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
+  CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
   INVESTIGATIONS: 'InvestigationsTableSettings',
   INVESTIGATION_DETAILS_TARGET_USER: 'InvestigationDetailsTargetUserTableSettings',
@@ -404,6 +406,7 @@ export const COMMON_SNACKBAR = {
 
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
+  CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',
   PERMISSION: 'PERMISSION',
