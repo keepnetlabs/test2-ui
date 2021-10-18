@@ -109,7 +109,10 @@ export default {
     },
     getStyle() {
       const style = {}
-      if (this.actionStatus === ACTION_STATUSES.PAUSE) style.backgroundColor = '#E6A23C'
+      if (this.actionStatus === ACTION_STATUSES.PAUSE) {
+        style.backgroundColor = '#E6A23C'
+        style.opacity = 0.66
+      }
       return style
     }
   },
