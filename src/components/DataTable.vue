@@ -446,8 +446,8 @@
             :lazy="lazy"
             ref="elTableRef"
             :row-key="rowKey"
-            @row-click="handleRowClick"
             style="width: 100%;"
+            @row-click="handleRowClick"
           >
             <el-table-column
               align="center"
@@ -1029,6 +1029,9 @@ export default {
   props: {
     isShowDownloadModal: {
       default: false
+    },
+    addRowClassName: {
+      type: Function
     },
     justCompareRowKey: {
       type: Boolean,
@@ -2529,10 +2532,12 @@ export default {
     },
     tableRowClassName(row) {
       const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row))
-      if (ans) {
-        return 'selected-row'
-      }
-      return ''
+      let className = ''
+
+      if (ans) className += 'selected-row'
+
+      if (this.addRowClassName) className += this.addRowClassName(row)
+      return className
     },
     getServerSideSelectionParams() {
       const serverSideSelectionParams = {}

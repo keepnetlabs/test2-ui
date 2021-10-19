@@ -11,8 +11,10 @@
     :empty="tableOptions.iEmpty"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
+    :add-row-class-name="addRowClassName"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
+    @row-click="handleRowClick"
   >
   </DataTable>
 </template>
@@ -69,10 +71,10 @@ export default {
             align: 'left',
             editable: false,
             label: 'Group Name',
-            fixed: 'left',
+            fixed: false,
             sortable: true,
             show: true,
-            type: 'slot',
+            type: 'text',
             width: 340,
             isEditable: true,
             filterableType: 'text'
@@ -85,6 +87,7 @@ export default {
             sortable: true,
             show: true,
             type: 'priority',
+            fixed: false,
             isEditable: true,
             filterableType: 'select',
             filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
@@ -107,13 +110,13 @@ export default {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
+            fixed: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
             show: true,
             type: 'text',
             filterableType: 'date',
             isEditable: true,
-            width: 265,
             overrideWidth: true
           }
         ],
@@ -123,7 +126,13 @@ export default {
         },
         serverSideEvents: { pagination: true, search: true, sort: true }
       },
-      serverSideProps: new ServerSideProps()
+      serverSideProps: new ServerSideProps(),
+      highlightedRow: {}
+    }
+  },
+  watch: {
+    highlightedRow(val) {
+      this.$emit('on-highlighted-row-change', val)
     }
   },
   created() {
@@ -143,6 +152,7 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.totalNumberOfRecords = totalNumberOfRecords
           this.tableData = data.results.length ? data.results : []
+          this.highlightedRow = this.tableData[0]
         })
         .finally(this.setLoading)
     },
@@ -186,6 +196,14 @@ export default {
     checkIsColumnFilterActive() {
       this.tableOptions.isColumnFilterActive =
         this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    handleRowClick(row) {
+      this.highlightedRow = row
+    },
+    addRowClassName({ row }) {
+      return row.resourceId === this.highlightedRow.resourceId
+        ? 'campaign-manager-highlighted-row'
+        : ''
     }
   }
 }
@@ -194,6 +212,20 @@ export default {
 <style lang="scss">
 #campaign-manager-target-groups-data-table.k-table__wrapper {
   padding-bottom: 0;
-  padding-top: 0;
+  .table-wrapper {
+    padding-top: 0;
+  }
+  .card .table-wrapper .selection-row {
+    top: 1px;
+  }
+}
+.campaign-manager-highlighted-row {
+  background-color: #fefdf2 !important;
+  color: #2196f3 !important;
+  font-weight: 600 !important;
+  div,
+  span {
+    color: #2196f3 !important;
+  }
 }
 </style>

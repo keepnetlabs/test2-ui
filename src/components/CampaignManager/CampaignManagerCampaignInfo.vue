@@ -48,7 +48,7 @@
         {{ isShowAdvancedSearch ? labels.CloseAdvancedSearch : labels.OpenAdvancedSearch }}
       </v-btn>
     </FormGroup>
-    <CampaignManagerTargetGroups />
+    <CampaignManagerTargetGroups v-if="isShowAdvancedSearch" />
   </v-form>
 </template>
 

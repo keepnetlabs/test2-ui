@@ -26,19 +26,22 @@
             :offset-y="true"
           >
             <template #activator="{ on }">
-              <v-text-field
-                v-on="on"
-                v-model.trim="company"
-                id="input--campaign-manager-company"
-                class="ml-4 campaign-manager-target-groups__input-company"
-                outlined
-                hide-details
-                readonly
-                autocomplete="off"
-                placeholder="Select a company to filter"
-                :append-icon="filterCompanyIcon"
-              ></v-text-field
-            ></template>
+              <div>
+                <v-text-field
+                  v-on="on"
+                  v-model.trim="company"
+                  id="input--campaign-manager-company"
+                  class="ml-4 campaign-manager-target-groups__input-company"
+                  outlined
+                  hide-details
+                  readonly
+                  autocomplete="off"
+                  placeholder="Select a company to filter"
+                  :append-icon="filterCompanyIcon"
+                  @click:append="isFilterCompanyMenuOpen = true"
+                ></v-text-field>
+              </div>
+            </template>
             <div class="filter__body-container">
               <div>
                 <v-text-field
@@ -52,7 +55,7 @@
                 ></v-text-field>
               </div>
               <v-checkbox
-                v-for="item in companyItems"
+                v-for="item in getCompanyItems"
                 v-model="filterChecked"
                 :key="item.value"
                 color="#2196f3"
@@ -82,14 +85,28 @@
           <div
             class="pane"
             :style="{
-              width: '50%',
+              width: '60%',
+              minWidth: '50%'
+            }"
+          >
+            <CampaignManagerTargetGroupsTable
+              @on-highlighted-row-change="highlightedRow = $event"
+            />
+          </div>
+          <MultipaneResizer></MultipaneResizer>
+          <div
+            class="pane"
+            :style="{
+              width: '40%',
               minWidth: '25%'
             }"
           >
-            <CampaignManagerTargetGroupsTable />
+            <CampaignManagerTargetGroupUsersTable
+              class="ml-4"
+              :resourceId="highlightedRow.resourceId"
+              :groupName="highlightedRow.name"
+            />
           </div>
-          <MultipaneResizer></MultipaneResizer>
-          <div class="pane" :style="{ flexGrow: 1 }"></div>
         </Multipane>
       </div>
     </div>
@@ -99,10 +116,17 @@
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerTargetGroupsTable'
+import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerTargetGroupUsersTable'
+import { getMyCompanies } from '@/api/company'
 
 export default {
   name: 'CampaignManagerTargetGroups',
-  components: { CampaignManagerTargetGroupsTable, Multipane, MultipaneResizer },
+  components: {
+    CampaignManagerTargetGroupUsersTable,
+    CampaignManagerTargetGroupsTable,
+    Multipane,
+    MultipaneResizer
+  },
   data() {
     return {
       search: '',
@@ -111,20 +135,39 @@ export default {
       isFilterCompanyMenuOpen: false,
       filterValue: '',
       filterChecked: [],
-      companyItems: []
+      companyItems: [],
+      highlightedRow: {}
     }
   },
   computed: {
     getFilterButtonDisabled() {
-      return !!this.filterChecked.length
+      return !Boolean(this.filterChecked.length)
+    },
+    getCompanyItems() {
+      return this.filterValue
+        ? this.companyItems.filter((item) => item.text.includes(this.filterValue))
+        : this.companyItems
     }
   },
   watch: {
-    filterValue(val) {}
+    search(val) {
+      this.debo
+    }
+  },
+  created() {
+    this.callForCompanyItems()
   },
   methods: {
     handleFilter() {},
-    clearFilter() {}
+    clearFilter() {},
+    callForCompanyItems() {
+      getMyCompanies().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.companyItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+      })
+    }
   }
 }
 </script>
@@ -144,6 +187,9 @@ export default {
   }
   &__input-company {
     max-width: 139px;
+    .v-icon {
+      cursor: pointer;
+    }
   }
   &__input-search {
     max-width: 200px;
@@ -161,6 +207,7 @@ export default {
       padding-right: 8px;
       padding-bottom: 4px;
       bottom: 0;
+      background-color: white;
 
       &-button {
         font-size: 14px;
