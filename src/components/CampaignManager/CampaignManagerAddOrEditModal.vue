@@ -97,7 +97,7 @@
 import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
-import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerCampaignInfo'
+import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 
 const EMITS = {
   ON_CLOSE: 'on-close'

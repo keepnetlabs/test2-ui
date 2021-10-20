@@ -115,8 +115,8 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerTargetGroupsTable'
-import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerTargetGroupUsersTable'
+import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupsTable'
+import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupUsersTable'
 import { getMyCompanies } from '@/api/company'
 
 export default {
@@ -150,9 +150,7 @@ export default {
     }
   },
   watch: {
-    search(val) {
-      this.debo
-    }
+    search(val) {}
   },
   created() {
     this.callForCompanyItems()
