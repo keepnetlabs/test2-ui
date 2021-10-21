@@ -100,6 +100,7 @@
               :empty.sync="isTargetGroupEmpty"
               :is-loading.sync="isTargetGroupLoading"
               @on-highlighted-row-change="highlightedRow = $event"
+              @handle-selection-change="$emit('handle-selection-change', $event)"
             />
           </div>
           <MultipaneResizer></MultipaneResizer>
@@ -139,6 +140,11 @@ export default {
     Multipane,
     MultipaneResizer
   },
+  props: {
+    selectedTargetGroups: {
+      type: Array
+    }
+  },
   data() {
     return {
       search: '',
@@ -173,12 +179,15 @@ export default {
           { FieldName: 'CreateTime', Operator: 'Contains', Value: val }
         ])
       }, 500)
-    }
+    },
+    selectedTargetGroups(val) {}
   },
   created() {
     this.callForCompanyItems()
   },
   methods: {
+    clearFilter() {},
+    handleFilter() {},
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)
@@ -259,6 +268,12 @@ export default {
         letter-spacing: normal;
       }
     }
+  }
+}
+.campaign-manager-target-groups-radio {
+  .v-radio label {
+    color: #383b41;
+    font-weight: 400;
   }
 }
 </style>

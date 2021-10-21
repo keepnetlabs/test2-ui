@@ -48,7 +48,13 @@
         {{ isShowAdvancedSearch ? labels.CloseAdvancedSearch : labels.OpenAdvancedSearch }}
       </v-btn>
     </FormGroup>
-    <CampaignManagerTargetGroups v-show="isShowAdvancedSearch" class="mb-6" />
+    <CampaignManagerTargetGroups
+      v-show="isShowAdvancedSearch"
+      ref="refCampaignManagerTargetGroup"
+      class="mb-6"
+      :selected-target-groups="formData.targetGroups"
+      @handle-selection-change="handleItemSelectionChange"
+    />
     <FormGroup
       has-hint
       class-name="campaign-manager__target-groups"
@@ -83,11 +89,43 @@
     </FormGroup>
     <CampaignManagerPhishingScenarios
       v-show="isShowAdvancedSearchPhishing"
+      class="mb-6"
       :items="phishingScenarioItems"
       :value="formData.phishingScenario"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
     />
+    <FormGroup :title="labels.Schedule" :sub-title="labels.ScheduleSub">
+      <v-radio-group
+        v-model="formData.schedule"
+        class="mt-0 campaign-manager-target-groups-radio"
+        hide-details
+      >
+        <v-radio
+          v-for="item in radioItems"
+          :key="item"
+          :id="`input--campaign-manager-radio-${item}`"
+          :value="item"
+          :label="item"
+          color="#2196f3"
+        ></v-radio>
+      </v-radio-group>
+    </FormGroup>
+    <FormGroup class="mt-6" :title="labels.Duration" :sub-title="labels.DurationSub" has-hint>
+      <v-text-field
+        id="input--campaign-manager-days"
+        placeholder="Enter"
+        outlined
+        class="edit-name-textfield edit-select standard-height"
+        v-model="formData.days"
+        v-mask="'###'"
+        style="max-width: 48px;"
+        :rules="rules.days"
+      ></v-text-field>
+      <span style="position: absolute; top: 66px; left: 56px; font-size: 13px; color: #000;"
+        >Days</span
+      >
+    </FormGroup>
   </v-form>
 </template>
 
@@ -140,11 +178,14 @@ export default {
       isPhishingScenariosLoading: false,
       isShowAdvancedSearch: true,
       isShowAdvancedSearchPhishing: true,
+      radioItems: ['Send now', 'Save for later'],
       labels,
       formData: {
         name: '',
         targetGroups: [],
-        phishingScenario: ''
+        phishingScenario: '',
+        schedule: 'Send now',
+        days: 3
       },
       targetGroupItems: [],
       phishingScenarioItems: [],
@@ -155,10 +196,15 @@ export default {
           (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName))
         ],
         select: [
-          (v) => validations.required(v, labels.Required),
+          (v) => v.length || labels.Required,
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
+        ],
+        days: [
+          (v) => validations.required(v, labels.Required),
+          (v) => validations.startsWith(v, 'Cannot start with 0', 0)
         ]
-      }
+      },
+      selectionsToBeAdded: []
     }
   },
   created() {

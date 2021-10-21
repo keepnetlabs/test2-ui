@@ -41,7 +41,7 @@
               :title="labels.PhishingCampaignInfo"
               :subtitle="labels.PhishingCampaignInfoSub"
             />
-            <CampaignManagerCampaignInfo />
+            <CampaignManagerCampaignInfo ref="refCampaignManagerCampaignInfo" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -98,6 +98,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
+import { scrollToComponent } from '@/utils/functions'
 
 const EMITS = {
   ON_CLOSE: 'on-close'
@@ -138,7 +139,16 @@ export default {
     handleSubmit() {
       switch (this.step) {
         case 1:
-          this.changeStep()
+          const { refCampaignManagerCampaignInfo } = this.$refs
+          const { refForm } = refCampaignManagerCampaignInfo.$refs
+          if (refForm.validate()) {
+            this.changeStep()
+          } else {
+            this.$nextTick(() => {
+              const el = refForm.$el.querySelector('.error--text')
+              scrollToComponent(el)
+            })
+          }
           break
         case 2:
           this.changeStep()

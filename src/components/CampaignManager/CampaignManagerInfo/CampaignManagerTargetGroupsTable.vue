@@ -19,6 +19,7 @@
     @server-side-size-changed="serverSideSizeChanged"
     @sortChangedEvent="sortChanged"
     @row-click="handleRowClick"
+    @handleSelectionChange="$emit('handle-selection-change', $event)"
   >
   </DataTable>
 </template>
