@@ -5,6 +5,7 @@
     selectable
     is-server-side
     :refName="'campaignManagerTargetGroupTable'"
+    :is-column-filter-active="tableOptions.isColumnFilterActive"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
@@ -14,6 +15,9 @@
     :add-row-class-name="addRowClassName"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
+    @server-side-page-number-changed="serverSidePageNumberChanged"
+    @server-side-size-changed="serverSideSizeChanged"
+    @sortChangedEvent="sortChanged"
     @row-click="handleRowClick"
   >
   </DataTable>
@@ -54,6 +58,14 @@ export default {
   components: {
     DataTable
   },
+  props: {
+    empty: {
+      type: Boolean
+    },
+    isLoading: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       axiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
@@ -61,7 +73,6 @@ export default {
         id: 'campaign-manager-target-groups-data-table',
         ascending: 'ascending'
       },
-      isLoading: false,
       tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
@@ -122,6 +133,7 @@ export default {
         ],
         iEmpty: {
           message: labels.EmptyTargetGroup,
+          subMes: 'Go to Company>Target Users to add Target Groups',
           id: 'btn-empty--campaign-manager-empty-target-group'
         },
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -151,13 +163,19 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.totalNumberOfRecords = totalNumberOfRecords
-          this.tableData = data.results.length ? data.results : []
-          this.highlightedRow = this.tableData[0]
+          this.tableData = data.results
+          if (data.results.length) {
+            this.highlightedRow = this.tableData[0]
+            this.$emit('update:empty', false)
+          } else {
+            this.highlightedRow = {}
+            this.$emit('update:empty', true)
+          }
         })
         .finally(this.setLoading)
     },
     setLoading(val = false) {
-      this.isLoading = val
+      this.$emit('update:is-loading', val)
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
@@ -173,6 +191,10 @@ export default {
         this.axiosPayload
       )
       this.checkIsColumnFilterActive()
+      this.callForData()
+    },
+    searchChangedFilter(filter = []) {
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = filter
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {

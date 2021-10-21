@@ -1,5 +1,5 @@
 export const methods = [
-  { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+  { text: 'Click-Only', value: 'WNZt0sCVCWB3' },
   { text: 'Data Submission', value: 'DYC0gugxJMjT' },
   { text: 'Attachment', value: '7dLrW2kdBTDs' }
 ]

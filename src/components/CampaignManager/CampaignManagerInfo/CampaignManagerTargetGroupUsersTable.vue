@@ -1,6 +1,9 @@
 <template>
   <div>
-    <div v-if="!isLoading" class="campaign-manager-target-user-groups-header">
+    <div
+      v-if="!isLoading && !isTargetGroupEmpty && !isTargetGroupLoading"
+      class="campaign-manager-target-user-groups-header"
+    >
       <v-icon color="#000000">mdi-account-multiple</v-icon>
       <span class="campaign-manager-target-user-groups-header__text">{{ groupName }}</span>
       <span class="campaign-manager-target-user-groups-header__badge"
@@ -14,7 +17,7 @@
         is-server-side
         :refName="'campaignManagerTargetGroupUsersTable'"
         :showPagination="false"
-        :loading="isLoading"
+        :loading="getLoadingStatus"
         :table="tableData"
         :columns="tableOptions.columns"
         :empty="tableOptions.iEmpty"
@@ -58,6 +61,12 @@ export default {
     },
     groupName: {
       type: String
+    },
+    isTargetGroupEmpty: {
+      type: Boolean
+    },
+    isTargetGroupLoading: {
+      type: Boolean
     }
   },
   data() {
@@ -115,6 +124,11 @@ export default {
   watch: {
     resourceId() {
       this.callForData()
+    }
+  },
+  computed: {
+    getLoadingStatus() {
+      return this.isTargetGroupLoading || this.isLoading
     }
   },
   created() {

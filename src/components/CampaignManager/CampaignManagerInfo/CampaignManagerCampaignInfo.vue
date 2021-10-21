@@ -48,7 +48,7 @@
         {{ isShowAdvancedSearch ? labels.CloseAdvancedSearch : labels.OpenAdvancedSearch }}
       </v-btn>
     </FormGroup>
-    <CampaignManagerTargetGroups v-if="isShowAdvancedSearch" class="mb-6" />
+    <CampaignManagerTargetGroups v-show="isShowAdvancedSearch" class="mb-6" />
     <FormGroup
       has-hint
       class-name="campaign-manager__target-groups"
@@ -82,6 +82,7 @@
       </v-btn>
     </FormGroup>
     <CampaignManagerPhishingScenarios
+      v-show="isShowAdvancedSearchPhishing"
       :items="phishingScenarioItems"
       :value="formData.phishingScenario"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
@@ -138,7 +139,7 @@ export default {
       isTargetGroupLoading: false,
       isPhishingScenariosLoading: false,
       isShowAdvancedSearch: true,
-      isShowAdvancedSearchPhishing: false,
+      isShowAdvancedSearchPhishing: true,
       labels,
       formData: {
         name: '',
@@ -189,8 +190,9 @@ export default {
           const {
             data: { data }
           } = response
-          console.log('data.results', data.results)
           this.phishingScenarioItems = data.results || []
+          if (this.phishingScenarioItems.length && !this.isEdit)
+            this.formData.phishingScenario = this.phishingScenarioItems[0].resourceId
         })
         .finally(this.setPhishingScenarioLoading)
     },

@@ -1,5 +1,11 @@
 <template>
-  <div class="campaign-manager-target-groups">
+  <div
+    style="padding-right: 120px;"
+    :class="[
+      'campaign-manager-target-groups',
+      { 'campaign-manager-target-groups--empty': isTargetGroupEmpty }
+    ]"
+  >
     <div class="campaign-manager-target-groups-card">
       <div class="campaign-manager-target-groups-card__header">
         <v-text-field
@@ -85,16 +91,20 @@
           <div
             class="pane"
             :style="{
-              width: '60%',
+              width: isTargetGroupEmpty ? '100%' : '60%',
               minWidth: '50%'
             }"
           >
             <CampaignManagerTargetGroupsTable
+              ref="refGroupTable"
+              :empty.sync="isTargetGroupEmpty"
+              :is-loading.sync="isTargetGroupLoading"
               @on-highlighted-row-change="highlightedRow = $event"
             />
           </div>
           <MultipaneResizer></MultipaneResizer>
           <div
+            v-if="!isTargetGroupEmpty"
             class="pane"
             :style="{
               width: '40%',
@@ -103,6 +113,8 @@
           >
             <CampaignManagerTargetGroupUsersTable
               class="ml-4"
+              :is-target-group-empty="isTargetGroupEmpty"
+              :is-target-group-loading="isTargetGroupLoading"
               :resourceId="highlightedRow.resourceId"
               :groupName="highlightedRow.name"
             />
@@ -136,7 +148,10 @@ export default {
       filterValue: '',
       filterChecked: [],
       companyItems: [],
-      highlightedRow: {}
+      highlightedRow: {},
+      isTargetGroupEmpty: false,
+      isTargetGroupLoading: true,
+      timeout: null
     }
   },
   computed: {
@@ -150,14 +165,28 @@ export default {
     }
   },
   watch: {
-    search(val) {}
+    search(val) {
+      this.debounce(() => {
+        this.$refs.refGroupTable.searchChangedFilter([
+          { FieldName: 'Name', Operator: 'Contains', Value: val },
+          { FieldName: 'Priority', Operator: 'Contains', Value: val },
+          { FieldName: 'CreateTime', Operator: 'Contains', Value: val }
+        ])
+      }, 500)
+    }
   },
   created() {
     this.callForCompanyItems()
   },
   methods: {
-    handleFilter() {},
-    clearFilter() {},
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
     callForCompanyItems() {
       getMyCompanies().then((response) => {
         const {
@@ -172,6 +201,21 @@ export default {
 
 <style lang="scss">
 .campaign-manager-target-groups {
+  &--empty {
+    .campaign-manager-target-groups-card__header {
+      pointer-events: none;
+      opacity: 0.5;
+    }
+    #campaign-manager-target-groups-data-table {
+      height: 100%;
+      .v-card {
+        height: 100%;
+      }
+      .table-wrapper {
+        box-shadow: none !important;
+      }
+    }
+  }
   &-card {
     background: #ffffff;
     box-shadow: 0px 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
