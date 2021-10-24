@@ -292,11 +292,13 @@
             </v-tooltip>
           </div>
         </div>
-        <data-table-load-all-records
-          v-if="isShowAllRecords"
-          :total-number-of-records="totalNumberOfRecords"
-          @on-all-records-button-click="$emit('on-all-records-button-click')"
-        />
+        <slot name="table-all-records">
+          <data-table-load-all-records
+            v-if="isShowAllRecords"
+            :total-number-of-records="totalNumberOfRecords"
+            @on-all-records-button-click="$emit('on-all-records-button-click')"
+          />
+        </slot>
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="getTableHeaderRender">
           <v-checkbox
@@ -444,8 +446,8 @@
             :lazy="lazy"
             ref="elTableRef"
             :row-key="rowKey"
-            @row-click="handleRowClick"
             style="width: 100%;"
+            @row-click="handleRowClick"
           >
             <el-table-column
               align="center"
@@ -1027,6 +1029,9 @@ export default {
   props: {
     isShowDownloadModal: {
       default: false
+    },
+    addRowClassName: {
+      type: Function
     },
     justCompareRowKey: {
       type: Boolean,
@@ -2527,10 +2532,12 @@ export default {
     },
     tableRowClassName(row) {
       const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row))
-      if (ans) {
-        return 'selected-row'
-      }
-      return ''
+      let className = ''
+
+      if (ans) className += 'selected-row'
+
+      if (this.addRowClassName) className += this.addRowClassName(row)
+      return className
     },
     getServerSideSelectionParams() {
       const serverSideSelectionParams = {}
@@ -2997,6 +3004,12 @@ export default {
       this.isSelectedAllEver = false
       this.$delete(this.filterValues, fieldName)
       this.$emit('columnFilterCleared', fieldName)
+    },
+    reRenderColumns(filterValues = {}) {
+      this.$nextTick(() => {
+        this.filterValues = filterValues
+        this.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      })
     }
   }
 }
