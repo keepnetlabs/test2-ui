@@ -48,6 +48,7 @@
               :title="labels.AdvancedSettings"
               :subtitle="labels.AdvancedSettingsSub"
             />
+            <CampaignManagerAdvancedSettings ref="refCampaignManagerAdvancedSettings" />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -99,6 +100,7 @@ import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import { scrollToComponent } from '@/utils/functions'
+import CampaignManagerAdvancedSettings from '@/components/CampaignManager/AdvancedSettings/CampaignManagerAdvancedSettings'
 
 const EMITS = {
   ON_CLOSE: 'on-close'
@@ -106,7 +108,12 @@ const EMITS = {
 
 export default {
   name: 'CampaignManagerAddOrEditModal',
-  components: { CampaignManagerCampaignInfo, ConfigureCompanyStepHeader, AppModal },
+  components: {
+    CampaignManagerAdvancedSettings,
+    CampaignManagerCampaignInfo,
+    ConfigureCompanyStepHeader,
+    AppModal
+  },
   props: {
     status: {
       type: Boolean
@@ -133,6 +140,12 @@ export default {
     closeOverlay() {
       this.$emit(EMITS.ON_CLOSE)
     },
+    showErrorMessage(ref) {
+      this.$nextTick(() => {
+        const el = ref.$el.querySelector('.error--text')
+        scrollToComponent(el)
+      })
+    },
     changeStep(flag = 1) {
       this.step += flag
     },
@@ -141,17 +154,15 @@ export default {
         case 1:
           const { refCampaignManagerCampaignInfo } = this.$refs
           const { refForm } = refCampaignManagerCampaignInfo.$refs
-          if (refForm.validate()) {
-            this.changeStep()
-          } else {
-            this.$nextTick(() => {
-              const el = refForm.$el.querySelector('.error--text')
-              scrollToComponent(el)
-            })
-          }
+
+          if (refForm.validate()) this.changeStep()
+          else this.showErrorMessage(refForm)
           break
         case 2:
-          this.changeStep()
+          const { refCampaignManagerAdvancedSettings } = this.$refs
+          const { refForm: refFormAdvanced } = refCampaignManagerAdvancedSettings.$refs
+          if (refFormAdvanced.validate()) this.changeStep()
+          else this.showErrorMessage(refFormAdvanced)
           break
         case 3:
           this.closeOverlay()

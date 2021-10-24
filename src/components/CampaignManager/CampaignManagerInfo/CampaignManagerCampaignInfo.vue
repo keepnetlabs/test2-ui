@@ -53,7 +53,6 @@
       ref="refCampaignManagerTargetGroup"
       class="mb-6"
       :selected-target-groups="formData.targetGroups"
-      @handle-selection-change="handleItemSelectionChange"
     />
     <FormGroup
       has-hint
@@ -113,12 +112,13 @@
     </FormGroup>
     <FormGroup class="mt-6" :title="labels.Duration" :sub-title="labels.DurationSub" has-hint>
       <v-text-field
-        id="input--campaign-manager-days"
-        placeholder="Enter"
-        outlined
-        class="edit-name-textfield edit-select standard-height"
         v-model="formData.days"
         v-mask="'###'"
+        id="input--campaign-manager-days"
+        outlined
+        hide-details
+        placeholder="Enter"
+        class="edit-name-textfield edit-select standard-height"
         style="max-width: 48px;"
         :rules="rules.days"
       ></v-text-field>
@@ -196,7 +196,7 @@ export default {
           (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName))
         ],
         select: [
-          (v) => v.length || labels.Required,
+          (v) => !!v.length || labels.Required,
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' ')
         ],
         days: [
@@ -214,7 +214,7 @@ export default {
   methods: {
     callForTargetGroups() {
       this.setTargetGroupLoading(true)
-      getTargetGroups()
+      getTargetGroups({ loading: true })
         .then((response) => {
           const {
             data: { data }

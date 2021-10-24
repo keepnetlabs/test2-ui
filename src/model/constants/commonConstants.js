@@ -163,6 +163,7 @@ export const PROPERTY_STORE = {
   ADDINSTATUSNAME: 'addInStatusName',
   ANALYSISENGINEPERMALINK: 'analysisEnginePermalink',
   CLIENTID: 'clientId',
+  SMTP: 'smtp',
   COMPANYID: 'companyId',
   TENANTUSERCOUNT: 'tenantUserCount',
   DIRECTORYID: 'directoryId',

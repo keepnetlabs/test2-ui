@@ -28,8 +28,8 @@ export function createTargetUser(payload) {
   return testRequest.post('/target-users', payload, { snackbar: COMMON_SNACKBAR })
 }
 
-export function getTargetGroups() {
-  return testRequest.get(`/target-groups`)
+export function getTargetGroups(config = {}) {
+  return testRequest.get(`/target-groups`, { ...config })
 }
 
 export function searchTargetGroups(payload) {
