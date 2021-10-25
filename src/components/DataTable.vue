@@ -362,7 +362,7 @@
                   <v-icon class="selection-icons" color="white">mdi-delete</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">Delete selected rows</span>
+              <span class="tooltip-span">Delete</span>
             </v-tooltip>
             <slot name="selection-all-slot" />
             <v-tooltip
