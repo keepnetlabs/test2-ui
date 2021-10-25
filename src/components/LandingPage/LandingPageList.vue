@@ -496,13 +496,17 @@ export default {
       this.getDefaultFilterAndSearch()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
-      localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
-        JSON.stringify({
-          filter: this.bodyData.filter,
-          filterValues
-        })
-      )
+      if (Object.keys(filterValues).length) {
+        localStorage.setItem(
+          DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES,
+          JSON.stringify({
+            filter: this.bodyData.filter,
+            filterValues
+          })
+        )
+      } else {
+        localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES)
+      }
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -625,14 +629,6 @@ export default {
             const { results = [] } = data
             this.tableData = results
             this.totalNumberOfRecords = totalNumberOfRecords
-
-            if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-
-            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-              this.showAllRecords = false
-            }
           })
           .catch(() => {
             this.tableData = []
@@ -698,6 +694,7 @@ export default {
     }
   },
   created() {
+    this.getDefaultFilterAndSearch()
     getLandingPageFormDetails().then((response) => {
       this.$set(
         this.tableOptions.columns[1],
@@ -726,9 +723,6 @@ export default {
       this.tableKey = `key-${Math.random().toString().substring(5)}`
       this.landingPageData = response.data.data
     })
-  },
-  mounted() {
-    this.getDefaultFilterAndSearch()
   }
 }
 </script>

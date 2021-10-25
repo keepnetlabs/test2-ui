@@ -2367,7 +2367,8 @@ export default {
               items: data,
               warningMessage: this.notifyMessage,
               selectAll: !!this.isInvestigationWarningSelectAll,
-              excludedItems: this.investigationWarningExcludedResourceIdList
+              excludedItems: this.investigationWarningExcludedResourceIdList,
+              filter: this.investigationListBodyData.filter
             },
             id: this.$route.params.id
           })
@@ -2405,7 +2406,8 @@ export default {
           warningMessage: message,
           selectAll: this.isInvestigationDeleteSelectAll,
           excludedItems: this.investigationDeleteExcludedResourceIdList,
-          isPermanentDelete: val
+          isPermanentDelete: val,
+          filter: this.investigationListBodyData.filter
         }
         this.warnAndDeleteButtonDisabled = true
         deleteAndMessageInvestigationDetailsItem(payload, this.$route.params.id).finally(() => {
@@ -2424,6 +2426,7 @@ export default {
               isPermanentDelete: val,
               selectAll: this.isInvestigationDeleteSelectAll,
               excludedItems: this.investigationDeleteExcludedResourceIdList,
+              filter: this.investigationListBodyData.filter,
               warningMessage: message
             },
             id: this.$route.params.id

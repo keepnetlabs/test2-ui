@@ -187,13 +187,6 @@ import DataTable from '../DataTable'
 import NewScenario from './NewScenario'
 import DeleteScenario from './DeleteScenario'
 import AppDialog from '../AppDialog'
-import { deleteIntegration, disableIntegration, enableIntegration } from '@/api/integrations'
-import {
-  getEmailTemplatesList,
-  exportEmailTemplates,
-  getEmailTemplatePreviewContent,
-  getLookups
-} from '@/api/phishingsimulator'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -716,15 +709,11 @@ export default {
     this.bodyData.pageNumber = page
     this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SCENARIOS))
-  },
-  mounted() {}
+  }
 }
 </script>
 
 <style lang="scss">
-.scenarios {
-  min-height: 90vh;
-}
 .scenarios__row-actions {
   .v-list-item__title {
     display: flex;

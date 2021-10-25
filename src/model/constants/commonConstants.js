@@ -444,7 +444,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
 }
 
 export const INTEGRATION_TYPES = {
-  VMRAY: 'Vmray',
+  VMRAY: 'VMRay',
   FORTINET: 'FortiNet',
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IBM X-Force',
