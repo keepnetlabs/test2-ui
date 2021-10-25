@@ -55,6 +55,10 @@
               :title="labels.CampaignSummary"
               :subtitle="labels.CampaignSummarySub"
             />
+            <CampaignManagerSummary
+              ref="refCampaignManagerSummary"
+              :form-data="getFormDataForCampaignSummary"
+            />
           </v-stepper-content>
         </v-stepper-items>
       </v-stepper>
@@ -101,6 +105,7 @@ import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyS
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import { scrollToComponent } from '@/utils/functions'
 import CampaignManagerAdvancedSettings from '@/components/CampaignManager/AdvancedSettings/CampaignManagerAdvancedSettings'
+import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 
 const EMITS = {
   ON_CLOSE: 'on-close'
@@ -109,6 +114,7 @@ const EMITS = {
 export default {
   name: 'CampaignManagerAddOrEditModal',
   components: {
+    CampaignManagerSummary,
     CampaignManagerAdvancedSettings,
     CampaignManagerCampaignInfo,
     ConfigureCompanyStepHeader,
@@ -134,6 +140,24 @@ export default {
     getTitle() {
       const text = this.isEdit ? labels.Edit : labels.New
       return `${text} Phishing Campaign`
+    },
+    getFormDataForCampaignSummary() {
+      let formData = {}
+      if (this.step === 3) {
+        const { refCampaignManagerCampaignInfo, refCampaignManagerAdvancedSettings } = this.$refs
+        formData = {
+          ...formData,
+          ...refCampaignManagerCampaignInfo.formData,
+          ...refCampaignManagerAdvancedSettings.formData
+        }
+        formData.selectedPhishingScenario = refCampaignManagerCampaignInfo.phishingScenarioItems.find(
+          (item) => item.resourceId === formData.phishingScenario
+        )
+        formData.selectedSmtpSetting = refCampaignManagerAdvancedSettings.responseOfSmtpItems.find(
+          (item) => item.resourceId === formData.smtpSettingResourceId
+        )
+      }
+      return formData
     }
   },
   methods: {

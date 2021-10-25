@@ -45,7 +45,7 @@
       </v-list-item>
       <v-list-item class="new-user-group__list-item mt-n2">
         <v-list-item-content>
-          <v-radio-group v-model="priority" id="input--target-group-priority" row>
+          <v-radio-group v-model="priority" id="input--target-group-priority" hide-details row>
             <v-radio
               value="VeryLow"
               id="input--target-group-priority-very-low"

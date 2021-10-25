@@ -203,8 +203,7 @@ export default {
           (v) => validations.required(v, labels.Required),
           (v) => validations.startsWith(v, 'Cannot start with 0', 0)
         ]
-      },
-      selectionsToBeAdded: []
+      }
     }
   },
   created() {
