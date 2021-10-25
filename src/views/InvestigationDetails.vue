@@ -1673,7 +1673,6 @@ export default {
       this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
       this.refreshDatatable()
     },
     handleRestoreDefaultSearch() {
@@ -1726,7 +1725,6 @@ export default {
       this.$refs.investigationDetailsTargetUsersList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSTARGETUSERS)
       this.refreshDatatable()
     },
     handleRestoreDefaultSearchForTargetUsers() {
@@ -2369,7 +2367,8 @@ export default {
               items: data,
               warningMessage: this.notifyMessage,
               selectAll: !!this.isInvestigationWarningSelectAll,
-              excludedItems: this.investigationWarningExcludedResourceIdList
+              excludedItems: this.investigationWarningExcludedResourceIdList,
+              filter: this.investigationListBodyData.filter
             },
             id: this.$route.params.id
           })
@@ -2407,7 +2406,8 @@ export default {
           warningMessage: message,
           selectAll: this.isInvestigationDeleteSelectAll,
           excludedItems: this.investigationDeleteExcludedResourceIdList,
-          isPermanentDelete: val
+          isPermanentDelete: val,
+          filter: this.investigationListBodyData.filter
         }
         this.warnAndDeleteButtonDisabled = true
         deleteAndMessageInvestigationDetailsItem(payload, this.$route.params.id).finally(() => {
@@ -2426,6 +2426,7 @@ export default {
               isPermanentDelete: val,
               selectAll: this.isInvestigationDeleteSelectAll,
               excludedItems: this.investigationDeleteExcludedResourceIdList,
+              filter: this.investigationListBodyData.filter,
               warningMessage: message
             },
             id: this.$route.params.id

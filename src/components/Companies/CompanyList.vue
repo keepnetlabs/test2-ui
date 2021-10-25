@@ -433,7 +433,6 @@ export default {
       this.payload.pageNumber = 1
       this.$refs.refDataList.filterValues = {}
       this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_LIST)
       this.getLookUpDatas()
     },
     getDefaultFilterAndSearch() {

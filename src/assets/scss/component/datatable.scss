@@ -1045,9 +1045,9 @@
 }
 
 .el-table--border td, .el-table--border th, .el-table__body-wrapper .el-table--border.is-scrolling-left~.el-table__fixed{
-  border-right: 2px solid #EBEEF5;
+  border-right: 2px solid #EBEEF5 !important;
 }
-.el-table__header-wrapper tr th:nth-last-child(3){
+.el-table__header-wrapper tr th:nth-last-child(2){
   border-right: 2.5px solid #EBEEF5 !important;
 }
 

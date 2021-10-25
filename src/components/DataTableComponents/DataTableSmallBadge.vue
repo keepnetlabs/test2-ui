@@ -139,6 +139,9 @@ export default {
 <style lang="scss">
 .small-badge {
   &__container {
+    div {
+      display: inline-block;
+    }
     .k-badge {
       margin-right: 5px;
     }

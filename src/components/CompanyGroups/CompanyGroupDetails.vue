@@ -413,7 +413,6 @@ export default {
       this.payload = JSON.parse(JSON.stringify(this.defaultPayload))
       this.$refs.refDataList.filterValues = {}
       this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.COMPANY_GROUP_DETAILS)
       this.initMethods()
     },
     getDefaultFilterAndSearch() {

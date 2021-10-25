@@ -32,6 +32,7 @@ import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUse
 import PhishingSimulator from '@/views/PhishingSimulator'
 import Sandbox from '@/views/Sandbox'
 import DnsServices from '@/views/DnsServices'
+import CampaignManager from '@/views/CampaignManager'
 
 Vue.use(Router)
 
@@ -239,6 +240,23 @@ const router = new Router({
           },
           beforeRouteUpdate: (to, from, next) => {
             //checkPermission()
+            next()
+          },
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard'
+          },
+          props: true,
+          params: true
+        },
+        {
+          path: '/campaign-manager',
+          name: 'Campaign Manager',
+          component: CampaignManager,
+          beforeEnter: (to, from, next) => {
+            next()
+          },
+          beforeRouteUpdate: (to, from, next) => {
             next()
           },
           meta: {

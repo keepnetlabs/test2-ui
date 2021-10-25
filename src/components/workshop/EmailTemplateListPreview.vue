@@ -586,21 +586,19 @@ export default {
       }
       &__header {
         font-size: 16px;
-        font-weight: normal;
-        font-stretch: normal;
-        font-style: normal;
-        line-height: normal;
+        font-weight: 600;
         letter-spacing: normal;
         color: #383b41;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        word-break: break-all;
+        margin-right: 24px;
       }
       &__sub-header {
         font-style: normal;
         font-weight: 600;
         font-size: 12px;
-        line-height: 19px;
         color: #757575;
         &--span {
           font-weight: normal;
@@ -611,9 +609,9 @@ export default {
         border: 1px solid #757575 !important;
         box-sizing: border-box;
         border-radius: 4px !important;
-        font-family: Open Sans;
-        font-style: normal;
         font-weight: 600 !important;
+        padding: 4px 8px;
+        max-height: 24px;
         font-size: 12px !important;
         line-height: 16px !important;
         color: #757575 !important;

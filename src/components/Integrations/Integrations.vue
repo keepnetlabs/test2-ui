@@ -427,7 +427,6 @@ export default {
       this.$refs.refIntegrationsList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.INTEGRATIONS)
       this.getDatatableList()
     },
     handleRestoreDefaultSearch() {
