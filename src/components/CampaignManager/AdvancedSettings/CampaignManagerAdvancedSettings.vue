@@ -219,6 +219,7 @@ export default {
       },
       smtpItems: [],
       defaultSmtpItems: [],
+      responseOfSmtpItems: [],
       timeTypeItems: ['seconds', 'minutes', 'hours'],
       formData: {
         smtpSettingResourceId: '',
@@ -271,7 +272,8 @@ export default {
         const {
           data: { data }
         } = response
-        this.smtpItems = data.results.map((smtpItem) => {
+        this.responseOfSmtpItems = data.results
+        this.smtpItems = this.responseOfSmtpItems.map((smtpItem) => {
           return { text: smtpItem.name, value: smtpItem.resourceId }
         })
         this.defaultSmtpItems = JSON.parse(JSON.stringify(this.smtpItems))

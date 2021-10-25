@@ -235,6 +235,7 @@
           <form-group title="Account Type" has-hint>
             <v-radio-group
               v-model="ewsFormValues.AccountType"
+              class="ews-target-groups-select__radio-group"
               id="input--ews-account-type"
               :mandatory="true"
               row
@@ -1692,6 +1693,14 @@ export default {
     .v-icon {
       font-size: 18px !important;
       color: white;
+    }
+  }
+  .ews-target-groups-select__radio-group {
+    .v-input--selection-controls.v-input {
+      margin-top: 0 !important;
+    }
+    .v-messages {
+      min-height: 9px !important;
     }
   }
 }

@@ -189,7 +189,7 @@ export default {
         },
         pageSizes: [5, 10, 25],
         empty: {
-          message: 'No DNS Services',
+          message: 'You do not have any DNS Services',
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--DnsServiceList'

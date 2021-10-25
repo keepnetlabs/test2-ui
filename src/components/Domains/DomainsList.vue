@@ -223,7 +223,7 @@ export default {
         },
         pageSizes: [5, 10, 25],
         empty: {
-          message: 'No Domains',
+          message: 'You do not have any domains',
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--domainList'
