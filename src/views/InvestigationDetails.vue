@@ -914,7 +914,7 @@
             <DatatableLoading :loading="loading" v-if="loading" />
             <div v-show="activeMenu !== 'targetUsers'">
               <datatable
-                v-show="showEmails"
+                v-show="showEmails && !loading"
                 id="investigationDetailsList"
                 ref="refInvestigationListData"
                 rowKey="resourceId"
@@ -1007,11 +1007,11 @@
               </datatable>
             </div>
             <div
-              v-show="activeMenu === 'targetUsers' && showTargetUsersDetails"
+              v-show="activeMenu === 'targetUsers' && showTargetUsersDetails && !loading"
               class="investigationDetails__target-users-table-container"
             >
               <datatable
-                v-if="showTargetUsersDetails"
+                v-show="showTargetUsersDetails && !loading"
                 :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
                 :refName="'investigationDetailsTargetUsersListTable'"
@@ -1470,12 +1470,7 @@ export default {
         minWidth: 180,
         type: 'service',
         filterableType: 'select',
-        filterableItems: [
-          'Outlook',
-          'O365',
-          'Exchange',
-          { text: 'Google Workspace', value: 'GSuite' }
-        ]
+        filterableItems: ['Outlook', 'O365', 'Exchange', 'Google Workspace']
       },
       {
         property: 'analyzedMailCount',
