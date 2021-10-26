@@ -36,6 +36,8 @@ export function getBtnStatusColor(type) {
       return '#b83a3a'
     case 'idle':
       return '#757575'
+    case 'excluded':
+      return '#757575'
     case 'disabled':
       return '#b83a3a'
     case 'network error':
@@ -131,6 +133,8 @@ export function getBtnPriorityColor(type) {
       return '#2196f3'
     case 'new':
       return '#43a047'
+    case 'excluded':
+      return '#757575'
     default:
       break
   }
