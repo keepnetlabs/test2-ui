@@ -1470,12 +1470,7 @@ export default {
         minWidth: 180,
         type: 'service',
         filterableType: 'select',
-        filterableItems: [
-          'Outlook',
-          'O365',
-          'Exchange',
-          { text: 'Google Workspace', value: 'GSuite' }
-        ]
+        filterableItems: ['Outlook', 'O365', 'Exchange', 'Google Workspace']
       },
       {
         property: 'analyzedMailCount',
