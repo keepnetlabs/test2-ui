@@ -739,37 +739,25 @@ export default {
     },
     nextStep() {
       const prevStep = JSON.parse(JSON.stringify(this.step))
-      console.log(prevStep, 'prevStep')
-      console.log(this.step, 'this.step')
       let isValid = true
       if (this.$refs.refMakeAvailableFor) {
         this.$refs.refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = this.$refs.refMakeAvailableFor.isAvailableForValid
       }
       if (prevStep === 1) {
-        console.log(prevStep, 'prevStep1')
-        console.log(this.step, 'this.step1')
         if (this.$refs.refFormStep1.validate() && isValid) {
           this.step += 1
-          console.log(prevStep, 'prevStep11')
-          console.log(this.step, 'this.step11')
         } else {
           const el = this.$refs.refFormStep1.$el.querySelector('.v-messages__message')
           scrollToComponent(el)
         }
       }
       if (prevStep === 2) {
-        console.log(prevStep, 'prevStep2')
-        console.log(this.step, 'this.step2')
         if (!!this.formValues.emailTemplateId || !!this.emailTemplateResourceId) {
           this.step += 1
-          console.log(prevStep, 'prevStep22')
-          console.log(this.step, 'this.step22')
         }
       }
       if (prevStep === 3) {
-        console.log(prevStep, 'prevStep3')
-        console.log(this.step, 'this.step3')
         if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
           getSummaryOfScenario(
             this.emailTemplateResourceId,
@@ -778,8 +766,6 @@ export default {
             this.summaryData = response.data.data
             this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
             this.step += 1
-            console.log(prevStep, 'prevStep33')
-            console.log(this.step, 'this.step33')
           })
         }
       }
