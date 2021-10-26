@@ -2272,6 +2272,21 @@ export default {
     resetTableFilters() {
       this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = []
       this.$refs.refReportedEmails.filterValues = {}
+      if (this.$refs.refReportedEmails) {
+        const { refReportedEmails } = this.$refs
+        refReportedEmails.$refs.elTableRef.clearSelection()
+        refReportedEmails.serverSideSelectionCount = 0
+        refReportedEmails.excludedResourceIdList = []
+        refReportedEmails.isSelectedAllEver = false
+      }
+      if (this.$refs.refReportedEmailsClustered) {
+        const { refReportedEmailsClustered } = this.$refs
+        refReportedEmailsClustered.$refs.elTableRef.clearSelection()
+        refReportedEmailsClustered.excludedResourceIdList = []
+        refReportedEmailsClustered.isSelectedAllEver = false
+        refReportedEmailsClustered.serverSideSelectionCount = 0
+      }
+
       this.queryHelper.setRouterQuery('page', 1)
       this.$refs.refReportedEmails.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
