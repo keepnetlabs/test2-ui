@@ -696,11 +696,13 @@ export default {
       let result = this.getResultOfAttachmentList(list)
       switch (result) {
         case 'Undetected':
-          return '#00bcd4'
+          return '#2196f3'
         case 'Malicious':
           return '#b83a3a'
         case 'Phishing':
-          return '#f56c6c'
+          return '#b83a3a'
+        case 'Excluded':
+          return '#757575'
         default:
           return '#00bcd4'
       }
@@ -715,7 +717,7 @@ export default {
       })
     },
     getResultOfAttachmentList(list) {
-      let result = 'Undetected'
+      let result = 'Excluded'
       for (let item of list) {
         if (item.result === 'Malicious') {
           result = 'Malicious'
@@ -727,6 +729,14 @@ export default {
         }
         if (item.result === 'Undetected' && result !== 'Phishing' && result !== 'Malicious') {
           result = 'Undetected'
+        }
+        if (
+          (item.result === 'Exclude' || item.result === 'Excluded') &&
+          result !== 'Undetected' &&
+          result !== 'Phishing' &&
+          result !== 'Malicious'
+        ) {
+          result = 'Excluded'
         }
       }
       return result
@@ -783,7 +793,6 @@ export default {
       })
     },
     getPostDetails() {
-      let _this = this
       this.isLoading = true
       getNotifiedEmail(this.$attrs.id)
         .then((response) => {

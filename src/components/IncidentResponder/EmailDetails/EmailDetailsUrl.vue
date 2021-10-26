@@ -214,7 +214,7 @@ export default {
       return result
     },
     getResultOfAttachmentList(list) {
-      let result = 'Undetected'
+      let result = 'Excluded'
       for (let item of list) {
         if (item.result === 'Malicious') {
           result = 'Malicious'
