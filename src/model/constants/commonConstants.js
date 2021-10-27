@@ -273,7 +273,7 @@ export const PROPERTY_STORE = {
 
 export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
-  CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
+  CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
   INVESTIGATIONS: 'InvestigationsTableSettings',

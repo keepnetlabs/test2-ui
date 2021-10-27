@@ -2,7 +2,6 @@
   <DataTable
     :id="CONSTANTS.id"
     ref="refTable"
-    selectable
     is-server-side
     :refName="'campaignManagerTargetGroupTable'"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -170,7 +169,7 @@ export default {
             this.$emit('update:empty', false)
           } else {
             this.highlightedRow = {}
-            this.$emit('update:empty', true)
+            if (!this.tableOptions.isColumnFilterActive) this.$emit('update:empty', true)
           }
         })
         .finally(this.setLoading)

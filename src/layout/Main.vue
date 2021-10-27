@@ -329,7 +329,10 @@
                 </router-link>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+            <v-list-item
+              v-if="checkPermissionMultiple(['phishing-simulator/phishing-campaign/search|POST'])"
+              style="padding-left: 0 !important; margin-left: -5px;"
+            >
               <v-list-item-content class="menu-item-content">
                 <router-link
                   to="/campaign-manager"
@@ -1204,6 +1207,7 @@ export default {
           routerName === 'Phishing Simulator' ||
           routerName === 'Email Templates' ||
           routerName === 'Phishing Scenarios' ||
+          routerName === 'Campaign Manager' ||
           routerName === 'DNSs and Domains',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'

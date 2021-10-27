@@ -17,6 +17,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :download-button="tableOptions.downloadButton"
     @on-add-button-click="toggleAddCampaignManagerModal"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
@@ -28,7 +29,12 @@
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
     @on-table-settings-change="handleSetRenderedColumns"
+    @downloadEvent="exportCampaignManagerList"
     @refreshAction="callForData"
+    @on-edit="handleEdit"
+    @on-preview="handlePreview"
+    @on-delete="handleDelete"
+    @on-duplicate="handleDuplicate"
   >
     <template v-slot:datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === 'name'">
@@ -43,9 +49,6 @@
           />
         </div>
       </template>
-    </template>
-    <template #datatable-row-actions="{ scope }">
-      <CampaignManagerRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
     </template>
   </DataTable>
 </template>
@@ -62,14 +65,35 @@ import {
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
+import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
+import QueryHelperForTable from '@/helper-classes/query-helper'
 const EMITS = {
-  UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
+  UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
+  ON_RECORD_BUTTON_CLICK: 'on-record-button-click',
+  ON_EDIT: 'on-edit',
+  ON_PREVIEW: 'on-preview',
+  ON_DELETE: 'on-delete',
+  ON_DUPLICATE: 'on-duplicate'
+}
+const defaultFilter = {
+  Condition: 'AND',
+  FilterGroups: [
+    {
+      Condition: 'AND',
+      FilterItems: [],
+      FilterGroups: []
+    },
+    {
+      Condition: 'OR',
+      FilterItems: [],
+      FilterGroups: []
+    }
+  ]
 }
 export default {
   name: 'CampaignManagerParentTable',
-  components: { CampaignManagerRowActions, TheRecordsButton, DataTable },
+  components: { TheRecordsButton, DataTable },
   props: {
     axiosPayload: {
       type: Object
@@ -77,6 +101,12 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    PERMISSIONS: {
+      type: Object
+    },
+    statusItems: {
+      type: Array
     }
   },
   emits: EMITS,
@@ -94,6 +124,7 @@ export default {
         columns: [
           COLUMNS.CAMPAIGN_NAME,
           COLUMNS.TARGET_USERS,
+          COLUMNS.CREATEDBY,
           COLUMNS.STATUS,
           COLUMNS.CREATE_TIME,
           COLUMNS.LAST_LAUNCH
@@ -110,12 +141,18 @@ export default {
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager'
         },
+        downloadButton: {
+          show: true,
+          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+        },
         rowActions: [
           {
             name: labels.Edit,
+            isNotShow: true,
             id: 'btn-edit--row-actions-campaign-manager',
             icon: 'mdi-pencil',
-            action: 'on-edit'
+            action: 'on-edit',
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: labels.Preview,
@@ -127,36 +164,39 @@ export default {
             name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-campaign-manager',
             icon: 'mdi-content-copy',
-            action: 'on-preview'
+            action: 'on-duplicate',
+            disabled: !this.PERMISSIONS.GET.hasPermission
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
-            action: 'on-delete'
+            action: 'on-delete',
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
       }
     }
   },
+  watch: {
+    statusItems(val) {
+      if (val.length) {
+        const col = this.tableOptions.columns.find(
+          (col) => col.property === COLUMNS.STATUS.property
+        )
+        this.$set(col, 'filterableItems', val)
+        this.$nextTick(() => {
+          this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    }
+  },
   created() {
     this.getStoredTableSettings()
+    this.setQueryValues()
     this.setDefaultFilter()
-    this.tableData = [
-      {
-        resourceId: 'askjajsajsajs',
-        name: 'Gurkan',
-        total: 5,
-        actionStatus: 'paused'
-      },
-      {
-        resourceId: 'askjzsassaajsajsajs',
-        name: 'Gurkan2',
-        total: 1,
-        actionStatus: 'launch'
-      }
-    ]
+    this.callForData()
   },
   methods: {
     getStoredTableSettings() {
@@ -164,20 +204,57 @@ export default {
         localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
       )
     },
+    setQueryValues() {
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.setDefaultValues()
+      this.queryHelper.controlRouteQuery()
+      const { page, size } = this.queryHelper.returnQueryValues()
+      this.axiosPayload.pageSize = size
+      this.serverSideProps.pageSize = size
+      this.axiosPayload.pageNumber = page
+    },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
       )
       if (!savedFilter) return
-      const { filter, filterValues } = savedFilter
+      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter = filter
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.tableOptions.isColumnFilterActive = true
-      this.$refs.refTable.reRenderColumns(filterValues)
+      this.$nextTick(() => {
+        this.$refs.refTable.reRenderColumns(filterValues)
+      })
     },
     callForData() {
-      //TODO Axios call
+      const { SEARCH } = this.PERMISSIONS
+      if (SEARCH.hasPermission) {
+        this.$nextTick(() => {
+          this.setLoading(true)
+          searchCampaignManager(this.axiosPayload)
+            .then((response) => {
+              const {
+                data: { data = [] }
+              } = response
+              const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+              this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+              this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+              this.serverSideProps.pageNumber = pageNumber
+              this.tableData = results.map((item) => {
+                const newItem = JSON.parse(JSON.stringify(item))
+                delete newItem['instanceCount']
+                newItem.targetUsers = Number(newItem.targetUsers)
+                newItem.total = Number(item['instanceCount']) || 1
+                return newItem
+              })
+            })
+            .finally(this.setLoading)
+        })
+      }
+    },
+    setLoading(flag = false) {
+      this.$emit('update:is-loading', flag)
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
@@ -186,7 +263,7 @@ export default {
         filter,
         copyOfAxiosPayload
       )
-      this.$emit('update:axiosPayload', copyOfAxiosPayload)
+      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.callForData()
     },
     columnFilterCleared(fieldName) {
@@ -211,6 +288,8 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.resetPageNumber()
+      this.queryHelper.setRouterQuery('size', pageSize)
+      this.queryHelper.setRouterQuery('page', 1)
       this.callForData()
     },
     sortChanged({ order } = {}) {
@@ -220,9 +299,8 @@ export default {
       this.callForData()
     },
     resetPageNumber() {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageNumber = 1
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageNumber = 1
+      this.queryHelper.setRouterQuery('page', 1)
       this.serverSideProps.pageNumber = 1
     },
     emitCopyOfAxiosPayload(payload) {
@@ -243,13 +321,20 @@ export default {
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
+
       this.callForData()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
+      const copyOfAxiosPayload = this.copyAxiosPayload()
+      copyOfAxiosPayload.filter.FilterGroups[1] = {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE,
         JSON.stringify({
-          filter: this.axiosPayload.filter,
+          filter: copyOfAxiosPayload.filter,
           filterValues
         })
       )
@@ -278,6 +363,43 @@ export default {
     },
     toggleAddCampaignManagerModal() {
       this.$emit('toggle-add-campaign-manager-modal')
+    },
+    exportCampaignManagerList(downloadTypes) {
+      const { EXPORT } = this.PERMISSIONS
+      if (EXPORT.hasPermission) {
+        downloadTypes.exportTypes.forEach((item) => {
+          let payload = {
+            pageNumber: downloadTypes.pageNumber,
+            pageSize: downloadTypes.pageSize,
+            orderBy: this.axiosPayload.orderBy,
+            ascending: this.axiosPayload.ascending,
+            reportAllPages: downloadTypes.reportAllPages,
+            exportType: item === 'XLS' ? 'Excel' : item,
+            filter: this.axiosPayload.filter
+          }
+          exportCampaignManager(payload).then((response) => {
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
+            link.download = `Campaign-Manager.${
+              item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+            }`
+            link.click()
+          })
+        })
+      }
+    },
+    handleEdit(row) {
+      this.$emit(EMITS.ON_EDIT, row)
+    },
+    handlePreview(row) {
+      this.$emit(EMITS.ON_PREVIEW, row)
+    },
+    handleDelete(row) {
+      this.$emit(EMITS.ON_DELETE, row)
+    },
+    handleDuplicate(row) {
+      this.$emit(EMITS.ON_DUPLICATE, row)
     }
   }
 }

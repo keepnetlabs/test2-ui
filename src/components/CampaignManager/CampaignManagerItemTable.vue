@@ -75,6 +75,9 @@ export default {
     axiosPayload: {
       type: Object
     },
+    item: {
+      type: Object
+    },
     isLoading: {
       type: Boolean,
       default: false

@@ -19,7 +19,7 @@
       :sub-title="labels.TargetGroupsSub"
     >
       <KSelect
-        v-model.trim="formData.targetGroups"
+        v-model.trim="formData.targetGroupResourceIds"
         type="combobox"
         id="input--campaign-target-user-groups"
         class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
@@ -52,7 +52,7 @@
       v-show="isShowAdvancedSearch"
       ref="refCampaignManagerTargetGroup"
       class="mb-6"
-      :selected-target-groups="formData.targetGroups"
+      :selected-target-groups="formData.targetGroupResourceIds"
     />
     <FormGroup
       has-hint
@@ -61,7 +61,7 @@
       :sub-title="labels.PhishingScenariosSub"
     >
       <KSelect
-        v-model.trim="formData.phishingScenario"
+        v-model.trim="formData.phishingScenarioResourceId"
         id="input--campaign-phishing-scenarios"
         outlined
         dense
@@ -90,29 +90,29 @@
       v-show="isShowAdvancedSearchPhishing"
       class="mb-6"
       :items="phishingScenarioItems"
-      :value="formData.phishingScenario"
+      :value="formData.phishingScenarioResourceId"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
     />
     <FormGroup :title="labels.Schedule" :sub-title="labels.ScheduleSub">
       <v-radio-group
-        v-model="formData.schedule"
+        v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
         hide-details
       >
         <v-radio
           v-for="item in radioItems"
-          :key="item"
-          :id="`input--campaign-manager-radio-${item}`"
-          :value="item"
-          :label="item"
           color="#2196f3"
+          :key="item.text"
+          :id="`input--campaign-manager-radio-${item.text}`"
+          :value="item.value"
+          :label="item.text"
         ></v-radio>
       </v-radio-group>
     </FormGroup>
     <FormGroup class="mt-6" :title="labels.Duration" :sub-title="labels.DurationSub" has-hint>
       <v-text-field
-        v-model="formData.days"
+        v-model="formData.duration"
         v-mask="'###'"
         id="input--campaign-manager-days"
         outlined
@@ -123,7 +123,7 @@
         :rules="rules.days"
       ></v-text-field>
       <span style="position: absolute; top: 66px; left: 56px; font-size: 13px; color: #000;"
-        >Days</span
+        >Day(s)</span
       >
     </FormGroup>
   </v-form>
@@ -171,6 +171,11 @@ export default {
     KSelect,
     FormGroup
   },
+  props: {
+    defaultValues: {
+      type: Object
+    }
+  },
   data() {
     return {
       axiosPayloadOfPhishingScenarios,
@@ -178,15 +183,19 @@ export default {
       isPhishingScenariosLoading: false,
       isShowAdvancedSearch: true,
       isShowAdvancedSearchPhishing: true,
-      radioItems: ['Send now', 'Save for later'],
+      radioItems: [
+        { text: 'Send now', value: '1' },
+        { text: 'Save for later', value: '2' }
+      ],
       labels,
       formData: {
         name: '',
-        targetGroups: [],
-        phishingScenario: '',
-        schedule: 'Send now',
-        days: 3
+        targetGroupResourceIds: [],
+        phishingScenarioResourceId: '',
+        scheduleTypeId: '1',
+        duration: 3
       },
+      defaultTargetGroupResourceIds: [],
       targetGroupItems: [],
       phishingScenarioItems: [],
       rules: {
@@ -206,11 +215,36 @@ export default {
       }
     }
   },
+  watch: {
+    defaultValues(val) {
+      for (const key of Object.keys(val)) {
+        if (key === 'targetGroupResourceIds') {
+          this.defaultTargetGroupResourceIds = val[key]
+          this.addDefaultTargetGroupItems(this.defaultTargetGroupResourceIds)
+        } else {
+          this.formData[key] = val[key]
+        }
+      }
+    }
+  },
   created() {
     this.callForTargetGroups()
     this.callForPhishingScenarios()
   },
   methods: {
+    addDefaultTargetGroupItems(resourceIds = []) {
+      if (
+        this.formData.targetGroupResourceIds.length ||
+        !this.targetGroupItems.length ||
+        !resourceIds.length
+      )
+        return
+      this.$nextTick(() => {
+        this.formData.targetGroupResourceIds = resourceIds.map((id) => {
+          return this.targetGroupItems.find((item) => item.value === id)
+        })
+      })
+    },
     callForTargetGroups() {
       this.setTargetGroupLoading(true)
       getTargetGroups({ loading: true })
@@ -219,6 +253,7 @@ export default {
             data: { data }
           } = response
           this.targetGroupItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+          this.addDefaultTargetGroupItems(this.defaultTargetGroupResourceIds)
         })
         .finally(this.setTargetGroupLoading)
     },
@@ -237,7 +272,7 @@ export default {
           } = response
           this.phishingScenarioItems = data.results || []
           if (this.phishingScenarioItems.length && !this.isEdit)
-            this.formData.phishingScenario = this.phishingScenarioItems[0].resourceId
+            this.formData.phishingScenarioResourceId = this.phishingScenarioItems[0].resourceId
         })
         .finally(this.setPhishingScenarioLoading)
     },
@@ -248,7 +283,7 @@ export default {
       this.isShowAdvancedSearchPhishing = !this.isShowAdvancedSearchPhishing
     },
     handleOnPhishingScenarioChange(item = {}) {
-      this.formData.phishingScenario = item.resourceId
+      this.formData.phishingScenarioResourceId = item.resourceId
     }
   }
 }
