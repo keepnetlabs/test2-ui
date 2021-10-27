@@ -536,6 +536,11 @@ export default {
               .filter((item) => item.genericCodeTypeId === 3)
               .map((item) => ({ text: item.name, value: item.resourceId }))
           )
+          this.$nextTick(() => {
+            this.$refs.refDataList.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          })
         })
         .finally(() => this.getTableData())
     },
