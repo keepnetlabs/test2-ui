@@ -48,7 +48,10 @@
               :title="labels.AdvancedSettings"
               :subtitle="labels.AdvancedSettingsSub"
             />
-            <CampaignManagerAdvancedSettings ref="refCampaignManagerAdvancedSettings" />
+            <CampaignManagerAdvancedSettings
+              ref="refCampaignManagerAdvancedSettings"
+              :form-details="getAdvancedSettingsFormDetails"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -106,6 +109,7 @@ import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignMa
 import { scrollToComponent } from '@/utils/functions'
 import CampaignManagerAdvancedSettings from '@/components/CampaignManager/AdvancedSettings/CampaignManagerAdvancedSettings'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
+import { getCampaignManager } from '@/api/phishingsimulator'
 
 const EMITS = {
   ON_CLOSE: 'on-close'
@@ -126,6 +130,12 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    selectedRow: {
+      type: Object
+    },
+    formDetails: {
+      type: Object
     }
   },
   emits: EMITS,
@@ -158,9 +168,32 @@ export default {
         )
       }
       return formData
+    },
+    getAdvancedSettingsFormDetails() {
+      if (!this.formDetails) return {}
+      const {
+        distributionEmailOverTimeTypes,
+        distributionSmtpDelayTimeTypes,
+        sendRandomlyUsersCalculateTypes
+      } = this.formDetails
+      return {
+        distributionEmailOverTimeTypes,
+        distributionSmtpDelayTimeTypes,
+        sendRandomlyUsersCalculateTypes
+      }
+    }
+  },
+  created() {
+    if (this.selectedRow) {
+      this.callForData()
     }
   },
   methods: {
+    callForData() {
+      getCampaignManager(this.selectedRow.resourceId).then((response) => {
+        console.log('response', response)
+      })
+    },
     closeOverlay() {
       this.$emit(EMITS.ON_CLOSE)
     },

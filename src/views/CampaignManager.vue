@@ -22,6 +22,7 @@
         :axios-payload.sync="axiosPayloadOfParent"
         :is-loading.sync="isParentTableLoading"
         :PERMISSIONS="PERMISSIONS['CAMPAIGN_MANAGER_PARENT']"
+        :status-items="getStatusItems"
         @on-record-button-click="handleOnRecordButtonClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
         @reset-axios-payload="handleResetAxiosPayloadOfParent"
@@ -76,6 +77,11 @@ export default {
         CAMPAIGN_MANAGER_PARENT: {}
       },
       formDetails: {}
+    }
+  },
+  computed: {
+    getStatusItems() {
+      return this.formDetails.status
     }
   },
   created() {

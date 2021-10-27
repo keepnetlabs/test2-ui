@@ -89,8 +89,7 @@ export const COLUMNS = {
     show: true,
     type: 'badge',
     width: 150,
-    filterableType: 'select',
-    filterableItems: COMMON_CONSTANTS.CAMPAIGN_MANAGER_STATUS_ITEMS
+    filterableType: 'select'
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,

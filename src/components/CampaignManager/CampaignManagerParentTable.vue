@@ -104,6 +104,9 @@ export default {
     },
     PERMISSIONS: {
       type: Object
+    },
+    statusItems: {
+      type: Array
     }
   },
   emits: EMITS,
@@ -173,6 +176,19 @@ export default {
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
+      }
+    }
+  },
+  watch: {
+    statusItems(val) {
+      if (val.length) {
+        const col = this.tableOptions.columns.find(
+          (col) => col.property === COLUMNS.STATUS.property
+        )
+        this.$set(col, 'filterableItems', val)
+        this.$nextTick(() => {
+          this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
       }
     }
   },
