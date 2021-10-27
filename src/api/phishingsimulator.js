@@ -110,3 +110,13 @@ export function getMergedTextForPhishing() {
   }
   return testRequest.get(`phishing-simulator/email-templates/merge-tags`, payload)
 }
+
+export function searchCampaignManager(payload = {}) {
+  return testRequest.post('/phishing-simulator/phishing-campaign/search', payload)
+}
+
+export function exportCampaignManager(payload = {}) {
+  return testRequest.post('phishing-simulator/phishing-campaign/search/export', payload, {
+    responseType: 'blob'
+  })
+}

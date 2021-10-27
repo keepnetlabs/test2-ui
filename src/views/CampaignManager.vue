@@ -8,15 +8,18 @@
       />
       <CampaignManagerParentTable
         v-show="!isItemTableShowing"
-        :axiosPayload.sync="axiosPayload"
-        :is-loading="isParentTableLoading"
+        :axios-payload.sync="axiosPayloadOfParent"
+        :is-loading.sync="isParentTableLoading"
+        :PERMISSIONS="PERMISSIONS['CAMPAIGN_MANAGER_PARENT']"
         @on-record-button-click="handleOnRecordButtonClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
+        @reset-axios-payload="handleResetAxiosPayloadOfParent"
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
-        :axiosPayload="axiosPayloadOfItem"
+        :axios-payload="axiosPayloadOfItem"
         :is-loading="isItemTableLoading"
+        :item="selectedParentItem"
         @on-back-click="handleOnBackClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
       />
@@ -29,6 +32,8 @@ import CampaignManagerParentTable from '@/components/CampaignManager/CampaignMan
 import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
+import PERMISSIONS from '@/permissions'
+import { checkPermission, getPermissionsOfAllItems } from '@/utils/functions'
 export default {
   name: 'CampaignManager',
   components: {
@@ -38,16 +43,32 @@ export default {
   },
   data() {
     return {
-      axiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
+      axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
       axiosPayloadOfItem: JSON.parse(JSON.stringify(axiosPayload)),
+      selectedParentItem: null,
       isParentTableLoading: false,
       isItemTableLoading: false,
       isItemTableShowing: false,
-      isShowAddOrEditCampaignManagerModal: false
+      isShowAddOrEditCampaignManagerModal: false,
+      PERMISSIONS: {
+        CAMPAIGN_MANAGER_PARENT: {}
+      }
     }
   },
+  created() {
+    this.getPermissions()
+  },
   methods: {
+    getPermissions() {
+      const { CAMPAIGN_MANAGER_PARENT } = PERMISSIONS
+      this.$set(
+        this.PERMISSIONS,
+        'CAMPAIGN_MANAGER_PARENT',
+        getPermissionsOfAllItems(CAMPAIGN_MANAGER_PARENT)
+      )
+    },
     handleOnRecordButtonClick(row) {
+      this.selectedParentItem = row
       this.toggleItemTableShowing()
     },
     handleOnBackClick() {
@@ -58,6 +79,9 @@ export default {
     },
     toggleAddCampaignManagerModal() {
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
+    },
+    handleResetAxiosPayloadOfParent() {
+      this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
     }
   }
 }
