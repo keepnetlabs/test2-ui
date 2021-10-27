@@ -126,5 +126,37 @@ export default {
       hasPermission: false,
       method: 'PUT'
     }
+  },
+  CAMPAIGN_MANAGER_PARENT: {
+    SEARCH: {
+      url: 'phishing-simulator/phishing-campaign/search',
+      hasPermission: false,
+      method: 'POST'
+    },
+    DELETE: {
+      url: 'phishing-simulator/phishing-campaign/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    },
+    GET: {
+      url: 'phishing-simulator/phishing-campaign/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    CREATE: {
+      url: 'phishing-simulator/phishing-campaign',
+      hasPermission: false,
+      method: 'POST'
+    },
+    EXPORT: {
+      url: 'phishing-simulator/phishing-campaign/search/export',
+      hasPermission: false,
+      method: 'POST'
+    },
+    UPDATE: {
+      url: 'phishing-simulator/phishing-campaign/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    }
   }
 }

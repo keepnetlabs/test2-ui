@@ -35,7 +35,7 @@ export function getBtnStatusColor(type) {
     case 'phishing':
       return '#b83a3a'
     case 'idle':
-      return '#757575'
+      return '#0198AC'
     case 'excluded':
       return '#757575'
     case 'disabled':

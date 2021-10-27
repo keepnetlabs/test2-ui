@@ -51,9 +51,9 @@
         <div class="campaign-manager-advanced-settings__distribution-item">
           <v-radio
             :id="`input--campaign-manager-radio-advanced-settings`"
-            value="send-email"
             label="Send emails with SMTP Delay every"
             color="#2196f3"
+            value="1"
           />
           <v-text-field
             v-model="formData.time"
@@ -64,10 +64,10 @@
             class="edit-name-textfield edit-select standard-height ml-2"
             hide-details
             style="max-width: 48px;"
-            :disabled="!getDistributionTimeTypeDisableStatus"
+            :disabled="!distributionEmailOverTimeDisableStatus"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.timeType"
+            v-model.trim="formData.distributionEmailOverTime"
             id="input--campaign-manager-advanced-settings-time-type"
             class="ml-2"
             outlined
@@ -75,14 +75,14 @@
             hide-details
             placeholder="Select a item"
             style="max-width: 118px;"
-            :items="timeTypeItems"
-            :disabled="!getDistributionTimeTypeDisableStatus"
+            :items="formDetails['distributionEmailOverTimeTypes']"
+            :disabled="!distributionEmailOverTimeDisableStatus"
           />
         </div>
         <div class="campaign-manager-advanced-settings__distribution-item mt-2">
           <v-radio
             :id="`input--campaign-manager-radio-advanced-settings`"
-            value="distribute-mail"
+            value="2"
             label="Distribute emails over"
             color="#2196f3"
           />
@@ -95,10 +95,10 @@
             class="edit-name-textfield edit-select standard-height ml-2"
             hide-details
             style="max-width: 48px;"
-            :disabled="getDistributionTimeTypeDisableStatus"
+            :disabled="distributionEmailOverTimeDisableStatus"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.distributeTimeType"
+            v-model.trim="formData.distributionSmtpDelayTime"
             id="input--campaign-manager-advanced-settings-distribute-time-type"
             class="ml-2"
             outlined
@@ -106,8 +106,8 @@
             hide-details
             placeholder="Select a item"
             style="max-width: 118px;"
-            :disabled="getDistributionTimeTypeDisableStatus"
-            :items="timeTypeItems"
+            :disabled="distributionEmailOverTimeDisableStatus"
+            :items="formDetails['distributionSmtpDelayTimeTypes']"
           />
         </div>
       </v-radio-group>
@@ -174,7 +174,7 @@
             hide-details
             placeholder="Select a item"
             style="max-width: 118px;"
-            :items="percentItems"
+            :items="formDetails['sendRandomlyUsersCalculateTypes']"
             :disabled="getDisabledStatusOfRandomlySelected"
           />
           <span class="ml-2">of target users</span>
@@ -195,12 +195,16 @@ import * as validations from '@/utils/validations'
 export default {
   name: 'CampaignManagerAdvancedSettings',
   components: { CampaignManagerSmtpSettingsDialog, KSelect, FormGroup },
+  props: {
+    formDetails: {
+      type: Object
+    }
+  },
   data() {
     return {
       labels,
       isTestingConnection: false,
       isShowCustomSmtpDialog: false,
-      percentItems: ['percent', 'users'],
       smtpAxiosPayload: {
         pageNumber: 1,
         pageSize: 5000,
@@ -220,20 +224,19 @@ export default {
       smtpItems: [],
       defaultSmtpItems: [],
       responseOfSmtpItems: [],
-      timeTypeItems: ['seconds', 'minutes', 'hours'],
       formData: {
         smtpSettingResourceId: '',
         isExcludeFromReports: false,
         isOnlyActiveUsers: false,
         isRandomSelected: false,
-        distribution: 'send-email',
+        distribution: '1',
         time: 20,
-        timeType: 'seconds',
+        distributionEmailOverTime: '1',
         distributeTime: 8,
-        distributeTimeType: 'hours',
+        distributionSmtpDelayTime: '1',
         sendingLimit: 50,
         randomlySelectNumber: 20,
-        randomlySelectPercent: 'percent'
+        randomlySelectPercent: '1'
       },
       commonRules: {
         hint: '*Required',
@@ -253,8 +256,8 @@ export default {
     }
   },
   computed: {
-    getDistributionTimeTypeDisableStatus() {
-      return this.formData.distribution === 'send-email'
+    distributionEmailOverTimeDisableStatus() {
+      return this.formData.distribution === '1'
     },
     getDistributionText() {
       return `Sending ${this.formData.sendingLimit} every ${this.formData.time} ${this.formData.timeType} 500 targetUsers will take approx 00:03:20 hours`

@@ -43,6 +43,18 @@ export const COLUMNS = {
     parentRect: 'reported-email-subject',
     overrideWidth: true
   },
+  CREATEDBY: {
+    property: PROPERTY_STORE.CREATEDBY,
+    align: 'left',
+    editable: false,
+    label: labels.CreatedBy,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
+  },
   SCHEDULE: {
     property: PROPERTY_STORE.SCHEDULE,
     align: 'center',
@@ -75,10 +87,9 @@ export const COLUMNS = {
     fixed: false,
     sortable: true,
     show: true,
-    type: 'status',
+    type: 'badge',
     width: 150,
-    filterableType: 'select',
-    filterableItems: COMMON_CONSTANTS.CAMPAIGN_MANAGER_STATUS_ITEMS
+    filterableType: 'select'
   },
   CREATE_TIME: {
     property: PROPERTY_STORE.CREATETIME,

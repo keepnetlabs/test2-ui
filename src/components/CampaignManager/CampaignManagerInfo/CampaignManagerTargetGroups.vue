@@ -91,7 +91,7 @@
           <div
             class="pane"
             :style="{
-              width: isTargetGroupEmpty ? '100%' : '60%',
+              width: isTargetGroupEmpty || !getTargetGroupUsersTableRenderStatus() ? '100%' : '60%',
               minWidth: '50%'
             }"
           >
@@ -105,7 +105,7 @@
           </div>
           <MultipaneResizer></MultipaneResizer>
           <div
-            v-if="!isTargetGroupEmpty"
+            v-if="!isTargetGroupEmpty && getTargetGroupUsersTableRenderStatus()"
             class="pane"
             :style="{
               width: '40%',
@@ -173,14 +173,15 @@ export default {
   watch: {
     search(val) {
       this.debounce(() => {
+        debugger
+        this.$refs.refGroupTable.tableOptions.isColumnFilterActive = !!val.length
         this.$refs.refGroupTable.searchChangedFilter([
           { FieldName: 'Name', Operator: 'Contains', Value: val },
           { FieldName: 'Priority', Operator: 'Contains', Value: val },
           { FieldName: 'CreateTime', Operator: 'Contains', Value: val }
         ])
       }, 500)
-    },
-    selectedTargetGroups(val) {}
+    }
   },
   created() {
     this.callForCompanyItems()
@@ -188,6 +189,14 @@ export default {
   methods: {
     clearFilter() {},
     handleFilter() {},
+    getTargetGroupUsersTableRenderStatus() {
+      const { refGroupTable } = this.$refs
+      return refGroupTable
+        ? refGroupTable.tableData.length
+          ? true
+          : !refGroupTable.tableOptions.isColumnFilterActive
+        : true
+    },
     debounce(fn, delay) {
       if (this.timeout) {
         clearTimeout(this.timeout)

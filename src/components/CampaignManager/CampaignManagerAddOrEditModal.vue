@@ -41,14 +41,20 @@
               :title="labels.PhishingCampaignInfo"
               :subtitle="labels.PhishingCampaignInfoSub"
             />
-            <CampaignManagerCampaignInfo ref="refCampaignManagerCampaignInfo" />
+            <CampaignManagerCampaignInfo
+              ref="refCampaignManagerCampaignInfo"
+              :default-values="getDefaultValuesOfCampaignInfo"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
               :title="labels.AdvancedSettings"
               :subtitle="labels.AdvancedSettingsSub"
             />
-            <CampaignManagerAdvancedSettings ref="refCampaignManagerAdvancedSettings" />
+            <CampaignManagerAdvancedSettings
+              ref="refCampaignManagerAdvancedSettings"
+              :form-details="getAdvancedSettingsFormDetails"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
             <ConfigureCompanyStepHeader
@@ -106,6 +112,7 @@ import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignMa
 import { scrollToComponent } from '@/utils/functions'
 import CampaignManagerAdvancedSettings from '@/components/CampaignManager/AdvancedSettings/CampaignManagerAdvancedSettings'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
+import { getCampaignManager } from '@/api/phishingsimulator'
 
 const EMITS = {
   ON_CLOSE: 'on-close'
@@ -126,6 +133,12 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    selectedRow: {
+      type: Object
+    },
+    formDetails: {
+      type: Object
     }
   },
   emits: EMITS,
@@ -133,7 +146,8 @@ export default {
     return {
       isSaveDisabled: false,
       labels,
-      step: 1
+      step: 1,
+      selectedRowFormData: {}
     }
   },
   computed: {
@@ -158,9 +172,51 @@ export default {
         )
       }
       return formData
+    },
+    getAdvancedSettingsFormDetails() {
+      if (!this.formDetails) return {}
+      const {
+        distributionEmailOverTimeTypes,
+        distributionSmtpDelayTimeTypes,
+        sendRandomlyUsersCalculateTypes
+      } = this.formDetails
+      return {
+        distributionEmailOverTimeTypes,
+        distributionSmtpDelayTimeTypes,
+        sendRandomlyUsersCalculateTypes
+      }
+    },
+    getDefaultValuesOfCampaignInfo() {
+      const keys = Object.keys(this.selectedRowFormData)
+      if (!keys.length) return {}
+      const {
+        name,
+        targetGroupResourceIds,
+        phishingScenarioResourceId,
+        scheduleTypeId,
+        duration
+      } = this.selectedRowFormData
+      return {
+        name,
+        targetGroupResourceIds,
+        phishingScenarioResourceId,
+        scheduleTypeId: scheduleTypeId.toString(),
+        duration
+      }
+    }
+  },
+  created() {
+    if (this.selectedRow) {
+      this.callForData()
     }
   },
   methods: {
+    callForData() {
+      getCampaignManager(this.selectedRow.resourceId).then((response) => {
+        const { data: { data = {} } = {} } = response
+        this.selectedRowFormData = data
+      })
+    },
     closeOverlay() {
       this.$emit(EMITS.ON_CLOSE)
     },
@@ -178,7 +234,6 @@ export default {
         case 1:
           const { refCampaignManagerCampaignInfo } = this.$refs
           const { refForm } = refCampaignManagerCampaignInfo.$refs
-
           if (refForm.validate()) this.changeStep()
           else this.showErrorMessage(refForm)
           break
