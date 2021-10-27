@@ -41,7 +41,10 @@
               :title="labels.PhishingCampaignInfo"
               :subtitle="labels.PhishingCampaignInfoSub"
             />
-            <CampaignManagerCampaignInfo ref="refCampaignManagerCampaignInfo" />
+            <CampaignManagerCampaignInfo
+              ref="refCampaignManagerCampaignInfo"
+              :default-values="getDefaultValuesOfCampaignInfo"
+            />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
             <ConfigureCompanyStepHeader
@@ -143,7 +146,8 @@ export default {
     return {
       isSaveDisabled: false,
       labels,
-      step: 1
+      step: 1,
+      selectedRowFormData: {}
     }
   },
   computed: {
@@ -181,6 +185,24 @@ export default {
         distributionSmtpDelayTimeTypes,
         sendRandomlyUsersCalculateTypes
       }
+    },
+    getDefaultValuesOfCampaignInfo() {
+      const keys = Object.keys(this.selectedRowFormData)
+      if (!keys.length) return {}
+      const {
+        name,
+        targetGroupResourceIds,
+        phishingScenarioResourceId,
+        scheduleTypeId,
+        duration
+      } = this.selectedRowFormData
+      return {
+        name,
+        targetGroupResourceIds,
+        phishingScenarioResourceId,
+        scheduleTypeId: scheduleTypeId.toString(),
+        duration
+      }
     }
   },
   created() {
@@ -191,7 +213,8 @@ export default {
   methods: {
     callForData() {
       getCampaignManager(this.selectedRow.resourceId).then((response) => {
-        console.log('response', response)
+        const { data: { data = {} } = {} } = response
+        this.selectedRowFormData = data
       })
     },
     closeOverlay() {
@@ -211,7 +234,6 @@ export default {
         case 1:
           const { refCampaignManagerCampaignInfo } = this.$refs
           const { refForm } = refCampaignManagerCampaignInfo.$refs
-
           if (refForm.validate()) this.changeStep()
           else this.showErrorMessage(refForm)
           break

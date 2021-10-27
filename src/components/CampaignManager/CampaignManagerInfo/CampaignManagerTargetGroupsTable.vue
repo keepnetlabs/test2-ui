@@ -2,7 +2,6 @@
   <DataTable
     :id="CONSTANTS.id"
     ref="refTable"
-    selectable
     is-server-side
     :refName="'campaignManagerTargetGroupTable'"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
