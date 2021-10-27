@@ -169,7 +169,7 @@ export default {
             this.$emit('update:empty', false)
           } else {
             this.highlightedRow = {}
-            this.$emit('update:empty', true)
+            if (!this.tableOptions.isColumnFilterActive) this.$emit('update:empty', true)
           }
         })
         .finally(this.setLoading)
