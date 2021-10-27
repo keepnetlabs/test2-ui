@@ -1,6 +1,5 @@
 import testRequest from '../utils/testRequest'
 import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
-import { getMergedTags } from '@/api/company'
 
 export function updatePhishingEmailTemplate(payload, id) {
   const formData = new FormData()
@@ -119,4 +118,17 @@ export function exportCampaignManager(payload = {}) {
   return testRequest.post('phishing-simulator/phishing-campaign/search/export', payload, {
     responseType: 'blob'
   })
+}
+export function deleteCampaignManager(resourceId = '') {
+  return testRequest.delete(`phishing-simulator/phishing-campaign/${resourceId}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function getCampaignManager(resourceId = '') {
+  return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
+}
+
+export function getCampaignManagerFormDetails() {
+  return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
 }

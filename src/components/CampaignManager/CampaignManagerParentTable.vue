@@ -17,6 +17,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :download-button="tableOptions.downloadButton"
     @on-add-button-click="toggleAddCampaignManagerModal"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
@@ -30,6 +31,10 @@
     @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerList"
     @refreshAction="callForData"
+    @on-edit="handleEdit"
+    @on-preview="handlePreview"
+    @on-delete="handleDelete"
+    @on-duplicate="handleDuplicate"
   >
     <template v-slot:datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === 'name'">
@@ -44,9 +49,6 @@
           />
         </div>
       </template>
-    </template>
-    <template #datatable-row-actions="{ scope }">
-      <CampaignManagerRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
     </template>
   </DataTable>
 </template>
@@ -68,7 +70,11 @@ import QueryHelperForTable from '@/helper-classes/query-helper'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
-  ON_RECORD_BUTTON_CLICK: 'on-record-button-click'
+  ON_RECORD_BUTTON_CLICK: 'on-record-button-click',
+  ON_EDIT: 'on-edit',
+  ON_PREVIEW: 'on-preview',
+  ON_DELETE: 'on-delete',
+  ON_DUPLICATE: 'on-duplicate'
 }
 const defaultFilter = {
   Condition: 'AND',
@@ -87,7 +93,7 @@ const defaultFilter = {
 }
 export default {
   name: 'CampaignManagerParentTable',
-  components: { CampaignManagerRowActions, TheRecordsButton, DataTable },
+  components: { TheRecordsButton, DataTable },
   props: {
     axiosPayload: {
       type: Object
@@ -132,12 +138,18 @@ export default {
           tooltip: 'Add a Campaign',
           id: 'btn-add--campaign-manager'
         },
+        downloadButton: {
+          show: true,
+          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+        },
         rowActions: [
           {
             name: labels.Edit,
+            isNotShow: true,
             id: 'btn-edit--row-actions-campaign-manager',
             icon: 'mdi-pencil',
-            action: 'on-edit'
+            action: 'on-edit',
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: labels.Preview,
@@ -149,13 +161,15 @@ export default {
             name: labels.Duplicate,
             id: 'btn-duplicate--row-actions-campaign-manager',
             icon: 'mdi-content-copy',
-            action: 'on-preview'
+            action: 'on-duplicate',
+            disabled: !this.PERMISSIONS.GET.hasPermission
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
-            action: 'on-delete'
+            action: 'on-delete',
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }
@@ -358,6 +372,18 @@ export default {
           })
         })
       }
+    },
+    handleEdit(row) {
+      this.$emit(EMITS.ON_EDIT, row)
+    },
+    handlePreview(row) {
+      this.$emit(EMITS.ON_PREVIEW, row)
+    },
+    handleDelete(row) {
+      this.$emit(EMITS.ON_DELETE, row)
+    },
+    handleDuplicate(row) {
+      this.$emit(EMITS.ON_DUPLICATE, row)
     }
   }
 }

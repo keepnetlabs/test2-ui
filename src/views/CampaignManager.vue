@@ -1,9 +1,20 @@
 <template>
   <div class="campaign-manager" id="campaign-manager">
     <div class="campaign-manager__content">
+      <CampaignManagerDeleteDialog
+        v-if="isShowDeleteDialog"
+        :status="isShowDeleteDialog"
+        :item="selectedRow"
+        :is-action-button-disabled="isDeleteDialogActionButtonDisabled"
+        @on-close="toggleShowDeleteDialog"
+        @on-delete="handleOnDelete"
+      />
       <CampaignManagerAddOrEditModal
         v-if="isShowAddOrEditCampaignManagerModal"
         :status="isShowAddOrEditCampaignManagerModal"
+        :is-edit="isEdit"
+        :selected-row="selectedRow"
+        :form-details="formDetails"
         @on-close="toggleAddCampaignManagerModal"
       />
       <CampaignManagerParentTable
@@ -14,6 +25,10 @@
         @on-record-button-click="handleOnRecordButtonClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
         @reset-axios-payload="handleResetAxiosPayloadOfParent"
+        @on-edit="handleItemOnEdit"
+        @on-preview="handleItemOnPreview"
+        @on-delete="handleItemOnDelete"
+        @on-duplicate="handleItemOnDuplicate"
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
@@ -33,10 +48,13 @@ import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
 import PERMISSIONS from '@/permissions'
-import { checkPermission, getPermissionsOfAllItems } from '@/utils/functions'
+import { getPermissionsOfAllItems } from '@/utils/functions'
+import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
+import { deleteCampaignManager, getCampaignManagerFormDetails } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManager',
   components: {
+    CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
     CampaignManagerAddOrEditModal
@@ -46,19 +64,34 @@ export default {
       axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
       axiosPayloadOfItem: JSON.parse(JSON.stringify(axiosPayload)),
       selectedParentItem: null,
+      selectedRow: null,
+      isEdit: false,
       isParentTableLoading: false,
       isItemTableLoading: false,
       isItemTableShowing: false,
       isShowAddOrEditCampaignManagerModal: false,
+      isShowDeleteDialog: false,
+      isDeleteDialogActionButtonDisabled: false,
       PERMISSIONS: {
         CAMPAIGN_MANAGER_PARENT: {}
-      }
+      },
+      formDetails: {}
     }
   },
   created() {
     this.getPermissions()
+    this.callForFormDetails()
   },
   methods: {
+    callForFormDetails() {
+      getCampaignManagerFormDetails().then((response) => {
+        const {
+          data: { data }
+        } = response
+        this.formDetails = data
+        console.log(this.formDetails, this.formDetails)
+      })
+    },
     getPermissions() {
       const { CAMPAIGN_MANAGER_PARENT } = PERMISSIONS
       this.$set(
@@ -78,10 +111,51 @@ export default {
       this.isItemTableShowing = !this.isItemTableShowing
     },
     toggleAddCampaignManagerModal() {
+      if (this.isShowAddOrEditCampaignManagerModal) {
+        this.selectedRow = null
+        this.isEdit = false
+      }
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
     },
     handleResetAxiosPayloadOfParent() {
       this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
+    },
+    handleItemOnEdit(row) {
+      this.selectedRow = row
+      this.isEdit = true
+      this.toggleAddCampaignManagerModal()
+    },
+    handleItemOnPreview(row) {},
+    handleItemOnDelete(row) {
+      this.selectedRow = row
+      this.toggleShowDeleteDialog()
+    },
+    handleItemOnDuplicate(row) {
+      this.selectedRow = row
+      this.toggleAddCampaignManagerModal()
+    },
+    toggleShowDeleteDialog() {
+      if (this.isShowDeleteDialog) {
+        this.selectedRow = null
+      }
+      this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    setDeleteDialogActionButtonDisabled(flag = false) {
+      this.isDeleteDialogActionButtonDisabled = flag
+    },
+    handleOnDelete(resourceId = '') {
+      const { CAMPAIGN_MANAGER_PARENT } = this.PERMISSIONS
+      if (CAMPAIGN_MANAGER_PARENT.DELETE.hasPermission) {
+        this.setDeleteDialogActionButtonDisabled(true)
+        deleteCampaignManager(resourceId)
+          .then(() => {
+            this.callForData()
+          })
+          .finally(() => {
+            this.toggleShowDeleteDialog()
+            this.setDeleteDialogActionButtonDisabled()
+          })
+      }
     }
   }
 }
