@@ -65,9 +65,10 @@
             hide-details
             style="max-width: 48px;"
             :disabled="!distributionEmailOverTimeDisableStatus"
+            :rules="rules.number"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.distributionEmailOverTimeTypeId"
+            v-model.trim="formData.distributionSmtpDelayTimeTypeId"
             id="input--campaign-manager-advanced-settings-time-type"
             class="ml-2"
             outlined
@@ -75,7 +76,7 @@
             hide-details
             placeholder="Select a item"
             style="max-width: 118px;"
-            :items="formDetails['distributionEmailOverTimeTypes']"
+            :items="formDetails['distributionSmtpDelayTimeTypes']"
             :disabled="!distributionEmailOverTimeDisableStatus"
           />
         </div>
@@ -96,9 +97,10 @@
             hide-details
             style="max-width: 48px;"
             :disabled="distributionEmailOverTimeDisableStatus"
+            :rules="rules.number"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.distributionSmtpDelayTimeTypeId"
+            v-model.trim="formData.distributionEmailOverTimeTypeId"
             id="input--campaign-manager-advanced-settings-distribute-time-type"
             class="ml-2"
             outlined
@@ -107,7 +109,7 @@
             placeholder="Select a item"
             style="max-width: 118px;"
             :disabled="distributionEmailOverTimeDisableStatus"
-            :items="formDetails['distributionSmtpDelayTimeTypes']"
+            :items="formDetails['distributionEmailOverTimeTypes']"
           />
         </div>
       </v-radio-group>
@@ -125,7 +127,7 @@
       ></v-text-field>
     </FormGroup>
     <div
-      v-if="formData.sendingLimit && formData.distributionSmtpDelayEvery"
+      v-if="getDistributionTextRenderStatus"
       class="campaign-manager-advanced-settings__distribution-text"
     >
       {{ getDistributionText }}
@@ -264,25 +266,80 @@ export default {
       return this.formData.distribution === '1'
     },
     getDistributionText() {
-      return `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedDistributionEmailOverTimeType} 500 target users will take approx ${this.getApproximatedTime} ${this.getSelectedDistributionEmailOverTimeType}`
+      return this.formData.distribution === '1'
+        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} 500 target users will take approx ${this.getApproximatedTime} hours`
+        : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to 500 targets users will take ${this.getEmailOverEndText}`
     },
-    getSelectedDistributionEmailOverTimeType() {
+    getEmailOverMinutes() {
+      const type = this.getSelectedEmailTimeType
+      let { distributionEmailOver, sendingLimit } = this.formData
+      let ratio = this.calculateRatio(type)
+      debugger
+      distributionEmailOver = Number(distributionEmailOver)
+      let seconds = (sendingLimit * ratio * distributionEmailOver) / 500
+      return seconds
+    },
+    getEmailOverEndText() {
+      const type = this.getSelectedEmailTimeType
+      const number = this.formData.distributionEmailOver.toString()
+      if (type === 'hours') {
+        return `${number.length === 1 ? `0${number}` : `${number}`}:00:00 hours`
+      } else {
+        const { distributionEmailOver } = this.formData
+        let hours = 0
+        let minutes = distributionEmailOver
+        if (distributionEmailOver > 60) {
+          hours = Math.floor(minutes / 60)
+          minutes = minutes % 60
+        }
+        hours = hours.toString()
+        minutes = minutes.toString()
+        return `${hours.length === 1 ? `0${hours}` : `${hours}`}:${
+          minutes.length === 1 ? `0${minutes}` : `${minutes}`
+        }:00 hours`
+      }
+    },
+    getSelectedSmtpDelayOverTimeType() {
+      return this.formDetails['distributionSmtpDelayTimeTypes'].find(
+        (item) => item.value === this.formData.distributionSmtpDelayTimeTypeId
+      )?.text
+    },
+    getSelectedEmailTimeType() {
       return this.formDetails['distributionEmailOverTimeTypes'].find(
         (item) => item.value === this.formData.distributionEmailOverTimeTypeId
       )?.text
     },
+    getDistributionTextRenderStatus() {
+      return this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
+    },
     getApproximatedTime() {
-      const type = this.getSelectedDistributionEmailOverTimeType
+      const type = this.getSelectedSmtpDelayOverTimeType
       let { distributionSmtpDelayEvery, sendingLimit } = this.formData
       distributionSmtpDelayEvery = Number(distributionSmtpDelayEvery)
-      let ratio = 60
-      if (type === 'hours') {
-        ratio *= 60
-      }
+      let ratio = this.calculateRatio(type)
       sendingLimit = Number(sendingLimit)
-      const answer = (500 * ratio * distributionSmtpDelayEvery) / sendingLimit
+      let seconds = (500 * ratio * distributionSmtpDelayEvery) / sendingLimit
+      let minutes = 0
+      let hours = 0
+      if (seconds > 60) {
+        minutes = Math.floor(seconds / 60)
+        seconds = seconds % 60
+      }
+      if (minutes > 60) {
+        hours = Math.floor(minutes / 60)
+        minutes = minutes % 60
+      }
+      seconds = Math.floor(seconds)
+      if (minutes === 0 && hours === 0 && seconds === 0) {
+        seconds = 1
+      }
+      hours = hours.toString()
+      minutes = minutes.toString()
+      seconds = seconds.toString()
 
-      return Number(answer / ratio).toFixed(2)
+      return `${hours.length === 1 ? `0${hours || 0}` : `${hours}`}:${
+        minutes.length === 1 ? `0${minutes || 0}` : `${minutes}`
+      }:${seconds.length === 1 ? `0${seconds || 0}` : `${seconds}`}`
     },
     getDisabledStatusOfRandomlySelected() {
       return !this.formData.sendRandomlyUsers
@@ -299,6 +356,16 @@ export default {
     this.callForSmtpSettings()
   },
   methods: {
+    calculateRatio(type = '') {
+      let ratio = 1
+      if (type === 'minutes' || type === 'hours') {
+        ratio *= 60
+      }
+      if (type === 'hours') {
+        ratio *= 60
+      }
+      return ratio
+    },
     callForSmtpSettings() {
       searchSmtpSettings(this.smtpAxiosPayload).then((response) => {
         const {
