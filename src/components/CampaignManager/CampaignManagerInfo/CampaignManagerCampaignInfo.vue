@@ -133,7 +133,7 @@
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getTargetGroups } from '@/api/targetUsers'
+import { searchTargetGroups } from '@/api/targetUsers'
 import * as validations from '@/utils/validations'
 import KSelectLoading from '@/components/KSelectLoading'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
@@ -247,12 +247,34 @@ export default {
     },
     callForTargetGroups() {
       this.setTargetGroupLoading(true)
-      getTargetGroups({ loading: true })
+      searchTargetGroups({
+        pageNumber: 1,
+        pageSize: 75000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      })
         .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.targetGroupItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+          const { data: { data: { results = [] } = {} } = {} } = response
+          this.targetGroupItems = results.map((item) => ({
+            text: item.name,
+            value: item.resourceId,
+            userCount: item.userCount
+          }))
           this.addDefaultTargetGroupItems(this.defaultTargetGroupResourceIds)
         })
         .finally(this.setTargetGroupLoading)

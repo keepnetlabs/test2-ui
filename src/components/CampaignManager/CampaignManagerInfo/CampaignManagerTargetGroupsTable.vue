@@ -91,6 +91,19 @@ export default {
             filterableType: 'text'
           },
           {
+            property: PROPERTY_STORE.COMPANYNAME,
+            align: 'left',
+            editable: false,
+            label: labels.CompanyName,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
+            isEditable: true,
+            filterableType: 'text'
+          },
+          {
             property: PROPERTY_STORE.PRIORITY,
             align: 'center',
             editable: false,
