@@ -56,7 +56,7 @@
             value="1"
           />
           <v-text-field
-            v-model="formData.time"
+            v-model="formData.distributionSmtpDelayEvery"
             v-mask="'#####'"
             id="input--campaign-manager-advanced-settings-time"
             placeholder="Enter number"
@@ -67,7 +67,7 @@
             :disabled="!distributionEmailOverTimeDisableStatus"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.distributionEmailOverTime"
+            v-model.trim="formData.distributionEmailOverTimeTypeId"
             id="input--campaign-manager-advanced-settings-time-type"
             class="ml-2"
             outlined
@@ -87,7 +87,7 @@
             color="#2196f3"
           />
           <v-text-field
-            v-model="formData.distributeTime"
+            v-model="formData.distributionEmailOver"
             v-mask="'#####'"
             id="input--campaign-manager-advanced-settings-distribute-time"
             placeholder="Enter number"
@@ -98,7 +98,7 @@
             :disabled="distributionEmailOverTimeDisableStatus"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.distributionSmtpDelayTime"
+            v-model.trim="formData.distributionSmtpDelayTimeTypeId"
             id="input--campaign-manager-advanced-settings-distribute-time-type"
             class="ml-2"
             outlined
@@ -121,33 +121,34 @@
         persistent-hint
         placeholder="Enter number"
         hint="*Required"
-        :rules="rules.days"
+        :rules="rules.number"
       ></v-text-field>
     </FormGroup>
-    <div class="campaign-manager-advanced-settings__distribution-text">
+    <div
+      v-if="formData.sendingLimit && formData.distributionSmtpDelayEvery"
+      class="campaign-manager-advanced-settings__distribution-text"
+    >
       {{ getDistributionText }}
     </div>
     <FormGroup class="mt-6" :title="labels.OtherSettings" style="max-width: 600px;">
       <div>
         <v-checkbox
-          v-model="formData.isExcludeFromReports"
+          v-model="formData.excludeFromReports"
           id="input--campaign-manager-advanced-settings-exclude-from-reports"
           color="#2196f3"
         >
-          <template #label> Exclude from reports (Test campaign)</template>
+          <template #label> Exclude from reports</template>
         </v-checkbox>
         <v-checkbox
-          v-model="formData.isOnlyActiveUsers"
+          v-model="formData.sendOnlyActiveUsers"
           id="input--campaign-manager-advanced-settings-only-active-users"
           color="#2196f3"
         >
-          <template #label>
-            Send only to active users on phishing reporter add-in (14 currently)</template
-          >
+          <template #label> Send only to active users on phishing reporter add-in</template>
         </v-checkbox>
         <div class="campaign-manager-advanced-settings__other-settings-last">
           <v-checkbox
-            v-model="formData.isRandomSelected"
+            v-model="formData.sendRandomlyUsers"
             id="input--campaign-manager-advanced-settings-randomly-selected"
             color="#2196f3"
             hide-details
@@ -155,7 +156,7 @@
           </v-checkbox>
           <span>Send this campaign to randomly selected</span>
           <v-text-field
-            v-model="formData.randomlySelectNumber"
+            v-model="formData.sendRandomlyUsersCount"
             v-mask="'#####'"
             id="input--campaign-manager-advanced-settings-other-settings-number"
             placeholder="Enter number"
@@ -166,7 +167,7 @@
             :disabled="getDisabledStatusOfRandomlySelected"
           ></v-text-field>
           <KSelect
-            v-model.trim="formData.randomlySelectPercent"
+            v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
             id="input--campaign-manager-advanced-settings-other-settings-percent"
             class="ml-2"
             outlined
@@ -198,6 +199,9 @@ export default {
   props: {
     formDetails: {
       type: Object
+    },
+    defaultValues: {
+      type: Object
     }
   },
   data() {
@@ -226,17 +230,17 @@ export default {
       responseOfSmtpItems: [],
       formData: {
         smtpSettingResourceId: '',
-        isExcludeFromReports: false,
-        isOnlyActiveUsers: false,
-        isRandomSelected: false,
+        excludeFromReports: false,
+        sendOnlyActiveUsers: false,
+        sendRandomlyUsers: false,
         distribution: '1',
-        time: 20,
-        distributionEmailOverTime: '1',
-        distributeTime: 8,
-        distributionSmtpDelayTime: '1',
+        distributionSmtpDelayEvery: 20,
+        distributionEmailOverTimeTypeId: '1',
+        distributionEmailOver: 8,
+        distributionSmtpDelayTimeTypeId: '1',
         sendingLimit: 50,
-        randomlySelectNumber: 20,
-        randomlySelectPercent: '1'
+        sendRandomlyUsersCount: 20,
+        sendRandomlyUsersCalculateTypeId: '1'
       },
       commonRules: {
         hint: '*Required',
@@ -248,7 +252,7 @@ export default {
         ]
       },
       rules: {
-        days: [
+        number: [
           (v) => validations.required(v, labels.Required),
           (v) => validations.startsWith(v, 'Cannot start with 0', 0)
         ]
@@ -260,10 +264,35 @@ export default {
       return this.formData.distribution === '1'
     },
     getDistributionText() {
-      return `Sending ${this.formData.sendingLimit} every ${this.formData.time} ${this.formData.timeType} 500 targetUsers will take approx 00:03:20 hours`
+      return `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedDistributionEmailOverTimeType} 500 target users will take approx ${this.getApproximatedTime} ${this.getSelectedDistributionEmailOverTimeType}`
+    },
+    getSelectedDistributionEmailOverTimeType() {
+      return this.formDetails['distributionEmailOverTimeTypes'].find(
+        (item) => item.value === this.formData.distributionEmailOverTimeTypeId
+      )?.text
+    },
+    getApproximatedTime() {
+      const type = this.getSelectedDistributionEmailOverTimeType
+      let { distributionSmtpDelayEvery, sendingLimit } = this.formData
+      distributionSmtpDelayEvery = Number(distributionSmtpDelayEvery)
+      let ratio = 60
+      if (type === 'hours') {
+        ratio *= 60
+      }
+      sendingLimit = Number(sendingLimit)
+      const answer = (500 * ratio * distributionSmtpDelayEvery) / sendingLimit
+
+      return Number(answer / ratio).toFixed(2)
     },
     getDisabledStatusOfRandomlySelected() {
-      return !this.formData.isRandomSelected
+      return !this.formData.sendRandomlyUsers
+    }
+  },
+  watch: {
+    defaultValues(val) {
+      for (const key of Object.keys(val)) {
+        this.formData[key] = val[key]
+      }
     }
   },
   created() {

@@ -54,6 +54,7 @@
             <CampaignManagerAdvancedSettings
               ref="refCampaignManagerAdvancedSettings"
               :form-details="getAdvancedSettingsFormDetails"
+              :default-values="getDefaultValuesOfAdvancedSettings"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -203,6 +204,36 @@ export default {
         scheduleTypeId: scheduleTypeId.toString(),
         duration
       }
+    },
+    getDefaultValuesOfAdvancedSettings() {
+      const keys = Object.keys(this.selectedRowFormData)
+      if (!keys.length) return {}
+      const {
+        smtpSettingResourceId,
+        distributionEmailOver,
+        distributionEmailOverTimeTypeId,
+        distributionSmtpDelayEvery,
+        distributionSmtpDelayTimeTypeId,
+        distributionTypeId,
+        sendingLimit,
+        excludeFromReports,
+        sendOnlyActiveUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId
+      } = this.selectedRowFormData
+      return {
+        smtpSettingResourceId: smtpSettingResourceId.toString(),
+        distributionEmailOver: distributionEmailOver.toString(),
+        distributionEmailOverTimeTypeId: distributionEmailOverTimeTypeId.toString(),
+        distributionSmtpDelayEvery: distributionSmtpDelayEvery.toString(),
+        distributionSmtpDelayTimeTypeId: distributionSmtpDelayTimeTypeId.toString(),
+        distributionTypeId: distributionTypeId.toString(),
+        sendingLimit,
+        excludeFromReports,
+        sendOnlyActiveUsers,
+        sendRandomlyUsersCount,
+        sendRandomlyUsersCalculateTypeId: sendRandomlyUsersCalculateTypeId.toString()
+      }
     }
   },
   created() {
@@ -215,6 +246,7 @@ export default {
       getCampaignManager(this.selectedRow.resourceId).then((response) => {
         const { data: { data = {} } = {} } = response
         this.selectedRowFormData = data
+        console.log('selectedRow', this.selectedRowFormData)
       })
     },
     closeOverlay() {

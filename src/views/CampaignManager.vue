@@ -95,6 +95,7 @@ export default {
           data: { data }
         } = response
         this.formDetails = data
+        console.log('this.formDetails', this.formDetails)
       })
     },
     getPermissions() {
