@@ -9,6 +9,7 @@ export const labels = {
   ZoneID: 'Zone ID',
   ApiKey: 'API Key',
   Completed: 'Completed',
+  Connected: 'Connected',
   PhishingScenarios: 'Phishing Scenarios',
   LandingPage: 'Landing Page',
   SendingLimit: 'Sending Limit',

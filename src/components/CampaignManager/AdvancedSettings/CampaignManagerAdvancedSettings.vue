@@ -6,6 +6,13 @@
       :smtp-items="defaultSmtpItems"
       @on-close="toggleCustomSmtpDialog"
     />
+    <CampaignManagerSmtpErrorDialog
+      v-if="isShowSmtpErrorDialog"
+      :status="isShowSmtpErrorDialog"
+      :message="testEmailErrorMessage"
+      @on-close="toggleShowSmtpErrorDialog"
+      @on-confirm="handleOnConfirmSmtpErrorDialog"
+    />
     <FormGroup
       class="mt-8 campaign-manager-smtp-settings"
       :title="labels.Smtp"
@@ -21,16 +28,31 @@
         outlined
         placeholder="Select Option"
         :items="smtpItems"
-        @input="handleSmtpItemChange"
+        :error="isShowSmtpInputError"
+        :error-messages="getSmtpInputErrorMessage"
+        @change="handleChangeSmtp"
       />
       <v-btn
         class="ml-4"
         text
         color="#2196f3"
         style="font-weight: 600;"
+        :style="getTestConnectionButtonStyle"
         :loading="isTestingConnection"
+        :disabled="!formData.smtpSettingResourceId"
         @click="handleTestConnectionChange"
-        >{{ labels.TestConnection }}
+        ><span
+          v-if="isTestMailSend"
+          style="
+            color: rgb(67, 160, 71) !important;
+            display: flex;
+            align-items: center;
+            text-transform: capitalize;
+          "
+        >
+          <v-icon>mdi-check</v-icon> <span class="ml-2"> {{ labels.Connected }}</span>
+        </span>
+        <span v-else> {{ labels.TestConnection }}</span>
         <template #loader>
           <img
             src="../../../assets/img/spinner-blue.svg"
@@ -192,17 +214,27 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { searchSmtpSettings } from '@/api/smtpSettings'
+import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpSettingsDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpSettingsDialog'
 import * as validations from '@/utils/validations'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 export default {
   name: 'CampaignManagerAdvancedSettings',
-  components: { CampaignManagerSmtpSettingsDialog, KSelect, FormGroup },
+  components: {
+    CampaignManagerSmtpErrorDialog,
+    CampaignManagerSmtpSettingsDialog,
+    KSelect,
+    FormGroup
+  },
   props: {
     formDetails: {
       type: Object
     },
     defaultValues: {
+      type: Object
+    },
+    selectedPhishingScenario: {
       type: Object
     }
   },
@@ -211,6 +243,8 @@ export default {
       labels,
       isTestingConnection: false,
       isShowCustomSmtpDialog: false,
+      isShowSmtpErrorDialog: false,
+      isTestMailSend: false,
       smtpAxiosPayload: {
         pageNumber: 1,
         pageSize: 5000,
@@ -230,6 +264,8 @@ export default {
       smtpItems: [],
       defaultSmtpItems: [],
       responseOfSmtpItems: [],
+      isShowSmtpInputError: false,
+      testEmailErrorMessage: '',
       formData: {
         smtpSettingResourceId: '',
         excludeFromReports: false,
@@ -262,8 +298,14 @@ export default {
     }
   },
   computed: {
+    getSmtpInputErrorMessage() {
+      return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
+    },
     distributionEmailOverTimeDisableStatus() {
       return this.formData.distribution === '1'
+    },
+    getTestConnectionButtonStyle() {
+      return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
     },
     getDistributionText() {
       return this.formData.distribution === '1'
@@ -274,10 +316,8 @@ export default {
       const type = this.getSelectedEmailTimeType
       let { distributionEmailOver, sendingLimit } = this.formData
       let ratio = this.calculateRatio(type)
-      debugger
       distributionEmailOver = Number(distributionEmailOver)
-      let seconds = (sendingLimit * ratio * distributionEmailOver) / 500
-      return seconds
+      return (sendingLimit * ratio * distributionEmailOver) / 500
     },
     getEmailOverEndText() {
       const type = this.getSelectedEmailTimeType
@@ -310,7 +350,9 @@ export default {
       )?.text
     },
     getDistributionTextRenderStatus() {
-      return this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
+      return this.formData.distribution === '1'
+        ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
+        : this.formData.sendingLimit && this.formData.distributionEmailOver
     },
     getApproximatedTime() {
       const type = this.getSelectedSmtpDelayOverTimeType
@@ -366,6 +408,17 @@ export default {
       }
       return ratio
     },
+    handleChangeSmtp() {
+      this.isTestMailSend = false
+      this.isShowSmtpInputError = false
+    },
+    handleOnConfirmSmtpErrorDialog() {
+      this.toggleShowSmtpErrorDialog()
+      this.$emit('on-increment-step')
+    },
+    toggleShowSmtpErrorDialog() {
+      this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
+    },
     callForSmtpSettings() {
       searchSmtpSettings(this.smtpAxiosPayload).then((response) => {
         const {
@@ -376,17 +429,61 @@ export default {
           return { text: smtpItem.name, value: smtpItem.resourceId }
         })
         this.defaultSmtpItems = JSON.parse(JSON.stringify(this.smtpItems))
-        this.smtpItems.push({ text: 'Customize for each company...', value: 'Custom' })
       })
     },
-    handleSmtpItemChange(item) {
-      if (item === 'Custom') this.toggleCustomSmtpDialog()
-    },
+
     toggleCustomSmtpDialog() {
       this.isShowCustomSmtpDialog = !this.isShowCustomSmtpDialog
     },
     handleTestConnectionChange() {
+      this.callForTestConnection()
+    },
+    callForGetSmtpSetting() {
+      return getSmtpSettings(this.formData.smtpSettingResourceId).then((response) => {
+        const {
+          data: {
+            data: { password, serverAddress, serverPort, useAuthentication, useSSL, userName } = {}
+          } = {}
+        } = response
+        return {
+          serverAddress,
+          port: serverPort,
+          userName,
+          password,
+          resourceId: this.formData.smtpSettingResourceId,
+          useAuthentication,
+          useSSL
+        }
+      })
+    },
+    async callForTestConnection() {
       this.isTestingConnection = true
+      const smtpData = await this.callForGetSmtpSetting()
+      const { fromAddress, fromName, template } = this.selectedPhishingScenario
+      const payload = {
+        ...smtpData,
+        to: this.$store.state.auth.user.email,
+        from: fromAddress,
+        fromName,
+        message: template
+      }
+      testConnection(payload)
+        .then(() => {
+          this.isTestMailSend = true
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.isShowSmtpInputError = false
+          this.testEmailErrorMessage = ''
+        })
+        .catch((error) => {
+          const { response } = error
+          const { data: { message = '', Message = '' } = {} } = response
+          const errorMessage = message || Message
+          this.testEmailErrorMessage =
+            errorMessage ||
+            'You cannot use this scenario with this SMTP setting.If you are going to keep it like that, there will be some errors in the campaign.'
+          this.isShowSmtpInputError = true
+        })
+        .finally(() => (this.isTestingConnection = false))
     }
   }
 }

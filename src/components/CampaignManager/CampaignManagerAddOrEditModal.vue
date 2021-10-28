@@ -55,6 +55,8 @@
               ref="refCampaignManagerAdvancedSettings"
               :form-details="getAdvancedSettingsFormDetails"
               :default-values="getDefaultValuesOfAdvancedSettings"
+              :selected-phishing-scenario="getSelectedPhishingScenario"
+              @on-increment-step="step++"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -156,6 +158,16 @@ export default {
       const text = this.isEdit ? labels.Edit : labels.New
       return `${text} Phishing Campaign`
     },
+    getSelectedPhishingScenario() {
+      let selectedScenario = {}
+      if (this.step === 2) {
+        const { refCampaignManagerCampaignInfo } = this.$refs
+        const { refCampaignManagerPhishingScenarios } = refCampaignManagerCampaignInfo.$refs
+        selectedScenario = refCampaignManagerPhishingScenarios.emailTemplateParams
+        selectedScenario.template = refCampaignManagerPhishingScenarios.emailTemplate
+      }
+      return selectedScenario
+    },
     getFormDataForCampaignSummary() {
       let formData = {}
       if (this.step === 3) {
@@ -166,7 +178,7 @@ export default {
           ...refCampaignManagerAdvancedSettings.formData
         }
         formData.selectedPhishingScenario = refCampaignManagerCampaignInfo.phishingScenarioItems.find(
-          (item) => item.resourceId === formData.phishingScenario
+          (item) => item.resourceId === formData.phishingScenarioResourceId
         )
         formData.selectedSmtpSetting = refCampaignManagerAdvancedSettings.responseOfSmtpItems.find(
           (item) => item.resourceId === formData.smtpSettingResourceId
@@ -259,7 +271,17 @@ export default {
       })
     },
     changeStep(flag = 1) {
-      this.step += flag
+      const { refCampaignManagerAdvancedSettings } = this.$refs
+      if (
+        this.step === 2 &&
+        flag === 1 &&
+        refCampaignManagerAdvancedSettings &&
+        refCampaignManagerAdvancedSettings.testEmailErrorMessage
+      ) {
+        refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
+      } else {
+        this.step += flag
+      }
     },
     handleSubmit() {
       switch (this.step) {

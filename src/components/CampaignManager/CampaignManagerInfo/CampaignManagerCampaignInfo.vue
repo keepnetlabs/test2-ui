@@ -89,6 +89,7 @@
     <CampaignManagerPhishingScenarios
       v-show="isShowAdvancedSearchPhishing"
       class="mb-6"
+      ref="refCampaignManagerPhishingScenarios"
       :items="phishingScenarioItems"
       :value="formData.phishingScenarioResourceId"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
