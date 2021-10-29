@@ -317,7 +317,17 @@ export default {
       let { distributionEmailOver, sendingLimit } = this.formData
       let ratio = this.calculateRatio(type)
       distributionEmailOver = Number(distributionEmailOver)
-      return (sendingLimit * ratio * distributionEmailOver) / 500
+      let seconds = (sendingLimit * ratio * distributionEmailOver) / 500
+      let minutes = 0
+      if (seconds > 60) {
+        minutes = seconds % 60
+        seconds = seconds / 60
+      }
+      minutes = minutes.toString()
+      seconds = seconds.toString()
+      return `${minutes.length === 1 ? `0${minutes}` : `${minutes}`}:${
+        seconds.length === 1 ? `0${seconds}` : `${seconds}`
+      }`
     },
     getEmailOverEndText() {
       const type = this.getSelectedEmailTimeType
