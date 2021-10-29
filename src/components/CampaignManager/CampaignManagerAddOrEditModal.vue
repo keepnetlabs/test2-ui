@@ -175,11 +175,25 @@ export default {
         formData = {
           ...formData,
           ...refCampaignManagerCampaignInfo.formData,
-          ...refCampaignManagerAdvancedSettings.formData
+          ...refCampaignManagerAdvancedSettings.formData,
+          emailTemplate:
+            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios.emailTemplate,
+          emailTemplateParams:
+            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
+              .emailTemplateParams,
+          landingPageTemplate:
+            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
+              .landingPageTemplate,
+          landingPageParams:
+            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
+              .landingPageParams
         }
         formData.selectedPhishingScenario = refCampaignManagerCampaignInfo.phishingScenarioItems.find(
           (item) => item.resourceId === formData.phishingScenarioResourceId
         )
+
+        formData.selectedSchedule =
+          refCampaignManagerCampaignInfo.formData.scheduleTypeId === '1' ? 'Now' : 'Later'
         formData.selectedSmtpSetting = refCampaignManagerAdvancedSettings.responseOfSmtpItems.find(
           (item) => item.resourceId === formData.smtpSettingResourceId
         )

@@ -436,7 +436,9 @@ export default {
       this.isShowCustomSmtpDialog = !this.isShowCustomSmtpDialog
     },
     handleTestConnectionChange() {
-      this.callForTestConnection()
+      try {
+        this.callForTestConnection()
+      } catch (e) {}
     },
     callForGetSmtpSetting() {
       return getSmtpSettings(this.formData.smtpSettingResourceId).then((response) => {
@@ -457,24 +459,25 @@ export default {
       })
     },
     async callForTestConnection() {
-      this.isTestingConnection = true
-      const smtpData = await this.callForGetSmtpSetting()
-      const { fromAddress, fromName, template } = this.selectedPhishingScenario
-      const payload = {
-        ...smtpData,
-        to: this.$store.state.auth.user.email,
-        from: fromAddress,
-        fromName,
-        message: template
-      }
-      testConnection(payload)
-        .then(() => {
+      try {
+        this.isTestingConnection = true
+        const smtpData = await this.callForGetSmtpSetting()
+        const { fromAddress, fromName, template } = this.selectedPhishingScenario
+        const payload = {
+          ...smtpData,
+          to: this.$store.state.auth.user.email,
+          from: fromAddress,
+          fromName,
+          message: template
+        }
+        try {
+          await testConnection(payload)
           this.isTestMailSend = true
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isShowSmtpInputError = false
           this.testEmailErrorMessage = ''
-        })
-        .catch((error) => {
+        } catch (error) {
+          if (!error) return
           const { response } = error
           const { data: { message = '', Message = '' } = {} } = response
           const errorMessage = message || Message
@@ -482,8 +485,10 @@ export default {
             errorMessage ||
             'You cannot use this scenario with this SMTP setting.If you are going to keep it like that, there will be some errors in the campaign.'
           this.isShowSmtpInputError = true
-        })
-        .finally(() => (this.isTestingConnection = false))
+        } finally {
+          this.isTestingConnection = false
+        }
+      } catch (e) {}
     }
   }
 }

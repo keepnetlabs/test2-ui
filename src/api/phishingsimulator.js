@@ -132,3 +132,12 @@ export function getCampaignManager(resourceId = '') {
 export function getCampaignManagerFormDetails() {
   return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
 }
+
+export function getPhishingScenarioLandingPageAndEmailTemplate(
+  emailTemplateId = '',
+  landingPageId = ''
+) {
+  return testRequest.get(
+    `/phishing-simulator/phishing-scenario/preview/${emailTemplateId}/${landingPageId}`
+  )
+}

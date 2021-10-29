@@ -243,7 +243,10 @@ import labels from '@/model/constants/labels'
 import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
+import {
+  getEmailTemplatePreviewContent,
+  getPhishingScenarioLandingPageAndEmailTemplate
+} from '@/api/phishingsimulator'
 import { getLandingPageTemplatePreviewContent } from '@/api/landingPage'
 export default {
   name: 'CampaignManagerPhishingScenarios',
@@ -337,26 +340,30 @@ export default {
           data: { data }
         } = response
         const { emailTemplateResourceId, landingPageTemplateResourceId } = data
-        getEmailTemplatePreviewContent(emailTemplateResourceId).then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { template, fromName, fromAddress, name } = data
+        getPhishingScenarioLandingPageAndEmailTemplate(
+          emailTemplateResourceId,
+          landingPageTemplateResourceId
+        ).then((response) => {
+          const { data: { data = {} } = {} } = response
+          const { emailTemplate, landingPageTemplate } = data
+          const { template, fromName, fromAddress, name } = emailTemplate
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name
           }
+
           this.emailTemplate = template
-        })
-        getLandingPageTemplatePreviewContent(landingPageTemplateResourceId).then((response) => {
           const {
-            data: { data }
-          } = response
-          const { name, description, landingPages } = data
+            name: landingPageName,
+            description,
+            landingPages,
+            urlTemplate
+          } = landingPageTemplate
           this.landingPageParams = {
-            name,
-            description
+            name: landingPageName,
+            description,
+            urlTemplate
           }
           this.landingPageTemplate = landingPages[0].content
         })

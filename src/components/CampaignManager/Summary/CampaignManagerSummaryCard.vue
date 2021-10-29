@@ -107,7 +107,8 @@ export default {
       word-break: break-all;
       padding: 16px;
       &:first-child {
-        padding-top: 0;
+        padding: 0 16px 16px 16px !important;
+        border-bottom: 1px solid #e0e0e0;
       }
       &:last-child {
         padding-bottom: 0;
