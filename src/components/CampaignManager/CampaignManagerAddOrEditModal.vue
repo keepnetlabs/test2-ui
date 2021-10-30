@@ -97,7 +97,7 @@
           class="add-in-configuration__footer-btn-next"
           color="#2196f3"
           rounded
-          :disabled="isSaveDisabled"
+          :disabled="isActionButtonDisabled"
           @click="handleSubmit"
         >
           {{ [1, 2].includes(step) ? labels.Next : labels.Start }}
@@ -115,10 +115,15 @@ import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignMa
 import { scrollToComponent } from '@/utils/functions'
 import CampaignManagerAdvancedSettings from '@/components/CampaignManager/AdvancedSettings/CampaignManagerAdvancedSettings'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
-import { getCampaignManager } from '@/api/phishingsimulator'
+import {
+  createCampaignManager,
+  getCampaignManager,
+  updateCampaignManager
+} from '@/api/phishingsimulator'
 
 const EMITS = {
-  ON_CLOSE: 'on-close'
+  ON_CLOSE: 'on-close',
+  ON_SUBMIT: 'on-submit'
 }
 
 export default {
@@ -147,7 +152,7 @@ export default {
   emits: EMITS,
   data() {
     return {
-      isSaveDisabled: false,
+      isActionButtonDisabled: false,
       labels,
       step: 1,
       selectedRowFormData: {}
@@ -272,7 +277,6 @@ export default {
       getCampaignManager(this.selectedRow.resourceId).then((response) => {
         const { data: { data = {} } = {} } = response
         this.selectedRowFormData = data
-        console.log('selectedRow', this.selectedRowFormData)
       })
     },
     closeOverlay() {
@@ -297,6 +301,9 @@ export default {
         this.step += flag
       }
     },
+    setActionButtonDisability(flag = false) {
+      this.isActionButtonDisabled = flag
+    },
     handleSubmit() {
       switch (this.step) {
         case 1:
@@ -312,7 +319,49 @@ export default {
           else this.showErrorMessage(refFormAdvanced)
           break
         case 3:
-          this.closeOverlay()
+          const {
+            refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
+            refCampaignManagerAdvancedSettings: { formData: advancedSettingsFormData }
+          } = this.$refs
+
+          const payload = {
+            name: campaignManagerFormData.name,
+            phishingScenarioResourceId: campaignManagerFormData.phishingScenarioResourceId,
+            scheduleTypeId: campaignManagerFormData.scheduleTypeId,
+            duration: campaignManagerFormData.duration,
+            targetGroupResourceIds: campaignManagerFormData.targetGroupResourceIds.map(
+              (item) => item.value
+            ),
+            distributionTypeId: advancedSettingsFormData.distributionTypeId,
+            distributionSmtpDelayEvery: advancedSettingsFormData.distributionSmtpDelayEvery,
+            distributionSmtpDelayTimeTypeId:
+              advancedSettingsFormData.distributionSmtpDelayTimeTypeId,
+            distributionEmailOver: advancedSettingsFormData.distributionEmailOver,
+            distributionEmailOverTimeTypeId:
+              advancedSettingsFormData.distributionEmailOverTimeTypeId,
+            sendingLimit: advancedSettingsFormData.sendingLimit,
+            excludeFromReports: advancedSettingsFormData.excludeFromReports,
+            sendOnlyActiveUsers: advancedSettingsFormData.sendOnlyActiveUsers,
+            sendRandomlyUsers: advancedSettingsFormData.sendRandomlyUsers,
+            sendRandomlyUsersCount: advancedSettingsFormData.sendRandomlyUsersCount,
+            sendRandomlyUsersCalculateTypeId:
+              advancedSettingsFormData.sendRandomlyUsersCalculateTypeId,
+            smtpSettingResourceId: advancedSettingsFormData.smtpSettingResourceId
+          }
+          this.setActionButtonDisability(true)
+          if (this.isEdit) {
+            updateCampaignManager(this.selectedRow.resourceId, payload)
+              .then(() => {
+                this.$emit(EMITS.ON_SUBMIT)
+              })
+              .finally(this.setActionButtonDisability)
+          } else {
+            createCampaignManager(payload)
+              .then(() => {
+                this.$emit(EMITS.ON_SUBMIT)
+              })
+              .finally(this.setActionButtonDisability)
+          }
       }
     }
   }

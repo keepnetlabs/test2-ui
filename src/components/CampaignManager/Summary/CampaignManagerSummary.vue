@@ -160,7 +160,6 @@ export default {
   },
   computed: {
     isFormData() {
-      console.log('this.formData', this.formData)
       return Object.keys(this.formData).length
     },
     getScenarioInfoItems() {

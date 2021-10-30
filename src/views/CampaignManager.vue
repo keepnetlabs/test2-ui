@@ -9,6 +9,12 @@
         @on-close="toggleShowDeleteDialog"
         @on-delete="handleOnDelete"
       />
+      <CampaignManagerPreview
+        v-if="isShowPreviewDialog"
+        :status="isShowPreviewDialog"
+        :selectedRow="selectedRow"
+        @on-close="toggleShowPreviewDialog"
+      />
       <CampaignManagerAddOrEditModal
         v-if="isShowAddOrEditCampaignManagerModal"
         :status="isShowAddOrEditCampaignManagerModal"
@@ -54,9 +60,11 @@ import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import { deleteCampaignManager, getCampaignManagerFormDetails } from '@/api/phishingsimulator'
+import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 export default {
   name: 'CampaignManager',
   components: {
+    CampaignManagerPreview,
     CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
@@ -68,6 +76,7 @@ export default {
       axiosPayloadOfItem: JSON.parse(JSON.stringify(axiosPayload)),
       selectedParentItem: null,
       selectedRow: null,
+      isShowPreviewDialog: false,
       isEdit: false,
       isParentTableLoading: false,
       isItemTableLoading: false,
@@ -137,7 +146,10 @@ export default {
       this.isEdit = true
       this.toggleAddCampaignManagerModal()
     },
-    handleItemOnPreview(row) {},
+    handleItemOnPreview(row) {
+      this.selectedRow = row
+      this.toggleShowPreviewDialog()
+    },
     handleItemOnDelete(row) {
       this.selectedRow = row
       this.toggleShowDeleteDialog()
@@ -145,6 +157,9 @@ export default {
     handleItemOnDuplicate(row) {
       this.selectedRow = row
       this.toggleAddCampaignManagerModal()
+    },
+    toggleShowPreviewDialog() {
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
