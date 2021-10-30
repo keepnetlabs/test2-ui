@@ -34,6 +34,7 @@
         placeholder="Select groups"
         :items="targetGroupItems"
         :rules="rules.select"
+        @input="handleTargetGroupsResourceIdsChange"
       >
         <template #progress>
           <KSelectLoading v-show="isTargetGroupLoading" />
@@ -53,6 +54,8 @@
       ref="refCampaignManagerTargetGroup"
       class="mb-6"
       :selected-target-groups="formData.targetGroupResourceIds"
+      :response-of-target-groups-items="responseOfTargetGroupsItems"
+      @handle-selection-change="handleTableSelectionChange"
     />
     <FormGroup
       has-hint
@@ -182,6 +185,7 @@ export default {
       axiosPayloadOfPhishingScenarios,
       isTargetGroupLoading: false,
       isPhishingScenariosLoading: false,
+      responseOfTargetGroupsItems: {},
       isShowAdvancedSearch: true,
       isShowAdvancedSearchPhishing: true,
       radioItems: [
@@ -244,7 +248,24 @@ export default {
         this.formData.targetGroupResourceIds = resourceIds.map((id) => {
           return this.targetGroupItems.find((item) => item.value === id)
         })
+        this.handleTargetGroupsResourceIdsChange(this.formData.targetGroupResourceIds)
       })
+    },
+    handleTargetGroupsResourceIdsChange(items) {
+      const { data: { data: { results = [] } = {} } = {} } = this.responseOfTargetGroupsItems
+      const selectedTableItems = items.map((item) => {
+        return results.find((targetGroup) => targetGroup.resourceId === item.value)
+      })
+      this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRows(
+        selectedTableItems
+      )
+    },
+    handleTableSelectionChange(items) {
+      this.formData.targetGroupResourceIds = items.map((item) => ({
+        text: item.name,
+        value: item.resourceId,
+        userCount: item.userCount
+      }))
     },
     callForTargetGroups() {
       this.setTargetGroupLoading(true)
@@ -271,6 +292,7 @@ export default {
       })
         .then((response) => {
           const { data: { data: { results = [] } = {} } = {} } = response
+          this.responseOfTargetGroupsItems = response
           this.targetGroupItems = results.map((item) => ({
             text: item.name,
             value: item.resourceId,

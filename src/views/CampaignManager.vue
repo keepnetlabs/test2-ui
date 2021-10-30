@@ -16,9 +16,11 @@
         :selected-row="selectedRow"
         :form-details="formDetails"
         @on-close="toggleAddCampaignManagerModal"
+        @on-submit="handleOnSubmit"
       />
       <CampaignManagerParentTable
         v-show="!isItemTableShowing"
+        ref="campaignManagerParentTable"
         :axios-payload.sync="axiosPayloadOfParent"
         :is-loading.sync="isParentTableLoading"
         :PERMISSIONS="PERMISSIONS['CAMPAIGN_MANAGER_PARENT']"
@@ -123,6 +125,10 @@ export default {
       }
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
     },
+    handleOnSubmit() {
+      this.$refs.campaignManagerParentTable.callForData()
+      this.toggleAddCampaignManagerModal()
+    },
     handleResetAxiosPayloadOfParent() {
       this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
     },
@@ -155,7 +161,7 @@ export default {
         this.setDeleteDialogActionButtonDisabled(true)
         deleteCampaignManager(resourceId)
           .then(() => {
-            this.callForData()
+            this.$refs.campaignManagerParentTable.callForData()
           })
           .finally(() => {
             this.toggleShowDeleteDialog()

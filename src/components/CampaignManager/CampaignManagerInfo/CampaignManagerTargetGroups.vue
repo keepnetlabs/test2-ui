@@ -32,7 +32,8 @@
               ref="refGroupTable"
               :empty.sync="isTargetGroupEmpty"
               :is-loading.sync="isTargetGroupLoading"
-              @on-highlighted-row-change="highlightedRow = $event"
+              :response-of-target-groups-items="responseOfTargetGroupsItems"
+              @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
             />
           </div>
@@ -76,6 +77,9 @@ export default {
   props: {
     selectedTargetGroups: {
       type: Array
+    },
+    responseOfTargetGroupsItems: {
+      type: Object
     }
   },
   data() {
@@ -94,15 +98,9 @@ export default {
   },
   watch: {
     search(val) {
-      this.debounce(() => {
-        this.$refs.refGroupTable.tableOptions.isColumnFilterActive = !!val.length
-        this.$refs.refGroupTable.searchChangedFilter([
-          { FieldName: 'Name', Operator: 'Contains', Value: val },
-          { FieldName: 'Priority', Operator: 'Contains', Value: val },
-          { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
-          { FieldName: 'CompanyName', Operator: 'Contains', Value: val }
-        ])
-      }, 500)
+      this.$refs.refGroupTable.tableOptions.isColumnFilterActive = !!val.length
+      this.$refs.refGroupTable.$refs.refTable.search = val
+      this.$refs.refGroupTable.$refs.refTable.searchChangedEvent()
     }
   },
   methods: {
@@ -121,6 +119,9 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
+    },
+    handleHiglightedRowChange(row) {
+      this.highlightedRow = row
     }
   }
 }

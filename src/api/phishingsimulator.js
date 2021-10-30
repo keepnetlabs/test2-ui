@@ -125,6 +125,12 @@ export function deleteCampaignManager(resourceId = '') {
   })
 }
 
+export function createCampaignManager(payload = {}) {
+  return testRequest.post('/phishing-simulator/phishing-campaign', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function getCampaignManager(resourceId = '') {
   return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
 }

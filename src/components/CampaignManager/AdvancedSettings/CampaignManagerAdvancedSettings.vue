@@ -67,7 +67,7 @@
     </FormGroup>
     <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
       <v-radio-group
-        v-model="formData.distribution"
+        v-model="formData.distributionTypeId"
         class="campaign-manager-advanced-settings__distribution"
       >
         <div class="campaign-manager-advanced-settings__distribution-item">
@@ -271,7 +271,7 @@ export default {
         excludeFromReports: false,
         sendOnlyActiveUsers: false,
         sendRandomlyUsers: false,
-        distribution: '1',
+        distributionTypeId: '1',
         distributionSmtpDelayEvery: 20,
         distributionEmailOverTimeTypeId: '1',
         distributionEmailOver: 8,
@@ -302,13 +302,13 @@ export default {
       return this.isShowSmtpInputError ? 'You cannot use this scenario with this SMTP setting.' : ''
     },
     distributionEmailOverTimeDisableStatus() {
-      return this.formData.distribution === '1'
+      return this.formData.distributionTypeId === '1'
     },
     getTestConnectionButtonStyle() {
       return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
     },
     getDistributionText() {
-      return this.formData.distribution === '1'
+      return this.formData.distributionTypeId === '1'
         ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} 500 target users will take approx ${this.getApproximatedTime} hours`
         : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to 500 targets users will take ${this.getEmailOverEndText}`
     },
@@ -360,7 +360,7 @@ export default {
       )?.text
     },
     getDistributionTextRenderStatus() {
-      return this.formData.distribution === '1'
+      return this.formData.distributionTypeId === '1'
         ? this.formData.sendingLimit && this.formData.distributionSmtpDelayEvery
         : this.formData.sendingLimit && this.formData.distributionEmailOver
     },
