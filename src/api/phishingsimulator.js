@@ -125,10 +125,35 @@ export function deleteCampaignManager(resourceId = '') {
   })
 }
 
+export function createCampaignManager(payload = {}) {
+  return testRequest.post('/phishing-simulator/phishing-campaign', payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function updateCampaignManager(resourceId = '', payload = {}) {
+  return testRequest.put(`/phishing-simulator/phishing-campaign/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function getCampaignManager(resourceId = '') {
   return testRequest.get(`phishing-simulator/phishing-campaign/${resourceId}`)
 }
 
 export function getCampaignManagerFormDetails() {
   return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
+}
+
+export function getPhishingScenarioLandingPageAndEmailTemplate(
+  emailTemplateId = '',
+  landingPageId = ''
+) {
+  return testRequest.get(
+    `/phishing-simulator/phishing-scenario/preview/${emailTemplateId}/${landingPageId}`
+  )
+}
+
+export function getCampaignManagerPreview(resourceId = '') {
+  return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
 }

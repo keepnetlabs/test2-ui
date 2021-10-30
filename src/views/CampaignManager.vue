@@ -9,6 +9,12 @@
         @on-close="toggleShowDeleteDialog"
         @on-delete="handleOnDelete"
       />
+      <CampaignManagerPreview
+        v-if="isShowPreviewDialog"
+        :status="isShowPreviewDialog"
+        :selectedRow="selectedRow"
+        @on-close="toggleShowPreviewDialog"
+      />
       <CampaignManagerAddOrEditModal
         v-if="isShowAddOrEditCampaignManagerModal"
         :status="isShowAddOrEditCampaignManagerModal"
@@ -16,9 +22,11 @@
         :selected-row="selectedRow"
         :form-details="formDetails"
         @on-close="toggleAddCampaignManagerModal"
+        @on-submit="handleOnSubmit"
       />
       <CampaignManagerParentTable
         v-show="!isItemTableShowing"
+        ref="campaignManagerParentTable"
         :axios-payload.sync="axiosPayloadOfParent"
         :is-loading.sync="isParentTableLoading"
         :PERMISSIONS="PERMISSIONS['CAMPAIGN_MANAGER_PARENT']"
@@ -52,9 +60,11 @@ import PERMISSIONS from '@/permissions'
 import { getPermissionsOfAllItems } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import { deleteCampaignManager, getCampaignManagerFormDetails } from '@/api/phishingsimulator'
+import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 export default {
   name: 'CampaignManager',
   components: {
+    CampaignManagerPreview,
     CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
     CampaignManagerParentTable,
@@ -66,6 +76,7 @@ export default {
       axiosPayloadOfItem: JSON.parse(JSON.stringify(axiosPayload)),
       selectedParentItem: null,
       selectedRow: null,
+      isShowPreviewDialog: false,
       isEdit: false,
       isParentTableLoading: false,
       isItemTableLoading: false,
@@ -95,6 +106,7 @@ export default {
           data: { data }
         } = response
         this.formDetails = data
+        console.log('this.formDetails', this.formDetails)
       })
     },
     getPermissions() {
@@ -122,6 +134,10 @@ export default {
       }
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
     },
+    handleOnSubmit() {
+      this.$refs.campaignManagerParentTable.callForData()
+      this.toggleAddCampaignManagerModal()
+    },
     handleResetAxiosPayloadOfParent() {
       this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
     },
@@ -130,7 +146,10 @@ export default {
       this.isEdit = true
       this.toggleAddCampaignManagerModal()
     },
-    handleItemOnPreview(row) {},
+    handleItemOnPreview(row) {
+      this.selectedRow = row
+      this.toggleShowPreviewDialog()
+    },
     handleItemOnDelete(row) {
       this.selectedRow = row
       this.toggleShowDeleteDialog()
@@ -138,6 +157,9 @@ export default {
     handleItemOnDuplicate(row) {
       this.selectedRow = row
       this.toggleAddCampaignManagerModal()
+    },
+    toggleShowPreviewDialog() {
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
@@ -154,7 +176,7 @@ export default {
         this.setDeleteDialogActionButtonDisabled(true)
         deleteCampaignManager(resourceId)
           .then(() => {
-            this.callForData()
+            this.$refs.campaignManagerParentTable.callForData()
           })
           .finally(() => {
             this.toggleShowDeleteDialog()

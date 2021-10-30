@@ -2,15 +2,15 @@
   <DataTable
     :id="CONSTANTS.id"
     ref="refTable"
-    is-server-side
+    selectable
+    filterable
     :refName="'campaignManagerTargetGroupTable'"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :loading="isLoading"
     :table="tableData"
     :columns="tableOptions.columns"
     :empty="tableOptions.iEmpty"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
+    :show-filter-options="false"
     :add-row-class-name="addRowClassName"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
@@ -33,7 +33,7 @@ import { searchTargetGroups } from '@/api/targetUsers'
 
 const axiosPayload = {
   pageNumber: 1,
-  pageSize: 10,
+  pageSize: 75000,
   orderBy: 'CreateTime',
   ascending: false,
   filter: {
@@ -64,6 +64,9 @@ export default {
     },
     isLoading: {
       type: Boolean
+    },
+    responseOfTargetGroupsItems: {
+      type: Object
     }
   },
   data() {
@@ -87,6 +90,19 @@ export default {
             show: true,
             type: 'text',
             width: 340,
+            isEditable: true,
+            filterableType: 'text'
+          },
+          {
+            property: PROPERTY_STORE.COMPANYNAME,
+            align: 'left',
+            editable: false,
+            label: labels.CompanyName,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 180,
             isEditable: true,
             filterableType: 'text'
           },
@@ -145,34 +161,36 @@ export default {
   watch: {
     highlightedRow(val) {
       this.$emit('on-highlighted-row-change', val)
+    },
+    responseOfTargetGroupsItems(val) {
+      this.setDefaultResponseParams(val)
     }
-  },
-  created() {
-    this.callForData()
   },
   methods: {
     callForData() {
       this.setLoading(true)
-      searchTargetGroups(this.axiosPayload)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.totalNumberOfRecords = totalNumberOfRecords
-          this.tableData = data.results
-          if (data.results.length) {
-            this.highlightedRow = this.tableData[0]
-            this.$emit('update:empty', false)
-          } else {
-            this.highlightedRow = {}
-            if (!this.tableOptions.isColumnFilterActive) this.$emit('update:empty', true)
-          }
-        })
-        .finally(this.setLoading)
+      searchTargetGroups(this.axiosPayload).then((response) => {
+        this.setDefaultResponseParams(response)
+      })
+    },
+    setDefaultResponseParams(response) {
+      const {
+        data: { data }
+      } = response
+      const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+      this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+      this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+      this.serverSideProps.pageNumber = pageNumber
+      this.totalNumberOfRecords = totalNumberOfRecords
+      this.tableData = data.results
+      if (data.results.length) {
+        this.highlightedRow = this.tableData[0]
+        this.$emit('update:empty', false)
+      } else {
+        this.highlightedRow = {}
+        if (!this.tableOptions.isColumnFilterActive) this.$emit('update:empty', true)
+      }
+      this.setLoading(false)
     },
     setLoading(val = false) {
       this.$emit('update:is-loading', val)
@@ -224,7 +242,7 @@ export default {
     },
     addRowClassName({ row }) {
       return row.resourceId === this.highlightedRow.resourceId
-        ? 'campaign-manager-highlighted-row'
+        ? ' campaign-manager-highlighted-row'
         : ''
     }
   }
