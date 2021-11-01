@@ -1696,6 +1696,7 @@ export default {
     }
   }
   .ews-target-groups-select__radio-group {
+    &.v-input--selection-controls.v-input,
     .v-input--selection-controls.v-input {
       margin-top: 0 !important;
     }
