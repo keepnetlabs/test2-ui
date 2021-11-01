@@ -226,6 +226,7 @@ export default {
       scenarioId: null,
       labels,
       showAllRecords: false,
+      selectedScenarioURL: '',
       totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,

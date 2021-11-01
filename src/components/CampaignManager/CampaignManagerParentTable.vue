@@ -133,13 +133,15 @@ export default {
           message: labels.EmptyCampaignManager,
           btn: labels.New,
           id: 'btn-empty--campaign-manager',
-          icon: 'mdi-plus'
+          icon: 'mdi-plus',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
-          id: 'btn-add--campaign-manager'
+          id: 'btn-add--campaign-manager',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         downloadButton: {
           show: true,
@@ -158,7 +160,8 @@ export default {
             name: labels.Preview,
             id: 'btn-preview--row-actions-campaign-manager',
             icon: 'mdi-eye',
-            action: 'on-preview'
+            action: 'on-preview',
+            disabled: !this.PERMISSIONS.GET.hasPermission
           },
           {
             name: labels.Duplicate,

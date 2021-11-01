@@ -440,7 +440,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
   DOMAINS: 'Domains',
   LANDINGPAGES: 'LandingPages',
-  SCENARIOS: 'Scenarios'
+  SCENARIOS: 'ScenariosSearchKeys'
 }
 
 export const INTEGRATION_TYPES = {
