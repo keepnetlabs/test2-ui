@@ -717,7 +717,11 @@ export default {
       })
     },
     getResultOfAttachmentList(list) {
-      let result = 'Excluded'
+      let result = list.length
+        ? list.some((item) => item.result === 'Expired')
+          ? 'Undetected'
+          : 'Excluded'
+        : 'Undetected'
       for (let item of list) {
         if (item.result === 'Malicious') {
           result = 'Malicious'
@@ -739,6 +743,7 @@ export default {
           result = 'Excluded'
         }
       }
+
       return result
     },
     writeToNavigator(value, index, type) {
