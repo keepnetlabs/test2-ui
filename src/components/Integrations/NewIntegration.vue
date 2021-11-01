@@ -761,7 +761,9 @@
                 label="Scan sender IP address"
                 color="#2196f3"
                 style="margin-top: 2px;"
-                :disabled="!selectedIntegrationType.isSendIp && !isCustomIntegration"
+                :disabled="
+                  isSpamHouse || (!selectedIntegrationType.isSendIp && !isCustomIntegration)
+                "
               ></v-checkbox>
             </div>
           </form-group>

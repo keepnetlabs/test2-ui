@@ -9,7 +9,8 @@
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
-      <el-tabs v-model="tab">
+      <DatatableLoading v-if="isLoading" :loading="isLoading" />
+      <el-tabs v-show="!isLoading" v-model="tab">
         <el-tab-pane
           id="campaign-manager-info--email-content"
           name="email"
@@ -70,9 +71,10 @@
 import AppDialog from '@/components/AppDialog'
 import { getCampaignManagerPreview } from '@/api/phishingsimulator'
 import labels from '@/model/constants/labels'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'CampaignManagerPreview',
-  components: { AppDialog },
+  components: { DatatableLoading, AppDialog },
   props: {
     status: {
       type: Boolean
@@ -88,6 +90,7 @@ export default {
       emailTemplateParams: {},
       landingPageParams: {},
       tab: 'email',
+      isLoading: false,
       labels
     }
   },
@@ -104,20 +107,26 @@ export default {
   },
   methods: {
     callForData() {
-      getCampaignManagerPreview(this.selectedRow.resourceId).then((response) => {
-        const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
-        const { emailTemplate, landingPageTemplate: landingPage } = phishingScenarioPreviewDto
-        this.emailTemplate = emailTemplate.template
-        this.emailTemplateParams = {
-          fromName: emailTemplate.fromName,
-          fromAddress: emailTemplate.fromAddress
-        }
-        this.landingPageTemplate = landingPage.landingPages[0].content
-        this.landingPageParams = {
-          name: landingPage.name,
-          description: landingPage.description
-        }
-      })
+      this.setLoading(true)
+      getCampaignManagerPreview(this.selectedRow.resourceId)
+        .then((response) => {
+          const { data: { data: { phishingScenarioPreviewDto } = {} } = {} } = response
+          const { emailTemplate, landingPageTemplate: landingPage } = phishingScenarioPreviewDto
+          this.emailTemplate = emailTemplate.template
+          this.emailTemplateParams = {
+            fromName: emailTemplate.fromName,
+            fromAddress: emailTemplate.fromAddress
+          }
+          this.landingPageTemplate = landingPage.landingPages[0].content
+          this.landingPageParams = {
+            name: landingPage.name,
+            description: landingPage.description
+          }
+        })
+        .finally(this.setLoading)
+    },
+    setLoading(flag = false) {
+      this.isLoading = flag
     },
     handleClose() {
       this.$emit('on-close')

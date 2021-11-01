@@ -232,11 +232,7 @@
                       </div>
                       <div class="summary-content-details">
                         <span class="summary-content__title">Difficulty</span
-                        ><span class="summary-content__body">{{
-                          scenarioDetailsLookup.difficultyTypes.find(
-                            (item) => item.value === generalDifficultyTypeId
-                          ).text
-                        }}</span>
+                        ><span class="summary-content__body">{{ getDifficultyType }}</span>
                       </div>
                     </div>
                     <div class="summary-content__collapsable"></div>
@@ -662,6 +658,7 @@ export default {
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
       availableForRequests: [],
+      generalDifficultyTypeId: '',
       labels,
       step: 1,
       Validations: Validations,
@@ -804,6 +801,13 @@ export default {
   computed: {
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
+    },
+    getDifficultyType() {
+      return (
+        this.scenarioDetailsLookup['difficultyTypes'].find(
+          (item) => item.value === this.generalDifficultyTypeId
+        )?.text || ''
+      )
     }
   },
   created() {
