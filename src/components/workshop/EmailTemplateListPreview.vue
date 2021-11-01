@@ -160,8 +160,9 @@
                 v-if="
                   !loadingTemplates &&
                   !loadingTemplatePreview &&
-                  search &&
-                  !!search.length &&
+                  ((search && !!search.length) ||
+                    bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+                    bodyData.filter.FilterGroups[0].FilterItems[1].value) &&
                   !listData.length
                 "
                 class="pl-5 pt-5"
@@ -169,10 +170,10 @@
                 Search criteria has no results
               </div>
               <div
-                v-if="
+                v-else-if="
                   !loadingTemplates &&
                   !loadingTemplatePreview &&
-                  search &&
+                  !search &&
                   !search.length &&
                   !listData.length
                 "

@@ -4,7 +4,10 @@
     ref="refTable"
     selectable
     filterable
+    is-server-side
     :refName="'campaignManagerTargetGroupTable'"
+    :server-side-events="{ pagination: true, search: true, sort: true }"
+    :server-side-props="serverSideProps"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :loading="isLoading"
     :table="tableData"
@@ -33,7 +36,7 @@ import { searchTargetGroups } from '@/api/targetUsers'
 
 const axiosPayload = {
   pageNumber: 1,
-  pageSize: 75000,
+  pageSize: 10,
   orderBy: 'CreateTime',
   ascending: false,
   filter: {
@@ -168,9 +171,11 @@ export default {
   },
   methods: {
     callForData() {
-      this.setLoading(true)
-      searchTargetGroups(this.axiosPayload).then((response) => {
-        this.setDefaultResponseParams(response)
+      this.$nextTick(() => {
+        this.setLoading(true)
+        searchTargetGroups(this.axiosPayload).then((response) => {
+          this.setDefaultResponseParams(response)
+        })
       })
     },
     setDefaultResponseParams(response) {
