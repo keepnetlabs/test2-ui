@@ -178,6 +178,9 @@ export default {
   props: {
     defaultValues: {
       type: Object
+    },
+    isEdit: {
+      type: Boolean
     }
   },
   data() {
@@ -261,11 +264,13 @@ export default {
       )
     },
     handleTableSelectionChange(items) {
-      this.formData.targetGroupResourceIds = items.map((item) => ({
-        text: item.name,
-        value: item.resourceId,
-        userCount: item.userCount
-      }))
+      this.formData.targetGroupResourceIds = items
+        .filter((item) => item)
+        .map((item) => ({
+          text: item.name,
+          value: item.resourceId,
+          userCount: item.userCount
+        }))
     },
     callForTargetGroups() {
       this.setTargetGroupLoading(true)
@@ -316,8 +321,9 @@ export default {
             data: { data }
           } = response
           this.phishingScenarioItems = data.results || []
-          if (this.phishingScenarioItems.length && !this.isEdit)
+          if (this.phishingScenarioItems.length && !this.isEdit) {
             this.formData.phishingScenarioResourceId = this.phishingScenarioItems[0].resourceId
+          }
         })
         .finally(this.setPhishingScenarioLoading)
     },

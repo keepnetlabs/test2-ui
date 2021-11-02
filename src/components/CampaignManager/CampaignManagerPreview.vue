@@ -1,10 +1,10 @@
 <template>
   <AppDialog
-    :status="status"
     icon="mdi-eye"
+    custom-size="900"
+    :status="status"
     :title="getTitle"
     :subtitle="getSubtitle"
-    :size="'ultraMaximum'"
     class-name="campaign-manager-preview-dialog"
     @changeStatus="handleClose"
   >
@@ -41,13 +41,9 @@
           <div class="template-preview pt-3">
             <div class="template-preview__text" v-if="!!landingPageTemplate">
               <div>
-                <span class="template-preview__text--title">Name: </span>
-                <span class="template-preview__text--body">{{ landingPageParams.name }}</span>
-              </div>
-              <div>
-                <span class="template-preview__text--title">Description: </span>
+                <span class="template-preview__text--title">Phishing URL: </span>
                 <span class="template-preview__text--body">{{
-                  landingPageParams.description
+                  landingPageParams.urlTemplate
                 }}</span>
               </div>
             </div>
@@ -96,7 +92,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return 'Landing Page Template Preview'
+      return 'Campaign Manager Template Preview'
     },
     getSubtitle() {
       return this.selectedRow.name
@@ -118,9 +114,11 @@ export default {
             fromAddress: emailTemplate.fromAddress
           }
           this.landingPageTemplate = landingPage.landingPages[0].content
+          console.log('landingPageTemplate', landingPage)
           this.landingPageParams = {
             name: landingPage.name,
-            description: landingPage.description
+            description: landingPage.description,
+            urlTemplate: landingPage.urlTemplate
           }
         })
         .finally(this.setLoading)
