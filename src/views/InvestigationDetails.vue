@@ -1862,14 +1862,14 @@ export default {
       return returnValue
     },
     getProgressText(scope) {
-      return Math.floor(scope.row.analyzedMailCount / scope.row.filteredMailCount) === 1 ||
-        scope.row.status === 'Completed'
+      return scope.row.status === 'Completed'
         ? 'Completed'
-        : !isNaN(scope.row.analyzedMailCount / scope.row.filteredMailCount)
-        ? Math.floor((scope.row.analyzedMailCount / scope.row.filteredMailCount) * 100) + '%'
-        : 0 + '%'
+        : scope.row.progress === 100
+        ? 'Completed'
+        : `${scope.row.progress}%`
     },
     getProgressValue(scope) {
+      debugger
       if (scope.row.analyzedMailCount === 0 && scope.row.filteredMailCount === 0) {
         return 100
       }
