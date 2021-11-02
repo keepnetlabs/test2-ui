@@ -295,7 +295,8 @@ export default {
         this.step === 2 &&
         flag === 1 &&
         refCampaignManagerAdvancedSettings &&
-        refCampaignManagerAdvancedSettings.testEmailErrorMessage
+        refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
+        !refCampaignManagerAdvancedSettings.isTestMailSend
       ) {
         refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
       } else {

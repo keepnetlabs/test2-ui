@@ -33,6 +33,7 @@
         @change="handleChangeSmtp"
       />
       <v-btn
+        :key="buttonKey"
         class="ml-4"
         text
         color="#2196f3"
@@ -261,6 +262,7 @@ export default {
         }
       },
       smtpItems: [],
+      buttonKey: Math.random().toString(),
       defaultSmtpItems: [],
       responseOfSmtpItems: [],
       isShowSmtpInputError: false,
@@ -418,6 +420,7 @@ export default {
       return ratio
     },
     handleChangeSmtp() {
+      this.buttonKey = Math.random().toString()
       this.isTestMailSend = false
       this.isShowSmtpInputError = false
     },
@@ -484,7 +487,9 @@ export default {
           this.isTestMailSend = true
           this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isShowSmtpInputError = false
-          this.testEmailErrorMessage = ''
+          this.$nextTick(() => {
+            this.testEmailErrorMessage = ''
+          })
         } catch (error) {
           if (!error) return
           const { response } = error
