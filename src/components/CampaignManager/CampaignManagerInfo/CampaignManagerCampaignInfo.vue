@@ -256,14 +256,17 @@ export default {
     },
     handleTargetGroupsResourceIdsChange(items) {
       const { data: { data: { results = [] } = {} } = {} } = this.responseOfTargetGroupsItems
-      const selectedTableItems = items.map((item) => {
-        return results.find((targetGroup) => targetGroup.resourceId === item.value)
-      })
+      const selectedTableItems = items
+        .filter((item) => item)
+        .map((item) => {
+          return results.find((targetGroup) => targetGroup.resourceId === item.value)
+        })
       this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRows(
         selectedTableItems
       )
     },
     handleTableSelectionChange(items) {
+      debugger
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({
@@ -276,7 +279,7 @@ export default {
       this.setTargetGroupLoading(true)
       searchTargetGroups({
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 7500,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {

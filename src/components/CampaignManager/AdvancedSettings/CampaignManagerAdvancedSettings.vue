@@ -36,8 +36,7 @@
         class="ml-4"
         text
         color="#2196f3"
-        style="font-weight: 600;"
-        :style="getTestConnectionButtonStyle"
+        :style="getTestConnectionButtonStyle()"
         :loading="isTestingConnection"
         :disabled="!formData.smtpSettingResourceId"
         @click="handleTestConnectionChange"
@@ -304,9 +303,6 @@ export default {
     distributionEmailOverTimeDisableStatus() {
       return this.formData.distributionTypeId === '1'
     },
-    getTestConnectionButtonStyle() {
-      return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
-    },
     getDistributionText() {
       return this.formData.distributionTypeId === '1'
         ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} 500 target users will take approx ${this.getApproximatedTime} hours`
@@ -408,6 +404,9 @@ export default {
     this.callForSmtpSettings()
   },
   methods: {
+    getTestConnectionButtonStyle() {
+      return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
+    },
     calculateRatio(type = '') {
       let ratio = 1
       if (type === 'minutes' || type === 'hours') {

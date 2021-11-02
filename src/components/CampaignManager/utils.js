@@ -77,7 +77,6 @@ export const COLUMNS = {
     show: true,
     type: 'number',
     width: 160,
-    filterableType: 'number',
     emptyText: 0
   },
   STATUS: {
@@ -110,8 +109,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     width: 160,
-    type: 'text',
-    filterableType: 'date'
+    type: 'text'
   }
 }
 export const ACTION_STATUSES = {

@@ -190,7 +190,14 @@ export default {
         const col = this.tableOptions.columns.find(
           (col) => col.property === COLUMNS.STATUS.property
         )
-        this.$set(col, 'filterableItems', val)
+
+        this.$set(
+          col,
+          'filterableItems',
+          val.map((item) => {
+            return { ...item, value: item.text }
+          })
+        )
         this.$nextTick(() => {
           this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
         })
@@ -297,9 +304,10 @@ export default {
       this.queryHelper.setRouterQuery('page', 1)
       this.callForData()
     },
-    sortChanged({ order } = {}) {
+    sortChanged({ order, prop } = {}) {
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.ascending = order === this.CONSTANTS.ascending
+      copyOfAxiosPayload.orderBy = prop
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.callForData()
     },
