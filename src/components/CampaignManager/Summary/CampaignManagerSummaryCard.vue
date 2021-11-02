@@ -120,6 +120,9 @@ export default {
         display: flex;
         font-weight: 600;
         flex-basis: 30%;
+        @media (max-width: 768px) {
+          flex-basis: 50%;
+        }
       }
     }
   }

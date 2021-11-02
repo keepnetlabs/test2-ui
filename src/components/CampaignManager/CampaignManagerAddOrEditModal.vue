@@ -44,6 +44,7 @@
             <CampaignManagerCampaignInfo
               ref="refCampaignManagerCampaignInfo"
               :default-values="getDefaultValuesOfCampaignInfo"
+              :is-edit="isEdit"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">

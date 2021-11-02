@@ -246,8 +246,8 @@ export default {
 <style lang="scss">
 .campaign-manager-last-step {
   &__header {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
     .campaign-manager-summary-card {
       min-width: 400px;
       margin-top: 24px;
