@@ -57,7 +57,6 @@
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
       :refName="'emailTemplatesList'"
       :columns="tableOptions.columns"
       :total-number-of-records="totalNumberOfRecords"
@@ -210,7 +209,6 @@ export default {
       isDuplicate: false,
       emailTemplateId: null,
       labels,
-      showAllRecords: false,
       totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
@@ -622,8 +620,8 @@ export default {
       })
     },
     getDatatableList() {
-      this.loading = true
       if (this.checkPermissions('phishing-simulator/email-templates', 'POST')) {
+        this.loading = true
         getEmailTemplatesList(this.bodyData)
           .then((response) => {
             const {
@@ -636,14 +634,6 @@ export default {
             const { results = [] } = data
             this.tableData = results
             this.totalNumberOfRecords = totalNumberOfRecords
-
-            if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-
-            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-              this.showAllRecords = false
-            }
           })
           .catch(() => {
             this.tableData = []

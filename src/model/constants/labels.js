@@ -163,7 +163,7 @@ export const labels = {
   JustEmail: 'Email',
   FromName: 'From Name',
   EmptySamlTable: 'You do not have any SAML configuration',
-  EmptyCampaignManager: 'You do not have any Campaign Manager',
+  EmptyCampaignManager: 'You do not have any Campaign',
   EmptySamlTableButton: 'Create a new SAML configuration',
   CreateNewNotificationTemplate: 'Create New Notification Template',
   EditNewNotificationTemplate: 'Edit Notification Template',

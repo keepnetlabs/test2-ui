@@ -4,13 +4,24 @@
       <v-col class="pl-0 phishingSimulator__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Scenarios" name="scenarios" id="emailTemplates-scenarios">
+            <el-tab-pane
+              v-if="checkPermission('phishing-simulator/phishing-scenario/search', 'POST')"
+              label="Scenarios"
+              name="scenarios"
+              id="emailTemplates-scenarios"
+            >
               <Scenarios v-if="tab === 'scenarios'" />
             </el-tab-pane>
-            <el-tab-pane label="Email Templates" name="emailTemplates" id="emailTemplates-content">
+            <el-tab-pane
+              v-if="checkPermission('phishing-simulator/email-templates', 'POST')"
+              label="Email Templates"
+              name="emailTemplates"
+              id="emailTemplates-content"
+            >
               <EmailTemplates v-if="tab === 'emailTemplates'" />
             </el-tab-pane>
             <el-tab-pane
+              v-if="checkPermission('phishing-simulator/landing-page-template', 'POST')"
               label="Landing Page Templates"
               name="landingPage"
               id="landing-page-content"
@@ -28,6 +39,7 @@
 import EmailTemplates from '../components/PhishingScenarios/EmailTemplates'
 import LandingPageList from '../components/LandingPage/LandingPageList'
 import Scenarios from '../components/PhishingScenarios/Scenarios'
+import { checkPermission } from '@/utils/functions'
 export default {
   name: 'PhishingSimulator',
   components: {
@@ -43,6 +55,9 @@ export default {
   methods: {
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
+    },
+    checkPermission(permission, type) {
+      return checkPermission(permission, type)
     }
   }
 }
