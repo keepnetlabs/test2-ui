@@ -264,11 +264,13 @@ export default {
       )
     },
     handleTableSelectionChange(items) {
-      this.formData.targetGroupResourceIds = items.map((item) => ({
-        text: item.name,
-        value: item.resourceId,
-        userCount: item.userCount
-      }))
+      this.formData.targetGroupResourceIds = items
+        .filter((item) => item)
+        .map((item) => ({
+          text: item.name,
+          value: item.resourceId,
+          userCount: item.userCount
+        }))
     },
     callForTargetGroups() {
       this.setTargetGroupLoading(true)

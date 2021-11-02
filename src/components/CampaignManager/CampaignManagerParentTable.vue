@@ -19,6 +19,7 @@
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
     @on-add-button-click="toggleAddCampaignManagerModal"
+    @onEmptyBtnClicked="toggleAddCampaignManagerModal"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -132,6 +133,7 @@ export default {
         iEmpty: {
           message: labels.EmptyCampaignManager,
           btn: labels.New,
+          action: 'on-add-button-click',
           id: 'btn-empty--campaign-manager',
           icon: 'mdi-plus',
           disabled: !this.PERMISSIONS.CREATE.hasPermission
@@ -220,7 +222,7 @@ export default {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
       )
-      if (!savedFilter) return
+      if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
       const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter = filter
