@@ -146,6 +146,7 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'date',
+            minWidth: 150,
             isEditable: true,
             overrideWidth: true
           }
