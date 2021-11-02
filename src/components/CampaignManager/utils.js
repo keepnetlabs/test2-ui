@@ -99,6 +99,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'text',
+    width: 160,
     filterableType: 'date'
   },
   LAST_LAUNCH: {
@@ -108,6 +109,7 @@ export const COLUMNS = {
     label: labels.LastLaunch,
     sortable: true,
     show: true,
+    width: 160,
     type: 'text',
     filterableType: 'date'
   }
