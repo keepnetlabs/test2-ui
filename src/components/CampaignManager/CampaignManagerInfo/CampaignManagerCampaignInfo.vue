@@ -248,9 +248,11 @@ export default {
       )
         return
       this.$nextTick(() => {
-        this.formData.targetGroupResourceIds = resourceIds.map((id) => {
-          return this.targetGroupItems.find((item) => item.value === id)
-        })
+        this.formData.targetGroupResourceIds = resourceIds
+          .map((id) => {
+            return this.targetGroupItems.find((item) => item.value === id)
+          })
+          .filter((item) => item)
         this.handleTargetGroupsResourceIdsChange(this.formData.targetGroupResourceIds)
       })
     },
@@ -266,7 +268,6 @@ export default {
       )
     },
     handleTableSelectionChange(items) {
-      debugger
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({

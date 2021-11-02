@@ -1869,7 +1869,6 @@ export default {
         : `${scope.row.progress}%`
     },
     getProgressValue(scope) {
-      debugger
       if (scope.row.analyzedMailCount === 0 && scope.row.filteredMailCount === 0) {
         return 100
       }
