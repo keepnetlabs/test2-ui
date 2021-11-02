@@ -178,6 +178,9 @@ export default {
   props: {
     defaultValues: {
       type: Object
+    },
+    isEdit: {
+      type: Boolean
     }
   },
   data() {
@@ -316,8 +319,9 @@ export default {
             data: { data }
           } = response
           this.phishingScenarioItems = data.results || []
-          if (this.phishingScenarioItems.length && !this.isEdit)
+          if (this.phishingScenarioItems.length && !this.isEdit) {
             this.formData.phishingScenarioResourceId = this.phishingScenarioItems[0].resourceId
+          }
         })
         .finally(this.setPhishingScenarioLoading)
     },
