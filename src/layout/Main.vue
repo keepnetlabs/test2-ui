@@ -364,7 +364,6 @@
               style="padding-left: 0 !important; margin-left: -5px;"
               v-if="
                 checkPermissionMultiple([
-                  'ir/dashboard/running-investigations|GET',
                   'ir/dashboard/top-rules|GET',
                   'notified-emails/search|POST',
                   'is/dashboard/summary|POST',
@@ -1505,7 +1504,6 @@ export default {
     },
     checkIncidentResponderPermissions() {
       return checkPermissionMultiple([
-        'ir/dashboard/running-investigations|GET',
         'ir/dashboard/top-rules|GET',
         'notified-emails/search|POST',
         'investigations/search|POST',
