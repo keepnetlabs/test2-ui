@@ -247,7 +247,9 @@ export default {
         !resourceIds.length
       )
         return
+      const that = this
       this.$nextTick(() => {
+        debugger
         this.formData.targetGroupResourceIds = resourceIds
           .map((id) => {
             return this.targetGroupItems.find((item) => item.value === id)
@@ -280,7 +282,7 @@ export default {
       this.setTargetGroupLoading(true)
       searchTargetGroups({
         pageNumber: 1,
-        pageSize: 7500,
+        pageSize: 75000,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
