@@ -290,7 +290,8 @@
               v-if="
                 checkPermissionMultiple([
                   'phishing-simulator/email-templates|POST',
-                  'phishing-simulator/phishing-scenario/search|POST'
+                  'phishing-simulator/phishing-scenario/search|POST',
+                  'phishing-simulator/landing-page-template|POST'
                 ])
               "
             >
