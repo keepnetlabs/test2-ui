@@ -247,9 +247,7 @@ export default {
         !resourceIds.length
       )
         return
-      const that = this
       this.$nextTick(() => {
-        debugger
         this.formData.targetGroupResourceIds = resourceIds
           .map((id) => {
             return this.targetGroupItems.find((item) => item.value === id)
