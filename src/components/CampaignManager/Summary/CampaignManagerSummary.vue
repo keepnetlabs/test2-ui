@@ -304,6 +304,8 @@ export default {
           align-items: center;
           div:last-child .k-badge {
             margin-left: 8px;
+            padding: 0;
+            max-width: none;
             .v-btn__content {
               color: #383b41;
             }
@@ -348,6 +350,8 @@ export default {
           align-items: center;
           div:last-child .k-badge {
             margin-left: 8px;
+            max-width: none;
+            padding: 0;
             .v-btn__content {
               color: #383b41;
             }
