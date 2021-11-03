@@ -124,11 +124,6 @@
             "
           >
             <td>
-              <!--<img
-                alt="logo"
-                style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
-                :src="'{COMPANYLOGO}'"
-              /> -->
               <img
                 alt="logo"
                 style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
@@ -138,34 +133,46 @@
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              Let’s design an email template
+              <p style="margin-bottom: 0;">
+                Let’s design an email template
+              </p>
             </td>
           </tr>
           <tr :style="[{ marginTop: '16px' }]">
             <td style="padding-top: 10px;">
-              To design an email template, first click the Edit button to enter design mode
+              <p style="margin-bottom: 0;">
+                To design an email template, first click the Edit button to enter design mode
+              </p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              Once there choose the layout, use blocks, text, images and other features you need to
-              design a responsive email, really fast.
+              <p style="margin-bottom: 0;">
+                Once there choose the layout, use blocks, text, images and other features you need
+                to design a responsive email, really fast.
+              </p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              Give your content a style by changing fonts, colors, borders and other properties.
+              <p style="margin-bottom: 0;">
+                Give your content a style by changing fonts, colors, borders and other properties.
+              </p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              Use shortcodes to define user names, email addresses, URLs, training pieces, dates and
-              many more properties
+              <p style="margin-bottom: 0;">
+                Use shortcodes to define user names, email addresses, URLs, training pieces, dates
+                and many more properties
+              </p>
             </td>
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              Upload files as attachments to track who downloads and runs suspicious files
+              <p style="margin-bottom: 0;">
+                Upload files as attachments to track who downloads and runs suspicious files
+              </p>
             </td>
           </tr>
           <tr>
@@ -199,8 +206,10 @@
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
-              <span>{DATESENT}</span>
+              <p style="margin-bottom: 0;">
+                This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
+                <span>{DATESENT}</span>
+              </p>
             </td>
           </tr>
         </tbody>
