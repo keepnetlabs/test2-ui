@@ -2,7 +2,7 @@ import mergedTextsPostCompanyName from '../blocks/mergedTextsBlocks/postCompanyN
 
 const postCompanyName = {
   label: 'Post Company Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

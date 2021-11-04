@@ -2,7 +2,7 @@ import mergedTextsStartedBy from '../blocks/mergedTextsBlocks/startedBy'
 
 const startedBy = {
   label: 'Started By',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

@@ -2,7 +2,7 @@ import mergedTextsDateEmailSent from '../blocks/mergedTextsBlocks/dateEmailSent'
 
 const EmailSent = {
   label: 'Date Email Sent',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

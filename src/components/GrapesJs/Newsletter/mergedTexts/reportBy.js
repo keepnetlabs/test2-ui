@@ -2,7 +2,7 @@ import mergedTextsReportBy from '../blocks/mergedTextsBlocks/reportBy'
 
 const reportBy = {
   label: 'Report By',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

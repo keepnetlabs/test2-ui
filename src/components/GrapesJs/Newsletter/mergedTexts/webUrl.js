@@ -2,7 +2,7 @@ import mergedTextsShareWebUrl from '../blocks/mergedTextsBlocks/webUrl'
 
 const webUrl = {
   label: 'Web URL',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

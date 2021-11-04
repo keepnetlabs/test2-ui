@@ -2,7 +2,7 @@ import mergedTextsAttachment from '../blocks/mergedTextsBlocks/attachment'
 
 const attachment = {
   label: 'Attachment',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

@@ -2,7 +2,7 @@ import mergedTextsAnalysedEmail from '../blocks/mergedTextsBlocks/analysedEmail'
 
 const analysedEmail = {
   label: 'Analysed Email',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

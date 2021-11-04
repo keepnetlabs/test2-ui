@@ -1136,15 +1136,28 @@ export default {
           }
         }
         // crate new body data for api call
+        const calculateTime = (date) => {
+          const splittedDate = date.split(' ')
+          const timeArray = splittedDate[1].split(':')
+          let time = Number(timeArray[0]) + 4
+          if (time > 24) {
+            time = time - 24
+          }
+          time = time.toString()
+          time = `${time.length === 1 ? `0${time}` : time}:${timeArray[1]}`
+          return `${splittedDate[0]} ${time}`
+        }
+
+        const [startDate, endDate] = this.date
         const newInvestigationObj = {
           headers: this.filterData(headersData),
           bodies: this.filterData(bodyData),
           attachments: this.filterData(attachmentsData),
           isScanEnterpriseVault: false,
           name: this.investgationName,
-          startDate: this.date[0],
-          endDate: this.date[1],
-          expireDate: this.newExpireDate(this.date[0], this.selectedDuration),
+          startDate: calculateTime(startDate),
+          endDate: calculateTime(endDate),
+          expireDate: this.newExpireDate(startDate, this.selectedDuration),
           targetUserType: this.targetUserType,
           targetUsers:
             this.targetUserType == 'Groups'

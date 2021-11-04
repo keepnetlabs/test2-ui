@@ -2,7 +2,7 @@ import mergedTextsSenderIP from '../blocks/mergedTextsBlocks/senderIP'
 
 const senderIP = {
   label: 'Sender IP',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

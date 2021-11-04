@@ -2,7 +2,7 @@ import mergedTextsPhishingUrl from '../blocks/mergedTextsBlocks/phishingUrl'
 
 const phishingUrl = {
   label: 'Phishing Url',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

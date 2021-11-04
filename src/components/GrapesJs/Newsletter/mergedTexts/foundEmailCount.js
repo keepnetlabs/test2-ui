@@ -2,7 +2,7 @@ import mergedTextsFoundEmailCount from '../blocks/mergedTextsBlocks/foundEmailCo
 
 const foundEmailCount = {
   label: 'Found Email Count',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

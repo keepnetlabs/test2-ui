@@ -2,7 +2,7 @@ import mergedTextsMacroUrl from '../blocks/mergedTextsBlocks/macroUrl'
 
 const macroUrl = {
   label: 'Macro Url',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

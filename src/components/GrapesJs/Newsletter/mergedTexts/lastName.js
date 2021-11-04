@@ -2,7 +2,7 @@ import mergedTextsLastName from '../blocks/mergedTextsBlocks/firstName'
 
 const lastName = {
   label: 'Last Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

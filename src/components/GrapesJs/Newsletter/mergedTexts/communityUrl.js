@@ -2,7 +2,7 @@ import mergedTextsCommunityUrl from '../blocks/mergedTextsBlocks/communityUrl'
 
 const communityUrl = {
   label: 'Community URL',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

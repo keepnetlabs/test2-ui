@@ -2,7 +2,7 @@ import mergedTextsPostUrl from '../blocks/mergedTextsBlocks/postUrl'
 
 const postUrl = {
   label: 'Post URL',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

@@ -2,7 +2,7 @@ import mergedTextsTrainingUrl from '../blocks/mergedTextsBlocks/trainingUrl'
 
 const trainingUrl = {
   label: 'Training Url',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',
