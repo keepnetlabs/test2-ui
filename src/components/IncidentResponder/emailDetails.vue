@@ -276,12 +276,14 @@
                         <template v-slot:datatable-custom-column="{ scope }">
                           <span @click="showPopupModal = true" style="cursor: pointer;">
                             <a
+                              v-if="scope.row.analysisEnginePermalink"
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               :href="scope.row.analysisEnginePermalink"
                               target="_blank"
                               class="attachments-table__link"
                               >See Details</a
                             >
+                            <span v-else></span>
                           </span>
                         </template>
                       </datatable>
