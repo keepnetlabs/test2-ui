@@ -2,7 +2,7 @@ import mergedTextsCommunityName from '../blocks/mergedTextsBlocks/communityName'
 
 const communityName = {
   label: 'Community Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

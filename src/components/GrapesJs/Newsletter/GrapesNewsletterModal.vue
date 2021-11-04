@@ -145,7 +145,7 @@ export default {
         },
         {
           type: 'select',
-          label: 'Merged Texts',
+          label: 'Merge Tags',
           name: 'href',
           options: this.urlMergedTexts
         }

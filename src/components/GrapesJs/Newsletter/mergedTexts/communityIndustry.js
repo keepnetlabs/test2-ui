@@ -2,7 +2,7 @@ import mergedTextsCommunityIndustry from '../blocks/mergedTextsBlocks/communityI
 
 const communityIndustry = {
   label: 'Community Industry',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

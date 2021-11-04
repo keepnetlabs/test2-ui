@@ -2,7 +2,7 @@ import mergedTextsCommunityUser from '../blocks/mergedTextsBlocks/communityUser'
 
 const communityUser = {
   label: 'Community User',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

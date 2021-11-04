@@ -2,7 +2,7 @@ import mergedTextsShareUserName from '../blocks/mergedTextsBlocks/shareUserName'
 
 const shareUserName = {
   label: 'Share User Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

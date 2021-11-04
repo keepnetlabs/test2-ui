@@ -2,7 +2,7 @@ import mergedTextsMacroForm from '../blocks/mergedTextsBlocks/macroForm'
 
 const macroForm = {
   label: 'Macro Form',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

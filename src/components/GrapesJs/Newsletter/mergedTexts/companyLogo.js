@@ -2,7 +2,7 @@ import companyLogoMergeText from '../blocks/mergedTextsBlocks/companyLogo'
 import store from '@/store'
 const companyLogo = {
   label: 'Company Logo',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   type: 'image',
   src: 'd',
   id: 'logo-url',

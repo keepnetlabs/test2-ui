@@ -2,7 +2,7 @@ import mergedTextsCaseID from '../blocks/mergedTextsBlocks/caseID'
 
 const mergedFrom = {
   label: 'Case ID',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

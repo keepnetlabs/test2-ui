@@ -2,7 +2,7 @@ import mergedTextsPostTitle from '../blocks/mergedTextsBlocks/postTitle'
 
 const postTitle = {
   label: 'Post Title',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

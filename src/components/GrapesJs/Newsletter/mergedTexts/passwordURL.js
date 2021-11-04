@@ -2,7 +2,7 @@ import mergedTextsPasswordURL from '../blocks/mergedTextsBlocks/passwordURL'
 
 const passwordURL = {
   label: 'Password URL',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

@@ -2,7 +2,7 @@ import mergedTextsFrom from '../blocks/mergedTextsBlocks/from'
 
 const mergedFrom = {
   label: 'From',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

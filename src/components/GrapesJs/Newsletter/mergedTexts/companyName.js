@@ -2,7 +2,7 @@ import mergedTextsCompanyName from '../blocks/mergedTextsBlocks/companyName'
 
 const companyName = {
   label: 'Company Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

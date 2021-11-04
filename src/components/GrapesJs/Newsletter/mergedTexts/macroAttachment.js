@@ -2,7 +2,7 @@ import mergedTextsMacroAttachment from '../blocks/mergedTextsBlocks/macroAttachm
 
 const macroAttachment = {
   label: 'Macro Attachment',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

@@ -2480,8 +2480,14 @@ export default {
               )
             }
           }
+
           const filteredData = this.initialData.reduce((acc, item) => {
             const row = this.renderedColumns.reduce((acc, key) => {
+              if (
+                this.columns.find((column) => column.property === key && column['unSearchable'])
+              ) {
+                return acc
+              }
               acc[key] = item[key]
               return acc
             }, {})

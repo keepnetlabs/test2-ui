@@ -2,7 +2,7 @@ import mergedTextsPostUserName from '../blocks/mergedTextsBlocks/postUserName'
 
 const postUserName = {
   label: 'Post User Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

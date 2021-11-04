@@ -2,7 +2,7 @@ import mergedTextsCommunityDescription from '../blocks/mergedTextsBlocks/communi
 
 const communityDescription = {
   label: 'Community Description',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',
