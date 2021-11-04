@@ -373,7 +373,29 @@ export default {
     },
     getPermissions() {
       getPermissionAll().then((response) => {
-        this.permissions = response.data.data
+        const sortedPermissions = []
+        response.data.data.map((item) => {
+          switch (item.moduleName) {
+            case 'Threat Sharing':
+              sortedPermissions[0] = item
+              break
+            case 'Phishing Simulation':
+              sortedPermissions[1] = item
+              break
+            case 'Incident Responder':
+              sortedPermissions[2] = item
+              break
+            case 'Phishing Reporter Add-In':
+              sortedPermissions[3] = item
+              break
+            case 'Company':
+              sortedPermissions[4] = item
+              break
+            default:
+              break
+          }
+        })
+        this.permissions = sortedPermissions
         function search_and_delete(obj, search_term) {
           if (obj['children'] === null) {
             delete obj['children']
