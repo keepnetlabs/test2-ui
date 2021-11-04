@@ -69,29 +69,16 @@
                   </v-radio-group>
                 </div>
                 <div class="target-users-select__input-area">
-                  <k-select
-                    type="combobox"
-                    id="input--investigation-target-user-all-users"
-                    :items="[]"
-                    :placeholder="
-                      targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
-                    "
-                    custom-menu-class="menu--investigation-target-user-all-users"
-                    outlined
-                    class="edit-select standard-height"
-                    item-text="name"
-                    multiple
-                    dense
-                    persistent-hint
-                    small-chips
-                    deletable-chips
-                    autocomplete="disabled"
-                    :return-object="false"
+                  <v-text-field
                     v-if="targetUserType === 'AllUsers'"
-                    :disabled="targetUserType === 'AllUsers'"
-                    required
+                    id="input--investigation-target-user-all-users"
+                    placeholder="All Users"
+                    outlined
+                    dense
+                    disabled
                   />
                   <k-select
+                    v-if="targetUserType === 'Groups'"
                     type="combobox"
                     id="input--investigation-target-user-groups"
                     custom-menu-class="menu--investigation-target-user-groups"
@@ -112,16 +99,16 @@
                     small-chips
                     deletable-chips
                     :return-object="true"
+                    prepend-inner-icon="mdi-magnify"
                     autocomplete="disabled"
-                    v-if="targetUserType === 'Groups'"
                   />
                   <k-select
+                    v-if="targetUserType === 'SpecificUsers'"
                     type="combobox"
                     id="input--investigation-target-user-specific-users"
                     custom-menu-class="menu--investigation-target-user-specific-users"
                     :items="specificUserItems"
-                    v-if="targetUserType === 'SpecificUsers'"
-                    placeholder="Select specific users"
+                    placeholder="Select target users"
                     item-text="email"
                     item-value="email"
                     :search-input.sync="searchTargetUsersSpecificValue"
@@ -137,6 +124,7 @@
                     :no-data-text="'no data'"
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
+                    prepend-inner-icon="mdi-magnify"
                     v-model.trim="targetUsersValue"
                   />
                 </div>
@@ -3318,9 +3306,27 @@ export default {
       overflow: initial !important;
       display: inline-flex !important;
     }
+    .v-input__prepend-inner {
+      .v-input__icon {
+        i {
+          font-size: 22px;
+          margin-top: 1px;
+        }
+      }
+    }
   }
   &__position {
     left: 15px !important;
+  }
+}
+.new-investigation__combo {
+  .v-input__prepend-inner {
+    .v-input__icon {
+      i {
+        font-size: 22px;
+        margin-top: 1px;
+      }
+    }
   }
 }
 .bounce-enter-active {
