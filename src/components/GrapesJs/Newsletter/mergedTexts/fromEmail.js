@@ -2,7 +2,7 @@ import mergedTextsFromEmail from '../blocks/mergedTextsBlocks/fromName'
 
 const fromEmail = {
   label: 'From Email',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

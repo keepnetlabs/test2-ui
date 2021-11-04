@@ -2,7 +2,7 @@ import mergedTextsCreateDate from '../blocks/mergedTextsBlocks/createDate'
 
 const createDate = {
   label: 'Create Date',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

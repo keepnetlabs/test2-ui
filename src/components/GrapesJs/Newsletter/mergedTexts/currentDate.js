@@ -2,7 +2,7 @@ import mergedTextsCurrentDate from '../blocks/mergedTextsBlocks/currentDate'
 
 const currentDate = {
   label: 'Current Date',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

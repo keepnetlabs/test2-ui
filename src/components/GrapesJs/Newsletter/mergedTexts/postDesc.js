@@ -2,7 +2,7 @@ import mergedTextsPostDesc from '../blocks/mergedTextsBlocks/postDesc'
 
 const postDesc = {
   label: 'Post Description',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

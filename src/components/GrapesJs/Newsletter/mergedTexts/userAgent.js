@@ -2,7 +2,7 @@ import mergedTextsUserAgent from '../blocks/mergedTextsBlocks/userAgent'
 
 const userAgent = {
   label: 'User Agent',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

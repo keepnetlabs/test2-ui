@@ -2,7 +2,7 @@ import mergedTextsActiveUsers from '../blocks/mergedTextsBlocks/activeUsers'
 
 const activeUsers = {
   label: 'Active Users',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

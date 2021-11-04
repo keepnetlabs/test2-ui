@@ -2,7 +2,7 @@ import mergedTextsInvestigationName from '../blocks/mergedTextsBlocks/investigat
 
 const investigationName = {
   label: 'Investigation Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

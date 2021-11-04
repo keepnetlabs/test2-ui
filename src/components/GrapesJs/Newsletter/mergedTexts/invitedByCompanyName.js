@@ -2,7 +2,7 @@ import mergedTextsInvitedByCompanyName from '../blocks/mergedTextsBlocks/invited
 
 const invitedByCompanyName = {
   label: 'Invited By Company Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

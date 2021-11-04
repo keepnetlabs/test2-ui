@@ -2,7 +2,7 @@ import mergedTextsUserName from '../blocks/mergedTextsBlocks/userName'
 
 const userName = {
   label: 'User Name',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

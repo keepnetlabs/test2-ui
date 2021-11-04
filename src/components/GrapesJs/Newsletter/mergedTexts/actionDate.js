@@ -2,7 +2,7 @@ import mergedTextsActionDate from '../blocks/mergedTextsBlocks/actionDate'
 
 const actionDate = {
   label: 'Action Date',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

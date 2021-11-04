@@ -145,7 +145,7 @@ export default {
         },
         {
           type: 'select',
-          label: 'Merged Texts',
+          label: 'Merge Tags',
           name: 'href',
           options: this.urlMergedTexts
         }
@@ -273,6 +273,7 @@ export default {
         ),
         view: dView
       })
+      debugger
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('amazonTemplate', amazonTemplate)

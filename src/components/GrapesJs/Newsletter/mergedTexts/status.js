@@ -2,7 +2,7 @@ import mergedTextsStatus from '../blocks/mergedTextsBlocks/status'
 
 const status = {
   label: 'Status',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

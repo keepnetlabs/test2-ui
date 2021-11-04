@@ -2,7 +2,7 @@ import mergedTextsActionIP from '../blocks/mergedTextsBlocks/actionIP'
 
 const actionIP = {
   label: 'Action IP',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

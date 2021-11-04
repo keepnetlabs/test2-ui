@@ -2,7 +2,7 @@ import mergedTextsDescription from '../blocks/mergedTextsBlocks/description'
 
 const description = {
   label: 'Description',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',

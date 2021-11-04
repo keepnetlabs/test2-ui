@@ -2,7 +2,7 @@ import mergedTextsOwner from '../blocks/mergedTextsBlocks/owner'
 
 const owner = {
   label: 'Owner',
-  category: 'Merged Texts',
+  category: 'Merge Tags',
   attributes: {
     title: 'To',
     class: 'merged-text',
