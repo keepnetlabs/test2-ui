@@ -674,5 +674,25 @@ export default {
   .gjs-cv-canvas {
     top: 40px !important;
   }
+  .gjs-block-category {
+    &:last-child {
+      order: 1;
+    }
+    &:first-child {
+      order: 2;
+    }
+    &:nth-child(2) {
+      order: 3;
+    }
+    &:nth-child(3) {
+      order: 4;
+    }
+    &:nth-child(4) {
+      order: 5;
+    }
+    &:nth-child(5) {
+      order: 6;
+    }
+  }
 }
 </style>

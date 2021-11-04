@@ -205,6 +205,7 @@
           <form-group title="Service URL" has-hint>
             <InputUrl
               v-model="ewsFormValues.ServiceUrl"
+              placeholder="https://exchange.devkeepnet.com/ews/exchange.asmx"
               :required="true"
               :persistent-hint="true"
               :hint="'*Required'"

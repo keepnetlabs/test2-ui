@@ -85,12 +85,14 @@
               <template v-slot:datatable-custom-column="{ scope, col }">
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">
                   <a
+                    v-if="scope.row['analysisEnginePermalink']"
                     :id="`btn-see-details--email-details-url-${index}`"
                     :href="scope.row['analysisEnginePermalink']"
                     target="_blank"
                     class="attachments-table__link"
                     >See Details</a
                   >
+                  <span v-else></span>
                 </span>
               </template>
             </data-table>
