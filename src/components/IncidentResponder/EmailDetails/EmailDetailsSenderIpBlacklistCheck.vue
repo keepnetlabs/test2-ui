@@ -35,7 +35,7 @@
             class="attachments-table__link"
             >See Details</a
           >
-          <span v-else>See Details</span>
+          <span v-else></span>
         </span>
         <span v-if="col.property === PROPERTY_STORE.REASON">
           <v-tooltip bottom v-if="scope.row.reasonDescription">
