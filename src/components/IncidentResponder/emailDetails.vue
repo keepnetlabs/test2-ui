@@ -1,5 +1,5 @@
 <template>
-  <div class="single-wrapper">
+  <div class="single-wrapper" :class="[tab === 'third' && 'show-overflow-tab-content']">
     <div class="single-post">
       <span class="single-post-header"
         >Email Details -
@@ -850,6 +850,30 @@ export default {
     panel(val) {},
     tab(val) {
       val === 2 && this.setEmailPreview()
+      if (val === 'third') {
+        this.$nextTick(() => {
+          const heightOfParent = getComputedStyle(
+            document.querySelector('.single-post__container .el-tabs__content')
+          ).height
+          const heightOfItem = getComputedStyle(
+            document.querySelector('#email-details-preview-content')
+          ).height
+          const heightOfParentNumber = Math.floor(Number(heightOfParent.replace('px', '')))
+          const heightOfItemNumber = Math.floor(Number(heightOfItem.replace('px', '')))
+          if (heightOfParentNumber - heightOfItemNumber > 300) {
+            document.querySelector('#email-details-preview-content').style.height = `${
+              heightOfParentNumber + 75
+            }px`
+            this.$nextTick(() => {
+              const footer = document.querySelector('.single-post__container .preview-footer')
+              if (footer) {
+                footer.style.position = 'absolute'
+                footer.style.bottom = '-8px'
+              }
+            })
+          }
+        })
+      }
     }
   }
 }
@@ -2212,5 +2236,8 @@ export default {
       margin-top: 0;
     }
   }
+}
+.show-overflow-tab-content .el-tabs__content {
+  overflow: hidden;
 }
 </style>
