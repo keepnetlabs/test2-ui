@@ -217,6 +217,8 @@ export default {
     font-size: 14px;
     padding: 0 8px !important;
     margin-left: 24px;
+    align-self: center;
+    margin-top: -24px;
   }
   &__advanced-search-container {
   }

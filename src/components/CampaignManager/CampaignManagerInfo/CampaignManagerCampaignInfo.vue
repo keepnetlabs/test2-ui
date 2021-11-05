@@ -91,8 +91,8 @@
     </FormGroup>
     <CampaignManagerPhishingScenarios
       v-show="isShowAdvancedSearchPhishing"
-      class="mb-6"
       ref="refCampaignManagerPhishingScenarios"
+      class="mb-1"
       :items="phishingScenarioItems"
       :value="formData.phishingScenarioResourceId"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
