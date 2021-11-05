@@ -79,7 +79,7 @@
           />
           <v-text-field
             v-model="formData.distributionSmtpDelayEvery"
-            v-mask="'#####'"
+            v-mask="'###'"
             id="input--campaign-manager-advanced-settings-time"
             placeholder="Enter number"
             outlined
@@ -111,7 +111,7 @@
           />
           <v-text-field
             v-model="formData.distributionEmailOver"
-            v-mask="'#####'"
+            v-mask="'###'"
             id="input--campaign-manager-advanced-settings-distribute-time"
             placeholder="Enter number"
             outlined
@@ -181,7 +181,7 @@
           <span>Send this campaign to randomly selected</span>
           <v-text-field
             v-model="formData.sendRandomlyUsersCount"
-            v-mask="'#####'"
+            v-mask="'###'"
             id="input--campaign-manager-advanced-settings-other-settings-number"
             placeholder="Enter number"
             outlined
@@ -293,7 +293,8 @@ export default {
       rules: {
         number: [
           (v) => validations.required(v, labels.Required),
-          (v) => validations.startsWith(v, 'Cannot start with 0', 0)
+          (v) => validations.startsWith(v, 'Cannot start with 0', 0),
+          (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
       }
     }

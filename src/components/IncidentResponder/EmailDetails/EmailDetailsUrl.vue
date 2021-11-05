@@ -85,7 +85,7 @@
               <template v-slot:datatable-custom-column="{ scope, col }">
                 <span style="cursor: pointer;" v-if="col.property === 'analysisEnginePermalink'">
                   <a
-                    v-if="scope.row['analysisEnginePermalink']"
+                    v-if="scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'"
                     :id="`btn-see-details--email-details-url-${index}`"
                     :href="scope.row['analysisEnginePermalink']"
                     target="_blank"

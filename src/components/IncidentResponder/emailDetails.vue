@@ -276,7 +276,9 @@
                         <template v-slot:datatable-custom-column="{ scope }">
                           <span @click="showPopupModal = true" style="cursor: pointer;">
                             <a
-                              v-if="scope.row.analysisEnginePermalink"
+                              v-if="
+                                scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'
+                              "
                               :id="`btn-see-details--email-details-attachment-${index}`"
                               :href="scope.row.analysisEnginePermalink"
                               target="_blank"

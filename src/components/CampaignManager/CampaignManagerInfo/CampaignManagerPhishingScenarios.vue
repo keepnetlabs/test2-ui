@@ -80,7 +80,7 @@
               <div
                 class="pane"
                 :style="{
-                  width: '25% !important',
+                  maxWidth: '25% !important',
                   pointerEvents: isPhishingScenariosLoading ? 'none' : 'inherit'
                 }"
               >
@@ -102,7 +102,7 @@
                         {{ item.method }}
                         &bull;
                         <span class="template-list--item__sub-header--span">by</span>
-                        {{ item.createdBy }}
+                        {{ item['createdBy'] }}
                       </div>
                     </div>
                     <div
