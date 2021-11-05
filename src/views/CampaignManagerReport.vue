@@ -1,0 +1,69 @@
+<template>
+  <div id="campaign-manager-report" class="campaign-manager-report integrations">
+    <v-layout id="ts-layout" wrap style="min-height: 80vh;">
+      <v-col class="pl-0 integrations__tab-container" cols="12">
+        <v-card id="pr-card" class="pr-card pr-6 pb-0">
+          <el-tabs v-model="tab">
+            <el-tab-pane
+              v-for="item in tabItems"
+              :key="item.name"
+              :id="item.id"
+              :name="item.name"
+              :label="item.label"
+            >
+              <component v-if="item.name === tab" :is="item.component" />
+            </el-tab-pane>
+          </el-tabs>
+        </v-card>
+      </v-col>
+    </v-layout>
+  </div>
+</template>
+
+<script>
+import labels from '@/model/constants/labels'
+import CampaignManagerReportSummary from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummary'
+export default {
+  name: 'CampaignManagerReport',
+  data() {
+    return {
+      tab: labels.Summary,
+      tabItems: [
+        {
+          name: labels.Summary,
+          id: 'campaign-manager-report-summary-content',
+          label: labels.Summary,
+          component: CampaignManagerReportSummary
+        },
+        {
+          name: labels.Opened,
+          id: 'campaign-manager-report-opened-content',
+          label: labels.Opened
+        },
+        {
+          name: labels.Clicked,
+          id: 'campaign-manager-report-clicked-content',
+          label: labels.Clicked
+        },
+        {
+          name: labels.SubmittedData,
+          id: 'campaign-manager-report-submitted-date-content',
+          label: labels.SubmittedData
+        },
+        {
+          name: labels.NoResponse,
+          id: 'campaign-manager-report-no-response-content',
+          label: labels.NoResponse
+        },
+        {
+          name: labels.SendingReport,
+          id: 'campaign-manager-report-sending-response-content',
+          label: labels.SendingReport
+        }
+      ]
+    }
+  }
+}
+</script>
+
+<style lang="scss"></style>

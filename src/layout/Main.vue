@@ -339,7 +339,10 @@
                   to="/campaign-manager"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   class="menu-link-default"
-                  :class="[routerName === 'Campaign Manager' && 'active-link']"
+                  :class="[
+                    (routerName === 'Campaign Manager' || routerName === 'Campaign Report') &&
+                      'active-link'
+                  ]"
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Campaign Manager</span>
