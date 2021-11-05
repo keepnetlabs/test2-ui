@@ -1787,6 +1787,7 @@ export default {
       //isPermanentDelete = false
       switch (status) {
         case 'Idle':
+        case 'Running':
           if (actionType === 'Delete') {
             if (isPermanentDelete) {
               returnValue.icon = null
