@@ -53,7 +53,7 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
 export default {
-  name: 'CampaignManagerReportSummaryEmailTemplate',
+  name: 'CampaignManagerReportSummaryEmail',
   components: { Badge, CampaignManagerSummaryCard },
   data() {
     return {
