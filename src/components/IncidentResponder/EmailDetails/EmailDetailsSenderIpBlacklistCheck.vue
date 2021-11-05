@@ -29,7 +29,7 @@
       <template v-slot:datatable-custom-column="{ scope, col }">
         <span v-if="col.property === PROPERTY_STORE.ANALYSISENGINEPERMALINK">
           <a
-            v-if="scope.row.analysisEnginePermalink"
+            v-if="scope.row.analysisEnginePermalink && scope.row.result !== 'Excluded'"
             :href="scope.row.analysisEnginePermalink"
             target="_blank"
             class="attachments-table__link"
