@@ -2,7 +2,7 @@
   <div id="campaign-manager-report" class="campaign-manager-report integrations">
     <v-layout id="ts-layout" wrap style="min-height: 80vh;">
       <v-col class="pl-0 integrations__tab-container" cols="12">
-        <v-card id="pr-card" class="pr-card pr-6 pb-0">
+        <v-card id="pr-card" class="pr-card pr-6">
           <el-tabs v-model="tab">
             <el-tab-pane
               v-for="item in tabItems"
