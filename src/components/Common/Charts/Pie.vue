@@ -34,6 +34,7 @@ export default {
       }
       this.renderChart(
         {
+          labels: this.chartOptions.showLabels ? this.chartOptions.labels : undefined,
           datasets: [
             {
               data: this.data,

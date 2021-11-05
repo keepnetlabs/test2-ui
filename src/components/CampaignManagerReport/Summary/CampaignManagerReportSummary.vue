@@ -9,6 +9,7 @@
     <CampaignManagerReportSummaryTargetGroups />
     <div class="campaign-manager-report-summary__general-info mt-4">
       <CampaignManagerReportSummaryScenarioInfo />
+      <CampaignManagerReportSummaryScenarioStats />
     </div>
   </div>
 </template>
@@ -20,9 +21,11 @@ import CampaignManagerReportSummaryCampaignInfo from '@/components/CampaignManag
 import CampaignManagerReportSummarySettings from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummarySettings'
 import CampaignManagerReportSummaryTargetGroups from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTargetGroups'
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
+import CampaignManagerReportSummaryScenarioStats from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioStats'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportSummaryScenarioStats,
     CampaignManagerReportSummaryScenarioInfo,
     CampaignManagerReportSummaryTargetGroups,
     CampaignManagerReportSummarySettings,

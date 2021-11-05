@@ -14,6 +14,7 @@ export const labels = {
   ClickedLink: 'Clicked Link',
   OpenedEmail: 'Opened Email',
   Opened: 'Opened',
+  ScenarioStats: 'Scenario Stats',
   DownloadReport: 'Download Report',
   ResendCampaign: 'Resend Campaign',
   ResetPassword: 'Reset Password',
