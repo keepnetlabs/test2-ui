@@ -1128,7 +1128,7 @@ export default {
           const splittedDate = date.split(' ')
           const timeArray = splittedDate[1].split(':')
           let time = Number(timeArray[0]) + 4
-          if (time > 24) {
+          if (time >= 24) {
             time = time - 24
           }
           time = time.toString()
