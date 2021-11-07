@@ -242,7 +242,7 @@ export default {
           }
         }
       })
-      setTimeout(() => {
+      /*setTimeout(() => {
         if (!document.getElementsByClassName('gjs-btn-prim').length) {
           document
             .getElementsByClassName('gjs-pn-btn fa fa-code')[0]
@@ -252,7 +252,34 @@ export default {
               }, 100)
             })
         }
-      }, 500)
+      }, 500)*/
+      setTimeout(() => {
+        if (!!document.getElementsByClassName('fa-file-code-o').length) {
+          document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
+            setTimeout(() => {
+              document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type', 'button')
+            }, 1000)
+          })
+        }
+      }, 1000)
+      setTimeout(() => {
+        if (!!document.getElementsByClassName('fa-file-code-o').length) {
+          document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
+            setTimeout(() => {
+              document.getElementsByClassName('cp-apply-css')[0].setAttribute('type', 'button')
+            }, 1000)
+          })
+        }
+      }, 1000)
+      setTimeout(() => {
+        if (!!document.getElementsByClassName('fa-file-code-o').length) {
+          document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
+            setTimeout(() => {
+              document.getElementsByClassName('cp-delete-css')[0].setAttribute('type', 'button')
+            }, 1000)
+          })
+        }
+      }, 1000)
       let dType = this.editor.DomComponents.getType('link')
       let dModel = dType.model
       let dView = dType.view
@@ -293,7 +320,8 @@ export default {
           className: 'fa fa-file-code-o',
           command: 'open-code',
           togglable: false, //do not close when button is clicked again
-          id: 'open-code'
+          id: 'open-code',
+          type: 'button'
         }
       ])
       const blocks = blockManager.getAll()
