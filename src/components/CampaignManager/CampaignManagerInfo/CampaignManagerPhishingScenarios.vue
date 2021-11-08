@@ -394,24 +394,29 @@ export default {
         ).then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const { template, fromName, fromAddress, name } = emailTemplate
+          const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
+
           this.emailTemplateParams = {
             fromName,
             fromAddress,
-            name
+            name,
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
           }
-
           this.emailTemplate = template
           const {
             name: landingPageName,
             description,
             landingPages,
-            urlTemplate
+            urlTemplate,
+            difficultyTypeId,
+            methodTypeId
           } = landingPageTemplate
           this.landingPageParams = {
             name: landingPageName,
             description,
-            urlTemplate
+            urlTemplate,
+            difficulty: difficulties[difficultyTypeId - 1].text,
+            method: methods[methodTypeId - 1].text
           }
           this.landingPageTemplate = landingPages[0].content
         })

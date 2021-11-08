@@ -121,6 +121,7 @@ import {
   getCampaignManager,
   updateCampaignManager
 } from '@/api/phishingsimulator'
+import { searchTargetGroups } from '@/api/targetUsers'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -194,9 +195,11 @@ export default {
             refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
               .landingPageParams
         }
-        formData.selectedPhishingScenario = refCampaignManagerCampaignInfo.phishingScenarioItems.find(
-          (item) => item.resourceId === formData.phishingScenarioResourceId
-        )
+
+        formData.selectedPhishingScenario =
+          refCampaignManagerCampaignInfo.phishingScenarioItems.find(
+            (item) => item.resourceId === formData.phishingScenarioResourceId
+          ) || refCampaignManagerCampaignInfo.formData.phishingScenario
 
         formData.selectedSchedule =
           refCampaignManagerCampaignInfo.formData.scheduleTypeId === '1' ? 'Now' : 'Later'
@@ -290,7 +293,7 @@ export default {
       })
     },
     changeStep(flag = 1) {
-      const { refCampaignManagerAdvancedSettings } = this.$refs
+      const { refCampaignManagerAdvancedSettings, refCampaignManagerCampaignInfo } = this.$refs
       if (
         this.step === 2 &&
         flag === 1 &&
@@ -299,6 +302,36 @@ export default {
         !refCampaignManagerAdvancedSettings.isTestMailSend
       ) {
         refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
+      } else if (this.step === 1 && flag === 1) {
+        const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
+          (item) => item.value
+        )
+        searchTargetGroups({
+          pageNumber: 1,
+          pageSize: 10,
+          orderBy: 'CreateTime',
+          ascending: false,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'AND',
+                FilterItems: [],
+                FilterGroups: []
+              },
+              {
+                Condition: 'OR',
+                FilterItems: [
+                  { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
+                ],
+                FilterGroups: []
+              }
+            ]
+          }
+        }).then((response) => {
+          refCampaignManagerCampaignInfo.formData.selectedTargetGroups = response.data.data.results
+        })
+        this.step += flag
       } else {
         this.step += flag
       }
