@@ -197,7 +197,7 @@
                     @click="isTemplateDetails = true"
                     v-if="!!templateHTML"
                   >
-                    {{ 'mdi-fullscreen' }}
+                    {{ 'mdi-eye' }}
                   </v-icon>
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">

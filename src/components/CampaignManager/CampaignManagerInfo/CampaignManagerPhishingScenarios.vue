@@ -157,7 +157,7 @@
                           medium
                           @click="handleClickEmailTemplateFullScreen"
                         >
-                          mdi-fullscreen
+                          mdi-eye
                         </v-icon>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!emailTemplate">
@@ -197,7 +197,7 @@
                           medium
                           @click="handleClickLandingPageTemplate"
                         >
-                          mdi-fullscreen
+                          mdi-eye
                         </v-icon>
                       </div>
                       <div class="template-preview__text pl-2" v-if="!!landingPageTemplate">
