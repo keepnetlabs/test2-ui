@@ -7,7 +7,7 @@
         class="campaign-manager-target-groups-and-users-info__item"
       >
         <div>
-          {{ item.text }}
+          {{ item.name }}
         </div>
         <div>
           {{ item.userCount }}
