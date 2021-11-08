@@ -23,6 +23,7 @@
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummary from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummary'
+import CampaignManagerReportOpened from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpened'
 export default {
   name: 'CampaignManagerReport',
   data() {
@@ -38,7 +39,8 @@ export default {
         {
           name: labels.Opened,
           id: 'campaign-manager-report-opened-content',
-          label: labels.Opened
+          label: labels.Opened,
+          component: CampaignManagerReportOpened
         },
         {
           name: labels.Clicked,

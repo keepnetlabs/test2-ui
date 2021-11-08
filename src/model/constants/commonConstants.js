@@ -161,9 +161,12 @@ export const PROPERTY_STORE = {
   TAGS: 'tags',
   TARGET_USERS: 'TargetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
+  LASTOPENED: 'lastOpened',
+  SCENARIO: 'scenario',
   ANALYSISENGINEPERMALINK: 'analysisEnginePermalink',
   CLIENTID: 'clientId',
   SMTP: 'smtp',
+  TIMESOPENED: 'timesOpened',
   COMPANYID: 'companyId',
   TENANTUSERCOUNT: 'tenantUserCount',
   DIRECTORYID: 'directoryId',
@@ -273,6 +276,7 @@ export const PROPERTY_STORE = {
 
 export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
+  CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
@@ -413,6 +417,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PERMISSION: 'PERMISSION',
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
+  CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSearchKeys',
   REPORTED_EMAIL: 'ReportedEmail',
   REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
   INVESTIGATIONS: 'Investigations',
