@@ -30,7 +30,12 @@
               </div>
             </div>
             <hr class="mt-2" v-if="!!emailTemplate" />
-            <k-shadow-frame :content="emailTemplate" :key="emailTemplate + 'vue'" />
+            <k-shadow-frame
+              class="grapesjs-reset-css"
+              style="pointer-events: none;"
+              :content="emailTemplate"
+              :key="emailTemplate + 'vue'"
+            />
           </div>
         </el-tab-pane>
         <el-tab-pane
@@ -48,7 +53,12 @@
               </div>
             </div>
             <hr class="mt-2" v-if="!!landingPageTemplate" />
-            <k-shadow-frame :content="landingPageTemplate" :key="landingPageTemplate + 'vue'" />
+            <k-shadow-frame
+              class="grapesjs-reset-css"
+              style="pointer-events: none;"
+              :content="landingPageTemplate"
+              :key="landingPageTemplate + 'vue'"
+            />
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -92,7 +102,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return 'Campaign Manager Template Preview'
+      return 'Campaign Template Preview'
     },
     getSubtitle() {
       return this.selectedRow.name

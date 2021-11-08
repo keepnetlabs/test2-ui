@@ -50,11 +50,7 @@
                     :disabled="editItemsDisabled"
                   />
                 </form-group>
-                <form-group
-                  title="Description"
-                  sub-title="Describe the template briefly"
-                  class-name="mt-4"
-                >
+                <form-group title="Description" sub-title="Describe the template briefly">
                   <v-textarea
                     id="input--new-email-templates-description"
                     outlined
@@ -70,9 +66,9 @@
                 <form-group
                   title="Method"
                   sub-title="Select the phishing technique for this template"
-                  class-name="mt-4"
+                  has-hint
                 >
-                  <v-select
+                  <k-select
                     :items="methodItems"
                     item-disabled="disabled"
                     item-text="name"
@@ -83,9 +79,9 @@
                     hint="*Required"
                     required
                     persistent-hint
-                  ></v-select>
+                  ></k-select>
                 </form-group>
-                <form-group title="Tags" sub-title="Define tags for the template" class-name="mt-6">
+                <form-group title="Tags" sub-title="Define tags for the template">
                   <k-select
                     type="combobox"
                     :id="`input--action-tags`"
@@ -100,14 +96,14 @@
                     persistent-hint
                     small-chips
                     :return-object="false"
-                    @input="handleTagItemChange"
                     placeholder="Enter tags and press enter key"
+                    @input="handleTagItemChange"
                   />
                 </form-group>
                 <form-group
                   title="Difficulty"
                   sub-title="Select a difficulty level for this scenario "
-                  class-name="mt-4 mb-10"
+                  class-name="mb-6"
                 >
                   <v-radio-group
                     v-model="formValues.difficultyResourceId"
@@ -150,7 +146,7 @@
                   <v-form ref="refEmailTemplateContent">
                     <form-group
                       title="Email Template"
-                      class-name="email-template mt-2 p-4"
+                      class-name="email-template mt-8 p-4"
                       onsubmit="return false"
                     >
                       <email-template
@@ -662,6 +658,11 @@ export default {
     font-size: 14px;
     line-height: 21px !important;
     color: #383b41 !important;
+  }
+}
+.email-template-info .hide-caret {
+  .v-input__append-inner {
+    display: none !important;
   }
 }
 </style>

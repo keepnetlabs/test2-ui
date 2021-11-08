@@ -38,7 +38,12 @@
         <p class="pl-1">
           <span>Phishing URL:</span> <b>{{ selectedScenarioURL }}</b>
         </p>
-        <k-shadow-frame :content="templateHTML" :key="templateHTML + 'appDialog'" />
+        <k-shadow-frame
+          class="grapesjs-reset-css"
+          style="pointer-events: none;"
+          :content="templateHTML"
+          :key="templateHTML + 'appDialog'"
+        />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">

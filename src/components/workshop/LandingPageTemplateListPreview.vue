@@ -10,7 +10,12 @@
       style="overflow: hidden;"
     >
       <template v-slot:app-dialog-body>
-        <k-shadow-frame :content="templateHTML" :key="templateHTML + 'appDialog'" />
+        <k-shadow-frame
+          class="grapesjs-reset-css"
+          style="pointer-events: none;"
+          :content="templateHTML"
+          :key="templateHTML + 'appDialog'"
+        />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -202,7 +207,12 @@
                   </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
-                <k-shadow-frame :content="templateHTML" :key="templateHTML + 'vue'" />
+                <k-shadow-frame
+                  class="grapesjs-reset-css"
+                  style="pointer-events: none;"
+                  :content="templateHTML"
+                  :key="templateHTML + 'vue'"
+                />
               </div>
             </div>
           </multipane>

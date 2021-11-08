@@ -10,7 +10,12 @@
       @changeStatus="toggleTemplateDialog"
     >
       <template #app-dialog-body>
-        <k-shadow-frame :content="selectedTemplate" :key="selectedTemplate + 'appDialog'" />
+        <k-shadow-frame
+          class="grapesjs-reset-css"
+          style="pointer-events: none;"
+          :content="selectedTemplate"
+          :key="selectedTemplate + 'appDialog'"
+        />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -170,7 +175,12 @@
                         </div>
                       </div>
                       <hr class="mt-2" v-if="!!emailTemplate" />
-                      <k-shadow-frame :content="emailTemplate" :key="emailTemplate + 'vue'" />
+                      <k-shadow-frame
+                        class="grapesjs-reset-css"
+                        style="pointer-events: none;"
+                        :content="emailTemplate"
+                        :key="emailTemplate + 'vue'"
+                      />
                     </div>
                   </el-tab-pane>
                   <el-tab-pane
@@ -206,6 +216,8 @@
                       </div>
                       <hr class="mt-2" v-if="!!landingPageTemplate" />
                       <k-shadow-frame
+                        class="grapesjs-reset-css"
+                        style="pointer-events: none;"
                         :content="landingPageTemplate"
                         :key="landingPageTemplate + 'vue'"
                       />

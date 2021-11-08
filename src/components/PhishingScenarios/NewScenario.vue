@@ -356,7 +356,11 @@
                       style="border: none;"
                     >
                       <div class="summary-template">
-                        <k-shadow-frame v-bind:content="summaryData.emailTemplate.template" />
+                        <k-shadow-frame
+                          class="grapesjs-reset-css"
+                          style="pointer-events: none;"
+                          v-bind:content="summaryData.emailTemplate.template"
+                        />
                       </div>
                     </div>
                   </div>
@@ -446,6 +450,8 @@
                     >
                       <div class="summary-template">
                         <k-shadow-frame
+                          class="grapesjs-reset-css"
+                          style="pointer-events: none;"
                           v-bind:content="summaryData.landingPageTemplate.landingPages[0].content"
                         />
                       </div>
