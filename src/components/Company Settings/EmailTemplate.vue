@@ -70,6 +70,7 @@
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
+        class="mb-2"
         hint="Only jpg, png, gif, bmp files. Max. file size 2MB"
         ref="refFileUpload"
         :value="AttachmentFiles"
@@ -101,8 +102,8 @@
     >
       <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
     >
-    <div class="email-template-preview">
-      <div v-if="template" v-html="template" ref="refPreview" />
+    <div class="email-template-preview" style="pointer-events: none;">
+      <div v-if="template" v-html="template" class="grapesjs-reset-css" ref="refPreview" />
       <table style="width: 600px; margin: 0 auto;" v-else ref="refPreview">
         <tbody>
           <tr
@@ -476,6 +477,31 @@ export default {
         font-size: 14px;
         margin-bottom: 0;
       }
+    }
+  }
+}
+.grapesjs-reset-css {
+  .form-group {
+    font-family: initial;
+    font-weight: initial;
+    input,
+    textarea,
+    button {
+      border-style: inset;
+      border-color: initial;
+      background-color: initial;
+    }
+    button {
+      padding: 1px 6px;
+      background-color: rgb(239, 239, 239);
+      border-radius: 2px;
+      color: initial;
+      border: 2px;
+      font-family: initial;
+      font-weight: initial;
+    }
+    .checkbox {
+      margin: 3px 3px 3px 4px;
     }
   }
 }
