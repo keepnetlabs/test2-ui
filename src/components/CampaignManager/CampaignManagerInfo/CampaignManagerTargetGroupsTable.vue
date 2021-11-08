@@ -174,9 +174,13 @@ export default {
     callForData() {
       this.$nextTick(() => {
         this.setLoading(true)
-        searchTargetGroups(this.axiosPayload).then((response) => {
-          this.setDefaultResponseParams(response)
-        })
+        searchTargetGroups(this.axiosPayload)
+          .then((response) => {
+            this.setDefaultResponseParams(response)
+          })
+          .finally(() => {
+            this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
+          })
       })
     },
     setDefaultResponseParams(response) {

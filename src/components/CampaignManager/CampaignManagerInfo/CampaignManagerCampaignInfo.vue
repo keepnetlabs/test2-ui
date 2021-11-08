@@ -32,12 +32,17 @@
         persistent-hint
         hint="*Required"
         placeholder="Select groups"
+        :loading="isTargetGroupSearchLoading"
         :items="targetGroupItems"
         :rules="rules.select"
+        :slots="{ progress: true }"
         @input="handleTargetGroupsResourceIdsChange"
+        @update:search-input="handleSearchInputChange"
+        @focus="handleFocusOfTargetGroupsInput"
+        @focusout="handleFocusOutOfTargetGroupsInput"
       >
         <template #progress>
-          <KSelectLoading v-show="isTargetGroupLoading" />
+          <KSelectLoading v-show="isTargetGroupSearchLoading && isTargetGroupFocused" />
         </template>
       </KSelect>
       <v-btn
@@ -71,13 +76,15 @@
         persistent-hint
         hint="*Required"
         placeholder="Select phishing scenario"
-        item-text="name"
-        item-value="resourceId"
-        :items="phishingScenarioItems"
+        :slots="{ progress: true }"
+        :loading="isPhishingScenariosLoading"
+        :items="phishingScenarioSelectItems"
         :rules="rules.select"
+        @focus="handleFocusOfPhishingScenarioInput"
+        @focusout="handleFocusOutOfPhishingScenarioInput"
       >
         <template #progress>
-          <KSelectLoading v-show="isPhishingScenariosLoading" />
+          <KSelectLoading v-show="isPhishingScenariosLoading && isPhishingScenarioFocused" />
         </template>
       </KSelect>
       <v-btn
@@ -146,7 +153,7 @@ import CampaignManagerPhishingScenarios from '@/components/CampaignManager/Campa
 
 const axiosPayloadOfPhishingScenarios = {
   pageNumber: 1,
-  pageSize: 10000,
+  pageSize: 10,
   orderBy: 'createTime',
   ascending: false,
   filter: {
@@ -186,10 +193,36 @@ export default {
   data() {
     return {
       axiosPayloadOfPhishingScenarios,
+      initial: true,
+      phishingInitial: true,
       isTargetGroupLoading: false,
+      isTargetGroupSearchLoading: false,
       isPhishingScenariosLoading: false,
+      isTargetGroupFocused: false,
+      isPhishingScenarioFocused: false,
       responseOfTargetGroupsItems: {},
       isShowAdvancedSearch: true,
+      axiosPayloadOfTargetGroups: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       isShowAdvancedSearchPhishing: true,
       radioItems: [
         { text: 'Send now', value: '1' },
@@ -203,9 +236,11 @@ export default {
         scheduleTypeId: '1',
         duration: 3
       },
-      defaultTargetGroupResourceIds: [],
+      defaultTargetGroups: [],
       targetGroupItems: [],
       phishingScenarioItems: [],
+      phishingScenarioSelectItems: [],
+
       rules: {
         name: [
           (v) => validations.required(v, labels.Required),
@@ -226,9 +261,12 @@ export default {
   watch: {
     defaultValues(val) {
       for (const key of Object.keys(val)) {
-        if (key === 'targetGroupResourceIds') {
-          this.defaultTargetGroupResourceIds = val[key]
-          this.addDefaultTargetGroupItems(this.defaultTargetGroupResourceIds)
+        if (key === 'targetGroups') {
+          this.defaultTargetGroups = val[key]
+          this.addDefaultTargetGroupItems(this.defaultTargetGroups)
+        } else if (key === 'phishingScenario') {
+          this.formData.phishingScenario = val[key]
+          this.formData.phishingScenarioResourceId = val[key].value
         } else {
           this.formData[key] = val[key]
         }
@@ -240,76 +278,72 @@ export default {
     this.callForPhishingScenarios()
   },
   methods: {
-    addDefaultTargetGroupItems(resourceIds = []) {
-      if (
-        this.formData.targetGroupResourceIds.length ||
-        !this.targetGroupItems.length ||
-        !resourceIds.length
-      )
-        return
+    addDefaultTargetGroupItems(targetGroups = []) {
+      if (this.formData.targetGroupResourceIds.length || !targetGroups.length) return
       this.$nextTick(() => {
-        this.formData.targetGroupResourceIds = resourceIds
-          .map((id) => {
-            return this.targetGroupItems.find((item) => item.value === id)
-          })
-          .filter((item) => item)
-        this.handleTargetGroupsResourceIdsChange(this.formData.targetGroupResourceIds)
+        this.handleTargetGroupsResourceIdsChange(targetGroups)
       })
     },
     handleTargetGroupsResourceIdsChange(items) {
-      const { data: { data: { results = [] } = {} } = {} } = this.responseOfTargetGroupsItems
       const selectedTableItems = items
         .filter((item) => item)
-        .map((item) => {
-          return results.find((targetGroup) => targetGroup.resourceId === item.value)
-        })
-      this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRows(
-        selectedTableItems
-      )
+        .map((item) => ({ ...item, resourceId: item.value }))
+      if (
+        this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.$refs.elTableRef
+      ) {
+        this.$refs.refCampaignManagerTargetGroup.$refs.refGroupTable.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey(
+          selectedTableItems
+        )
+      }
     },
     handleTableSelectionChange(items) {
       this.formData.targetGroupResourceIds = items
         .filter((item) => item)
         .map((item) => ({
-          text: item.name,
-          value: item.resourceId,
-          userCount: item.userCount
+          text: item.text || item.name,
+          value: item.value || item.resourceId,
+          extraDatas: null
         }))
     },
+    handleScroll(
+      e,
+      callback = this.callForTargetGroups,
+      axiosPayload = this.axiosPayloadOfTargetGroups
+    ) {
+      const { scrollTop, scrollHeight, offsetHeight } = e.target
+      if (
+        scrollTop - (scrollHeight - offsetHeight) < 10 &&
+        scrollTop - (scrollHeight - offsetHeight) > -10
+      ) {
+        axiosPayload.pageSize += 10
+        this.debounce(() => {
+          callback()
+        }, 500)
+      }
+    },
     callForTargetGroups() {
+      this.isTargetGroupSearchLoading = true
       this.setTargetGroupLoading(true)
-      searchTargetGroups({
-        pageNumber: 1,
-        pageSize: 75000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      })
+      searchTargetGroups(this.axiosPayloadOfTargetGroups)
         .then((response) => {
           const { data: { data: { results = [] } = {} } = {} } = response
-          this.responseOfTargetGroupsItems = response
+          if (this.initial) {
+            this.responseOfTargetGroupsItems = response
+          }
+
+          this.initial = false
           this.targetGroupItems = results.map((item) => ({
             text: item.name,
             value: item.resourceId,
-            userCount: item.userCount
+            extraDatas: null
           }))
-          this.addDefaultTargetGroupItems(this.defaultTargetGroupResourceIds)
         })
-        .finally(this.setTargetGroupLoading)
+        .finally(() => {
+          this.isTargetGroupSearchLoading = false
+          this.setTargetGroupLoading()
+          this.addDefaultTargetGroupItems(this.defaultTargetGroups)
+          this.targetGroupItems.push(...this.defaultTargetGroups)
+        })
     },
     setTargetGroupLoading(val = false) {
       this.isTargetGroupLoading = val
@@ -324,12 +358,35 @@ export default {
           const {
             data: { data }
           } = response
-          this.phishingScenarioItems = data.results || []
-          if (this.phishingScenarioItems.length && !this.isEdit) {
+          if (this.phishingInitial) {
+            this.phishingScenarioItems = JSON.parse(JSON.stringify(data.results)) || []
+          }
+          this.phishingInitial = false
+          this.phishingScenarioSelectItems = this.phishingScenarioItems.map((item) => ({
+            text: item.name,
+            value: item.resourceId,
+            extraDatas: null
+          }))
+
+          if (
+            this.phishingScenarioSelectItems.length &&
+            !this.isEdit &&
+            !this.formData.phishingScenarioResourceId
+          ) {
             this.formData.phishingScenarioResourceId = this.phishingScenarioItems[0].resourceId
           }
         })
-        .finally(this.setPhishingScenarioLoading)
+        .finally(() => {
+          if (
+            this.formData.phishingScenario &&
+            !this.phishingScenarioSelectItems.find(
+              (item) => item.value === this.formData.phishingScenarioResourceId
+            )
+          ) {
+            this.phishingScenarioSelectItems.push(this.formData.phishingScenario)
+          }
+          this.setPhishingScenarioLoading()
+        })
     },
     toggleShowAdvancedSearch() {
       this.isShowAdvancedSearch = !this.isShowAdvancedSearch
@@ -338,7 +395,95 @@ export default {
       this.isShowAdvancedSearchPhishing = !this.isShowAdvancedSearchPhishing
     },
     handleOnPhishingScenarioChange(item = {}) {
+      this.formData.phishingScenario = {
+        text: item.name,
+        value: item.resourceId,
+        extraDatas: null
+      }
+      if (
+        !this.phishingScenarioSelectItems.find((selectItem) => selectItem.value === item.resourceId)
+      ) {
+        this.phishingScenarioSelectItems.push(this.formData.phishingScenario)
+      }
       this.formData.phishingScenarioResourceId = item.resourceId
+    },
+    handleSearchInputChange(val) {
+      this.debounce(() => {
+        if (
+          (!this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
+            val === null) ||
+          (this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0] &&
+            this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems[0].Value === val)
+        )
+          return
+        this.axiosPayloadOfTargetGroups.filter.FilterGroups[1].FilterItems = [
+          { FieldName: 'Name', Operator: 'Contains', Value: val }
+        ]
+        this.callForTargetGroups()
+      }, 500)
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
+    },
+    handleFocusOfTargetGroupsInput() {
+      this.isTargetGroupFocused = true
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          document
+            .querySelector('#input--campaign-target-user-groups .k-select__menu')
+            .addEventListener('scroll', this.handleScroll)
+        })
+      }, 250)
+    },
+    handleFocusOutOfTargetGroupsInput() {
+      this.isTargetGroupFocused = false
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          document
+            .querySelector('#input--campaign-target-user-groups .k-select__menu')
+            .removeEventListener('scroll', this.handleScroll)
+        })
+      }, 250)
+    },
+    handleFocusOfPhishingScenarioInput() {
+      this.isPhishingScenarioFocused = true
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          document
+            .querySelector('#input--campaign-phishing-scenarios .k-select__menu')
+            .addEventListener('scroll', this.handleScrollOfPhishingScenarios)
+        })
+      }, 250)
+    },
+    handleScrollOfPhishingScenarios(e) {
+      this.handleScroll(e, this.callForPhishingScenarios, this.axiosPayloadOfPhishingScenarios)
+    },
+    handleFocusOutOfPhishingScenarioInput() {
+      this.isPhishingScenarioFocused = false
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          document
+            .querySelector('#input--campaign-phishing-scenarios .k-select__menu')
+            .removeEventListener('scroll', this.handleScrollOfPhishingScenarios)
+        })
+      }, 250)
     }
   }
 }

@@ -34,9 +34,7 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
           </div>
           <div v-if="isShowTargetUserDetail">
-            <CampaignManagerTargetGroupsAndUserSummaryInfo
-              :items="formData.targetGroupResourceIds"
-            />
+            <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.targetGroups" />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -60,13 +58,13 @@
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
-                  :color="getBadgeColor(formData.selectedPhishingScenario.difficulty)"
-                  :text="getBadgeText(formData.selectedPhishingScenario.difficulty)"
+                  :color="getBadgeColor(formData.emailTemplateParams.difficulty)"
+                  :text="getBadgeText(formData.emailTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
                   color="#E0E0E0"
-                  :text="getBadgeText(formData.selectedPhishingScenario.method)"
+                  :text="getBadgeText(formData.landingPageParams.method)"
                   :outline="false"
                 />
               </div>
@@ -111,13 +109,13 @@
               <div class="campaign-manager-last-step__landing-page-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
-                  :color="getBadgeColor(formData.selectedPhishingScenario.difficulty)"
-                  :text="getBadgeText(formData.selectedPhishingScenario.difficulty)"
+                  :color="getBadgeColor(formData.landingPageParams.difficulty)"
+                  :text="getBadgeText(formData.landingPageParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
                   color="#E0E0E0"
-                  :text="getBadgeText(formData.selectedPhishingScenario.method)"
+                  :text="getBadgeText(formData.landingPageParams.method)"
                   :outline="false"
                 />
               </div>
@@ -199,8 +197,8 @@ export default {
       return text
     },
     getTotalUsers() {
-      const { targetGroupResourceIds } = this.formData
-      return targetGroupResourceIds.reduce((acc, item) => {
+      const { selectedTargetGroups } = this.formData
+      return selectedTargetGroups.reduce((acc, item) => {
         acc += item.userCount
         return acc
       }, 0)
