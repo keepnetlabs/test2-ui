@@ -22,7 +22,7 @@
       <KSelect
         v-bind="commonRules"
         v-model.trim="formData.smtpSettingResourceId"
-        id="input--notification-template-smtp"
+        id="input--company-manager-advanced-settings-smtp"
         class="new-integration__select"
         dense
         outlined
@@ -31,6 +31,8 @@
         :error="isShowSmtpInputError"
         :error-messages="getSmtpInputErrorMessage"
         @change="handleChangeSmtp"
+        @focus="handleFocusOfSmtpSettingsInput"
+        @focusout="handleFocusOutOfSmtpSettingsInput"
       />
       <v-btn
         :key="buttonKey"
@@ -247,7 +249,7 @@ export default {
       isTestMailSend: false,
       smtpAxiosPayload: {
         pageNumber: 1,
-        pageSize: 5000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -399,7 +401,12 @@ export default {
   watch: {
     defaultValues(val) {
       for (const key of Object.keys(val)) {
-        this.formData[key] = val[key]
+        if (key === 'smtpSetting') {
+          this.selectedSmtpSetting = val[key]
+          this.formData.smtpSettingResourceId = this.selectedSmtpSetting.value
+        } else {
+          this.formData[key] = val[key]
+        }
       }
     }
   },
@@ -433,16 +440,25 @@ export default {
       this.isShowSmtpErrorDialog = !this.isShowSmtpErrorDialog
     },
     callForSmtpSettings() {
-      searchSmtpSettings(this.smtpAxiosPayload).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.responseOfSmtpItems = data.results
-        this.smtpItems = this.responseOfSmtpItems.map((smtpItem) => {
-          return { text: smtpItem.name, value: smtpItem.resourceId }
+      searchSmtpSettings(this.smtpAxiosPayload)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.responseOfSmtpItems = data.results
+          this.smtpItems = this.responseOfSmtpItems.map((smtpItem) => {
+            return { text: smtpItem.name, value: smtpItem.resourceId }
+          })
+          this.defaultSmtpItems = JSON.parse(JSON.stringify(this.smtpItems))
         })
-        this.defaultSmtpItems = JSON.parse(JSON.stringify(this.smtpItems))
-      })
+        .finally(() => {
+          if (
+            this.selectedSmtpSetting &&
+            !this.smtpItems.find((item) => item.value === this.selectedSmtpSetting.value)
+          ) {
+            this.smtpItems.push(this.selectedSmtpSetting)
+          }
+        })
     },
 
     toggleCustomSmtpDialog() {
@@ -504,6 +520,50 @@ export default {
           this.isTestingConnection = false
         }
       } catch (e) {}
+    },
+    handleFocusOfSmtpSettingsInput() {
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          document
+            .querySelector('#input--company-manager-advanced-settings-smtp .k-select__menu')
+            .addEventListener('scroll', this.handleScroll)
+        })
+      }, 250)
+    },
+    handleFocusOutOfSmtpSettingsInput() {
+      if (this.inputTimeout) {
+        clearTimeout(this.inputTimeout)
+      }
+      this.inputTimeout = setTimeout(() => {
+        this.$nextTick(() => {
+          document
+            .querySelector('#input--company-manager-advanced-settings-smtp .k-select__menu')
+            .removeEventListener('scroll', this.handleScroll)
+        })
+      }, 250)
+    },
+    handleScroll(e) {
+      const { scrollTop, scrollHeight, offsetHeight } = e.target
+      if (
+        scrollTop - (scrollHeight - offsetHeight) < 10 &&
+        scrollTop - (scrollHeight - offsetHeight) > -10
+      ) {
+        this.axiosPayload.pageSize += 10
+        this.debounce(() => {
+          this.callForSmtpSettings()
+        }, 500)
+      }
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
     }
   }
 }

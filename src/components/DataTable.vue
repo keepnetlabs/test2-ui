@@ -1724,6 +1724,24 @@ export default {
         })
       })
     },
+    getSelectedObjectAndSelectRowsByRowKey(
+      selections = JSON.parse(JSON.stringify(this.multipleSelection))
+    ) {
+      this.$nextTick(() => {
+        this.multipleSelection = []
+        this.$refs.elTableRef.clearSelection()
+        selections.forEach((selectedItem) => {
+          const thisTableItem = this.tableData.find((item) => {
+            return item[this.rowKey] === selectedItem[this.rowKey]
+          })
+          if (thisTableItem) {
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
+          } else {
+            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
+          }
+        })
+      })
+    },
     setPersistentStateToDataValues() {
       const {
         renderedColumns = [],

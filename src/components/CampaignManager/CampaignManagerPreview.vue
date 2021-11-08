@@ -114,7 +114,6 @@ export default {
             fromAddress: emailTemplate.fromAddress
           }
           this.landingPageTemplate = landingPage.landingPages[0].content
-          console.log('landingPageTemplate', landingPage)
           this.landingPageParams = {
             name: landingPage.name,
             description: landingPage.description,

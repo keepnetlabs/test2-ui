@@ -224,15 +224,15 @@ export default {
       if (!keys.length) return {}
       const {
         name,
-        targetGroupResourceIds,
-        phishingScenarioResourceId,
+        targetGroups,
+        phishingScenario,
         scheduleTypeId,
         duration
       } = this.selectedRowFormData
       return {
         name,
-        targetGroupResourceIds,
-        phishingScenarioResourceId,
+        targetGroups,
+        phishingScenario,
         scheduleTypeId: scheduleTypeId.toString(),
         duration
       }
@@ -241,7 +241,6 @@ export default {
       const keys = Object.keys(this.selectedRowFormData)
       if (!keys.length) return {}
       const {
-        smtpSettingResourceId,
         distributionEmailOver,
         distributionEmailOverTimeTypeId,
         distributionSmtpDelayEvery,
@@ -251,10 +250,11 @@ export default {
         excludeFromReports,
         sendOnlyActiveUsers,
         sendRandomlyUsersCount,
-        sendRandomlyUsersCalculateTypeId
+        sendRandomlyUsersCalculateTypeId,
+        smtpSetting
       } = this.selectedRowFormData
       return {
-        smtpSettingResourceId: smtpSettingResourceId.toString(),
+        smtpSetting,
         distributionEmailOver: distributionEmailOver.toString(),
         distributionEmailOverTimeTypeId: distributionEmailOverTimeTypeId.toString(),
         distributionSmtpDelayEvery: distributionSmtpDelayEvery.toString(),

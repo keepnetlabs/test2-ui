@@ -28,11 +28,10 @@
               <div class="d-flex">
                 <div>
                   <v-text-field
-                    @mouseover.native="hover = true"
+                    v-model.trim="search"
                     placeholder="Search"
                     outlined
                     class="filter-field filter-field-scenarios search-wrapper__search-filter pr-2"
-                    v-model.trim="search"
                     hide-details
                     prepend-inner-icon="mdi-magnify"
                     style="
@@ -45,12 +44,12 @@
                 </div>
                 <div>
                   <k-select
+                    v-model="method"
                     :items="methods"
                     placeholder="Type"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="method"
-                    item-value="value"
+                    item-value="text"
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
@@ -59,12 +58,12 @@
                 </div>
                 <div>
                   <k-select
+                    v-model="difficulty"
                     :items="difficulties"
                     placeholder="Difficulty"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="difficulty"
-                    item-value="value"
+                    item-value="text"
                     outlined
                     persistent-hint
                     class="filter-field-scenarios"
@@ -81,8 +80,10 @@
                 class="pane"
                 :style="{
                   maxWidth: '25% !important',
+                  minWidth: '25% !important',
                   pointerEvents: isPhishingScenariosLoading ? 'none' : 'inherit'
                 }"
+                @scroll="handleScroll"
               >
                 <div
                   v-for="(item, index) in getItems"
@@ -124,8 +125,8 @@
                   </div>
                   <div class="template-list--item mt-2">
                     <v-chip
-                      class="template-list--item template-list--item__chip p"
                       v-for="(value, key) in item.tags"
+                      class="template-list--item template-list--item__chip p"
                       :key="value + key"
                     >
                       {{ value }}
@@ -233,7 +234,7 @@
 </template>
 
 <script>
-import { getScenario } from '@/api/scenarios'
+import { getScenario, getScenariosList } from '@/api/scenarios'
 
 const EMITS = {
   ON_ITEM_CHANGE: 'on-item-change'
@@ -265,6 +266,27 @@ export default {
   data() {
     return {
       tab: 'email',
+      axiosPayload: {
+        pageNumber: 1,
+        pageSize: 10,
+        orderBy: 'createTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       labels,
       search: '',
       isShowTemplate: false,
@@ -277,7 +299,8 @@ export default {
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
-      landingPageTemplate: null
+      landingPageTemplate: null,
+      phishingScenarioItems: []
     }
   },
   computed: {
@@ -296,26 +319,7 @@ export default {
       return method || difficulty || search
     },
     getItems() {
-      const { method, difficulty, search } = this
-      if (!this.isFilterOrSearchActive) return this.items
-      let filteredItems = this.items
-      if (search) {
-        filteredItems = filteredItems.filter((item) => {
-          const values = Object.values(item).map((i) => i.toString().toLowerCase())
-          return values.some((v) => v.includes(search.toLowerCase()))
-        })
-      }
-      if (difficulty) {
-        filteredItems = filteredItems.filter(
-          (item) => item.difficulty === this.difficulties.find((d) => d.value === difficulty)?.text
-        )
-      }
-      if (method) {
-        filteredItems = filteredItems.filter(
-          (item) => item.method === this.methods.find((m) => m.value === method)?.text
-        )
-      }
-      return filteredItems
+      return this.phishingScenarioItems
     },
     getStyle() {
       const style = {}
@@ -331,6 +335,46 @@ export default {
   watch: {
     value() {
       this.callForSelectedPhishingScenario()
+    },
+    search(val) {
+      this.debounce(() => {
+        this.axiosPayload.filter.FilterGroups[1].FilterItems = [
+          { FieldName: 'Name', Operator: 'Contains', Value: val },
+          { FieldName: 'Method', Operator: 'Contains', Value: val },
+          { FieldName: 'Tags', Operator: 'Contains', Value: val },
+          { FieldName: 'Difficulty', Operator: 'Contains', Value: val },
+          { FieldName: 'CreatedBy', Operator: 'Contains', Value: val },
+          { FieldName: 'CreateTime', Operator: 'Contains', Value: val }
+        ]
+        this.callForPhishingScenarios()
+      }, 500)
+    },
+    difficulty(val) {
+      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => item.FieldName === 'difficulty'
+      )
+      const obj = { Value: val, FieldName: 'difficulty', Operator: 'Include' }
+      if (index > -1) {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+      }
+      this.callForPhishingScenarios()
+    },
+    method(val) {
+      const index = this.axiosPayload.filter.FilterGroups[0].FilterItems.findIndex(
+        (item) => item.FieldName === 'method'
+      )
+      const obj = { Value: val, FieldName: 'method', Operator: 'Include' }
+      if (index > -1) {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems[index] = obj
+      } else {
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.push(obj)
+      }
+      this.callForPhishingScenarios()
+    },
+    items(val) {
+      this.phishingScenarioItems = [...val]
     }
   },
   methods: {
@@ -339,6 +383,10 @@ export default {
         const {
           data: { data }
         } = response
+
+        if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
+          this.phishingScenarioItems.push(data)
+        }
         const { emailTemplateResourceId, landingPageTemplateResourceId } = data
         getPhishingScenarioLandingPageAndEmailTemplate(
           emailTemplateResourceId,
@@ -369,6 +417,27 @@ export default {
         })
       })
     },
+    callForPhishingScenarios() {
+      getScenariosList(this.axiosPayload).then((response) => {
+        const {
+          data: { data }
+        } = response
+
+        this.phishingScenarioItems = data.results || []
+      })
+    },
+    handleScroll(e) {
+      const { scrollTop, scrollHeight, offsetHeight } = e.target
+      if (
+        scrollTop - (scrollHeight - offsetHeight) < 10 &&
+        scrollTop - (scrollHeight - offsetHeight) > -10
+      ) {
+        this.axiosPayload.pageSize += 10
+        this.debounce(() => {
+          this.callForPhishingScenarios()
+        }, 500)
+      }
+    },
     toggleTemplateDialog() {
       this.isShowTemplate = !this.isShowTemplate
     },
@@ -384,6 +453,14 @@ export default {
       this.selectedTemplate = this.landingPageTemplate
       this.selectedTemplateHeader = this.landingPageParams.name
       this.toggleTemplateDialog()
+    },
+    debounce(fn, delay) {
+      if (this.timeout) {
+        clearTimeout(this.timeout)
+      }
+      this.timeout = setTimeout(() => {
+        fn()
+      }, delay)
     }
   }
 }
