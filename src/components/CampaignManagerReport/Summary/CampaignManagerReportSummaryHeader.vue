@@ -1,5 +1,11 @@
 <template>
   <div class="campaign-manager-report-summary-header">
+    <CampaignManagerReportSummaryResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      @on-close="toggleShowResendDialog"
+      @on-confirm="handleOnConfirmResend"
+    />
     <div class="campaign-manager-report-summary-header__left">
       <div class="campaign-manager-report-summary-header__title">
         {{ labels.CampaignSummary }}
@@ -18,6 +24,7 @@
         class="campaign-manager-report-summary-header__btn-resend-campaign ml-2"
         rounded
         color="#2196f3"
+        @click="toggleShowResendDialog"
         >{{ labels.ResendCampaign }}</v-btn
       >
     </div>
@@ -26,12 +33,21 @@
 
 <script>
 import labels from '@/model/constants/labels'
+import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
 export default {
   name: 'CampaignManagerReportSummaryHeader',
+  components: { CampaignManagerReportSummaryResendDialog },
   data() {
     return {
-      labels
+      labels,
+      isShowResendDialog: false
     }
+  },
+  methods: {
+    toggleShowResendDialog() {
+      this.isShowResendDialog = !this.isShowResendDialog
+    },
+    handleOnConfirmResend() {}
   }
 }
 </script>

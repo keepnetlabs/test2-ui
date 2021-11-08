@@ -12,6 +12,7 @@ export const labels = {
   Connected: 'Connected',
   Summary: 'Summary',
   ClickedLink: 'Clicked Link',
+  Resend: 'Resend',
   OpenedEmail: 'Opened Email',
   Opened: 'Opened',
   ScenarioStats: 'Scenario Stats',
