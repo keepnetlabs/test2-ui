@@ -83,5 +83,65 @@ export const COLUMNS = {
     type: 'numeric',
     width: 160,
     filterableType: 'numeric'
+  },
+  DATE_CLICKED: {
+    property: PROPERTY_STORE.DATECLICKED,
+    align: 'left',
+    label: labels.DateClicked,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'date',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  USER_AGENT: {
+    property: PROPERTY_STORE.USERAGENT,
+    align: 'left',
+    label: labels.UserAgent,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  BROWSER: {
+    property: PROPERTY_STORE.BROWSER,
+    align: 'left',
+    label: labels.Browser,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  GEOLOCATION: {
+    property: PROPERTY_STORE.GEOLOCATION,
+    align: 'left',
+    label: labels.Geolocation,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  IP: {
+    property: PROPERTY_STORE.IP,
+    align: 'left',
+    label: labels.Ip,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
   }
 }
