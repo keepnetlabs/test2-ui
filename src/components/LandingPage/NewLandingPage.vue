@@ -517,7 +517,7 @@ export default {
         this.landingPageData.parameterTypes.find(
           (item) => item.value == this.formValues.parameterTypeId.toString()
         ).text
-      }=`
+      }=${(Math.random() * 10 + 1).toString().replace('.', '')}`
     },
     setAttachmentFile(file) {
       this.formValues.attachmentFiles = file
@@ -768,7 +768,7 @@ export default {
           this.landingPageData.parameterTypes.find(
             (item) => item.value == this.formValues.parameterTypeId.toString()
           ).text
-        }=`
+        }=${(Math.random() * 10 + 1).toString().replace('.', '')}`
       },
       {
         immediate: true, // run immediately
