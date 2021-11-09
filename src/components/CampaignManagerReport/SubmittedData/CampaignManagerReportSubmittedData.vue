@@ -4,7 +4,16 @@
       :title="labels.UserWhoSubmitted"
       :subtitle="labels.ResetPassword"
     />
-    <CampaignManagerReportSubmittedTable class="mt-6" />
+    <CampaignManagerReportSubmittedtemDetailDialog
+      v-if="isShowDetailDialog"
+      :status="isShowDetailDialog"
+      :item="selectedRow"
+    />
+    <CampaignManagerReportSubmittedTable
+      class="mt-6"
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+    />
   </div>
 </template>
 
@@ -12,13 +21,31 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
+import CampaignManagerReportSubmittedtemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
 export default {
   name: 'CampaignManagerReportSubmittedData',
-  components: { CampaignManagerReportSubmittedTable, CampaignManagerReportHeader },
+  components: {
+    CampaignManagerReportSubmittedtemDetailDialog,
+    CampaignManagerReportSubmittedTable,
+    CampaignManagerReportHeader
+  },
   data() {
     return {
-      labels
+      labels,
+      isShowDetailDialog: false,
+      selectedRow: null
     }
+  },
+  methods: {
+    handleOnDetail(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDetailDialog()
+    },
+    toggleShowDetailDialog() {
+      if (this.isShowDetailDialog) this.selectedRow = null
+      this.isShowDetailDialog = !this.isShowDetailDialog
+    },
+    handleOnResend(row = {}) {}
   }
 }
 </script>

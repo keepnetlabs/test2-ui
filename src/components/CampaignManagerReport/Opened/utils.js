@@ -38,6 +38,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  DATA: {
+    property: PROPERTY_STORE.DATA,
+    align: 'left',
+    label: labels.Data,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   DEPARTMENT: {
     property: PROPERTY_STORE.DEPARTMENT,
     align: 'left',

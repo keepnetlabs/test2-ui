@@ -162,6 +162,7 @@ export const PROPERTY_STORE = {
   TARGET_USERS: 'TargetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
   LASTOPENED: 'lastOpened',
+  DATA: 'data',
   DATECLICKED: 'dateClicked',
   SCENARIO: 'scenario',
   LASTCLICKED: 'lastClicked',

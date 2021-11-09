@@ -12,6 +12,7 @@ export const labels = {
   UserWhoOpened: 'User who opened the email',
   Connected: 'Connected',
   UserWhoClicked: 'User who clicked the link',
+  Data: 'Data',
   UserWhoSubmitted: 'Users who submitted the form',
   CampaignSettings: 'Campaign Settings',
   CampaignSettingsSub:
