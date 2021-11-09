@@ -38,6 +38,17 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  EMAIL_SEND_DATE: {
+    property: PROPERTY_STORE.EMAIL_SEND_DATE,
+    align: 'left',
+    editable: false,
+    label: labels.EmailSendDate,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
   DATA: {
     property: PROPERTY_STORE.DATA,
     align: 'left',

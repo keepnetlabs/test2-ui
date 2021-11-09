@@ -10,11 +10,13 @@ export const labels = {
   ApiKey: 'API Key',
   Completed: 'Completed',
   UserWhoOpened: 'User who opened the email',
+  UserWhoHaventOpened: 'Users who haven’t opened the email',
   Connected: 'Connected',
   UserWhoClicked: 'User who clicked the link',
   Data: 'Data',
   UserWhoSubmitted: 'Users who submitted the form',
   CampaignSettings: 'Campaign Settings',
+  EmailSendDate: 'Email Send Date',
   CampaignSettingsSub:
     'Enter campaign information, select target groups and select training. To create a campaign with advanced settings, go to create a campaign. Please make sure everything is completed in the checklist.',
   Summary: 'Summary',

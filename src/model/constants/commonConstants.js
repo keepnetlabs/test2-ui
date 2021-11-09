@@ -168,6 +168,7 @@ export const PROPERTY_STORE = {
   LASTCLICKED: 'lastClicked',
   BROWSER: 'browser',
   GEOLOCATION: 'geoLocation',
+  EMAIL_SEND_DATE: 'emailSendDate',
   LAST_SUBMISSION: 'lastSubmission',
   PASSWORD_COMPLEXITY: 'passwordComplexity',
   TIMESCLICKED: 'timesClicked',
@@ -286,6 +287,7 @@ export const PROPERTY_STORE = {
 export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
+  CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSettings',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSettings',
@@ -430,6 +432,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSearchKeys',
+  CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSearchKeys',
   REPORTED_EMAIL: 'ReportedEmail',
   REPORTED_EMAIL_CLUSTERED: 'ReportedEmailClustered',
