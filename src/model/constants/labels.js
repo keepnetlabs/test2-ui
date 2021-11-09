@@ -16,6 +16,9 @@ export const labels = {
   Data: 'Data',
   UserWhoSubmitted: 'Users who submitted the form',
   CampaignSettings: 'Campaign Settings',
+  EmailSendingReport: 'Email Sending Report',
+  LastSendingDate: 'Last Sending Date',
+  LAST_SENDING_STATUS: 'Last Sending Status',
   EmailSendDate: 'Email Send Date',
   CampaignSettingsSub:
     'Enter campaign information, select target groups and select training. To create a campaign with advanced settings, go to create a campaign. Please make sure everything is completed in the checklist.',

@@ -207,7 +207,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'date',
+    type: 'text',
     width: 180,
     isEditable: false,
     filterableType: 'date'
@@ -223,5 +223,37 @@ export const COLUMNS = {
     width: 180,
     isEditable: false,
     filterableType: 'numeric'
+  },
+  LAST_SENDING_DATE: {
+    property: PROPERTY_STORE.LAST_SENDING_DATE,
+    align: 'left',
+    label: labels.LastSendingDate,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  LAST_SENDING_STATUS: {
+    property: PROPERTY_STORE.LAST_SENDING_STATUS,
+    align: 'center',
+    label: labels.LAST_SENDING_STATUS,
+    sortable: true,
+    show: true,
+    type: 'slot',
+    width: 160,
+    filterableType: 'select'
+  },
+  SMTP: {
+    property: PROPERTY_STORE.SMTP,
+    align: 'left',
+    label: labels.Smtp,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'text'
   }
 }

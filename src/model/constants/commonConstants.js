@@ -163,6 +163,8 @@ export const PROPERTY_STORE = {
   ADDINSTATUSNAME: 'addInStatusName',
   LASTOPENED: 'lastOpened',
   DATA: 'data',
+  LAST_SENDING_DATE: 'lastSendingDate',
+  LAST_SENDING_STATUS: 'lastSendingStatus',
   DATECLICKED: 'dateClicked',
   SCENARIO: 'scenario',
   LASTCLICKED: 'lastClicked',
