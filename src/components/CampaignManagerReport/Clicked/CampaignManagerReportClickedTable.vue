@@ -6,7 +6,7 @@
     filterable
     options
     is-server-side
-    :refName="'campaignManagerOpenedTable'"
+    :refName="'campaignManagerClickedTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
@@ -34,7 +34,6 @@
 
 <script>
 import DataTable from '@/components/DataTable'
-import { COLUMNS } from './utils'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
@@ -43,6 +42,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 const defaultFilter = {
   Condition: 'AND',
   FilterGroups: [
@@ -59,36 +59,36 @@ const defaultFilter = {
   ]
 }
 export default {
-  name: 'CampaignManagerReportOpenedTable',
+  name: 'CampaignManagerReportClickedTable',
   components: { DataTable },
   data() {
     return {
       CONSTANTS: {
-        id: 'campaign-manager-opened-data-table',
+        id: 'campaign-manager-clicked-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
       isLoading: false,
-      tableData: [],
+      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
+      serverSideEvents: { pagination: true, search: true, sort: true },
+      tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
-        serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.SCENARIO,
-          COLUMNS.LAST_OPENED,
-          COLUMNS.TIMES_OPENED
+          COLUMNS.LAST_CLICKED,
+          COLUMNS.TIMES_CLICKED
         ],
         addButton: {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportClicked
+          message: labels.EmptyCampaignManagerReportOpened
         },
         rowActions: [
           {
@@ -115,18 +115,14 @@ export default {
   },
   methods: {
     callForData() {},
-    setQueryValues() {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
-      this.axiosPayload.pageNumber = page
+    getStoredTableSettings() {
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE)
+      )
     },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE)
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
       const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
@@ -136,10 +132,14 @@ export default {
         this.$refs.refTable.reRenderColumns(filterValues)
       })
     },
-    getStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE)
-      )
+    setQueryValues() {
+      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
+      this.queryHelper.setDefaultValues()
+      this.queryHelper.controlRouteQuery()
+      const { page, size } = this.queryHelper.returnQueryValues()
+      this.axiosPayload.pageSize = size
+      this.serverSideProps.pageSize = size
+      this.axiosPayload.pageNumber = page
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
@@ -202,7 +202,7 @@ export default {
         FilterGroups: []
       }
       localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
+        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
         JSON.stringify({
           filter: this.axiosPayload.filter,
           filterValues
@@ -219,7 +219,7 @@ export default {
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE,
+        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE,
         JSON.stringify(tableSettings)
       )
     },

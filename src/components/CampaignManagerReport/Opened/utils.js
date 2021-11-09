@@ -143,5 +143,28 @@ export const COLUMNS = {
     width: 180,
     isEditable: false,
     filterableType: 'text'
+  },
+  LAST_CLICKED: {
+    property: PROPERTY_STORE.LASTCLICKED,
+    align: 'left',
+    label: labels.LastClicked,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'date',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  TIMES_CLICKED: {
+    property: PROPERTY_STORE.TIMESCLICKED,
+    align: 'left',
+    editable: false,
+    label: labels.TimesClicked,
+    sortable: true,
+    show: true,
+    type: 'numeric',
+    width: 160,
+    filterableType: 'numeric'
   }
 }

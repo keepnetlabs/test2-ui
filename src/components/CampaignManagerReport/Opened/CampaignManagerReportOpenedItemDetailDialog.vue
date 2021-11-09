@@ -63,9 +63,6 @@ export default {
     },
     item: {
       type: Object
-    },
-    isActionButtonDisabled: {
-      type: Boolean
     }
   },
   data() {
