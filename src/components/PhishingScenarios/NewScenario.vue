@@ -60,11 +60,7 @@
                     :disabled="editItemsDisabled"
                   />
                 </form-group>
-                <form-group
-                  title="Description"
-                  sub-title="Describe the template briefly"
-                  class-name="mt-4"
-                >
+                <form-group title="Description" sub-title="Describe the template briefly">
                   <v-textarea
                     id="input--new-phishing-scenarios-description"
                     outlined
@@ -78,9 +74,9 @@
                   ></v-textarea>
                 </form-group>
                 <form-group
+                  has-hint
                   title="Method"
                   sub-title="Select the phishing technique for this scenario"
-                  class-name="mt-4"
                 >
                   <v-select
                     :items="scenarioDetailsLookup.methodTypes"
@@ -114,11 +110,11 @@
                     </template>
                   </v-select>
                 </form-group>
-                <form-group title="Tags" sub-title="Define tags for the scenario" class-name="mt-6">
+                <form-group title="Tags" sub-title="Define tags for the scenario">
                   <k-select
-                    type="combobox"
-                    :id="`input--action-tags`"
                     v-model="formValues.tags"
+                    type="combobox"
+                    id="input--action-tags-new-scenario"
                     :items="[]"
                     chips
                     deletable-chips
@@ -154,7 +150,7 @@
                   >
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
+              <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <EmailTemplateListPreview
                     v-if="step === 2"
@@ -180,7 +176,7 @@
                   >
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
+              <v-list-item style="margin-top: -10px;">
                 <v-list-item-content>
                   <LandingPageListPreview
                     v-if="step === 3"
@@ -915,6 +911,11 @@ export default {
 .phishing-scenario {
   .phishing-scenario__container {
     padding: 24px !important;
+  }
+}
+#input--action-tags-new-scenario.hide-caret {
+  .v-input__append-inner {
+    display: none !important;
   }
 }
 .new-phishing-scenario__footer-btn-cancel {
