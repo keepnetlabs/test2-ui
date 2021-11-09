@@ -34,7 +34,7 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
           </div>
           <div v-if="isShowTargetUserDetail">
-            <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.targetGroups" />
+            <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.selectedTargetGroups" />
           </div>
         </template>
       </CampaignManagerSummaryCard>

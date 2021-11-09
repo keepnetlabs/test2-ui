@@ -27,6 +27,7 @@
         content-class="data-table-text-with-badge__tooltip"
       >
         <template v-slot:activator="{ on }">
+          <v-btn style="display: none;"></v-btn>
           <badge
             :color="'#2196f3'"
             :full-width="col.fullWidth"
