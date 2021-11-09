@@ -4,19 +4,37 @@
       :title="labels.EmailSendingReport"
       :subtitle="labels.ResetPassword"
     />
+    <CampaignManagerReportSendingReportTable
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+    />
   </div>
 </template>
 
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
+import CampaignManagerReportSendingReportTable from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportTable'
 export default {
   name: 'CampaignManagerReportSendingReport',
-  components: { CampaignManagerReportHeader },
+  components: { CampaignManagerReportSendingReportTable, CampaignManagerReportHeader },
   data() {
     return {
-      labels
+      labels,
+      isShowDetailDialog: false,
+      selectedRow: null
     }
+  },
+  methods: {
+    handleOnDetail(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDetailDialog()
+    },
+    toggleShowDetailDialog() {
+      if (this.isShowDetailDialog) this.selectedRow = null
+      this.isShowDetailDialog = !this.isShowDetailDialog
+    },
+    handleOnResend(row = {}) {}
   }
 }
 </script>
