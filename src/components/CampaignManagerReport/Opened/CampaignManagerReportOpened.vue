@@ -1,7 +1,16 @@
 <template>
   <div id="campaign-manager-report-opened" class="campaign-manager-report-opened">
     <CampaignManagerReportHeader :title="labels.UserWhoOpened" :subtitle="labels.ResetPassword" />
-    <CampaignManagerReportOpenedTable class="mt-6" />
+    <CampaignManagerReportOpenedItemDetailDialog
+      v-if="isShowDetailDialog"
+      :status="isShowDetailDialog"
+      :item="selectedRow"
+    />
+    <CampaignManagerReportOpenedTable
+      class="mt-6"
+      @on-resend="handleOnResend"
+      @on-detail="handleOnDetail"
+    />
   </div>
 </template>
 
@@ -9,13 +18,31 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportOpenedTable from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpenedTable'
+import CampaignManagerReportOpenedItemDetailDialog from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpenedItemDetailDialog'
 export default {
   name: 'CampaignManagerReportOpened',
-  components: { CampaignManagerReportOpenedTable, CampaignManagerReportHeader },
+  components: {
+    CampaignManagerReportOpenedItemDetailDialog,
+    CampaignManagerReportOpenedTable,
+    CampaignManagerReportHeader
+  },
   data() {
     return {
-      labels
+      labels,
+      isShowDetailDialog: false,
+      selectedRow: null
     }
+  },
+  methods: {
+    handleOnDetail(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDetailDialog()
+    },
+    toggleShowDetailDialog() {
+      if (this.isShowDetailDialog) this.selectedRow = null
+      this.isShowDetailDialog = !this.isShowDetailDialog
+    },
+    handleOnResend(row = {}) {}
   }
 }
 </script>

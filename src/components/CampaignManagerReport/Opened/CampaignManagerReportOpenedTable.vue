@@ -29,6 +29,8 @@
     @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerReportOpenedTable"
     @refreshAction="callForData"
+    @on-resend="handleOnResend"
+    @on-detail="handleOnDetail"
   />
 </template>
 
@@ -88,7 +90,7 @@ export default {
           show: false
         },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportClicked
+          message: labels.EmptyCampaignManagerReportOpened
         },
         rowActions: [
           {
@@ -223,7 +225,13 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {}
+    exportCampaignManagerReportOpenedTable() {},
+    handleOnResend(row) {
+      this.$emit('on-resend', row)
+    },
+    handleOnDetail(row) {
+      this.$emit('on-detail', row)
+    }
   }
 }
 </script>

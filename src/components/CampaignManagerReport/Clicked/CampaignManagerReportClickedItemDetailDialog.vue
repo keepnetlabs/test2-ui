@@ -48,14 +48,13 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
-import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
-import { DEFAULT_SEARCH_CONTAINER_KEYS } from '@/model/constants/commonConstants'
+import DataTable from '@/components/DataTable'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 export default {
-  name: 'CampaignManagerReportOpenedItemDetailDialog',
+  name: 'CampaignManagerReportClickedItemDetailDialog',
   components: { DataTable, AppDialog },
   props: {
     status: {
@@ -69,11 +68,9 @@ export default {
     return {
       CONSTANTS: {
         icon: 'mdi-text-box',
-        id: 'campaign-manager-opened-detail-item-data-table',
+        id: 'campaign-manager-clicked-detail-item-data-table',
         ascending: 'ascending'
       },
-      isLoading: false,
-      serverSideProps: new ServerSideProps(),
       axiosPayload: {
         Condition: 'AND',
         FilterGroups: [
@@ -89,6 +86,8 @@ export default {
           }
         ]
       },
+      isLoading: false,
+      serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
         serverSideEvents: { pagination: true, search: true, sort: true },
@@ -120,9 +119,6 @@ export default {
     getSubtitle() {
       return ''
     }
-  },
-  created() {
-    this.callForData()
   },
   methods: {
     callForData() {},
@@ -184,3 +180,5 @@ export default {
   }
 }
 </script>
+
+<style lang="scss"></style>
