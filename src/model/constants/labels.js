@@ -13,6 +13,9 @@ export const labels = {
   Connected: 'Connected',
   UserWhoClicked: 'User who clicked the link',
   UserWhoSubmitted: 'Users who submitted the form',
+  CampaignSettings: 'Campaign Settings',
+  CampaignSettingsSub:
+    'Enter campaign information, select target groups and select training. To create a campaign with advanced settings, go to create a campaign. Please make sure everything is completed in the checklist.',
   Summary: 'Summary',
   Scenario: 'Scenario',
   DateClicked: 'Date Clicked',

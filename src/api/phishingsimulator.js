@@ -157,3 +157,9 @@ export function getPhishingScenarioLandingPageAndEmailTemplate(
 export function getCampaignManagerPreview(resourceId = '') {
   return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
 }
+
+export function getDefaultCompanySmtpSetting() {
+  return testRequest.get(
+    '/phishing-simulator/phishing-campaign/root-company-shared-smtp-resource-id'
+  )
+}
