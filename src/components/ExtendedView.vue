@@ -182,6 +182,7 @@
                   v-else-if="
                         (copyOfEditedRows[0][col.property] && (!editMode || !col.isEditable) && (col.type === 'smallBadge'))
                       "
+                  style="display: flex; flex-wrap: wrap;"
                 >
                   <badge
                     :id="`badge--extended-view-singular-value-${col.label}-${index}`"
