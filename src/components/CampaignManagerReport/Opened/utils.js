@@ -154,7 +154,7 @@ export const COLUMNS = {
     type: 'date',
     width: 180,
     isEditable: false,
-    filterableType: 'text'
+    filterableType: 'date'
   },
   TIMES_CLICKED: {
     property: PROPERTY_STORE.TIMESCLICKED,
@@ -165,6 +165,40 @@ export const COLUMNS = {
     show: true,
     type: 'numeric',
     width: 160,
+    filterableType: 'numeric'
+  },
+  PASSWORD_COMPLEXITY: {
+    property: PROPERTY_STORE.PASSWORD_COMPLEXITY,
+    align: 'center',
+    label: labels.PasswordComplexity,
+    sortable: true,
+    show: true,
+    type: 'badge',
+    width: 160,
+    filterableType: 'select'
+  },
+  LAST_SUBMISSION: {
+    property: PROPERTY_STORE.LAST_SUBMISSION,
+    align: 'left',
+    label: labels.LastSubmission,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'date',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  TIMES_SUBMISSION: {
+    property: PROPERTY_STORE.TIMES_SUBMISSION,
+    align: 'left',
+    label: labels.TimesSubmission,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
     filterableType: 'numeric'
   }
 }

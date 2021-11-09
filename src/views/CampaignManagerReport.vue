@@ -25,6 +25,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportSummary from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummary'
 import CampaignManagerReportOpened from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpened'
 import CampaignManagerReportClicked from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClicked'
+import CampaignManagerReportSubmittedData from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedData'
 export default {
   name: 'CampaignManagerReport',
   data() {
@@ -52,7 +53,8 @@ export default {
         {
           name: labels.SubmittedData,
           id: 'campaign-manager-report-submitted-date-content',
-          label: labels.SubmittedData
+          label: labels.SubmittedData,
+          component: CampaignManagerReportSubmittedData
         },
         {
           name: labels.NoResponse,
