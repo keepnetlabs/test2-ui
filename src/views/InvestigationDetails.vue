@@ -1335,6 +1335,18 @@ export default {
         cellPadding: 8
       },
       {
+        property: 'senderName',
+        align: 'left',
+        editable: false,
+        label: 'Sender Name',
+        fixed: false,
+        sortable: true,
+        show: true,
+        type: 'text',
+        filterableType: 'text',
+        width: 180
+      },
+      {
         property: 'subject',
         align: 'left',
         editable: false,
