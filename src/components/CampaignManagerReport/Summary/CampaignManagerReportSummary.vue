@@ -1,6 +1,9 @@
 <template>
   <div id="campaign-manager-report-summary" class="campaign-manager-report-summary">
-    <CampaignManagerReportSummaryHeader :phishing-scenario-name="phishingScenarioName" />
+    <CampaignManagerReportSummaryHeader
+      :phishing-scenario-name="phishingScenarioName"
+      :resend-dialog-items="getResendDialogItems"
+    />
     <CampaignManagerReportSummaryCards :items="getCardsData" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
@@ -109,6 +112,24 @@ export default {
         Difficulty: difficulties[difficultyTypeId - 1].text,
         Languages: languages || 'English'
       }
+    },
+    getResendDialogItems() {
+      const [
+        openedEmail = 0,
+        clickedEmail = 0,
+        submittedEmail = 0,
+        noResponseEmail = 0,
+        notDelivered = 0
+      ] = this.getChartData
+      return this.getChartData.length
+        ? {
+            clickedEmail,
+            noResponseEmail,
+            notDelivered,
+            openedEmail,
+            submittedEmail
+          }
+        : {}
     },
     getChartData() {
       const { scenarioStats = {} } = this.campaignSummary

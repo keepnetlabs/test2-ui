@@ -3,6 +3,8 @@
     <CampaignManagerReportSummaryResendDialog
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
+      :items="resendDialogItems"
+      :phishing-scenario-name="phishingScenarioName"
       @on-close="toggleShowResendDialog"
       @on-confirm="handleOnConfirmResend"
     />
@@ -40,6 +42,9 @@ export default {
   props: {
     phishingScenarioName: {
       type: String
+    },
+    resendDialogItems: {
+      type: Object
     }
   },
   data() {
