@@ -45,31 +45,24 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-const defaultFilter = {
-  Condition: 'AND',
-  FilterGroups: [
-    {
-      Condition: 'AND',
-      FilterItems: [],
-      FilterGroups: []
-    },
-    {
-      Condition: 'OR',
-      FilterItems: [],
-      FilterGroups: []
-    }
-  ]
-}
+import { searchCampaignJobUserEmailOpened } from '@/api/phishingsimulator'
+import { getDefaultFilter } from '@/utils/functions'
+
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: { DataTable },
+  props: {
+    id: {
+      type: String
+    }
+  },
   data() {
     return {
       CONSTANTS: {
         id: 'campaign-manager-opened-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
+      axiosPayload: getDefaultFilter(),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -116,7 +109,11 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id).then((response) => {
+        debugger
+      })
+    },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.setDefaultValues()

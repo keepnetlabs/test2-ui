@@ -163,3 +163,43 @@ export function getDefaultCompanySmtpSetting() {
     '/phishing-simulator/phishing-campaign/root-company-shared-smtp-resource-id'
   )
 }
+
+export function searchCampaignJobUsers(payload = {}, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailClicked(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-clicked/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-opened/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailSubmitted(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-submitted/${id}`,
+    payload
+  )
+}
+
+export function getCampaignManagerJobFormDetails() {
+  return testRequest.get('/phishing-simulator/phishing-campaign-job/form-details')
+}
+
+export function getCampaignJobSummary(id) {
+  return testRequest.get(`/phishing-simulator/phishing-campaign-job/summary/${id}`)
+}
+
+export function getCampaignJobSummaryTargetGroups(id) {
+  return testRequest.get(`/phishing-simulator/phishing-campaign-job/summary/target-groups/${id}`)
+}

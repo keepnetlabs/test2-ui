@@ -45,24 +45,16 @@ import {
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-const defaultFilter = {
-  Condition: 'AND',
-  FilterGroups: [
-    {
-      Condition: 'AND',
-      FilterItems: [],
-      FilterGroups: []
-    },
-    {
-      Condition: 'OR',
-      FilterItems: [],
-      FilterGroups: []
-    }
-  ]
-}
+import { getDefaultFilter } from '@/utils/functions'
+import { searchCampaignJobUserEmailClicked } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportClickedTable',
   components: { DataTable },
+  props: {
+    id: {
+      type: String
+    }
+  },
   data() {
     return {
       CONSTANTS: {
@@ -70,7 +62,7 @@ export default {
         ascending: 'ascending'
       },
       isLoading: false,
-      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
+      axiosPayload: getDefaultFilter(),
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
@@ -116,7 +108,11 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id).then((response) => {
+        debugger
+      })
+    },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE)

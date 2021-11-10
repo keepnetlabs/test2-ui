@@ -11,10 +11,10 @@
         <span v-if="getOtherSettingsItems.isRandomSelected">
           Randomly selected %10 (9 users) from</span
         >
-        <span> 420 users from 19 groups </span>
+        <span> {{ getTotalTargetGroupsAndUsersCount }} </span>
       </div>
       <div v-if="isShowTargetUserDetail">
-        <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.targetGroupResourceIds" />
+        <CampaignManagerTargetGroupsAndUserSummaryInfo :items="items" />
       </div>
     </template>
   </CampaignManagerSummaryCard>
@@ -27,18 +27,34 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'CampaignManagerReportSummaryTargetGroups',
   components: { CampaignManagerTargetGroupsAndUserSummaryInfo, CampaignManagerSummaryCard },
+  props: {
+    items: {
+      type: Array
+    }
+  },
   data() {
     return {
       labels,
-      isShowTargetUserDetail: false,
-      formData: {
-        targetGroupResourceIds: []
-      }
+      isShowTargetUserDetail: false
     }
   },
   computed: {
     getOtherSettingsItems() {
       return { isRandomSelected: true }
+    },
+    getTotalTargetGroupsAndUsersCount() {
+      let text = ''
+      const itemsLength = this.items.length
+      if (itemsLength) {
+        text = `${this.getTotalUsers} user(s) from ${itemsLength} group(s)`
+      }
+      return text
+    },
+    getTotalUsers() {
+      return this.items.reduce((acc, item) => {
+        acc += item['usersCount']
+        return acc
+      }, 0)
     }
   }
 }

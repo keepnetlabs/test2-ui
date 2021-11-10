@@ -14,7 +14,7 @@
               :name="item.name"
               :label="item.label"
             >
-              <component v-if="item.name === tab" :is="item.component" />
+              <component v-if="item.name === tab" :is="item.component" :id="id" />
             </el-tab-pane>
           </el-tabs>
         </v-card>
@@ -31,6 +31,7 @@ import CampaignManagerReportClicked from '@/components/CampaignManagerReport/Cli
 import CampaignManagerReportSubmittedData from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedData'
 import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
+import { getCampaignManagerJobFormDetails } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReport',
   data() {
@@ -73,7 +74,23 @@ export default {
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport
         }
-      ]
+      ],
+      formDetails: null
+    }
+  },
+  computed: {
+    id() {
+      return this.$route?.params?.id
+    }
+  },
+  created() {
+    this.callForFormDetails()
+  },
+  methods: {
+    callForFormDetails() {
+      getCampaignManagerJobFormDetails().then((response) => {
+        this.formDetails = response.data.data
+      })
     }
   }
 }

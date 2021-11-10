@@ -6,7 +6,7 @@
       <CampaignManagerReportSummaryCampaignInfo />
       <CampaignManagerReportSummarySettings />
     </div>
-    <CampaignManagerReportSummaryTargetGroups />
+    <CampaignManagerReportSummaryTargetGroups :items="targetGroups" />
     <div class="campaign-manager-report-summary__general-info mt-4">
       <CampaignManagerReportSummaryScenarioInfo />
       <CampaignManagerReportSummaryScenarioStats />
@@ -26,6 +26,7 @@ import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManag
 import CampaignManagerReportSummaryScenarioStats from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioStats'
 import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 import CampaignManagerReportSummaryLanginPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
+import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -38,6 +39,39 @@ export default {
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader
+  },
+  props: {
+    id: {
+      type: String
+    }
+  },
+  data() {
+    return {
+      targetGroups: [],
+      interval: null
+    }
+  },
+  created() {
+    this.callForData()
+  },
+  beforeDestroy() {
+    clearInterval(this.interval)
+  },
+  methods: {
+    callForData() {
+      this.callApis()
+      this.interval = setInterval(() => {
+        this.callApis()
+      }, 15000)
+    },
+    callApis() {
+      getCampaignJobSummary(this.id).then((response) => {
+        debugger
+      })
+      getCampaignJobSummaryTargetGroups(this.id).then((response) => {
+        this.targetGroups = response.data.data.groups
+      })
+    }
   }
 }
 </script>
