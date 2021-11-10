@@ -7,32 +7,25 @@
     :title="labels.EmailThatWill"
   >
     <template #body>
-      <div
-        v-if="isFormData && formData.emailTemplateParams && formData.selectedPhishingScenario"
-        class="campaign-manager-last-step__email-template-body pb-4"
-      >
+      <div v-if="isFormData" class="campaign-manager-last-step__email-template-body pb-4">
         <div class="campaign-manager-last-step__email-template-body-header">
           <div class="campaign-manager-last-step__email-template-body-header-left">
-            {{ formData.emailTemplateParams.name }}
+            {{ formData.name }}
           </div>
           <div class="campaign-manager-last-step__email-template-body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge
-              :color="getBadgeColor(formData.selectedPhishingScenario.difficulty)"
-              :text="getBadgeText(formData.selectedPhishingScenario.difficulty)"
+              :color="getBadgeColor(formData.difficulty)"
+              :text="getBadgeText(formData.difficulty)"
               :outline="false"
             />
-            <Badge
-              color="#E0E0E0"
-              :text="getBadgeText(formData.selectedPhishingScenario.method)"
-              :outline="false"
-            />
+            <Badge color="#E0E0E0" :text="getBadgeText(formData.method)" :outline="false" />
           </div>
         </div>
         <div class="campaign-manager-last-step__email-template-body-header-sub">
-          From: {{ formData.emailTemplateParams.fromName }}
+          From: {{ formData.fromName }}
           <span>&#60;</span>
-          {{ formData.emailTemplateParams.fromAddress }} <span>&#62;</span>
+          {{ formData.fromAddress }} <span>&#62;</span>
         </div>
         <div></div>
       </div>
@@ -41,7 +34,11 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <div v-html="formData.emailTemplate"></div>
+          <div
+            v-html="formData.emailTemplate"
+            class="grapesjs-reset-css"
+            style="pointer-events: none;"
+          ></div>
         </div>
       </div>
     </template>
@@ -55,16 +52,20 @@ import Badge from '@/components/Badge'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
   components: { Badge, CampaignManagerSummaryCard },
+  props: {
+    formData: {
+      type: Object
+    }
+  },
   data() {
     return {
       isShowEmailTemplate: false,
-      labels,
-      formData: {}
+      labels
     }
   },
   computed: {
     isFormData() {
-      return false
+      return Object.keys(this.formData).length
     }
   },
   methods: {

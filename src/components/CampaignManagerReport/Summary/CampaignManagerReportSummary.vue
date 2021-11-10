@@ -14,7 +14,7 @@
         :chart-labels="chartLabels"
       />
     </div>
-    <CampaignManagerReportSummaryEmail />
+    <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" />
     <CampaignManagerReportSummaryLanginPage />
   </div>
 </template>
@@ -123,6 +123,28 @@ export default {
         })
       })
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
+    },
+    getEmailTemplateData() {
+      const { emailTemplate = {} } = this.campaignSummary
+      const {
+        name,
+        difficultyResourceId,
+        categoryResourceId,
+        fromName,
+        fromAddress,
+        template
+      } = emailTemplate
+
+      return Object.keys(emailTemplate).length
+        ? {
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+            method: methods.find((item) => item.value === categoryResourceId)?.text,
+            fromName,
+            fromAddress,
+            emailTemplate: template,
+            name
+          }
+        : {}
     }
   },
   created() {
