@@ -16,15 +16,14 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'CampaignManagerReportSummaryCampaignInfo',
   components: { CampaignManagerSummaryCard },
+  props: {
+    items: {
+      type: Object
+    }
+  },
   data() {
     return {
-      labels,
-      items: {
-        'Start Date': '28.05.2021 16:29:00',
-        'End Date': '29.05.2021 16:29:00',
-        'Total Target Users': 145,
-        'Not Delivered': 4
-      }
+      labels
     }
   }
 }

@@ -3,7 +3,7 @@
     <CampaignManagerReportSummaryHeader />
     <CampaignManagerReportSummaryCards />
     <div class="campaign-manager-report-summary__general-info mt-6">
-      <CampaignManagerReportSummaryCampaignInfo />
+      <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
       <CampaignManagerReportSummarySettings />
     </div>
     <CampaignManagerReportSummaryTargetGroups :items="targetGroups" />
@@ -48,7 +48,20 @@ export default {
   data() {
     return {
       targetGroups: [],
+      campaignSummary: {},
       interval: null
+    }
+  },
+  computed: {
+    getCampaignSummaryItems() {
+      const { campaignInfo = {} } = this.campaignSummary
+      const { startDate, endDate, totalTargetUserCount, emailNotDeliveredUserCount } = campaignInfo
+      return {
+        'Start Date': startDate,
+        'End Date': endDate,
+        'Total Target Users': totalTargetUserCount,
+        'Not Delivered': emailNotDeliveredUserCount || 0
+      }
     }
   },
   created() {
@@ -66,10 +79,10 @@ export default {
     },
     callApis() {
       getCampaignJobSummary(this.id).then((response) => {
-        debugger
+        this.campaignSummary = response?.data?.data
       })
       getCampaignJobSummaryTargetGroups(this.id).then((response) => {
-        this.targetGroups = response.data.data.groups
+        this.targetGroups = response?.data?.data?.groups
       })
     }
   }
