@@ -14,7 +14,12 @@
               :name="item.name"
               :label="item.label"
             >
-              <component v-if="item.name === tab" :is="item.component" :id="id" />
+              <component
+                v-if="item.name === tab"
+                :is="item.component"
+                :id="id"
+                :phishing-scenario-name="getPhishingScenarioName"
+              />
             </el-tab-pane>
           </el-tabs>
         </v-card>
@@ -81,6 +86,9 @@ export default {
   computed: {
     id() {
       return this.$route?.params?.id
+    },
+    getPhishingScenarioName() {
+      return this.$store?.state?.common?.activePageRouterName
     }
   },
   created() {

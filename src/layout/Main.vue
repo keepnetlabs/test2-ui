@@ -655,6 +655,9 @@
             <h1 v-else-if="routerName === 'Target Group Users'">
               {{ getTargetGroupUsersRouterName }}
             </h1>
+            <h1 v-else-if="routerName === 'Campaign Report'">
+              {{ getCampaignReportName }}
+            </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
 
@@ -1150,6 +1153,9 @@ export default {
     },
     getTargetGroupUsersRouterName() {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+    },
+    getCampaignReportName() {
+      return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
     },
     getRouterKey() {
       const { name } = this.$route

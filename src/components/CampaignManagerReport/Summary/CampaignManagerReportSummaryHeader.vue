@@ -10,7 +10,7 @@
       <div class="campaign-manager-report-summary-header__title">
         {{ labels.CampaignSummary }}
       </div>
-      <div class="campaign-manager-report-summary-header__subtitle">{{ labels.ResetPassword }}</div>
+      <div class="campaign-manager-report-summary-header__subtitle">{{ phishingScenarioName }}</div>
     </div>
     <div class="campaign-manager-report-summary-header__right">
       <v-btn
@@ -37,6 +37,11 @@ import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManag
 export default {
   name: 'CampaignManagerReportSummaryHeader',
   components: { CampaignManagerReportSummaryResendDialog },
+  props: {
+    phishingScenarioName: {
+      type: String
+    }
+  },
   data() {
     return {
       labels,

@@ -1,6 +1,6 @@
 <template>
   <div id="campaign-manager-report-summary" class="campaign-manager-report-summary">
-    <CampaignManagerReportSummaryHeader />
+    <CampaignManagerReportSummaryHeader :phishing-scenario-name="phishingScenarioName" />
     <CampaignManagerReportSummaryCards />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
@@ -15,7 +15,7 @@
       />
     </div>
     <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" />
-    <CampaignManagerReportSummaryLanginPage />
+    <CampaignManagerReportSummaryLanginPage :form-data="getLandingPageTemplateData" />
   </div>
 </template>
 
@@ -46,6 +46,9 @@ export default {
   },
   props: {
     id: {
+      type: String
+    },
+    phishingScenarioName: {
       type: String
     }
   },
@@ -145,6 +148,25 @@ export default {
             name
           }
         : {}
+    },
+    getLandingPageTemplateData() {
+      const { landingPageTemplate = {} } = this.campaignSummary
+      const {
+        urlTemplate,
+        name,
+        landingPages,
+        difficultyTypeId = 1,
+        methodTypeId = 1
+      } = landingPageTemplate
+      return Object.keys(landingPageTemplate).length
+        ? {
+            name,
+            urlTemplate,
+            landingPageTemplate: landingPages[0].content,
+            method: methods[methodTypeId - 1].text,
+            difficulty: difficulties[difficultyTypeId - 1].text
+          }
+        : {}
     }
   },
   created() {
@@ -163,6 +185,10 @@ export default {
     callApis() {
       getCampaignJobSummary(this.id).then((response) => {
         this.campaignSummary = response?.data?.data
+        this.$store.dispatch(
+          'common/setActivePageRouterName',
+          this.campaignSummary['phishingCampaignName']
+        )
       })
       getCampaignJobSummaryTargetGroups(this.id).then((response) => {
         this.targetGroups = response?.data?.data?.groups

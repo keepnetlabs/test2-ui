@@ -13,20 +13,16 @@
             <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
               >URL:</span
             >
-            {{ formData.landingPageParams.urlTemplate }}
+            {{ formData.urlTemplate }}
           </div>
           <div class="campaign-manager-last-step__landing-page-template-body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge
-              :color="getBadgeColor(formData.selectedPhishingScenario.difficulty)"
-              :text="getBadgeText(formData.selectedPhishingScenario.difficulty)"
+              :color="getBadgeColor(formData.difficulty)"
+              :text="getBadgeText(formData.difficulty)"
               :outline="false"
             />
-            <Badge
-              color="#E0E0E0"
-              :text="getBadgeText(formData.selectedPhishingScenario.method)"
-              :outline="false"
-            />
+            <Badge color="#E0E0E0" :text="getBadgeText(formData.method)" :outline="false" />
           </div>
         </div>
       </div>
@@ -35,7 +31,11 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <div v-html="formData.landingPageTemplate"></div>
+          <div
+            v-html="formData.landingPageTemplate"
+            class="grapesjs-reset-css"
+            style="pointer-events: none;"
+          ></div>
         </div>
       </div>
     </template>
@@ -49,16 +49,20 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'CampaignManagerReportSummaryLanginPage',
   components: { Badge, CampaignManagerSummaryCard },
+  props: {
+    formData: {
+      type: Object
+    }
+  },
   data() {
     return {
       labels,
-      isShowLandingPageTemplate: false,
-      formData: {}
+      isShowLandingPageTemplate: false
     }
   },
   computed: {
     isFormData() {
-      return false
+      return Object.keys(this.formData).length
     }
   },
   methods: {
