@@ -1,23 +1,27 @@
 <template>
   <div id="campaign-manager-report-summary-cards" class="campaign-manager-report-summary-cards">
     <CampaignManagerReportSummaryInfoCard
+      v-bind="getNoResponseData"
       :title="labels.NoResponse"
       :is-loading="isLoading"
       :icon-src="noResponseIcon"
     />
     <CampaignManagerReportSummaryInfoCard
+      v-bind="getOpenedData"
       background-color="#E6A23C"
       :title="labels.OpenedEmail"
       :is-loading="isLoading"
       :icon-src="openedEmailIcon"
     />
     <CampaignManagerReportSummaryInfoCard
+      v-bind="getClickedData"
       background-color="#F56C6C"
       :title="labels.ClickedLink"
       :is-loading="isLoading"
       :icon-src="clickedLinkIcon"
     />
     <CampaignManagerReportSummaryInfoCard
+      v-bind="getSubmittedData"
       class="campaign-manager-report-summary-info-card--submitted-data"
       background-color="#B83A3A"
       :title="labels.SubmittedData"
@@ -42,6 +46,9 @@ export default {
     isLoading: {
       type: Boolean,
       default: false
+    },
+    items: {
+      type: Object
     }
   },
   data() {
@@ -51,6 +58,24 @@ export default {
       noResponseIcon: require('../../../assets/img/ic-check-box.svg'),
       clickedLinkIcon: require('../../../assets/img/ic-exclude.svg'),
       submittedDataIcon: require('../../../assets/img/enhanced_encryption.png')
+    }
+  },
+  computed: {
+    getNoResponseData() {
+      const { noResponse } = this.items
+      return noResponse ? noResponse : {}
+    },
+    getOpenedData() {
+      const { openedEmail } = this.items
+      return openedEmail ? openedEmail : {}
+    },
+    getSubmittedData() {
+      const { submittedEmail } = this.items
+      return submittedEmail ? submittedEmail : {}
+    },
+    getClickedData() {
+      const { clickedEmail } = this.items
+      return clickedEmail ? clickedEmail : {}
     }
   }
 }

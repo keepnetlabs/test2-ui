@@ -1,12 +1,16 @@
 <template>
   <div id="campaign-manager-report-summary" class="campaign-manager-report-summary">
     <CampaignManagerReportSummaryHeader :phishing-scenario-name="phishingScenarioName" />
-    <CampaignManagerReportSummaryCards />
+    <CampaignManagerReportSummaryCards :items="getCardsData" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
       <CampaignManagerReportSummarySettings :items="getSettingsItems" />
     </div>
-    <CampaignManagerReportSummaryTargetGroups :items="targetGroups" />
+    <CampaignManagerReportSummaryTargetGroups
+      :items="targetGroups"
+      :randomly-selected-users-count="getRandomlySelectedUsersCount"
+      :target-users-count="getTotalUsers"
+    />
     <div class="campaign-manager-report-summary__general-info mt-4">
       <CampaignManagerReportSummaryScenarioInfo :items="getScenarioInfoItems" />
       <CampaignManagerReportSummaryScenarioStats
@@ -92,6 +96,10 @@ export default {
         SMTP: smtpName
       }
     },
+    getRandomlySelectedUsersCount() {
+      const { targetUsers = {} } = this.campaignSummary
+      return targetUsers['randomlyUsersCount'] || 0
+    },
     getScenarioInfoItems() {
       const { scenarioInfo = {} } = this.campaignSummary
       const { name, difficultyTypeId = 1, methodTypeId = 1, languages } = scenarioInfo
@@ -118,14 +126,43 @@ export default {
         noResponseEmail,
         notDelivered
       ]
-      const datasets = []
-      this.chartLabels.forEach((item, index) => {
-        datasets.push({
-          label: item,
-          data: dataContainer[index]
-        })
-      })
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
+    },
+    getCardsData() {
+      if (!this.getChartData.length) return {}
+      const [
+        openedEmail = 0,
+        clickedEmail = 0,
+        submittedEmail = 0,
+        noResponseEmail = 0
+      ] = this.getChartData
+
+      return {
+        noResponse: {
+          userCount: noResponseEmail,
+          userPercent: ((noResponseEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        openedEmail: {
+          userCount: openedEmail,
+          userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        clickedEmail: {
+          userCount: clickedEmail,
+          userPercent: ((clickedEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        submittedEmail: {
+          userCount: submittedEmail,
+          userPercent: ((submittedEmail / this.getTotalUsers) * 100).toFixed()
+        }
+      }
+    },
+    getTotalUsers() {
+      return (
+        this.targetGroups.reduce((acc, item) => {
+          acc += item['usersCount']
+          return acc
+        }, 0) || 0
+      )
     },
     getEmailTemplateData() {
       const { emailTemplate = {} } = this.campaignSummary

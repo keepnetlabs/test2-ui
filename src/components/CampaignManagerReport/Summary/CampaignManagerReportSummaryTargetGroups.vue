@@ -9,7 +9,7 @@
     <template #body>
       <div class="campaign-manager-last-step__target-users-body pb-4">
         <span v-if="getOtherSettingsItems.isRandomSelected">
-          Randomly selected %10 (9 users) from</span
+          Randomly selected {{ randomlySelectedUsersCount }} user(s) from</span
         >
         <span> {{ getTotalTargetGroupsAndUsersCount }} </span>
       </div>
@@ -30,6 +30,12 @@ export default {
   props: {
     items: {
       type: Array
+    },
+    randomlySelectedUsersCount: {
+      type: Number
+    },
+    targetUsersCount: {
+      type: Number
     }
   },
   data() {
@@ -46,15 +52,9 @@ export default {
       let text = ''
       const itemsLength = this.items.length
       if (itemsLength) {
-        text = `${this.getTotalUsers} user(s) from ${itemsLength} group(s)`
+        text = `${this.targetUsersCount} user(s) from ${itemsLength} group(s)`
       }
       return text
-    },
-    getTotalUsers() {
-      return this.items.reduce((acc, item) => {
-        acc += item['usersCount']
-        return acc
-      }, 0)
     }
   }
 }

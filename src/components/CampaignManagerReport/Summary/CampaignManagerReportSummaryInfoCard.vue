@@ -47,8 +47,8 @@ export default {
       default: 0
     },
     userPercent: {
-      type: Number,
-      default: 0
+      type: String,
+      default: '0'
     },
     backgroundColor: {
       type: String,
