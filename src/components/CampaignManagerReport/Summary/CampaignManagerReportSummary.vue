@@ -8,7 +8,7 @@
     </div>
     <CampaignManagerReportSummaryTargetGroups :items="targetGroups" />
     <div class="campaign-manager-report-summary__general-info mt-4">
-      <CampaignManagerReportSummaryScenarioInfo />
+      <CampaignManagerReportSummaryScenarioInfo :items="getScenarioInfoItems" />
       <CampaignManagerReportSummaryScenarioStats />
     </div>
     <CampaignManagerReportSummaryEmail />
@@ -27,6 +27,7 @@ import CampaignManagerReportSummaryScenarioStats from '@/components/CampaignMana
 import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 import CampaignManagerReportSummaryLanginPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
+import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -76,6 +77,16 @@ export default {
         Duration: `${duration} Day(s)`,
         'Excluded from reports': excludeFromReports ? 'Yes' : 'No',
         SMTP: smtpName
+      }
+    },
+    getScenarioInfoItems() {
+      const { scenarioInfo = {} } = this.campaignSummary
+      const { name, difficultyTypeId = 1, methodTypeId = 1, languages } = scenarioInfo
+      return {
+        Name: name,
+        Method: methods[methodTypeId - 1].text,
+        Difficulty: difficulties[difficultyTypeId - 1].text,
+        Languages: languages || 'English'
       }
     }
   },

@@ -8,15 +8,14 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'CampaignManagerReportSummaryScenarioInfo',
   components: { CampaignManagerSummaryCard },
+  props: {
+    items: {
+      type: Object
+    }
+  },
   data() {
     return {
-      labels,
-      items: {
-        Name: 'Reset Password',
-        Method: 'Data Submission',
-        Difficulty: 'Medium',
-        Languages: 'Turkish, English'
-      }
+      labels
     }
   }
 }
