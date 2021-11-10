@@ -9,7 +9,10 @@
     <CampaignManagerReportSummaryTargetGroups :items="targetGroups" />
     <div class="campaign-manager-report-summary__general-info mt-4">
       <CampaignManagerReportSummaryScenarioInfo :items="getScenarioInfoItems" />
-      <CampaignManagerReportSummaryScenarioStats />
+      <CampaignManagerReportSummaryScenarioStats
+        :chart-data="getChartData"
+        :chart-labels="chartLabels"
+      />
     </div>
     <CampaignManagerReportSummaryEmail />
     <CampaignManagerReportSummaryLanginPage />
@@ -50,7 +53,14 @@ export default {
     return {
       targetGroups: [],
       campaignSummary: {},
-      interval: null
+      interval: null,
+      chartLabels: [
+        'Opened email',
+        'Clicked link',
+        'Submitted data',
+        'No response',
+        'Not delivered'
+      ]
     }
   },
   computed: {
@@ -88,6 +98,31 @@ export default {
         Difficulty: difficulties[difficultyTypeId - 1].text,
         Languages: languages || 'English'
       }
+    },
+    getChartData() {
+      const { scenarioStats = {} } = this.campaignSummary
+      const {
+        clickedEmail = 0,
+        noResponseEmail = 0,
+        notDelivered = 0,
+        openedEmail = 0,
+        submittedEmail = 0
+      } = scenarioStats
+      const dataContainer = [
+        openedEmail,
+        clickedEmail,
+        submittedEmail,
+        noResponseEmail,
+        notDelivered
+      ]
+      const datasets = []
+      this.chartLabels.forEach((item, index) => {
+        datasets.push({
+          label: item,
+          data: dataContainer[index]
+        })
+      })
+      return dataContainer.every((item) => item === 0) ? [] : dataContainer
     }
   },
   created() {

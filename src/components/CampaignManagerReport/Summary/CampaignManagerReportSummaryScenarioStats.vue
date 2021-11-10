@@ -5,9 +5,9 @@
     :title="labels.ScenarioStats"
   >
     <template #body>
-      <div style="background-color: #fafafa;">
+      <div style="background-color: #fafafa; overflow: hidden;">
         <div class="campaign-manager-report-summary-scenario-stats__chart-container">
-          <Pie :chart-options="chartOptions" :data="chartData" />
+          <Pie v-if="chartData.length" :chart-options="chartOptions" :data="chartData" />
         </div>
       </div>
     </template>
@@ -21,6 +21,14 @@ import Pie from '@/components/Common/Charts/Pie'
 export default {
   name: 'CampaignManagerReportSummaryScenarioStats',
   components: { Pie, CampaignManagerSummaryCard },
+  props: {
+    chartData: {
+      type: Array
+    },
+    chartLabels: {
+      type: Array
+    }
+  },
   data() {
     return {
       labels,
@@ -39,20 +47,29 @@ export default {
           position: 'right',
           labels: {
             usePointStyle: true,
-            fontColor: '#757575',
-            fontFamily: 'Open-sans,sans-serif',
+            font: 'Open-sans,sans-serif',
             padding: 16,
-            fontSize: 12
+            fontSize: 12,
+            generateLabels: (chart) => {
+              const { data } = chart
+              return data.datasets[0].data.map((data, index) => {
+                return {
+                  text: `${this.chartLabels[index]} - ${data}`,
+                  fillStyle: this.chartOptions.backgroundColor[index],
+                  fontColor: '#383B41',
+                  lineWidth: 0
+                }
+              })
+            }
           }
         },
-        backgroundColor: ['#3f51b5', '#00bcd4'],
+        backgroundColor: ['#E6A23C', '#B6791D', '#B83A3A', '#43A047', '#F56C6C'],
         tooltips: {
           enabled: true
         },
-        labels: ['Gürkan', 'Sara'],
+        labels: this.chartLabels,
         showTooltipLine: true
-      },
-      chartData: [10, 20]
+      }
     }
   }
 }
@@ -62,9 +79,9 @@ export default {
 .campaign-manager-report-summary-scenario-stats {
   &__chart {
     &-container {
-      max-width: 300px;
-      margin: 0 auto;
-      max-height: 300px;
+      max-width: 350px;
+      margin: -60px auto;
+      max-height: 350px;
     }
   }
 }
