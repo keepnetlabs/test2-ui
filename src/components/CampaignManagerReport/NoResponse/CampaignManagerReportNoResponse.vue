@@ -4,7 +4,7 @@
       :title="labels.UserWhoHaventOpened"
       :subtitle="labels.ResetPassword"
     />
-    <CampaignManagerReportNoResponseTable @on-resend="handleOnResend" />
+    <CampaignManagerReportNoResponseTable class="mt-6" @on-resend="handleOnResend" />
   </div>
 </template>
 

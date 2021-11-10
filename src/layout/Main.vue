@@ -1210,6 +1210,7 @@ export default {
           routerName === 'Email Templates' ||
           routerName === 'Phishing Scenarios' ||
           routerName === 'Campaign Manager' ||
+          routerName === 'Campaign Report' ||
           routerName === 'DNSs and Domains',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'

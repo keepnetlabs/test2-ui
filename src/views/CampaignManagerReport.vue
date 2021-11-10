@@ -1,5 +1,8 @@
 <template>
-  <div id="campaign-manager-report" class="campaign-manager-report integrations">
+  <div
+    id="campaign-manager-report"
+    class="campaign-manager-report integrations campaign-manager-report"
+  >
     <v-layout id="ts-layout" wrap style="min-height: 80vh;">
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6">
@@ -26,6 +29,8 @@ import CampaignManagerReportSummary from '@/components/CampaignManagerReport/Sum
 import CampaignManagerReportOpened from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpened'
 import CampaignManagerReportClicked from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClicked'
 import CampaignManagerReportSubmittedData from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedData'
+import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponse'
+import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
 export default {
   name: 'CampaignManagerReport',
   data() {
@@ -59,12 +64,14 @@ export default {
         {
           name: labels.NoResponse,
           id: 'campaign-manager-report-no-response-content',
-          label: labels.NoResponse
+          label: labels.NoResponse,
+          component: CampaignManagerReportNoResponse
         },
         {
           name: labels.SendingReport,
           id: 'campaign-manager-report-sending-response-content',
-          label: labels.SendingReport
+          label: labels.SendingReport,
+          component: CampaignManagerReportSendingReport
         }
       ]
     }
@@ -72,4 +79,10 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+.campaign-manager-report {
+  .k-table__wrapper {
+    padding-bottom: 6px;
+  }
+}
+</style>

@@ -5,6 +5,7 @@
       :subtitle="labels.ResetPassword"
     />
     <CampaignManagerReportSendingReportTable
+      class="mt-6"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
