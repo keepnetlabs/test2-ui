@@ -8,15 +8,14 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'CampaignManagerReportSummarySettings',
   components: { CampaignManagerSummaryCard },
+  props: {
+    items: {
+      type: Object
+    }
+  },
   data() {
     return {
-      labels,
-      items: {
-        Languages: 'Turkish,English,German,French',
-        'Excluded from reports': 'Yes',
-        Duration: '3 Days',
-        SMTP: 'default_smtp_name'
-      }
+      labels
     }
   }
 }

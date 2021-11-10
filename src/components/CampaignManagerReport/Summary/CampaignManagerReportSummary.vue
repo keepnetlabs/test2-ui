@@ -4,7 +4,7 @@
     <CampaignManagerReportSummaryCards />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
-      <CampaignManagerReportSummarySettings />
+      <CampaignManagerReportSummarySettings :items="getSettingsItems" />
     </div>
     <CampaignManagerReportSummaryTargetGroups :items="targetGroups" />
     <div class="campaign-manager-report-summary__general-info mt-4">
@@ -55,12 +55,27 @@ export default {
   computed: {
     getCampaignSummaryItems() {
       const { campaignInfo = {} } = this.campaignSummary
-      const { startDate, endDate, totalTargetUserCount, emailNotDeliveredUserCount } = campaignInfo
+      const {
+        startDate,
+        endDate,
+        totalTargetUserCount = 0,
+        emailDeliveredUserCount = 0
+      } = campaignInfo
       return {
         'Start Date': startDate,
         'End Date': endDate,
         'Total Target Users': totalTargetUserCount,
-        'Not Delivered': emailNotDeliveredUserCount || 0
+        'Not Delivered': totalTargetUserCount - emailDeliveredUserCount
+      }
+    },
+    getSettingsItems() {
+      const { settings = {} } = this.campaignSummary
+      const { duration, excludeFromReports, languages, smtpName = 0 } = settings
+      return {
+        Languages: languages || 'English',
+        Duration: `${duration} Day(s)`,
+        'Excluded from reports': excludeFromReports ? 'Yes' : 'No',
+        SMTP: smtpName
       }
     }
   },
