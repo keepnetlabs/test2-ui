@@ -4,10 +4,11 @@
       :title="labels.UserWhoSubmitted"
       :subtitle="phishingScenarioName"
     />
-    <CampaignManagerReportSubmittedtemDetailDialog
+    <CampaignManagerReportSubmittedItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
       :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportSubmittedTable
       class="mt-6"
@@ -22,11 +23,11 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
-import CampaignManagerReportSubmittedtemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
+import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
 export default {
   name: 'CampaignManagerReportSubmittedData',
   components: {
-    CampaignManagerReportSubmittedtemDetailDialog,
+    CampaignManagerReportSubmittedItemDetailDialog,
     CampaignManagerReportSubmittedTable,
     CampaignManagerReportHeader
   },

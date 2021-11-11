@@ -98,6 +98,7 @@ export default {
     callForFormDetails() {
       getCampaignManagerJobFormDetails().then((response) => {
         this.formDetails = response.data.data
+        console.log('this.formDetails ', this.formDetails)
       })
     }
   }
