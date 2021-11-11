@@ -2,8 +2,8 @@ const mergedTextsPhishingUrl = [
   {
     tagName: 'a',
     type: 'link',
-    content: `{PHISHING_URL}`,
-    attributes: { href: '{PHISHING_URL}', isUrl: true }
+    content: `{PHISHINGURL}`,
+    attributes: { href: '{PHISHINGURL}', isUrl: true }
   }
 ]
 export default mergedTextsPhishingUrl
