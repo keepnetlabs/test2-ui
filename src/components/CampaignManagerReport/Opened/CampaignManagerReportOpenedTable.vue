@@ -45,12 +45,17 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-import { searchCampaignJobUserEmailOpened } from '@/api/phishingsimulator'
-import { getDefaultFilter } from '@/utils/functions'
+import {
+  exportCampaignJobUserEmailOpened,
+  searchCampaignJobUserEmailOpened
+} from '@/api/phishingsimulator'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -62,8 +67,7 @@ export default {
         id: 'campaign-manager-opened-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultFilter(),
-      isLoading: false,
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       tableData: [],
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
@@ -110,9 +114,20 @@ export default {
   },
   methods: {
     callForData() {
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id).then((response) => {
-        debugger
-      })
+      this.setLoading(true)
+      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
@@ -222,7 +237,28 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {},
+    exportCampaignManagerReportOpenedTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Opened.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleOnResend(row) {
       this.$emit('on-resend', row)
     },

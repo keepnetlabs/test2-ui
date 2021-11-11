@@ -3,7 +3,7 @@ import labels from '@/model/constants/labels'
 
 export const COLUMNS = {
   FIRST_NAME: {
-    property: PROPERTY_STORE.NAME,
+    property: PROPERTY_STORE.FIRSTNAME,
     align: 'left',
     label: labels.FirstName,
     fixed: 'left',
@@ -74,7 +74,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   SCENARIO: {
-    property: PROPERTY_STORE.SCENARIO,
+    property: 'phishingScenarioName',
     align: 'left',
     label: labels.Scenario,
     fixed: 'left',
@@ -86,7 +86,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   LAST_OPENED: {
-    property: PROPERTY_STORE.LASTOPENED,
+    property: 'lastOpenedTime',
     align: 'left',
     editable: false,
     label: labels.LastOpened,
@@ -97,13 +97,13 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   TIMES_OPENED: {
-    property: PROPERTY_STORE.TIMESOPENED,
+    property: 'openedCount',
     align: 'left',
     editable: false,
     label: labels.TimesOpened,
     sortable: true,
     show: true,
-    type: 'numeric',
+    type: 'text',
     width: 160,
     filterableType: 'numeric'
   },

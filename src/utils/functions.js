@@ -1039,18 +1039,31 @@ export function deepCopyArray(data) {
 
 export function getDefaultFilter() {
   return deepCopyArray({
-    Condition: 'AND',
-    FilterGroups: [
-      {
-        Condition: 'AND',
-        FilterItems: [],
-        FilterGroups: []
-      },
-      {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-    ]
+    filter: {
+      Condition: 'AND',
+      FilterGroups: [
+        {
+          Condition: 'AND',
+          FilterItems: [],
+          FilterGroups: []
+        },
+        {
+          Condition: 'OR',
+          FilterItems: [],
+          FilterGroups: []
+        }
+      ]
+    }
+  })
+}
+
+export function getDefaultAxiosPayload(props) {
+  return deepCopyArray({
+    pageNumber: 1,
+    pageSize: 10,
+    orderBy: 'CreateTime',
+    ascending: false,
+    filter: getDefaultFilter().filter,
+    ...props
   })
 }

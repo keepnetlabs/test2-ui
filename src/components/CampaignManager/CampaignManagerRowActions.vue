@@ -110,6 +110,7 @@ export default {
   },
   methods: {
     handleItemClick(act = {}) {
+      debugger
       this.$emit(act.action, this.scope.row)
     }
   }
