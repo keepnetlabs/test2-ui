@@ -180,7 +180,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   LAST_CLICKED: {
-    property: PROPERTY_STORE.LASTCLICKED,
+    property: 'lastClickedTime',
     align: 'left',
     label: labels.LastClicked,
     fixed: 'left',
@@ -192,13 +192,13 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   TIMES_CLICKED: {
-    property: PROPERTY_STORE.TIMESCLICKED,
+    property: 'clickedCount',
     align: 'left',
     editable: false,
     label: labels.TimesClicked,
     sortable: true,
     show: true,
-    type: 'numeric',
+    type: 'text',
     width: 160,
     filterableType: 'numeric'
   },

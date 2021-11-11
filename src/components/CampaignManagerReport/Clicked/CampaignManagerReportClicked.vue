@@ -4,6 +4,7 @@
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
+      @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportClickedTable
       class="mt-6"

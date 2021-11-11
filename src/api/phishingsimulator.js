@@ -173,6 +173,13 @@ export function searchCampaignJobUsers(payload = {}, id) {
 
 export function searchCampaignJobUserEmailClicked(payload, id) {
   return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/clicked/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailClickedDetails(payload, id) {
+  return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-clicked/${id}`,
     payload
   )

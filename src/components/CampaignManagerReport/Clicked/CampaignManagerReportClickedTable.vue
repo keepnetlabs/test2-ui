@@ -45,11 +45,13 @@ import {
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-import { getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import { searchCampaignJobUserEmailClicked } from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportClickedTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -62,7 +64,7 @@ export default {
         ascending: 'ascending'
       },
       isLoading: false,
-      axiosPayload: getDefaultFilter(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
@@ -109,9 +111,20 @@ export default {
   },
   methods: {
     callForData() {
-      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id).then((response) => {
-        debugger
-      })
+      this.setLoading(true)
+      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
