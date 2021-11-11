@@ -1672,13 +1672,8 @@ export default {
       return this.isDisconnected
     },
     onNavigationClick() {
-      if (window.outerWidth > 767) {
-        this.getDrawer = true
-        this.getMini = !this.getMini
-      } else {
-        this.getMini = false
-        this.getDrawer = !this.getDrawer
-      }
+      this.getDrawer = true
+      this.getMini = !this.getMini
     },
     isMobile() {
       if (
