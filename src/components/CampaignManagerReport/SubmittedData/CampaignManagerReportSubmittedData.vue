@@ -43,7 +43,7 @@ export default {
     return {
       labels,
       isShowDetailDialog: false,
-      selectedRow: null
+      selectedRow: {}
     }
   },
   methods: {

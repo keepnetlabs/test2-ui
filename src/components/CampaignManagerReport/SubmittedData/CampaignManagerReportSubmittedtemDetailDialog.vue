@@ -2,6 +2,8 @@
   <AppDialog
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
+    maxHeightSize="665"
+    :custom-size="'1000'"
     :icon="CONSTANTS.icon"
     :title="getTitle"
     :subtitle="getSubtitle"
@@ -16,6 +18,9 @@
         filterable
         options
         is-server-side
+        no-padding-bottom
+        :show-filter-options="false"
+        :is-settings-popup="false"
         :refName="'campaignManagerOpenedTable'"
         :loading="isLoading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -53,9 +58,13 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { searchCampaignJobUserEmailSubmittedDetails } from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportSubmittedtemDetailDialog',
   components: { DataTable, AppDialog },
+  mixins: [useLoading],
   props: {
     status: {
       type: Boolean
@@ -73,30 +82,16 @@ export default {
       },
       isLoading: false,
       serverSideProps: new ServerSideProps(),
-      axiosPayload: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      },
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'SubmittedTime' }),
       tableOptions: {
         isColumnFilterActive: false,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
-          COLUMNS.DATE_CLICKED,
+          COLUMNS.SUBMITTED_TIME,
           COLUMNS.USER_AGENT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
-          COLUMNS.IP,
+          COLUMNS.SUBMITTED_DATA_IP,
           COLUMNS.DATA
         ],
         addButton: {
@@ -115,17 +110,32 @@ export default {
   },
   computed: {
     getTitle() {
-      return ''
+      return `Submitted Data ${this.item?.['submittedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return ''
+      return `${this.item?.firstName} ${this.item?.lastName}`
     }
   },
   created() {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      searchCampaignJobUserEmailSubmittedDetails(this.axiosPayload, this.item?.resourceId)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(

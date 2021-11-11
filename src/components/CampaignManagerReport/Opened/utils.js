@@ -50,10 +50,10 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   DATA: {
-    property: PROPERTY_STORE.DATA,
+    property: 'submittedData',
     align: 'left',
     label: labels.Data,
-    fixed: 'left',
+    fixed: 'right',
     sortable: true,
     show: true,
     type: 'text',
@@ -120,6 +120,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  SUBMITTED_TIME: {
+    property: 'submittedTime',
+    align: 'left',
+    label: labels.DateClicked,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   DATE_OPENED: {
     property: 'openedTime',
     align: 'left',
@@ -173,6 +185,18 @@ export const COLUMNS = {
     align: 'left',
     label: labels.Ip,
     fixed: 'right',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  SUBMITTED_DATA_IP: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: 'false',
     sortable: true,
     show: true,
     type: 'text',
