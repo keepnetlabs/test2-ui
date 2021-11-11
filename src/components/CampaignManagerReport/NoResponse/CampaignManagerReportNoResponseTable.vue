@@ -44,31 +44,24 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-const defaultFilter = {
-  Condition: 'AND',
-  FilterGroups: [
-    {
-      Condition: 'AND',
-      FilterItems: [],
-      FilterGroups: []
-    },
-    {
-      Condition: 'OR',
-      FilterItems: [],
-      FilterGroups: []
-    }
-  ]
-}
+import { searchCampaignJobUserNoResponse } from '@/api/phishingsimulator'
+import { getDefaultFilter } from '@/utils/functions'
+
 export default {
   name: 'CampaignManagerReportNoResponseTable',
   components: { DataTable },
+  props: {
+    id: {
+      type: String
+    }
+  },
   data() {
     return {
       CONSTANTS: {
         id: 'campaign-manager-no-response-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
+      axiosPayload: JSON.parse(JSON.stringify(getDefaultFilter())),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -107,7 +100,11 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      searchCampaignJobUserNoResponse(this.axiosPayload, this.id).then((response) => {
+        debugger
+      })
+    },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.setDefaultValues()

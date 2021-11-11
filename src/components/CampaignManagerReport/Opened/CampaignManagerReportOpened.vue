@@ -1,6 +1,6 @@
 <template>
   <div id="campaign-manager-report-opened" class="campaign-manager-report-opened">
-    <CampaignManagerReportHeader :title="labels.UserWhoOpened" :subtitle="labels.ResetPassword" />
+    <CampaignManagerReportHeader :title="labels.UserWhoOpened" :subtitle="phishingScenarioName" />
     <CampaignManagerReportOpenedItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
@@ -8,6 +8,7 @@
     />
     <CampaignManagerReportOpenedTable
       class="mt-6"
+      :id="id"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -25,6 +26,14 @@ export default {
     CampaignManagerReportOpenedItemDetailDialog,
     CampaignManagerReportOpenedTable,
     CampaignManagerReportHeader
+  },
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    }
   },
   data() {
     return {

@@ -2,9 +2,9 @@
   <div id="campaign-manager-report-no-response" class="campaign-manager-report-no-response">
     <CampaignManagerReportHeader
       :title="labels.UserWhoHaventOpened"
-      :subtitle="labels.ResetPassword"
+      :subtitle="phishingScenarioName"
     />
-    <CampaignManagerReportNoResponseTable class="mt-6" @on-resend="handleOnResend" />
+    <CampaignManagerReportNoResponseTable class="mt-6" :id="id" @on-resend="handleOnResend" />
   </div>
 </template>
 
@@ -15,6 +15,14 @@ import CampaignManagerReportNoResponseTable from '@/components/CampaignManagerRe
 export default {
   name: 'CampaignManagerReportNoResponse',
   components: { CampaignManagerReportNoResponseTable, CampaignManagerReportHeader },
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    }
+  },
   data() {
     return {
       labels

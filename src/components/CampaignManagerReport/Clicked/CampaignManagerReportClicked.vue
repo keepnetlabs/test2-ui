@@ -1,12 +1,13 @@
 <template>
   <div id="campaign-manager-report-clicked" class="clicked">
-    <CampaignManagerReportHeader :title="labels.UserWhoClicked" :subtitle="labels.ResetPassword" />
+    <CampaignManagerReportHeader :title="labels.UserWhoClicked" :subtitle="phishingScenarioName" />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
     />
     <CampaignManagerReportClickedTable
       class="mt-6"
+      :id="id"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -24,6 +25,14 @@ export default {
     CampaignManagerReportClickedItemDetailDialog,
     CampaignManagerReportClickedTable,
     CampaignManagerReportHeader
+  },
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    }
   },
   data() {
     return {

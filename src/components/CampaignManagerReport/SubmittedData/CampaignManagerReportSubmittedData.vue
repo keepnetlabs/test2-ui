@@ -2,7 +2,7 @@
   <div id="campaign-manager-report-submitted-data" class="campaign-manager-report-submitted-data">
     <CampaignManagerReportHeader
       :title="labels.UserWhoSubmitted"
-      :subtitle="labels.ResetPassword"
+      :subtitle="phishingScenarioName"
     />
     <CampaignManagerReportSubmittedtemDetailDialog
       v-if="isShowDetailDialog"
@@ -11,6 +11,7 @@
     />
     <CampaignManagerReportSubmittedTable
       class="mt-6"
+      :id="id"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -28,6 +29,14 @@ export default {
     CampaignManagerReportSubmittedtemDetailDialog,
     CampaignManagerReportSubmittedTable,
     CampaignManagerReportHeader
+  },
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    }
   },
   data() {
     return {

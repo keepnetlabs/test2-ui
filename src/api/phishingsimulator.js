@@ -185,9 +185,23 @@ export function searchCampaignJobUserEmailOpened(payload, id) {
   )
 }
 
-export function searchCampaignJobUserEmailSubmitted(payload, id) {
+export function getSubmittedSearchEmail(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-submitted/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserNoResponse(payload, id) {
+  return testRequest.post(
+    `  /phishing-simulator/phishing-campaign-job-report/noresponse/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailSubmitted(payload, id) {
+  return testRequest.post(
+    `  /phishing-simulator/phishing-campaign-job-report/submitteddata/search/${id}`,
     payload
   )
 }
