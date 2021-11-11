@@ -2,6 +2,8 @@
   <AppDialog
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
+    :custom-size="'995'"
+    maxHeightSize="665"
     :icon="CONSTANTS.icon"
     :title="getTitle"
     :subtitle="getSubtitle"
@@ -16,6 +18,9 @@
         filterable
         options
         is-server-side
+        no-padding-bottom
+        :show-filter-options="false"
+        :is-settings-popup="false"
         :refName="'campaignManagerOpenedTable'"
         :loading="isLoading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -52,11 +57,14 @@ import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
-import { DEFAULT_SEARCH_CONTAINER_KEYS } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { searchCampaignJobUserEmailOpenedDetails } from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportOpenedItemDetailDialog',
   components: { DataTable, AppDialog },
+  mixins: [useLoading],
   props: {
     status: {
       type: Boolean
@@ -72,28 +80,13 @@ export default {
         id: 'campaign-manager-opened-detail-item-data-table',
         ascending: 'ascending'
       },
-      isLoading: false,
       serverSideProps: new ServerSideProps(),
-      axiosPayload: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      },
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'OpenedTime' }),
       tableOptions: {
         isColumnFilterActive: false,
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
-          COLUMNS.DATE_CLICKED,
+          COLUMNS.DATE_OPENED,
           COLUMNS.USER_AGENT,
           COLUMNS.BROWSER,
           COLUMNS.GEOLOCATION,
@@ -115,17 +108,32 @@ export default {
   },
   computed: {
     getTitle() {
-      return ''
+      return `Opened Email ${this.item?.['openedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return ''
+      return `${this.item?.firstName} ${this.item?.lastName}`
     }
   },
   created() {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      searchCampaignJobUserEmailOpenedDetails(this.axiosPayload, this.item?.resourceId)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
@@ -177,7 +185,6 @@ export default {
       this.tableOptions.isColumnFilterActive = columnFilterActive
       this.callForData()
     },
-
     handleClose() {
       this.$emit('on-close')
     }

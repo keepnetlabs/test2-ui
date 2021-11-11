@@ -20,6 +20,7 @@ export const labels = {
   LastSendingDate: 'Last Sending Date',
   LAST_SENDING_STATUS: 'Last Sending Status',
   EmailSendDate: 'Email Send Date',
+  DateOpened: 'Date Opened',
   CampaignSettingsSub:
     'Enter campaign information, select target groups and select training. To create a campaign with advanced settings, go to create a campaign. Please make sure everything is completed in the checklist.',
   Summary: 'Summary',

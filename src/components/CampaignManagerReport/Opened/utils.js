@@ -114,10 +114,22 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'date',
+    type: 'text',
     width: 180,
     isEditable: false,
     filterableType: 'text'
+  },
+  DATE_OPENED: {
+    property: 'openedTime',
+    align: 'left',
+    label: labels.DateOpened,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
   },
   USER_AGENT: {
     property: PROPERTY_STORE.USERAGENT,
@@ -132,7 +144,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   BROWSER: {
-    property: PROPERTY_STORE.BROWSER,
+    property: 'browserName',
     align: 'left',
     label: labels.Browser,
     fixed: 'left',
@@ -144,7 +156,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   GEOLOCATION: {
-    property: PROPERTY_STORE.GEOLOCATION,
+    property: 'userGeolocation',
     align: 'left',
     label: labels.Geolocation,
     fixed: 'left',
@@ -156,7 +168,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   IP: {
-    property: PROPERTY_STORE.IP,
+    property: 'userIpAddressList',
     align: 'left',
     label: labels.Ip,
     fixed: 'left',

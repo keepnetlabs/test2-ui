@@ -5,6 +5,7 @@
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
       :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportOpenedTable
       class="mt-6"

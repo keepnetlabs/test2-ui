@@ -228,9 +228,11 @@ export function getCampaignManagerJobFormDetails() {
 }
 
 export function getCampaignJobSummary(id) {
-  return testRequest.get(`/phishing-simulator/phishing-campaign-job/summary/${id}`)
+  return testRequest.get(`/phishing-simulator/phishing-campaign-job-report/summary/${id}`)
 }
 
 export function getCampaignJobSummaryTargetGroups(id) {
-  return testRequest.get(`/phishing-simulator/phishing-campaign-job/summary/target-groups/${id}`)
+  return testRequest.get(
+    `/phishing-simulator/phishing-campaign-job-report/summary/target-groups/${id}`
+  )
 }
