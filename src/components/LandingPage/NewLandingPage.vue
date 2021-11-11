@@ -50,11 +50,7 @@
                     :disabled="editItemsDisabled"
                   />
                 </form-group>
-                <form-group
-                  title="Description"
-                  sub-title="Describe the template briefly"
-                  class-name="mt-4"
-                >
+                <form-group title="Description" sub-title="Describe the template briefly">
                   <v-textarea
                     id="input--new-email-templates-description"
                     outlined
@@ -68,9 +64,9 @@
                   ></v-textarea>
                 </form-group>
                 <form-group
+                  has-hint
                   title="Method"
                   sub-title="Select the phishing technique for this template"
-                  class-name="mt-4"
                 >
                   <v-select
                     :items="landingPageData.methodTypes"
@@ -104,7 +100,7 @@
                     </template>
                   </v-select>
                 </form-group>
-                <form-group title="Tags" sub-title="Define tags for the template" class-name="mt-6">
+                <form-group title="Tags" sub-title="Define tags for the template">
                   <k-select
                     type="combobox"
                     :id="`input--action-tags`"
@@ -126,7 +122,7 @@
                 <form-group
                   title="Difficulty"
                   sub-title="Select a difficulty level for this scenario "
-                  class-name="mt-4 mb-10"
+                  class-name="mb-6"
                 >
                   <v-radio-group
                     v-model="formValues.difficultyTypeId"

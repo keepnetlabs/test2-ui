@@ -63,6 +63,7 @@
       @handle-selection-change="handleTableSelectionChange"
     />
     <FormGroup
+      v-if="showPhishingScenarios"
       has-hint
       class-name="campaign-manager__target-groups"
       :title="labels.PhishingScenarios"
@@ -97,6 +98,7 @@
       </v-btn>
     </FormGroup>
     <CampaignManagerPhishingScenarios
+      v-if="showPhishingScenarios"
       v-show="isShowAdvancedSearchPhishing"
       ref="refCampaignManagerPhishingScenarios"
       class="mb-1"
@@ -105,7 +107,7 @@
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
     />
-    <FormGroup :title="labels.Schedule" :sub-title="labels.ScheduleSub">
+    <FormGroup v-if="showSchedule" :title="labels.Schedule" :sub-title="labels.ScheduleSub">
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
@@ -121,7 +123,13 @@
         ></v-radio>
       </v-radio-group>
     </FormGroup>
-    <FormGroup class="mt-6" :title="labels.Duration" :sub-title="labels.DurationSub" has-hint>
+    <FormGroup
+      v-if="showDuration"
+      class="mt-6"
+      :title="labels.Duration"
+      :sub-title="labels.DurationSub"
+      has-hint
+    >
       <v-text-field
         v-model="formData.duration"
         v-mask="'###'"
@@ -188,6 +196,18 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    showPhishingScenarios: {
+      type: Boolean,
+      default: true
+    },
+    showSchedule: {
+      type: Boolean,
+      default: true
+    },
+    showDuration: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -275,7 +295,9 @@ export default {
   },
   created() {
     this.callForTargetGroups()
-    this.callForPhishingScenarios()
+    if (this.showPhishingScenarios) {
+      this.callForPhishingScenarios()
+    }
   },
   methods: {
     addDefaultTargetGroupItems(targetGroups = []) {

@@ -308,7 +308,7 @@ export default {
         )
         searchTargetGroups({
           pageNumber: 1,
-          pageSize: 10,
+          pageSize: 2000000,
           orderBy: 'CreateTime',
           ascending: false,
           filter: {
