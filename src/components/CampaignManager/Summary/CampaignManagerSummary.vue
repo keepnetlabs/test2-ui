@@ -81,7 +81,11 @@
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
-              <div v-html="formData.emailTemplate"></div>
+              <div
+                v-html="formData.emailTemplate"
+                class="grapesjs-reset-css"
+                style="pointer-events: none;"
+              ></div>
             </div>
           </div>
         </template>
@@ -126,7 +130,11 @@
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
-              <div v-html="formData.landingPageTemplate"></div>
+              <div
+                v-html="formData.landingPageTemplate"
+                class="grapesjs-reset-css"
+                style="pointer-events: none;"
+              ></div>
             </div>
           </div>
         </template>

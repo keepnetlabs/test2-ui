@@ -2059,7 +2059,7 @@ export default {
       if (val == null) val = 0
       this.iconType()
       //this.statsAndMenuData.estimatedTime = 'asd'
-
+      debugger
       switch (section) {
         case 'statusTime':
           switch (this.statsAndMenuData.status) {
@@ -2072,7 +2072,7 @@ export default {
             case 'Expired':
               return this.investigationDetailsData.expireDate
             case 'Finished':
-              return this.investigationDetailsData.endDate
+              return this.investigationDetailsData.finishedTime
             default:
               break
           }

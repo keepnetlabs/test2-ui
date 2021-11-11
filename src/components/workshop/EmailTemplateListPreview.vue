@@ -212,7 +212,12 @@
                   </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
-                <k-shadow-frame :content="templateHTML" :key="templateHTML + 'vue'" />
+                <k-shadow-frame
+                  class="grapesjs-reset-css"
+                  style="pointer-events: none;"
+                  :content="templateHTML"
+                  :key="templateHTML + 'vue'"
+                />
               </div>
             </div>
           </multipane>

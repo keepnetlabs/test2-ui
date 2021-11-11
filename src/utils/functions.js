@@ -1036,3 +1036,21 @@ export function getTimeZoneForMoment() {
 export function deepCopyArray(data) {
   return JSON.parse(JSON.stringify(data))
 }
+
+export function getDefaultFilter() {
+  return deepCopyArray({
+    Condition: 'AND',
+    FilterGroups: [
+      {
+        Condition: 'AND',
+        FilterItems: [],
+        FilterGroups: []
+      },
+      {
+        Condition: 'OR',
+        FilterItems: [],
+        FilterGroups: []
+      }
+    ]
+  })
+}

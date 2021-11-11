@@ -32,10 +32,12 @@
             :key="key"
             class="campaign-manager-summary-card__body-item"
           >
-            <div v-if="!hideLabel" class="campaign-manager-summary-card__body-item-key">
-              {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
-            </div>
-            <div class="campaign-manager-summary-card__body-item-value">{{ val }}</div>
+            <slot :name="key.replace(' ', '')" :props="{ val, key }">
+              <div v-if="!hideLabel" class="campaign-manager-summary-card__body-item-key">
+                {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
+              </div>
+              <div class="campaign-manager-summary-card__body-item-value">{{ val }}</div>
+            </slot>
           </div>
         </div>
       </div>
