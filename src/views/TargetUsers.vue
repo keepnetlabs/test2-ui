@@ -21,7 +21,7 @@
               @call-for-company-licenses="callForLicenseCheck"
           /></el-tab-pane>
           <el-tab-pane
-            label="Group"
+            label="Groups"
             name="target-users--group"
             id="target-users--group-content"
             v-if="checkPermissions('target-groups/search', 'POST')"
