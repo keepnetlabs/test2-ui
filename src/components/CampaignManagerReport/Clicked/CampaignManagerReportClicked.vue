@@ -3,6 +3,7 @@
     <CampaignManagerReportHeader :title="labels.UserWhoClicked" :subtitle="phishingScenarioName" />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
+      :item="selectedRow"
       :status="isShowDetailDialog"
       @on-close="toggleShowDetailDialog"
     />
@@ -38,6 +39,7 @@ export default {
   data() {
     return {
       labels,
+      selectedRow: {},
       isShowDetailDialog: false
     }
   },

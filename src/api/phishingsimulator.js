@@ -209,6 +209,16 @@ export function exportCampaignJobUserEmailOpened(payload, id) {
   )
 }
 
+export function exportCampaignJobUserEmailClicked(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/clicked/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export function getSubmittedSearchEmail(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-submitted/${id}`,

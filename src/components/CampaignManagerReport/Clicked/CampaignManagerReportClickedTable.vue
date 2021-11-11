@@ -27,7 +27,7 @@
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
     @on-table-settings-change="handleSetRenderedColumns"
-    @downloadEvent="exportCampaignManagerReportOpenedTable"
+    @downloadEvent="exportCampaignManagerReportClickedTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
@@ -46,7 +46,10 @@ import {
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { searchCampaignJobUserEmailClicked } from '@/api/phishingsimulator'
+import {
+  exportCampaignJobUserEmailClicked,
+  searchCampaignJobUserEmailClicked
+} from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportClickedTable',
@@ -234,7 +237,28 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {},
+    exportCampaignManagerReportClickedTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserEmailClicked(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Clicked.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleOnResend(row) {
       this.$emit('on-resend', row)
     },

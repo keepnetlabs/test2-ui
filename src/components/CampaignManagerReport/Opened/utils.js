@@ -108,7 +108,7 @@ export const COLUMNS = {
     filterableType: 'numeric'
   },
   DATE_CLICKED: {
-    property: PROPERTY_STORE.DATECLICKED,
+    property: 'clickedTime',
     align: 'left',
     label: labels.DateClicked,
     fixed: 'left',
@@ -117,7 +117,7 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     isEditable: false,
-    filterableType: 'text'
+    filterableType: 'date'
   },
   DATE_OPENED: {
     property: 'openedTime',
