@@ -223,7 +223,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(getDefaultFilter())), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter = filter
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)

@@ -45,11 +45,13 @@ import {
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { searchCampaignJobUserNoResponse } from '@/api/phishingsimulator'
-import { getDefaultFilter } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'CampaignManagerReportNoResponseTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -61,7 +63,7 @@ export default {
         id: 'campaign-manager-no-response-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(getDefaultFilter())),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -101,9 +103,20 @@ export default {
   },
   methods: {
     callForData() {
-      searchCampaignJobUserNoResponse(this.axiosPayload, this.id).then((response) => {
-        debugger
-      })
+      this.setLoading(true)
+      searchCampaignJobUserNoResponse(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
