@@ -2067,11 +2067,11 @@ export default {
                 ? this.statsAndMenuData.estimatedTime
                 : 'Estimated time can not be calculated at the moment'
             case 'Canceled':
-              return this.investigationDetailsData.endDate
+              return this.investigationDetailsData['finishedTime']
             case 'Expired':
               return this.investigationDetailsData.expireDate
             case 'Finished':
-              return this.investigationDetailsData.finishedTime
+              return this.investigationDetailsData['finishedTime']
             default:
               break
           }

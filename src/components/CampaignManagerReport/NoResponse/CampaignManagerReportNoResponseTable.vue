@@ -44,7 +44,10 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import { searchCampaignJobUserNoResponse } from '@/api/phishingsimulator'
+import {
+  exportCampaignJobUserNoResponse,
+  searchCampaignJobUserNoResponse
+} from '@/api/phishingsimulator'
 import { getDefaultAxiosPayload } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 
@@ -111,6 +114,7 @@ export default {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
+          debugger
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -228,7 +232,28 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportNoResponseTable() {},
+    exportCampaignManagerReportNoResponseTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserNoResponse(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-No-Response.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleOnResend(row) {
       this.$emit('on-resend', row)
     }

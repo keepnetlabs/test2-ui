@@ -45,33 +45,23 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-
-const defaultFilter = {
-  Condition: 'AND',
-  FilterGroups: [
-    {
-      Condition: 'AND',
-      FilterItems: [],
-      FilterGroups: []
-    },
-    {
-      Condition: 'OR',
-      FilterItems: [],
-      FilterGroups: []
-    }
-  ]
-}
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 
 export default {
   name: 'CampaignManagerReportSendingReportTable',
   components: { DataTable },
+  props: {
+    id: {
+      type: String
+    }
+  },
   data() {
     return {
       CONSTANTS: {
         id: 'campaign-manager-sending-report-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
+      axiosPayload: JSON.parse(JSON.stringify(getDefaultAxiosPayload())),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -133,7 +123,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {
