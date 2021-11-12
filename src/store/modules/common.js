@@ -13,7 +13,8 @@ const common = {
     downloadModalStatus: false,
     timezones: [],
     sessionCheck: false,
-    isReCaptcha: false
+    isReCaptcha: false,
+    activePageRouterName: ''
   },
   getters: {
     getMenuStatus: (state) => state.menuStatus,
@@ -66,6 +67,9 @@ const common = {
       state.snackbars = state.snackbars.filter((item) => {
         return JSON.stringify(item) !== JSON.stringify(payload)
       })
+    },
+    SET_ACTIVE_PAGE_ROUTE_NAME(state, payload) {
+      state.activePageRouterName = payload
     }
   },
   actions: {
@@ -106,6 +110,9 @@ const common = {
       getTimezones().then((response) => {
         commit('SET_TIMEZONE', response.data.data)
       })
+    },
+    setActivePageRouterName({ commit }, payload) {
+      commit('SET_ACTIVE_PAGE_ROUTE_NAME', payload)
     }
   }
 }

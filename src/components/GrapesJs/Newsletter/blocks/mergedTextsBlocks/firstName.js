@@ -1,7 +1,7 @@
-const firstName = [
+const lastName = [
   {
     tagName: 'span',
-    content: '{FIRSTNAME}'
+    content: '{LASTNAME}'
   }
 ]
-export default firstName
+export default lastName

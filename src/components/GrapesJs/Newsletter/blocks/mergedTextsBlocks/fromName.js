@@ -1,7 +1,7 @@
-const mergedTextsFromName = [
+const mergedTextsFromEmail = [
   {
     tagName: 'span',
-    content: '{FROMNAME}'
+    content: '{FROMEMAIL}'
   }
 ]
-export default mergedTextsFromName
+export default mergedTextsFromEmail

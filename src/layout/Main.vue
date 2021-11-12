@@ -339,7 +339,10 @@
                   to="/campaign-manager"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   class="menu-link-default"
-                  :class="[routerName === 'Campaign Manager' && 'active-link']"
+                  :class="[
+                    (routerName === 'Campaign Manager' || routerName === 'Campaign Report') &&
+                      'active-link'
+                  ]"
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Campaign Manager</span>
@@ -651,6 +654,9 @@
             </h1>
             <h1 v-else-if="routerName === 'Target Group Users'">
               {{ getTargetGroupUsersRouterName }}
+            </h1>
+            <h1 v-else-if="routerName === 'Campaign Report'">
+              {{ getCampaignReportName }}
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
@@ -1148,6 +1154,9 @@ export default {
     getTargetGroupUsersRouterName() {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
     },
+    getCampaignReportName() {
+      return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
+    },
     getRouterKey() {
       const { name } = this.$route
       if (['Community', 'Threat Sharing'].includes(name)) {
@@ -1207,6 +1216,7 @@ export default {
           routerName === 'Email Templates' ||
           routerName === 'Phishing Scenarios' ||
           routerName === 'Campaign Manager' ||
+          routerName === 'Campaign Report' ||
           routerName === 'DNSs and Domains',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
@@ -1662,13 +1672,8 @@ export default {
       return this.isDisconnected
     },
     onNavigationClick() {
-      if (window.outerWidth > 767) {
-        this.getDrawer = true
-        this.getMini = !this.getMini
-      } else {
-        this.getMini = false
-        this.getDrawer = !this.getDrawer
-      }
+      this.getDrawer = true
+      this.getMini = !this.getMini
     },
     isMobile() {
       if (

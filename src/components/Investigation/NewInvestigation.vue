@@ -1145,7 +1145,7 @@ export default {
                 ? `0${newDate.getFullYear()}`
                 : `${newDate.getFullYear()}`
           }
-          debugger
+
           time = time.toString()
           time = `${time.length === 1 ? `0${time}` : time}:${timeArray[1]}`
 

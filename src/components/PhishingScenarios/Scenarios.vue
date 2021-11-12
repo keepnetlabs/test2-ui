@@ -1,5 +1,11 @@
 <template>
   <div id="scenarios">
+    <PhishingScenariosFastLaunch
+      v-if="isShowFastLaunch"
+      :status="isShowFastLaunch"
+      :selected-scenario="selectedRow"
+      @on-close="toggleShowFastLaunch"
+    />
     <v-overlay
       id="add-new-community-overlay"
       :value="modalStatus"
@@ -101,6 +107,7 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
+      @on-fast-launch="handleFastLaunch"
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -117,6 +124,7 @@
               icon
               v-on="on"
               :disabled="tableOptions.rowActions[0].disabled"
+              @click="handleFastLaunch(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
             </v-btn>
@@ -211,9 +219,11 @@ import {
   getScenariosList
 } from '@/api/scenarios'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 export default {
   name: 'EmailTemplates',
   components: {
+    PhishingScenariosFastLaunch,
     DataTable,
     DeleteScenario,
     NewScenario,
@@ -222,6 +232,8 @@ export default {
   data() {
     return {
       scenarioDetailsLookup: null,
+      isShowFastLaunch: false,
+      selectedRow: null,
       methodItems: [],
       difficultyItems: [],
       editableFormValues: {},
@@ -326,7 +338,7 @@ export default {
           {
             name: labels.FastLaunch,
             icon: 'mdi-send',
-            action: 'handleFastLaunch',
+            action: 'on-fast-launch',
             disabled: !this.checkPermissions(
               'phishing-simulator/phishing-scenario/preview/{resourceId}',
               'GET'
@@ -575,7 +587,10 @@ export default {
         this.getDatatableList()
       })
     },
-    handleFastLaunch() {},
+    handleFastLaunch(row = {}) {
+      this.selectedRow = row
+      this.toggleShowFastLaunch()
+    },
     handlePreview(row) {
       const id = row.resourceId
       getScenarioPreviewContent(id)
@@ -588,6 +603,10 @@ export default {
           //window.open(data.landingPageTemplate.urlTemplate, '_blank').focus()
         })
         .catch((error) => {})
+    },
+    toggleShowFastLaunch() {
+      if (this.isShowFastLaunch) this.selectedRow = null
+      this.isShowFastLaunch = !this.isShowFastLaunch
     },
     handleEdit(row, isDuplicate) {
       this.editableFormValues = row
@@ -724,6 +743,14 @@ export default {
   .v-list-item__title {
     display: flex;
     align-items: center;
+  }
+}
+#scenarios {
+  .k-stepper {
+    overflow: visible;
+    &__items {
+      overflow: visible;
+    }
   }
 }
 </style>
