@@ -46,7 +46,7 @@
     </template>
     <template #table-all-records>
       <div class="campaign-manager__table-all-records">
-        {{ labels.InstancesOfCampaign }}: Gürkan
+        {{ labels.InstancesOfCampaign }}: {{ item.name }}
       </div>
     </template>
   </DataTable>
@@ -63,6 +63,8 @@ import {
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
+import { searchCampaignPhishingJob } from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -78,12 +80,12 @@ export default {
     item: {
       type: Object
     },
-    isLoading: {
-      type: Boolean,
-      default: false
+    statusItems: {
+      type: Array
     }
   },
   emits: EMITS,
+  mixins: [useLoading],
   data() {
     return {
       labels,
@@ -96,12 +98,15 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
-        columns: [COLUMNS.SCHEDULE, COLUMNS.TARGET_USERS, COLUMNS.STATUS, COLUMNS.CREATE_TIME],
+        columns: [
+          COLUMNS.SCHEDULE,
+          COLUMNS.TARGET_USERS_ITEM_TABLE,
+          COLUMNS.STATUS,
+          COLUMNS.CREATE_TIME_ITEM_TABLE
+        ],
         iEmpty: {
-          message: labels.EmptyCampaignManager,
-          btn: labels.New,
-          id: 'btn-empty--campaign-manager',
-          icon: 'mdi-plus'
+          message: labels.EmptyCampaignManagerReport,
+          id: 'btn-empty--campaign-manager-report'
         },
         addButton: {
           show: true,
@@ -127,25 +132,50 @@ export default {
       }
     }
   },
+  watch: {
+    statusItems(val) {
+      if (val.length) {
+        const col = this.tableOptions.columns.find(
+          (col) => col.property === COLUMNS.STATUS.property
+        )
+        this.$set(
+          col,
+          'filterableItems',
+          val.map((item) => {
+            return { ...item, value: item.text }
+          })
+        )
+        this.$nextTick(() => {
+          this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    }
+  },
   created() {
     this.getStoredTableSettings()
     this.setDefaultFilter()
-    this.tableData = [
-      {
-        resourceId: 'askjajsajsajs',
-        name: 'Gurkan',
-        total: 5,
-        actionStatus: 'paused'
-      },
-      {
-        resourceId: 'askjzsassaajsajsajs',
-        name: 'Gurkan2',
-        total: 1,
-        actionStatus: 'launch'
-      }
-    ]
+    this.callForData()
   },
   methods: {
+    callForData() {
+      this.setLoading(true)
+      searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
+        .then((response) => {
+          const {
+            data: { data = [] }
+          } = response
+          const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          results[0].status = 'Completed'
+          results[1].status = 'Running'
+          results[2].status = 'Paused'
+          results[3].status = 'Canceled'
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE)
@@ -162,9 +192,6 @@ export default {
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.tableOptions.isColumnFilterActive = true
       this.$refs.refTable.reRenderColumns(filterValues)
-    },
-    callForData() {
-      //TODO Axios call
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true

@@ -257,6 +257,10 @@ export function searchCampaignJobUserSendingReport(payload, id) {
   )
 }
 
+export function searchCampaignPhishingJob(payload, id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/${id}/search`, payload)
+}
+
 export function exportCampaignJobUserSendingReport(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/all/search/export/${id}`,
