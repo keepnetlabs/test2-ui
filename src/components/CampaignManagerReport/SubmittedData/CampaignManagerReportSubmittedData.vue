@@ -13,6 +13,7 @@
     <CampaignManagerReportSubmittedTable
       class="mt-6"
       :id="id"
+      :password-complexities="getPasswordComplexities"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -37,6 +38,9 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
@@ -44,6 +48,11 @@ export default {
       labels,
       isShowDetailDialog: false,
       selectedRow: {}
+    }
+  },
+  computed: {
+    getPasswordComplexities() {
+      return this.formDetails['passwordComplexityTypes']
     }
   },
   methods: {

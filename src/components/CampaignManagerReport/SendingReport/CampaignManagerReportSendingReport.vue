@@ -7,6 +7,7 @@
     <CampaignManagerReportSendingReportTable
       class="mt-6"
       :id="id"
+      :last-sending-status-items="getLastSendingStatusItems"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -26,6 +27,9 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    formDetails: {
+      type: Array
     }
   },
   data() {
@@ -33,6 +37,11 @@ export default {
       labels,
       isShowDetailDialog: false,
       selectedRow: null
+    }
+  },
+  computed: {
+    getLastSendingStatusItems() {
+      return this.formDetails['userStatuses']
     }
   },
   methods: {

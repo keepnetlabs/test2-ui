@@ -39,7 +39,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   EMAIL_SEND_DATE: {
-    property: PROPERTY_STORE.EMAIL_SEND_DATE,
+    property: 'lastSendingTime',
     align: 'left',
     editable: false,
     label: labels.EmailSendDate,
@@ -274,15 +274,32 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  SENDING_REPORT_LAST_SENDING_DATE: {
+    property: 'lastSubmittedTime',
+    align: 'left',
+    label: labels.LastSendingDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   LAST_SENDING_STATUS: {
-    property: PROPERTY_STORE.LAST_SENDING_STATUS,
+    property: 'status',
     align: 'center',
     label: labels.LAST_SENDING_STATUS,
     sortable: true,
     show: true,
-    type: 'slot',
-    width: 160,
-    filterableType: 'select'
+    type: 'badge',
+    width: 200,
+    filterableType: 'select',
+    props: {
+      style: {
+        maxWidth: '120px'
+      }
+    }
   },
   SMTP: {
     property: PROPERTY_STORE.SMTP,

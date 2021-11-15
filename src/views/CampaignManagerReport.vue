@@ -19,6 +19,7 @@
                 :is="item.component"
                 :id="id"
                 :phishing-scenario-name="getPhishingScenarioName"
+                :form-details="formDetails"
               />
             </el-tab-pane>
           </el-tabs>
@@ -98,7 +99,7 @@ export default {
     callForFormDetails() {
       getCampaignManagerJobFormDetails().then((response) => {
         this.formDetails = response.data.data
-        console.log('this.formDetails ', this.formDetails)
+        console.log('this.formDetails', this.formDetails)
       })
     }
   }

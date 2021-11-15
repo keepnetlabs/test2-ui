@@ -41,6 +41,7 @@ export const labels = {
   EmptyCampaignManagerReportClicked: 'You do not have any user who clicked the email',
   EmptyCampaignManagerReportOpenedDetail: 'You do not have any details',
   EmptyCampaignManagerReportSubmittedData: 'You do not have any user who submitted data',
+  EmptyCampaignManagerReportSendingReport: 'You do not have any user who sending report',
   LastOpened: 'Last Opened',
   TimesOpened: 'Times Opened',
   UserAgent: 'User Agent',

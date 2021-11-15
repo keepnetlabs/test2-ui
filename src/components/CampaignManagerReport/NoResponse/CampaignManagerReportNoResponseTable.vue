@@ -114,7 +114,7 @@ export default {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
-          debugger
+
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber

@@ -250,6 +250,30 @@ export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
   )
 }
 
+export function searchCampaignJobUserSendingReport(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserSendingReport(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/all/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+export function searchCampaignJobUserSendingReportDetails(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
+    payload
+  )
+}
+
 export function getCampaignManagerJobFormDetails() {
   return testRequest.get('/phishing-simulator/phishing-campaign-job/form-details')
 }

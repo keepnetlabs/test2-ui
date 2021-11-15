@@ -59,6 +59,9 @@ export default {
   props: {
     id: {
       type: String
+    },
+    passwordComplexities: {
+      type: Array
     }
   },
   data() {
@@ -107,11 +110,17 @@ export default {
       }
     }
   },
+  watch: {
+    passwordComplexities() {
+      this.setPasswordComplexityItems()
+    }
+  },
   created() {
     this.getStoredTableSettings()
     this.setQueryValues()
     this.setDefaultFilter()
     this.callForData()
+    this.setPasswordComplexityItems()
   },
   methods: {
     callForData() {
@@ -123,13 +132,22 @@ export default {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
-
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results
         })
         .finally(this.setLoading)
+    },
+    setPasswordComplexityItems() {
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'minPasswordComplexity'),
+        'filterableItems',
+        this.passwordComplexities.map((item) => ({ ...item, value: item.text }))
+      )
+      this.$nextTick(() => {
+        this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      })
     },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
