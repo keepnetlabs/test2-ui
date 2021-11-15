@@ -261,6 +261,18 @@ export function searchCampaignPhishingJob(payload, id) {
   return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/${id}/search`, payload)
 }
 
+export function stopPhishingCampaignJob(id) {
+  return testRequest.patch(`/phishing-simulator/phishing-campaign-job/stop/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function deletePhishingCampaignJob(id) {
+  return testRequest.delete(`/phishing-simulator/phishing-campaign-job/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
 export function exportCampaignJobUserSendingReport(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/all/search/export/${id}`,

@@ -1,55 +1,70 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    selectable
-    filterable
-    options
-    is-server-side
-    :refName="'campaignManagerItemTable'"
-    :loading="isLoading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :stored-table-settings="storedTableSettings"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    @on-add-button-click="toggleAddCampaignManagerModal"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
-    @refreshAction="callForData"
-  >
-    <template #table-search-left-side>
-      <v-btn
-        id="btn-back--compaign-manager-clustered-table"
-        text
-        color="#2196f3"
-        class="clustered-table-back-btn"
-        @click="handleBackClick"
-      >
-        <v-icon left>mdi-arrow-left</v-icon> {{ labels.Back }}</v-btn
-      >
-    </template>
-    <template #datatable-row-actions="{ scope }">
-      <CampaignManagerItemRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
-    </template>
-    <template #table-all-records>
-      <div class="campaign-manager__table-all-records">
-        {{ labels.InstancesOfCampaign }}: {{ item.name }}
-      </div>
-    </template>
-  </DataTable>
+  <div>
+    <CampaignManagerItemDeleteDialog
+      v-if="isShowDeleteDialog"
+      :status="isShowDeleteDialog"
+      :item="selectedRow"
+      :is-action-button-disabled="isDeleteDialogActionButtonDisabled"
+      @on-close="toggleShowDeleteDialog"
+      @on-delete="handleOnDelete"
+    />
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      selectable
+      filterable
+      options
+      is-server-side
+      :refName="'campaignManagerItemTable'"
+      :loading="isLoading"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :stored-table-settings="storedTableSettings"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      @on-add-button-click="toggleAddCampaignManagerModal"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
+      @refreshAction="callForData"
+    >
+      <template #table-search-left-side>
+        <v-btn
+          id="btn-back--compaign-manager-clustered-table"
+          text
+          color="#2196f3"
+          class="clustered-table-back-btn"
+          @click="handleBackClick"
+        >
+          <v-icon left>mdi-arrow-left</v-icon> {{ labels.Back }}</v-btn
+        >
+      </template>
+      <template #datatable-row-actions="{ scope }">
+        <CampaignManagerItemRowActions
+          :scope="scope"
+          :row-actions="tableOptions.rowActions"
+          @on-delete="handleDelete"
+          @on-stop="handleStop"
+        />
+      </template>
+      <template #table-all-records>
+        <div class="campaign-manager__table-all-records">
+          {{ labels.InstancesOfCampaign }}: {{ item.name }}
+        </div>
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
@@ -63,8 +78,13 @@ import {
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
-import { searchCampaignPhishingJob } from '@/api/phishingsimulator'
+import {
+  deletePhishingCampaignJob,
+  searchCampaignPhishingJob,
+  stopPhishingCampaignJob
+} from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
+import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -72,7 +92,7 @@ const EMITS = {
 }
 export default {
   name: 'CampaignManagerItemTable',
-  components: { CampaignManagerItemRowActions, DataTable },
+  components: { CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
   props: {
     axiosPayload: {
       type: Object
@@ -89,11 +109,14 @@ export default {
   data() {
     return {
       labels,
+      isShowDeleteDialog: false,
+      isDeleteDialogActionButtonDisabled: false,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
         ascending: 'ascending'
       },
       tableData: [],
+      selectedRow: {},
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -292,6 +315,32 @@ export default {
     },
     toggleAddCampaignManagerModal() {
       this.$emit('toggle-add-campaign-manager-modal')
+    },
+    toggleShowDeleteDialog() {
+      if (this.isShowDeleteDialog) {
+        this.selectedRow = {}
+      }
+      this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleDelete(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDeleteDialog()
+    },
+    handleOnDelete(resourceId) {
+      this.isDeleteDialogActionButtonDisabled = true
+      deletePhishingCampaignJob(resourceId)
+        .then(() => {
+          this.callForData()
+        })
+        .finally(() => {
+          this.isDeleteDialogActionButtonDisabled = false
+          this.toggleShowDeleteDialog()
+        })
+    },
+    handleStop(row = {}) {
+      stopPhishingCampaignJob(row.resourceId).then(() => {
+        this.callForData()
+      })
     }
   }
 }

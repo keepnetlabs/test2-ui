@@ -47,6 +47,7 @@
           :id="`btn--delete-row-action-${Math.random().toString().substring(2)}`"
           class="btn-hover"
           icon
+          @click="$emit('on-delete', scope.row)"
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
@@ -77,7 +78,6 @@ export default {
   },
   computed: {
     isMenuRender() {
-      debugger
       return ![
         ACTION_STATUSES.COMPLETE,
         ACTION_STATUSES.IDLE,
@@ -92,7 +92,6 @@ export default {
       return this.scope.row.status
     },
     getIconName() {
-      debugger
       switch (this.actionStatus) {
         case ACTION_STATUSES.COMPLETE:
         case ACTION_STATUSES.IDLE:
@@ -132,6 +131,12 @@ export default {
   },
   methods: {
     handleItemClick(act) {
+      if (!this.isMenuRender) {
+        return this.$router.push({
+          name: 'Campaign Report',
+          params: { id: this.scope.row.resourceId }
+        })
+      }
       this.$emit(act.action, this.scope.row)
     }
   }
