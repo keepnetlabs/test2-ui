@@ -41,7 +41,7 @@
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
-        :axios-payload="axiosPayloadOfItem"
+        :axios-payload.sync="axiosPayloadOfItem"
         :is-loading="isItemTableLoading"
         :item="selectedParentItem"
         :status-items="getStatusItems"

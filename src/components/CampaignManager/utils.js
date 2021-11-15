@@ -69,7 +69,7 @@ export const COLUMNS = {
   },
   TARGET_USERS: {
     property: PROPERTY_STORE.TARGET_USERS,
-    align: 'center',
+    align: 'right',
     editable: false,
     label: labels.TargetUsers,
     fixed: false,

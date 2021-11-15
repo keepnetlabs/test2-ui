@@ -181,23 +181,26 @@ export default {
   },
   methods: {
     callForData() {
+      console.log('this.axiosPayload', this.axiosPayload)
       this.setLoading(true)
-      searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
-        .then((response) => {
-          const {
-            data: { data = [] }
-          } = response
-          const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          results[0].status = 'Completed'
-          results[1].status = 'Running'
-          results[2].status = 'Paused'
-          results[3].status = 'Canceled'
-          this.tableData = results
-        })
-        .finally(this.setLoading)
+      this.$nextTick(() => {
+        searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
+          .then((response) => {
+            const {
+              data: { data = [] }
+            } = response
+            const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            results[0].status = 'Completed'
+            results[1].status = 'Running'
+            results[2].status = 'Paused'
+            results[3].status = 'Canceled'
+            this.tableData = results
+          })
+          .finally(this.setLoading)
+      })
     },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
@@ -223,7 +226,7 @@ export default {
         filter,
         copyOfAxiosPayload
       )
-      this.$emit('update:axiosPayload', copyOfAxiosPayload)
+      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.callForData()
     },
     columnFilterCleared(fieldName) {
@@ -257,9 +260,7 @@ export default {
       this.callForData()
     },
     resetPageNumber() {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageNumber = 1
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     emitCopyOfAxiosPayload(payload) {
@@ -275,9 +276,11 @@ export default {
         )
         return column.filterableType
       })
+
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      console.log('copyOfAxiosPayload', copyOfAxiosPayload)
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
       this.callForData()
