@@ -38,6 +38,7 @@
       @clear-filters="handleClearFilters"
       @on-table-settings-change="handleSetRenderedColumns"
       @refreshAction="callForData"
+      @downloadEvent="exportCampaignManagerItemList"
     >
       <template #table-search-left-side>
         <v-btn
@@ -80,6 +81,8 @@ import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
 import {
   deletePhishingCampaignJob,
+  exportCampaignManager,
+  exportCampaignManagerItem,
   searchCampaignPhishingJob,
   stopPhishingCampaignJob
 } from '@/api/phishingsimulator'
@@ -200,6 +203,29 @@ export default {
             this.tableData = results
           })
           .finally(this.setLoading)
+      })
+    },
+    exportCampaignManagerItemList(downloadTypes = []) {
+      debugger
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignManagerItem(payload, this.item.resourceId).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Manager-Instance.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     getStoredTableSettings() {

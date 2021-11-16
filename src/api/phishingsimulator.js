@@ -119,6 +119,17 @@ export function exportCampaignManager(payload = {}) {
     responseType: 'blob'
   })
 }
+
+export function exportCampaignManagerItem(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/${id}/search/export`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export function deleteCampaignManager(resourceId = '') {
   return testRequest.delete(`phishing-simulator/phishing-campaign/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
@@ -263,6 +274,28 @@ export function searchCampaignPhishingJob(payload, id) {
 
 export function stopPhishingCampaignJob(id) {
   return testRequest.patch(`/phishing-simulator/phishing-campaign-job/stop/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function resendOpenedPhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/opened/${id}`)
+}
+
+export function resendClickedPhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/clicked/${id}`)
+}
+
+export function resendSubmittedDataPhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/submitted/${id}`)
+}
+
+export function resendNoResponsePhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/notresponded/${id}`)
+}
+
+export function resendPhishingCampaignToUsers(payload, id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/${id}`, payload, {
     snackbar: COMMON_SNACKBAR
   })
 }

@@ -3,6 +3,7 @@
     <CampaignManagerReportSummaryHeader
       :phishing-scenario-name="phishingScenarioName"
       :resend-dialog-items="getResendDialogItems"
+      :id="id"
     />
     <CampaignManagerReportSummaryCards :items="getCardsData" />
     <div class="campaign-manager-report-summary__general-info mt-6">

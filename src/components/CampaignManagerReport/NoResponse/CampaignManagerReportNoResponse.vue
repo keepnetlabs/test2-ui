@@ -4,7 +4,12 @@
       :title="labels.UserWhoHaventOpened"
       :subtitle="phishingScenarioName"
     />
-    <CampaignManagerReportNoResponseTable class="mt-6" :id="id" @on-resend="handleOnResend" />
+    <CampaignManagerReportNoResponseTable
+      ref="refTable"
+      class="mt-6"
+      :id="id"
+      @on-resend="handleOnResend"
+    />
   </div>
 </template>
 
@@ -12,6 +17,7 @@
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import labels from '@/model/constants/labels'
 import CampaignManagerReportNoResponseTable from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponseTable'
+import { resendNoResponsePhishingCampaignJob } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportNoResponse',
   components: { CampaignManagerReportNoResponseTable, CampaignManagerReportHeader },
@@ -29,7 +35,11 @@ export default {
     }
   },
   methods: {
-    handleOnResend(row = {}) {}
+    handleOnResend(row = {}) {
+      resendNoResponsePhishingCampaignJob(row.resourceId).then(() => {
+        this.$refs.refTable.callForData()
+      })
+    }
   }
 }
 </script>
