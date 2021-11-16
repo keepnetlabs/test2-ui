@@ -11,7 +11,7 @@
       @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportSubmittedTable
-      ref="refTable"
+      ref="refSubmittedTable"
       class="mt-6"
       :id="id"
       :password-complexities="getPasswordComplexities"
@@ -26,7 +26,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
 import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
-import { resendSubmittedDataPhishingCampaignJob } from '@/api/phishingsimulator'
+import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSubmittedData',
   components: {
@@ -66,9 +66,9 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {
-      resendSubmittedDataPhishingCampaignJob(row.resourceId).then(() => {
-        this.$refs.refTable.callForData()
+    handleOnResend(payload) {
+      resendPhishingCampaignToUserList(payload, this.id).then(() => {
+        this.$refs.refSubmittedTable.callForData()
       })
     }
   }

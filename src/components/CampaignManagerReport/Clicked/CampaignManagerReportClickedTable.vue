@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
     :refName="'campaignManagerClickedTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -267,7 +268,6 @@ export default {
       })
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
-      debugger
       const payload = {
         Types: [2],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
