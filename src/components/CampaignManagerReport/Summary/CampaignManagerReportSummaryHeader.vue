@@ -65,10 +65,10 @@ export default {
     },
     handleOnConfirmResend(types) {
       this.isActionButtonDisabled = true
-      debugger
-      resendPhishingCampaignToUsers({ Types: types }, this.id)
-        .then((response) => {})
-        .finally(() => (this.isActionButtonDisabled = false))
+      resendPhishingCampaignToUsers({ Types: types }, this.id).finally(() => {
+        this.isActionButtonDisabled = false
+        this.toggleShowResendDialog()
+      })
     }
   }
 }
