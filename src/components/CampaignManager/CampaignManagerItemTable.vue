@@ -184,7 +184,6 @@ export default {
   },
   methods: {
     callForData() {
-      console.log('this.axiosPayload', this.axiosPayload)
       this.setLoading(true)
       this.$nextTick(() => {
         searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
@@ -196,17 +195,12 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            results[0].status = 'Completed'
-            results[1].status = 'Running'
-            results[2].status = 'Paused'
-            results[3].status = 'Canceled'
             this.tableData = results
           })
           .finally(this.setLoading)
       })
     },
     exportCampaignManagerItemList(downloadTypes = []) {
-      debugger
       downloadTypes.exportTypes.forEach((item) => {
         let payload = {
           pageNumber: downloadTypes.pageNumber,
@@ -306,7 +300,6 @@ export default {
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
-      console.log('copyOfAxiosPayload', copyOfAxiosPayload)
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
       this.callForData()

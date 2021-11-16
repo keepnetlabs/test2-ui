@@ -134,7 +134,6 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results
-          console.log('this.tableData', this.tableData)
         })
         .finally(this.setLoading)
     },
