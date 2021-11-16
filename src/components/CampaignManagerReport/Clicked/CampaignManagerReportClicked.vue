@@ -8,7 +8,7 @@
       @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportClickedTable
-      ref="refTable"
+      ref="refClickedTable"
       class="mt-6"
       :id="id"
       @on-resend="handleOnResend"
@@ -22,7 +22,7 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import labels from '@/model/constants/labels'
 import CampaignManagerReportClickedTable from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedTable'
 import CampaignManagerReportClickedItemDetailDialog from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedItemDetailDialog'
-import { resendClickedPhishingCampaignJob } from '@/api/phishingsimulator'
+import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportClicked',
   components: {
@@ -54,9 +54,9 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {
-      resendClickedPhishingCampaignJob(row.resourceId).then(() => {
-        this.$refs.refTable.callForData()
+    handleOnResend(payload = {}) {
+      resendPhishingCampaignToUserList(payload, this.id).then(() => {
+        this.$refs.refClickedTable.callForData()
       })
     }
   }

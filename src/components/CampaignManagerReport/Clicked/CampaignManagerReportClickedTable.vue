@@ -17,6 +17,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :select-event="tableOptions.selectEvent"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -45,7 +46,7 @@ import {
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import {
   exportCampaignJobUserEmailClicked,
   searchCampaignJobUserEmailClicked
@@ -88,6 +89,9 @@ export default {
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportClicked
+        },
+        selectEvent: {
+          resend: true
         },
         rowActions: [
           {
@@ -139,7 +143,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {
@@ -259,8 +266,16 @@ export default {
         })
       })
     },
-    handleOnResend(row) {
-      this.$emit('on-resend', row)
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      debugger
+      const payload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
       this.$emit('on-detail', row)

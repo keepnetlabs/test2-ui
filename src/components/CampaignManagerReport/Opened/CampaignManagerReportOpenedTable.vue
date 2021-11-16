@@ -51,7 +51,7 @@ import {
   exportCampaignJobUserEmailOpened,
   searchCampaignJobUserEmailOpened
 } from '@/api/phishingsimulator'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 
 export default {
@@ -148,7 +148,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {
@@ -267,7 +270,7 @@ export default {
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
         Types: [1],
-        items: items.map((item) => item.resourceId),
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,
         filter: this.axiosPayload.filter
