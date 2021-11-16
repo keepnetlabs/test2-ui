@@ -253,7 +253,7 @@ export default {
                 const newItem = JSON.parse(JSON.stringify(item))
                 delete newItem['instanceCount']
                 newItem.targetUsers = Number(newItem.targetUsers)
-                newItem.total = Number(item['instanceCount']) || 2
+                newItem.total = Number(item['instanceCount']) || 1
                 return newItem
               })
             })

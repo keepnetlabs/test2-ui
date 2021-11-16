@@ -106,7 +106,6 @@ export default {
         const {
           data: { data }
         } = response
-        console.log('response', response)
         this.formDetails = data
       })
     },

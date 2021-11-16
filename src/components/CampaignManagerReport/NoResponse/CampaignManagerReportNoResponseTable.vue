@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
     :refName="'campaignManagerOpenedTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -17,6 +18,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :select-event="tableOptions.selectEvent"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -86,6 +88,9 @@ export default {
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
+        },
+        selectEvent: {
+          resend: true
         },
         rowActions: [
           {
@@ -254,8 +259,15 @@ export default {
         })
       })
     },
-    handleOnResend(row) {
-      this.$emit('on-resend', row)
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [4],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     }
   }
 }

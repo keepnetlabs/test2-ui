@@ -22,7 +22,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportOpenedTable from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpenedTable'
 import CampaignManagerReportOpenedItemDetailDialog from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpenedItemDetailDialog'
-import { resendOpenedPhishingCampaignJob } from '@/api/phishingsimulator'
+import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportOpened',
   components: {
@@ -54,8 +54,8 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {
-      resendOpenedPhishingCampaignJob(row.resourceId).then(() => {
+    handleOnResend(payload) {
+      resendPhishingCampaignToUserList(payload, this.id).then(() => {
         this.$refs.refOpenedTable.callForData()
       })
     }

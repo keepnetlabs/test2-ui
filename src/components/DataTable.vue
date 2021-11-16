@@ -400,6 +400,19 @@
               </template>
               <span class="tooltip-span">Send users a warning message</span>
             </v-tooltip>
+            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.resend">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  v-on="on"
+                  class="btn-selected-hover mr-1"
+                  icon
+                  @click="handleResend(multipleSelection)"
+                >
+                  <v-icon class="selection-icons" color="white">mdi-refresh</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Resend</span>
+            </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.deleteAndNotify">
               <template v-slot:activator="{ on }">
                 <v-btn
@@ -3013,6 +3026,9 @@ export default {
         selections,
         ...Object.values(this.getServerSideSelectionParams())
       )
+    },
+    handleResend(selections) {
+      this.$emit('on-resend', selections, ...Object.values(this.getServerSideSelectionParams()))
     },
     handleDeleteAndNotify(selections) {
       this.rowAct('deleteAndNotifyInvestigationDetails', selections)

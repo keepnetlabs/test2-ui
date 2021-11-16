@@ -5,6 +5,7 @@
       :subtitle="phishingScenarioName"
     />
     <CampaignManagerReportSendingReportTable
+      ref="refSendingReportTable"
       class="mt-6"
       :id="id"
       :last-sending-status-items="getLastSendingStatusItems"
@@ -18,6 +19,7 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportTable from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportTable'
+import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSendingReport',
   components: { CampaignManagerReportSendingReportTable, CampaignManagerReportHeader },
@@ -53,7 +55,11 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {}
+    handleOnResend(payload) {
+      resendPhishingCampaignToUserList(payload, this.id).then(() => {
+        this.$refs.refSendingReportTable.callForData()
+      })
+    }
   }
 }
 </script>
