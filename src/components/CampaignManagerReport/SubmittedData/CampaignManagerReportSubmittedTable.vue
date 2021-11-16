@@ -27,7 +27,7 @@
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
     @on-table-settings-change="handleSetRenderedColumns"
-    @downloadEvent="exportCampaignManagerReportOpenedTable"
+    @downloadEvent="exportCampaignManagerReportSubmittedTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
@@ -45,15 +45,23 @@ import {
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-import { getDefaultFilter } from '@/utils/functions'
-import { searchCampaignJobUserEmailSubmitted } from '@/api/phishingsimulator'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  exportCampaignJobUserEmailClicked,
+  searchCampaignJobUserEmailSubmitted
+} from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'CampaignManagerReportSubmittedTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
+    },
+    passwordComplexities: {
+      type: Array
     }
   },
   data() {
@@ -62,7 +70,7 @@ export default {
         id: 'campaign-manager-submitted-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultFilter(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -102,15 +110,44 @@ export default {
       }
     }
   },
+  watch: {
+    passwordComplexities() {
+      this.setPasswordComplexityItems()
+    }
+  },
   created() {
     this.getStoredTableSettings()
     this.setQueryValues()
     this.setDefaultFilter()
     this.callForData()
+    this.setPasswordComplexityItems()
   },
   methods: {
     callForData() {
-      searchCampaignJobUserEmailSubmitted(this.axiosPayload, this.id).then((response) => {})
+      this.setLoading(true)
+      searchCampaignJobUserEmailSubmitted(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
+    setPasswordComplexityItems() {
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'minPasswordComplexity'),
+        'filterableItems',
+        this.passwordComplexities.map((item) => ({ ...item, value: item.text }))
+      )
+      this.$nextTick(() => {
+        this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      })
     },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
@@ -220,7 +257,28 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {},
+    exportCampaignManagerReportSubmittedTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserEmailClicked(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Submitted-Data.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     handleOnResend(row) {
       this.$emit('on-resend', row)
     },

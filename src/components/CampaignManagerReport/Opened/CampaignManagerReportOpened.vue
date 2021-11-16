@@ -5,8 +5,10 @@
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
       :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportOpenedTable
+      ref="refOpenedTable"
       class="mt-6"
       :id="id"
       @on-resend="handleOnResend"
@@ -20,6 +22,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportOpenedTable from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpenedTable'
 import CampaignManagerReportOpenedItemDetailDialog from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpenedItemDetailDialog'
+import { resendOpenedPhishingCampaignJob } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportOpened',
   components: {
@@ -51,7 +54,11 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {}
+    handleOnResend(row = {}) {
+      resendOpenedPhishingCampaignJob(row.resourceId).then(() => {
+        this.$refs.refOpenedTable.callForData()
+      })
+    }
   }
 }
 </script>

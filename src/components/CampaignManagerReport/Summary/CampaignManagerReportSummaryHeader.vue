@@ -5,6 +5,7 @@
       :status="isShowResendDialog"
       :items="resendDialogItems"
       :phishing-scenario-name="phishingScenarioName"
+      :is-action-button-disabled="isActionButtonDisabled"
       @on-close="toggleShowResendDialog"
       @on-confirm="handleOnConfirmResend"
     />
@@ -36,6 +37,7 @@
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
+import { resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSummaryHeader',
   components: { CampaignManagerReportSummaryResendDialog },
@@ -45,11 +47,15 @@ export default {
     },
     resendDialogItems: {
       type: Object
+    },
+    id: {
+      type: String
     }
   },
   data() {
     return {
       labels,
+      isActionButtonDisabled: false,
       isShowResendDialog: false
     }
   },
@@ -57,7 +63,13 @@ export default {
     toggleShowResendDialog() {
       this.isShowResendDialog = !this.isShowResendDialog
     },
-    handleOnConfirmResend() {}
+    handleOnConfirmResend(types) {
+      this.isActionButtonDisabled = true
+      debugger
+      resendPhishingCampaignToUsers({ Types: types }, this.id)
+        .then((response) => {})
+        .finally(() => (this.isActionButtonDisabled = false))
+    }
   }
 }
 </script>

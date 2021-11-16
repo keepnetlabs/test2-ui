@@ -119,6 +119,17 @@ export function exportCampaignManager(payload = {}) {
     responseType: 'blob'
   })
 }
+
+export function exportCampaignManagerItem(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/${id}/search/export`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export function deleteCampaignManager(resourceId = '') {
   return testRequest.delete(`phishing-simulator/phishing-campaign/${resourceId}`, {
     snackbar: COMMON_SNACKBAR
@@ -173,35 +184,141 @@ export function searchCampaignJobUsers(payload = {}, id) {
 
 export function searchCampaignJobUserEmailClicked(payload, id) {
   return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/clicked/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailClickedDetails(payload, id) {
+  return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-clicked/${id}`,
     payload
   )
 }
 
-export function searchCampaignJobUserEmailOpened(payload, id) {
+export function searchCampaignJobUserEmailOpenedDetails(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-opened/${id}`,
     payload
   )
 }
 
-export function getSubmittedSearchEmail(payload, id) {
+export function searchCampaignJobUserEmailOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/opened/search/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserEmailOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/opened/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+export function exportCampaignJobUserEmailClicked(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/clicked/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+export function searchCampaignJobUserNoResponse(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/noresponse/search/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserNoResponse(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/noresponse/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+export function searchCampaignJobUserEmailSubmitted(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/submitteddata/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserEmailSubmittedDetails(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/search-email-submitted/${id}`,
     payload
   )
 }
 
-export function searchCampaignJobUserNoResponse(payload, id) {
+export function searchCampaignJobUserSendingReport(payload, id) {
   return testRequest.post(
-    `  /phishing-simulator/phishing-campaign-job-report/noresponse/search/${id}`,
+    `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
     payload
   )
 }
 
-export function searchCampaignJobUserEmailSubmitted(payload, id) {
+export function searchCampaignPhishingJob(payload, id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/${id}/search`, payload)
+}
+
+export function stopPhishingCampaignJob(id) {
+  return testRequest.patch(`/phishing-simulator/phishing-campaign-job/stop/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function resendOpenedPhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/opened/${id}`)
+}
+
+export function resendClickedPhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/clicked/${id}`)
+}
+
+export function resendSubmittedDataPhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/submitted/${id}`)
+}
+
+export function resendNoResponsePhishingCampaignJob(id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/notresponded/${id}`)
+}
+
+export function resendPhishingCampaignToUsers(payload, id) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/${id}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function deletePhishingCampaignJob(id) {
+  return testRequest.delete(`/phishing-simulator/phishing-campaign-job/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function exportCampaignJobUserSendingReport(payload, id) {
   return testRequest.post(
-    `  /phishing-simulator/phishing-campaign-job-report/submitteddata/search/${id}`,
+    `/phishing-simulator/phishing-campaign-job-report/all/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+export function searchCampaignJobUserSendingReportDetails(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
     payload
   )
 }
@@ -211,9 +328,11 @@ export function getCampaignManagerJobFormDetails() {
 }
 
 export function getCampaignJobSummary(id) {
-  return testRequest.get(`/phishing-simulator/phishing-campaign-job/summary/${id}`)
+  return testRequest.get(`/phishing-simulator/phishing-campaign-job-report/summary/${id}`)
 }
 
 export function getCampaignJobSummaryTargetGroups(id) {
-  return testRequest.get(`/phishing-simulator/phishing-campaign-job/summary/target-groups/${id}`)
+  return testRequest.get(
+    `/phishing-simulator/phishing-campaign-job-report/summary/target-groups/${id}`
+  )
 }

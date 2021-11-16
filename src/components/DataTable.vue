@@ -1,5 +1,9 @@
 <template>
-  <div class="k-table__wrapper" :id="id">
+  <div
+    class="k-table__wrapper"
+    :class="['k-table__wrapper', noPaddingBottom && 'k-table__wrapper--no-padding']"
+    :id="id"
+  >
     <DatatableLoading :loading="loading" />
     <download-modal
       :isShow="isWantToDownload"
@@ -1028,6 +1032,10 @@ export default {
   },
   props: {
     isShowDownloadModal: {
+      default: false
+    },
+    noPaddingBottom: {
+      type: Boolean,
       default: false
     },
     addRowClassName: {
@@ -3076,6 +3084,9 @@ export default {
       z-index: 9999999999 !important;
     }
   }
+}
+.k-table__wrapper--no-padding {
+  padding-bottom: 0 !important;
 }
 </style>
 <!--

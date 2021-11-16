@@ -15,12 +15,12 @@
       </template>
       <span>{{ getTooltipText }}</span>
     </v-tooltip>
-    <v-menu v-if="actionStatus !== 'launch'" bottom left offset-y transition="scale-transition">
+    <v-menu v-if="isMenuRender" bottom left offset-y transition="scale-transition">
       <template #activator="{ on }">
         <v-btn
           v-on="on"
           :id="`btn-dots--row-actions-list-${Math.random().toString().substring(2)}`"
-          class="btn-hover ml-1"
+          class="btn-hover"
           icon
         >
           <v-icon>mdi-dots-vertical</v-icon>
@@ -47,6 +47,7 @@
           :id="`btn--delete-row-action-${Math.random().toString().substring(2)}`"
           class="btn-hover"
           icon
+          @click="$emit('on-delete', scope.row)"
         >
           <v-icon>mdi-delete</v-icon>
         </v-btn>
@@ -76,18 +77,28 @@ export default {
     }
   },
   computed: {
+    isMenuRender() {
+      return ![
+        ACTION_STATUSES.COMPLETE,
+        ACTION_STATUSES.IDLE,
+        ACTION_STATUSES.DELETE,
+        ACTION_STATUSES.CANCEL
+      ].includes(this.actionStatus)
+    },
     getId() {
       return `btn-${this.actionStatus}-row-action-${Math.random().toString().substring(2)}`
     },
     actionStatus() {
-      return this.scope.row.actionStatus
+      return this.scope.row.status
     },
     getIconName() {
       switch (this.actionStatus) {
-        case ACTION_STATUSES.LAUNCH:
-          return 'mdi-eye'
+        case ACTION_STATUSES.COMPLETE:
+        case ACTION_STATUSES.IDLE:
+        case ACTION_STATUSES.CANCEL:
+          return 'mdi-text-box'
         case ACTION_STATUSES.PAUSE:
-        case ACTION_STATUSES.RESUME:
+        case ACTION_STATUSES.RUNNING:
           return 'mdi-pause'
         default:
           return 'mdi-eye'
@@ -95,11 +106,13 @@ export default {
     },
     getTooltipText() {
       switch (this.actionStatus) {
-        case ACTION_STATUSES.LAUNCH:
-          return labels.Preview
+        case ACTION_STATUSES.COMPLETE:
+        case ACTION_STATUSES.IDLE:
+        case ACTION_STATUSES.CANCEL:
+          return labels.ViewReport
         case ACTION_STATUSES.PAUSE:
           return labels.Resume
-        case ACTION_STATUSES.RESUME:
+        case ACTION_STATUSES.RUNNING:
           return labels.Pause
         case ACTION_STATUSES.DELETE:
           return labels.Delete
@@ -118,6 +131,12 @@ export default {
   },
   methods: {
     handleItemClick(act) {
+      if (!this.isMenuRender) {
+        return this.$router.push({
+          name: 'Campaign Report',
+          params: { id: this.scope.row.resourceId }
+        })
+      }
       this.$emit(act.action, this.scope.row)
     }
   }

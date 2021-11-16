@@ -2,6 +2,8 @@
   <AppDialog
     title-id="text--campaign-manager-opened-detail-popup-title"
     subtitle-id="text--campaign-manager-opened-detail-popup-subtitle"
+    :custom-size="'1000'"
+    maxHeightSize="665"
     :icon="CONSTANTS.icon"
     :title="getTitle"
     :subtitle="getSubtitle"
@@ -16,6 +18,9 @@
         filterable
         options
         is-server-side
+        no-padding-bottom
+        :show-filter-options="false"
+        :is-settings-popup="false"
         :refName="'campaignManagerOpenedTable'"
         :loading="isLoading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -53,9 +58,13 @@ import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import DataTable from '@/components/DataTable'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { searchCampaignJobUserEmailClickedDetails } from '@/api/phishingsimulator'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportClickedItemDetailDialog',
   components: { DataTable, AppDialog },
+  mixins: [useLoading],
   props: {
     status: {
       type: Boolean
@@ -71,21 +80,7 @@ export default {
         id: 'campaign-manager-clicked-detail-item-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      },
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'ClickedTime' }),
       isLoading: false,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
@@ -114,14 +109,32 @@ export default {
   },
   computed: {
     getTitle() {
-      return ''
+      return `Clicked Link ${this.item?.['clickedCount'] || 0} Time(s)`
     },
     getSubtitle() {
-      return ''
+      return `${this.item?.firstName} ${this.item?.lastName}`
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      searchCampaignJobUserEmailClickedDetails(this.axiosPayload, this.item?.resourceId)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(

@@ -2,10 +2,12 @@
   <div id="campaign-manager-report-sending-report" class="campaign-manager-report-sending-report">
     <CampaignManagerReportHeader
       :title="labels.EmailSendingReport"
-      :subtitle="labels.ResetPassword"
+      :subtitle="phishingScenarioName"
     />
     <CampaignManagerReportSendingReportTable
       class="mt-6"
+      :id="id"
+      :last-sending-status-items="getLastSendingStatusItems"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -19,11 +21,27 @@ import CampaignManagerReportSendingReportTable from '@/components/CampaignManage
 export default {
   name: 'CampaignManagerReportSendingReport',
   components: { CampaignManagerReportSendingReportTable, CampaignManagerReportHeader },
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    },
+    formDetails: {
+      type: Array
+    }
+  },
   data() {
     return {
       labels,
       isShowDetailDialog: false,
       selectedRow: null
+    }
+  },
+  computed: {
+    getLastSendingStatusItems() {
+      return this.formDetails['userStatuses']
     }
   },
   methods: {

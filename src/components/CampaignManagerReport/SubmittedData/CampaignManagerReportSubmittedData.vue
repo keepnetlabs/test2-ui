@@ -4,14 +4,17 @@
       :title="labels.UserWhoSubmitted"
       :subtitle="phishingScenarioName"
     />
-    <CampaignManagerReportSubmittedtemDetailDialog
+    <CampaignManagerReportSubmittedItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"
       :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportSubmittedTable
+      ref="refTable"
       class="mt-6"
       :id="id"
+      :password-complexities="getPasswordComplexities"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -22,11 +25,12 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
-import CampaignManagerReportSubmittedtemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
+import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
+import { resendSubmittedDataPhishingCampaignJob } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSubmittedData',
   components: {
-    CampaignManagerReportSubmittedtemDetailDialog,
+    CampaignManagerReportSubmittedItemDetailDialog,
     CampaignManagerReportSubmittedTable,
     CampaignManagerReportHeader
   },
@@ -36,13 +40,21 @@ export default {
     },
     phishingScenarioName: {
       type: String
+    },
+    formDetails: {
+      type: Object
     }
   },
   data() {
     return {
       labels,
       isShowDetailDialog: false,
-      selectedRow: null
+      selectedRow: {}
+    }
+  },
+  computed: {
+    getPasswordComplexities() {
+      return this.formDetails['passwordComplexityTypes']
     }
   },
   methods: {
@@ -54,7 +66,11 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {}
+    handleOnResend(row = {}) {
+      resendSubmittedDataPhishingCampaignJob(row.resourceId).then(() => {
+        this.$refs.refTable.callForData()
+      })
+    }
   }
 }
 </script>
