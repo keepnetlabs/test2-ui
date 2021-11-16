@@ -1,55 +1,71 @@
 <template>
-  <DataTable
-    :id="CONSTANTS.id"
-    ref="refTable"
-    selectable
-    filterable
-    options
-    is-server-side
-    :refName="'campaignManagerItemTable'"
-    :loading="isLoading"
-    :is-column-filter-active="tableOptions.isColumnFilterActive"
-    :table="tableData"
-    :columns="tableOptions.columns"
-    :empty="tableOptions.iEmpty"
-    :stored-table-settings="storedTableSettings"
-    :server-side-props="serverSideProps"
-    :server-side-events="tableOptions.serverSideEvents"
-    :row-actions="tableOptions.rowActions"
-    :add-button="tableOptions.addButton"
-    @on-add-button-click="toggleAddCampaignManagerModal"
-    @columnFilterChanged="columnFilterChanged"
-    @columnFilterCleared="columnFilterCleared"
-    @server-side-page-number-changed="serverSidePageNumberChanged"
-    @server-side-size-changed="serverSideSizeChanged"
-    @sortChangedEvent="sortChanged"
-    @searchChangedEvent="handleSearchChange"
-    @set-default-search="handleSetDefaultSearch"
-    @restore-default-search="handleRestoreDefaultSearch"
-    @clear-filters="handleClearFilters"
-    @on-table-settings-change="handleSetRenderedColumns"
-    @refreshAction="callForData"
-  >
-    <template #table-search-left-side>
-      <v-btn
-        id="btn-back--compaign-manager-clustered-table"
-        text
-        color="#2196f3"
-        class="clustered-table-back-btn"
-        @click="handleBackClick"
-      >
-        <v-icon left>mdi-arrow-left</v-icon> {{ labels.Back }}</v-btn
-      >
-    </template>
-    <template #datatable-row-actions="{ scope }">
-      <CampaignManagerItemRowActions :scope="scope" :row-actions="tableOptions.rowActions" />
-    </template>
-    <template #table-all-records>
-      <div class="campaign-manager__table-all-records">
-        {{ labels.InstancesOfCampaign }}: Gürkan
-      </div>
-    </template>
-  </DataTable>
+  <div>
+    <CampaignManagerItemDeleteDialog
+      v-if="isShowDeleteDialog"
+      :status="isShowDeleteDialog"
+      :item="selectedRow"
+      :is-action-button-disabled="isDeleteDialogActionButtonDisabled"
+      @on-close="toggleShowDeleteDialog"
+      @on-delete="handleOnDelete"
+    />
+    <DataTable
+      :id="CONSTANTS.id"
+      ref="refTable"
+      selectable
+      filterable
+      options
+      is-server-side
+      :refName="'campaignManagerItemTable'"
+      :loading="isLoading"
+      :is-column-filter-active="tableOptions.isColumnFilterActive"
+      :table="tableData"
+      :columns="tableOptions.columns"
+      :empty="tableOptions.iEmpty"
+      :stored-table-settings="storedTableSettings"
+      :server-side-props="serverSideProps"
+      :server-side-events="tableOptions.serverSideEvents"
+      :row-actions="tableOptions.rowActions"
+      :add-button="tableOptions.addButton"
+      @on-add-button-click="toggleAddCampaignManagerModal"
+      @columnFilterChanged="columnFilterChanged"
+      @columnFilterCleared="columnFilterCleared"
+      @server-side-page-number-changed="serverSidePageNumberChanged"
+      @server-side-size-changed="serverSideSizeChanged"
+      @sortChangedEvent="sortChanged"
+      @searchChangedEvent="handleSearchChange"
+      @set-default-search="handleSetDefaultSearch"
+      @restore-default-search="handleRestoreDefaultSearch"
+      @clear-filters="handleClearFilters"
+      @on-table-settings-change="handleSetRenderedColumns"
+      @refreshAction="callForData"
+      @downloadEvent="exportCampaignManagerItemList"
+    >
+      <template #table-search-left-side>
+        <v-btn
+          id="btn-back--compaign-manager-clustered-table"
+          text
+          color="#2196f3"
+          class="clustered-table-back-btn"
+          @click="handleBackClick"
+        >
+          <v-icon left>mdi-arrow-left</v-icon> {{ labels.Back }}</v-btn
+        >
+      </template>
+      <template #datatable-row-actions="{ scope }">
+        <CampaignManagerItemRowActions
+          :scope="scope"
+          :row-actions="tableOptions.rowActions"
+          @on-delete="handleDelete"
+          @on-stop="handleStop"
+        />
+      </template>
+      <template #table-all-records>
+        <div class="campaign-manager__table-all-records">
+          {{ labels.InstancesOfCampaign }}: {{ item.name }}
+        </div>
+      </template>
+    </DataTable>
+  </div>
 </template>
 
 <script>
@@ -63,6 +79,15 @@ import {
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
+import {
+  deletePhishingCampaignJob,
+  exportCampaignManager,
+  exportCampaignManagerItem,
+  searchCampaignPhishingJob,
+  stopPhishingCampaignJob
+} from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
+import CampaignManagerItemDeleteDialog from '@/components/CampaignManager/CampaignManagerItemDeleteDialog'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axiosPayload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -70,7 +95,7 @@ const EMITS = {
 }
 export default {
   name: 'CampaignManagerItemTable',
-  components: { CampaignManagerItemRowActions, DataTable },
+  components: { CampaignManagerItemDeleteDialog, CampaignManagerItemRowActions, DataTable },
   props: {
     axiosPayload: {
       type: Object
@@ -78,30 +103,36 @@ export default {
     item: {
       type: Object
     },
-    isLoading: {
-      type: Boolean,
-      default: false
+    statusItems: {
+      type: Array
     }
   },
   emits: EMITS,
+  mixins: [useLoading],
   data() {
     return {
       labels,
+      isShowDeleteDialog: false,
+      isDeleteDialogActionButtonDisabled: false,
       CONSTANTS: {
         id: 'campaign-manager-parent-data-table',
         ascending: 'ascending'
       },
       tableData: [],
+      selectedRow: {},
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
-        columns: [COLUMNS.SCHEDULE, COLUMNS.TARGET_USERS, COLUMNS.STATUS, COLUMNS.CREATE_TIME],
+        columns: [
+          COLUMNS.SCHEDULE,
+          COLUMNS.TARGET_USERS_ITEM_TABLE,
+          COLUMNS.STATUS,
+          COLUMNS.CREATE_TIME_ITEM_TABLE
+        ],
         iEmpty: {
-          message: labels.EmptyCampaignManager,
-          btn: labels.New,
-          id: 'btn-empty--campaign-manager',
-          icon: 'mdi-plus'
+          message: labels.EmptyCampaignManagerReport,
+          id: 'btn-empty--campaign-manager-report'
         },
         addButton: {
           show: true,
@@ -127,25 +158,70 @@ export default {
       }
     }
   },
+  watch: {
+    statusItems(val) {
+      if (val.length) {
+        const col = this.tableOptions.columns.find(
+          (col) => col.property === COLUMNS.STATUS.property
+        )
+        this.$set(
+          col,
+          'filterableItems',
+          val.map((item) => {
+            return { ...item, value: item.text }
+          })
+        )
+        this.$nextTick(() => {
+          this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        })
+      }
+    }
+  },
   created() {
     this.getStoredTableSettings()
     this.setDefaultFilter()
-    this.tableData = [
-      {
-        resourceId: 'askjajsajsajs',
-        name: 'Gurkan',
-        total: 5,
-        actionStatus: 'paused'
-      },
-      {
-        resourceId: 'askjzsassaajsajsajs',
-        name: 'Gurkan2',
-        total: 1,
-        actionStatus: 'launch'
-      }
-    ]
+    this.callForData()
   },
   methods: {
+    callForData() {
+      this.setLoading(true)
+      this.$nextTick(() => {
+        searchCampaignPhishingJob(this.axiosPayload, this.item.resourceId)
+          .then((response) => {
+            const {
+              data: { data = [] }
+            } = response
+            const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            this.tableData = results
+          })
+          .finally(this.setLoading)
+      })
+    },
+    exportCampaignManagerItemList(downloadTypes = []) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignManagerItem(payload, this.item.resourceId).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Manager-Instance.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_ITEM_TABLE)
@@ -163,9 +239,6 @@ export default {
       this.tableOptions.isColumnFilterActive = true
       this.$refs.refTable.reRenderColumns(filterValues)
     },
-    callForData() {
-      //TODO Axios call
-    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       const copyOfAxiosPayload = this.copyAxiosPayload()
@@ -173,7 +246,7 @@ export default {
         filter,
         copyOfAxiosPayload
       )
-      this.$emit('update:axiosPayload', copyOfAxiosPayload)
+      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.callForData()
     },
     columnFilterCleared(fieldName) {
@@ -207,9 +280,7 @@ export default {
       this.callForData()
     },
     resetPageNumber() {
-      const copyOfAxiosPayload = this.copyAxiosPayload()
-      copyOfAxiosPayload.pageNumber = 1
-      this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
+      this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     emitCopyOfAxiosPayload(payload) {
@@ -225,6 +296,7 @@ export default {
         )
         return column.filterableType
       })
+
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
@@ -265,6 +337,32 @@ export default {
     },
     toggleAddCampaignManagerModal() {
       this.$emit('toggle-add-campaign-manager-modal')
+    },
+    toggleShowDeleteDialog() {
+      if (this.isShowDeleteDialog) {
+        this.selectedRow = {}
+      }
+      this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleDelete(row = {}) {
+      this.selectedRow = row
+      this.toggleShowDeleteDialog()
+    },
+    handleOnDelete(resourceId) {
+      this.isDeleteDialogActionButtonDisabled = true
+      deletePhishingCampaignJob(resourceId)
+        .then(() => {
+          this.callForData()
+        })
+        .finally(() => {
+          this.isDeleteDialogActionButtonDisabled = false
+          this.toggleShowDeleteDialog()
+        })
+    },
+    handleStop(row = {}) {
+      stopPhishingCampaignJob(row.resourceId).then(() => {
+        this.callForData()
+      })
     }
   }
 }

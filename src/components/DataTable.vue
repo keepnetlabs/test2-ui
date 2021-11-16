@@ -1,5 +1,9 @@
 <template>
-  <div class="k-table__wrapper" :id="id">
+  <div
+    class="k-table__wrapper"
+    :class="['k-table__wrapper', noPaddingBottom && 'k-table__wrapper--no-padding']"
+    :id="id"
+  >
     <DatatableLoading :loading="loading" />
     <download-modal
       :isShow="isWantToDownload"
@@ -395,6 +399,19 @@
                 </v-btn>
               </template>
               <span class="tooltip-span">Send users a warning message</span>
+            </v-tooltip>
+            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.resend">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  v-on="on"
+                  class="btn-selected-hover mr-1"
+                  icon
+                  @click="handleResend(multipleSelection)"
+                >
+                  <v-icon class="selection-icons" color="white">mdi-refresh</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Resend</span>
             </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.deleteAndNotify">
               <template v-slot:activator="{ on }">
@@ -1028,6 +1045,10 @@ export default {
   },
   props: {
     isShowDownloadModal: {
+      default: false
+    },
+    noPaddingBottom: {
+      type: Boolean,
       default: false
     },
     addRowClassName: {
@@ -3006,6 +3027,9 @@ export default {
         ...Object.values(this.getServerSideSelectionParams())
       )
     },
+    handleResend(selections) {
+      this.$emit('on-resend', selections, ...Object.values(this.getServerSideSelectionParams()))
+    },
     handleDeleteAndNotify(selections) {
       this.rowAct('deleteAndNotifyInvestigationDetails', selections)
     },
@@ -3076,6 +3100,9 @@ export default {
       z-index: 9999999999 !important;
     }
   }
+}
+.k-table__wrapper--no-padding {
+  padding-bottom: 0 !important;
 }
 </style>
 <!--

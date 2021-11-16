@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
     :refName="'campaignManagerClickedTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -17,6 +18,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :select-event="tableOptions.selectEvent"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -27,7 +29,7 @@
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
     @on-table-settings-change="handleSetRenderedColumns"
-    @downloadEvent="exportCampaignManagerReportOpenedTable"
+    @downloadEvent="exportCampaignManagerReportClickedTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
@@ -45,11 +47,16 @@ import {
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
-import { getDefaultFilter } from '@/utils/functions'
-import { searchCampaignJobUserEmailClicked } from '@/api/phishingsimulator'
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import {
+  exportCampaignJobUserEmailClicked,
+  searchCampaignJobUserEmailClicked
+} from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportClickedTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -62,7 +69,7 @@ export default {
         ascending: 'ascending'
       },
       isLoading: false,
-      axiosPayload: getDefaultFilter(),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
@@ -83,6 +90,9 @@ export default {
         },
         iEmpty: {
           message: labels.EmptyCampaignManagerReportClicked
+        },
+        selectEvent: {
+          resend: true
         },
         rowActions: [
           {
@@ -109,9 +119,20 @@ export default {
   },
   methods: {
     callForData() {
-      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id).then((response) => {
-        debugger
-      })
+      this.setLoading(true)
+      searchCampaignJobUserEmailClicked(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
@@ -123,7 +144,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {
@@ -221,9 +245,37 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {},
-    handleOnResend(row) {
-      this.$emit('on-resend', row)
+    exportCampaignManagerReportClickedTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserEmailClicked(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Clicked.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [2],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
       this.$emit('on-detail', row)

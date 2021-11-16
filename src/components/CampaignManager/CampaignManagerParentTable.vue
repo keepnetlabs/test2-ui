@@ -32,10 +32,6 @@
     @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerList"
     @refreshAction="callForData"
-    @on-edit="handleEdit"
-    @on-preview="handlePreview"
-    @on-delete="handleDelete"
-    @on-duplicate="handleDuplicate"
   >
     <template v-slot:datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === 'name'">
@@ -50,6 +46,16 @@
           />
         </div>
       </template>
+    </template>
+    <template #datatable-row-actions="{ scope }">
+      <CampaignManagerRowActions
+        :scope="scope"
+        :row-actions="tableOptions.rowActions"
+        @on-edit="handleEdit"
+        @on-preview="handlePreview"
+        @on-delete="handleDelete"
+        @on-duplicate="handleDuplicate"
+      />
     </template>
   </DataTable>
 </template>
@@ -68,6 +74,7 @@ import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
 import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
 import QueryHelperForTable from '@/helper-classes/query-helper'
+import { getDefaultFilter } from '@/utils/functions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
   RESET_AXIOS_PAYLOAD: 'reset-axios-payload',
@@ -77,24 +84,10 @@ const EMITS = {
   ON_DELETE: 'on-delete',
   ON_DUPLICATE: 'on-duplicate'
 }
-const defaultFilter = {
-  Condition: 'AND',
-  FilterGroups: [
-    {
-      Condition: 'AND',
-      FilterItems: [],
-      FilterGroups: []
-    },
-    {
-      Condition: 'OR',
-      FilterItems: [],
-      FilterGroups: []
-    }
-  ]
-}
+
 export default {
   name: 'CampaignManagerParentTable',
-  components: { TheRecordsButton, DataTable },
+  components: { TheRecordsButton, DataTable, CampaignManagerRowActions },
   props: {
     axiosPayload: {
       type: Object
@@ -230,7 +223,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       const copyOfAxiosPayload = this.copyAxiosPayload()
       copyOfAxiosPayload.filter = filter
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)

@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
     :refName="'campaignManagerOpenedTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -17,6 +18,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :select-event="tableOptions.selectEvent"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -27,7 +29,7 @@
     @restore-default-search="handleRestoreDefaultSearch"
     @clear-filters="handleClearFilters"
     @on-table-settings-change="handleSetRenderedColumns"
-    @downloadEvent="exportCampaignManagerReportOpenedTable"
+    @downloadEvent="exportCampaignManagerReportSendingReportTable"
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
@@ -45,33 +47,32 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-
-const defaultFilter = {
-  Condition: 'AND',
-  FilterGroups: [
-    {
-      Condition: 'AND',
-      FilterItems: [],
-      FilterGroups: []
-    },
-    {
-      Condition: 'OR',
-      FilterItems: [],
-      FilterGroups: []
-    }
-  ]
-}
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import {
+  exportCampaignJobUserEmailOpened,
+  searchCampaignJobUserSendingReport
+} from '@/api/phishingsimulator'
+import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'CampaignManagerReportSendingReportTable',
   components: { DataTable },
+  mixins: [useLoading],
+  props: {
+    id: {
+      type: String
+    },
+    lastSendingStatusItems: {
+      type: Array
+    }
+  },
   data() {
     return {
       CONSTANTS: {
         id: 'campaign-manager-sending-report-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(defaultFilter)),
+      axiosPayload: JSON.parse(JSON.stringify(getDefaultAxiosPayload({ orderBy: 'FirstName' }))),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -84,15 +85,17 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
-          COLUMNS.LAST_SENDING_DATE,
-          COLUMNS.LAST_SENDING_STATUS,
-          COLUMNS.SMTP
+          COLUMNS.SENDING_REPORT_LAST_SENDING_DATE,
+          COLUMNS.LAST_SENDING_STATUS
         ],
         addButton: {
           show: false
         },
+        selectEvent: {
+          resend: true
+        },
         iEmpty: {
-          message: labels.EmptyCampaignManagerReportSubmittedData
+          message: labels.EmptyCampaignManagerReportSendingReport
         },
         rowActions: [
           {
@@ -100,15 +103,14 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-opened',
             icon: 'mdi-refresh',
             action: 'on-resend'
-          },
-          {
-            name: labels.Details,
-            id: 'btn-details--row-actions-campaign-manager-report-opened',
-            icon: 'mdi-text-box',
-            action: 'on-detail'
           }
         ]
       }
+    }
+  },
+  watch: {
+    lastSendingStatusItems() {
+      this.setLastSendingStatusItems()
     }
   },
   created() {
@@ -116,9 +118,25 @@ export default {
     this.setQueryValues()
     this.setDefaultFilter()
     this.callForData()
+    this.setLastSendingStatusItems()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      searchCampaignJobUserSendingReport(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
       this.queryHelper.setDefaultValues()
@@ -128,12 +146,27 @@ export default {
       this.serverSideProps.pageSize = size
       this.axiosPayload.pageNumber = page
     },
+    setLastSendingStatusItems() {
+      this.$set(
+        this.tableOptions.columns.find((col) => col.property === 'status'),
+        'filterableItems',
+        this.lastSendingStatusItems.map((item) => ({ ...item, value: item.text }))
+      )
+      this.$nextTick(() => {
+        this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      })
+    },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
-        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE)
+        localStorage.getItem(
+          DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE
+        )
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {
@@ -142,7 +175,7 @@ export default {
     },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE)
+        localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE)
       )
     },
     columnFilterChanged(filter) {
@@ -206,7 +239,7 @@ export default {
         FilterGroups: []
       }
       localStorage.setItem(
-        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE,
+        DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
         JSON.stringify({
           filter: this.axiosPayload.filter,
           filterValues
@@ -223,13 +256,41 @@ export default {
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(
-        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE,
+        TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE,
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {},
-    handleOnResend(row) {
-      this.$emit('on-resend', row)
+    exportCampaignManagerReportSendingReportTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Sending.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [0],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
       this.$emit('on-detail', row)

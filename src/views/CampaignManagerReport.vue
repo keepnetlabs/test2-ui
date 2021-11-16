@@ -19,6 +19,7 @@
                 :is="item.component"
                 :id="id"
                 :phishing-scenario-name="getPhishingScenarioName"
+                :form-details="formDetails"
               />
             </el-tab-pane>
           </el-tabs>

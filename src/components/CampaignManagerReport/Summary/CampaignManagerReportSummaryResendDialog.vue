@@ -13,38 +13,43 @@
         <div class="mb-3">Resend this campaign to:</div>
         <div>
           <v-checkbox
-            v-model="isEmailFailedToSend"
+            v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :value="5"
           >
             <template #label> Email failed to send {{ `(${items.notDelivered || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
-            v-model="isOnlyOpened"
+            v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :value="1"
           >
             <template #label> Only opened {{ `(${items.openedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
-            v-model="isOnlyClicked"
+            v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :value="2"
           >
             <template #label> Only clicked {{ `(${items.clickedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
-            v-model="isOnlySubmitted"
+            v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :value="3"
           >
             <template #label> Only submitted {{ `(${items.submittedEmail || 0})` }}</template>
           </v-checkbox>
           <v-checkbox
-            v-model="isNoResponse"
+            v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
             hide-details
+            :value="4"
           >
             <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>
           </v-checkbox>
@@ -56,7 +61,7 @@
         cancel-button-id="btn-cancel--campaign-manager-report-resend-popup"
         confirm-button-id="btn-delete--campaign-manager-report-resend-popup"
         :action-button-text="labels.Resend"
-        :confirm-button-disabled="isActionButtonDisabled"
+        :confirm-button-disabled="getActionButtonDisabled"
         @handleClose="closeModal"
         @handleConfirm="handleConfirm"
       />
@@ -92,11 +97,12 @@ export default {
         title: labels.ResendCampaign
       },
       labels,
-      isOnlyOpened: false,
-      isOnlyClicked: false,
-      isEmailFailedToSend: false,
-      isOnlySubmitted: false,
-      isNoResponse: false
+      types: []
+    }
+  },
+  computed: {
+    getActionButtonDisabled() {
+      return this.isActionButtonDisabled || !this.types.length
     }
   },
   methods: {
@@ -104,7 +110,7 @@ export default {
       this.$emit('on-close')
     },
     handleConfirm() {
-      this.$emit('on-confirm', this.item.resourceId)
+      this.$emit('on-confirm', this.types)
     }
   }
 }

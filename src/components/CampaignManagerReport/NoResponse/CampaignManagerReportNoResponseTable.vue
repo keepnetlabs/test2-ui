@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
     :refName="'campaignManagerOpenedTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -17,6 +18,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :select-event="tableOptions.selectEvent"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -44,12 +46,17 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
-import { searchCampaignJobUserNoResponse } from '@/api/phishingsimulator'
-import { getDefaultFilter } from '@/utils/functions'
+import {
+  exportCampaignJobUserNoResponse,
+  searchCampaignJobUserNoResponse
+} from '@/api/phishingsimulator'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'CampaignManagerReportNoResponseTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -61,7 +68,7 @@ export default {
         id: 'campaign-manager-no-response-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(getDefaultFilter())),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -82,6 +89,9 @@ export default {
         iEmpty: {
           message: labels.EmptyCampaignManagerReportOpened
         },
+        selectEvent: {
+          resend: true
+        },
         rowActions: [
           {
             name: labels.Resend,
@@ -101,9 +111,21 @@ export default {
   },
   methods: {
     callForData() {
-      searchCampaignJobUserNoResponse(this.axiosPayload, this.id).then((response) => {
-        debugger
-      })
+      this.setLoading(true)
+      searchCampaignJobUserNoResponse(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
@@ -215,9 +237,37 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportNoResponseTable() {},
-    handleOnResend(row) {
-      this.$emit('on-resend', row)
+    exportCampaignManagerReportNoResponseTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserNoResponse(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-No-Response.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [4],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     }
   }
 }

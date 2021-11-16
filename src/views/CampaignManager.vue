@@ -41,9 +41,10 @@
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
-        :axios-payload="axiosPayloadOfItem"
+        :axios-payload.sync="axiosPayloadOfItem"
         :is-loading="isItemTableLoading"
         :item="selectedParentItem"
+        :status-items="getStatusItems"
         @on-back-click="handleOnBackClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
       />
@@ -57,7 +58,7 @@ import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
 import PERMISSIONS from '@/permissions'
-import { getPermissionsOfAllItems } from '@/utils/functions'
+import { getDefaultAxiosPayload, getPermissionsOfAllItems } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import { deleteCampaignManager, getCampaignManagerFormDetails } from '@/api/phishingsimulator'
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
@@ -73,7 +74,7 @@ export default {
   data() {
     return {
       axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
-      axiosPayloadOfItem: JSON.parse(JSON.stringify(axiosPayload)),
+      axiosPayloadOfItem: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
       selectedParentItem: null,
       selectedRow: null,
       isShowPreviewDialog: false,

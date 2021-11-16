@@ -5,6 +5,7 @@
     selectable
     filterable
     options
+    is-server-side-selection
     is-server-side
     :refName="'campaignManagerOpenedTable'"
     :loading="isLoading"
@@ -17,6 +18,7 @@
     :server-side-events="tableOptions.serverSideEvents"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
+    :select-event="tableOptions.selectEvent"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -45,12 +47,17 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import QueryHelperForTable from '@/helper-classes/query-helper'
-import { searchCampaignJobUserEmailOpened } from '@/api/phishingsimulator'
-import { getDefaultFilter } from '@/utils/functions'
+import {
+  exportCampaignJobUserEmailOpened,
+  searchCampaignJobUserEmailOpened
+} from '@/api/phishingsimulator'
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
+import { useLoading } from '@/hooks/useLoading'
 
 export default {
   name: 'CampaignManagerReportOpenedTable',
   components: { DataTable },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -62,14 +69,16 @@ export default {
         id: 'campaign-manager-opened-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultFilter(),
-      isLoading: false,
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       tableData: [],
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
         serverSideEvents: { pagination: true, search: true, sort: true },
+        selectEvent: {
+          resend: true
+        },
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
@@ -110,9 +119,20 @@ export default {
   },
   methods: {
     callForData() {
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id).then((response) => {
-        debugger
-      })
+      this.setLoading(true)
+      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
     },
     setQueryValues() {
       this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
@@ -128,7 +148,10 @@ export default {
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.CAMPAIGN_MANAGER_REPORT_OPENED_TABLE)
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {
@@ -222,9 +245,37 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    exportCampaignManagerReportOpenedTable() {},
-    handleOnResend(row) {
-      this.$emit('on-resend', row)
+    exportCampaignManagerReportOpenedTable(downloadTypes) {
+      downloadTypes.exportTypes.forEach((item) => {
+        let payload = {
+          pageNumber: downloadTypes.pageNumber,
+          pageSize: downloadTypes.pageSize,
+          orderBy: this.axiosPayload.orderBy,
+          ascending: this.axiosPayload.ascending,
+          reportAllPages: downloadTypes.reportAllPages,
+          exportType: item === 'XLS' ? 'Excel' : item,
+          filter: this.axiosPayload.filter
+        }
+        exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Report-Opened.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
+    },
+    handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
+      const payload = {
+        Types: [1],
+        items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
+        excludedItems: excludedResourceIdList || [],
+        selectAll: !!isSelectedAllEver,
+        filter: this.axiosPayload.filter
+      }
+      this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
       this.$emit('on-detail', row)

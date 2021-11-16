@@ -288,6 +288,7 @@ export const PROPERTY_STORE = {
 
 export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
+  CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSettings',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
   CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSettings',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSettings',
@@ -427,6 +428,7 @@ export const COMMON_SNACKBAR = {
 export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTable',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
+  CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSearchKeys',
   PHISHING_REPORTER: 'PhishingReporter',
   SMTP_SETTINGS: 'SmtpSettings',

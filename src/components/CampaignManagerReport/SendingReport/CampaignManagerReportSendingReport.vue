@@ -2,10 +2,13 @@
   <div id="campaign-manager-report-sending-report" class="campaign-manager-report-sending-report">
     <CampaignManagerReportHeader
       :title="labels.EmailSendingReport"
-      :subtitle="labels.ResetPassword"
+      :subtitle="phishingScenarioName"
     />
     <CampaignManagerReportSendingReportTable
+      ref="refSendingReportTable"
       class="mt-6"
+      :id="id"
+      :last-sending-status-items="getLastSendingStatusItems"
       @on-resend="handleOnResend"
       @on-detail="handleOnDetail"
     />
@@ -16,14 +19,31 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportTable from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportTable'
+import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSendingReport',
   components: { CampaignManagerReportSendingReportTable, CampaignManagerReportHeader },
+  props: {
+    id: {
+      type: String
+    },
+    phishingScenarioName: {
+      type: String
+    },
+    formDetails: {
+      type: Array
+    }
+  },
   data() {
     return {
       labels,
       isShowDetailDialog: false,
       selectedRow: null
+    }
+  },
+  computed: {
+    getLastSendingStatusItems() {
+      return this.formDetails['userStatuses']
     }
   },
   methods: {
@@ -35,7 +55,11 @@ export default {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
     },
-    handleOnResend(row = {}) {}
+    handleOnResend(payload) {
+      resendPhishingCampaignToUserList(payload, this.id).then(() => {
+        this.$refs.refSendingReportTable.callForData()
+      })
+    }
   }
 }
 </script>

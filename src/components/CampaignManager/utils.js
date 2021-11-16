@@ -35,8 +35,8 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
-    width: 180,
+    type: 'slot',
+    width: 360,
     isEditable: false,
     isCustomOverflowedColumn: true,
     filterableType: 'text',
@@ -69,7 +69,7 @@ export const COLUMNS = {
   },
   TARGET_USERS: {
     property: PROPERTY_STORE.TARGET_USERS,
-    align: 'center',
+    align: 'right',
     editable: false,
     label: labels.TargetUsers,
     fixed: false,
@@ -78,6 +78,19 @@ export const COLUMNS = {
     type: 'number',
     width: 160,
     emptyText: 0
+  },
+  TARGET_USERS_ITEM_TABLE: {
+    property: 'totalTargetUserCount',
+    align: 'right',
+    editable: false,
+    label: labels.TargetUsers,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    emptyText: 0,
+    filterableType: 'numeric'
   },
   STATUS: {
     property: PROPERTY_STORE.STATUS,
@@ -101,6 +114,17 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'date'
   },
+  CREATE_TIME_ITEM_TABLE: {
+    property: 'startDate',
+    align: 'left',
+    editable: false,
+    label: labels.DateCreated,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
   LAST_LAUNCH: {
     property: PROPERTY_STORE.LASTLAUNCH,
     align: 'left',
@@ -113,8 +137,11 @@ export const COLUMNS = {
   }
 }
 export const ACTION_STATUSES = {
-  LAUNCH: 'launch',
-  PAUSE: 'paused',
-  RESUME: 'resumed',
-  DELETE: 'delete'
+  RUNNING: 'Running',
+  PAUSE: 'Paused',
+  RESUME: 'Resumed',
+  DELETE: 'Delete',
+  COMPLETE: 'Completed',
+  CANCEL: 'Canceled',
+  IDLE: 'Idle'
 }

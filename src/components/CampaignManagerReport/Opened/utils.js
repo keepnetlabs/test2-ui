@@ -3,7 +3,7 @@ import labels from '@/model/constants/labels'
 
 export const COLUMNS = {
   FIRST_NAME: {
-    property: PROPERTY_STORE.NAME,
+    property: PROPERTY_STORE.FIRSTNAME,
     align: 'left',
     label: labels.FirstName,
     fixed: 'left',
@@ -18,7 +18,7 @@ export const COLUMNS = {
     property: PROPERTY_STORE.LASTNAME,
     align: 'left',
     label: labels.LastName,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -30,7 +30,7 @@ export const COLUMNS = {
     property: PROPERTY_STORE.EMAIL,
     align: 'left',
     label: labels.Email,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -39,21 +39,21 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   EMAIL_SEND_DATE: {
-    property: PROPERTY_STORE.EMAIL_SEND_DATE,
+    property: 'lastSendingTime',
     align: 'left',
     editable: false,
     label: labels.EmailSendDate,
     sortable: true,
     show: true,
     type: 'text',
-    width: 160,
+    width: 200,
     filterableType: 'date'
   },
   DATA: {
-    property: PROPERTY_STORE.DATA,
+    property: 'submittedData',
     align: 'left',
     label: labels.Data,
-    fixed: 'left',
+    fixed: 'right',
     sortable: true,
     show: true,
     type: 'text',
@@ -65,7 +65,7 @@ export const COLUMNS = {
     property: PROPERTY_STORE.DEPARTMENT,
     align: 'left',
     label: labels.Department,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -74,10 +74,10 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   SCENARIO: {
-    property: PROPERTY_STORE.SCENARIO,
+    property: 'phishingScenarioName',
     align: 'left',
     label: labels.Scenario,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -86,8 +86,9 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   LAST_OPENED: {
-    property: PROPERTY_STORE.LASTOPENED,
+    property: 'lastOpenedTime',
     align: 'left',
+    fixed: false,
     editable: false,
     label: labels.LastOpened,
     sortable: true,
@@ -97,33 +98,57 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   TIMES_OPENED: {
-    property: PROPERTY_STORE.TIMESOPENED,
-    align: 'left',
+    property: 'openedCount',
+    align: 'right',
     editable: false,
     label: labels.TimesOpened,
     sortable: true,
     show: true,
-    type: 'numeric',
+    type: 'text',
     width: 160,
     filterableType: 'numeric'
   },
   DATE_CLICKED: {
-    property: PROPERTY_STORE.DATECLICKED,
+    property: 'clickedTime',
     align: 'left',
     label: labels.DateClicked,
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'date',
+    type: 'text',
     width: 180,
     isEditable: false,
-    filterableType: 'text'
+    filterableType: 'date'
+  },
+  SUBMITTED_TIME: {
+    property: 'submittedTime',
+    align: 'left',
+    label: labels.DateClicked,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
+  DATE_OPENED: {
+    property: 'openedTime',
+    align: 'left',
+    label: labels.DateOpened,
+    fixed: 'left',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
   },
   USER_AGENT: {
     property: PROPERTY_STORE.USERAGENT,
     align: 'left',
     label: labels.UserAgent,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -132,10 +157,10 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   BROWSER: {
-    property: PROPERTY_STORE.BROWSER,
+    property: 'browserName',
     align: 'left',
     label: labels.Browser,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -144,10 +169,10 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   GEOLOCATION: {
-    property: PROPERTY_STORE.GEOLOCATION,
+    property: 'userGeolocation',
     align: 'left',
     label: labels.Geolocation,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -156,10 +181,22 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   IP: {
-    property: PROPERTY_STORE.IP,
+    property: 'userIpAddressList',
     align: 'left',
     label: labels.Ip,
-    fixed: 'left',
+    fixed: 'right',
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
+  SUBMITTED_DATA_IP: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: 'false',
     sortable: true,
     show: true,
     type: 'text',
@@ -168,10 +205,10 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   LAST_CLICKED: {
-    property: PROPERTY_STORE.LASTCLICKED,
+    property: 'lastClickedTime',
     align: 'left',
     label: labels.LastClicked,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'date',
@@ -180,31 +217,32 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   TIMES_CLICKED: {
-    property: PROPERTY_STORE.TIMESCLICKED,
-    align: 'left',
+    property: 'clickedCount',
+    align: 'right',
     editable: false,
     label: labels.TimesClicked,
     sortable: true,
     show: true,
-    type: 'numeric',
+    type: 'text',
     width: 160,
     filterableType: 'numeric'
   },
   PASSWORD_COMPLEXITY: {
-    property: PROPERTY_STORE.PASSWORD_COMPLEXITY,
+    property: 'minPasswordComplexity',
     align: 'center',
     label: labels.PasswordComplexity,
+    fixed: false,
     sortable: true,
     show: true,
     type: 'badge',
-    width: 160,
+    width: 200,
     filterableType: 'select'
   },
   LAST_SUBMISSION: {
-    property: PROPERTY_STORE.LAST_SUBMISSION,
+    property: 'lastSubmittedTime',
     align: 'left',
     label: labels.LastSubmission,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -213,10 +251,10 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   TIMES_SUBMISSION: {
-    property: PROPERTY_STORE.TIMES_SUBMISSION,
-    align: 'left',
+    property: 'submittedCount',
+    align: 'right',
     label: labels.TimesSubmission,
-    fixed: 'left',
+    fixed: false,
     sortable: true,
     show: true,
     type: 'text',
@@ -236,15 +274,32 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
+  SENDING_REPORT_LAST_SENDING_DATE: {
+    property: 'lastSubmittedTime',
+    align: 'left',
+    label: labels.LastSendingDate,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
+  },
   LAST_SENDING_STATUS: {
-    property: PROPERTY_STORE.LAST_SENDING_STATUS,
+    property: 'status',
     align: 'center',
     label: labels.LAST_SENDING_STATUS,
     sortable: true,
     show: true,
-    type: 'slot',
-    width: 160,
-    filterableType: 'select'
+    type: 'badge',
+    width: 200,
+    filterableType: 'select',
+    props: {
+      style: {
+        maxWidth: '120px'
+      }
+    }
   },
   SMTP: {
     property: PROPERTY_STORE.SMTP,
