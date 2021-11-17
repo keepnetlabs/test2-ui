@@ -76,6 +76,7 @@ export default {
       tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
+        serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.FIRST_NAME,
           COLUMNS.LAST_NAME,
