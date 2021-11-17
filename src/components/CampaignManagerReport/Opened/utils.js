@@ -83,7 +83,8 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     isEditable: false,
-    filterableType: 'text'
+    filterableType: 'text',
+    filterableCustomFieldName: 'Scenario'
   },
   LAST_OPENED: {
     property: 'lastOpenedTime',
@@ -106,7 +107,8 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
-    filterableType: 'numeric'
+    filterableType: 'numeric',
+    filterableCustomFieldName: 'TimesOpened'
   },
   DATE_CLICKED: {
     property: 'clickedTime',
@@ -225,7 +227,8 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
-    filterableType: 'numeric'
+    filterableType: 'numeric',
+    filterableCustomFieldName: 'TimesClicked'
   },
   PASSWORD_COMPLEXITY: {
     property: 'minPasswordComplexity',
@@ -236,7 +239,8 @@ export const COLUMNS = {
     show: true,
     type: 'badge',
     width: 200,
-    filterableType: 'select'
+    filterableType: 'select',
+    filterableCustomFieldName: 'PasswordComplexity'
   },
   LAST_SUBMISSION: {
     property: 'lastSubmittedTime',
@@ -260,7 +264,8 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     isEditable: false,
-    filterableType: 'numeric'
+    filterableType: 'numeric',
+    filterableCustomFieldName: 'TimesSubmission'
   },
   LAST_SENDING_DATE: {
     property: PROPERTY_STORE.LAST_SENDING_DATE,
@@ -299,7 +304,8 @@ export const COLUMNS = {
       style: {
         maxWidth: '120px'
       }
-    }
+    },
+    filterableCustomFieldName: 'LastSendingStatus'
   },
   SMTP: {
     property: PROPERTY_STORE.SMTP,
