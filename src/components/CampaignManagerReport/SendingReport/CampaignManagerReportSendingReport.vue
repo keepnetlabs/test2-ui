@@ -31,7 +31,7 @@ export default {
       type: String
     },
     formDetails: {
-      type: Array
+      type: Object
     }
   },
   data() {
