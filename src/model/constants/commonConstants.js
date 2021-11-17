@@ -159,7 +159,7 @@ export const LABEL_STORE = {
 
 export const PROPERTY_STORE = {
   TAGS: 'tags',
-  TARGET_USERS: 'TargetUsers',
+  TARGET_USERS: 'targetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
   LASTOPENED: 'lastOpened',
   DATA: 'data',
