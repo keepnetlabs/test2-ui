@@ -213,6 +213,13 @@ export default {
         )
         return column.filterableType
       })
+
+      const clickedItem = filterItems.find((item) => item.FieldName === 'ClickedCount')
+
+      if (clickedItem) {
+        clickedItem.FieldName = 'TimesClicked'
+      }
+
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
