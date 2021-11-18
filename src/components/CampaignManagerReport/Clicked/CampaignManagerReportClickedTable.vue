@@ -220,6 +220,12 @@ export default {
         clickedItem.FieldName = 'TimesClicked'
       }
 
+      const scenarioItem = filterItems.find((item) => item.FieldName === 'phishingScenarioName')
+
+      if (scenarioItem) {
+        scenarioItem.FieldName = 'Scenario'
+      }
+
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
