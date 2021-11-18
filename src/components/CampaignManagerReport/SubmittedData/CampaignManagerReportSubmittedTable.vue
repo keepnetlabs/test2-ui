@@ -49,7 +49,7 @@ import QueryHelperForTable from '@/helper-classes/query-helper'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import {
-  exportCampaignJobUserEmailClicked,
+  exportCampaignJobUserEmailSubmitted,
   searchCampaignJobUserEmailSubmitted
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
@@ -286,7 +286,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailClicked(payload, this.id).then((response) => {
+        exportCampaignJobUserEmailSubmitted(payload, this.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
