@@ -95,7 +95,13 @@ export default {
     addQuery() {
       const navigatorWidth = document.querySelector('nav.page-nav').style.width
       const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
-      if (width < 1200 && width > 600) {
+      console.log('width', width)
+      if (width < 1200 && width > 700) {
+        document.querySelector(
+          '.campaign-manager-report-summary-cards__right'
+        ).style.flexDirection = 'row'
+        document.querySelector('.campaign-manager-report-summary-cards__left').style.flexDirection =
+          'row'
         document.querySelector('.campaign-manager-report-summary-cards__right').style.marginLeft =
           '0'
         document
@@ -103,13 +109,41 @@ export default {
             '.campaign-manager-report-summary-cards .campaign-manager-report-summary-info-card'
           )
           .forEach((item, index) => {
-            if (index === 2) {
-              item.style.marginLeft = '0'
+            switch (index) {
+              case 1:
+                item.style.marginLeft = '16px'
+                break
+              case 2:
+                item.style.marginLeft = '0'
+                break
+              case 3:
+                item.style.marginLeft = '16px'
             }
           })
 
         document.querySelector('.campaign-manager-report-summary-cards').style = 'flex-wrap:wrap;'
+      } else if (width < 700) {
+        document.querySelector('.campaign-manager-report-summary-cards').style = 'flex-wrap:wrap;'
+        document.querySelector(
+          '.campaign-manager-report-summary-cards__right'
+        ).style.flexDirection = 'column'
+        document.querySelector('.campaign-manager-report-summary-cards__left').style.flexDirection =
+          'column'
+        document.querySelector('.campaign-manager-report-summary-cards__right').style.marginLeft =
+          '0'
+        document
+          .querySelectorAll(
+            '.campaign-manager-report-summary-cards .campaign-manager-report-summary-info-card'
+          )
+          .forEach((item, index) => {
+            item.style.marginLeft = '0'
+          })
       } else {
+        document.querySelector(
+          '.campaign-manager-report-summary-cards__right'
+        ).style.flexDirection = 'row'
+        document.querySelector('.campaign-manager-report-summary-cards__left').style.flexDirection =
+          'row'
         document.querySelector('.campaign-manager-report-summary-cards__right').style.marginLeft =
           '16px'
         document
