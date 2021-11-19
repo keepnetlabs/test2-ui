@@ -64,7 +64,6 @@ export default {
 
 <style lang="scss">
 .campaign-manager-report-summary-info-card {
-  flex-basis: 24%;
   min-width: 300px;
   max-height: 170px;
   border-radius: 8px;
