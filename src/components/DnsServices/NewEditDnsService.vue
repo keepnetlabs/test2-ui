@@ -33,7 +33,7 @@
             height="40"
           ></v-text-field>
         </form-group>
-        <form-group title="Service Type">
+        <form-group title="Service Type" has-hint>
           <k-select
             :items="providerTypes"
             custom-menu-class="menu--provider"
@@ -45,10 +45,8 @@
             v-model.trim="formValues.dnsServiceProviderTypeId"
             item-value="value"
             item-text="text"
-            class="pop-up-card__invite-member"
             :rules="[(v) => validations.required(v, labels.Required)]"
             hint="*Required"
-            reuired
             persistent-hint
           ></k-select>
         </form-group>
