@@ -82,20 +82,11 @@ export default {
       return clickedEmail ? clickedEmail : {}
     }
   },
-  created() {
-    window.addEventListener('resize', this.addQuery)
-  },
-  mounted() {
-    this.addQuery()
-  },
-  beforeDestroy() {
-    window.removeEventListener('resize', this.addQuery)
-  },
   methods: {
     addQuery() {
+      console.log('add query')
       const navigatorWidth = document.querySelector('nav.page-nav').style.width
       const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
-      console.log('width', width)
       if (width < 1324 && width > 680) {
         document.querySelector(
           '.campaign-manager-report-summary-cards__right'
@@ -179,7 +170,27 @@ export default {
 
 <style lang="scss">
 .campaign-manager-report-summary-cards {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  @media (max-width: 1300px) {
+    grid-template-columns: 1fr;
+    .campaign-manager-report-summary-info-card {
+      max-width: 300px;
+    }
+    &__right {
+      margin-left: 0 !important;
+    }
+    @media (max-width: 620px) {
+      &__left,
+      &__right {
+        flex-direction: column;
+        margin-left: 0 !important;
+      }
+      .campaign-manager-report-summary-info-card {
+        margin-left: 0 !important;
+      }
+    }
+  }
   &__left {
     display: flex;
     .campaign-manager-report-summary-info-card:last-child {
