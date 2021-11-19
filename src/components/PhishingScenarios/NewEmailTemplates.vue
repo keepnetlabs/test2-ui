@@ -79,7 +79,27 @@
                     hint="*Required"
                     required
                     persistent-hint
-                  ></k-select>
+                    :slots="{ item: true }"
+                  >
+                    <template #item="{item}">
+                      <div :class="['mail-configuration-select-sources__item-container']">
+                        <div class="mail-configuration-select-sources__item">
+                          <div class="mail-configuration-select-sources__item-left">
+                            {{ item.name }}
+                          </div>
+                          <div class="mail-configuration-select-sources__item-right-platform">
+                            {{
+                              item.name === 'Click Only'
+                                ? 'See who falls for phishing links'
+                                : item.name === 'Data Submission'
+                                ? 'Gather information from users'
+                                : 'Send a trackable macro file '
+                            }}
+                          </div>
+                        </div>
+                      </div>
+                    </template>
+                  </k-select>
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <k-select
