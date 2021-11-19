@@ -81,89 +81,6 @@ export default {
       const { clickedEmail } = this.items
       return clickedEmail ? clickedEmail : {}
     }
-  },
-  methods: {
-    addQuery() {
-      console.log('add query')
-      const navigatorWidth = document.querySelector('nav.page-nav').style.width
-      const width = window.innerWidth - Number(navigatorWidth.slice(0, -2))
-      if (width < 1324 && width > 680) {
-        document.querySelector(
-          '.campaign-manager-report-summary-cards__right'
-        ).style.flexDirection = 'row'
-        document.querySelector('.campaign-manager-report-summary-cards__left').style.flexDirection =
-          'row'
-        document.querySelector('.campaign-manager-report-summary-cards__right').style.marginLeft =
-          '0'
-        if (width > 1314 && width < 1324) {
-          document.querySelector('.campaign-manager-report-summary-cards__left').style.marginRight =
-            '16px'
-        } else {
-          document.querySelector('.campaign-manager-report-summary-cards__left').style.marginRight =
-            '0'
-        }
-        document
-          .querySelectorAll(
-            '.campaign-manager-report-summary-cards .campaign-manager-report-summary-info-card'
-          )
-          .forEach((item, index) => {
-            switch (index) {
-              case 1:
-                item.style.marginLeft = '16px'
-                break
-              case 2:
-                item.style.marginLeft = '0'
-                break
-              case 3:
-                item.style.marginLeft = '16px'
-            }
-          })
-
-        document.querySelector('.campaign-manager-report-summary-cards').style = 'flex-wrap:wrap;'
-      } else if (width <= 680) {
-        document.querySelector('.campaign-manager-report-summary-cards__left').style.marginRight =
-          '0'
-        document.querySelector('.campaign-manager-report-summary-cards').style = 'flex-wrap:wrap;'
-        document.querySelector(
-          '.campaign-manager-report-summary-cards__right'
-        ).style.flexDirection = 'column'
-        document.querySelector('.campaign-manager-report-summary-cards__left').style.flexDirection =
-          'column'
-        document.querySelector('.campaign-manager-report-summary-cards__right').style.marginLeft =
-          '0'
-        document
-          .querySelectorAll(
-            '.campaign-manager-report-summary-cards .campaign-manager-report-summary-info-card'
-          )
-          .forEach((item, index) => {
-            item.style.marginLeft = '0'
-          })
-      } else {
-        document.querySelector('.campaign-manager-report-summary-cards__left').style.marginRight =
-          '0'
-        document.querySelector(
-          '.campaign-manager-report-summary-cards__right'
-        ).style.flexDirection = 'row'
-        document.querySelector('.campaign-manager-report-summary-cards__left').style.flexDirection =
-          'row'
-        document.querySelector('.campaign-manager-report-summary-cards__right').style.marginLeft =
-          '16px'
-        document
-          .querySelectorAll(
-            '.campaign-manager-report-summary-cards .campaign-manager-report-summary-info-card'
-          )
-          .forEach((item, index) => {
-            if (index === 2) {
-              item.style.marginLeft = '16px'
-            }
-            item.style.width = 'calc(24%) !important'
-            item.style.maxWidth = 'calc(24%) !important'
-          })
-        const columnsRowContainer = document.querySelector('.campaign-manager-report-summary-cards')
-        if (columnsRowContainer)
-          document.querySelector('.campaign-manager-report-summary-cards').style = ''
-      }
-    }
   }
 }
 </script>
@@ -208,6 +125,12 @@ export default {
     margin-left: 16px;
     & > div:last-child {
       margin-left: 16px;
+    }
+    & > .campaign-manager-report-summary-info-card:first-child {
+      .campaign-manager-report-summary-info-card-body__icon {
+        right: -2px !important;
+        bottom: -2px !important;
+      }
     }
     @media (min-width: 1201px) {
       flex-basis: 50%;
