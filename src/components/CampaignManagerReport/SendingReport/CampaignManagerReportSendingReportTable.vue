@@ -228,11 +228,6 @@ export default {
         return column.filterableType
       })
 
-      const statusItem = filterItems.find((item) => item.FieldName === 'Status')
-      if (statusItem) {
-        statusItem.FieldName = 'LastSendingStatus'
-      }
-
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive

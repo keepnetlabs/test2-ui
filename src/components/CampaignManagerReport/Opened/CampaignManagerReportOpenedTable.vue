@@ -212,15 +212,6 @@ export default {
         )
         return column.filterableType
       })
-
-      const scenarioItem = filterItems.find((item) => item.FieldName === 'PhishingScenarioName')
-      if (scenarioItem) {
-        scenarioItem.FieldName = 'Scenario'
-      }
-      const openedItem = filterItems.find((item) => item.FieldName === 'OpenedCount')
-      if (openedItem) {
-        openedItem.FieldName = 'TimesOpened'
-      }
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
