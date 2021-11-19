@@ -59,7 +59,7 @@ export const labels = {
   LandingPage: 'Landing Page',
   SendingLimit: 'Sending Limit',
   OtherSettings: 'Other Settings',
-  EmailThatWill: 'Email that will be sent to users',
+  EmailThatWill: 'Email that was be sent to users',
   LandingPageWhoUsers: 'Landing Page for users who clicked the phishing link',
   ScenarioInfo: 'Scenario Info',
   Other: 'Other',
