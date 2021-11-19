@@ -106,7 +106,7 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
-    filterableType: 'numeric'
+    filterableType: 'number'
   },
   DATE_CLICKED: {
     property: 'clickedTime',
@@ -225,7 +225,7 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
-    filterableType: 'numeric'
+    filterableType: 'number'
   },
   PASSWORD_COMPLEXITY: {
     property: 'minPasswordComplexity',
@@ -260,7 +260,7 @@ export const COLUMNS = {
     type: 'text',
     width: 180,
     isEditable: false,
-    filterableType: 'numeric'
+    filterableType: 'number'
   },
   LAST_SENDING_DATE: {
     property: PROPERTY_STORE.LAST_SENDING_DATE,

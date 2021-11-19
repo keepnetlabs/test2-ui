@@ -46,7 +46,7 @@
               </v-list-item>
 
               <v-form ref="refFormStep1" lazy-validation>
-                <form-group title="Template Name" has-hint class-name="mt-8">
+                <form-group title="Scenario Name" has-hint class-name="mt-8">
                   <v-text-field
                     v-model.trim="formValues.name"
                     v-bind="commonRules"
@@ -247,13 +247,14 @@
                       </div>
                       <div>
                         <v-btn
+                          class="campaign-manager-summary-card__button"
                           rounded
                           outlined
                           color="#2196f3"
                           @click="showTemplate1 = !showTemplate1"
                           >Details
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate1 ? 'mdi-arrow-up' : 'mdi-arrow-down' }}
+                            {{ showTemplate1 ? 'mdi-menu-up' : 'mdi-menu-down' }}
                           </v-icon></v-btn
                         >
                       </div>
@@ -374,13 +375,14 @@
                       </div>
                       <div>
                         <v-btn
+                          class="campaign-manager-summary-card__button"
                           rounded
                           outlined
                           color="#2196f3"
                           @click="showTemplate2 = !showTemplate2"
                           >Details
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
-                            {{ showTemplate2 ? 'mdi-arrow-up' : 'mdi-arrow-down' }}
+                            {{ showTemplate2 ? 'mdi-menu-up' : 'mdi-menu-down' }}
                           </v-icon></v-btn
                         >
                       </div>
