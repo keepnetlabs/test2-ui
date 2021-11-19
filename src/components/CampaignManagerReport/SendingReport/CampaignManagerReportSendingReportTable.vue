@@ -49,7 +49,7 @@ import {
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import {
-  exportCampaignJobUserEmailOpened,
+  exportCampaignJobUserSendingReport,
   searchCampaignJobUserSendingReport
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
@@ -272,7 +272,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+        exportCampaignJobUserSendingReport(payload, this.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
