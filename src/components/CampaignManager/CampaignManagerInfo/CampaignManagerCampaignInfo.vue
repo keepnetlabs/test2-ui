@@ -101,7 +101,6 @@
       v-if="showPhishingScenarios"
       v-show="isShowAdvancedSearchPhishing"
       ref="refCampaignManagerPhishingScenarios"
-      class="mb-1"
       :items="phishingScenarioItems"
       :value="formData.phishingScenarioResourceId"
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
