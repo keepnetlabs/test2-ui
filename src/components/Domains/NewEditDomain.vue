@@ -31,8 +31,9 @@
             height="40"
           ></v-text-field>
         </form-group>
-        <form-group title="Record Type">
+        <form-group title="Record Type" has-hint>
           <k-select
+            v-model="formValues.recordTypeId"
             :items="domainData.recordTypes"
             custom-menu-class="menu--provider"
             placeholder="Select Record Type"
@@ -40,14 +41,13 @@
             deletable-chips
             autocomplete="off"
             outlined
-            v-model="formValues.recordTypeId"
             item-value="value"
+            hint="*Required"
             item-text="text"
-            class="pop-up-card__invite-member"
             persistent-hint
           ></k-select>
         </form-group>
-        <form-group title="DNS Service">
+        <form-group title="DNS Service" has-hint>
           <k-select
             :items="domainData.dnsServiceProviders"
             custom-menu-class="menu--provider"
@@ -57,9 +57,10 @@
             autocomplete="off"
             outlined
             v-model="formValues.dnsServiceProviderId"
+            persistent-hint
+            hint="*Required"
             item-value="value"
             item-text="text"
-            class="pop-up-card__invite-member"
           ></k-select>
         </form-group>
         <form-group title="DNS Record" has-hint>
