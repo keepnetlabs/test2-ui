@@ -214,18 +214,6 @@ export default {
         return column.filterableType
       })
 
-      const clickedItem = filterItems.find((item) => item.FieldName === 'ClickedCount')
-
-      if (clickedItem) {
-        clickedItem.FieldName = 'TimesClicked'
-      }
-
-      const scenarioItem = filterItems.find((item) => item.FieldName === 'phishingScenarioName')
-
-      if (scenarioItem) {
-        scenarioItem.FieldName = 'Scenario'
-      }
-
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive

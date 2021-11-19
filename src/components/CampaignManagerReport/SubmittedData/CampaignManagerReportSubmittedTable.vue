@@ -233,15 +233,6 @@ export default {
         return column.filterableType
       })
 
-      const passwordItem = filterItems.find((item) => item.FieldName === 'MinPasswordComplexity')
-      if (passwordItem) {
-        passwordItem.FieldName = 'PasswordComplexity'
-      }
-      const timesSubmissionItem = filterItems.find((item) => item.FieldName === 'SubmittedCount')
-      if (timesSubmissionItem) {
-        timesSubmissionItem.FieldName = 'TimesSubmission'
-      }
-
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = columnFilterActive
