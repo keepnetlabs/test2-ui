@@ -95,8 +95,8 @@ export default {
       const { duration, excludeFromReports, languages, smtpName = 0 } = settings
       return {
         Languages: languages || 'English',
-        Duration: `${duration} Day(s)`,
         'Excluded from reports': excludeFromReports ? 'Yes' : 'No',
+        Duration: `${duration} Day(s)`,
         SMTP: smtpName
       }
     },
