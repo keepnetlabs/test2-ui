@@ -46,7 +46,7 @@
               </v-list-item>
 
               <v-form ref="refFormStep1" lazy-validation>
-                <form-group title="Template Name" has-hint class-name="mt-8">
+                <form-group title="Scenario Name" has-hint class-name="mt-8">
                   <v-text-field
                     v-model.trim="formValues.name"
                     v-bind="commonRules"
