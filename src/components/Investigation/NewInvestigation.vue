@@ -1131,15 +1131,15 @@ export default {
           let time = Number(timeArray[0]) + 4
           if (time >= 24) {
             time = time - 24
-            const newDate = new Date(dateArray[2], dateArray[1], Number(dateArray[0]) + 1)
+            const newDate = new Date(dateArray[2], dateArray[1] - 1, Number(dateArray[0]) + 1)
             dateArray[0] =
               newDate.getDate().toString().length === 1
                 ? `0${newDate.getDate()}`
                 : `${newDate.getDate()}`
             dateArray[1] =
               newDate.getMonth().toString().length === 1
-                ? `0${newDate.getMonth()}`
-                : `${newDate.getMonth()}`
+                ? `0${newDate.getMonth() + 1}`
+                : `${newDate.getMonth() + 1}`
             dateArray[2] =
               newDate.getFullYear().toString().length === 1
                 ? `0${newDate.getFullYear()}`
