@@ -319,6 +319,11 @@ export default {
     text-align: center;
     color: #2196f3;
     margin-bottom: 24px;
+    .v-btn__content {
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 24px;
+    }
   }
   &__testing-content {
     &__item {

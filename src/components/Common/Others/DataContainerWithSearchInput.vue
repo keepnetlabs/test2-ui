@@ -5,7 +5,7 @@
     :sub-title="labels.subtitle"
   >
     <v-form v-model="isValid" lazy-validation ref="refForm" onSubmit="return false;">
-      <div class="copy-to-clipboard__container saml-domain">
+      <div class="copy-to-clipboard__container saml-domain data-container-with-search-input">
         <slot name="search-input">
           <v-text-field
             id="input--saml-settings-domain-to-add"
@@ -21,7 +21,7 @@
           outlined
           rounded
           color="#2196F3"
-          :class="['btn-domain-add ml-10', { 'btn-data-container-invalid': !isValid }]"
+          :class="['btn-domain-add ml-4', { 'btn-data-container-invalid': !isValid }]"
           @click="handleAddClick"
         >
           <v-icon left>mdi-plus</v-icon>
@@ -70,5 +70,10 @@ export default {
 .btn-data-container-invalid {
   color: #757575 !important;
   border-color: #757575;
+}
+.data-container-with-search-input {
+  .v-input {
+    max-width: 452px;
+  }
 }
 </style>

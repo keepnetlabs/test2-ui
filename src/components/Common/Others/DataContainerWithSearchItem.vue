@@ -1,5 +1,5 @@
 <template>
-  <div class="data-container-with-search-item" :style="isEdit && { backgroundColor: 'white' }">
+  <div class="data-container-with-search-item" :style="getStyle">
     <div class="data-container-with-search-item__text">
       <span v-if="!isEdit" :style="!isValid && { color: '#B83A3A' }">{{ value }}</span>
       <v-form v-else ref="refForm">
@@ -104,6 +104,16 @@ export default {
     isValid() {
       const comparator = this.isEdit ? this.textFieldValue : this.value
       return this.textFieldRules.every((func) => func(comparator) === true)
+    },
+    getStyle() {
+      const style = {}
+      if (!this.isValid) {
+        style.backgroundColor = '#FEF7F7'
+      }
+      if (this.isEdit) {
+        style.backgroundColor = 'white'
+      }
+      return style
     }
   },
   methods: {

@@ -14,26 +14,6 @@
             <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
           </template>
           <template v-else>
-            <div class="phishing-reporter__stats-cards" id="card--phishing-reporter-header-add-in">
-              <div class="phishing-reporter__stats-card">
-                <div class="phishing-reporter__stats-card-left">
-                  <div
-                    class="phishing-reporter__stats-card-left-icon"
-                    style="background-color: #2196f3;"
-                  >
-                    <v-icon color="white" left medium>mdi-puzzle</v-icon>
-                  </div>
-                </div>
-                <div class="phishing-reporter__stats-card-right">
-                  <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
-                    {{ getAddOnStatus }}
-                  </h3>
-                  <p class="phishing-reporter__stats-card-right-stats">
-                    {{ labels.User }}(s) have the add-in
-                  </p>
-                </div>
-              </div>
-            </div>
             <div class="phishing-reporter__stats-cards" id="card--phishing-reporter-header-online">
               <div class="phishing-reporter__stats-card">
                 <div class="phishing-reporter__stats-card-left">
@@ -50,6 +30,26 @@
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
                     {{ labels.User }}(s) {{ labels.Online }}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div class="phishing-reporter__stats-cards" id="card--phishing-reporter-header-add-in">
+              <div class="phishing-reporter__stats-card">
+                <div class="phishing-reporter__stats-card-left">
+                  <div
+                    class="phishing-reporter__stats-card-left-icon"
+                    style="background-color: #2196f3;"
+                  >
+                    <v-icon color="white" left medium>mdi-puzzle</v-icon>
+                  </div>
+                </div>
+                <div class="phishing-reporter__stats-card-right">
+                  <h3 class="phishing-reporter__stats-card-right-title" style="color: #2196f3;">
+                    {{ getAddOnStatus }}
+                  </h3>
+                  <p class="phishing-reporter__stats-card-right-stats">
+                    {{ labels.User }}(s) have the add-in
                   </p>
                 </div>
               </div>

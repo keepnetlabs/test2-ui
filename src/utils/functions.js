@@ -1,4 +1,3 @@
-import store from '../store'
 import jwt_decode from 'jwt-decode'
 
 export function getBtnStatusColor(type) {
@@ -13,7 +12,7 @@ export function getBtnStatusColor(type) {
     case 'clean':
       return '#00bcd4'
     case 'active':
-      return '#2196f3'
+      return '#1173C1'
     case 'inactive':
       return '#b83a3a'
     case 'warning':
@@ -23,9 +22,9 @@ export function getBtnStatusColor(type) {
     case 'nonmalicious':
       return '#00bcd4'
     case 'offline':
-      return '#b6791d'
+      return '#B83A3A'
     case 'expired':
-      return '#b6791d'
+      return '#B6791D'
     case 'paused':
       return '#B6791D'
     case 'passive':
@@ -34,6 +33,8 @@ export function getBtnStatusColor(type) {
       return '#b83a3a'
     case 'canceled':
       return '#b83a3a'
+    case 'quequed':
+      return '#0198AC'
     case 'phishing':
       return '#b83a3a'
     case 'idle':
@@ -49,17 +50,17 @@ export function getBtnStatusColor(type) {
     case 'none':
       return '#00bcd4'
     case 'running':
-      return '#2196f3'
+      return '#1173C1'
     case 'Running':
-      return '#2196f3'
+      return '#1173C1'
     case 'Not Running':
-      return '#2196f3'
+      return '#1173C1'
     case 'completed':
-      return '#43a047'
+      return '#217124'
     case 'finished':
-      return '#43a047'
+      return '#217124'
     case 'online':
-      return '#43a047'
+      return '#217124'
     case 'deactivated':
       return '#757575'
     case 'notinstalled':
@@ -79,23 +80,23 @@ export function getBtnStatusColor(type) {
     case 'error':
       return '#b83a3a'
     case 'exist':
-      return '#2196f3'
+      return '#1173C1'
     case 'new':
-      return '#43a047'
+      return '#217124'
     case 'undetected':
-      return '#2196f3'
+      return '#1173C1'
     case 'listed':
       return '#b83a3a'
     case 'custom':
       return '#f56c6c'
     case 'system':
-      return '#2196f3'
+      return '#1173C1'
     case 'yes':
       return '#1173c1'
     case 'no':
       return '#757575'
     case 'not running':
-      return '#f56c6c'
+      return '#B83A3A'
     case 'easy':
       return 'rgba(33, 113, 36, 1)'
     case 'medium':
@@ -120,7 +121,7 @@ export function getBtnPriorityColor(type) {
     case 'verylow':
       return '#757575'
     case 'medium':
-      return '#2196f3'
+      return '#1173C1'
     case 'high':
       return '#b6791d'
     case 'very high':
@@ -132,9 +133,9 @@ export function getBtnPriorityColor(type) {
     case 'error':
       return '#b83a3a'
     case 'exist':
-      return '#2196f3'
+      return '#1173C1'
     case 'new':
-      return '#43a047'
+      return '#217124'
     case 'excluded':
       return '#757575'
     default:
