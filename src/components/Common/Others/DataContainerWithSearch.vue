@@ -254,6 +254,8 @@ export default {
   }
   &__content {
     background: #fafafa;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
   }
   &__error {
     position: absolute;
