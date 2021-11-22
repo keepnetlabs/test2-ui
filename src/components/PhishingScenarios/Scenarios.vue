@@ -32,38 +32,12 @@
       @handleMultipleDelete="handleDeleteMultiple"
       :selectedScenario="selectedScenario"
     />
-    <app-dialog
-      :status="isScenarioDetails"
-      @changeStatus="isScenarioDetails = false"
-      icon="mdi-eye"
-      :title="'Landing Page Template Preview'"
-      :subtitle="selectedScenarioHeader"
-      :size="'ultraMaximum'"
-    >
-      <template v-slot:app-dialog-body>
-        <p class="pl-1">
-          <span>Phishing URL:</span> <b>{{ selectedScenarioURL }}</b>
-        </p>
-        <k-shadow-frame
-          class="grapesjs-reset-css"
-          style="pointer-events: none;"
-          :content="templateHTML"
-          :key="templateHTML + 'appDialog'"
-        />
-      </template>
-      <template v-slot:app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end;">
-          <v-btn
-            class="pa-0 k-dialog__button"
-            text
-            color="#2196f3"
-            @click="isScenarioDetails = false"
-            >CLOSE
-          </v-btn>
-        </div>
-      </template>
-    </app-dialog>
-
+    <PhishingScenarioPreview
+      v-if="isShowPreviewDialog"
+      :status="isShowPreviewDialog"
+      :selected-row="selectedPhishingScenario"
+      @on-close="toggleShowPreviewDialog"
+    />
     <data-table
       v-if="checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')"
       id="scenarios-data-table"
@@ -199,7 +173,6 @@
 import DataTable from '../DataTable'
 import NewScenario from './NewScenario'
 import DeleteScenario from './DeleteScenario'
-import AppDialog from '../AppDialog'
 import {
   getStoreValue,
   PROPERTY_STORE,
@@ -215,24 +188,25 @@ import {
   deleteScenario,
   exportScenarios,
   getScenarioDataDetails,
-  getScenarioPreviewContent,
   getScenariosList
 } from '@/api/scenarios'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
+import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 export default {
   name: 'EmailTemplates',
   components: {
+    PhishingScenarioPreview,
     PhishingScenariosFastLaunch,
     DataTable,
     DeleteScenario,
-    NewScenario,
-    AppDialog
+    NewScenario
   },
   data() {
     return {
       scenarioDetailsLookup: null,
       isShowFastLaunch: false,
+      isShowPreviewDialog: false,
       selectedRow: null,
       methodItems: [],
       difficultyItems: [],
@@ -450,14 +424,18 @@ export default {
         }
       },
       serverSideProps: new ServerSideProps(),
-      isScenarioDetails: false,
       selectedScenarioHeader: null,
-      templateHTML: null
+      templateHTML: null,
+      selectedPhishingScenario: {}
     }
   },
   methods: {
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SCENARIOS, JSON.stringify(tableSettings))
+    },
+    toggleShowPreviewDialog() {
+      if (this.isShowPreviewDialog) this.selectedPhishingScenario = {}
+      this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     resetPageNumber() {
       //generic
@@ -592,17 +570,8 @@ export default {
       this.toggleShowFastLaunch()
     },
     handlePreview(row) {
-      const id = row.resourceId
-      getScenarioPreviewContent(id)
-        .then((response) => {
-          const data = response.data.data
-          this.selectedScenarioHeader = data.landingPageTemplate.landingPages[0].name
-          this.selectedScenarioURL = data.landingPageTemplate.urlTemplate
-          this.templateHTML = data.landingPageTemplate.landingPages[0].content
-          this.isScenarioDetails = true
-          //window.open(data.landingPageTemplate.urlTemplate, '_blank').focus()
-        })
-        .catch((error) => {})
+      this.selectedPhishingScenario = row
+      this.toggleShowPreviewDialog()
     },
     toggleShowFastLaunch() {
       if (this.isShowFastLaunch) this.selectedRow = null
