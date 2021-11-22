@@ -345,7 +345,7 @@
                   :class="[routerName === 'DNSs and Domains' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">DNSs and Domains</span>
+                    <span class="menu-item-span">DNS and Domains</span>
                   </v-list-item-title>
                 </router-link>
               </v-list-item-content>
