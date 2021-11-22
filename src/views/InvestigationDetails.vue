@@ -224,6 +224,7 @@
                             ? 'bg-salmon'
                             : 'bg-salmon'
                         "
+                        :style="getHeaderCardBoxShadow"
                       >
                         <v-icon medium left color="white">{{ statusIcon }}</v-icon>
                       </div>
@@ -276,6 +277,7 @@
                             ? 'bg-macaroni'
                             : 'bg-macaroni'
                         "
+                        :style="getHeaderCardBoxShadowSecond"
                       >
                         <v-icon medium left color="white">mdi-account</v-icon>
                       </div>
@@ -311,6 +313,10 @@
                     <div class="investigation-details__container__stats__cards__card-left">
                       <div
                         class="investigation-details__container__stats__cards__card-left__icon bg-green"
+                        style="
+                          box-shadow: 0px 2px 5px rgba(67, 160, 71, 0.3),
+                            0px 0px 3px rgba(0, 0, 0, 0.1);
+                        "
                       >
                         <v-icon medium left color="white">mdi-account-circle</v-icon>
                       </div>
@@ -344,6 +350,10 @@
                     <div class="investigation-details__container__stats__cards__card-left">
                       <div
                         class="investigation-details__container__stats__cards__card-left__icon bg-blue"
+                        :style="{
+                          boxShadow:
+                            '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+                        }"
                       >
                         <v-icon medium left color="white">mdi-email</v-icon>
                       </div>
@@ -2579,6 +2589,34 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    getHeaderCardBoxShadow() {
+      const { statsAndMenuData } = this
+      const style = {}
+      style.boxShadow = statsAndMenuData
+        ? statsAndMenuData.status === 'Running'
+          ? '0px 2px 5px rgba(33, 150, 243, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : statsAndMenuData && statsAndMenuData.status === 'Finished'
+          ? '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : statsAndMenuData && statsAndMenuData.status === 'Expired'
+          ? '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+        : ''
+      return style
+    },
+    getHeaderCardBoxShadowSecond() {
+      const { statsAndMenuData } = this
+      const style = {}
+      style.boxShadow = statsAndMenuData
+        ? statsAndMenuData.status === 'Running'
+          ? '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : statsAndMenuData && statsAndMenuData.status === 'Finished'
+          ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : statsAndMenuData && statsAndMenuData.status === 'Expired'
+          ? '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+        : ''
+      return style
+    },
     getGoogleData() {
       return (
         this.investigationDetailsData &&
