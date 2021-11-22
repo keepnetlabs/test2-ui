@@ -15,17 +15,15 @@ export function createLandingPage(payload) {
 }
 
 export function getLandingPageTemplatePreviewContent(id) {
-  return testRequest.get(`phishing-simulator/landing-page-template/${id}`, { loading: true })
+  return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
 }
 
 export function getLandingPageFormDetails() {
-  return testRequest.get(`phishing-simulator/landing-page-template/form-details`, { loading: true })
+  return testRequest.get(`phishing-simulator/landing-page-template/form-details`)
 }
 
 export function getLandingPageList(payload) {
-  return testRequest.post(`phishing-simulator/landing-page-template/search`, payload, {
-    loading: true
-  })
+  return testRequest.post(`phishing-simulator/landing-page-template/search`, payload)
 }
 
 export function exportLandingPage(payload) {
@@ -35,7 +33,9 @@ export function exportLandingPage(payload) {
 }
 
 export function deleteLandingPage(id) {
-  return testRequest.delete(`phishing-simulator/landing-page-template/${id}`, { loading: true })
+  return testRequest.delete(`phishing-simulator/landing-page-template/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getLookups(name) {
@@ -79,5 +79,5 @@ export function getMergedTextForPhishing() {
 }
 
 export function getLandingPageTemplate(id) {
-  return testRequest.get(`phishing-simulator/landing-page-template/${id}`, { loading: true })
+  return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
 }

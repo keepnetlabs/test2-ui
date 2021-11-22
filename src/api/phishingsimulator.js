@@ -53,7 +53,7 @@ export function createPhishingEmailTemplate(payload) {
 }
 
 export function getEmailTemplatesList(payload) {
-  return testRequest.post(`phishing-simulator/email-templates/search`, payload, { loading: true })
+  return testRequest.post(`phishing-simulator/email-templates/search`, payload)
 }
 
 export function exportEmailTemplates(payload) {
@@ -63,11 +63,13 @@ export function exportEmailTemplates(payload) {
 }
 
 export function getEmailTemplatePreviewContent(id) {
-  return testRequest.get(`phishing-simulator/email-templates/${id}`, { loading: true })
+  return testRequest.get(`phishing-simulator/email-templates/${id}`)
 }
 
 export function deleteEmailTemplate(id) {
-  return testRequest.delete(`phishing-simulator/email-templates/${id}`, { loading: true })
+  return testRequest.delete(`phishing-simulator/email-templates/${id}`, {
+    snackbar: COMMON_SNACKBAR
+  })
 }
 
 export function getLookups(name) {

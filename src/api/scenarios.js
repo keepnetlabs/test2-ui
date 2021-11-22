@@ -28,28 +28,20 @@ export function exportScenarios(payload) {
 }
 
 export function getScenarioPreviewContent(id) {
-  return testRequest.get(`phishing-simulator/phishing-scenario/preview/${id}`, {
-    loading: true
-  })
+  return testRequest.get(`phishing-simulator/phishing-scenario/preview/${id}`)
 }
 
 export function getScenarioDataDetails() {
-  return testRequest.get(`phishing-simulator/phishing-scenario/form-details`, {
-    loading: true
-  })
+  return testRequest.get(`phishing-simulator/phishing-scenario/form-details`)
 }
 
 export function deleteScenario(id) {
   return testRequest.delete(`phishing-simulator/phishing-scenario/${id}`, {
-    loading: true,
     snackbar: COMMON_SNACKBAR
   })
 }
 export function getSummaryOfScenario(templateId, landingPageId) {
   return testRequest.get(
-    `phishing-simulator/phishing-scenario/preview/${templateId}/${landingPageId}`,
-    {
-      loading: true
-    }
+    `phishing-simulator/phishing-scenario/preview/${templateId}/${landingPageId}`
   )
 }
