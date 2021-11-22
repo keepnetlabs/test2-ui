@@ -6,7 +6,7 @@
       <span class="test-connectivity-status__error-text">{{ message }}</span>
     </div>
     <div v-if="state === 'success'">
-      <span class="test-connectivity-status__success-text pl-3">{{ message }}</span>
+      <span class="test-connectivity-status__success-text">{{ message }}</span>
       <v-icon color="#43a047" class="test-connectivity-status__icon">mdi-check</v-icon>
     </div>
   </div></template

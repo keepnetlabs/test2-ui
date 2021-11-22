@@ -13,7 +13,7 @@
         TESTING CONNECTION
         <v-icon class="ml-2 loading-spin" color="#2196f3" left medium>mdi-rotate-left </v-icon>
       </div>
-      <div class="test-connection__button" v-else>
+      <div :style="!isLoading && { maxWidth: '160px' }" class="test-connection__button" v-else>
         TEST CONNECTION
       </div>
     </div>

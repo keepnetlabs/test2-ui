@@ -57,11 +57,11 @@
               <v-btn style="display: none;" />
               <Badge
                 size="small"
+                color="#217124"
+                text="Running"
                 className="mail-configuration-select-sources__badge"
                 :id="`badge--mail-configuration-select-sources-${index}`"
                 :outline="false"
-                :text="'Running'"
-                :color="getBtnStatusColor(item.statusName)"
               />
             </div>
           </div>

@@ -1,5 +1,9 @@
 <template>
-  <div class="data-container-with-search" :style="getStyle">
+  <div
+    class="data-container-with-search"
+    :style="getStyle"
+    :class="['data-container-with-search', !isAllValid && 'data-container-with-search--error']"
+  >
     <div class="data-container-with-search__input">
       <slot name="search">
         <v-text-field
@@ -229,6 +233,9 @@ export default {
   border: 1px solid #e0e0e0;
   border-radius: 8px;
   margin-bottom: 24px;
+  &--error {
+    border: 1px solid #f56c6c;
+  }
   &__menu {
     .filter__body-container {
       padding: 16px 16px 6px 16px;
@@ -254,6 +261,8 @@ export default {
   }
   &__content {
     background: #fafafa;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
   }
   &__error {
     position: absolute;

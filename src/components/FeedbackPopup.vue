@@ -1,14 +1,20 @@
 <template>
   <div class="feedback-popup">
     <v-card style="width: 600px; max-height: 330px; overflow-y: auto;">
-      <v-list-item class="feedback-popup__header k-dialog__header-max-height">
+      <v-list-item
+        class="feedback-popup__header k-dialog__header-max-height"
+        :style="getScrollingStyle"
+      >
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">
             mdi-message-alert
           </v-icon>
         </div>
         <v-list-item-content>
-          <v-list-item-title id="text--feedback-popup-title" class="v-card-headline"
+          <v-list-item-title
+            id="text--feedback-popup-title"
+            class="v-card-headline"
+            style="color: #2196f3 !important;"
             >Feedback</v-list-item-title
           >
           <v-list-item-subtitle id="text--feedback-popup-subtitle" class="feedback-title">
@@ -19,6 +25,7 @@
       <div class="feedback-popup__text-area">
         <v-form ref="feedbackForm">
           <v-textarea
+            ref="refTextArea"
             id="input--feedback-message"
             filled
             auto-grow
@@ -39,7 +46,7 @@
           ></v-textarea>
         </v-form>
       </div>
-      <div class="feedback-button k-dialog__footer-max-height">
+      <div class="feedback-button k-dialog__footer-max-height" :style="getScrollingStyle">
         <v-btn
           id="btn-cancel--feedback-popup"
           class="feedback-button--cancel"
@@ -71,7 +78,23 @@ export default {
     return {
       labels,
       saveDisable: false,
-      feedbackMessage: null
+      feedbackMessage: null,
+      textAreaHeight: 156
+    }
+  },
+  computed: {
+    getScrollingStyle() {
+      const style = { boxShadow: 'none !important' }
+      if (this.textAreaHeight > 165) {
+        style.boxShadow =
+          ' 0px 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14), 0px 1px 5px rgba(80, 80, 80, 0.2) !important'
+      }
+      return style
+    }
+  },
+  watch: {
+    feedbackMessage() {
+      this.textAreaHeight = this.$refs.refTextArea.$el.getBoundingClientRect().height
     }
   },
   methods: {

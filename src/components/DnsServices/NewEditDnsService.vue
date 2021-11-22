@@ -61,10 +61,12 @@
           <v-text-field
             placeholder="Enter API Key from your provider"
             outlined
-            class="new-client__textfield new-client__api-key__textfield mt-2"
+            class="new-client__textfield new-client__api-key__textfield"
             v-model="formValues.password"
             required
+            persistent-hint
             height="40"
+            hint="*Required"
             :rules="[
               (v) => validations.required(v, labels.Required),
               (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
@@ -73,16 +75,14 @@
         </form-group>
         <make-available-for v-model="availableForRequests" ref="refMakeAvailableFor" />
 
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content class="test-connection-wrapper">
-            <TestConnection
-              :values="formValues"
-              ref="testConnection"
-              @testConnectionValues="testConnectionValues"
-              @loading="saveButtonDisabled = false"
-            />
-          </v-list-item-content>
-        </v-list-item>
+        <form-group :title="labels.TestConnection" class="mt-2">
+          <TestConnection
+            :values="formValues"
+            ref="testConnection"
+            @testConnectionValues="testConnectionValues"
+            @loading="saveButtonDisabled = false"
+          />
+        </form-group>
       </v-form>
     </template>
     <template v-slot:overlay-footer>
