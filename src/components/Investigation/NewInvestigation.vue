@@ -1123,34 +1123,6 @@ export default {
               break
           }
         }
-        // crate new body data for api call
-        const calculateTime = (date) => {
-          const splittedDate = date.split(' ')
-          const timeArray = splittedDate[1].split(':')
-          const dateArray = splittedDate[0].split('/')
-          let time = Number(timeArray[0]) + 4
-          if (time >= 24) {
-            time = time - 24
-            const newDate = new Date(dateArray[2], dateArray[1] - 1, Number(dateArray[0]) + 1)
-            dateArray[0] =
-              newDate.getDate().toString().length === 1
-                ? `0${newDate.getDate()}`
-                : `${newDate.getDate()}`
-            dateArray[1] =
-              newDate.getMonth().toString().length === 1
-                ? `0${newDate.getMonth() + 1}`
-                : `${newDate.getMonth() + 1}`
-            dateArray[2] =
-              newDate.getFullYear().toString().length === 1
-                ? `0${newDate.getFullYear()}`
-                : `${newDate.getFullYear()}`
-          }
-
-          time = time.toString()
-          time = `${time.length === 1 ? `0${time}` : time}:${timeArray[1]}`
-
-          return `${dateArray.join('/')} ${time}`
-        }
 
         const [startDate, endDate] = this.date
         const newInvestigationObj = {
@@ -1159,8 +1131,8 @@ export default {
           attachments: this.filterData(attachmentsData),
           isScanEnterpriseVault: false,
           name: this.investgationName,
-          startDate: calculateTime(startDate),
-          endDate: calculateTime(endDate),
+          startDate,
+          endDate,
           expireDate: this.newExpireDate(startDate, this.selectedDuration),
           targetUserType: this.targetUserType,
           targetUsers:
@@ -1175,6 +1147,7 @@ export default {
             warningMessage: this.warningMessage
           }
         }
+        console.log('newInvestigationObj', newInvestigationObj)
         this.saveDisable = true
         // post request with body data
         this.$store
