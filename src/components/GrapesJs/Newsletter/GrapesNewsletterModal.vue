@@ -512,6 +512,18 @@ export default {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
       this.editor.setComponents(html)
+      const newComponents = this.editor.DomComponents
+      this.editor.on('load', () => {
+        this.editor.select(newComponents.getComponents().at(0))
+        document.querySelector('span[title="Open Code"]').addEventListener('click', () => {
+          const selected = this.editor.getSelected()
+          if (selected && selected.ccid !== 'wrapper') {
+          } else {
+            this.editor.select(newComponents.getComponents().at(0))
+            document.querySelector('span[title="Open Code"]').dispatchEvent(new Event('click'))
+          }
+        })
+      })
     },
     getGrapesEditorContent() {
       let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
