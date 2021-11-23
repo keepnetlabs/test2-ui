@@ -42,6 +42,7 @@
           <TheRecordsButton
             :index="scope.$index"
             :row="scope.row"
+            :disabled-count="0"
             @on-click="handleRecordButtonClick"
           />
         </div>

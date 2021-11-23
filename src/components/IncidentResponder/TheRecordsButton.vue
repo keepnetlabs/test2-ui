@@ -2,7 +2,7 @@
   <v-btn
     rounded
     :id="`btn-records--incident-responder-clustered-table-${index}`"
-    :class="['the-records-button', { 'the-records-button--disabled': this.row.total === 1 }]"
+    :class="['the-records-button', { 'the-records-button--disabled': isDisabled }]"
     :color="getColor"
     :style="getStyle"
     :disabled="isDisabled"
@@ -21,17 +21,21 @@ export default {
     },
     index: {
       type: Number
+    },
+    disabledCount: {
+      type: Number,
+      default: 1
     }
   },
   watch: {
     row(row) {
-      this.isDisabled = row.total === 1
+      this.isDisabled = row.total === this.disabledCount
     }
   },
   emits: ['on-click'],
   data() {
     return {
-      isDisabled: this.row.total === 1
+      isDisabled: this.row.total === this.disabledCount
     }
   },
   computed: {
@@ -49,7 +53,7 @@ export default {
       return `${this.row.total} ${text}`
     },
     isIconVisible() {
-      return { visibility: this.row.total === 1 ? 'hidden' : 'visible' }
+      return { visibility: this.row.total === this.disabledCount ? 'hidden' : 'visible' }
     }
   },
   methods: {

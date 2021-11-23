@@ -30,6 +30,7 @@
         :items="smtpItems"
         :error="isShowSmtpInputError"
         :error-messages="getSmtpInputErrorMessage"
+        :disabled="isTestingConnection"
         @change="handleChangeSmtp"
         @focus="handleFocusOfSmtpSettingsInput"
         @focusout="handleFocusOutOfSmtpSettingsInput"
@@ -431,6 +432,7 @@ export default {
       this.buttonKey = Math.random().toString()
       this.isTestMailSend = false
       this.isShowSmtpInputError = false
+      this.testEmailErrorMessage = ''
     },
     handleOnConfirmSmtpErrorDialog() {
       this.toggleShowSmtpErrorDialog()
@@ -488,6 +490,7 @@ export default {
       })
     },
     async callForTestConnection() {
+      this.$emit('set-action-button-disability', true)
       try {
         this.isTestingConnection = true
         const smtpData = await this.callForGetSmtpSetting()
@@ -502,11 +505,11 @@ export default {
         try {
           await testConnection(payload)
           this.isTestMailSend = true
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.isShowSmtpInputError = false
           this.$nextTick(() => {
             this.testEmailErrorMessage = ''
           })
+          return true
         } catch (error) {
           if (!error) return
           const { response } = error
@@ -519,7 +522,10 @@ export default {
         } finally {
           this.isTestingConnection = false
         }
-      } catch (e) {}
+      } catch (e) {
+      } finally {
+        this.$emit('set-action-button-disability', false)
+      }
     },
     handleFocusOfSmtpSettingsInput() {
       if (this.inputTimeout) {
@@ -551,7 +557,7 @@ export default {
         scrollTop - (scrollHeight - offsetHeight) < 10 &&
         scrollTop - (scrollHeight - offsetHeight) > -10
       ) {
-        this.axiosPayload.pageSize += 10
+        this.smtpAxiosPayload.pageSize += 10
         this.debounce(() => {
           this.callForSmtpSettings()
         }, 500)
