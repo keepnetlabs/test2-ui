@@ -58,6 +58,7 @@
               :default-values="getDefaultValuesOfAdvancedSettings"
               :selected-phishing-scenario="getSelectedPhishingScenario"
               @on-increment-step="step++"
+              @set-action-button-disability="setActionButtonDisability"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="3">
@@ -294,14 +295,33 @@ export default {
     },
     changeStep(flag = 1) {
       const { refCampaignManagerAdvancedSettings, refCampaignManagerCampaignInfo } = this.$refs
-      if (
-        this.step === 2 &&
-        flag === 1 &&
-        refCampaignManagerAdvancedSettings &&
-        refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
-        !refCampaignManagerAdvancedSettings.isTestMailSend
-      ) {
-        refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
+      if (this.step === 2 && flag === 1) {
+        if (
+          refCampaignManagerAdvancedSettings &&
+          refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
+          !refCampaignManagerAdvancedSettings.isTestMailSend
+        ) {
+          refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
+        } else if (
+          refCampaignManagerAdvancedSettings &&
+          !refCampaignManagerAdvancedSettings.testEmailErrorMessage &&
+          !refCampaignManagerAdvancedSettings.isTestMailSend
+        ) {
+          refCampaignManagerAdvancedSettings
+            .callForTestConnection()
+            .then((response) => {
+              if (response) {
+                this.step++
+              } else {
+                refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
+              }
+            })
+            .catch(() => {
+              refCampaignManagerAdvancedSettings.toggleShowSmtpErrorDialog()
+            })
+        } else {
+          this.step++
+        }
       } else if (this.step === 1 && flag === 1) {
         const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
           (item) => item.value
