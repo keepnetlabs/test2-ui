@@ -414,3 +414,9 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+#campaign-manager-parent-data-table #btn-back--compaign-manager-clustered-table {
+  pointer-events: visible;
+}
+</style>
