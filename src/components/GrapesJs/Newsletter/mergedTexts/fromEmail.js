@@ -1,4 +1,4 @@
-import mergedTextsFromEmail from '../blocks/mergedTextsBlocks/fromName'
+import mergedTextsFromEmail from '../blocks/mergedTextsBlocks/fromEmail'
 
 const fromEmail = {
   label: 'From Email',
