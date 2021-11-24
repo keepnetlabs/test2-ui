@@ -398,7 +398,6 @@ export default {
             label: 'Basic'
           }
         } else if (block.attributes.id === 'form') {
-          debugger
           block.attributes.category = {
             label: 'Forms'
           }
