@@ -232,7 +232,12 @@ export default {
       const logoUrl = store.state.whitelabel.mainLogoUrl
 
       this.editor.on('block:drag:stop', (droppedComponent) => {
-        if (droppedComponent.attributes.attributes['data-title'] === 'Company Logo') {
+        if (
+          droppedComponent &&
+          droppedComponent.attributes &&
+          droppedComponent.attributes.attributes &&
+          droppedComponent.attributes.attributes['data-title'] === 'Company Logo'
+        ) {
           for (const img of document
             .getElementsByClassName('gjs-frame')[0]
             .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
@@ -242,17 +247,7 @@ export default {
           }
         }
       })
-      /*setTimeout(() => {
-        if (!document.getElementsByClassName('gjs-btn-prim').length) {
-          document
-            .getElementsByClassName('gjs-pn-btn fa fa-code')[0]
-            .addEventListener('click', () => {
-              setTimeout(() => {
-                document.getElementsByClassName('gjs-btn-prim')[0].setAttribute('type', 'button')
-              }, 100)
-            })
-        }
-      }, 500)*/
+
       setTimeout(() => {
         if (!!document.getElementsByClassName('fa-file-code-o').length) {
           document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
@@ -403,6 +398,7 @@ export default {
             label: 'Basic'
           }
         } else if (block.attributes.id === 'form') {
+          debugger
           block.attributes.category = {
             label: 'Forms'
           }
