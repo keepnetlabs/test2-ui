@@ -45,6 +45,7 @@
             hint="*Required"
             item-text="text"
             persistent-hint
+            :rules="[(v) => validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
         <form-group title="DNS Service" has-hint>
@@ -61,6 +62,7 @@
             hint="*Required"
             item-value="value"
             item-text="text"
+            :rules="[(v) => validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
         <form-group title="DNS Record" has-hint>
