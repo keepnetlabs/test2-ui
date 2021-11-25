@@ -115,7 +115,7 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       CONSTANTS: {
-        id: 'campaign-manager-parent-data-table',
+        id: 'campaign-manager-item-data-table',
         ascending: 'ascending'
       },
       tableData: [],
@@ -367,3 +367,8 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+#campaign-manager-item-data-table .selection-row {
+  top: 131px;
+}
+</style>
