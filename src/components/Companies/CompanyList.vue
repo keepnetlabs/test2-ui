@@ -111,7 +111,7 @@
               <span
                 v-on="on"
                 :class="{ 'number-of-users-exceed': isNumberOfUsersExceed(scope.row) }"
-                >{{ scope.row['numberOfUsers'] }}</span
+                >{{ ` ${scope.row['numberOfUsers']} ` }}</span
               >
             </template>
             <span>{{
