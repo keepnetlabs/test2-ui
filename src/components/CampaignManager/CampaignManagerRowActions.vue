@@ -62,12 +62,15 @@ export default {
       return `btn-${this.actionStatus}-row-action-${Math.random().toString().substring(2)}`
     },
     actionStatus() {
-      return this.scope.row.actionStatus
+      return this.scope.row.status
     },
     getIconName() {
       switch (this.actionStatus) {
-        case ACTION_STATUSES.LAUNCH:
+        case ACTION_STATUSES.COMPLETE:
+        case ACTION_STATUSES.IDLE:
+        case ACTION_STATUSES.CANCEL:
           return 'mdi-send'
+        case ACTION_STATUSES.RUNNING:
         case ACTION_STATUSES.PAUSE:
         case ACTION_STATUSES.RESUME:
           return 'mdi-pause'
@@ -77,10 +80,13 @@ export default {
     },
     getTooltipText() {
       switch (this.actionStatus) {
-        case ACTION_STATUSES.LAUNCH:
+        case ACTION_STATUSES.COMPLETE:
+        case ACTION_STATUSES.IDLE:
+        case ACTION_STATUSES.CANCEL:
           return labels.Launch
         case ACTION_STATUSES.PAUSE:
           return labels.Resume
+        case ACTION_STATUSES.RUNNING:
         case ACTION_STATUSES.RESUME:
           return labels.Pause
         default:
@@ -97,7 +103,11 @@ export default {
     },
     getItems() {
       const copyOfRowActions = JSON.parse(JSON.stringify(this.rowActions))
-      if (this.actionStatus !== ACTION_STATUSES.LAUNCH) {
+      if (
+        [ACTION_STATUSES.PAUSE, ACTION_STATUSES.RESUME, ACTION_STATUSES.RUNNING].includes(
+          this.actionStatus
+        )
+      ) {
         copyOfRowActions.unshift({
           name: labels.Stop,
           id: 'btn-stop--row-actions-campaign-manager',
@@ -110,7 +120,23 @@ export default {
   },
   methods: {
     handleItemClick(act = {}) {
-      this.$emit(act.action, this.scope.row)
+      let eventName = ''
+      switch (act.action) {
+        case ACTION_STATUSES.RUNNING:
+          eventName = 'on-pause'
+          break
+        case ACTION_STATUSES.PAUSE:
+          eventName = 'on-run'
+          break
+        case ACTION_STATUSES.COMPLETE:
+        case ACTION_STATUSES.IDLE:
+        case ACTION_STATUSES.CANCEL:
+          eventName = 'on-launch'
+          break
+        default:
+          eventName = act.action
+      }
+      this.$emit(eventName, this.scope.row)
     }
   }
 }

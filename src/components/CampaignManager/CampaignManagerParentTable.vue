@@ -56,6 +56,10 @@
         @on-preview="handlePreview"
         @on-delete="handleDelete"
         @on-duplicate="handleDuplicate"
+        @on-pause="handlePause"
+        @on-run="handleRun"
+        @on-stop="handleStop"
+        @on-launch="handleLaunch"
       />
     </template>
   </DataTable>
@@ -83,7 +87,11 @@ const EMITS = {
   ON_EDIT: 'on-edit',
   ON_PREVIEW: 'on-preview',
   ON_DELETE: 'on-delete',
-  ON_DUPLICATE: 'on-duplicate'
+  ON_DUPLICATE: 'on-duplicate',
+  ON_PAUSE: 'on-pause',
+  ON_RUN: 'on-run',
+  ON_STOP: 'on-stop',
+  ON_LAUNCH: 'on-launch'
 }
 
 export default {
@@ -410,6 +418,18 @@ export default {
     },
     handleDuplicate(row) {
       this.$emit(EMITS.ON_DUPLICATE, row)
+    },
+    handlePause(row) {
+      this.$emit(EMITS.ON_PAUSE, row)
+    },
+    handleRun(row) {
+      this.$emit(EMITS.ON_RUN, row)
+    },
+    handleStop(row) {
+      this.$emit(EMITS.ON_STOP, row)
+    },
+    handleLaunch(row) {
+      this.$emit(EMITS.ON_LAUNCH, row)
     }
   }
 }
