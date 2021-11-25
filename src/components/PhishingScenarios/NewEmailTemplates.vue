@@ -69,13 +69,13 @@
                   has-hint
                 >
                   <k-select
+                    v-bind="commonRules"
+                    v-model.trim="formValues.categoryResourceId"
                     :items="methodItems"
                     item-disabled="disabled"
                     item-text="name"
-                    :value="formValues.categoryResourceId"
                     item-value="resourceId"
                     outlined
-                    v-bind="commonRules"
                     hint="*Required"
                     required
                     persistent-hint
@@ -103,9 +103,9 @@
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <k-select
+                    v-model="formValues.tags"
                     type="combobox"
                     :id="`input--action-tags`"
-                    v-model="formValues.tags"
                     :items="[]"
                     chips
                     deletable-chips

@@ -1,4 +1,4 @@
-import mergedTextsLastName from '../blocks/mergedTextsBlocks/firstName'
+import mergedTextsLastName from '../blocks/mergedTextsBlocks/lastName'
 
 const lastName = {
   label: 'Last Name',
