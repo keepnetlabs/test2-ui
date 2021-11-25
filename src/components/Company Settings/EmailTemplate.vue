@@ -23,7 +23,7 @@
       <label>Subject</label>
       <v-text-field
         id="input--notification-template-subject"
-        placeholder="Enter subject"
+        placeholder="Enter email subject"
         outlined
         dense
         hint="*Required"

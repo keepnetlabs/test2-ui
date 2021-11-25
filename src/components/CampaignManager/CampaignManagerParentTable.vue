@@ -15,6 +15,7 @@
     :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="tableOptions.serverSideEvents"
+    :select-event="tableOptions.selectEvent"
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :download-button="tableOptions.downloadButton"
@@ -125,6 +126,12 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         columns: [
           COLUMNS.CAMPAIGN_NAME,
           COLUMNS.TARGET_USERS,
@@ -435,9 +442,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-#campaign-manager-parent-data-table #btn-back--compaign-manager-clustered-table {
-  pointer-events: visible;
-}
-</style>

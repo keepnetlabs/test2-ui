@@ -24,6 +24,7 @@
       :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="tableOptions.serverSideEvents"
+      :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :add-button="tableOptions.addButton"
       @on-add-button-click="toggleAddCampaignManagerModal"
@@ -42,7 +43,7 @@
     >
       <template #table-search-left-side>
         <v-btn
-          id="btn-back--compaign-manager-clustered-table"
+          id="btn-back--campaign-manager-clustered-table"
           text
           color="#2196f3"
           class="clustered-table-back-btn"
@@ -115,7 +116,7 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       CONSTANTS: {
-        id: 'campaign-manager-parent-data-table',
+        id: 'campaign-manager-item-data-table',
         ascending: 'ascending'
       },
       tableData: [],
@@ -124,6 +125,12 @@ export default {
       serverSideProps: new ServerSideProps(),
       tableOptions: {
         isColumnFilterActive: false,
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
         columns: [
           COLUMNS.SCHEDULE,
           COLUMNS.TARGET_USERS_ITEM_TABLE,
@@ -367,3 +374,22 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+#campaign-manager-item-data-table {
+  .table-header-disable {
+    opacity: 1;
+    pointer-events: visible;
+    * {
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    #btn-back--campaign-manager-clustered-table {
+      pointer-events: visible;
+      opacity: 1;
+    }
+  }
+  .selection-row {
+    top: 131px;
+  }
+}
+</style>

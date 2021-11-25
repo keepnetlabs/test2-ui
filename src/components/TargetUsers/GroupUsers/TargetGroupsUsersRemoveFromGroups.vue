@@ -3,7 +3,7 @@
     v-if="status"
     :status="status"
     title="Remove from group ?"
-    icon="mdi-delete"
+    icon="mdi-minus-circle"
     subtitle="User(s) will be removed from target group"
     :body="getContent"
     @changeStatus="handleClose"
