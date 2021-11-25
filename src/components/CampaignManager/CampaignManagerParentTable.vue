@@ -40,6 +40,7 @@
             <span> {{ scope.row[col.property] }}</span>
           </div>
           <TheRecordsButton
+            label="instance"
             :index="scope.$index"
             :row="scope.row"
             :disabled-count="0"
