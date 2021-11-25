@@ -38,6 +38,10 @@
         @on-preview="handleItemOnPreview"
         @on-delete="handleItemOnDelete"
         @on-duplicate="handleItemOnDuplicate"
+        @on-pause="handleOnPause"
+        @on-run="handleOnRun"
+        @on-stop="handleStop"
+        @on-launch="handleLaunch"
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
@@ -60,7 +64,13 @@ import CampaignManagerAddOrEditModal from '@/components/CampaignManager/Campaign
 import PERMISSIONS from '@/permissions'
 import { getDefaultAxiosPayload, getPermissionsOfAllItems } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
-import { deleteCampaignManager, getCampaignManagerFormDetails } from '@/api/phishingsimulator'
+import {
+  deleteCampaignManager,
+  getCampaignManagerFormDetails,
+  pausePhishingCampaignJob,
+  resumePhishingCampaignJob,
+  stopPhishingCampaignJob
+} from '@/api/phishingsimulator'
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 export default {
   name: 'CampaignManager',
@@ -158,6 +168,22 @@ export default {
       this.selectedRow = row
       this.toggleAddCampaignManagerModal()
     },
+    handleOnPause(row = {}) {
+      pausePhishingCampaignJob(row.resourceId).then(() => {
+        this.$refs.campaignManagerParentTable.callForData()
+      })
+    },
+    handleOnRun(row = {}) {
+      resumePhishingCampaignJob(row.resourceId).then(() => {
+        this.$refs.campaignManagerParentTable.callForData()
+      })
+    },
+    handleStop(row = {}) {
+      stopPhishingCampaignJob(row.resourceId).then(() => {
+        this.$refs.campaignManagerParentTable.callForData()
+      })
+    },
+    handleLaunch(row = {}) {},
     toggleShowPreviewDialog() {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },

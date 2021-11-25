@@ -285,7 +285,18 @@ export function searchCampaignPhishingJob(payload, id) {
 }
 
 export function stopPhishingCampaignJob(id) {
-  return testRequest.patch(`/phishing-simulator/phishing-campaign-job/stop/${id}`, {
+  return testRequest.patch(`/phishing-simulator/phishing-campaign-job/stop/${id}`, null, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+export function pausePhishingCampaignJob(id) {
+  return testRequest.patch(`/phishing-simulator/phishing-campaign-job/pause/${id}`, null, {
+    snackbar: COMMON_SNACKBAR
+  })
+}
+
+export function resumePhishingCampaignJob(id) {
+  return testRequest.patch(`/phishing-simulator/phishing-campaign-job/resume/${id}`, null, {
     snackbar: COMMON_SNACKBAR
   })
 }

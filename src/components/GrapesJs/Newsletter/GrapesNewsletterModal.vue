@@ -114,7 +114,11 @@ export default {
     },
     setMergedTextsForLinks() {
       Object.keys(this.blockManagerComponents).forEach((key) => {
-        if (this.blockManagerComponents[key].attributes.isUrl)
+        if (
+          this.blockManagerComponents[key] &&
+          this.blockManagerComponents[key].attributes &&
+          this.blockManagerComponents[key].attributes.isUrl
+        )
           this.urlMergedTexts.push({
             value: key,
             name: this.blockManagerComponents[key].label,
@@ -231,7 +235,7 @@ export default {
       })
       const logoUrl = store.state.whitelabel.mainLogoUrl
 
-      this.editor.on('block:drag:stop', (droppedComponent) => {
+      this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (
           droppedComponent &&
           droppedComponent.attributes &&
@@ -245,6 +249,30 @@ export default {
             img.src = logoUrl
             img.className = img.className.replaceAll('gjs-plh-image', '')
           }
+        } else if (
+          droppedComponent &&
+          block.attributes &&
+          block.attributes.customId === 'grapesForm'
+        ) {
+          droppedComponent.components().forEach((inner) => {
+            switch (inner.find('label')[0].view.el.textContent) {
+              case 'Name':
+                inner.find('input')[0].addAttributes({ name: 'Name' })
+                break
+              case 'Email':
+                inner.find('input')[0].addAttributes({ name: 'Email' })
+                break
+              case 'Gender':
+                inner.find('input')[0].addAttributes({ name: 'Male' })
+                inner.find('input')[1].addAttributes({ name: 'Female' })
+                break
+              case 'Message':
+                inner.find('textarea')[0].addAttributes({ name: 'Message' })
+                break
+              default:
+                break
+            }
+          })
         }
       })
 
@@ -401,6 +429,7 @@ export default {
           block.attributes.category = {
             label: 'Forms'
           }
+          block.attributes.customId = 'grapesForm'
         } else if (block.attributes.id === 'input') {
           block.attributes.category = {
             label: 'Forms'
