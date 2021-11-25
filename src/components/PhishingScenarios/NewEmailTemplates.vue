@@ -122,7 +122,7 @@
                 </form-group>
                 <form-group
                   title="Difficulty"
-                  sub-title="Select a difficulty level for this scenario "
+                  sub-title="Select a detection difficulty level for this phishing email"
                   class-name="mb-6"
                 >
                   <v-radio-group

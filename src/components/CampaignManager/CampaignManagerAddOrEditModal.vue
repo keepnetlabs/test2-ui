@@ -102,7 +102,7 @@
           :disabled="isActionButtonDisabled"
           @click="handleSubmit"
         >
-          {{ [1, 2].includes(step) ? labels.Next : labels.Start }}
+          {{ [1, 2].includes(step) ? labels.Next : getLastStepText }}
         </v-btn>
       </div>
     </template>
@@ -165,6 +165,11 @@ export default {
     getTitle() {
       const text = this.isEdit ? labels.Edit : labels.New
       return `${text} Phishing Campaign`
+    },
+    getLastStepText() {
+      return this.$refs.refCampaignManagerCampaignInfo.formData.scheduleTypeId === '1'
+        ? labels.Start
+        : labels.Save
     },
     getSelectedPhishingScenario() {
       let selectedScenario = {}

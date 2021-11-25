@@ -175,19 +175,11 @@ export default {
     },
     handleRemoveUsers() {
       this.toggleShowRemoveUserModal()
-      if (this.selectedRow.constructor.name === 'Array') {
-        this.selectedRow.map((selectedItem) => {
-          this.$refs.refTable.$refs.refTargetGroupUsersTable.$refs.elTableRef.toggleRowSelection(
-            selectedItem,
-            false
-          )
-        })
-      } else {
-        this.$refs.refTable.$refs.refTargetGroupUsersTable.$refs.elTableRef.toggleRowSelection(
-          this.selectedRow,
-          false
-        )
-      }
+      const refTable = this.$refs.refTable.$refs.refTargetGroupUsersTable
+      refTable.$refs.elTableRef.clearSelection()
+      refTable.serverSideSelectionCount = 0
+      refTable.excludedResourceIdList = []
+      refTable.isSelectedAllEver = false
       this.callForSearchTargetGroupUsers()
     },
     toggleAddUserModal() {
