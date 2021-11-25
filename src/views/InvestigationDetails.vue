@@ -405,7 +405,7 @@
                   <div
                     class="investigation-details__container__content--left-menu--time--left-date"
                   >
-                    {{ diffDays === 0 ? 0 : diffDays }} {{ diffDays > 1 ? 'days' : 'day' }}
+                    {{ getTimeLeftText }}
                   </div>
                 </div>
                 <div class="investigation-details__container__content--left-menu--mail-menu">
@@ -1194,6 +1194,8 @@ export default {
     notifyMessage: null,
     notifyMessageWithDelete: null,
     diffDays: null,
+    totalHours: 0,
+    totalMinutes: 0,
     activeMenu: 'Inbox',
     warningMessage: 'Send a warning message for this email',
     statusIcon: 'mdi-check',
@@ -2026,19 +2028,30 @@ export default {
         this.investigationDetailsData.expireDate.split(' ')[0],
         getTimeZoneForMoment()
       ).toDate()
-      let startDate = moment(
-        this.investigationDetailsData.startDate.split(' ')[0],
-        getTimeZoneForMoment()
-      ).toDate()
-      let diffDays = parseInt((expireDate - today) / (1000 * 60 * 60 * 24), 10)
-      let totalDays = parseInt((expireDate - createDate) / (1000 * 60 * 60 * 24), 10)
-      this.diffDays = diffDays
-      let progressValue = 100 - (diffDays === 0 ? 100 : diffDays * 100) / totalDays
-      if (diffDays <= 0) {
+
+      let diffSeconds = parseInt((expireDate - today) / 1000, 10)
+      this.diffDays = diffSeconds / (60 * 60 * 24)
+      if (this.diffDays <= 0) {
         this.diffDays = 0
         this.progressValue = 100
       } else {
-        this.progressValue = progressValue
+        let progressSeconds = diffSeconds
+        this.diffDays = Math.floor(progressSeconds / (60 * 60 * 24))
+        let remainingTime = progressSeconds
+        if (this.diffDays > 0) {
+          remainingTime = progressSeconds % (60 * 60 * 24)
+        }
+
+        this.totalHours = Math.floor(remainingTime / (60 * 60))
+        if (this.totalHours > 0) {
+          remainingTime = remainingTime % (60 * 60)
+        }
+        this.totalMinutes = Math.floor(remainingTime / 60)
+        const totalSeconds = parseInt((expireDate - createDate) / 1000, 10)
+        this.progressValue =
+          this.statsAndMenuData.status === 'Finished'
+            ? 100
+            : (parseInt((today - createDate) / 1000, 10) / totalSeconds) * 100
       }
     },
     isWantToStopConfirm() {
@@ -2589,6 +2602,20 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    getTimeLeftText() {
+      const { diffDays, totalHours, totalMinutes } = this
+      return this.loading
+        ? 'Loading...'
+        : this.statsAndMenuData.status === 'Finished'
+        ? 'Finished'
+        : this.statsAndMenuData.status === 'Canceled'
+        ? 'Canceled'
+        : this.statsAndMenuData.status === 'Expired'
+        ? 'Expired'
+        : `${
+            diffDays === 0 ? 0 : diffDays
+          } day(s) ${totalHours} hour(s) ${totalMinutes} minute(s) left`
+    },
     getHeaderCardBoxShadow() {
       const { statsAndMenuData } = this
       const style = {}
