@@ -25,6 +25,10 @@ export default {
     disabledCount: {
       type: Number,
       default: 1
+    },
+    label: {
+      type: String,
+      default: 'record'
     }
   },
   watch: {
@@ -49,7 +53,7 @@ export default {
       }
     },
     getText() {
-      const text = this.row.total === 1 ? 'record' : 'records'
+      const text = this.row.total === 1 ? `${this.label}` : `${this.label}s`
       return `${this.row.total} ${text}`
     },
     isIconVisible() {
