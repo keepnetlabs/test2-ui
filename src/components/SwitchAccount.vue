@@ -44,6 +44,7 @@
           <div style="position: relative;" v-click-outside="handleSearchCompanyFocusOut">
             <v-text-field
               v-model.trim="searchedCompanyText"
+              ref="refSearchTextField"
               id="input--switch-account-search-company"
               outlined
               hide-details
@@ -174,6 +175,10 @@ export default {
       this.changeMenuStatus()
       this.isOpenAllMenuItems = false
       this.searchedCompanyText = this.selectedAccount.label
+      if (this.$refs && this.$refs.refSearchTextField && this.$refs.refSearchTextField) {
+        const el = this.$refs.refSearchTextField.$el
+        el && el.querySelector('input').blur()
+      }
     },
     changeMenuStatus(status = 'hidden') {
       const menu = document.querySelector('.switch-account__container')
