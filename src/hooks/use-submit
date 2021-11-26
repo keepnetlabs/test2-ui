@@ -300,11 +300,11 @@
             /* repeat character exists */
             bCharExists = true
             /*
-        Calculate icrement deduction based on proximity to identical characters
-        Deduction is incremented each time a new match is discovered
-        Deduction amount is based on total password length divided by the
-        difference of distance between currently selected match
-        */
+Calculate icrement deduction based on proximity to identical characters
+Deduction is incremented each time a new match is discovered
+Deduction amount is based on total password length divided by the
+difference of distance between currently selected match
+*/
             nRepInc += Math.abs(arrPwdLen / (b - a))
           }
         }
