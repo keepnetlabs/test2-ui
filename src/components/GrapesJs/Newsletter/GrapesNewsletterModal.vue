@@ -95,6 +95,9 @@ export default {
       // Log the state data to the console
     })
   },
+  beforeDestroy() {
+    this.editor.destroy()
+  },
   methods: {
     setMergeTextNames() {
       let _this = this

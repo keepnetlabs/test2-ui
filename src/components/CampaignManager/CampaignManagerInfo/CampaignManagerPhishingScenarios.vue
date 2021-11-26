@@ -10,12 +10,7 @@
       @changeStatus="toggleTemplateDialog"
     >
       <template #app-dialog-body>
-        <k-shadow-frame
-          class="grapesjs-reset-css"
-          style="pointer-events: none;"
-          :content="selectedTemplate"
-          :key="selectedTemplate + 'appDialog'"
-        />
+        <KEmailPreview v-if="!!selectedTemplate" :html="selectedTemplate" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -175,12 +170,8 @@
                         </div>
                       </div>
                       <hr class="mt-2" v-if="!!emailTemplate" />
-                      <k-shadow-frame
-                        class="grapesjs-reset-css"
-                        style="pointer-events: none;"
-                        :content="emailTemplate"
-                        :key="emailTemplate + 'vue'"
-                      />
+
+                      <KEmailPreview v-if="!!emailTemplate" :html="emailTemplate" />
                     </div>
                   </el-tab-pane>
                   <el-tab-pane
@@ -215,12 +206,7 @@
                         </div>
                       </div>
                       <hr class="mt-2" v-if="!!landingPageTemplate" />
-                      <k-shadow-frame
-                        class="grapesjs-reset-css"
-                        style="pointer-events: none;"
-                        :content="landingPageTemplate"
-                        :key="landingPageTemplate + 'vue'"
-                      />
+                      <KEmailPreview v-if="!!landingPageTemplate" :html="landingPageTemplate" />
                     </div>
                   </el-tab-pane>
                 </el-tabs>
@@ -261,9 +247,10 @@ import {
   getPhishingScenarioLandingPageAndEmailTemplate
 } from '@/api/phishingsimulator'
 import { getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'CampaignManagerPhishingScenarios',
-  components: { KSelect, AppDialog, Multipane, MultipaneResizer },
+  components: { KEmailPreview, KSelect, AppDialog, Multipane, MultipaneResizer },
   props: {
     items: {
       type: Array

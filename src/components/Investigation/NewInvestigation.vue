@@ -1147,7 +1147,6 @@ export default {
             warningMessage: this.warningMessage
           }
         }
-        console.log('newInvestigationObj', newInvestigationObj)
         this.saveDisable = true
         // post request with body data
         this.$store

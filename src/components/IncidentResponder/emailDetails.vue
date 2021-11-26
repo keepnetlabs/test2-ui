@@ -113,7 +113,12 @@
                 :uploadRespond="mailDetails"
               />
               <div class="border-for-header"></div>
-              <k-shadow-frame id="sframe" v-bind:content="mailDetails.htmlBody" />
+              <KEmailPreview
+                id="sframe"
+                v-if="!!mailDetails.htmlBody"
+                ref="refPreview"
+                :html="mailDetails.htmlBody"
+              />
               <div class="border-for-header mt-8 mb-3"></div>
               <email-details-preview-footer
                 v-if="!!mailDetails.attachments.length"
@@ -434,9 +439,11 @@ import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetai
 import { scrollToComponent } from '@/utils/functions'
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
+import KEmailPreview from '@/components/KEmailPreview'
 
 export default {
   components: {
+    KEmailPreview,
     EmailDetailsUrl,
     EmailDetailsPreviewFooter,
     EmailDetailsContentDetails,
@@ -830,7 +837,7 @@ export default {
           for (let a of _this.mailDetails.urls) {
             const els = document
               .getElementById('sframe')
-              .shadowRoot.querySelectorAll('[href="' + a.url + '"]')
+              .contentWindow.document.querySelectorAll('[href="' + a.url + '"]')
             for (let i = 0, l = els.length; i < l; i++) {
               const el = els[i]
               el.setAttribute('target', '_blank')
