@@ -7,6 +7,7 @@
   >
     <Treeselect
       v-bind="isAvailableForProps"
+      ref="refTreeSelect"
       id="input--make-available-for"
       :class="[
         'k-treeselect',
@@ -228,6 +229,12 @@ export default {
           this.setTreeSelectOptions(this.treeSelectionStatus)
         }
         this.$emit('input', emittedVal)
+        debugger
+        if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
+          if (this.$refs.refTreeSelect.menu.isOpen) {
+            this.$refs.refTreeSelect.menu.isOpen = false
+          }
+        }
         this.validateAvailableFor(newVal)
       }
     },

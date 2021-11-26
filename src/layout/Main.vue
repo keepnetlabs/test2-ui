@@ -50,7 +50,7 @@
     <div class="layout-container__background"></div>
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
-        <div class="page-nav__logo-wrapper">
+        <div class="page-nav__logo-wrapper" style="display: flex; align-items: center;">
           <div
             v-show="isTourActive"
             class="tour-btn-container tour-five"
@@ -1923,6 +1923,7 @@ export default {
       min-height: 48px;
       &__logo {
         max-height: 48px;
+        max-width: 100%;
       }
     }
     &.v-navigation-drawer--mini-variant {
@@ -2257,9 +2258,8 @@ export default {
       width: 60px;
 
       img {
-        max-width: 60px;
+        max-width: 100%;
         max-height: 60px;
-        border-radius: 40px;
       }
     }
     &__details {

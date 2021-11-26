@@ -56,8 +56,8 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   SCHEDULE: {
-    property: PROPERTY_STORE.SCHEDULE,
-    align: 'center',
+    property: 'startDate',
+    align: 'left',
     editable: false,
     label: labels.Schedule,
     fixed: false,
@@ -65,7 +65,7 @@ export const COLUMNS = {
     show: true,
     type: 'text',
     width: 160,
-    filterableType: 'text'
+    filterableType: 'date'
   },
   TARGET_USERS: {
     property: PROPERTY_STORE.TARGET_USERS,
@@ -77,6 +77,7 @@ export const COLUMNS = {
     show: true,
     type: 'number',
     width: 160,
+    filterableType: 'number',
     emptyText: 0
   },
   TARGET_USERS_ITEM_TABLE: {
@@ -90,7 +91,7 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     emptyText: 0,
-    filterableType: 'numeric'
+    filterableType: 'number'
   },
   STATUS: {
     property: PROPERTY_STORE.STATUS,
@@ -115,7 +116,7 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   CREATE_TIME_ITEM_TABLE: {
-    property: 'startDate',
+    property: 'createdDate',
     align: 'left',
     editable: false,
     label: labels.DateCreated,
