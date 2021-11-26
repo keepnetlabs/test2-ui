@@ -10,12 +10,7 @@
       style="overflow: hidden;"
     >
       <template v-slot:app-dialog-body>
-        <k-shadow-frame
-          class="grapesjs-reset-css"
-          style="pointer-events: none;"
-          :content="templateHTML"
-          :key="templateHTML + 'appDialog'"
-        />
+        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -212,12 +207,7 @@
                   </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
-                <k-shadow-frame
-                  class="grapesjs-reset-css"
-                  style="pointer-events: none;"
-                  :content="templateHTML"
-                  :key="templateHTML + 'vue'"
-                />
+                <k-email-preview v-if="templateHTML" :html="templateHTML" />
               </div>
             </div>
           </multipane>
@@ -233,13 +223,14 @@ import { getSelectedEmailPreview, searchNotifiedMail } from '@/api/threadSharing
 import AppDialog from '../AppDialog'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
 import { scrollToComponent } from '@/utils/functions'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
     scenarioDetailsLookup: { required: true },
     emailTemplateResourceId: { required: false }
   },
-  components: { Multipane, MultipaneResizer, AppDialog },
+  components: { KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   data() {
     return {
       showAdvancedSearch: true,

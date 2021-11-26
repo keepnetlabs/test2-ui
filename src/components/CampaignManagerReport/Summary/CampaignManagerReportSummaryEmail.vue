@@ -34,11 +34,7 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <div
-            v-html="formData.emailTemplate"
-            class="grapesjs-reset-css"
-            style="pointer-events: none;"
-          ></div>
+          <KEmailPreview v-if="!!formData.emailTemplate" :html="formData.emailTemplate" />
         </div>
       </div>
     </template>
@@ -49,9 +45,10 @@
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
-  components: { Badge, CampaignManagerSummaryCard },
+  components: { KEmailPreview, Badge, CampaignManagerSummaryCard },
   props: {
     formData: {
       type: Object

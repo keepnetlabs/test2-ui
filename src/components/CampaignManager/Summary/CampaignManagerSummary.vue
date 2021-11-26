@@ -81,11 +81,11 @@
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
-              <div
-                v-html="formData.emailTemplate"
-                class="grapesjs-reset-css"
-                style="pointer-events: none;"
-              ></div>
+              <KEmailPreview
+                v-if="!!formData.emailTemplate"
+                ref="refPreview"
+                :html="formData.emailTemplate"
+              />
             </div>
           </div>
         </template>
@@ -130,11 +130,10 @@
             class="campaign-manager-last-step__email-template-body-preview-container"
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
-              <div
-                v-html="formData.landingPageTemplate"
-                class="grapesjs-reset-css"
-                style="pointer-events: none;"
-              ></div>
+              <KEmailPreview
+                v-if="!!formData.landingPageTemplate"
+                :html="formData.landingPageTemplate"
+              />
             </div>
           </div>
         </template>
@@ -148,9 +147,15 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
 import Badge from '@/components/Badge'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'CampaignManagerSummary',
-  components: { Badge, CampaignManagerTargetGroupsAndUserSummaryInfo, CampaignManagerSummaryCard },
+  components: {
+    KEmailPreview,
+    Badge,
+    CampaignManagerTargetGroupsAndUserSummaryInfo,
+    CampaignManagerSummaryCard
+  },
   props: {
     formData: {
       type: Object
