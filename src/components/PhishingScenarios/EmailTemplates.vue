@@ -35,12 +35,7 @@
       :maxHeightSize="'600'"
     >
       <template v-slot:app-dialog-body>
-        <k-shadow-frame
-          class="grapesjs-reset-css"
-          style="pointer-events: none;"
-          :content="templateHTML"
-          :key="templateHTML + 'appDialog'"
-        />
+        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -196,9 +191,11 @@ import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'EmailTemplates',
   components: {
+    KEmailPreview,
     DataTable,
     DeleteEmailTemplates,
     NewEmailTemplates,

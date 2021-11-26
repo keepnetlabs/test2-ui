@@ -30,12 +30,7 @@
               </div>
             </div>
             <hr class="mt-2" v-if="!!emailTemplate" />
-            <k-shadow-frame
-              class="grapesjs-reset-css"
-              style="pointer-events: none;"
-              :content="emailTemplate"
-              :key="emailTemplate + 'vue'"
-            />
+            <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
           </div>
         </el-tab-pane>
         <el-tab-pane
@@ -53,11 +48,10 @@
               </div>
             </div>
             <hr class="mt-2" v-if="!!landingPageTemplate" />
-            <k-shadow-frame
-              class="grapesjs-reset-css"
-              style="pointer-events: none;"
-              :content="landingPageTemplate"
-              :key="landingPageTemplate + 'vue'"
+            <KEmailPreview
+              v-if="!!landingPageTemplate"
+              ref="refPreview"
+              :html="landingPageTemplate"
             />
           </div>
         </el-tab-pane>
@@ -80,9 +74,10 @@ import labels from '@/model/constants/labels'
 import { getScenario } from '@/api/scenarios'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'PhishingScenarioPreview',
-  components: { DatatableLoading, AppDialog },
+  components: { KEmailPreview, DatatableLoading, AppDialog },
   props: {
     status: {
       type: Boolean
@@ -104,7 +99,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return 'Campaign Template Preview'
+      return 'Scenario Preview'
     },
     getSubtitle() {
       return this.selectedRow.name

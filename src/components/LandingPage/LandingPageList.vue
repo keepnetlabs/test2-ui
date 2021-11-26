@@ -31,17 +31,12 @@
       @changeStatus="isTemplateDetails = false"
       icon="mdi-eye"
       :title="selectedTemplateHeader"
-      :subtitle="'Email Template Preview'"
+      :subtitle="'Landing Page Template Preview'"
       :size="'ultraMaximum'"
       :maxHeightSize="'600'"
     >
       <template v-slot:app-dialog-body>
-        <k-shadow-frame
-          class="grapesjs-reset-css"
-          style="pointer-events: none;"
-          :content="templateHTML"
-          :key="templateHTML + 'appDialog'"
-        />
+        <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -198,9 +193,11 @@ import {
   exportLandingPage,
   deleteLandingPage
 } from '@/api/landingPage'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'EmailTemplates',
   components: {
+    KEmailPreview,
     DataTable,
     DeleteEmailTemplates,
     NewLandingPage,

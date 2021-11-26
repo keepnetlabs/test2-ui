@@ -103,7 +103,7 @@
       <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
     >
     <div class="email-template-preview" style="pointer-events: none;">
-      <div v-if="template" v-html="template" class="grapesjs-reset-css" ref="refPreview" />
+      <k-email-preview v-if="template" ref="refPreview" :html="template" />
       <table style="width: 600px; margin: 0 auto;" v-else ref="refPreview">
         <tbody>
           <tr
@@ -133,22 +133,22 @@
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
-              <p style="margin-bottom: 0;">
+            <td>
+              <p style="margin: 2px;">
                 Let’s design an email template
               </p>
             </td>
           </tr>
-          <tr :style="[{ marginTop: '16px' }]">
-            <td style="padding-top: 10px;">
-              <p style="margin-bottom: 0;">
+          <tr>
+            <td>
+              <p style="margin: 2px;">
                 To design an email template, first click the Edit button to enter design mode
               </p>
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
-              <p style="margin-bottom: 0;">
+            <td>
+              <p style="margin: 2px;">
                 Once there choose the layout, use blocks, text, images and other features you need
                 to design a responsive email, really fast.
               </p>
@@ -156,28 +156,28 @@
           </tr>
           <tr>
             <td style="padding-top: 10px;">
-              <p style="margin-bottom: 0;">
+              <p style="margin: 2px;">
                 Give your content a style by changing fonts, colors, borders and other properties.
               </p>
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
-              <p style="margin-bottom: 0;">
+            <td>
+              <p style="margin: 2px;">
                 Use shortcodes to define user names, email addresses, URLs, training pieces, dates
                 and many more properties
               </p>
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
-              <p style="margin-bottom: 0;">
+            <td>
+              <p style="margin: 2px;">
                 Upload files as attachments to track who downloads and runs suspicious files
               </p>
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
+            <td>
               <hr
                 style="margin: 8px auto 16px auto; max-width: 600px; border: 1px solid #b3d4fc;"
               />
@@ -203,14 +203,14 @@
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
+            <td>
               <hr
                 style="margin: 14px auto 14px auto; max-width: 600px; border: 1px solid #b3d4fc;"
               />
             </td>
           </tr>
           <tr>
-            <td style="padding-top: 10px;">
+            <td>
               <p style="margin-bottom: 0;">
                 This email is sent by <span>{USERNAME}</span> from <span>{COMPANYNAME}</span> on
                 <span>{DATESENT}</span>
@@ -232,9 +232,11 @@ import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsle
 import { mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AttachmentsPreview from '../ThreadSharing/AttachmentsPreview'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'EmailTemplate',
   components: {
+    KEmailPreview,
     GrapesNewsletterModal,
     AppModal,
     InputEmail,
@@ -275,7 +277,7 @@ export default {
     }
   },
   mounted() {
-    this.defaultTemplate = JSON.parse(JSON.stringify(this.$refs.refPreview.outerHTML))
+    this.defaultTemplate = this.$refs.refPreview.outerHTML || this.template
   },
   methods: {
     onFileChanged(file) {
@@ -285,7 +287,10 @@ export default {
       this.tab = index
     },
     editHtmlTemplate() {
-      this.$emit('update:template', this.$refs.refPreview.outerHTML)
+      this.$emit(
+        'update:template',
+        this.$refs.refPreview.$refs.iframe.contentWindow.document.body.innerHTML
+      )
       this.toggleShowGrapesModal()
     },
     getPStyle() {

@@ -353,10 +353,10 @@
                       style="border: none;"
                     >
                       <div class="summary-template">
-                        <k-shadow-frame
-                          class="grapesjs-reset-css"
-                          style="pointer-events: none;"
-                          v-bind:content="summaryData.emailTemplate.template"
+                        <KEmailPreview
+                          v-if="!!summaryData.emailTemplate.template"
+                          ref="refPreview"
+                          :html="summaryData.emailTemplate.template"
                         />
                       </div>
                     </div>
@@ -447,10 +447,10 @@
                       style="border: none;"
                     >
                       <div class="summary-template">
-                        <k-shadow-frame
-                          class="grapesjs-reset-css"
-                          style="pointer-events: none;"
-                          v-bind:content="summaryData.landingPageTemplate.landingPages[0].content"
+                        <KEmailPreview
+                          v-if="!!summaryData.landingPageTemplate.landingPages[0].content"
+                          ref="refPreview"
+                          :html="summaryData.landingPageTemplate.landingPages[0].content"
                         />
                       </div>
                     </div>
@@ -516,6 +516,7 @@ import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPre
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import KShadowFrame from '@/components/KShadowFrame'
 import { scrollToComponent } from '@/utils/functions'
+import KEmailPreview from '@/components/KEmailPreview'
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
@@ -635,6 +636,7 @@ a{position:relative}
 export default {
   name: 'NewScenarios',
   components: {
+    KEmailPreview,
     KSelect,
     AppModal,
     FormGroup,
