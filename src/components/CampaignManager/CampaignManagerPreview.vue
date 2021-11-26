@@ -1,7 +1,9 @@
 <template>
   <AppDialog
+    custom-size="1600"
+    max-height
+    max-height-size="900"
     icon="mdi-eye"
-    custom-size="900"
     :status="status"
     :title="getTitle"
     :subtitle="getSubtitle"

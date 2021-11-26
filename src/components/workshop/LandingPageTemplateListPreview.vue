@@ -1,12 +1,14 @@
 <template>
   <div class="landingPagePreview">
     <app-dialog
+      custom-size="1600"
+      max-height
+      max-height-size="900"
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
       icon="mdi-eye"
       :title="selectedTemplateHeader"
       :subtitle="'Landing Page Template Preview'"
-      :size="'ultraMaximum'"
       style="overflow: hidden;"
     >
       <template v-slot:app-dialog-body>

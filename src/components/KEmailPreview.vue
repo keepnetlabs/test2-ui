@@ -54,6 +54,7 @@ export default {
 .k-email-preview {
   border: none !important;
   pointer-events: none !important;
+  max-height: 5000px;
   * {
     padding: 0;
     margin: 0;
