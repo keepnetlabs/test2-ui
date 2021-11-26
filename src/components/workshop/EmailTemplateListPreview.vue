@@ -1,12 +1,14 @@
 <template>
   <div class="emailTemplatePreview">
     <app-dialog
+      custom-size="1600"
+      max-height
+      max-height-size="900"
       :status="isTemplateDetails"
       @changeStatus="isTemplateDetails = false"
       icon="mdi-eye"
       :title="selectedTemplateHeader"
       :subtitle="'Email Template Preview'"
-      :size="'ultraMaximum'"
       style="overflow: hidden;"
     >
       <template v-slot:app-dialog-body>
