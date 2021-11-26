@@ -26,13 +26,14 @@
       :selectedEmailTemplate="selectedEmailTemplate"
     />
     <app-dialog
-      :status="isTemplateDetails"
-      @changeStatus="isTemplateDetails = false"
+      custom-size="1600"
+      max-height
+      max-height-size="900"
       icon="mdi-eye"
       :title="selectedTemplateHeader"
+      :status="isTemplateDetails"
       :subtitle="'Email Template Preview'"
-      :size="'ultraMaximum'"
-      :maxHeightSize="'600'"
+      @changeStatus="isTemplateDetails = false"
     >
       <template v-slot:app-dialog-body>
         <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />

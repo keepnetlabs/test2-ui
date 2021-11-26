@@ -2,7 +2,9 @@
   <div class="emailTemplatePreview mb-8" style="min-height: auto !important;">
     <AppDialog
       icon="mdi-eye"
-      size="ultraMaximum"
+      custom-size="1600"
+      max-height
+      max-height-size="900"
       :subtitle="labels.TemplatePreview"
       :status="isShowTemplate"
       :title="selectedTemplateHeader"

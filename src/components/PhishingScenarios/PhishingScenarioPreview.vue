@@ -1,10 +1,12 @@
 <template>
   <AppDialog
     icon="mdi-eye"
-    custom-size="900"
+    custom-size="1600"
     :status="status"
     :title="getTitle"
     :subtitle="getSubtitle"
+    max-height
+    max-height-size="900"
     class-name="campaign-manager-preview-dialog"
     @changeStatus="handleClose"
   >
