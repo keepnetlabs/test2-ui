@@ -137,7 +137,7 @@
                     />
                   </v-list-item-content>
                 </v-list-item>
-                <v-list-item class="margin-top">
+                <v-list-item class="mt-5">
                   <v-list-item-content>
                     <v-switch
                       v-model="isActive"
