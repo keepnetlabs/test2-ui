@@ -77,6 +77,7 @@ export const COLUMNS = {
     show: true,
     type: 'number',
     width: 160,
+    filterableType: 'number',
     emptyText: 0
   },
   TARGET_USERS_ITEM_TABLE: {
@@ -90,7 +91,7 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     emptyText: 0,
-    filterableType: 'numeric'
+    filterableType: 'number'
   },
   STATUS: {
     property: PROPERTY_STORE.STATUS,
