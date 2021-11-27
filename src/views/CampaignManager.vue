@@ -106,6 +106,11 @@ export default {
       return this.formDetails.status
     }
   },
+  watch: {
+    isItemTableShowing(val) {
+      if (!val) this.axiosPayloadOfItem = getDefaultAxiosPayload({ orderBy: 'StartDate' })
+    }
+  },
   created() {
     this.getPermissions()
     this.callForFormDetails()
