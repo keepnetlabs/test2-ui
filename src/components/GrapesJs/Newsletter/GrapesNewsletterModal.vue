@@ -373,7 +373,6 @@ export default {
             label: 'Layout'
           }
         } else if (block.attributes.id === 'button') {
-          console.log('block2', block)
           block.attributes.category = {
             label: 'Basic'
           }
@@ -547,7 +546,6 @@ export default {
       this.editor.setComponents(html)
       const newComponents = this.editor.DomComponents
       this.editor.on('load', () => {
-        console.log('this.editor.BlockManager.getAll()', this.editor.BlockManager.getAll())
         this.editor.select(newComponents.getComponents().at(0))
         document.querySelector('span[title="Open Code"]').addEventListener('click', () => {
           const selected = this.editor.getSelected()
