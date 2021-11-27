@@ -78,7 +78,6 @@
         trackingData,
         passwordComplexityType: complexity
       }
-      console.log('payload', payload)
       handleSubmit(payload)
     })
   }
