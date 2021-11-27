@@ -21,6 +21,8 @@
         rounded
         outlined
         color="#2196f3"
+        :disabled="isDownloadReportDisabled"
+        @click="handleDownloadReport"
         >{{ labels.DownloadReport }}</v-btn
       >
       <v-btn
@@ -37,7 +39,7 @@
 <script>
 import labels from '@/model/constants/labels'
 import CampaignManagerReportSummaryResendDialog from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryResendDialog'
-import { resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
+import { exportPhishingCampaignJob, resendPhishingCampaignToUsers } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSummaryHeader',
   components: { CampaignManagerReportSummaryResendDialog },
@@ -56,7 +58,8 @@ export default {
     return {
       labels,
       isActionButtonDisabled: false,
-      isShowResendDialog: false
+      isShowResendDialog: false,
+      isDownloadReportDisabled: false
     }
   },
   methods: {
@@ -69,6 +72,18 @@ export default {
         this.isActionButtonDisabled = false
         this.toggleShowResendDialog()
       })
+    },
+    handleDownloadReport() {
+      this.isDownloadReportDisabled = true
+      exportPhishingCampaignJob(this.id)
+        .then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Manager-Report.xlsx`
+          link.click()
+        })
+        .finally(() => (this.isDownloadReportDisabled = false))
     }
   }
 }

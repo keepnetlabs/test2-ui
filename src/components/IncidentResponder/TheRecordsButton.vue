@@ -53,7 +53,7 @@ export default {
       }
     },
     getText() {
-      const text = this.row.total === 1 ? `${this.label}` : `${this.label}s`
+      const text = this.row.total === 1 || this.row.total === 0 ? `${this.label}` : `${this.label}s`
       return `${this.row.total} ${text}`
     },
     isIconVisible() {

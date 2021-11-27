@@ -42,6 +42,7 @@ import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
 import { eventFire } from '@/utils/functions'
 import store from '@/store'
+import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -192,7 +193,6 @@ export default {
           ]
         }
       })
-      const copyEditor = Object.assign({}, this.editor)
       this.editor.on('component:selected', () => {
         const selected = this.editor.getSelected()
         if (selected && selected.is('link')) {
@@ -237,7 +237,6 @@ export default {
         }
       })
       const logoUrl = store.state.whitelabel.mainLogoUrl
-
       this.editor.on('block:drag:stop', (droppedComponent, block) => {
         if (
           droppedComponent &&
@@ -329,7 +328,6 @@ export default {
       let blockManager = this.editor.BlockManager
       blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('amazonTemplate', amazonTemplate)
-
       let pn = this.editor.Panels
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
@@ -352,6 +350,12 @@ export default {
       ])
       const blocks = blockManager.getAll()
       blocks.map((block) => {
+        if (block.attributes.id === 'Submit Phishing Button') {
+          block.attributes.category = {
+            id: 'Basic',
+            label: 'Basic'
+          }
+        }
         if (block.attributes.id === 'sect100') {
           block.attributes.category = {
             label: 'Layout'
@@ -483,6 +487,7 @@ export default {
           }
         }
       })
+      blockManager.add('Submit Phishing Button', submitButton)
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
           const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl

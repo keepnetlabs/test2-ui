@@ -307,6 +307,12 @@ export function resendPhishingCampaignToUsers(payload, id) {
   })
 }
 
+export function exportPhishingCampaignJob(id) {
+  return testRequest.get(`/phishing-simulator/phishing-campaign-job-report/export/${id}`, {
+    responseType: 'blob'
+  })
+}
+
 export function resendPhishingCampaignToUserList(payload, id) {
   return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/list/${id}`, payload, {
     snackbar: COMMON_SNACKBAR
