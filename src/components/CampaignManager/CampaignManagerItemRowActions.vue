@@ -28,7 +28,7 @@
       </template>
       <v-list class="v-cart-dropdown-list el-table__action-buttons">
         <v-list-item
-          v-for="(act, ind) of rowActions"
+          v-for="(act, ind) of getRowActions"
           :key="ind"
           :id="`${act.id}-${scope.$index}-${ind}-${Math.random().toString().substring(2)}`"
           class="sub-menu-el datatable-row-action-list"
@@ -91,6 +91,21 @@ export default {
     actionStatus() {
       return this.scope.row.status
     },
+    getRowActions() {
+      const rowActions = this.rowActions
+      if (this.actionStatus === ACTION_STATUSES.RUNNING) {
+        return [
+          {
+            name: labels.ViewReport,
+            id: 'btn-view-report-row-actions-campaign-item-manager',
+            icon: 'mdi-text-box',
+            action: 'on-view-report'
+          },
+          ...rowActions
+        ]
+      }
+      return rowActions
+    },
     getIconName() {
       switch (this.actionStatus) {
         case ACTION_STATUSES.COMPLETE:
@@ -131,7 +146,7 @@ export default {
   },
   methods: {
     handleItemClick(act) {
-      if (!this.isMenuRender) {
+      if (!this.isMenuRender || act.action === 'on-view-report') {
         return this.$router.push({
           name: 'Campaign Report',
           params: { id: this.scope.row.resourceId }

@@ -2021,14 +2021,13 @@ export default {
     calculateProgressData() {
       let today = moment(new Date()).toDate()
       let createDate = moment(
-        this.investigationDetailsData.createTime.split(' ')[0],
+        this.investigationDetailsData.createTime.split(' '),
         getTimeZoneForMoment()
       ).toDate()
       let expireDate = moment(
-        this.investigationDetailsData.expireDate.split(' ')[0],
+        this.investigationDetailsData.expireDate.split(' '),
         getTimeZoneForMoment()
       ).toDate()
-
       let diffSeconds = parseInt((expireDate - today) / 1000, 10)
       this.diffDays = diffSeconds / (60 * 60 * 24)
       if (this.diffDays <= 0) {
@@ -2612,9 +2611,9 @@ export default {
         ? 'Canceled'
         : this.statsAndMenuData.status === 'Expired'
         ? 'Expired'
-        : `${
-            diffDays === 0 ? 0 : diffDays
-          } day(s) ${totalHours} hour(s) ${totalMinutes} minute(s) left`
+        : `${diffDays > 0 ? `${diffDays === 0 ? 0 : diffDays} day(s) ` : ''}${
+            totalHours > 0 ? `${totalHours} hour(s) ` : ''
+          }${totalMinutes} minute(s) left`
     },
     getHeaderCardBoxShadow() {
       const { statsAndMenuData } = this

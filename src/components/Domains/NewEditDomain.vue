@@ -31,23 +31,6 @@
             height="40"
           ></v-text-field>
         </form-group>
-        <form-group title="Record Type" has-hint>
-          <k-select
-            v-model="formValues.recordTypeId"
-            :items="domainData.recordTypes"
-            custom-menu-class="menu--provider"
-            placeholder="Select Record Type"
-            dense
-            deletable-chips
-            autocomplete="off"
-            outlined
-            item-value="value"
-            hint="*Required"
-            item-text="text"
-            persistent-hint
-            :rules="[(v) => validations.required(v, labels.Required)]"
-          ></k-select>
-        </form-group>
         <form-group title="DNS Service" has-hint>
           <k-select
             :items="domainData.dnsServiceProviders"
@@ -62,6 +45,23 @@
             hint="*Required"
             item-value="value"
             item-text="text"
+            :rules="[(v) => validations.required(v, labels.Required)]"
+          ></k-select>
+        </form-group>
+        <form-group title="Record Type" has-hint>
+          <k-select
+            v-model="formValues.recordTypeId"
+            :items="domainData.recordTypes"
+            custom-menu-class="menu--provider"
+            placeholder="Select Record Type"
+            dense
+            deletable-chips
+            autocomplete="off"
+            outlined
+            item-value="value"
+            hint="*Required"
+            item-text="text"
+            persistent-hint
             :rules="[(v) => validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
