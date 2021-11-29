@@ -15,7 +15,8 @@ const submitButton = {
     attributes: {
       title: 'Submit',
       type: 'submit'
-    }
+    },
+    style: { cursor: 'pointer' }
   }
 }
 
