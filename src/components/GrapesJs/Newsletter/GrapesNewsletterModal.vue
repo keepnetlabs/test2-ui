@@ -198,7 +198,7 @@ export default {
           try {
             originalFct(components)
           } catch (ex) {
-            window.alert('Parse error: ' + ex.stack)
+            window.alert('Parse error: ' + ex)
           }
         }
       })(this.editor.setComponents)
