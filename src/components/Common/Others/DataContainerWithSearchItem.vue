@@ -103,7 +103,7 @@ export default {
   computed: {
     isValid() {
       const comparator = this.isEdit ? this.textFieldValue : this.value
-      return this.textFieldRules.every((func) => func(comparator) === true)
+      return comparator && this.textFieldRules.every((func) => func(comparator) === true)
     },
     getStyle() {
       const style = {}
