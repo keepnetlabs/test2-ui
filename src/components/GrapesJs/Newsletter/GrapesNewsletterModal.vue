@@ -193,6 +193,15 @@ export default {
           ]
         }
       })
+      this.editor.setComponents = (function (originalFct) {
+        return function (components) {
+          try {
+            originalFct(components)
+          } catch (ex) {
+            window.alert('Parse error: ' + ex)
+          }
+        }
+      })(this.editor.setComponents)
       this.editor.on('component:selected', () => {
         const selected = this.editor.getSelected()
         if (selected && selected.is('link')) {
