@@ -2955,7 +2955,7 @@ export default {
                 }
 
                 &.bg-salmon {
-                  background-color: #f56c6c;
+                  background-color: #e6a23c;
                 }
 
                 &.bg-macaroni {
