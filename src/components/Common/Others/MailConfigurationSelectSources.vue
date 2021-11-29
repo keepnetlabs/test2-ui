@@ -197,6 +197,7 @@ export default {
     &.v-btn.v-btn--contained.v-btn--rounded.theme--light {
       height: 24px !important;
       border-radius: 4px !important;
+      box-shadow: none !important;
     }
   }
 }

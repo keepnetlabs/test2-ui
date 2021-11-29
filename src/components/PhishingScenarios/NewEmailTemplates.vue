@@ -333,10 +333,10 @@ export default {
       step: 1,
       Validations: Validations,
       formValues: {
-        name: null,
-        description: null,
+        name: '',
+        description: '',
         categoryResourceId: 'WNZt0sCVCWB3',
-        tags: null,
+        tags: '',
         difficultyResourceId: 'mT0CeYGgKsVb',
         fromAddress: null,
         fromName: null,
