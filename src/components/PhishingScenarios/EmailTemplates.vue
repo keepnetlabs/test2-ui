@@ -26,6 +26,7 @@
       :selectedEmailTemplate="selectedEmailTemplate"
     />
     <app-dialog
+      v-if="isTemplateDetails"
       custom-size="1600"
       max-height
       max-height-size="900"
@@ -36,7 +37,23 @@
       @changeStatus="isTemplateDetails = false"
     >
       <template v-slot:app-dialog-body>
-        <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
+        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
+        <div v-show="!isPreviewLoading" class="template-preview">
+          <div class="template-preview__text" v-if="!!templateHTML">
+            <div>
+              <span class="template-preview__text--title">From Name: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
+            </div>
+            <div>
+              <span class="template-preview__text--title">From Email Address: </span>
+              <span class="template-preview__text--body">{{
+                emailTemplateParams.fromAddress
+              }}</span>
+            </div>
+          </div>
+          <hr class="mt-2" v-if="!!templateHTML" />
+          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+        </div>
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -193,9 +210,12 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import QueryHelperForTable from '@/helper-classes/query-helper'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
 import KEmailPreview from '@/components/KEmailPreview'
+import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'EmailTemplates',
   components: {
+    DatatableLoading,
     KEmailPreview,
     DataTable,
     DeleteEmailTemplates,
@@ -207,6 +227,8 @@ export default {
       methodItems: [],
       difficultyItems: [],
       editableFormValues: {},
+      timeoutId: '',
+      emailTemplateParams: {},
       loading: true,
       isEdit: false,
       isDuplicate: false,
@@ -216,6 +238,7 @@ export default {
       tableData: [],
       showDeleteModal: false,
       storedTableSettings: null,
+      isPreviewLoading: false,
       selectedEmailTemplate: {},
       tableOptions: {
         isColumnFilterActive: false,
@@ -422,6 +445,7 @@ export default {
       templateHTML: null
     }
   },
+
   methods: {
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.EMAILTEMPLATES, JSON.stringify(tableSettings))
@@ -557,15 +581,27 @@ export default {
       })
     },
     handlePreview(row) {
+      this.isTemplateDetails = true
       const id = row.resourceId
+      this.isPreviewLoading = true
       getEmailTemplatePreviewContent(id)
         .then((response) => {
           const data = response.data.data
           this.selectedTemplateHeader = data.subject
+          const { fromName, fromAddress, name, difficultyResourceId } = data
+          this.emailTemplateParams = {
+            fromName,
+            fromAddress,
+            name,
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+          }
           this.templateHTML = data.template
-          this.isTemplateDetails = true
         })
-        .catch((error) => {})
+        .finally(() => {
+          this.timeoutId = setTimeout(() => {
+            this.isPreviewLoading = false
+          }, 500)
+        })
     },
     handleEdit(row, isDuplicate) {
       this.editableFormValues = row
@@ -681,6 +717,9 @@ export default {
   },
   mounted() {
     this.getDefaultFilterAndSearch()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
   }
 }
 </script>
