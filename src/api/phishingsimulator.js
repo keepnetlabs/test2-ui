@@ -301,6 +301,16 @@ export function resumePhishingCampaignJob(id) {
   })
 }
 
+export function launchPhishingCampaign(id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job/start/${id}`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
+}
+
 export function resendPhishingCampaignToUsers(payload, id) {
   return testRequest.post(`/phishing-simulator/phishing-campaign-job/resend/${id}`, payload, {
     snackbar: COMMON_SNACKBAR
