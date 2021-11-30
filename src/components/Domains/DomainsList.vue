@@ -161,22 +161,6 @@ export default {
             filterableType: 'text'
           },
           {
-            property: 'status',
-            align: 'center',
-            editable: false,
-            label: labels.Status,
-            sortable: true,
-            show: true,
-            fixed: false,
-            width: 160,
-            type: 'status',
-            filterableType: 'select',
-            filterableItems: [
-              { text: 'Online', value: 'Online' },
-              { text: 'Offline', value: 'Offline' }
-            ]
-          },
-          {
             property: PROPERTY_STORE.CREATETIME,
             align: 'left',
             editable: false,
