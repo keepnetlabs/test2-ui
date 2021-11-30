@@ -233,7 +233,7 @@ const router = new Router({
         },
         {
           path: '/services',
-          name: 'DNSs and Domains',
+          name: 'DNS and Domains',
           component: DnsServices,
           beforeEnter: (to, from, next) => {
             //checkPermission()

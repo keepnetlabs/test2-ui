@@ -342,7 +342,7 @@
                   to="/services"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   class="menu-link-default"
-                  :class="[routerName === 'DNSs and Domains' && 'active-link']"
+                  :class="[routerName === 'DNS and Domains' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">DNS and Domains</span>
@@ -1217,7 +1217,7 @@ export default {
           routerName === 'Phishing Scenarios' ||
           routerName === 'Campaign Manager' ||
           routerName === 'Campaign Report' ||
-          routerName === 'DNSs and Domains',
+          routerName === 'DNS and Domains',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
       }
