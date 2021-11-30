@@ -152,7 +152,18 @@ export default {
           params: { id: this.scope.row.resourceId }
         })
       }
-      this.$emit(act.action, this.scope.row)
+      let eventName = act.action
+      switch (act.action) {
+        case ACTION_STATUSES.RUNNING:
+          eventName = 'on-pause'
+          break
+        case ACTION_STATUSES.PAUSE:
+          eventName = 'on-resume'
+          break
+        default:
+          eventName = act.action
+      }
+      this.$emit(eventName, this.scope.row)
     }
   }
 }
