@@ -27,6 +27,9 @@ export default {
     },
     chartLabels: {
       type: Array
+    },
+    percents: {
+      type: Array
     }
   },
   data() {
@@ -54,7 +57,7 @@ export default {
               const { data } = chart
               return data.datasets[0].data.map((data, index) => {
                 return {
-                  text: `${this.chartLabels[index]} - ${data}`,
+                  text: `${this.chartLabels[index]} - ${data} (${this.percents[index]}%)`,
                   fillStyle: this.chartOptions.backgroundColor[index],
                   fontColor: '#383B41',
                   lineWidth: 0

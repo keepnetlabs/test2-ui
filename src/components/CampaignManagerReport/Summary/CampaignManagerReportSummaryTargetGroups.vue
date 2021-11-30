@@ -8,7 +8,7 @@
   >
     <template #body>
       <div class="campaign-manager-last-step__target-users-body pb-4">
-        <span v-if="getOtherSettingsItems.isRandomSelected">
+        <span v-if="isShowRandomlySelected">
           Randomly selected {{ randomlySelectedUsersCount }} user(s) from</span
         >
         <span> {{ getTotalTargetGroupsAndUsersCount }} </span>
@@ -36,6 +36,9 @@ export default {
     },
     targetUsersCount: {
       type: Number
+    },
+    isShowRandomlySelected: {
+      type: Boolean
     }
   },
   data() {
@@ -45,9 +48,6 @@ export default {
     }
   },
   computed: {
-    getOtherSettingsItems() {
-      return { isRandomSelected: true }
-    },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
       const itemsLength = this.items.length
