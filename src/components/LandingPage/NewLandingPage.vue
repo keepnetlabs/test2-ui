@@ -1,5 +1,6 @@
 <template>
   <app-modal
+    v-if="status"
     :status="status"
     icon-name="mdi-file"
     :title="
