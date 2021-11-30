@@ -96,7 +96,8 @@ export default {
       landingPageParams: {},
       tab: 'email',
       isLoading: false,
-      labels
+      labels,
+      timeoutId: ''
     }
   },
   computed: {
@@ -109,6 +110,9 @@ export default {
   },
   created() {
     this.callForData()
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
   },
   methods: {
     callForData() {
@@ -151,7 +155,11 @@ export default {
             }
             this.landingPageTemplate = landingPages[0].content
           })
-          .finally(this.setLoading)
+          .finally(() => {
+            this.timeoutId = setTimeout(() => {
+              this.setLoading()
+            }, 500)
+          })
       })
     },
     setLoading(flag = false) {

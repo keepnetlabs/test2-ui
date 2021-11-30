@@ -27,6 +27,7 @@
       :selectedEmailTemplate="selectedEmailTemplate"
     />
     <app-dialog
+      v-if="isTemplateDetails"
       custom-size="1600"
       max-height
       max-height-size="900"
@@ -38,7 +39,17 @@
       :size="'ultraMaximum'"
     >
       <template v-slot:app-dialog-body>
-        <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+        <DatatableLoading v-if="isPreviewLoading" :loading="isPreviewLoading" />
+        <div v-show="!isPreviewLoading" class="template-preview">
+          <div class="template-preview__text" v-if="!!templateHTML">
+            <div>
+              <span class="template-preview__text--title">Phishing URL: </span>
+              <span class="template-preview__text--body">{{ landingPageParams.urlTemplate }}</span>
+            </div>
+          </div>
+          <hr class="mt-2" v-if="!!templateHTML" />
+          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
+        </div>
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -196,9 +207,11 @@ import {
   deleteLandingPage
 } from '@/api/landingPage'
 import KEmailPreview from '@/components/KEmailPreview'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'EmailTemplates',
   components: {
+    DatatableLoading,
     KEmailPreview,
     DataTable,
     DeleteEmailTemplates,
@@ -216,6 +229,8 @@ export default {
       isEdit: false,
       isDuplicate: false,
       emailTemplateId: null,
+      landingPageParams: {},
+      isPreviewLoading: false,
       labels,
       showAllRecords: false,
       totalNumberOfRecords: 0,
@@ -411,7 +426,8 @@ export default {
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
-      templateHTML: null
+      templateHTML: null,
+      timeoutId: ''
     }
   },
   methods: {
@@ -554,14 +570,20 @@ export default {
     },
     handlePreview(row) {
       const id = row.resourceId
+      this.isTemplateDetails = true
+      this.isPreviewLoading = true
       getLandingPageTemplatePreviewContent(id)
         .then((response) => {
           const data = response.data.data
+          this.landingPageParams.urlTemplate = data.urlTemplate
           this.selectedTemplateHeader = data.name
           this.templateHTML = data.landingPages[0].content
-          this.isTemplateDetails = true
         })
-        .catch((error) => {})
+        .finally(() => {
+          this.timeoutId = setTimeout(() => {
+            this.isPreviewLoading = false
+          }, 500)
+        })
     },
     handleEdit(row, isDuplicate) {
       this.editableFormValues = row
@@ -727,6 +749,9 @@ export default {
       this.tableKey = `key-${Math.random().toString().substring(5)}`
       this.landingPageData = response.data.data
     })
+  },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
   }
 }
 </script>
