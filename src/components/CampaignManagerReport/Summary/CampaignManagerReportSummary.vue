@@ -13,6 +13,7 @@
     <CampaignManagerReportSummaryTargetGroups
       :items="targetGroups"
       :randomly-selected-users-count="getRandomlySelectedUsersCount"
+      :is-show-randomly-selected="getIsShowRandomlySelected"
       :target-users-count="getTotalUsers"
     />
     <div class="campaign-manager-report-summary__general-info mt-4">
@@ -20,6 +21,7 @@
       <CampaignManagerReportSummaryScenarioStats
         :chart-data="getChartData"
         :chart-labels="chartLabels"
+        :percents="getPercents"
       />
     </div>
     <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" />
@@ -75,6 +77,17 @@ export default {
     }
   },
   computed: {
+    getPercents() {
+      if (!this.getChartData.length) return [0, 0, 0, 0, 0]
+      const cardsData = this.getCardsData
+      return [
+        cardsData.openedEmail.userPercent,
+        cardsData.clickedEmail.userPercent,
+        cardsData.submittedEmail.userPercent,
+        cardsData.noResponse.userPercent,
+        cardsData.notDelivered.userPercent
+      ]
+    },
     getCampaignSummaryItems() {
       const { campaignInfo = {} } = this.campaignSummary
       const {
@@ -103,6 +116,10 @@ export default {
     getRandomlySelectedUsersCount() {
       const { targetUsers = {} } = this.campaignSummary
       return targetUsers['randomlyUsersCount'] || 0
+    },
+    getIsShowRandomlySelected() {
+      const { targetUsers = {} } = this.campaignSummary
+      return !!targetUsers.sendRandomlyUsers
     },
     getScenarioInfoItems() {
       const { scenarioInfo = {} } = this.campaignSummary
@@ -156,9 +173,9 @@ export default {
         openedEmail = 0,
         clickedEmail = 0,
         submittedEmail = 0,
-        noResponseEmail = 0
+        noResponseEmail = 0,
+        notDelivered = 0
       ] = this.getChartData
-
       return {
         noResponse: {
           userCount: noResponseEmail,
@@ -175,6 +192,10 @@ export default {
         submittedEmail: {
           userCount: submittedEmail,
           userPercent: ((submittedEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        notDelivered: {
+          userCount: notDelivered,
+          userPercent: ((notDelivered / this.getTotalUsers) * 100).toFixed()
         }
       }
     },

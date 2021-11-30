@@ -58,6 +58,8 @@
           :row-actions="tableOptions.rowActions"
           @on-delete="handleDelete"
           @on-stop="handleStop"
+          @on-resume="handleResume"
+          @on-pause="handlePause"
         />
       </template>
       <template #table-all-records>
@@ -84,6 +86,8 @@ import {
   deletePhishingCampaignJob,
   exportCampaignManager,
   exportCampaignManagerItem,
+  pausePhishingCampaignJob,
+  resumePhishingCampaignJob,
   searchCampaignPhishingJob,
   stopPhishingCampaignJob
 } from '@/api/phishingsimulator'
@@ -368,6 +372,16 @@ export default {
     },
     handleStop(row = {}) {
       stopPhishingCampaignJob(row.resourceId).then(() => {
+        this.callForData()
+      })
+    },
+    handleResume(row = {}) {
+      resumePhishingCampaignJob(row.resourceId).then(() => {
+        this.callForData()
+      })
+    },
+    handlePause(row = {}) {
+      pausePhishingCampaignJob(row.resourceId).then(() => {
         this.callForData()
       })
     }
