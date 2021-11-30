@@ -1,6 +1,6 @@
 <template>
   <div class="feedback-popup">
-    <v-card style="width: 600px; max-height: 330px; overflow-y: auto;">
+    <v-card style="width: 600px; max-height: 340px; overflow-y: auto;">
       <v-list-item
         class="feedback-popup__header k-dialog__header-max-height"
         :style="getScrollingStyle"
