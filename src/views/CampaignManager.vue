@@ -67,6 +67,7 @@ import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignMa
 import {
   deleteCampaignManager,
   getCampaignManagerFormDetails,
+  launchPhishingCampaign,
   pausePhishingCampaignJob,
   resumePhishingCampaignJob,
   stopPhishingCampaignJob
@@ -188,7 +189,11 @@ export default {
         this.$refs.campaignManagerParentTable.callForData()
       })
     },
-    handleLaunch(row = {}) {},
+    handleLaunch(row = {}) {
+      launchPhishingCampaign(row.resourceId).then(() => {
+        this.$refs.campaignManagerParentTable.callForData()
+      })
+    },
     toggleShowPreviewDialog() {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },

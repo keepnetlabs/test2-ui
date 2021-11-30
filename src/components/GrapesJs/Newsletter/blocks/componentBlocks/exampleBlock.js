@@ -7,7 +7,7 @@ const exampleBlock = [
 
 
 
-<section class="form" style="max-height:800px">
+<section class="form" style="min-height:800px">
   <div class='form-content'>
     <div class='form-bg'>
    <img data-gjs-type="image" draggable="true" height="20" width="94" src="https://aeocdn.azureedge.net/mediahandler/azure-emails-templates/production/shared/images/templates/shared/microsoft-2x.png" alt="Microsoft" title="Microsoft" id="imjz" class="logo-microsoft text-left">
