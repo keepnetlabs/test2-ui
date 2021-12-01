@@ -1116,12 +1116,12 @@ export default {
         },
         {
           target: '#RecentlyReportedIncidents',
-          content: 'Numbers of reported emails by category over time'
+          content: 'Numbers of reported emails by category'
         },
         {
           target: '#Reporters',
           content:
-            "Top reporters sorted by reliability score. Reliability score measures a user's credibility calculatted by accuracy of their reported emails that are detected harmful"
+            "Top reporters sorted by reliability score. Reliability score measures a user's credibility calculated by accuracy of their reported emails that are detected harmful"
         },
         {
           target: '#RecentInvestigations',
