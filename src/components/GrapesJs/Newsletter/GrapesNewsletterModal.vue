@@ -164,6 +164,23 @@ export default {
     },
     setGrapesEditor() {
       let _this = this
+      const myNewComponentTypes = (editor) => {
+        editor.DomComponents.addType('text', {
+          model: {
+            defaults: {
+              droppable: true
+            }
+          }
+        })
+        editor.DomComponents.addType('link', {
+          model: {
+            defaults: {
+              droppable: true
+            }
+          }
+        })
+      }
+
       this.editor = GrapesNewsletterModal.init({
         container: '#gjsNewsletterModal',
         fromElement: 1,
@@ -171,6 +188,7 @@ export default {
         plugins: [
           'gjs-preset-newsletter',
           'gjs-preset-webpage',
+          myNewComponentTypes,
           parserPostCSS,
           componentEditor,
           'grapesjs-tooltip'
@@ -238,11 +256,6 @@ export default {
               ).selectedIndex = 0
             }
           }, 50)
-        } else {
-          this.editor.StyleManager.getSectors().models[0].attributes.open = true
-          this.editor.StyleManager.getSectors().models[1].attributes.open = true
-          this.editor.StyleManager.getSectors().models[2].attributes.open = true
-          this.editor.StyleManager.render()
         }
       })
       const logoUrl = store.state.whitelabel.mainLogoUrl
