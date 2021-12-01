@@ -112,7 +112,9 @@
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the scenario">
                   <k-select
-                    v-model="formValues.tags"
+                    :value="formValues.tags"
+                    :search-input.sync="tagSearch"
+                    ref="refTags"
                     type="combobox"
                     id="input--action-tags-new-scenario"
                     :items="[]"
@@ -664,6 +666,7 @@ export default {
       blockManagerComponents: {},
       nonEditableAvailableForRequests: [],
       availableForRequests: [],
+      tagSearch: '',
       generalDifficultyTypeId: '',
       labels,
       step: 1,
@@ -736,7 +739,28 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
-    handleTagItemChange() {},
+    handleTagItemChange(value) {
+      const tagSearch = this.tagSearch.trim()
+      if (!tagSearch && value[value.length - 1].trim() === '') {
+        value.splice(0, value[value.length - 1])
+        return
+      }
+      value.splice(value.length - 1, 1)
+      if (tagSearch.includes(',')) {
+        const tags = tagSearch.split(',')
+        tags.forEach((tag) => {
+          if (tag.trim() && !value.includes(tag)) {
+            this.formValues.tags.push(tag.trim().substring(0, 20))
+          }
+        })
+      } else {
+        if (!value.includes(tagSearch)) {
+          this.formValues.tags.push(tagSearch.trim().substring(0, 20))
+        }
+      }
+      this.$refs.refTags.$refs.refComponent.initialValue = this.formValues.tags
+      this.$refs.refTags.$refs.refComponent.lazyValue = this.formValues.tags
+    },
     changeNewScenarioModalStatus() {
       this.$emit('changeNewScenarioModalStatus', false)
     },
