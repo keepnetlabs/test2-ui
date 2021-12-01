@@ -1,5 +1,8 @@
 <template>
   <component
+    v-bind="$attrs"
+    v-on="$listeners"
+    ref="refComponent"
     :is="getComponentType"
     :class="uniqueSelector"
     :attach="`.${uniqueSelector}`"
@@ -9,8 +12,6 @@
       contentClass: getContentClass,
       nudgeWidth
     }"
-    v-bind="$attrs"
-    v-on="$listeners"
   >
     <template v-slot:selection="props" v-if="slots.selection">
       <slot name="selection" v-bind="props" />
