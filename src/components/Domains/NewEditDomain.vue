@@ -128,9 +128,14 @@
         </form-group>
         <make-available-for ref="refMakeAvailableFor" v-model="availableForRequests" />
 
-        <v-list-item class="add-user-overlay__list-item">
-          <v-list-item-content class="test-connection-wrapper"> </v-list-item-content>
-        </v-list-item>
+        <form-group :title="labels.TestConnection" class="mt-2">
+          <TestConnection
+            :values="formValues"
+            ref="testConnection"
+            @loading="saveButtonDisabled = false"
+            @save-button-disabled="saveButtonDisabled = $event"
+          />
+        </form-group>
       </v-form>
     </template>
     <template v-slot:overlay-footer>
@@ -164,18 +169,19 @@
 <script>
 import labels from '@/model/constants/labels'
 import AppModal from '../AppModal'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
 import * as Validations from '@/utils/validations'
-import { createDomain, getDomainEditData, updateDomain, updateDomains } from '@/api/domains'
+import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
+import TestConnection from '@/components/Domains/TestConnection'
 export default {
   name: 'NewEditDnsService',
   components: {
+    TestConnection,
     AppModal,
     AppModalBodyHeader,
     FormGroup,

@@ -40,3 +40,6 @@ export function getDomainEditData(resId) {
     loading: true
   })
 }
+export function testDomainConnection(payload) {
+  return testRequest.post(`phishing-simulator/domain-records/test`, payload)
+}
