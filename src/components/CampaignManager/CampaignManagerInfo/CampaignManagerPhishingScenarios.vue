@@ -12,7 +12,7 @@
       @changeStatus="toggleTemplateDialog"
     >
       <template #app-dialog-body>
-        <KEmailPreview v-if="!!selectedTemplate" :html="selectedTemplate" />
+        <KEmailPreview v-if="!!selectedTemplate" :key="selectedTemplate" :html="selectedTemplate" />
       </template>
       <template v-slot:app-dialog-footer>
         <div class="d-flex" style="justify-content: flex-end;">
@@ -173,7 +173,11 @@
                       </div>
                       <hr class="mt-2" v-if="!!emailTemplate" />
 
-                      <KEmailPreview v-if="!!emailTemplate" :html="emailTemplate" />
+                      <KEmailPreview
+                        v-if="!!emailTemplate"
+                        :key="emailTemplate"
+                        :html="emailTemplate"
+                      />
                     </div>
                   </el-tab-pane>
                   <el-tab-pane
@@ -208,7 +212,11 @@
                         </div>
                       </div>
                       <hr class="mt-2" v-if="!!landingPageTemplate" />
-                      <KEmailPreview v-if="!!landingPageTemplate" :html="landingPageTemplate" />
+                      <KEmailPreview
+                        v-if="!!landingPageTemplate"
+                        :key="landingPageTemplate"
+                        :html="landingPageTemplate"
+                      />
                     </div>
                   </el-tab-pane>
                 </el-tabs>
