@@ -8,7 +8,7 @@ export function updatePhishingEmailTemplate(payload, id) {
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
   for (let i = 0; i < payload?.tags?.length; i++) {
-    formData.append(`tags[${[i]}]`, payload.tags)
+    formData.append(`tags[${[i]}]`, payload.tags[i])
   }
 
   formData.append('difficultyResourceId', payload.difficultyResourceId)
@@ -33,7 +33,7 @@ export function createPhishingEmailTemplate(payload) {
   formData.append('description', payload.description)
   formData.append('categoryResourceId', payload.categoryResourceId)
   for (let i = 0; i < payload?.tags?.length; i++) {
-    formData.append(`tags[${[i]}]`, payload.tags)
+    formData.append(`tags[${[i]}]`, payload.tags[i])
   }
 
   formData.append('difficultyResourceId', payload.difficultyResourceId)
