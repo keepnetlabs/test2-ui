@@ -130,8 +130,9 @@
       has-hint
     >
       <v-text-field
-        v-model="formData.duration"
         v-mask="'###'"
+        :value="formData.duration"
+        ref="refDurationTextField"
         id="input--campaign-manager-days"
         outlined
         hide-details
@@ -139,6 +140,7 @@
         class="edit-name-textfield edit-select standard-height"
         style="max-width: 48px;"
         :rules="rules.days"
+        @input="handleDurationChange"
       ></v-text-field>
       <span style="position: absolute; top: 66px; left: 56px; font-size: 13px; color: #000;"
         >Day(s)</span
@@ -299,6 +301,14 @@ export default {
     }
   },
   methods: {
+    handleDurationChange(val) {
+      if (!val || /\d+$/.test(val)) {
+        this.formData.duration = val
+      } else {
+        this.$refs.refDurationTextField.initialValue = this.formData.duration
+        this.$refs.refDurationTextField.lazyValue = this.formData.duration
+      }
+    },
     addDefaultTargetGroupItems(targetGroups = []) {
       if (this.formData.targetGroupResourceIds.length || !targetGroups.length) return
       this.$nextTick(() => {
