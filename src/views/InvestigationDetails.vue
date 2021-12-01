@@ -221,7 +221,7 @@
                             : statsAndMenuData && statsAndMenuData.status == 'Finished'
                             ? 'bg-green'
                             : statsAndMenuData && statsAndMenuData.status == 'Expired'
-                            ? 'bg-salmon'
+                            ? 'bg-red'
                             : 'bg-salmon'
                         "
                         :style="getHeaderCardBoxShadow"
@@ -274,7 +274,7 @@
                             : statsAndMenuData && statsAndMenuData.status == 'Finished'
                             ? 'bg-turquoise'
                             : statsAndMenuData && statsAndMenuData.status == 'Expired'
-                            ? 'bg-macaroni'
+                            ? 'bg-red'
                             : 'bg-macaroni'
                         "
                         :style="getHeaderCardBoxShadowSecond"
@@ -2959,6 +2959,9 @@ export default {
 
                 &.bg-macaroni {
                   background-color: #e6a23c;
+                }
+                &.bg-red {
+                  background-color: #f56c6c;
                 }
 
                 i {
