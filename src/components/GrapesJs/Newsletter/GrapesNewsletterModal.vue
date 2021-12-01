@@ -96,10 +96,10 @@ export default {
       // Log the state data to the console
     })
   },
-  beforeDestroy() {
-    this.editor.destroy()
-  },
   methods: {
+    destroyEditor() {
+      this.editor.destroy()
+    },
     setMergeTextNames() {
       let _this = this
       const component = this.editor.getSelected()
@@ -205,8 +205,8 @@ export default {
         styleManager: {
           sectors: [
             {
-              name: 'Dimension',
-              open: true
+              name: 'extra',
+              buildProps: ['display']
             }
           ]
         }
@@ -568,6 +568,19 @@ export default {
       this.editor.setComponents(html)
       const newComponents = this.editor.DomComponents
       this.editor.on('load', () => {
+        document.querySelectorAll('.gjs-sm-title').forEach((item) => item.click())
+        this.editor.StyleManager.addProperty('dimension', {
+          property: 'display',
+          type: 'select',
+          list: [
+            { name: 'inline-block', value: 'inline-block' },
+            { name: 'flex', value: 'flex' },
+            { name: 'grid', value: 'grid' },
+            { name: 'inline', value: 'inline' },
+            { name: 'block', value: 'block' },
+            { name: 'none', value: 'none' }
+          ]
+        })
         this.editor.select(newComponents.getComponents().at(0))
         document.querySelector('span[title="Open Code"]').addEventListener('click', () => {
           const selected = this.editor.getSelected()
