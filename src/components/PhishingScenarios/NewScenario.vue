@@ -740,26 +740,30 @@ export default {
       this.$emit('validation', this.isAvailableForValid)
     },
     handleTagItemChange(value) {
-      const tagSearch = this.tagSearch.trim()
-      if (!tagSearch && value[value.length - 1].trim() === '') {
-        value.splice(0, value[value.length - 1])
-        return
-      }
-      value.splice(value.length - 1, 1)
-      if (tagSearch.includes(',')) {
-        const tags = tagSearch.split(',')
-        tags.forEach((tag) => {
-          if (tag.trim() && !value.includes(tag)) {
-            this.formValues.tags.push(tag.trim().substring(0, 20))
-          }
-        })
+      if (value.length < this.formValues.tags.length) {
+        this.formValues.tags = value
       } else {
-        if (!value.includes(tagSearch)) {
-          this.formValues.tags.push(tagSearch.trim().substring(0, 20))
+        const tagSearch = this.tagSearch.trim()
+        if (!tagSearch && value[value.length - 1].trim() === '') {
+          value.splice(0, value[value.length - 1])
+          return
         }
+        value.splice(value.length - 1, 1)
+        if (tagSearch.includes(',')) {
+          const tags = tagSearch.split(',')
+          tags.forEach((tag) => {
+            if (tag.trim() && !value.includes(tag)) {
+              this.formValues.tags.push(tag.trim().substring(0, 20))
+            }
+          })
+        } else {
+          if (!value.includes(tagSearch)) {
+            this.formValues.tags.push(tagSearch.trim().substring(0, 20))
+          }
+        }
+        this.$refs.refTags.$refs.refComponent.initialValue = this.formValues.tags
+        this.$refs.refTags.$refs.refComponent.lazyValue = this.formValues.tags
       }
-      this.$refs.refTags.$refs.refComponent.initialValue = this.formValues.tags
-      this.$refs.refTags.$refs.refComponent.lazyValue = this.formValues.tags
     },
     changeNewScenarioModalStatus() {
       this.$emit('changeNewScenarioModalStatus', false)
