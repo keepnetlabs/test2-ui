@@ -165,6 +165,22 @@ export default {
     setGrapesEditor() {
       let _this = this
       const myNewComponentTypes = (editor) => {
+        editor.DomComponents.addType('cell', {
+          isComponent(el) {
+            let result = ''
+            const tag = el.tagName
+
+            if (tag === 'TD' || tag === 'TH') {
+              result = {
+                type: 'cell',
+                tagName: tag.toLowerCase()
+              }
+              result.components = `<td><div>${el.innerHTML}</div></td>`
+            }
+
+            return result
+          }
+        })
         editor.DomComponents.addType('text', {
           model: {
             defaults: {
@@ -175,7 +191,22 @@ export default {
         editor.DomComponents.addType('link', {
           model: {
             defaults: {
-              droppable: true
+              droppable: true,
+              editable: true
+            }
+          }
+        })
+        editor.DomComponents.addType('span', {
+          model: {
+            defaults: {
+              editable: true
+            }
+          }
+        })
+        editor.DomComponents.addType('label', {
+          model: {
+            defaults: {
+              editable: true
             }
           }
         })
@@ -279,27 +310,33 @@ export default {
           block.attributes.customId === 'grapesForm'
         ) {
           droppedComponent.components().forEach((inner) => {
-            switch (inner.find('label')[0].view.el.textContent) {
-              case 'Name':
-                inner.find('input')[0].addAttributes({ name: 'Name' })
-                break
-              case 'Email':
-                inner.find('input')[0].addAttributes({ name: 'Email' })
-                break
-              case 'Gender':
-                inner.find('input')[0].addAttributes({ name: 'Male' })
-                inner.find('input')[1].addAttributes({ name: 'Female' })
-                break
-              case 'Message':
-                inner.find('textarea')[0].addAttributes({ name: 'Message' })
-                break
-              default:
-                break
+            if (
+              inner &&
+              inner.find('label') &&
+              inner.find('label')[0] &&
+              inner.find('label')[0].view
+            ) {
+              switch (inner.find('label')[0].view.el.textContent) {
+                case 'Name':
+                  inner.find('input')[0].addAttributes({ name: 'Name' })
+                  break
+                case 'Email':
+                  inner.find('input')[0].addAttributes({ name: 'Email' })
+                  break
+                case 'Gender':
+                  inner.find('input')[0].addAttributes({ name: 'Male' })
+                  inner.find('input')[1].addAttributes({ name: 'Female' })
+                  break
+                case 'Message':
+                  inner.find('textarea')[0].addAttributes({ name: 'Message' })
+                  break
+                default:
+                  break
+              }
             }
           })
         }
       })
-
       setTimeout(() => {
         if (!!document.getElementsByClassName('fa-file-code-o').length) {
           document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
@@ -398,6 +435,10 @@ export default {
           block.attributes.category = {
             label: 'Basic'
           }
+          block.attributes.content = block.attributes.content.replace(
+            'button',
+            'button grapes-custom-button'
+          )
         } else if (block.attributes.id === 'divider') {
           block.attributes.category = {
             label: 'Layout'
@@ -510,6 +551,13 @@ export default {
         }
       })
       blockManager.add('Submit Phishing Button', submitButton)
+      this.editor.Css.setRule('.grapes-custom-button', {
+        color: 'white',
+        'background-color': '#2196F3',
+        padding: '8px 12px',
+        'border-radius': '4px',
+        display: 'inline-block'
+      })
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
           const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
@@ -801,5 +849,8 @@ export default {
       order: 6;
     }
   }
+}
+.grapes-custom-button {
+  font-size: 22px;
 }
 </style>
