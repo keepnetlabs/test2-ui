@@ -486,6 +486,7 @@
           class="new-phishing-scenario__footer-btn-next"
           color="#2196f3"
           rounded
+          :disabled="isSubmitDisabled"
           v-if="step < 4"
         >
           {{ labels.Next }}
@@ -847,26 +848,31 @@ export default {
   created() {
     let _this = this
     if (this.isEdit) {
-      getScenario(this.scenarioId).then((response) => {
-        _this.formValues = response.data.data
-        _this.formValues.name = `${this.formValues.name}`
-        _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
-        _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-        this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
-        this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
-        this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
-        this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
-        if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
-        if (this.$refs.refMakeAvailableFor) {
-          this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-        } else {
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
-            response.data.data.availableForList
-          )
-        }
-      })
+      this.isSubmitDisabled = true
+      getScenario(this.scenarioId)
+        .then((response) => {
+          _this.formValues = response.data.data
+          _this.formValues.name = `${this.formValues.name}`
+          _this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
+          _this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
+          this.formValues.emailTemplateId = response.data.data.emailTemplateResourceId
+          this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
+          this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
+          this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
+          if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
+          if (this.$refs.refMakeAvailableFor) {
+            this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
+              response.data.data.availableForList
+            )
+          } else {
+            this.nonEditableAvailableForRequests = getAvailableForListFromBackend(
+              response.data.data.availableForList
+            )
+          }
+        })
+        .finally(() => {
+          this.isSubmitDisabled = false
+        })
     }
   }
 }

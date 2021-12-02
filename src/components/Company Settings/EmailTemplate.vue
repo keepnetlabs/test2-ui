@@ -329,7 +329,7 @@ export default {
       this.$emit('update:template', this.defaultTemplate)
     },
     toggleShowGrapesModal() {
-      if (this.showGrapesModal) {
+       if (this.showGrapesModal) {
         this.$refs.grapesJsPostIncident.destroyEditor()
       }
       this.showGrapesModal = !this.showGrapesModal

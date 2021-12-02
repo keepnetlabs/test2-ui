@@ -32,15 +32,12 @@ import customMacroAttachment from './mergedTexts/customMacroAttachment'
 import trainingUrl from './mergedTexts/trainingUrl'
 import phishingUrl from './mergedTexts/phishingUrl'
 import macroUrl from './mergedTexts/macroUrl'
-import custom from 'grapesjs-custom-code'
 import { uploadEmlOrMsg } from '../../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
-import { setGrapesjsStyle } from './assets/css/grapesStyle'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
 import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
-import { eventFire } from '@/utils/functions'
 import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 
@@ -92,9 +89,6 @@ export default {
     this.setMergedTextsForLinks()
     this.setTraits()
     this.setGrapesEditor()
-    window.addEventListener('popstate', function (event) {
-      // Log the state data to the console
-    })
   },
   methods: {
     destroyEditor() {
@@ -113,7 +107,6 @@ export default {
             '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
           ).selectedIndex = 0
         }
-        //component.getTrait('href').props()
       }, 10)
     },
     setMergedTextsForLinks() {
@@ -165,6 +158,22 @@ export default {
     setGrapesEditor() {
       let _this = this
       const myNewComponentTypes = (editor) => {
+        editor.DomComponents.addType('cell', {
+          isComponent(el) {
+            let result = ''
+            const tag = el.tagName
+
+            if (tag === 'TD' || tag === 'TH') {
+              result = {
+                type: 'cell',
+                tagName: tag.toLowerCase()
+              }
+              result.components = `<td><div>${el.innerHTML}</div></td>`
+            }
+
+            return result
+          }
+        })
         editor.DomComponents.addType('text', {
           model: {
             defaults: {
@@ -175,7 +184,22 @@ export default {
         editor.DomComponents.addType('link', {
           model: {
             defaults: {
-              droppable: true
+              droppable: true,
+              editable: true
+            }
+          }
+        })
+        editor.DomComponents.addType('span', {
+          model: {
+            defaults: {
+              editable: true
+            }
+          }
+        })
+        editor.DomComponents.addType('label', {
+          model: {
+            defaults: {
+              editable: true
             }
           }
         })
@@ -198,7 +222,8 @@ export default {
             modalTitleImport: 'Import Template',
             importPlaceholder: 'Template Here',
             inlineCss: true,
-            categoryLabel: 'Basic'
+            categoryLabel: 'Basic',
+            cmdInlineHtml: 'get-html-juiced'
           }
         },
         noticeOnUnload: false,
@@ -279,27 +304,33 @@ export default {
           block.attributes.customId === 'grapesForm'
         ) {
           droppedComponent.components().forEach((inner) => {
-            switch (inner.find('label')[0].view.el.textContent) {
-              case 'Name':
-                inner.find('input')[0].addAttributes({ name: 'Name' })
-                break
-              case 'Email':
-                inner.find('input')[0].addAttributes({ name: 'Email' })
-                break
-              case 'Gender':
-                inner.find('input')[0].addAttributes({ name: 'Male' })
-                inner.find('input')[1].addAttributes({ name: 'Female' })
-                break
-              case 'Message':
-                inner.find('textarea')[0].addAttributes({ name: 'Message' })
-                break
-              default:
-                break
+            if (
+              inner &&
+              inner.find('label') &&
+              inner.find('label')[0] &&
+              inner.find('label')[0].view
+            ) {
+              switch (inner.find('label')[0].view.el.textContent) {
+                case 'Name':
+                  inner.find('input')[0].addAttributes({ name: 'Name' })
+                  break
+                case 'Email':
+                  inner.find('input')[0].addAttributes({ name: 'Email' })
+                  break
+                case 'Gender':
+                  inner.find('input')[0].addAttributes({ name: 'Male' })
+                  inner.find('input')[1].addAttributes({ name: 'Female' })
+                  break
+                case 'Message':
+                  inner.find('textarea')[0].addAttributes({ name: 'Message' })
+                  break
+                default:
+                  break
+              }
             }
           })
         }
       })
-
       setTimeout(() => {
         if (!!document.getElementsByClassName('fa-file-code-o').length) {
           document.getElementsByClassName('fa-file-code-o')[0].addEventListener('click', () => {
@@ -348,28 +379,16 @@ export default {
         view: dView
       })
       let blockManager = this.editor.BlockManager
-      blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('amazonTemplate', amazonTemplate)
       let pn = this.editor.Panels
+      pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-upload')
+      document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
+      document.querySelector('span[title="Fullscreen"]').style.display = 'none'
+      document.querySelector('span[title="Open Blocks"]').style.order = '-1'
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }
-      const panelViews = pn.addPanel({
-        id: 'views'
-      })
-      panelViews.get('buttons').add([
-        {
-          attributes: {
-            title: 'Open Code'
-          },
-          className: 'fa fa-file-code-o',
-          command: 'open-code',
-          togglable: false, //do not close when button is clicked again
-          id: 'open-code',
-          type: 'button'
-        }
-      ])
       const blocks = blockManager.getAll()
       blocks.map((block) => {
         if (block.attributes.id === 'Submit Phishing Button') {
@@ -398,6 +417,10 @@ export default {
           block.attributes.category = {
             label: 'Basic'
           }
+          block.attributes.content = block.attributes.content.replace(
+            'button',
+            'button grapes-custom-button'
+          )
         } else if (block.attributes.id === 'divider') {
           block.attributes.category = {
             label: 'Layout'
@@ -510,6 +533,13 @@ export default {
         }
       })
       blockManager.add('Submit Phishing Button', submitButton)
+      this.editor.Css.setRule('.grapes-custom-button', {
+        color: 'white',
+        'background-color': '#2196F3',
+        padding: '8px 12px',
+        'border-radius': '4px',
+        display: 'inline-block'
+      })
       for (const [key, value] of Object.entries(this.blockManagerComponents)) {
         if (key === '{COMPANYLOGO}') {
           const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
@@ -527,8 +557,6 @@ export default {
               document.getElementsByClassName('merged-text')[i].getAttribute('data-title')
             )
         }
-        document.querySelector('.fa-download').classList.add('fa-upload')
-        document.querySelector('.fa-download').classList.remove('fa-download')
       }, 1000)
       const rte = this.editor.RichTextEditor
       rte.get('link').result = (rte) => {
@@ -581,14 +609,51 @@ export default {
             { name: 'none', value: 'none' }
           ]
         })
-        this.editor.select(newComponents.getComponents().at(0))
-        document.querySelector('span[title="Open Code"]').addEventListener('click', () => {
-          const selected = this.editor.getSelected()
-          if (selected && selected.ccid !== 'wrapper') {
-          } else {
-            this.editor.select(newComponents.getComponents().at(0))
-            document.querySelector('span[title="Open Code"]').dispatchEvent(new Event('click'))
+        document.querySelector('.fa-upload').addEventListener('click', () => {
+          const editor = this.editor
+          const html = editor.runCommand('get-html-juiced')
+          let md = editor.Modal
+          // Init code viewer if not yet instantiated
+          let codeViewer = editor.CodeManager.getViewer('CodeMirror')
+          let viewer
+          let container = document.createElement('div')
+          let btnImp = document.createElement('button')
+          let btnCopyToClipboard = document.createElement('button')
+          // Init import button
+          btnImp.innerHTML = 'Import'
+          btnCopyToClipboard.innerHTML = 'Copy to clipboard'
+          btnImp.className = 'gjs-btn-prim gjs-btn-import'
+          btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
+          btnImp.onclick = () => {
+            let code = codeViewer.editor.getValue()
+            editor.DomComponents.getWrapper().set('content', '')
+            editor.setComponents(code)
+            editor.Modal.close()
           }
+          btnCopyToClipboard.onclick = () => {
+            navigator.clipboard.writeText(codeViewer.editor.getValue())
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'COPIED TO CLIPBOARD',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+          }
+          codeViewer.set({
+            codeName: 'htmlmixed',
+            readOnly: 0,
+            theme: 'hopscotch'
+          })
+          let txtarea = document.createElement('textarea')
+          container.appendChild(txtarea)
+          container.appendChild(btnImp)
+          container.appendChild(btnCopyToClipboard)
+          codeViewer.init(txtarea)
+          viewer = codeViewer.editor
+          viewer.setOption('lineWrapping', 1)
+          md.setContent('')
+          md.setContent(container)
+          codeViewer.setContent(html)
+          viewer.refresh()
         })
       })
     },
@@ -801,5 +866,8 @@ export default {
       order: 6;
     }
   }
+}
+.grapes-custom-button {
+  font-size: 22px;
 }
 </style>

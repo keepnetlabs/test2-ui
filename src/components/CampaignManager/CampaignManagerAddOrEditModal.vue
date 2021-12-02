@@ -45,6 +45,7 @@
               ref="refCampaignManagerCampaignInfo"
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
+              :is-action-button-disabled.sync="isActionButtonDisabled"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
