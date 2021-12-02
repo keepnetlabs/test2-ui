@@ -395,18 +395,6 @@ export default {
       const panelViews = pn.addPanel({
         id: 'views'
       })
-      panelViews.get('buttons').add([
-        {
-          attributes: {
-            title: 'Open Code'
-          },
-          className: 'fa fa-file-code-o',
-          command: 'open-code',
-          togglable: false, //do not close when button is clicked again
-          id: 'open-code',
-          type: 'button'
-        }
-      ])
       const blocks = blockManager.getAll()
       blocks.map((block) => {
         if (block.attributes.id === 'Submit Phishing Button') {
@@ -630,14 +618,6 @@ export default {
           ]
         })
         this.editor.select(newComponents.getComponents().at(0))
-        document.querySelector('span[title="Open Code"]').addEventListener('click', () => {
-          const selected = this.editor.getSelected()
-          if (selected && selected.ccid !== 'wrapper') {
-          } else {
-            this.editor.select(newComponents.getComponents().at(0))
-            document.querySelector('span[title="Open Code"]').dispatchEvent(new Event('click'))
-          }
-        })
       })
     },
     getGrapesEditorContent() {
