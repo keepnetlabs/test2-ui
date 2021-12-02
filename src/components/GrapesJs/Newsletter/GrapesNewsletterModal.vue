@@ -32,15 +32,12 @@ import customMacroAttachment from './mergedTexts/customMacroAttachment'
 import trainingUrl from './mergedTexts/trainingUrl'
 import phishingUrl from './mergedTexts/phishingUrl'
 import macroUrl from './mergedTexts/macroUrl'
-import custom from 'grapesjs-custom-code'
 import { uploadEmlOrMsg } from '../../../api/threadSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
-import { setGrapesjsStyle } from './assets/css/grapesStyle'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
 import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
-import { eventFire } from '@/utils/functions'
 import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 
@@ -388,13 +385,11 @@ export default {
       blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('amazonTemplate', amazonTemplate)
       let pn = this.editor.Panels
+      pn.removeButton('views', 'open-layers')
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
       }
-      const panelViews = pn.addPanel({
-        id: 'views'
-      })
       const blocks = blockManager.getAll()
       blocks.map((block) => {
         if (block.attributes.id === 'Submit Phishing Button') {
