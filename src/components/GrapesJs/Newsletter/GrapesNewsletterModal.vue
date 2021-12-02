@@ -385,9 +385,9 @@ export default {
       blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('amazonTemplate', amazonTemplate)
       let pn = this.editor.Panels
-      debugger
-      pn.removeButton('views', 'open-layers')
-      pn.removeButton('options', 'fullscreen')
+      document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
+      document.querySelector('span[title="Fullscreen"]').style.display = 'none'
+      document.querySelector('span[title="Open Blocks"]').style.order = '-1'
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
