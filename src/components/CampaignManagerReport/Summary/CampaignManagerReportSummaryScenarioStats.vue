@@ -7,7 +7,12 @@
     <template #body>
       <div style="background-color: #fafafa; overflow: hidden;">
         <div class="campaign-manager-report-summary-scenario-stats__chart-container">
-          <Pie v-if="chartData.length" :chart-options="chartOptions" :data="chartData" />
+          <Pie
+            v-if="chartData.length"
+            :key="chartKey"
+            :chart-options="chartOptions"
+            :data="chartData"
+          />
         </div>
       </div>
     </template>
@@ -35,6 +40,7 @@ export default {
   data() {
     return {
       labels,
+      chartKey: `key-${Math.random().toString().substring(5)}`,
       chartOptions: {
         showLabels: true,
         plugins: {
@@ -73,6 +79,11 @@ export default {
         labels: this.chartLabels,
         showTooltipLine: true
       }
+    }
+  },
+  watch: {
+    chartData() {
+      this.chartKey = `key-${Math.random().toString().substring(5)}`
     }
   }
 }

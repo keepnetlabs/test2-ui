@@ -313,8 +313,6 @@ export default {
     },
     getTemplates(isInitial, emailTemplateResourceId) {
       this.loadingTemplates = true
-      //this.templateFromName = null
-      //this.templateFromEmail = null
       getEmailTemplatesList(this.bodyData)
         .then((response) => {
           const { data } = response

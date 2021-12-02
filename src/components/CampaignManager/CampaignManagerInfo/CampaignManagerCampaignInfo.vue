@@ -209,6 +209,9 @@ export default {
     showDuration: {
       type: Boolean,
       default: true
+    },
+    isActionButtonDisabled: {
+      type: Boolean
     }
   },
   data() {
@@ -384,6 +387,7 @@ export default {
     },
     callForPhishingScenarios() {
       this.setPhishingScenarioLoading(true)
+      this.$emit('update:isActionButtonDisabled', true)
       getScenariosList(this.axiosPayloadOfPhishingScenarios)
         .then((response) => {
           const {
@@ -417,6 +421,7 @@ export default {
             this.phishingScenarioSelectItems.push(this.formData.phishingScenario)
           }
           this.setPhishingScenarioLoading()
+          this.$emit('update:isActionButtonDisabled', false)
         })
     },
     toggleShowAdvancedSearch() {
