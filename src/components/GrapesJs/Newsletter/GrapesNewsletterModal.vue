@@ -89,9 +89,6 @@ export default {
     this.setMergedTextsForLinks()
     this.setTraits()
     this.setGrapesEditor()
-    window.addEventListener('popstate', function (event) {
-      // Log the state data to the console
-    })
   },
   methods: {
     destroyEditor() {
@@ -110,7 +107,6 @@ export default {
             '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
           ).selectedIndex = 0
         }
-        //component.getTrait('href').props()
       }, 10)
     },
     setMergedTextsForLinks() {
@@ -226,7 +222,8 @@ export default {
             modalTitleImport: 'Import Template',
             importPlaceholder: 'Template Here',
             inlineCss: true,
-            categoryLabel: 'Basic'
+            categoryLabel: 'Basic',
+            cmdInlineHtml: 'get-html-juiced'
           }
         },
         noticeOnUnload: false,
@@ -382,9 +379,9 @@ export default {
         view: dView
       })
       let blockManager = this.editor.BlockManager
-      blockManager.add('exampleComponent', exampleComponent)
       blockManager.add('amazonTemplate', amazonTemplate)
       let pn = this.editor.Panels
+      pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-upload')
       document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
       document.querySelector('span[title="Fullscreen"]').style.display = 'none'
       document.querySelector('span[title="Open Blocks"]').style.order = '-1'
@@ -560,8 +557,6 @@ export default {
               document.getElementsByClassName('merged-text')[i].getAttribute('data-title')
             )
         }
-        document.querySelector('.fa-download').classList.add('fa-upload')
-        document.querySelector('.fa-download').classList.remove('fa-download')
       }, 1000)
       const rte = this.editor.RichTextEditor
       rte.get('link').result = (rte) => {
@@ -614,7 +609,52 @@ export default {
             { name: 'none', value: 'none' }
           ]
         })
-        this.editor.select(newComponents.getComponents().at(0))
+        document.querySelector('.fa-upload').addEventListener('click', () => {
+          const editor = this.editor
+          const html = editor.runCommand('get-html-juiced')
+          let md = editor.Modal
+          // Init code viewer if not yet instantiated
+          let codeViewer = editor.CodeManager.getViewer('CodeMirror')
+          let viewer
+          let container = document.createElement('div')
+          let btnImp = document.createElement('button')
+          let btnCopyToClipboard = document.createElement('button')
+          // Init import button
+          btnImp.innerHTML = 'Import'
+          btnCopyToClipboard.innerHTML = 'Copy to clipboard'
+          btnImp.className = 'gjs-btn-prim gjs-btn-import'
+          btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
+          btnImp.onclick = () => {
+            let code = codeViewer.editor.getValue()
+            editor.DomComponents.getWrapper().set('content', '')
+            editor.setComponents(code)
+            editor.Modal.close()
+          }
+          btnCopyToClipboard.onclick = () => {
+            navigator.clipboard.writeText(codeViewer.editor.getValue())
+            this.$store.dispatch('common/createSnackBar', {
+              message: 'COPIED TO CLIPBOARD',
+              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+              icon: 'mdi-check-circle'
+            })
+          }
+          codeViewer.set({
+            codeName: 'htmlmixed',
+            readOnly: 0,
+            theme: 'hopscotch'
+          })
+          let txtarea = document.createElement('textarea')
+          container.appendChild(txtarea)
+          container.appendChild(btnImp)
+          container.appendChild(btnCopyToClipboard)
+          codeViewer.init(txtarea)
+          viewer = codeViewer.editor
+          viewer.setOption('lineWrapping', 1)
+          md.setContent('')
+          md.setContent(container)
+          codeViewer.setContent(html)
+          viewer.refresh()
+        })
       })
     },
     getGrapesEditorContent() {
