@@ -191,10 +191,10 @@ export default {
         if (totalGroupLength && totalUsers === 0) {
           totalUsers = 1
         }
+
         if (sendRandomlyUsersCalculateTypeId === '1') {
-          text = `Randomly selected %${sendRandomlyUsersCount} (${Math.floor(
-            totalUsers / Number(sendRandomlyUsersCount)
-          )} users) from`
+          const total = Math.floor(totalUsers / Number(sendRandomlyUsersCount))
+          text = `Randomly selected %${sendRandomlyUsersCount} (${total || 1} users) from`
         } else {
           text = `Randomly selected ${Number(sendRandomlyUsersCount)} users from`
         }

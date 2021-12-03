@@ -473,9 +473,11 @@ export default {
       }
       this.inputTimeout = setTimeout(() => {
         this.$nextTick(() => {
-          document
-            .querySelector('#input--campaign-target-user-groups .k-select__menu')
-            .addEventListener('scroll', this.handleScroll)
+          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
+            document
+              .querySelector('#input--campaign-target-user-groups .k-select__menu')
+              .addEventListener('scroll', this.handleScroll)
+          }
         })
       }, 250)
     },
@@ -486,9 +488,11 @@ export default {
       }
       this.inputTimeout = setTimeout(() => {
         this.$nextTick(() => {
-          document
-            .querySelector('#input--campaign-target-user-groups .k-select__menu')
-            .removeEventListener('scroll', this.handleScroll)
+          if (document.querySelector('#input--campaign-target-user-groups .k-select__menu')) {
+            document
+              .querySelector('#input--campaign-target-user-groups .k-select__menu')
+              .removeEventListener('scroll', this.handleScroll)
+          }
         })
       }, 250)
     },
