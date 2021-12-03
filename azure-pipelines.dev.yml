@@ -10,6 +10,11 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: '14.15.1'
+  displayName: 'Install Node.js'
+  
 - script: |
     rm public/config.js
     mv public/config.Production.js public/config.js
