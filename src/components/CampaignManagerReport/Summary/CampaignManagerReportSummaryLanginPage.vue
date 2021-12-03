@@ -35,6 +35,7 @@
             v-if="!!formData.landingPageTemplate"
             ref="refPreview"
             :html="formData.landingPageTemplate"
+            is-extra-height
           />
         </div>
       </div>

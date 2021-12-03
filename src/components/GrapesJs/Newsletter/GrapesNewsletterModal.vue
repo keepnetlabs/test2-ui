@@ -544,6 +544,7 @@ export default {
           }
         }
       })
+      document.querySelector('.gjs-blocks-no-cat').style.display = 'none'
       blockManager.add('Submit Phishing Button', submitButton)
       this.editor.Css.setRule('.grapes-custom-button', {
         color: 'white',

@@ -73,7 +73,11 @@
             ]"
           />
         </form-group>
-        <make-available-for v-model="availableForRequests" ref="refMakeAvailableFor" />
+        <make-available-for
+          v-model="availableForRequests"
+          ref="refMakeAvailableFor"
+          placeholder="Select companies that should see this landing page template in their libraries"
+        />
 
         <form-group :title="labels.TestConnection" class="mt-2">
           <TestConnection

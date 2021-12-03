@@ -85,6 +85,7 @@
                 v-if="!!formData.emailTemplate"
                 ref="refPreview"
                 :html="formData.emailTemplate"
+                is-extra-height
               />
             </div>
           </div>
@@ -133,6 +134,7 @@
               <KEmailPreview
                 v-if="!!formData.landingPageTemplate"
                 :html="formData.landingPageTemplate"
+                is-extra-height
               />
             </div>
           </div>
