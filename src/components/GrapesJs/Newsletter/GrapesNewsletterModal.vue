@@ -385,6 +385,18 @@ export default {
       document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
       document.querySelector('span[title="Fullscreen"]').style.display = 'none'
       document.querySelector('span[title="Open Blocks"]').style.order = '-1'
+      pn.removeButton('options', 'preview')
+      pn.addButton('options', {
+        id: 'my-preview',
+        className: 'fa fa-eye',
+        attributes: { title: 'Preview' },
+        active: false
+      })
+      document.querySelector('span[title="Preview"]').addEventListener('click', () => {
+        const win = window.open('', 'Title')
+        win.document.title = 'Mail Preview'
+        win.document.body.innerHTML = this.getGrapesEditorContent()
+      })
       pn.getButton('options', 'sw-visibility').set('active', 0)
       if (!!this.htmlData) {
         this.getGrapesWebModalDraw(this.htmlData)
@@ -658,8 +670,7 @@ export default {
       })
     },
     getGrapesEditorContent() {
-      let htmlContent = this.editor.Commands.run('gjs-get-inlined-html')
-      return htmlContent
+      return this.editor.Commands.run('get-html-juiced')
     }
   }
 }
