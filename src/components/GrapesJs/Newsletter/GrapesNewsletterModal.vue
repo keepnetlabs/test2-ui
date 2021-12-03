@@ -633,6 +633,7 @@ export default {
           let btnCopyToClipboard = document.createElement('button')
           // Init import button
           btnImp.innerHTML = 'Import'
+          btnImp.type = 'button'
           btnCopyToClipboard.innerHTML = 'Copy to clipboard'
           btnImp.className = 'gjs-btn-prim gjs-btn-import'
           btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
@@ -642,6 +643,7 @@ export default {
             editor.setComponents(code)
             editor.Modal.close()
           }
+          btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
             navigator.clipboard.writeText(codeViewer.editor.getValue())
             this.$store.dispatch('common/createSnackBar', {
