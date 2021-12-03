@@ -199,12 +199,17 @@
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
                   <div>
-                    <span class="template-preview__text--title">URL: </span>
+                    <span class="template-preview__text--title">Phishing URL: </span>
                     <span class="template-preview__text--body">{{ templateURL }}</span>
                   </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
-                <KEmailPreview v-if="!!templateHTML" :html="templateHTML" />
+                <KEmailPreview
+                  v-if="!!templateHTML"
+                  :key="templateHTML"
+                  :html="templateHTML"
+                  is-extra-height
+                />
               </div>
             </div>
           </multipane>

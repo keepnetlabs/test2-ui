@@ -192,6 +192,7 @@
             hide-details
             style="max-width: 48px;"
             :disabled="getDisabledStatusOfRandomlySelected"
+            :rules="rules.number"
           ></v-text-field>
           <KSelect
             v-model.trim="formData.sendRandomlyUsersCalculateTypeId"

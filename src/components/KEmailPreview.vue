@@ -17,6 +17,10 @@ export default {
   props: {
     html: {
       type: String
+    },
+    isExtraHeight: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -63,6 +67,9 @@ export default {
         }
         if (height > this.numberHeight && height > 300) {
           height = height - 12
+          if (this.isExtraHeight) {
+            height += 16
+          }
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)

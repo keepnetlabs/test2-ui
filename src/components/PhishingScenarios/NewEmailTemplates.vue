@@ -1,7 +1,7 @@
 <template>
   <app-modal
     :status="status"
-    icon-name="mdi-file"
+    icon-name="mdi-email"
     :title="
       !isEdit
         ? 'New Email Template'

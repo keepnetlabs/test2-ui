@@ -357,8 +357,9 @@
                       <div class="summary-template">
                         <KEmailPreview
                           v-if="!!summaryData.emailTemplate.template"
-                          ref="refPreview"
+                          :key="summaryData.emailTemplate.template"
                           :html="summaryData.emailTemplate.template"
+                          is-extra-height
                         />
                       </div>
                     </div>
@@ -451,8 +452,9 @@
                       <div class="summary-template">
                         <KEmailPreview
                           v-if="!!summaryData.landingPageTemplate.landingPages[0].content"
-                          ref="refPreview"
+                          :key="summaryData.landingPageTemplate.landingPages[0].content"
                           :html="summaryData.landingPageTemplate.landingPages[0].content"
+                          is-extra-height
                         />
                       </div>
                     </div>
@@ -513,129 +515,12 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
-import KShadowFrame from '@/components/KShadowFrame'
 import { scrollToComponent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
-Vue.customElement('k-shadow-frame', KShadowFrame, {
-  shadow: true,
-  shadowCss: `
- @import url('https://fonts.googleapis.com/css?family=Material+Icons');
- @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
- @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
-.hidden-icon-link {
-  background-color: #757575;
-  color: #ffffff;
-}
-.malicious-style,
-.malicious-link {
-     color: #f56c6d !important;
-    border-color: #f56c6d !important;
-    background-color: #f3e1e5 !important;
-    text-decoration: none !important;
-
-    position: relative;
-  text-decoration: none !important;
-  border-bottom: 0 solid;
-  position:relative;
-  .share-setting-text {
-    text-decoration: none !important;
-    text-decoration-color: transparent !important;
-    text-decoration-style: unset !important;
-    border: none !important;
-    border-bottom: transparent !important;
-    border-bottom-color: transparent !important;
-    border-image: none !important;
-    border-image-width: 0 !important;
-  }
-}
-[data-title]:hover:after {
-    opacity: 1;
-
-    visibility: visible;
-}
-[data-title]:after {
-     content: attr(data-title);
-    position: absolute;
-    padding: 4px 8px;
-    bottom: -40px;
-    left: 0;
-    white-space: nowrap;
-    opacity: 0;
-    z-index: 99999;
-    visibility: hidden;
-  border-radius: 4px;
-    line-height: 1.33;
-    min-height: 24px;
-    background: #6d6d6d !important;
-    color: rgba(255, 255, 255, 0.87) !important;
-    font-family: "Open Sans", sans-serif !important;
-    font-size: 12px;
-    text-decoration:none;
-        font-weight: normal;
-
-}
-[data-title] {
-    position: relative;
-}
-.malicious-style {
-   color: #bb2a45 !important;
-    border-color: #bb2a45 !important;
-    background-color: #f3e1e5 !important;
-
-  text-decoration: none !important;
-  border-bottom: 1px solid;
-  position:relative;
-      text-indent: 0;
-}
-
-.malicious-icon {
- top: 0px;
-  background: transparent;
-  color: #f56c6c;
-  font-size: inherit !important;
-  padding: 0;
-}
-
-.red-malicious-alert {
-   color: #f56c6c !important;
-    caret-color: #f56c6c !important;
-    text-decoration: unset !important;
-    text-decoration-color: transparent !important;
-    font-size: inherit !important;
-    overflow: hidden;
-}
-
-.red-malicious-alert::before {
-  border: unset !important;
-}
-
-.hidden-icon-link {
-  background-color: #757575;
-  color: #ffffff;
-}
-
-.url-badge{
-  font-family: "Open Sans", sans-serif;
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    color: white;
-    background-color: #757575c2;
-    height: 10px;
-    width: 10px;
-    text-align: center;
-    border-radius: 30px;
-    font-size: 8px;
-    font-weight: 900;
-    line-height: 1.2 !important;
-}
-a{position:relative}
- `
-})
 export default {
   name: 'NewScenarios',
   components: {
@@ -791,14 +676,16 @@ export default {
       }
       if (prevStep === 3) {
         if (!!this.formValues.landingPageTemplateId || !!this.landingPageTemplateResourceId) {
-          getSummaryOfScenario(
-            this.emailTemplateResourceId,
-            this.landingPageTemplateResourceId
-          ).then((response) => {
-            this.summaryData = response.data.data
-            this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
-            this.step += 1
-          })
+          this.isSubmitDisabled = true
+          getSummaryOfScenario(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
+            .then((response) => {
+              this.summaryData = response.data.data
+              this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
+              this.step += 1
+            })
+            .finally(() => {
+              this.isSubmitDisabled = false
+            })
         }
       }
     },
