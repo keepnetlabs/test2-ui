@@ -209,7 +209,12 @@
                   </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
-                <k-email-preview v-if="templateHTML" :key="templateHTML" :html="templateHTML" />
+                <k-email-preview
+                  v-if="templateHTML"
+                  :key="templateHTML"
+                  :html="templateHTML"
+                  is-extra-height
+                />
               </div>
             </div>
           </multipane>

@@ -34,7 +34,11 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <KEmailPreview v-if="!!formData.emailTemplate" :html="formData.emailTemplate" />
+          <KEmailPreview
+            v-if="!!formData.emailTemplate"
+            :html="formData.emailTemplate"
+            is-extra-height
+          />
         </div>
       </div>
     </template>
