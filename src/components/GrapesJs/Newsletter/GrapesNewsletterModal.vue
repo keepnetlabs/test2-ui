@@ -383,7 +383,6 @@ export default {
       let pn = this.editor.Panels
       pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-upload')
       document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
-      document.querySelector('span[title="Fullscreen"]').style.display = 'none'
       document.querySelector('span[title="Open Blocks"]').style.order = '-1'
       pn.removeButton('options', 'preview')
       pn.addButton('options', {
@@ -547,7 +546,8 @@ export default {
       setTimeout(() => {
         document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
           'none'
-      }, 1000)
+        document.querySelector('span[title="Fullscreen"]').style.display = 'none'
+      }, 500)
       blockManager.add('Submit Phishing Button', submitButton)
       this.editor.Css.setRule('.grapes-custom-button', {
         color: 'white',
