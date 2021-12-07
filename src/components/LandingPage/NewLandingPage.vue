@@ -127,7 +127,7 @@
                 >
                   <v-radio-group
                     v-model="formValues.difficultyTypeId"
-                    class="send-welcome-email__radio-group"
+                    class="send-welcome-email__radio-group mt-4"
                     hide-details
                     row
                     persistent-hint
