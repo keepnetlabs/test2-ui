@@ -801,6 +801,13 @@ export default {
       display: flex;
       padding: 26px;
       align-items: center;
+      div {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+        color: #2196f3 !important;
+      }
     }
     &-content {
       border-top: 1px solid #e0e0e0;
