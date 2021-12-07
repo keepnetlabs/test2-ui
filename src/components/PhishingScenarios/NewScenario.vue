@@ -228,7 +228,7 @@
                           ).text
                         }}</span>
                       </div>
-                      <div class="summary-content-details">
+                      <div class="summary-content-details" style="border-bottom: none !important;">
                         <span class="summary-content__title">Difficulty</span
                         ><span class="summary-content__body">{{ getDifficultyType }}</span>
                       </div>
