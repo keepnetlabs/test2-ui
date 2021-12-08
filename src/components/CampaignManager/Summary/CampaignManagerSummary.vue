@@ -1,6 +1,11 @@
 <template>
   <div class="campaign-manager-last-step">
-    <div class="campaign-manager-last-step__header">
+    <div
+      class="campaign-manager-last-step__header"
+      :style="{
+        gridTemplateColumns: Object.keys(getOtherSettingsItems).length ? '1fr 1fr 1fr' : '1fr 1fr'
+      }"
+    >
       <CampaignManagerSummaryCard
         icon="mdi-alert-circle"
         :title="labels.ScenarioInfo"

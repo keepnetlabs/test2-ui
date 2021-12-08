@@ -1,13 +1,13 @@
 <template>
   <app-modal
-    :status="status"
     v-if="status"
-    @closeOverlay="status = false"
+    :status="status"
     :icon-name="'mdi-book-search'"
     :title="status && resourceId ? 'Edit Domain' : 'Create New Domain'"
     className="mail-configuration__modal"
     ref="domain__modal"
     title-id="text--create-domain-modal-title"
+    @closeOverlay="status = false"
   >
     <template v-slot:overlay-body>
       <v-form ref="domainForm">
@@ -17,7 +17,7 @@
         />
         <form-group title="Domain" has-hint>
           <v-text-field
-            placeholder="Enter Domain"
+            placeholder="yourdomain.com"
             id="input--domain"
             outlined
             dense
@@ -67,7 +67,7 @@
         </form-group>
         <form-group title="DNS Record" has-hint>
           <v-text-field
-            placeholder="Enter DNS Record"
+            placeholder="Target IP or domain"
             id="input--domain"
             outlined
             dense
@@ -83,10 +83,16 @@
         </form-group>
         <form-group title="Proxy Status">
           <div class="d-flex">
-            <v-radio-group v-model.trim="formValues.proxyStatusId" row>
+            <v-radio-group
+              v-model.trim="formValues.proxyStatusId"
+              class="mt-4 mb-6"
+              style="margin-top: 16px !important;"
+              row
+            >
               <v-radio
                 v-for="item in domainData.proxyStatuses"
                 :key="item.value"
+                hide-details
                 color="#2196f3"
                 :value="item.value"
                 :label="item.text"
@@ -97,11 +103,17 @@
         </form-group>
         <form-group title="Schema">
           <div class="d-flex">
-            <v-radio-group v-model.trim="formValues.urlSchemaTypeId" row>
+            <v-radio-group
+              v-model.trim="formValues.urlSchemaTypeId"
+              class="mt-4 mb-6"
+              style="margin-top: 16px !important;"
+              row
+            >
               <v-radio
                 v-for="item in domainData.urlSchemas"
                 :key="item.value"
                 color="#2196f3"
+                hide-details
                 :value="item.value"
                 :label="item.text"
                 class="mr-4"
@@ -126,7 +138,11 @@
             height="40"
           ></v-text-field>
         </form-group>
-        <make-available-for ref="refMakeAvailableFor" v-model="availableForRequests" />
+        <make-available-for
+          ref="refMakeAvailableFor"
+          v-model="availableForRequests"
+          placeholder="Select companies that should see this landing page template in their libraries"
+        />
 
         <form-group :title="labels.TestConnection" class="mt-2">
           <TestConnection

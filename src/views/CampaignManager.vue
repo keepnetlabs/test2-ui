@@ -21,6 +21,7 @@
         :is-edit="isEdit"
         :selected-row="selectedRow"
         :form-details="formDetails"
+        :is-duplicate="isDuplicate"
         @on-close="toggleAddCampaignManagerModal"
         @on-submit="handleOnSubmit"
       />
@@ -93,6 +94,7 @@ export default {
       isParentTableLoading: false,
       isItemTableLoading: false,
       isItemTableShowing: false,
+      isDuplicate: false,
       isShowAddOrEditCampaignManagerModal: false,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
@@ -147,6 +149,7 @@ export default {
       if (this.isShowAddOrEditCampaignManagerModal) {
         this.selectedRow = null
         this.isEdit = false
+        this.isDuplicate = false
       }
       this.isShowAddOrEditCampaignManagerModal = !this.isShowAddOrEditCampaignManagerModal
     },
@@ -172,6 +175,7 @@ export default {
     },
     handleItemOnDuplicate(row) {
       this.selectedRow = row
+      this.isDuplicate = true
       this.toggleAddCampaignManagerModal()
     },
     handleOnPause(row = {}) {

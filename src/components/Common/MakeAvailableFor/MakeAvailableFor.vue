@@ -309,5 +309,11 @@ export default {
       }
     }
   }
+  .vue-treeselect__multi-value-item {
+    pointer-events: none;
+    .vue-treeselect__value-remove {
+      pointer-events: all;
+    }
+  }
 }
 </style>

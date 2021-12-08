@@ -127,7 +127,7 @@
                 >
                   <v-radio-group
                     v-model="formValues.difficultyTypeId"
-                    class="send-welcome-email__radio-group"
+                    class="send-welcome-email__radio-group mt-4"
                     hide-details
                     row
                     persistent-hint
@@ -156,7 +156,7 @@
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="new-email-template__title">
-                    Email Settings</v-list-item-title
+                    Page Settings</v-list-item-title
                   >
                   <v-list-item-subtitle class="new-email-template__sub-title"
                     >Enter basic information about this email template</v-list-item-subtitle

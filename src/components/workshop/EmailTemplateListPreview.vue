@@ -195,11 +195,11 @@
                   </v-icon>
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
-                  <div>
+                  <div class="mb-2">
                     <span class="template-preview__text--title">Subject: </span>
                     <span class="template-preview__text--body">{{ templateSubject }}</span>
                   </div>
-                  <div>
+                  <div class="mb-2">
                     <span class="template-preview__text--title">From Name: </span>
                     <span class="template-preview__text--body">{{ templateFromName }}</span>
                   </div>

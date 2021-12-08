@@ -170,6 +170,9 @@
           @media (max-width:1700px){
             height: 48px;
           }
+          @media (min-width:2500px){
+            height: auto;
+          }
           .el-checkbox {
             z-index: 2;
           }
@@ -385,7 +388,7 @@
         }
 
         .selected-row {
-          background-color: #bde0ff !important;
+          background-color: #F1F8FE !important;
         }
 
         .selection-row {
@@ -1064,7 +1067,7 @@
 }
 
 .el-table--border th, .el-table__fixed-right-patch {
-  @media (min-width:1800px) {
+  @media (min-width:2400px) {
     border-bottom: 1px solid #EBEEF5 !important;
   }
   border-bottom: none !important; ;
