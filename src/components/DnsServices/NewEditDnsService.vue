@@ -176,7 +176,7 @@ export default {
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
       availableForRequests: [],
       formValues: {
-        dnsServiceProviderTypeId: null,
+        dnsServiceProviderTypeId: 1,
         dnsServiceProviderName: null,
         username: null,
         password: null,
