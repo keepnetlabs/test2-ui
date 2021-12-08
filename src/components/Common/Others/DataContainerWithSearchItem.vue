@@ -19,7 +19,7 @@
     <div v-if="!isEdit" class="data-container-with-search-item__actions">
       <v-tooltip v-if="!isValid" bottom opacity="1">
         <template #activator="{ on }">
-          <v-icon v-on="on" class="mr-8" color="#F56C6C" style="font-size: 24px !important;"
+          <v-icon v-on="on" class="mr-2" color="#F56C6C" style="font-size: 24px !important;"
             >mdi-alert-circle</v-icon
           >
         </template>
@@ -35,7 +35,7 @@
     <div v-else class="d-flex download-buttons flex-row flex-wrap justify-end">
       <v-tooltip v-if="!isValid" bottom opacity="1">
         <template #activator="{ on }">
-          <v-icon v-on="on" class="mr-8" color="#F56C6C">mdi-alert-circle</v-icon>
+          <v-icon v-on="on" class="mr-2" color="#F56C6C">mdi-alert-circle</v-icon>
         </template>
         {{ textFieldErrorMessage }}
       </v-tooltip>

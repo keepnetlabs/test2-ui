@@ -47,8 +47,9 @@
                     rounded
                     medium
                     color="blue"
+                    :disabled="mfaStatus === 2"
                     @click="onMfaStatusChangeButton"
-                    >{{ mfaStatus ? labels.Resync : labels.Enable }}</v-btn
+                    >{{ mfaStatus === 1 ? labels.Resync : labels.Enable }}</v-btn
                   >
                 </div>
               </v-col>
