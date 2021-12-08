@@ -165,7 +165,7 @@
               </v-list-item>
               <v-list-item>
                 <v-list-item-content>
-                  <v-form ref="refEmailTemplateContent">
+                  <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
                     <form-group
                       title="Email Template"
                       class-name="email-template mt-8 p-4"
