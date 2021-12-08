@@ -255,7 +255,7 @@ export default {
           label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
           sortable: true,
           show: true,
-          type: 'text',
+          type: 'date',
           filterableType: 'date',
           width: 180
         },
@@ -268,7 +268,7 @@ export default {
           sortable: true,
           show: true,
           filterableType: 'date',
-          type: 'text',
+          type: 'date',
           width: 180
         }
       ],

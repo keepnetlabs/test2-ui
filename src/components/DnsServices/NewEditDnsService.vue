@@ -76,7 +76,7 @@
         <make-available-for
           v-model="availableForRequests"
           ref="refMakeAvailableFor"
-          placeholder="Select companies that should see this landing page template in their libraries"
+          sub-title="Select companies that should see this landing page template in their libraries"
         />
 
         <form-group :title="labels.TestConnection" class="mt-2">
@@ -176,7 +176,7 @@ export default {
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
       availableForRequests: [],
       formValues: {
-        dnsServiceProviderTypeId: null,
+        dnsServiceProviderTypeId: 1,
         dnsServiceProviderName: null,
         username: null,
         password: null,

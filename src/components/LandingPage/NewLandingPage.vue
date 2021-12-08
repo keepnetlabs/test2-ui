@@ -123,7 +123,7 @@
                 <form-group
                   title="Difficulty"
                   sub-title="Select a detection difficulty level for this phishing email"
-                  class-name="mb-6"
+                  class-name="mb-8"
                 >
                   <v-radio-group
                     v-model="formValues.difficultyTypeId"

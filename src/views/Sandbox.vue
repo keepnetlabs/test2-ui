@@ -74,7 +74,7 @@
                   v-model="filteredSelectValueDate"
                   :menu-props="{ offsetY: true }"
                   placeholder="Select an option"
-                  :key="$store.state.auth.user.userCompany.timeZone"
+                  :key="getDateKey"
                   @blur="changeBlurValue($event)"
                 ></v-select>
                 <InputDate
@@ -479,6 +479,11 @@ export default {
         { name: 'Ip', value: 3 },
         { name: 'Hash', value: 4 }
       ]
+    }
+  },
+  computed: {
+    getDateKey() {
+      return this.$store?.state?.auth?.user?.userCompany?.timeZone
     }
   },
   created() {

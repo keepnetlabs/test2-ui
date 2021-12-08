@@ -117,7 +117,7 @@
             contentClass: 'data-table-filter__date-picker-select-menu'
           }"
           placeholder="Select an option"
-          :key="$store.state.auth.user.userCompany.timeZone"
+          :key="getDateKey"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
@@ -126,7 +126,7 @@
           type="datetime"
           ref="refPicker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
-          :key="`${$store.state.auth.user.userCompany.timeZone}1`"
+          :key="`${getDateKey}1`"
         />
         <InputDate
           v-if="filteredSelectValueDate === 'between'"
@@ -135,7 +135,7 @@
           type="datetimerange"
           style="margin-bottom: 14px;"
           @change="handleChangeBetweenDatepicker"
-          :key="`${$store.state.auth.user.userCompany.timeZone}2`"
+          :key="`${getDateKey}2`"
         />
       </template>
       <template v-if="filterableType === 'dateOnly'">
@@ -148,7 +148,7 @@
           v-model="filteredSelectValueDate"
           :menu-props="{ offsetY: true }"
           placeholder="Select an option"
-          :key="$store.state.auth.user.userCompany.timeZone"
+          :key="getDateKey"
           v-if="filterableOptions.showSelect"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
@@ -158,7 +158,7 @@
           type="date"
           ref="refPicker"
           style="width: 100%; max-width: 260px; margin-bottom: 14px;"
-          :key="`${$store.state.auth.user.userCompany.timeZone}1`"
+          :key="`${getDateKey}1`"
           :format="getTimeZone(true) || 'yyyy/MM/dd HH:mm'"
           :valueFormat="getTimeZone(true) || `yyyy/MM/dd HH:mm`"
         />
@@ -171,7 +171,7 @@
           :format="getTimeZone(true) || 'yyyy/MM/dd HH:mm'"
           :valueFormat="getTimeZone(true) || `yyyy/MM/dd HH:mm`"
           @change="handleChangeBetweenDatepicker"
-          :key="`${$store.state.auth.user.userCompany.timeZone}2`"
+          :key="`${getDateKey}2`"
         />
       </template>
       <template v-if="filterableType === 'select'">
@@ -567,6 +567,9 @@ export default {
           )
         }
       }
+    },
+    getDateKey() {
+      return this.$store?.state?.auth?.user?.userCompany?.timeZone
     },
     getTextFilterItems() {
       if (this.filterOptionProps && this.filterOptionProps.length > 0) {
