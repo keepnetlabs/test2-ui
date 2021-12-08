@@ -151,6 +151,9 @@ export default {
     },
     formDetails: {
       type: Object
+    },
+    isDuplicate: {
+      type: Boolean
     }
   },
   emits: EMITS,
@@ -287,6 +290,9 @@ export default {
     callForData() {
       getCampaignManager(this.selectedRow.resourceId).then((response) => {
         const { data: { data = {} } = {} } = response
+        if (this.isDuplicate) {
+          data.name = `${data.name} - Copy`
+        }
         this.selectedRowFormData = data
       })
     },
