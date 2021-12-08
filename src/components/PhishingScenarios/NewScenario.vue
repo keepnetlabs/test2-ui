@@ -799,7 +799,7 @@ export default {
     &-header {
       justify-content: space-between;
       display: flex;
-      padding: 26px;
+      padding: 24px 24px 16px 24px;
       align-items: center;
       div {
         font-style: normal;
