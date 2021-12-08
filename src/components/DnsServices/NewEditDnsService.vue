@@ -52,7 +52,7 @@
         </form-group>
         <form-group title="Email" has-hint>
           <InputEmail
-            placeholder="Enter Email"
+            placeholder="Enter email address"
             v-model.trim="formValues.username"
             :required="true"
           />

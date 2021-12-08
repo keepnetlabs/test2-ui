@@ -228,7 +228,7 @@
                           ).text
                         }}</span>
                       </div>
-                      <div class="summary-content-details">
+                      <div class="summary-content-details" style="border-bottom: none !important;">
                         <span class="summary-content__title">Difficulty</span
                         ><span class="summary-content__body">{{ getDifficultyType }}</span>
                       </div>
@@ -799,8 +799,15 @@ export default {
     &-header {
       justify-content: space-between;
       display: flex;
-      padding: 26px;
+      padding: 24px 24px 16px 24px;
       align-items: center;
+      div {
+        font-style: normal;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 22px;
+        color: #2196f3 !important;
+      }
     }
     &-content {
       border-top: 1px solid #e0e0e0;
