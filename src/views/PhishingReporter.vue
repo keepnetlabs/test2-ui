@@ -29,7 +29,7 @@
                     {{ (phishingReportSummary && phishingReportSummary['onlineUsersCount']) || 0 }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    {{ labels.User }}(s) {{ labels.Online }}
+                    Online users
                   </p>
                 </div>
               </div>
@@ -49,7 +49,7 @@
                     {{ getAddOnStatus }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    {{ labels.User }}(s) have the add-in
+                    Users with add-in
                   </p>
                 </div>
               </div>
@@ -77,7 +77,7 @@
                     {{ (phishingReportSummary && phishingReportSummary['offlineUsersCount']) || 0 }}
                   </h3>
                   <p class="phishing-reporter__stats-card-right-stats">
-                    {{ labels.User }}(s) {{ labels.Offline }}
+                    Offline users
                   </p>
                 </div>
               </div>
