@@ -290,6 +290,8 @@ export const TABLE_SETTINGS_KEYS = {
   REPORTED_EMAIL: 'ReportedEmailTableSettings',
   CAMPAIGN_MANAGER_REPORT_SENDING_REPORT_TABLE: 'CampaignManagerReportSendingReportTableSettings',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSettings',
+  CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
+    'CampaignManagerReportPhishingReportTableSettings',
   CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSettings',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
@@ -436,6 +438,8 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSearchKeys',
+  CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
+    'CampaignManagerReportPhishingReporterTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_NO_RESPONSE_TABLE: 'CampaignManagerReportNoResponseTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSearchKeys',
   REPORTED_EMAIL: 'ReportedEmail',

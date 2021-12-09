@@ -38,6 +38,7 @@ import CampaignManagerReportSubmittedData from '@/components/CampaignManagerRepo
 import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
 import { getCampaignManagerJobFormDetails } from '@/api/phishingsimulator'
+import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
 export default {
   name: 'CampaignManagerReport',
   data() {
@@ -79,6 +80,12 @@ export default {
           id: 'campaign-manager-report-sending-response-content',
           label: labels.SendingReport,
           component: CampaignManagerReportSendingReport
+        },
+        {
+          name: labels.PhishingReporter,
+          id: 'campaign-manager-report-phishing-report-content',
+          label: labels.PhishingReporter,
+          component: CampaignManagerReportPhishingReport
         }
       ],
       formDetails: null
