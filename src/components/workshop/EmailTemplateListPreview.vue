@@ -126,7 +126,9 @@
                     </div>
                     <div class="template-list--item template-list--item__sub-header">
                       {{ item.categoryName }}
-                      <span class="template-list--item__sub-header--span">by</span>
+                      <span class="template-list--item__sub-header--span"
+                        ><span style="font-size: 20px; vertical-align: sub;">&bull;</span> by</span
+                      >
                       {{ item.createdBy }}
                     </div>
                   </div>
