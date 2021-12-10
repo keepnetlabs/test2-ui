@@ -200,12 +200,8 @@ export default {
       }
     },
     getTotalUsers() {
-      return (
-        this.targetGroups.reduce((acc, item) => {
-          acc += item['usersCount']
-          return acc
-        }, 0) || 0
-      )
+      const { campaignInfo = {} } = this.campaignSummary
+      return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
       const { emailTemplate = {} } = this.campaignSummary

@@ -29,7 +29,8 @@ const investigations = {
     getInvestigationDetailsData: {},
     getInvestigationDetailsListData: [],
     getInvestigationDetailsTargetUsersListData: [],
-    irSummary: {}
+    irSummary: {},
+    isWidgetsLoading: true
   },
   getters: {
     // create global getters for the target users list and investigaiton list
@@ -40,7 +41,8 @@ const investigations = {
     getInvestigationDetailsListGetter: (state) => state.getInvestigationDetailsListData,
     getInvestigationDetailsTargetUsersListGetter: (state) =>
       state.getInvestigationDetailsTargetUsersListData,
-    irSummaryGetter: (state) => state.irSummary
+    irSummaryGetter: (state) => state.irSummary,
+    isWidgetsLoadingGetter: (state) => state.isWidgetsLoading
   },
   mutations: {
     SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
@@ -87,9 +89,15 @@ const investigations = {
       let data = payload.data
       //data.unshift({ name: 'All', groupId: 'all' })
       state.targetUsersList = data
+    },
+    SET_WIDGETS_LOADING(state, payload) {
+      state.isWidgetsLoading = payload
     }
   },
   actions: {
+    setWidgetsLoading({ commit }, payload) {
+      commit('SET_WIDGETS_LOADING', payload)
+    },
     SET_INVESTIGATIONLISTEMPY(state, payload) {
       state.investigationList = []
     },
@@ -166,11 +174,11 @@ const investigations = {
       })
     },
     async getIrSummary({ commit, dispatch }, obj) {
-      // get investigaiton list via axious
-
+      dispatch('setWidgetsLoading', true)
       return await irSummary(obj).then((response) => {
         const result = response.data
         commit('SET_IRSUMMARY', result)
+        dispatch('setWidgetsLoading', false)
       })
     },
 

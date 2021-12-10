@@ -83,14 +83,14 @@ export default {
   },
   data() {
     return {
-      isLoading: true,
       labels
     }
   },
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter' // for using getters
+      irSummary: 'investigations/irSummaryGetter',
+      isLoading: 'investigations/isWidgetsLoadingGetter'
     })
   },
 
@@ -105,19 +105,6 @@ export default {
           data['notifiedEmailResultCount']['reportedMailCount']
         )
     }
-  },
-  created() {
-    this.$store
-      .dispatch('investigations/getIrSummary')
-      .then(() => {
-        this.isLoading = false
-      })
-      .catch(() => {
-        this.isLoading = false
-      })
-      .finally(() => {
-        this.isLoading = false
-      })
   }
 }
 </script>
