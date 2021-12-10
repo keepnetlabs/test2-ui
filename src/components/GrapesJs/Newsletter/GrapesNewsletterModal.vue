@@ -281,6 +281,14 @@ export default {
               ).selectedIndex = 0
             }
           }, 50)
+        } else if (selected) {
+          const name = selected.getName()
+          if (['Input', 'Textarea', 'Button', 'Checkbox'].includes(name)) {
+            const settingsTab = document.querySelector('.gjs-pn-buttons span[title="Settings"]')
+            if (settingsTab) {
+              settingsTab.click()
+            }
+          }
         }
       })
       const logoUrl = store.state.whitelabel.mainLogoUrl
@@ -547,6 +555,7 @@ export default {
         document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
           'none'
         document.querySelector('span[title="Fullscreen"]').style.display = 'none'
+        document.querySelector('span[title="View code"]').style.display = 'none'
       }, 500)
       blockManager.add('Submit Phishing Button', submitButton)
       this.editor.Css.setRule('.grapes-custom-button', {
@@ -813,6 +822,7 @@ export default {
     }
   }
   .gjs-pn-buttons {
+    justify-content: flex-end;
     .gjs-pn-btn {
       margin: 0 8px !important;
     }
@@ -824,7 +834,9 @@ export default {
     border: 1px solid #434343;
   }
   .gjs-trt-trait.gjs-trt-trait--text,
-  .gjs-trt-trait.gjs-trt-trait--select {
+  .gjs-trt-trait.gjs-trt-trait--select,
+  .gjs-trt-trait--content,
+  .gjs-trt-trait--checkbox {
     background: #757575 !important;
   }
   .gjs-label {
