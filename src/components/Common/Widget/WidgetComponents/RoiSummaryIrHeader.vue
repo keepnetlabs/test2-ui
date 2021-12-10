@@ -74,7 +74,8 @@ export default {
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter' // for using getters
+      irSummary: 'investigations/irSummaryGetter',
+      isLoading: 'investigations/isWidgetsLoadingGetter'
     }),
     getRoiSummaryValue() {
       if (this.irSummary && this.irSummary['roiSummary'] && this.irSummary['roiSummary'].revenue) {
@@ -134,7 +135,6 @@ export default {
   },
   data() {
     return {
-      isLoading: true,
       labels
     }
   },
@@ -144,19 +144,6 @@ export default {
       const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
       return revenue === '0' && time === '0'
     }
-  },
-  created() {
-    this.$store
-      .dispatch('investigations/getIrSummary')
-      .then(() => {
-        this.isLoading = false
-      })
-      .catch(() => {
-        this.isLoading = false
-      })
-      .finally(() => {
-        this.isLoading = false
-      })
   }
 }
 </script>

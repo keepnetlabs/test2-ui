@@ -141,7 +141,7 @@
         <make-available-for
           ref="refMakeAvailableFor"
           v-model="availableForRequests"
-          placeholder="Select companies that should see this landing page template in their libraries"
+          sub-title="Select companies that should see this landing page template in their libraries"
         />
 
         <form-group :title="labels.TestConnection" class="mt-2">
