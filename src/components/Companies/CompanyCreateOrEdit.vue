@@ -678,6 +678,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch('common/setIsShowLeavingDialog', { show: true, callback: () => {} })
     this.getLookupContents()
     this.getCompanyGroups()
 
