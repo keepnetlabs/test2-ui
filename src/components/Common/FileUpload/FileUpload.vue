@@ -234,5 +234,9 @@ export default {
     line-height: 13px;
     color: #474747;
   }
+  .file-uploads.file-uploads-html4 input,
+  .file-uploads.file-uploads-html5 label {
+    top: 21px;
+  }
 }
 </style>

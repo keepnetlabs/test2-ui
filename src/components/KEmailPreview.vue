@@ -51,6 +51,7 @@ export default {
         iframe &&
         iframe.contentWindow &&
         iframe.contentWindow.document &&
+        iframe.contentWindow.document.body &&
         !this.stopCalculateFrame
       ) {
         cancelAnimationFrame(this.animationFrame)
