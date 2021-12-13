@@ -5,7 +5,7 @@
       :resend-dialog-items="getResendDialogItems"
       :id="id"
     />
-    <CampaignManagerReportSummaryCards :items="getCardsData" />
+    <CampaignManagerReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
       <CampaignManagerReportSummarySettings :items="getSettingsItems" />
@@ -41,6 +41,7 @@ import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerRepor
 import CampaignManagerReportSummaryLanginPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
@@ -54,6 +55,7 @@ export default {
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader
   },
+  mixins: [useLoading],
   props: {
     id: {
       type: String
@@ -259,13 +261,18 @@ export default {
       }, 15000)
     },
     callApis() {
-      getCampaignJobSummary(this.id).then((response) => {
-        this.campaignSummary = response?.data?.data
-        this.$store.dispatch(
-          'common/setActivePageRouterName',
-          this.campaignSummary['phishingCampaignName']
-        )
-      })
+      this.setLoading(true)
+      getCampaignJobSummary(this.id)
+        .then((response) => {
+          this.campaignSummary = response?.data?.data
+          this.$store.dispatch(
+            'common/setActivePageRouterName',
+            this.campaignSummary['phishingCampaignName']
+          )
+        })
+        .finally(() => {
+          this.setLoading(false)
+        })
       getCampaignJobSummaryTargetGroups(this.id).then((response) => {
         this.targetGroups = response?.data?.data?.groups
       })
