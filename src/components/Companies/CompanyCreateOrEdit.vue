@@ -523,7 +523,7 @@
           outlined
           rounded
           color="error"
-          @click="$emit('cancelForm')"
+          @click="handleCancel"
           >{{ labels.Cancel }}</v-btn
         >
       </div>
@@ -720,6 +720,18 @@ export default {
     }
   },
   methods: {
+    handleCancel() {
+      if (this.isFormDataChanged()) {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('cancelForm')
+          }
+        })
+      } else {
+        this.$emit('cancelForm')
+      }
+    },
     getImagePreview(url) {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
     },
