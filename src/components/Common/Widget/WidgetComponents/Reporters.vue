@@ -62,6 +62,7 @@ import { getTextColor } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import { getReporters } from '@/api/phishingReporter'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Reporters',
   components: {
@@ -78,7 +79,6 @@ export default {
   },
   data() {
     return {
-      isLoading: false,
       columns: [
         {
           property: PROPERTY_STORE.REPORTEREMAIL,
@@ -113,37 +113,24 @@ export default {
           }
         }
       ],
-      tableData: [],
       empty: {
         message: 'You do not have any reporters'
       }
     }
   },
   computed: {
+    ...mapGetters({
+      isLoading: 'widgets/getIsLoading',
+      tableData: 'widgets/getReportersCard'
+    }),
     getTitle() {
       return labels.Reporters
     }
   },
-  created() {
-    this.callForGetReporters()
-  },
   methods: {
-    callForGetReporters() {
-      this.isLoading = true
-      getReporters()
-        .then((response) => {
-          const {
-            data: { data = [] }
-          } = response
-          this.tableData = data
-        })
-        .finally(() => (this.isLoading = false))
-    },
     getTextColor(value) {
       return getTextColor(value)
     }
   }
 }
 </script>
-
-<style lang="scss"></style>

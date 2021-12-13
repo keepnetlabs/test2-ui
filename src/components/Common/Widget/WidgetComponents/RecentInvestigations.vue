@@ -70,6 +70,7 @@ import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import { getRunningInvestigations } from '@/api/incidentResponder'
 import labels from '@/model/constants/labels'
+import { mapGetters } from 'vuex'
 export default {
   name: 'RecentInvestigations',
   components: {
@@ -84,15 +85,8 @@ export default {
       type: Boolean
     }
   },
-  computed: {
-    getTitle() {
-      return labels.RecentInvestigations
-    }
-  },
-
   data() {
     return {
-      isLoading: true,
       columns: [
         {
           property: labels.Name.toLowerCase(),
@@ -112,31 +106,19 @@ export default {
           }
         }
       ],
-      tableData: [],
       empty: {
         message: 'You do not have any recent investigations'
       }
     }
   },
-  created() {
-    this.callForGetRunningInvestigations()
-  },
-  methods: {
-    callForGetRunningInvestigations() {
-      getRunningInvestigations()
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.tableData = data
-          this.isLoading = false
-        })
-        .catch(() => {
-          this.isLoading = false
-        })
+  computed: {
+    ...mapGetters({
+      isLoading: 'widgets/getIsLoading',
+      tableData: 'widgets/getRecentInvestigationsCard'
+    }),
+    getTitle() {
+      return labels.RecentInvestigations
     }
   }
 }
 </script>
-
-<style lang="scss"></style>

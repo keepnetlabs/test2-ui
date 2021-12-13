@@ -81,7 +81,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      // get IR Reports data via vuex.
       notifiedEmailResultCount: 'widgets/getIncidentAnalysisCard',
       isLoading: 'widgets/getIsLoading'
     })

@@ -7,14 +7,20 @@ const widgetsStore = {
     investigationCard: {},
     incidentAnalysisCard: {},
     phishingReporterCard: {},
-    roiSummaryCard: {}
+    roiSummaryCard: {},
+    topRulesCard: [],
+    recentInvestigationsCard: [],
+    reportersCard: []
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
     getInvestigationCard: (state) => state.investigationCard,
     getIncidentAnalysisCard: (state) => state.incidentAnalysisCard,
     getPhishingReporterCard: (state) => state.phishingReporterCard,
-    getROISummaryCard: (state) => state.roiSummaryCard
+    getROISummaryCard: (state) => state.roiSummaryCard,
+    getTopRulesCard: (state) => state.topRulesCard,
+    getRecentInvestigationsCard: (state) => state.recentInvestigationsCard,
+    getReportersCard: (state) => state.reportersCard
   },
   mutations: {
     SET_INVESTIGATION_CARD(state, payload) {
@@ -29,6 +35,15 @@ const widgetsStore = {
     SET_ROI_SUMMARY(state, payload) {
       state.roiSummaryCard = payload
     },
+    SET_TOP_RULES(state, payload) {
+      state.topRulesCard = payload
+    },
+    SET_RECENT_INVESTIGATIONS(state, payload) {
+      state.recentInvestigationsCard = payload
+    },
+    SET_REPORTERS(state, payload) {
+      state.reportersCard = payload
+    },
     SET_LOADING(state, payload) {
       state.isLoading = payload
     }
@@ -36,9 +51,14 @@ const widgetsStore = {
   actions: {
     callForWidgets({ commit, dispatch }, payload) {
       commit('SET_LOADING', true)
-      getSummary(payload)
+      return getSummary(payload)
         .then((response) => {
-          const { dashboardSummary } = response.data
+          const {
+            dashboardSummary,
+            dashboardTopRules,
+            runningInvestigations,
+            topReporters
+          } = response.data
           const {
             investigationTypeCount,
             notifiedEmailResultCount,
@@ -49,6 +69,20 @@ const widgetsStore = {
           commit('SET_INCIDENT_ANALYSIS_CARD', notifiedEmailResultCount)
           commit('SET_PHISHING_REPORTER_CARD', phishingReporterUserStatusCount)
           commit('SET_ROI_SUMMARY', roiSummary)
+
+          const { data: topRules } = dashboardTopRules
+
+          commit('SET_TOP_RULES', topRules)
+
+          const { data: investigationsData } = runningInvestigations
+
+          commit('SET_RECENT_INVESTIGATIONS', investigationsData)
+
+          const { data: reporters } = topReporters
+
+          commit('SET_REPORTERS', reporters)
+
+          return response
         })
         .finally(() => {
           commit('SET_LOADING', false)
