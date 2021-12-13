@@ -756,10 +756,7 @@ export default {
   },
   created() {
     if (this.checkPermissions('dashboard/widgets', 'GET')) {
-      if (checkPermission('ir/dashboard/summary', 'GET')) {
-        this.$store.dispatch('investigations/getIrSummary')
-      }
-
+      this.$store.dispatch('widgets/callForWidgets')
       this.callForGetWidgets()
         .then((response) => {
           if (response.settings.length) {

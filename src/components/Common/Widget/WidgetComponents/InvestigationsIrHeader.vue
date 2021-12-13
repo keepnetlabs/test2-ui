@@ -9,7 +9,7 @@
         id="card--incident-responder-investigations"
         class="dashboard-cards investigations"
         :class="{
-          'no-data__opacity-green': !isInvestigationsEmpty(irSummary)
+          'no-data__opacity-green': !isInvestigationsEmpty(investigationTypeCount)
         }"
       >
         <div class="card-header">
@@ -30,7 +30,7 @@
         <div
           class="columns-row__body"
           style="margin-top: 13px;"
-          v-if="isInvestigationsEmpty(irSummary)"
+          v-if="isInvestigationsEmpty(investigationTypeCount)"
         >
           <div class="card-body d-flex">
             <div class="body-row">
@@ -39,9 +39,7 @@
                 id="card--incident-responder-investigations-automatic-investigation-count"
               >
                 {{
-                  (irSummary &&
-                    irSummary.investigationTypeCount &&
-                    irSummary.investigationTypeCount.automaticInvestigationCount) ||
+                  (investigationTypeCount && investigationTypeCount.automaticInvestigationCount) ||
                   0
                 }}
               </span>
@@ -55,10 +53,7 @@
                 id="card--incident-responder-investigations-manual-investigation-count"
                 class="body-row__number"
                 >{{
-                  (irSummary &&
-                    irSummary.investigationTypeCount &&
-                    irSummary.investigationTypeCount.manualInvestigationCount) ||
-                  0
+                  (investigationTypeCount && investigationTypeCount.manualInvestigationCount) || 0
                 }}
               </span>
 
@@ -72,7 +67,10 @@
             You haven’t started any investigations
           </div>
         </div>
-        <div class="bg-image" :style="[!isInvestigationsEmpty(irSummary) && { opacity: 0.4 }]">
+        <div
+          class="bg-image"
+          :style="[!isInvestigationsEmpty(investigationTypeCount) && { opacity: 0.4 }]"
+        >
           <img src="../../../../assets/img/ic-check-box.svg" />
         </div>
       </div>
@@ -102,18 +100,18 @@ export default {
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter',
-      isLoading: 'investigations/isWidgetsLoadingGetter'
+      investigationTypeCount: 'widgets/getInvestigationCard',
+      isLoading: 'widgets/getIsLoading'
     })
   },
   methods: {
-    isInvestigationsEmpty(summary) {
-      if (summary && summary['investigationTypeCount']) {
-        const investigationTypeCountKeys = Object.keys(summary['investigationTypeCount'])
+    isInvestigationsEmpty(investigationTypeCount) {
+      if (investigationTypeCount) {
+        const investigationTypeCountKeys = Object.keys(investigationTypeCount)
         if (investigationTypeCountKeys.length > 0) {
           let hasValue = false
           for (let key of investigationTypeCountKeys) {
-            if (summary['investigationTypeCount'][key]) {
+            if (investigationTypeCount[key]) {
               hasValue = true
             }
           }

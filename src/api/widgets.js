@@ -9,3 +9,7 @@ export function postWidgets(payload) {
 export function getWidgets() {
   return testRequest.get(API_URL, { loading: true })
 }
+
+export function getSummary(payload = {}) {
+  return testRequest.post('/dashboard/summary', payload)
+}
