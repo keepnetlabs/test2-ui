@@ -59,6 +59,7 @@ export default {
       this.setDialog(false)
     },
     handleCallback() {
+      this.handleClose()
       this.callback()
     }
   }

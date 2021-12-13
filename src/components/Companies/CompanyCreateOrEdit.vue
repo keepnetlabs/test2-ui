@@ -633,6 +633,7 @@ export default {
         LicenseModuleResourceIdArray: [],
         statusId: '1'
       },
+      defaultFormData: null,
       LicenseDates: [],
       isActive: true,
       expiryPeriods: [],
@@ -678,7 +679,8 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch('common/setIsShowLeavingDialog', { show: true, callback: () => {} })
+    this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
+
     this.getLookupContents()
     this.getCompanyGroups()
 
@@ -714,11 +716,18 @@ export default {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
           this.companyGroupList.push(x)
         })
+      this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
     }
   },
   methods: {
     getImagePreview(url) {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
+    },
+    isFormDataChanged() {
+      debugger
+      return Object.keys(this.formData).some(
+        (key) => this.formData[key] !== this.defaultFormData[key]
+      )
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []

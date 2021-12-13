@@ -15,6 +15,7 @@
     >
       <template v-slot:overlay-body>
         <CompanyCreateOrEdit
+          ref="refCreateOrEditModal"
           :selectedRow="selectedRow"
           :selectedExtend="selectedExtend"
           :edit="editModal"

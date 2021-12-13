@@ -10,7 +10,7 @@
               id="company-companies-content"
               v-if="checkPermissions('companies/search', 'POST')"
             >
-              <company-list v-if="tab === 'company-companies'"
+              <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
             /></el-tab-pane>
             <el-tab-pane
               label="Company Groups"
@@ -56,6 +56,23 @@ export default {
         vm.tab = 'company-companies'
       }
     })
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refCompanyList } = this.$refs
+    debugger
+    if (refCompanyList.isShowCreateOrEditModal) {
+      const { refCreateOrEditModal } = refCompanyList.$refs
+      if (refCreateOrEditModal && refCreateOrEditModal.isFormDataChanged())
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            refCompanyList.isShowCreateOrEditModal = false
+          }
+        })
+      next(false)
+    } else {
+      next()
+    }
   },
   watch: {
     tab(val) {
