@@ -389,7 +389,8 @@ export default {
       let blockManager = this.editor.BlockManager
       blockManager.add('amazonTemplate', amazonTemplate)
       let pn = this.editor.Panels
-      pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-upload')
+      pn.getButton('options', 'export-template').set('className', 'fa fa-import')
+      pn.getButton('options', 'gjs-open-import-webpage').set('className', 'fa fa-code')
       document.querySelector('span[title="Open Layer Manager"]').style.display = 'none'
       document.querySelector('span[title="Open Blocks"]').style.order = '-1'
       pn.removeButton('options', 'preview')
@@ -634,7 +635,7 @@ export default {
             { name: 'none', value: 'none' }
           ]
         })
-        document.querySelector('.fa-upload').addEventListener('click', () => {
+        document.querySelector('.fa-code').addEventListener('click', () => {
           const editor = this.editor
           const html = editor.runCommand('get-html-juiced')
           let md = editor.Modal
