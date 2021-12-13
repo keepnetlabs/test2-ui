@@ -724,10 +724,12 @@ export default {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
     },
     isFormDataChanged() {
-      debugger
-      return Object.keys(this.formData).some(
-        (key) => this.formData[key] !== this.defaultFormData[key]
-      )
+      return Object.keys(this.formData).some((key) => {
+        if (Array.isArray(this.formData[key])) {
+          return this.formData[key].length !== this.defaultFormData[key].length
+        }
+        return this.formData[key] !== this.defaultFormData[key]
+      })
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []

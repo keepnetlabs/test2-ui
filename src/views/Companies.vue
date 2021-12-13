@@ -59,17 +59,19 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refCompanyList } = this.$refs
-    debugger
     if (refCompanyList.isShowCreateOrEditModal) {
       const { refCreateOrEditModal } = refCompanyList.$refs
-      if (refCreateOrEditModal && refCreateOrEditModal.isFormDataChanged())
+      if (refCreateOrEditModal && refCreateOrEditModal.isFormDataChanged()) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
-          callback: () => {
+          callback() {
             refCompanyList.isShowCreateOrEditModal = false
           }
         })
-      next(false)
+        next(false)
+      } else {
+        refCompanyList.isShowCreateOrEditModal = false
+      }
     } else {
       next()
     }
