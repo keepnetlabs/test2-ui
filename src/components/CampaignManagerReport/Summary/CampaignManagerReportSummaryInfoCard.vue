@@ -69,6 +69,9 @@ export default {
   padding: 16px;
   &--loading {
     width: 100%;
+    & > div {
+      margin: -16px;
+    }
   }
   &-body {
     &__header {

@@ -14,7 +14,9 @@ const common = {
     timezones: [],
     sessionCheck: false,
     isReCaptcha: false,
-    activePageRouterName: ''
+    activePageRouterName: '',
+    isShowLeavingDialog: false,
+    leavingDialogCallback: () => {}
   },
   getters: {
     getMenuStatus: (state) => state.menuStatus,
@@ -27,9 +29,17 @@ const common = {
     getReCaptcha: (state) => state.isReCaptcha,
     getDownloadModalStatus: (state) => state.downloadModalStatus,
     getTimezones: (state) => state.timezones,
-    getSessionCheck: (state) => state.sessionCheck
+    getSessionCheck: (state) => state.sessionCheck,
+    getIsShowLeavingDialog: (state) => state.isShowLeavingDialog,
+    getLeavingDialogCallback: (state) => state.leavingDialogCallback
   },
   mutations: {
+    SET_IS_SHOW_LEAVING_DIALOG(state, payload) {
+      state.isShowLeavingDialog = payload
+    },
+    SET_LEAVING_DIALOG_CALLBACK(state, payload) {
+      state.leavingDialogCallback = payload
+    },
     CHANGE_SESSION_CHECK(state, payload) {
       state.sessionCheck = payload
     },
@@ -73,6 +83,10 @@ const common = {
     }
   },
   actions: {
+    setIsShowLeavingDialog({ commit }, payload) {
+      commit('SET_IS_SHOW_LEAVING_DIALOG', payload.show)
+      commit('SET_LEAVING_DIALOG_CALLBACK', payload.callback)
+    },
     changeSessionExpiredStatus({ commit }, payload) {
       commit('CHANGE_SESSION_CHECK', payload)
     },

@@ -15,6 +15,7 @@
       v-if="showSettingsModalStatus"
       @changeSettings="changeSettings"
     />
+    <LeavingDialog />
     <v-overlay :value="isLoadingFromStore > 0" :z-index="9999999">
       <div class="text-center">
         <v-progress-circular :size="50" color="primary" indeterminate />
@@ -802,10 +803,12 @@ import AppRouterItem from '@/layout/AppRouterItem'
 import SecurityModal from '@/components/Security/SecurityModal'
 import SettingsModal from '@/components/Settings/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
+import LeavingDialog from '@/components/LeavingDialog'
 
 export default {
   name: 'Main',
   components: {
+    LeavingDialog,
     NavigationDrawerFooter,
     SecurityModal,
     SettingsModal,
