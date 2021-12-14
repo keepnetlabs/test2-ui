@@ -15,6 +15,7 @@ export const labels = {
   UserWhoClicked: 'User who clicked the link',
   UserWhoReported: 'Users who reported the email',
   ViewReport: 'View Report',
+  CreateNewInstance: 'Create new instance',
   Data: 'Data',
   UserWhoSubmitted: 'Users who submitted the form',
   CampaignSettings: 'Campaign Settings',

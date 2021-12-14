@@ -14,6 +14,7 @@ import incidents from '@/store/modules/incidents'
 import communities from '@/store/modules/communities'
 import tableReload from '@/store/modules/tableReload'
 import whitelabel from '@/store/modules/whitelabel'
+import widgets from '@/store/modules/widgets'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -30,7 +31,8 @@ let store = new Vuex.Store({
     incidents,
     communities,
     tableReload,
-    whitelabel
+    whitelabel,
+    widgets
   }
 })
 

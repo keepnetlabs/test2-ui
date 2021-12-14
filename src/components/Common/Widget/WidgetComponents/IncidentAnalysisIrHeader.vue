@@ -9,8 +9,8 @@
         id="card--incident-responder-incident-analysis"
         class="dashboard-cards"
         :class="{
-          'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
-          'incident-analysis': !isNotifiedEmailEmpty(irSummary)
+          'no-data__opacity-red': isNotifiedEmailEmpty(notifiedEmailResultCount),
+          'incident-analysis': !isNotifiedEmailEmpty(notifiedEmailResultCount)
         }"
       >
         <div class="card-header">
@@ -25,18 +25,13 @@
             >mdi-close-circle</v-icon
           >
         </div>
-        <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(irSummary)">
+        <div class="columns-row__body" v-if="!isNotifiedEmailEmpty(notifiedEmailResultCount)">
           <div class="card-body">
             <div
               class="biggest"
               id="card--incident-responder-incident-analysis-notified-harmful-count"
             >
-              {{
-                (irSummary &&
-                  irSummary.notifiedEmailResultCount &&
-                  irSummary.notifiedEmailResultCount.harmfulCount) ||
-                0
-              }}
+              {{ (notifiedEmailResultCount && notifiedEmailResultCount.harmfulCount) || 0 }}
             </div>
           </div>
           <div
@@ -44,12 +39,7 @@
             id="card--incident-responder-incident-analysis-reported-mail-count"
           >
             of
-            {{
-              (irSummary &&
-                irSummary.notifiedEmailResultCount &&
-                irSummary.notifiedEmailResultCount.reportedMailCount) ||
-              0
-            }}
+            {{ (notifiedEmailResultCount && notifiedEmailResultCount.reportedMailCount) || 0 }}
             reported email(s)
           </div>
           <div class="card-status">{{ labels.FoundHarmful }}</div>
@@ -57,7 +47,10 @@
         <div class="columns-row__body" v-else>
           <div class="card-footer no-data-text">{{ labels.NoEmailAnalysed }}</div>
         </div>
-        <div class="bg-image" :style="[isNotifiedEmailEmpty(irSummary) && { opacity: 0.3 }]">
+        <div
+          class="bg-image"
+          :style="[isNotifiedEmailEmpty(notifiedEmailResultCount) && { opacity: 0.3 }]"
+        >
           <img src="../../../../assets/img/ic-warning.svg" alt="link" />
         </div>
       </div>
@@ -88,22 +81,14 @@ export default {
   },
   computed: {
     ...mapGetters({
-      // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter',
-      isLoading: 'investigations/isWidgetsLoadingGetter'
+      notifiedEmailResultCount: 'widgets/getIncidentAnalysisCard',
+      isLoading: 'widgets/getIsLoading'
     })
   },
 
   methods: {
     isNotifiedEmailEmpty(data) {
-      if (data && !data['notifiedEmailResultCount']) {
-        return true
-      } else
-        return !(
-          data &&
-          data['notifiedEmailResultCount'] &&
-          data['notifiedEmailResultCount']['reportedMailCount']
-        )
+      return !(data['reportedMailCount'] || data['harmfulCount'])
     }
   }
 }

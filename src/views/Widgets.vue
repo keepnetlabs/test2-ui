@@ -741,52 +741,39 @@ export default {
       )
       postWidgets(payload)
     },
-    callForGetWidgets() {
-      return getWidgets()
-        .then((response) => {
-          return response.data.data || []
-        })
-        .catch(() => {
-          return []
-        })
-    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     }
   },
-  created() {
+  async created() {
     if (this.checkPermissions('dashboard/widgets', 'GET')) {
-      if (checkPermission('ir/dashboard/summary', 'GET')) {
-        this.$store.dispatch('investigations/getIrSummary')
-      }
+      try {
+        const response = await this.$store.dispatch('widgets/callForWidgets')
+        const settings = response.data['dashboardWidgetsOrdering'].data.settings
+        if (settings.length) {
+          this.layout = settings.reduce((acc, item) => {
+            const widget = { ...this.allWidgets[item.key], ...item }
+            this.removeAvailableWidget(item)
+            //availableWidgets.splice()
+            if (widget.isAllowed) acc.push(widget)
+            return acc
+          }, [])
 
-      this.callForGetWidgets()
-        .then((response) => {
-          if (response.settings.length) {
-            this.layout = response.settings.reduce((acc, item) => {
-              const widget = { ...this.allWidgets[item.key], ...item }
-              this.removeAvailableWidget(item)
-              //availableWidgets.splice()
-              if (widget.isAllowed) acc.push(widget)
-              return acc
-            }, [])
-
-            this.newItemY = this.layout.reduce((acc, item) => {
-              return (acc += item.h)
-            }, 0)
-            setTimeout(() => {
-              this.handleDeleteShadows()
-              this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
-            }, 20)
-          }
-        })
-        .catch(() => {
-          this.layout = this.getDefaultLayoutObject()
+          this.newItemY = this.layout.reduce((acc, item) => {
+            return (acc += item.h)
+          }, 0)
           setTimeout(() => {
             this.handleDeleteShadows()
             this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
           }, 20)
-        })
+        }
+      } catch (e) {
+        this.layout = this.getDefaultLayoutObject()
+        setTimeout(() => {
+          this.handleDeleteShadows()
+          this.breakpointChanged({ newBreakpoint: this.activeBreakpoint })
+        }, 20)
+      }
     }
   },
   mounted() {},

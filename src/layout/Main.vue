@@ -25,7 +25,7 @@
       v-if="showLicenseExceededDialog"
       :status="showLicenseExceededDialog"
       :dialogBody="getDialogBody"
-      @close-overlay="showLicenseExceededDialog = false"
+      @close-overlay="handleCloseLicenseExceededDialog"
     />
     <v-row justify="center">
       <v-dialog
@@ -828,8 +828,6 @@ export default {
     return {
       showSettingsModalStatus: false,
       isScroll: null,
-      companyLicense: null,
-      showLicenseExceededDialog: false,
       labels,
       switchDialogStatus: false,
       showNewPassword: false,
@@ -1149,7 +1147,9 @@ export default {
       sessionCheck: 'common/getSessionCheck',
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
       brandName: 'whitelabel/getBrandName',
-      supportEmailAddress: 'whitelabel/getSupportEmailAddress'
+      supportEmailAddress: 'whitelabel/getSupportEmailAddress',
+      showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
+      companyLicense: 'whitelabel/getCompanyLicense'
     }),
     getBreadCrumbBaseName() {
       return this.brandName || this.$store.state.auth.selectedCompanyName
@@ -1436,8 +1436,7 @@ export default {
           this.$FullStory.setUserVars({ companyId: this.$store.state['auth'].selectedCompanyId })
         }
         this.$store.dispatch('whitelabel/callForData')
-        this.$store.dispatch('whitelabel/callForSystemVersion')
-        this.callForLicenseCheck()
+        this.callForSystemSummary()
         //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
@@ -1466,7 +1465,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      getCurrentUser: 'auth/getCurrentUser'
+      getCurrentUser: 'auth/getCurrentUser',
+      handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
@@ -1544,18 +1544,12 @@ export default {
         incidentsData
       })
     },
-    callForLicenseCheck() {
+    callForSystemSummary() {
+      const payload = {}
       if (this.$route.name !== 'Target Users') {
-        const companyResourceId = localStorage.getItem('companyId')
-        getCheckCompanyLicense(companyResourceId).then((response) => {
-          const { data: { data = {} } = {} } = response
-          const { isLicenseExceeded, licenseLimit, totalUserCount, isLimited } = data
-          this.companyLicense = data
-          if (isLimited && isLicenseExceeded) {
-            this.showLicenseExceededDialog = true
-          }
-        })
+        payload.checkExceedDialog = true
       }
+      this.$store.dispatch('whitelabel/callForSystemInfoSummary', payload)
     },
     checkPermissionMultiple(data, contain) {
       return checkPermissionMultiple(data, contain)

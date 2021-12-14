@@ -1,4 +1,5 @@
 import {
+  callForSystemInfoSummary,
   deleteWhiteLabel,
   getSystemVersion,
   resolveWhiteLabel,
@@ -23,13 +24,21 @@ const initialState = {
   isShowReleaseVersionNumber: false,
   isShowReleaseNotes: false,
   releaseNotesUrl: '',
-  systemVersion: null
+  systemVersion: null,
+  companyLicense: null,
+  showLicenseExceededDialog: false
 }
 
 const whitelabel = {
   namespaced: true,
   state: JSON.parse(JSON.stringify(initialState)),
   getters: {
+    getShowLicenseDialog(state) {
+      return state.showLicenseExceededDialog
+    },
+    getCompanyLicense(state) {
+      return state.companyLicense
+    },
     getState(state) {
       return state
     },
@@ -100,6 +109,12 @@ const whitelabel = {
       for (const key of Object.keys(state)) {
         state[key] = payload[key]
       }
+    },
+    SET_COMPANY_LICENSE(state, payload) {
+      state.companyLicense = payload
+    },
+    SET_SHOW_EXCEED_DIALOG(state) {
+      state.showLicenseExceededDialog = !state.showLicenseExceededDialog
     }
   },
   actions: {
@@ -130,13 +145,29 @@ const whitelabel = {
         context.dispatch('callForData')
       })
     },
-    callForSystemVersion(context = {}, payload = {}) {
+    callForSystemVersion(context = {}) {
       getSystemVersion().then((response) => {
         context.commit('SET_SYSTEM_VERSION', response.data.data.version)
       })
     },
+    callForSystemInfoSummary(context = {}, payload = {}) {
+      callForSystemInfoSummary().then((response) => {
+        const { versionInfo, companyLicense } = response.data
+        context.commit('SET_SYSTEM_VERSION', versionInfo.data.version)
+        if (payload.checkExceedDialog) {
+          const { isLicenseExceeded, isLimited } = companyLicense.data
+          context.commit('SET_COMPANY_LICENSE', companyLicense.data)
+          if (isLimited && isLicenseExceeded) {
+            context.commit('SET_SHOW_EXCEED_DIALOG')
+          }
+        }
+      })
+    },
     resetState(context = {}) {
       context.commit('RESET_STATE', JSON.parse(JSON.stringify(initialState)))
+    },
+    toggleShowExceedDialog(context) {
+      context.commit('SET_SHOW_EXCEED_DIALOG')
     }
   }
 }

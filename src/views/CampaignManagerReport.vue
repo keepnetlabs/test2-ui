@@ -76,6 +76,12 @@ export default {
           component: CampaignManagerReportNoResponse
         },
         {
+          name: labels.PhishingReporter,
+          id: 'campaign-manager-report-phishing-report-content',
+          label: labels.PhishingReporter,
+          component: CampaignManagerReportPhishingReport
+        },
+        {
           name: labels.SendingReport,
           id: 'campaign-manager-report-sending-response-content',
           label: labels.SendingReport,
@@ -84,14 +90,6 @@ export default {
       ],
       formDetails: null
     }
-    /*
-    {
-          name: labels.PhishingReporter,
-          id: 'campaign-manager-report-phishing-report-content',
-          label: labels.PhishingReporter,
-          component: CampaignManagerReportPhishingReport
-        },
-     */
   },
   computed: {
     id() {
