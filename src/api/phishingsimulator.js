@@ -280,6 +280,23 @@ export function searchCampaignJobUserSendingReport(payload, id) {
   )
 }
 
+export function searchCampaignJobUserPhishingReport(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/reported/search/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserPhishingReport(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/reported/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export function searchCampaignPhishingJob(payload, id) {
   return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/${id}/search`, payload)
 }

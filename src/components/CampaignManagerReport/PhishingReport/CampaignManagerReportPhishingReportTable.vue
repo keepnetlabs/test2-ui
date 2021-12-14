@@ -44,8 +44,8 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import {
-  exportCampaignJobUserEmailOpened,
-  searchCampaignJobUserEmailOpened
+  exportCampaignJobUserPhishingReport,
+  searchCampaignJobUserPhishingReport
 } from '@/api/phishingsimulator'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -82,8 +82,7 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
-          COLUMNS.SCENARIO,
-          COLUMNS.LAST_OPENED,
+          COLUMNS.LAST_REPORTED,
           COLUMNS.TIMES_OPENED
         ],
         addButton: {
@@ -115,7 +114,22 @@ export default {
     this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      searchCampaignJobUserPhishingReport(this.axiosPayload, this.id)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results || []
+        })
+        .finally(this.setLoading)
+    },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
         localStorage.getItem(
@@ -228,11 +242,11 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+        exportCampaignJobUserPhishingReport(payload, this.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Campaign-Report-Opened.${
+          link.download = `Campaign-Report-Phishing-Reporter.${
             item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
           }`
           link.click()

@@ -97,11 +97,34 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'date'
   },
+  LAST_REPORTED: {
+    property: 'lastReportedTime',
+    align: 'left',
+    fixed: false,
+    editable: false,
+    label: labels.LastReported,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
   TIMES_OPENED: {
     property: 'openedCount',
     align: 'right',
     editable: false,
     label: labels.TimesOpened,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'number'
+  },
+  TIMES_REPORTED: {
+    property: 'reportedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesReported,
     sortable: true,
     show: true,
     type: 'text',
