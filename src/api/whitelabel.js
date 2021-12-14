@@ -31,3 +31,7 @@ export function deleteWhiteLabel(resourceId = '') {
 export function getSystemVersion() {
   return testRequest.get('/system-info/version')
 }
+
+export function callForSystemInfoSummary() {
+  return testRequest.get('/system-info/summary')
+}
