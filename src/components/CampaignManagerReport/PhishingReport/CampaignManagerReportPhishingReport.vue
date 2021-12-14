@@ -1,6 +1,12 @@
 <template>
   <div id="campaign-manager-report-phishing-report" class="campaign-manager-report-phishing-report">
     <CampaignManagerReportHeader :title="labels.UserWhoReported" :subtitle="phishingScenarioName" />
+    <CampaignManagerReportPhishingReporterItemDetailDialog
+      v-if="isShowDetailDialog"
+      :status="isShowDetailDialog"
+      :item="selectedRow"
+      @on-close="toggleShowDetailDialog"
+    />
     <CampaignManagerReportPhishingReportTable
       ref="refPhishingReportTable"
       class="mt-6"
@@ -16,9 +22,14 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import labels from '@/model/constants/labels'
 import CampaignManagerReportPhishingReportTable from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReportTable'
 import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
+import CampaignManagerReportPhishingReporterItemDetailDialog from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReporterItemDetailDialog'
 export default {
   name: 'CampaignManagerReportPhishingReport',
-  components: { CampaignManagerReportPhishingReportTable, CampaignManagerReportHeader },
+  components: {
+    CampaignManagerReportPhishingReporterItemDetailDialog,
+    CampaignManagerReportPhishingReportTable,
+    CampaignManagerReportHeader
+  },
   props: {
     id: {
       type: String
@@ -45,7 +56,7 @@ export default {
     },
     handleOnResend(payload) {
       resendPhishingCampaignToUserList(payload, this.id).then(() => {
-        //todo
+        this.$refs.refPhishingReportTable.callForData()
       })
     }
   }

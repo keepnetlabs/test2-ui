@@ -255,7 +255,7 @@ export default {
     },
     handleOnResend(items, excludedResourceIdList, isSelectedAllEver) {
       const payload = {
-        Types: [1],
+        Types: [6],
         items: Array.isArray(items) ? items.map((item) => item.resourceId) : [items.resourceId],
         excludedItems: excludedResourceIdList || [],
         selectAll: !!isSelectedAllEver,

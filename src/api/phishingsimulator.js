@@ -205,6 +205,13 @@ export function searchCampaignJobUserEmailOpenedDetails(payload, id) {
   )
 }
 
+export function searchCampaignJobUserEmailReportedDetails(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-reported/${id}`,
+    payload
+  )
+}
+
 export function searchCampaignJobUserEmailOpened(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/opened/search/${id}`,

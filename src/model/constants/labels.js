@@ -22,6 +22,7 @@ export const labels = {
   UserWhoSubmitted: 'Users who submitted the form',
   CampaignSettings: 'Campaign Settings',
   EmailSendingReport: 'Email Sending Report',
+  DateReported: 'Date Reported',
   LastSendingDate: 'Last Sending Date',
   LAST_SENDING_STATUS: 'Last Sending Status',
   EmailSendDate: 'Email Send Date',

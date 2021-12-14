@@ -109,6 +109,18 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'date'
   },
+  DATE_REPORTED: {
+    property: 'reportedTime',
+    align: 'left',
+    fixed: false,
+    editable: false,
+    label: labels.DateReported,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
   TIMES_OPENED: {
     property: 'openedCount',
     align: 'right',
