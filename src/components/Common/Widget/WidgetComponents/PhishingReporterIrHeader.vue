@@ -9,7 +9,7 @@
         id="card--incident-responder-phishing-reporter"
         class="dashboard-cards phishing-reporter"
         :class="{
-          'no-data__opacity-blue': isPhishingEmpty(irSummary)
+          'no-data__opacity-blue': isPhishingEmpty(phishingReporterUserStatusCount)
         }"
       >
         <div class="card-header">
@@ -27,13 +27,12 @@
             >mdi-close-circle</v-icon
           >
         </div>
-        <div class="columns-row__body" v-if="!isPhishingEmpty(irSummary)">
+        <div class="columns-row__body" v-if="!isPhishingEmpty(phishingReporterUserStatusCount)">
           <div class="card-body">
             <div class="biggest" id="card--incident-responder-phishing-reporter-online-users-count">
               {{
-                (irSummary &&
-                  irSummary.phishingReporterUserStatusCount &&
-                  irSummary.phishingReporterUserStatusCount.onlineUsersCount) ||
+                (phishingReporterUserStatusCount &&
+                  phishingReporterUserStatusCount.onlineUsersCount) ||
                 0
               }}
             </div>
@@ -44,10 +43,9 @@
           >
             of
             {{
-              (irSummary &&
-                irSummary.phishingReporterUserStatusCount &&
-                irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-                  irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
+              (phishingReporterUserStatusCount &&
+                phishingReporterUserStatusCount.onlineUsersCount +
+                  phishingReporterUserStatusCount.offlineUsersCount) ||
               0
             }}
             user(s) are
@@ -62,7 +60,7 @@
         <div
           class="bg-image"
           style="bottom: 10px; right: -11px;"
-          :style="[isPhishingEmpty(irSummary) && { opacity: 0.4 }]"
+          :style="[isPhishingEmpty(phishingReporterUserStatusCount) && { opacity: 0.4 }]"
         >
           <img src="../../../../assets/img/ph-crone.svg" alt="link" />
         </div>
@@ -95,20 +93,19 @@ export default {
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter',
-      isLoading: 'investigations/isWidgetsLoadingGetter'
+      phishingReporterUserStatusCount: 'widgets/getPhishingReporterCard',
+      isLoading: 'widgets/getIsLoading'
     })
   },
   methods: {
-    isPhishingEmpty(data) {
-      if (data && !data['phishingReporterUserStatusCount']) {
+    isPhishingEmpty(phishingReporterUserStatusCount) {
+      if (!phishingReporterUserStatusCount) {
         return true
       } else
         return !(
-          data &&
-          data['phishingReporterUserStatusCount'] &&
-          (data['phishingReporterUserStatusCount']['onlineUsersCount'] ||
-            data['phishingReporterUserStatusCount']['offlineUsersCount'])
+          phishingReporterUserStatusCount &&
+          (phishingReporterUserStatusCount['onlineUsersCount'] ||
+            phishingReporterUserStatusCount['offlineUsersCount'])
         )
     },
     emptyPhishingButtonClick() {

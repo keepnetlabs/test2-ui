@@ -52,6 +52,7 @@
     </template>
     <template #datatable-row-actions="{ scope }">
       <CampaignManagerRowActions
+        :PERMISSIONS="PERMISSIONS"
         :scope="scope"
         :row-actions="tableOptions.rowActions"
         @on-edit="handleEdit"
@@ -160,14 +161,6 @@ export default {
           disabled: !this.PERMISSIONS.EXPORT.hasPermission
         },
         rowActions: [
-          {
-            name: labels.Edit,
-            isNotShow: true,
-            id: 'btn-edit--row-actions-campaign-manager',
-            icon: 'mdi-pencil',
-            action: 'on-edit',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
-          },
           {
             name: labels.Preview,
             id: 'btn-preview--row-actions-campaign-manager',

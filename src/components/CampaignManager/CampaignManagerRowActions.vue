@@ -6,14 +6,13 @@
           v-on="on"
           :id="getId"
           class="btn-hover"
-          :style="getStyle"
           icon
-          @click="handleItemClick({ action: actionStatus })"
+          @click="handleItemClick({ action: 'on-preview' })"
         >
-          <v-icon>{{ getIconName }}</v-icon>
+          <v-icon>mdi-eye</v-icon>
         </v-btn>
       </template>
-      <span>{{ getTooltipText }}</span>
+      <span>Preview</span>
     </v-tooltip>
     <v-menu bottom left offset-y transition="scale-transition">
       <template #activator="{ on }">
@@ -34,7 +33,13 @@
           class="sub-menu-el datatable-row-action-list"
         >
           <v-list-item-title @click="handleItemClick(act)">
-            <v-icon class="pr-3">{{ act.icon }}</v-icon>
+            <img
+              v-if="act.id === 'btn-new-instance-item-row-actions-campaign-manager'"
+              class="pr-3"
+              :src="act.icon"
+              alt="icon"
+            />
+            <v-icon v-else class="pr-3">{{ act.icon }}</v-icon>
             <span>{{ act.name }}</span>
           </v-list-item-title>
         </v-list-item>
@@ -55,6 +60,9 @@ export default {
     },
     rowActions: {
       type: Array
+    },
+    PERMISSIONS: {
+      type: Object
     }
   },
   computed: {
@@ -64,56 +72,59 @@ export default {
     actionStatus() {
       return this.scope.row.status
     },
-    getIconName() {
-      switch (this.actionStatus) {
-        case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.IDLE:
-        case ACTION_STATUSES.CANCEL:
-          return 'mdi-send'
-        case ACTION_STATUSES.RUNNING:
-        case ACTION_STATUSES.PAUSE:
-        case ACTION_STATUSES.RESUME:
-          return 'mdi-pause'
-        default:
-          return 'mdi-send'
-      }
-    },
-    getTooltipText() {
-      switch (this.actionStatus) {
-        case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.IDLE:
-        case ACTION_STATUSES.CANCEL:
-          return labels.Launch
-        case ACTION_STATUSES.PAUSE:
-          return labels.Resume
-        case ACTION_STATUSES.RUNNING:
-        case ACTION_STATUSES.RESUME:
-          return labels.Pause
-        default:
-          return labels.Launch
-      }
-    },
-    getStyle() {
-      const style = {}
-      if (this.actionStatus === ACTION_STATUSES.PAUSE) {
-        style.backgroundColor = '#E6A23C'
-        style.opacity = 0.66
-      }
-      return style
-    },
     getItems() {
-      const copyOfRowActions = JSON.parse(JSON.stringify(this.rowActions))
-      if (
-        [ACTION_STATUSES.PAUSE, ACTION_STATUSES.RESUME, ACTION_STATUSES.RUNNING].includes(
-          this.actionStatus
-        )
-      ) {
-        copyOfRowActions.unshift({
-          name: labels.Stop,
-          id: 'btn-stop--row-actions-campaign-manager',
-          icon: 'mdi-stop',
-          action: 'on-stop'
-        })
+      const copyOfRowActions = []
+      const newInstanceItem = {
+        name: labels.CreateNewInstance,
+        isNotShow: true,
+        id: 'btn-new-instance-item-row-actions-campaign-manager',
+        icon: require('../../assets/img/icon_left.svg'),
+        action: 'on-launch',
+        disabled: !this.PERMISSIONS.UPDATE.hasPermission
+      }
+      const duplicateItem = {
+        name: labels.Duplicate,
+        id: 'btn-duplicate--row-actions-campaign-manager',
+        icon: 'mdi-content-copy',
+        action: 'on-duplicate',
+        disabled: !this.PERMISSIONS.GET.hasPermission
+      }
+      const deleteItem = {
+        name: labels.Delete,
+        id: 'btn-delete--row-actions-campaign-manager',
+        icon: 'mdi-delete',
+        action: 'on-delete',
+        disabled: !this.PERMISSIONS.DELETE.hasPermission
+      }
+      switch (this.actionStatus) {
+        case ACTION_STATUSES.IDLE:
+          copyOfRowActions.push({
+            name: labels.Edit,
+            isNotShow: true,
+            id: 'btn-edit--row-actions-campaign-manager',
+            icon: 'mdi-pencil',
+            action: 'on-edit',
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+          })
+          copyOfRowActions.push(newInstanceItem)
+          copyOfRowActions.push(duplicateItem)
+          copyOfRowActions.push(deleteItem)
+          break
+        case ACTION_STATUSES.RUNNING:
+          copyOfRowActions.push(newInstanceItem)
+          copyOfRowActions.push(duplicateItem)
+          copyOfRowActions.push(deleteItem)
+          break
+        case ACTION_STATUSES.COMPLETE:
+          copyOfRowActions.push(newInstanceItem)
+          copyOfRowActions.push(deleteItem)
+          break
+        case ACTION_STATUSES.CANCEL:
+          copyOfRowActions.push(newInstanceItem)
+          copyOfRowActions.push(deleteItem)
+        default:
+          copyOfRowActions.push(deleteItem)
+          break
       }
       return copyOfRowActions
     }

@@ -9,8 +9,8 @@
         id="card--incident-responder-roi-summary"
         class="dashboard-cards"
         :class="{
-          'no-data__opacity-purple': isRoiSummaryEmpty(irSummary),
-          'roi-summary': !isRoiSummaryEmpty(irSummary)
+          'no-data__opacity-purple': isRoiSummaryEmpty(roiSummary),
+          'roi-summary': !isRoiSummaryEmpty(roiSummary)
         }"
       >
         <div class="card-header">
@@ -26,7 +26,7 @@
           >
         </div>
         <div
-          v-if="!isRoiSummaryEmpty(irSummary)"
+          v-if="!isRoiSummaryEmpty(roiSummary)"
           class="card-body d-flex roi-summary__body-container"
         >
           <div class="body-row">
@@ -35,14 +35,14 @@
               class="body-row__number"
               style="white-space: nowrap;"
             >
-              {{ `${irSummary && irSummary.roiSummary && irSummary.roiSummary.time}` || 0 }}
+              {{ `${roiSummary && roiSummary.time}` || 0 }}
             </span>
 
             <span class="body-row__text" style="margin-left: 2px;">Hour(s)</span>
           </div>
           <div class="body-row body-row--2">
             <span id="card--incident-responder-roi-summary-revenue" class="body-row__number">
-              ${{ (irSummary && irSummary.roiSummary && irSummary.roiSummary.revenue) || 0 }}
+              ${{ (roiSummary && roiSummary.revenue) || 0 }}
             </span>
 
             <span class="body-row__text" style="margin-left: 2px;">{{ labels.Money }}</span>
@@ -74,12 +74,12 @@ export default {
   computed: {
     ...mapGetters({
       // get IR Reports data via vuex.
-      irSummary: 'investigations/irSummaryGetter',
-      isLoading: 'investigations/isWidgetsLoadingGetter'
+      roiSummary: 'widgets/getROISummaryCard',
+      isLoading: 'widgets/getIsLoading'
     }),
     getRoiSummaryValue() {
-      if (this.irSummary && this.irSummary['roiSummary'] && this.irSummary['roiSummary'].revenue) {
-        let revenue = Number(this.irSummary['roiSummary'].revenue)
+      if (this.roiSummary && this.roiSummary.revenue) {
+        let revenue = Number(this.roiSummary.revenue)
         if (revenue < 1000) {
           return `$${revenue}`
         } else if (revenue >= 1000 && revenue < 1000000) {
@@ -140,8 +140,8 @@ export default {
   },
 
   methods: {
-    isRoiSummaryEmpty(summary) {
-      const { roiSummary: { revenue = '0', time = '0' } = { revenue, time } } = summary
+    isRoiSummaryEmpty() {
+      let { revenue = '0', time = '0' } = this.roiSummary
       return revenue === '0' && time === '0'
     }
   }

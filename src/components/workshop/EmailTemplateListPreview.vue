@@ -150,13 +150,7 @@
                   {{ item.description || '\xa0' }}
                 </div>
                 <div class="template-list--item mt-2">
-                  <v-chip
-                    class="template-list--item template-list--item__chip p"
-                    v-for="(value, key) in item.tags"
-                    :key="value + key"
-                  >
-                    {{ value }}
-                  </v-chip>
+                  <ShowMoreTags :default-badges="item.tags" />
                   <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                 </div>
               </div>
@@ -233,13 +227,14 @@ import AppDialog from '../AppDialog'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
 import { scrollToComponent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
+import ShowMoreTags from '@/components/ShowMoreTags'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
     scenarioDetailsLookup: { required: true },
     emailTemplateResourceId: { required: false }
   },
-  components: { KEmailPreview, Multipane, MultipaneResizer, AppDialog },
+  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   data() {
     return {
       showAdvancedSearch: true,

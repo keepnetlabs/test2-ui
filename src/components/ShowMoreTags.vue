@@ -1,8 +1,8 @@
 <template>
-  <div class="data-table-text-with-badge">
+  <div class="show-more-tags">
     <div
-      v-if="scope.row && scope.row[col.property]"
-      class="small-badge__container data-table-text-with-badge__container"
+      v-if="badges.length"
+      class="small-badge__container show-more-tags__container"
       :style="[
         maximumRenderedBadgeCount === 0 && unRenderedBadgeCount > 0
           ? { justifyContent: 'center' }
@@ -11,66 +11,54 @@
     >
       <v-tooltip bottom :key="getKey(index)" v-for="index in (maximumRenderedBadgeCount)">
         <template v-slot:activator="{ on }">
-          <span :listeners="on" class="data-table-text-with-badge__span">
-            {{ badges[index - 1] }} {{ index !== maximumRenderedBadgeCount ? ' , ' : null }}
-          </span>
+          <v-btn style="display: none;"></v-btn>
+          <Badge :listeners="on" size="small" :color="'#1173C1'" :text="`${badges[index - 1]}`" />
         </template>
         <span class="tooltip-span">
-          <slot name="status-tooltip-text" :scope="scope" :col="col">
+          <slot name="status-tooltip-text">
             {{ badges[index - 1] }}
           </slot>
         </span>
       </v-tooltip>
-      <v-tooltip
-        bottom
-        v-if="unRenderedBadgeCount > 0"
-        content-class="data-table-text-with-badge__tooltip"
-      >
+      <v-tooltip bottom v-if="unRenderedBadgeCount > 0" content-class="show-more-tags__tooltip">
         <template v-slot:activator="{ on }">
           <v-btn style="display: none;"></v-btn>
-          <badge
-            :color="'#2196f3'"
-            :full-width="col.fullWidth"
+          <Badge
             :listeners="on"
             size="mini"
+            :color="'#1173C1'"
             :text="`+${unRenderedBadgeCount}`"
           />
         </template>
         <span class="tooltip-span">
-          <slot name="status-tooltip-text" :scope="scope" :col="col">
+          <slot name="status-tooltip-text">
             {{ getTooltipText }}
           </slot>
         </span>
       </v-tooltip>
     </div>
-    <span v-else>
-      {{ col.emptyText || '' }}
-    </span>
+    <span v-else> </span>
     <v-btn style="display: none;"></v-btn>
   </div>
 </template>
 
 <script>
-import Badge from '../Badge'
-
+import Badge from '@/components/Badge'
 export default {
-  name: 'DatatableTextWithBadge',
-  components: {
-    Badge
-  },
-  watch: {
-    scope() {
-      this.getBadges()
+  name: 'ShowMoreTags',
+  components: { Badge },
+  props: {
+    defaultBadges: {
+      type: Array,
+      default: () => []
     }
   },
   data() {
     return {
-      badges: [],
+      badges: this.defaultBadges || [],
       maximumRenderedBadgeWidth: null,
       maximumRenderedBadgeCount: 0,
-      unRenderedBadgeCount: 0,
-      isDescending: false,
-      isAscending: true
+      unRenderedBadgeCount: 0
     }
   },
   computed: {
@@ -82,47 +70,20 @@ export default {
       }, '')
     }
   },
-  props: {
-    scope: {
-      type: Object
-    },
-    col: {
-      type: Object
-    }
-  },
   created() {
-    this.badges = this.col.hasMapper ? this.mapper() : this.scope.row[this.col.property]
     this.getBadges()
   },
-
   methods: {
     getKey(index) {
       return `${index}ab-${Math.random()}`
     },
-    mapper() {
-      return this.scope.row[this.col.property].map((item) => {
-        let uppercaseCount = 0
-        let index
-        for (let i = 1; i < item.length; i++) {
-          if (item[i] === item[i].toUpperCase()) {
-            uppercaseCount++
-          }
-          if (uppercaseCount === 1) {
-            index = i
-            break
-          }
-        }
-        return item.substring(0, index) + ' ' + item.substring(index)
-      })
-    },
     getBadges() {
       if (this.badges.length > 0) {
         let renderedCount = 0
-        let totalWidth = this.unRenderedBadgeCount
-          ? this.scope.column.width - 40
-          : this.scope.column.width
+        const maxWidth = 200
+        let totalWidth = this.unRenderedBadgeCount ? maxWidth - 40 : maxWidth
         for (let item of this.badges) {
-          let itemWidth = item.length * 8 + this.col.cellPadding
+          let itemWidth = item.length * 8 + 8
           if (itemWidth > totalWidth) {
             break
           } else {
@@ -141,7 +102,7 @@ export default {
 
         this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
         if (this.maximumRenderedBadgeCount === 0) {
-          if (this.scope.column.width > 100) {
+          if (maxWidth > 100) {
             this.maximumRenderedBadgeCount = 1
             this.unRenderedBadgeCount -= 1
           }
@@ -153,11 +114,7 @@ export default {
 </script>
 
 <style lang="scss">
-.data-table-text-with-badge {
-  .k-badge {
-    margin-left: 10px;
-  }
-
+.show-more-tags {
   &__tooltip {
     white-space: pre-line;
     line-height: 1.6;

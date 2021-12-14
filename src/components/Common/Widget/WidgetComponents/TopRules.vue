@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import { getTopRules } from '@/api/incidentResponder'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
 import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
@@ -61,6 +60,7 @@ import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncide
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import { mapGetters } from 'vuex'
 export default {
   name: 'TopRules',
   components: {
@@ -76,16 +76,8 @@ export default {
       type: Boolean
     }
   },
-  computed: {
-    getTitle() {
-      return labels.TopRules
-    }
-  },
-
   data() {
     return {
-      isLoading: true,
-      tableData: [],
       showPlaybookModal: false,
       showMatchingModal: false,
       selectedMatch: null,
@@ -114,22 +106,18 @@ export default {
       }
     }
   },
-  created() {
-    this.callForTopRules()
+  computed: {
+    ...mapGetters({
+      isLoading: 'widgets/getIsLoading',
+      tableData: 'widgets/getTopRulesCard'
+    }),
+    getTitle() {
+      return labels.TopRules
+    }
   },
   methods: {
-    callForTopRules() {
-      getTopRules()
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          this.tableData = data || []
-        })
-        .finally(() => (this.isLoading = false))
-    },
     handleRuleNameClick({ resourceId = '' }) {
-      this.$emit('handleSelectPlaybookId', { resourceId, callback: this.callForTopRules })
+      this.$emit('handleSelectPlaybookId', { resourceId, callback: () => {} })
     },
     handleSelectMatch(row) {
       this.selectedMatch = row
@@ -145,5 +133,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss"></style>
