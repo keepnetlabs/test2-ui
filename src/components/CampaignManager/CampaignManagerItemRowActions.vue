@@ -94,15 +94,14 @@ export default {
     getRowActions() {
       const rowActions = this.rowActions
       if (this.actionStatus === ACTION_STATUSES.RUNNING) {
-        return [
-          {
-            name: labels.ViewReport,
-            id: 'btn-view-report-row-actions-campaign-item-manager',
-            icon: 'mdi-text-box',
-            action: 'on-view-report'
-          },
-          ...rowActions
-        ]
+        const copyOfRowActions = JSON.parse(JSON.stringify(rowActions))
+        copyOfRowActions.splice(1, 0, {
+          name: labels.ViewReport,
+          id: 'btn-view-report-row-actions-campaign-item-manager',
+          icon: 'mdi-text-box',
+          action: 'on-view-report'
+        })
+        return copyOfRowActions
       }
       return rowActions
     },
