@@ -126,13 +126,7 @@
                     {{ item.description || '\xa0' }}
                   </div>
                   <div class="template-list--item mt-2">
-                    <v-chip
-                      v-for="(value, key) in item.tags"
-                      class="template-list--item template-list--item__chip p"
-                      :key="value + key"
-                    >
-                      {{ value }}
-                    </v-chip>
+                    <ShowMoreTags :default-badges="item.tags" />
                     <div v-if="!item.tags.length">{{ '\xa0' }}</div>
                   </div>
                 </div>
@@ -258,9 +252,10 @@ import {
 } from '@/api/phishingsimulator'
 import { getLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import KEmailPreview from '@/components/KEmailPreview'
+import ShowMoreTags from '@/components/ShowMoreTags'
 export default {
   name: 'CampaignManagerPhishingScenarios',
-  components: { KEmailPreview, KSelect, AppDialog, Multipane, MultipaneResizer },
+  components: { ShowMoreTags, KEmailPreview, KSelect, AppDialog, Multipane, MultipaneResizer },
   props: {
     items: {
       type: Array

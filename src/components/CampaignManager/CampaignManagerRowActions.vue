@@ -6,7 +6,6 @@
           v-on="on"
           :id="getId"
           class="btn-hover"
-          :style="getStyle"
           icon
           @click="handleItemClick({ action: 'on-preview' })"
         >
@@ -72,14 +71,6 @@ export default {
     },
     actionStatus() {
       return this.scope.row.status
-    },
-    getStyle() {
-      const style = {}
-      if (this.actionStatus === ACTION_STATUSES.PAUSE) {
-        style.backgroundColor = '#E6A23C'
-        style.opacity = 0.66
-      }
-      return style
     },
     getItems() {
       const copyOfRowActions = []

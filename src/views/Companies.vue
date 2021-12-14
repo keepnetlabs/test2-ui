@@ -59,7 +59,7 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refCompanyList } = this.$refs
-    if (refCompanyList.isShowCreateOrEditModal) {
+    if (refCompanyList && refCompanyList.isShowCreateOrEditModal) {
       const { refCreateOrEditModal } = refCompanyList.$refs
       if (refCreateOrEditModal && refCreateOrEditModal.isFormDataChanged()) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
