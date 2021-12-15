@@ -281,7 +281,6 @@ export default {
   },
   methods: {
     changeTemplateType(resId) {
-      debugger
       let htmlTemplate = this.categoryItems.find((item) => item.value === resId)?.template
       const logoKey = '{COMPANYLOGO}'
       const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
