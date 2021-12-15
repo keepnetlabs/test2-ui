@@ -97,11 +97,46 @@ export const COLUMNS = {
     width: 160,
     filterableType: 'date'
   },
+  LAST_REPORTED: {
+    property: 'lastReportedTime',
+    align: 'left',
+    fixed: false,
+    editable: false,
+    label: labels.LastReported,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
+  DATE_REPORTED: {
+    property: 'reportedTime',
+    align: 'left',
+    fixed: false,
+    editable: false,
+    label: labels.DateReported,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'date'
+  },
   TIMES_OPENED: {
     property: 'openedCount',
     align: 'right',
     editable: false,
     label: labels.TimesOpened,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 160,
+    filterableType: 'number'
+  },
+  TIMES_REPORTED: {
+    property: 'reportedCount',
+    align: 'right',
+    editable: false,
+    label: labels.TimesReported,
     sortable: true,
     show: true,
     type: 'text',
@@ -275,7 +310,7 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   SENDING_REPORT_LAST_SENDING_DATE: {
-    property: 'lastSubmittedTime',
+    property: 'lastSendingTime',
     align: 'left',
     label: labels.LastSendingDate,
     fixed: false,
