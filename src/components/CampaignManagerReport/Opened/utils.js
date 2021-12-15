@@ -310,7 +310,7 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   SENDING_REPORT_LAST_SENDING_DATE: {
-    property: 'lastSubmittedTime',
+    property: 'lastSendingTime',
     align: 'left',
     label: labels.LastSendingDate,
     fixed: false,
