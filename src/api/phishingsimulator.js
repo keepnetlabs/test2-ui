@@ -205,6 +205,13 @@ export function searchCampaignJobUserEmailOpenedDetails(payload, id) {
   )
 }
 
+export function searchCampaignJobUserEmailReportedDetails(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-reported/${id}`,
+    payload
+  )
+}
+
 export function searchCampaignJobUserEmailOpened(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/opened/search/${id}`,
@@ -277,6 +284,23 @@ export function searchCampaignJobUserSendingReport(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/all/search/${id}`,
     payload
+  )
+}
+
+export function searchCampaignJobUserPhishingReport(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/reported/search/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserPhishingReport(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/reported/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
   )
 }
 

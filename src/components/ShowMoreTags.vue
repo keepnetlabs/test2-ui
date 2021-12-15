@@ -83,7 +83,7 @@ export default {
         const maxWidth = 200
         let totalWidth = this.unRenderedBadgeCount ? maxWidth - 40 : maxWidth
         for (let item of this.badges) {
-          let itemWidth = item.length * 8 + 8
+          let itemWidth = item.length * 8 + 10
           if (itemWidth > totalWidth) {
             break
           } else {
@@ -115,6 +115,10 @@ export default {
 
 <style lang="scss">
 .show-more-tags {
+  .k-badge {
+    min-width: auto !important;
+    height: 24px !important;
+  }
   &__tooltip {
     white-space: pre-line;
     line-height: 1.6;

@@ -181,7 +181,7 @@
                           outlined
                           persistent-hint
                           class="same-width"
-                          style="max-width: 96px;"
+                          style="max-width: 102px;"
                           placeholder="Select URL schema"
                           @change="changeDisabledLabel"
                         ></v-select>
@@ -210,7 +210,7 @@
                           placeholder="Select domain record"
                           required
                           :rules="[(v) => validations.required(v, labels.Required)]"
-                          @change="changeDisabledLabel"
+                          @change="handleChangeDomainRecord"
                         ></v-select>
                         <v-select
                           :items="landingPageData.pathTypes"
@@ -493,6 +493,21 @@ export default {
     }
   },
   methods: {
+    handleChangeDomainRecord(value) {
+      const domainRecord = this.landingPageData.domainRecords.find((item) => item.value === value)
+      this.landingPageData.urlSchemaTypes = this.landingPageData.urlSchemaTypes.map((schema) => {
+        const activeVal = domainRecord.extraDatas[0].value
+        if (activeVal === '3') {
+          schema.disabled = false
+        } else {
+          schema.disabled = !(domainRecord.extraDatas[0].value === schema.value)
+        }
+        return schema
+      })
+      this.formValues.urlSchemaTypeId =
+        domainRecord.extraDatas[0].text === 'Both' ? '2' : domainRecord.extraDatas[0].value
+      this.changeDisabledLabel()
+    },
     changeDisabledLabel() {
       this.disabledLabel = `${
         this.landingPageData.urlSchemaTypes.find(

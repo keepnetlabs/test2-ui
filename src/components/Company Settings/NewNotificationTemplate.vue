@@ -99,6 +99,7 @@ import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
+import message from '@/components/GrapesJs/Newsletter/mergedTexts/message'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
 import postDate from '@/components/GrapesJs/Newsletter/mergedTexts/postDate'
@@ -320,6 +321,7 @@ export default {
       })
     },
     getTagsComponent(item) {
+      console.log('item', item)
       switch (item) {
         case '{FULLNAME}':
           return fullName
@@ -355,6 +357,8 @@ export default {
           return description
         case '{SHARECOMPANYNAME}':
           return shareCompanyName
+        case '{MESSAGE}':
+          return message
         case '{LINK}':
           return link
         case '{COMMUNITYTITLE}':
