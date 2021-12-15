@@ -1005,7 +1005,6 @@ import locale from 'element-ui/lib/locale/lang/en'
 import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
-import printJS from 'print-js'
 import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
@@ -2897,9 +2896,6 @@ export default {
           this.$emit(action, row)
           return false
       }
-    },
-    printMethod() {
-      printJS('table-container', 'html')
     },
     clusterSelected(name) {
       this.selectedCluster = name
