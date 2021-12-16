@@ -296,6 +296,7 @@ export const TABLE_SETTINGS_KEYS = {
   CAMPAIGN_MANAGER_REPORT_CLICKED_TABLE: 'CampaignManagerReportClickedTableSettings',
   CAMPAIGN_MANAGER_PARENT_TABLE: 'CampaignManagerParentTableTableSettings',
   CAMPAIGN_MANAGER_REPORT_SUBMITTED_TABLE: 'CampaignManagerReportSubmittedDataTableSettings',
+  CAMPAIGN_REPORTS: 'CampaignReportsTableSettings',
   CAMPAIGN_MANAGER_ITEM_TABLE: 'CampaignManagerItemTable',
   CLUSTERED_REPORTED_EMAIL: 'ClusteredReportedEmailTableSettings',
   INVESTIGATIONS: 'InvestigationsTableSettings',
@@ -437,6 +438,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   PERMISSION: 'PERMISSION',
   NOTIFICATION_TEMPLATE: 'NotificationTemplate',
   REST_API: 'RestApi',
+  CAMPAIGN_REPORTS: 'CampaignReportsSearchKeys',
   CAMPAIGN_MANAGER_REPORT_OPENED_TABLE: 'CampaignManagerReportOpenedTableSearchKeys',
   CAMPAIGN_MANAGER_REPORT_PHISHING_REPORTER_TABLE:
     'CampaignManagerReportPhishingReporterTableSearchKeys',

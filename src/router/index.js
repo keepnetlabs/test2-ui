@@ -34,6 +34,8 @@ import Sandbox from '@/views/Sandbox'
 import DnsServices from '@/views/DnsServices'
 import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
+import CampaignReports from '@/views/CampaignReports'
+import Reports from '@/views/Reports'
 
 Vue.use(Router)
 
@@ -604,23 +606,23 @@ const router = new Router({
           }
         },
         {
-          path: '/grapesjs',
-          name: 'Grapes',
-          component: ExampleGrapesJS,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
+          path: '/reports',
+          name: 'Reports',
+          component: Reports,
           meta: {
             isAuthenticated: true
           },
-          props: true
+          children: [
+            {
+              path: '/campaign-reports',
+              name: 'Campaign Reports',
+              component: CampaignReports,
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Reports'
+              }
+            }
+          ]
         }
       ]
     },

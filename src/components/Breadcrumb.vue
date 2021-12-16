@@ -49,7 +49,6 @@ export default {
         const resolved = this.$router.resolve({ name: parent })
         parent = resolved.route.meta.parentName
       }
-      //this.breadcrumb.unshift(this.baseName)
     },
     getItemId(item = '') {
       return `breadcrumb-link--${item.replace(/\s/, '')}`

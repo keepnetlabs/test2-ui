@@ -67,6 +67,7 @@ export const labels = {
   PhishingScenarios: 'Phishing Scenarios',
   LandingPage: 'Landing Page',
   SendingLimit: 'Sending Limit',
+  EmptyCampaignReport: 'You do not have any Campaign reports',
   OtherSettings: 'Other Settings',
   EmailThatWill: 'Email that was be sent to users',
   LandingPageWhoUsers: 'Landing Page for users who clicked the phishing link',
