@@ -114,7 +114,6 @@ import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
 import Badge from '@/components/Badge'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'Users',
@@ -589,15 +588,12 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.requestBody.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForPhishingReporterUser()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.requestBody.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForPhishingReporterUser()
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
@@ -621,19 +617,12 @@ export default {
     resetPageNumber() {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     }
   },
   created() {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.PHISHINGREPORTER)
     )
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.requestBody.pageSize = size
-    this.serverSideProps.pageSize = size
-    this.requestBody.pageNumber = page
     this.getDefaultFilterAndSearch()
   }
 }

@@ -123,7 +123,6 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { checkPermission } from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
@@ -447,21 +446,17 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.bodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getDatatableList()
     },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.tableOptions.isColumnFilterActive = columnFilterActive
@@ -639,13 +634,6 @@ export default {
   },
   mounted() {
     this.getPermissions()
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.bodyData.pageSize = size
-    this.bodyData.pageNumber = page
-    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }

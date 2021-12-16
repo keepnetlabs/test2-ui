@@ -1100,6 +1100,7 @@
                       class="empty-inline"
                       v-if="
                         investigationDetailsTargetUsersListData &&
+                        investigationDetailsTargetUsersListData.results &&
                         investigationDetailsTargetUsersListData.results.length === 0
                       "
                     >
@@ -1152,7 +1153,6 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   components: {
     DatatableLoading,
@@ -1579,8 +1579,6 @@ export default {
       this.investigationTargetUsersListBodyData.pageSize = pageSize
       this.serverSidePropsForTargetUsers.pageSize = pageSize
       this.resetPageNumberForTargetUsers()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.refreshDatatable()
     },
     resetPageNumberForTargetUsers() {
@@ -1597,19 +1595,9 @@ export default {
       this.isColumnFilterActive = filterActive
       this.refreshDatatable()
     },
-    setQueryValuesToPayloadForTargetUsers({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.investigationTargetUsersListBodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.investigationTargetUsersListBodyData.pageSize = size
-      this.serverSidePropsForTargetUsers.pageSize = size
-    },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
       //generic
       this.investigationTargetUsersListBodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.refreshDatatable()
     },
     sortChangedForTargetUsers({ order, prop } = {}) {
@@ -1623,8 +1611,6 @@ export default {
       this.investigationListBodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.refreshDatatable()
     },
     handleSetRenderedColumns(tableSettings = {}) {
@@ -1647,19 +1633,9 @@ export default {
       this.isColumnFilterActive = filterActive
       this.refreshDatatable()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.investigationListBodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.investigationListBodyData.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.investigationListBodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.refreshDatatable()
     },
     sortChanged({ order, prop } = {}) {
@@ -2739,13 +2715,6 @@ export default {
   },
   created() {
     this.setStoredTableSettings()
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.investigationListBodyData.pageSize = size
-    this.investigationListBodyData.pageNumber = page
-    this.serverSideProps.pageSize = size
-    this.serverSidePropsForTargetUsers.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
     this.getDefaultFilterAndSearch()
   },

@@ -67,10 +67,7 @@ export default {
           height += 16
         }
         if (height > this.numberHeight && height > 300) {
-          height = height - 12
-          if (this.isExtraHeight) {
-            height += 16
-          }
+          height = height + 4
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)

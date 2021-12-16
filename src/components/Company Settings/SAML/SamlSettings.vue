@@ -72,7 +72,6 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   columnFilterChanged,
@@ -219,7 +218,6 @@ export default {
   },
   created() {
     this.setStoredTableSettings()
-    this.setQueryValues()
     this.getDefaultFilterAndSearch()
     this.callForSamlSettings()
   },
@@ -259,15 +257,12 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.axiosPayload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSamlSettings()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForSamlSettings()
     },
     sortChanged({ order, prop } = {}) {
@@ -296,7 +291,6 @@ export default {
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS, JSON.stringify(tableSettings))
@@ -345,15 +339,6 @@ export default {
     },
     setStoredTableSettings() {
       this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS))
-    },
-    setQueryValues() {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
-      this.axiosPayload.pageNumber = page
     },
     handleEditAction(row = {}) {
       this.selectedRow = row

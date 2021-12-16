@@ -204,7 +204,6 @@ import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 import { checkPermission } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
 
 export default {
@@ -488,19 +487,9 @@ export default {
         })
       )
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.payload.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.payload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     sortChanged({ order, prop } = {}) {
@@ -514,8 +503,6 @@ export default {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     resetPageNumber() {
@@ -881,14 +868,6 @@ export default {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_PEOPLE)
     )
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.tableOptions.pageSize = size
-    this.tableOptions.pageNumber = page
-    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }

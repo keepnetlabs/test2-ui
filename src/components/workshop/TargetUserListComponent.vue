@@ -75,11 +75,9 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { required, maxLength } from '@/utils/validations'
+import { required } from '@/utils/validations'
 import { checkPermission } from '@/utils/functions'
-import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'TargetUserListComponent',
   components: {

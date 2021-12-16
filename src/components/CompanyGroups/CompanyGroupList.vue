@@ -79,7 +79,6 @@ import {
 import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission } from '@/utils/functions'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
@@ -227,13 +226,6 @@ export default {
     }
   },
   created() {
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.payload.pageSize = size
-    this.serverSideProps.pageSize = size
-    this.payload.pageNumber = page
     if (this.isLoadState) {
       const tableState =
         this.$store.state['datatable'].tables['CompanyGroups'] &&
@@ -315,15 +307,12 @@ export default {
   methods: {
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getTableData()
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
@@ -347,7 +336,6 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
