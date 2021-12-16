@@ -40,7 +40,6 @@ import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
@@ -105,7 +104,6 @@ export default {
   },
   created() {
     this.getStoredTableSettings()
-    this.setQueryValues()
     this.setDefaultFilter()
     this.callForData()
   },
@@ -126,15 +124,6 @@ export default {
           this.tableData = results
         })
         .finally(this.setLoading)
-    },
-    setQueryValues() {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
-      this.axiosPayload.pageNumber = page
     },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
@@ -179,8 +168,6 @@ export default {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForData()
     },
     sortChanged({ order, prop } = {}) {
@@ -190,7 +177,6 @@ export default {
     },
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
       this.serverSideProps.pageNumber = 1
     },
     checkIsColumnFilterActive() {

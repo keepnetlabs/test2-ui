@@ -475,7 +475,6 @@ import ListItemLoading from '@/components/SkeletonLoading/ListItemLoading'
 import TargetUsersRequiredArea from '@/components/TargetUsers/TargetUsersRequiredArea'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 
 export default {
   name: 'TargetUserImportFromAFile',
@@ -783,16 +782,6 @@ export default {
     }
   },
   methods: {
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-
-      this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.bodyData.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
 
@@ -806,9 +795,7 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
-
       this.bodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
@@ -817,8 +804,6 @@ export default {
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForGetTargetUserCustomFieldsByCompanyId()
       this.getDatatableList()
     },
@@ -1475,9 +1460,6 @@ export default {
   },
   created() {
     this.callForGetTargetUserCustomFieldsByCompanyId()
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    this.setQueryValuesToPayload(this.$route.query)
     this.getTargetUsers()
   },
   beforeRouteLeave(to, from, next) {

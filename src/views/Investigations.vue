@@ -594,7 +594,9 @@ export default {
         .finally(() => {
           this.loading = false
           this.tableData.data = this.tableData.data || []
-          this.$refs.investigationTable.$forceUpdate()
+          if (this.$refs && this.$refs.investigationTable) {
+            this.$refs.investigationTable.$forceUpdate()
+          }
         })
         .then((response) => {
           const {
