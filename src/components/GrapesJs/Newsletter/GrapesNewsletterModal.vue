@@ -623,6 +623,29 @@ export default {
       const newComponents = this.editor.DomComponents
       this.editor.on('load', () => {
         document.querySelectorAll('.gjs-sm-title').forEach((item) => item.click())
+        try {
+          document
+            .querySelector('.gjs-pn-devices-c .gjs-pn-buttons .fa-desktop')
+            .setAttribute('title', 'Desktop')
+          document
+            .querySelector('.gjs-pn-devices-c .gjs-pn-buttons .fa-tablet')
+            .setAttribute('title', 'Tablet')
+          document
+            .querySelector('.gjs-pn-devices-c .gjs-pn-buttons .fa-mobile')
+            .setAttribute('title', 'Mobile')
+          document
+            .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-undo')
+            .setAttribute('title', 'Undo')
+          document
+            .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-repeat')
+            .setAttribute('title', 'Repeat')
+          document
+            .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-code')
+            .setAttribute('title', 'Import')
+          document
+            .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-trash')
+            .setAttribute('title', 'Clear canvas')
+        } catch (e) {}
         this.editor.StyleManager.addProperty('dimension', {
           property: 'display',
           type: 'select',
