@@ -59,8 +59,6 @@ import {
 import labels from '@/model/constants/labels'
 import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
-import { exportSmtpSettings } from '@/api/smtpSettings'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getTimeZoneForMoment } from '@/utils/functions'
 
@@ -300,21 +298,17 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.bodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getDatatableList()
     },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.tableOptions.isColumnFilterActive = columnFilterActive
@@ -494,12 +488,6 @@ export default {
       Date.now()
     ).format(getTimeZoneForMoment())
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.AUDIT))
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.bodyData.pageSize = size
-    this.bodyData.pageNumber = page
-    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }

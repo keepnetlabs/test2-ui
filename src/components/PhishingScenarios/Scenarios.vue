@@ -183,7 +183,6 @@ import {
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import {
   deleteScenario,
   exportScenarios,
@@ -271,7 +270,7 @@ export default {
           },
           {
             property: 'difficulty',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: labels.DIFFICULTY,
             sortable: true,
@@ -459,19 +458,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.getDatatableList()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.bodyData.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.bodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
@@ -485,8 +474,6 @@ export default {
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getDatatableList()
     },
     getDefaultFilterAndSearch() {
@@ -609,17 +596,15 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportScenarios(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `Scenarios.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-          })
-          .catch((error) => {})
+        exportScenarios(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Scenarios.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     getDatatableList() {
@@ -676,18 +661,21 @@ export default {
   created() {
     getScenarioDataDetails()
       .then((response) => {
-        this.scenarioDetailsLookup = response.data.data
+        this.scenarioDetailsLookup = response?.data?.data || {
+          methodTypes: [],
+          difficultyTypes: []
+        }
         this.$set(
           this.tableOptions.columns[1],
           'filterableItems',
-          response.data.data.methodTypes.map((item) => {
+          this.scenarioDetailsLookup.methodTypes.map((item) => {
             return { text: item.text, value: item.text }
           })
         )
         this.$set(
           this.tableOptions.columns[3],
           'filterableItems',
-          response.data.data.difficultyTypes.map((item) => {
+          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
             return { text: item.text, value: item.text }
           })
         )
@@ -695,13 +683,7 @@ export default {
       .finally(() => {
         this.getDefaultFilterAndSearch()
       })
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.bodyData.pageSize = size
-    this.bodyData.pageNumber = page
-    this.serverSideProps.pageSize = size
+
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SCENARIOS))
   }
 }

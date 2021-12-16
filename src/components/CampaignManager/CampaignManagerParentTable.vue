@@ -81,7 +81,6 @@ import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
 import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import { getDefaultFilter } from '@/utils/functions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
@@ -209,7 +208,6 @@ export default {
   },
   created() {
     this.getStoredTableSettings()
-    this.setQueryValues()
     this.setDefaultFilter()
     this.callForData()
   },
@@ -218,15 +216,6 @@ export default {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_MANAGER_PARENT_TABLE)
       )
-    },
-    setQueryValues() {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.setDefaultValues()
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
-      this.axiosPayload.pageNumber = page
     },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
@@ -306,8 +295,6 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForData()
     },
     sortChanged({ order, prop } = {}) {
@@ -319,7 +306,6 @@ export default {
     },
     resetPageNumber() {
       this.axiosPayload.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
       this.serverSideProps.pageNumber = 1
     },
     emitCopyOfAxiosPayload(payload) {

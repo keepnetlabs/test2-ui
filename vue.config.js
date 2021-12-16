@@ -6,7 +6,7 @@ module.exports = {
   productionSourceMap: process.env.NODE_ENV !== 'production',
   configureWebpack: {
     optimization: {
-      minimize: true,
+      minimize: process.env.NODE_ENV === 'production',
       runtimeChunk: 'single',
       splitChunks: {
         chunks: 'all',

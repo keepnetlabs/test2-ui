@@ -107,20 +107,17 @@ import Datatable from '../DataTable'
 import CreateOrEditRule from './CreateOrEditRule'
 import { mapActions, mapGetters, mapState } from 'vuex'
 import {
-  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   LABEL_STORE,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { getMatchingIncidents } from '@/api/incidentResponder'
 import AppDialog from '../AppDialog'
 import { exportPlaybookRules, deletePlaybookRule } from '@/api/playbook'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 export default {
@@ -361,7 +358,6 @@ export default {
     }),
     serverSidePageNumberChanged(pageNumber = 1) {
       this.tableCredientials.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSearchPlaybook()
     },
     serverSideSizeChanged(pageSize = 10) {
@@ -369,8 +365,6 @@ export default {
       this.tableCredientials.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForSearchPlaybook()
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
@@ -394,7 +388,6 @@ export default {
     resetPageNumber() {
       this.tableCredientials.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -667,12 +660,6 @@ export default {
     this.controlGetAndUpdatePermission(this.playbookId)
   },
   created() {
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.tableCredientials.pageSize = size
-    this.serverSideProps.pageSize = size
-    this.tableCredientials.pageNumber = page
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PLAYBOOK))
     if (this.$route.params && this.$route.params.playbookId) {
       this.controlGetAndUpdatePermission(this.$route.params.playbookId)

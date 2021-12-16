@@ -117,7 +117,6 @@ import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import labels from '@/model/constants/labels'
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
   name: 'CompanyGroupDetails',
@@ -334,13 +333,6 @@ export default {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS)
     )
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.payload.pageSize = size
-    this.payload.pageNumber = page
-    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   },
   methods: {
@@ -358,19 +350,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.initMethods()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.payload.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.payload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.initMethods()
     },
     sortChanged({ order, prop } = {}) {
@@ -384,8 +366,6 @@ export default {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.initMethods()
     },
     handleAllRecordsClick() {

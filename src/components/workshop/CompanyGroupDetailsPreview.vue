@@ -33,15 +33,14 @@ import {
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import labels from '@/model/constants/labels'
+
 import {
   exportTargetGroupUsers,
   getTargetUserCustomFieldsByCompanyId,
   searchTargetGroupUsers
 } from '@/api/targetUsers'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 
 export default {
   name: 'CompanyGroupDetailsPreview',

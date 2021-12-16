@@ -159,7 +159,6 @@ import AppModal from '@/components/AppModal'
 import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 export default {
   name: 'CompanyList',
@@ -385,10 +384,6 @@ export default {
   created() {
     //generic
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.COMPANY_LIST))
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    this.setQueryValuesToPayload(this.$route.query)
     this.getDefaultFilterAndSearch()
     this.getLookUpDatas()
     if (handleIsSafari()) {
@@ -398,15 +393,6 @@ export default {
     }
   },
   methods: {
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.payload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.payload.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_LIST, JSON.stringify(tableSettings))
     },
@@ -470,7 +456,6 @@ export default {
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.payload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -484,15 +469,12 @@ export default {
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getTableData()
     },
     resetPageNumber() {
       //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
@@ -538,9 +520,11 @@ export default {
               .map((item) => ({ text: item.name, value: item.resourceId }))
           )
           this.$nextTick(() => {
-            this.$refs.refDataList.columnKey = `column-key${Math.random()
-              .toString()
-              .substring(0, 5)}`
+            if (this.$refs && this.$refs.refDataList) {
+              this.$refs.refDataList.columnKey = `column-key${Math.random()
+                .toString()
+                .substring(0, 5)}`
+            }
           })
         })
         .finally(() => this.getTableData())
@@ -551,12 +535,9 @@ export default {
       searchCompanies(_payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          //this.queryHelper.setRouterQuery('page', pageNumber)
-
           this.tableData =
             response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
               ? this.getManipulatedTableData(response.data.data.results)
@@ -595,7 +576,6 @@ export default {
     resetTableFilters() {
       this.payload.filter.FilterGroups[0].FilterItems = []
       this.$refs.refDataList.filterValues = {}
-      this.queryHelper.setRouterQuery('page', 1)
       this.$refs.refDataList.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
     handleClusterLoad({ tree, treeNode, resolve, callback }) {},

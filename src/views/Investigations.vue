@@ -135,7 +135,6 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import { checkPermission } from '@/utils/functions'
 
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
@@ -376,21 +375,17 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.bodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getInvestigationList()
     },
     serverSideSizeChanged(pageSize = 10) {
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getInvestigationList()
     },
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -599,7 +594,9 @@ export default {
         .finally(() => {
           this.loading = false
           this.tableData.data = this.tableData.data || []
-          this.$refs.investigationTable.$forceUpdate()
+          if (this.$refs && this.$refs.investigationTable) {
+            this.$refs.investigationTable.$forceUpdate()
+          }
         })
         .then((response) => {
           const {
@@ -613,8 +610,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-
           this.totalNumberOfRecords = totalNumberOfRecords
 
           if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
@@ -671,10 +666,6 @@ export default {
         this.serverSideProps = tableState.serverSideProps
         tableState.currentPage = tableState.serverSideProps.pageNumber
         const { filterValues = {} } = tableState
-        this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-        this.queryHelper.controlRouteQuery()
-        //this.queryHelper.setDefaultValues()
-        const { page, size } = this.queryHelper.returnQueryValues()
         if (Object.keys(filterValues).length) {
           this.isColumnFilterActive = true
           for (const [key, value] of Object.entries(filterValues)) {
@@ -708,13 +699,6 @@ export default {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
       )
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.controlRouteQuery()
-      this.queryHelper.setDefaultValues()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.bodyData.pageSize = size
-      this.bodyData.pageNumber = page
-      this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }
 
