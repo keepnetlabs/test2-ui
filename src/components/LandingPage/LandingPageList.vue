@@ -198,7 +198,6 @@ import {
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import {
   getLandingPageFormDetails,
   getLandingPageList,
@@ -512,19 +511,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.getDatatableList()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.bodyData.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.bodyData.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.bodyData.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
@@ -538,8 +527,6 @@ export default {
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getDatatableList()
     },
     getDefaultFilterAndSearch() {
@@ -788,13 +775,6 @@ export default {
         'filterableItems',
         response.data.data.difficultyTypes.map((item) => item.text)
       )
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.setQueryValuesToPayload(this.$route.query)
-      this.bodyData.pageSize = size
-      this.bodyData.pageNumber = page
-      this.serverSideProps.pageSize = size
       this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
       this.tableKey = `key-${Math.random().toString().substring(5)}`
       this.landingPageData = response.data.data
