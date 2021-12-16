@@ -87,8 +87,6 @@ import {
 } from '@/api/targetUsers'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
-
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -311,9 +309,6 @@ export default {
       localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUP_USERS)
     )
     if (this.resourceId) {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.controlRouteQuery()
-      this.setQueryValuesToPayload(this.$route.query)
       this.getDefaultFilterAndSearch()
     }
   },
@@ -325,15 +320,6 @@ export default {
         JSON.stringify(tableSettings)
       )
       this.storedTableSettings = tableSettings
-    },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.axiosPayload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
@@ -347,7 +333,6 @@ export default {
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.axiosPayload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     sortChanged({ order, prop } = {}) {
@@ -361,8 +346,6 @@ export default {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     resetPageNumber() {

@@ -401,11 +401,7 @@ export default {
     }, [])
     if (this.defaultDate) {
       this.isFilterActive = true
-      this.this.emitValue(
-        ...this.filteredDateRangeValue,
-        this.filteredSelectValueDate,
-        this.fieldName
-      )
+      this.emitValue(...this.filteredDateRangeValue, this.filteredSelectValueDate, this.fieldName)
     }
   },
   beforeDestroy() {

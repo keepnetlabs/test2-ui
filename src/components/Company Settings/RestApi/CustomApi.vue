@@ -79,7 +79,6 @@ import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
 import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'CustomApi',
   data() {
@@ -238,14 +237,6 @@ export default {
   },
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.REST_API))
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.tableOptions.pageSize = size
-    this.tableOptions.pageNumber = page
-    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   },
   methods: {
@@ -266,19 +257,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.callForSearch()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.axiosPayload.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.axiosPayload.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.axiosPayload.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSearch()
     },
     sortChanged({ order, prop } = {}) {
@@ -297,8 +278,6 @@ export default {
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForSearch()
     },
     callForSearch() {

@@ -449,7 +449,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   TARGETUSERSGROUP: 'TargetUsersGroup',
   TARGETGROUPUSERSTABLE: 'TargetGroupUsersTable',
   SYSTEMUSERSPEOPLE: 'SystemUsersPeople',
-  AUDIT: 'Audit',
+  AUDIT: 'AuditSearchKeys',
   INTEGRATIONS: 'Integrations',
   PLAYBOOKRULES: 'PlaybookRules',
   MAILCONFIG: 'MailConfig',

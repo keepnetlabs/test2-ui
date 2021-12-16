@@ -511,7 +511,6 @@ export default {
       this.domainData = response.data.data
       this.getDefaultFilterAndSearch()
     })
-    this.serverSideProps.pageSize = size
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DOMAINS))
   }
 }

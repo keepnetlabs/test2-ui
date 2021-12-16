@@ -113,7 +113,6 @@ import NewProxySettings from '@/components/Company Settings/ProxySettings/NewPro
 import { deleteProxySettings, exportProxySettings, searchProxySettings } from '@/api/proxySettings'
 import DeleteProxySettings from '@/components/Company Settings/ProxySettings/DeleteProxySettings'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 export default {
@@ -335,19 +334,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.callForSearchProxySettings()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.bodyOptions.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.bodyOptions.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.bodyOptions.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSearchProxySettings()
     },
     sortChanged({ order, prop } = {}) {
@@ -366,8 +355,6 @@ export default {
       this.bodyOptions.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForSearchProxySettings()
     },
     toggleProxyModalStatus() {
@@ -592,14 +579,6 @@ export default {
   },
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS))
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.setDefaultValues()
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.bodyOptions.pageSize = size
-    this.bodyOptions.pageNumber = page
-    this.serverSideProps.pageSize = size
     this.getDefaultFilterAndSearch()
   }
 }

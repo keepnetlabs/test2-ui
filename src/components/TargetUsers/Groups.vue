@@ -124,7 +124,6 @@ import { required, maxLength } from '@/utils/validations'
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 export default {
   name: 'Groups',
   components: {
@@ -374,19 +373,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.callForTargetGroups()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.tableCredientials.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.tableCredientials.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.tableCredientials.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForTargetGroups()
     },
     sortChanged({ order, prop } = {}) {
@@ -400,8 +389,6 @@ export default {
       this.tableCredientials.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForTargetGroups()
     },
     getDefaultFilterAndSearch() {
@@ -619,7 +606,6 @@ export default {
   },
 
   created() {
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
     if (this.isLoadState) {
       const tableState =
         this.$store.state['datatable'].tables['Groups'] &&
@@ -650,23 +636,14 @@ export default {
             }
           }
         }
-        this.queryHelper.setRouterQuery('page', tableState.serverSideProps.pageNumber)
-        this.queryHelper.setRouterQuery('size', tableState.serverSideProps.pageSize)
         this.tableState = { persistentState: tableState }
       }
     } else {
-      this.queryHelper.setDefaultValues()
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS)
       )
     }
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.setQueryValuesToPayload(this.$route.query)
-    this.tableOptions.pageSize = size
-    this.tableOptions.pageNumber = page
     if (!this.isLoadState) {
-      this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }
   },
