@@ -127,7 +127,7 @@
                     <div class="template-list--item template-list--item__sub-header">
                       {{ item.method }}
                       <span class="template-list--item__sub-header--span">
-                        <span style="font-size: 20px; vertical-align: sub;">&bull;</span> by</span
+                        <span style="font-size: 20px; vertical-align: sub;">&#8226;</span> by</span
                       >
                       {{ item.createdBy }}
                     </div>
