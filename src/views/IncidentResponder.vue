@@ -868,7 +868,6 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import * as Validations from '@/utils/validations'
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
@@ -1982,12 +1981,6 @@ export default {
     this.addQuery()
   },
   created() {
-    this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-    this.queryHelper.controlRouteQuery()
-    const { page, size } = this.queryHelper.returnQueryValues()
-    this.requestBodyReportedEmails.pageSize = size
-    this.serverSideProps.pageSize = size
-    this.requestBodyReportedEmails.pageNumber = page
     this.setStoredTableSettings()
     this.getReportedEmailPersistentStateAndLoad()
     this.getClusteredEmailPersistentStateAndLoad()
@@ -2191,8 +2184,6 @@ export default {
       this.requestBodyReportedEmails.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.callForSearchNotifiedMail()
     },
     serverSideClusteredSizeChanged(pageSize = 10) {
@@ -2207,7 +2198,6 @@ export default {
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.requestBodyReportedEmails.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.callForSearchNotifiedMail()
     },
     serverSideClusteredPageNumberChanged(pageNumber = 1) {
@@ -2287,7 +2277,6 @@ export default {
         refReportedEmailsClustered.serverSideSelectionCount = 0
       }
 
-      this.queryHelper.setRouterQuery('page', 1)
       this.$refs.refReportedEmails.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
     getManipulatedChildData(data, isChild = false) {
@@ -2530,7 +2519,6 @@ export default {
     resetPageNumber() {
       this.requestBodyReportedEmails.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-      this.queryHelper.setRouterQuery('page', 1)
     },
     closeMatchingModal() {
       this.showMatchingModal = false

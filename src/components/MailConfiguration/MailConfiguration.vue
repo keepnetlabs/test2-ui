@@ -701,7 +701,6 @@ import { checkPermission, scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import QueryHelperForTable from '@/helper-classes/query-helper'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import { getTargetGroups } from '@/api/targetUsers'
@@ -1087,19 +1086,9 @@ export default {
       this.tableOptions.isColumnFilterActive = filterActive
       this.getTableData()
     },
-    setQueryValuesToPayload({ page, size }) {
-      //generic
-      const parsedPage = parseInt(page)
-      this.requestBody.pageNumber = isNaN(parsedPage) ? 1 : parsedPage
-      const parsedSize = parseInt(size)
-      size = isNaN(parsedSize) ? 10 : parsedSize
-      this.requestBody.pageSize = size
-      this.serverSideProps.pageSize = size
-    },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
       this.requestBody.pageNumber = pageNumber
-      this.queryHelper.setRouterQuery('page', pageNumber)
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -1113,8 +1102,6 @@ export default {
       this.requestBody.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
-      this.queryHelper.setRouterQuery('size', pageSize)
-      this.queryHelper.setRouterQuery('page', 1)
       this.getTableData()
     },
     getDefaultFilterAndSearch() {
@@ -1575,13 +1562,6 @@ export default {
     if (!this.checkPermissions('mail-configurations/search', 'POST')) {
       this.$router.push('/incident-responder')
     } else {
-      this.queryHelper = new QueryHelperForTable(this.$router, this.$route)
-      this.queryHelper.controlRouteQuery()
-      const { page, size } = this.queryHelper.returnQueryValues()
-      this.setQueryValuesToPayload(this.$route.query)
-      this.tableOptions.pageSize = size
-      this.tableOptions.pageNumber = page
-      this.serverSideProps.pageSize = size
       this.getDefaultFilterAndSearch()
     }
   }
