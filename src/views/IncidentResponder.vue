@@ -376,7 +376,7 @@
             </div>
             <div class="table">
               <datatable
-                :loading="topRulesLoading"
+                :loading="investigationsLoading || topRulesLoading"
                 :refName="'topRules'"
                 ref="refTopRules"
                 :columns="topRules.columns"
@@ -451,7 +451,7 @@
             </div>
             <div class="table investigations">
               <datatable
-                :loading="investigationsLoading"
+                :loading="investigationsLoading || topRulesLoading"
                 :table="investigationsData"
                 :refName="'recentInv'"
                 ref="refRecentInv"
@@ -915,9 +915,9 @@ export default {
     storedReportedEmailTableSettings: null,
     storedReportedEmailClusteredSettings: null,
     isConfirmButtonDisabled: false,
-    topRulesLoading: true,
+    topRulesLoading: false,
     isCustomMessageMultiple: false,
-    investigationsLoading: true,
+    investigationsLoading: false,
     investigationsData: [],
     reportedEmailsData: [],
     bindPropsIsSafari: {},

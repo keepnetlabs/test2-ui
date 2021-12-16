@@ -86,7 +86,7 @@ export default {
   data() {
     return {
       axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
-      axiosPayloadOfItem: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
+      axiosPayloadOfItem: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       selectedParentItem: null,
       selectedRow: null,
       isShowPreviewDialog: false,

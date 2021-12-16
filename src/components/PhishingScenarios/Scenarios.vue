@@ -271,7 +271,7 @@ export default {
           },
           {
             property: 'difficulty',
-            align: 'left',
+            align: 'center',
             editable: false,
             label: labels.DIFFICULTY,
             sortable: true,
@@ -676,18 +676,21 @@ export default {
   created() {
     getScenarioDataDetails()
       .then((response) => {
-        this.scenarioDetailsLookup = response.data.data
+        this.scenarioDetailsLookup = response?.data?.data || {
+          methodTypes: [],
+          difficultyTypes: []
+        }
         this.$set(
           this.tableOptions.columns[1],
           'filterableItems',
-          response.data.data.methodTypes.map((item) => {
+          this.scenarioDetailsLookup.methodTypes.map((item) => {
             return { text: item.text, value: item.text }
           })
         )
         this.$set(
           this.tableOptions.columns[3],
           'filterableItems',
-          response.data.data.difficultyTypes.map((item) => {
+          this.scenarioDetailsLookup.difficultyTypes.map((item) => {
             return { text: item.text, value: item.text }
           })
         )
