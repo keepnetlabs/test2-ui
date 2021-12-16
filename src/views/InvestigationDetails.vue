@@ -1100,6 +1100,7 @@
                       class="empty-inline"
                       v-if="
                         investigationDetailsTargetUsersListData &&
+                        investigationDetailsTargetUsersListData.results &&
                         investigationDetailsTargetUsersListData.results.length === 0
                       "
                     >

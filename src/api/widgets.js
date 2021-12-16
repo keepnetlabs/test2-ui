@@ -11,5 +11,5 @@ export function getWidgets() {
 }
 
 export function getSummary(payload = {}) {
-  return testRequest.post('/dashboard/summary', payload, { loading: true })
+  return testRequest.get('/dashboard/summary', { loading: true })
 }

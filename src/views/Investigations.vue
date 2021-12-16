@@ -610,8 +610,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
-
           this.totalNumberOfRecords = totalNumberOfRecords
 
           if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
