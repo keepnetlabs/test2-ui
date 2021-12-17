@@ -103,7 +103,7 @@
                       </div>
                       <div class="template-list--item template-list--item__sub-header">
                         {{ item.method }}
-                        &bull;
+                        &#8226;
                         <span class="template-list--item__sub-header--span">by</span>
                         {{ item['createdBy'] }}
                       </div>

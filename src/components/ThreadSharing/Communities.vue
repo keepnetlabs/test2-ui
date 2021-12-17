@@ -534,11 +534,11 @@
                   <div class="ts-user-comp-detail">
                     <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
                     <span class="pr-2">{{ item.memberCount }}</span>
-                    &bull;
+                    &#8226;
                     <span class="ts-community-industry pl-2 pr-2">
                       {{ item.industryName || 'Industry' }}
                     </span>
-                    &bull;
+                    &#8226;
                     <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
                       item.privacyStatusName
                     }}</span>
@@ -605,11 +605,11 @@
                   <div class="ts-user-comp-detail">
                     <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
                     <span class="pr-2">{{ item.memberCount }}</span>
-                    &bull;
+                    &#8226;
                     <span class="ts-community-industry pl-2 pr-2">
                       {{ item.industryName || 'Industry' }}
                     </span>
-                    &bull;
+                    &#8226;
                     <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
                       item.privacyStatusName
                     }}</span>

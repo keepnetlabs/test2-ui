@@ -10,7 +10,8 @@ const widgetsStore = {
     roiSummaryCard: {},
     topRulesCard: [],
     recentInvestigationsCard: [],
-    reportersCard: []
+    reportersCard: [],
+    reportedEmailTrendsCard: []
   },
   getters: {
     getIsLoading: (state) => state.isLoading,
@@ -20,7 +21,8 @@ const widgetsStore = {
     getROISummaryCard: (state) => state.roiSummaryCard,
     getTopRulesCard: (state) => state.topRulesCard,
     getRecentInvestigationsCard: (state) => state.recentInvestigationsCard,
-    getReportersCard: (state) => state.reportersCard
+    getReportersCard: (state) => state.reportersCard,
+    getReportedEmailTrendsCard: (state) => state.reportedEmailTrendsCard
   },
   mutations: {
     SET_INVESTIGATION_CARD(state, payload) {
@@ -46,6 +48,9 @@ const widgetsStore = {
     },
     SET_LOADING(state, payload) {
       state.isLoading = payload
+    },
+    SET_REPORTED_EMAIL_TRENDS(state, payload) {
+      state.reportedEmailTrendsCard = payload
     }
   },
   actions: {
@@ -57,7 +62,8 @@ const widgetsStore = {
             dashboardSummary,
             dashboardTopRules,
             runningInvestigations,
-            topReporters
+            topReporters,
+            reportedEmailTrends
           } = response.data
           const {
             investigationTypeCount,
@@ -81,6 +87,10 @@ const widgetsStore = {
           const { data: reporters } = topReporters
 
           commit('SET_REPORTERS', reporters)
+
+          const { data } = reportedEmailTrends
+
+          commit('SET_REPORTED_EMAIL_TRENDS', data)
 
           return response
         })

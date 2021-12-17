@@ -50,7 +50,7 @@
             persistent-hint
           ></k-select>
         </form-group>
-        <form-group title="Email" has-hint>
+        <form-group title="Email Address" has-hint>
           <InputEmail
             placeholder="Enter email address"
             v-model.trim="formValues.username"

@@ -619,14 +619,14 @@
       </div>
       <div class="footer-middle">
         <div class="footer-item__secondary footer-links">
-          <a href="#">Privacy Policy</a> &bull;
+          <a href="#">Privacy Policy</a> &#8226;
           <a href="https://www.keepnetlabs.com/terms-conditions/" target="_blank"
             >Terms and Conditions</a
           >
-          &bull;
+          &#8226;
         </div>
         <div class="footer-item__third footer-links">
-          <a href="#">Cookie Policy</a> &bull;
+          <a href="#">Cookie Policy</a> &#8226;
           <a href="#">EULA</a>
         </div>
       </div>
