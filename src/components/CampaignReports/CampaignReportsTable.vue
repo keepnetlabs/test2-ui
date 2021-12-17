@@ -47,6 +47,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import { callForCampaignReports, exportCampaignReports } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignReportsTable',
   components: { DataTable },
@@ -57,7 +58,7 @@ export default {
         id: 'campaign-manager-clicked-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'CreateTime' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'StartDate' }),
       storedTableSettings: null,
       serverSideProps: new ServerSideProps(),
       serverSideEvents: { pagination: true, search: true, sort: true },
@@ -67,10 +68,11 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true },
         columns: [
           COLUMNS.CAMPAIGN_NAME,
-          COLUMNS.CREATEDBY,
-          COLUMNS.CREATEDBY,
-          COLUMNS.STATUS,
           COLUMNS.LAST_LAUNCH,
+          COLUMNS.TARGET_USERS,
+          COLUMNS.STATUS,
+          COLUMNS.CREATEDBY,
+          COLUMNS.DATE_CREATED,
           COLUMNS.USER_STATS,
           COLUMNS.DELIVERY
         ],
@@ -100,8 +102,30 @@ export default {
       }
     }
   },
+  created() {
+    this.callForData()
+  },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      callForCampaignReports(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: {
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+            }
+          } = response
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results.map((row) => ({
+            ...row,
+            progress: row['emailDeliveredUserCount'] / row['totalTargetUserCount'] || 0
+          }))
+          console.log('this.tableData = ', this.tableData)
+        })
+        .finally(this.setLoading)
+    },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.CAMPAIGN_REPORTS)
@@ -213,6 +237,15 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
+        exportCampaignReports(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `Campaign-Manager-Report.${
+            item.toLocaleLowerCase() === 'xls' ? 'xlsx' : item.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     }
   }
