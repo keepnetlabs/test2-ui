@@ -292,7 +292,7 @@ export default {
       loadingTemplates: false,
       selectedTemplateId: null,
       selectedPreviousIndex: 0,
-      selectChangeValue: null
+      selectChangeValue: ''
     }
   },
   mounted() {
@@ -315,6 +315,13 @@ export default {
     },
     getTemplates(isInitial, emailTemplateResourceId) {
       this.loadingTemplates = true
+      if (isInitial && this.emailTemplateResourceId) {
+        this.bodyData.filter.FilterGroups[1].FilterItems.push({
+          FieldName: 'ResourceId',
+          Operator: 'Include',
+          value: this.emailTemplateResourceId
+        })
+      }
       getEmailTemplatesList(this.bodyData)
         .then((response) => {
           const { data } = response
@@ -340,6 +347,7 @@ export default {
                 this.listData[
                   this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
                 ].selected = true
+                this.selectChangeValue = this.emailTemplateResourceId
               } else {
                 if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
               }

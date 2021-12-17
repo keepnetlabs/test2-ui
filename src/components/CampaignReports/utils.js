@@ -9,8 +9,8 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'slot',
-    width: 360,
+    type: 'text',
+    width: 180,
     isEditable: false,
     isCustomOverflowedColumn: true,
     filterableType: 'text',
@@ -18,17 +18,18 @@ export const COLUMNS = {
     overrideWidth: true
   },
   LAST_LAUNCH: {
-    property: PROPERTY_STORE.LASTLAUNCH,
+    property: 'startDate',
     align: 'left',
     editable: false,
     label: labels.LastLaunch,
     sortable: true,
     show: true,
     width: 160,
-    type: 'text'
+    type: 'text',
+    filterableType: 'date'
   },
   TARGET_USERS: {
-    property: PROPERTY_STORE.TARGET_USERS,
+    property: 'totalTargetUserCount',
     align: 'right',
     editable: false,
     label: labels.TargetUsers,
@@ -49,7 +50,8 @@ export const COLUMNS = {
     show: true,
     type: 'badge',
     width: 150,
-    filterableType: 'select'
+    filterableType: 'select',
+    filterableItems: ['Idle', 'Running', 'Completed', 'Canceled', 'Paused', 'Error']
   },
   CREATEDBY: {
     property: PROPERTY_STORE.CREATEDBY,
@@ -75,15 +77,16 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   USER_STATS: {
-    property: 'userStatus',
+    property: 'campaignStatus',
     align: 'center',
     editable: false,
-    label: getStoreValue('userStatus'),
+    label: 'User Stats',
     fixed: false,
     sortable: false,
     show: true,
     type: 'chart',
-    width: 130
+    width: 130,
+    hideSort: true
   },
   DELIVERY: {
     property: 'progress',
@@ -95,7 +98,20 @@ export const COLUMNS = {
     show: true,
     type: 'progress',
     progressType: 'stats',
-    width: 120
+    width: 120,
+    hideSort: true
     // minWidth: 60
+  },
+  DATE_CREATED: {
+    property: 'createdDate',
+    align: 'left',
+    label: 'Date Created',
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'date'
   }
 }

@@ -389,3 +389,17 @@ export function getCampaignJobSummaryTargetGroups(id) {
     `/phishing-simulator/phishing-campaign-job-report/summary/target-groups/${id}`
   )
 }
+
+export function callForCampaignReports(payload) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign-job-report/search`, payload)
+}
+
+export function exportCampaignReports(payload) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search/export`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
