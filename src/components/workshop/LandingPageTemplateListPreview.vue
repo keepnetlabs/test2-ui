@@ -288,7 +288,7 @@ export default {
       selectedLandingPageId: null,
       templateURL: null,
       selectedPreviousIndex: 0,
-      selectChangeValue: null
+      selectChangeValue: ''
     }
   },
   mounted() {
@@ -311,6 +311,13 @@ export default {
     },
     getTemplates(isInitial, landingPageTemplateResourceId) {
       this.loadingTemplates = true
+      if (isInitial && this.landingPageTemplateResourceId) {
+        this.bodyData.filter.FilterGroups[1].FilterItems.push({
+          FieldName: 'ResourceId',
+          Operator: 'Include',
+          value: this.landingPageTemplateResourceId
+        })
+      }
       getLandingPageList(this.bodyData)
         .then((response) => {
           if (!response.data.data.results.length) {
@@ -341,6 +348,7 @@ export default {
                     (item) => item.resourceId === landingPageTemplateResourceId
                   )
                 ].selected = true
+                this.selectChangeValue = this.landingPageTemplateResourceId
               } else {
                 if (!landingPageTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
               }
