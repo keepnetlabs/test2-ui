@@ -19,6 +19,7 @@
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :select-event="tableOptions.selectEvent"
+    :chart-options="tableOptions.chartOptions"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -76,6 +77,11 @@ export default {
           COLUMNS.USER_STATS,
           COLUMNS.DELIVERY
         ],
+        chartOptions: {
+          backgroundColor: ['#3f51b5', '#E6A23C', '#FBF280', '#F56C6C'],
+          labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
+          showTooltipLine: true
+        },
         addButton: {
           show: false
         },
@@ -120,6 +126,12 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results.map((row) => ({
             ...row,
+            campaignStatus: [
+              row['totalNoResponseCount'],
+              row['totalClickedCount'],
+              row['totalOpenedCount'],
+              row['totalSubmittedCount']
+            ],
             progress: row['emailDeliveredUserCount'] / row['totalTargetUserCount'] || 0
           }))
           console.log('this.tableData = ', this.tableData)

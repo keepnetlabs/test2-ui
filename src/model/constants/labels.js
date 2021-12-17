@@ -12,6 +12,7 @@ export const labels = {
   UserWhoOpened: 'User who opened the email',
   UserWhoHaventOpened: 'Users who haven’t opened the email',
   Connected: 'Connected',
+  Submitted: 'Submitted',
   UserWhoClicked: 'User who clicked the link',
   UserWhoReported: 'Users who reported the email',
   TimesReported: 'Times Reported',

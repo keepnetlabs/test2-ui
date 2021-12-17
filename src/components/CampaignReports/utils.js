@@ -77,10 +77,10 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   USER_STATS: {
-    property: 'userStatus',
+    property: 'campaignStatus',
     align: 'center',
     editable: false,
-    label: getStoreValue('userStatus'),
+    label: 'User Stats',
     fixed: false,
     sortable: false,
     show: true,
