@@ -76,6 +76,7 @@
         <div class="campaign-manager-advanced-settings__distribution-item">
           <v-radio
             :id="`input--campaign-manager-radio-advanced-settings`"
+            class="mb-0"
             label="Send emails with SMTP Delay every"
             color="#2196f3"
             value="1"
@@ -109,6 +110,7 @@
           <v-radio
             :id="`input--campaign-manager-radio-advanced-settings`"
             value="2"
+            class="mb-0"
             label="Distribute emails over"
             color="#2196f3"
           />
