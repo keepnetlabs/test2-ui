@@ -66,6 +66,7 @@ export default {
           show: true,
           callback() {
             refCompanyList.isShowCreateOrEditModal = false
+            refCompanyList.cancelCreateOrEditForm()
           }
         })
         next(false)

@@ -5,19 +5,17 @@
     subtitle-id="text--campaign-manager-delete-popup-subtitle"
     :icon="CONSTANTS.icon"
     :title="CONSTANTS.title"
-    :subtitle="CONSTANTS.subtitle"
     :status="isShowDialog"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body> {{ content }} </template>
     <template #app-dialog-footer>
       <AppDialogFooter
-        type="delete"
         cancel-button-id="btn-cancel--leaving-popup"
         confirm-button-id="btn-delete--leaving-popup"
         action-button-text="Quit"
         action-button-color="#F56C6C"
-        cancel-button-text="Keep Editing"
+        cancel-button-text="Continue Editing"
         cancel-button-color="#383B41"
         @handleClose="handleClose"
         @handleConfirm="handleCallback"
@@ -38,11 +36,10 @@ export default {
   data() {
     return {
       CONSTANTS: {
-        icon: 'mdi-delete',
-        title: labels.YouAreLeaving,
-        subtitle: labels.OperationWillBeAbondened
+        icon: 'mdi-alert',
+        title: labels.YourDataWillBeLost
       },
-      content: labels.YouWillLoseAllProgressAndData
+      content: labels.AllYourDataWillBeLost
     }
   },
   computed: {
