@@ -17,7 +17,7 @@
 <script>
 import CampaignReportsTable from '@/components/CampaignReports/CampaignReportsTable'
 import CampaignReportsDeleteDialog from '@/components/CampaignReports/CampaignReportsDeleteDialog'
-import { deleteCampaignManager } from '@/api/phishingsimulator'
+import { deletePhishingCampaignJob } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignReports',
   components: { CampaignReportsDeleteDialog, CampaignReportsTable },
@@ -37,7 +37,7 @@ export default {
     },
     handleDeleteItem(resourceId = '') {
       this.setDeleteDialogActionButtonDisabled(true)
-      deleteCampaignManager(resourceId)
+      deletePhishingCampaignJob(resourceId)
         .then(() => {
           this.$refs.refTable.callForData()
         })
