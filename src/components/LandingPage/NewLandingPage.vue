@@ -807,13 +807,14 @@ export default {
       getLandingPageTemplate(this.emailTemplateId).then((response) => {
         this.formValues = response.data.data
         this.formValues.methodTypeId = this.formValues.methodTypeId.toString()
-        this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId.toString()
         this.formValues.domainRecordId = response.data.data.domainRecordId.toString()
+        this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId.toString()
         this.formValues.pathTypeId = this.formValues.pathTypeId.toString()
         this.formValues.extensionTypeId = this.formValues.extensionTypeId.toString()
         this.formValues.parameterTypeId = this.formValues.parameterTypeId.toString()
         this.formValues.difficultyTypeId = this.formValues.difficultyTypeId.toString()
         this.formValues.name = `${this.formValues.name}`
+        this.handleChangeDomainRecord(this.formValues.domainRecordId)
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
           this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
