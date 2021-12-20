@@ -1,16 +1,59 @@
 <template>
   <div class="campaign-reports" id="campaign-reports">
     <div class="campaign-reports__content">
-      <CampaignReportsTable />
+      <CampaignReportsDeleteDialog
+        v-if="isShowDeleteDialog"
+        :status="isShowDeleteDialog"
+        :is-action-button-disabled="isActionButtonDisabled"
+        :resource-id="selectedRowResourceId"
+        @on-close="toggleShowDeleteDialog"
+        @on-delete="handleDeleteItem"
+      />
+      <CampaignReportsTable ref="refTable" @on-delete="handleTableDeleteClick" />
     </div>
   </div>
 </template>
 
 <script>
 import CampaignReportsTable from '@/components/CampaignReports/CampaignReportsTable'
+import CampaignReportsDeleteDialog from '@/components/CampaignReports/CampaignReportsDeleteDialog'
+import { deletePhishingCampaignJob } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignReports',
-  components: { CampaignReportsTable }
+  components: { CampaignReportsDeleteDialog, CampaignReportsTable },
+  data() {
+    return {
+      isShowDeleteDialog: false,
+      selectedRowResourceId: '',
+      isActionButtonDisabled: false
+    }
+  },
+  methods: {
+    toggleShowDeleteDialog() {
+      if (this.isShowDeleteDialog) {
+        this.selectedRowResourceId = ''
+      }
+      this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleDeleteItem(resourceId = '') {
+      this.setDeleteDialogActionButtonDisabled(true)
+      deletePhishingCampaignJob(resourceId)
+        .then(() => {
+          this.$refs.refTable.callForData()
+        })
+        .finally(() => {
+          this.toggleShowDeleteDialog()
+          this.setDeleteDialogActionButtonDisabled()
+        })
+    },
+    setDeleteDialogActionButtonDisabled(status = false) {
+      this.isActionButtonDisabled = status
+    },
+    handleTableDeleteClick(resourceId = '') {
+      this.selectedRowResourceId = resourceId
+      this.toggleShowDeleteDialog()
+    }
+  }
 }
 </script>
 

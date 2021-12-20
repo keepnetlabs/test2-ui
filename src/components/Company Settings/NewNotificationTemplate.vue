@@ -321,7 +321,6 @@ export default {
       })
     },
     getTagsComponent(item) {
-      console.log('item', item)
       switch (item) {
         case '{FULLNAME}':
           return fullName
