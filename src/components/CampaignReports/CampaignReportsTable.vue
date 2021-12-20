@@ -32,6 +32,8 @@
     @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerReportClickedTable"
     @refreshAction="callForData"
+    @on-view-report="handleViewReport"
+    @on-delete="handleDelete"
   />
 </template>
 
@@ -99,7 +101,7 @@ export default {
             id: 'btn-delete--campaign-reports',
             name: 'Delete',
             icon: 'mdi-delete',
-            action: 'delete'
+            action: 'on-delete'
           }
         ],
         selectEvent: {
@@ -134,7 +136,6 @@ export default {
             ],
             progress: row['emailDeliveredUserCount'] / row['totalTargetUserCount'] || 0
           }))
-          console.log('this.tableData = ', this.tableData)
         })
         .finally(this.setLoading)
     },
@@ -259,6 +260,15 @@ export default {
           link.click()
         })
       })
+    },
+    handleViewReport(row = {}) {
+      this.$router.push({
+        name: 'Campaign Report',
+        params: { id: row.resourceId }
+      })
+    },
+    handleDelete(row = {}) {
+      this.$emit('on-delete', row.resourceId)
     }
   }
 }
