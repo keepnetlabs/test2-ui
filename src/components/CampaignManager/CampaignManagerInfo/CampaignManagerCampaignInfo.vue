@@ -106,7 +106,12 @@
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
     />
-    <FormGroup v-if="showSchedule" :title="labels.Schedule" :sub-title="labels.ScheduleSub">
+    <FormGroup
+      v-if="showSchedule"
+      :title="labels.Schedule"
+      :sub-title="labels.ScheduleSub"
+      style="max-width: 600px;"
+    >
       <v-radio-group
         v-model="formData.scheduleTypeId"
         class="mt-0 campaign-manager-target-groups-radio"
@@ -114,12 +119,48 @@
       >
         <v-radio
           v-for="item in radioItems"
-          color="#2196f3"
           :key="item.text"
+          style="margin-bottom: 16px;"
+          color="#2196f3"
           :id="`input--campaign-manager-radio-${item.text}`"
           :value="item.value"
           :label="item.text"
         ></v-radio>
+        <div class="campaign-manager-advanced-settings__distribution-item mt-n2">
+          <v-radio
+            :id="`input--campaign-manager-radio-schedule-to`"
+            style="margin-bottom: 0;"
+            label="Schedule to"
+            color="#2196f3"
+            value="3"
+          />
+
+          <InputDate
+            v-model="formData.scheduledDate"
+            class="campaign-manager-schedule-datepicker ml-2"
+            type="datetime"
+            ref="refPicker"
+            placeholder="Select Date Select Time"
+            style="width: 100%; max-width: 222px;"
+            :disabled="isScheduledTimeDisabled"
+          />
+
+          <KSelect
+            v-model.trim="formData.scheduledDateTimeZoneId"
+            type="autocomplete"
+            id="input--campaign-manager-campaign-info-time-type"
+            class="ml-2"
+            style="max-width: 195px;"
+            outlined
+            dense
+            hide-details
+            placeholder="Select a item"
+            min-width-type="small"
+            nudge-width="170"
+            :items="scheduledTimeItems"
+            :disabled="isScheduledTimeDisabled"
+          />
+        </div>
       </v-radio-group>
     </FormGroup>
     <FormGroup
@@ -159,7 +200,8 @@ import KSelectLoading from '@/components/KSelectLoading'
 import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroups'
 import { getScenariosList } from '@/api/scenarios'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerPhishingScenarios'
-
+import InputDate from '@/components/Common/Inputs/InputDate'
+import { mapGetters } from 'vuex'
 const axiosPayloadOfPhishingScenarios = {
   pageNumber: 1,
   pageSize: 10,
@@ -185,6 +227,7 @@ const axiosPayloadOfPhishingScenarios = {
 export default {
   name: 'CampaignManagerCampaignInfo',
   components: {
+    InputDate,
     CampaignManagerPhishingScenarios,
     CampaignManagerTargetGroups,
     KSelectLoading,
@@ -258,7 +301,9 @@ export default {
         targetGroupResourceIds: [],
         phishingScenarioResourceId: '',
         scheduleTypeId: '1',
-        duration: 3
+        duration: 3,
+        scheduledDate: '',
+        scheduledDateTimeZoneId: ''
       },
       defaultTargetGroups: [],
       targetGroupItems: [],
@@ -282,6 +327,18 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      selectedTimeZone: 'common/getSelectedTimeZone'
+    }),
+    isScheduledTimeDisabled() {
+      return this.formData.scheduleTypeId !== '3'
+    },
+    scheduledTimeItems() {
+      const { timeZoneList = [] } = this.$store.getters['common/getTimezones'] || {}
+      return timeZoneList.map((item) => ({ text: item.displayName, value: item.id }))
+    }
+  },
   watch: {
     defaultValues(val) {
       for (const key of Object.keys(val)) {
@@ -295,15 +352,37 @@ export default {
           this.formData[key] = val[key]
         }
       }
+    },
+    selectedTimeZone(val) {
+      this.formData.scheduledDateTimeZoneId = val
     }
   },
   created() {
     this.callForTargetGroups()
+    this.callForGetTimeZones()
+    if (!this.isEdit) {
+      this.getSelectedTimeZone()
+    }
     if (this.showPhishingScenarios) {
       this.callForPhishingScenarios()
     }
   },
   methods: {
+    callForGetTimeZones() {
+      if (
+        this.$store?.getters['common/getTimezones'] &&
+        !this.$store?.getters['common/getTimezones'].length
+      ) {
+        this.$store.dispatch('common/getTimezone')
+      }
+    },
+    getSelectedTimeZone() {
+      if (this.$store?.getters['common/getSelectedTimeZone']) {
+        this.formData.scheduledDateTimeZoneId = this.$store?.getters['common/getSelectedTimeZone']
+      } else {
+        this.$store.dispatch('common/callForSettings')
+      }
+    },
     handleDurationChange(val) {
       if (!val || /\d+$/.test(val)) {
         this.formData.duration = val
@@ -528,3 +607,10 @@ export default {
   }
 }
 </script>
+<style lang="scss">
+.campaign-manager-schedule-datepicker {
+  input {
+    min-height: 40px !important;
+  }
+}
+</style>

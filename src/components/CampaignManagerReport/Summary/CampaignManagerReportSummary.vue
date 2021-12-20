@@ -255,13 +255,15 @@ export default {
   },
   methods: {
     callForData() {
-      this.callApis()
+      this.callApis(true)
       this.interval = setInterval(() => {
         this.callApis()
       }, 15000)
     },
-    callApis() {
-      this.setLoading(true)
+    callApis(isUseLoading = false) {
+      if (isUseLoading) {
+        this.setLoading(true)
+      }
       getCampaignJobSummary(this.id)
         .then((response) => {
           this.campaignSummary = response?.data?.data
@@ -271,7 +273,9 @@ export default {
           )
         })
         .finally(() => {
-          this.setLoading(false)
+          if (isUseLoading) {
+            this.setLoading(false)
+          }
         })
       getCampaignJobSummaryTargetGroups(this.id).then((response) => {
         this.targetGroups = response?.data?.data?.groups
