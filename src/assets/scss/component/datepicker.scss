@@ -58,3 +58,11 @@
     margin-left: -32px !important;
   }
 }
+
+.el-input.is-disabled .el-input__inner {
+  background-color:#f2f2f2 !important;
+  border:solid 1px rgba(0, 0, 0, 0.16);
+  &::placeholder{
+    color:rgba(0, 0, 0, 0.30);
+  }
+}

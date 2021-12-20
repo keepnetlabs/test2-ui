@@ -240,14 +240,18 @@ export default {
         targetGroups,
         phishingScenario,
         scheduleTypeId,
-        duration
+        duration,
+        scheduledDate,
+        scheduledDateTimeZoneId
       } = this.selectedRowFormData
       return {
         name,
         targetGroups,
         phishingScenario,
         scheduleTypeId: scheduleTypeId.toString(),
-        duration
+        duration,
+        scheduledDate,
+        scheduledDateTimeZoneId
       }
     },
     getDefaultValuesOfAdvancedSettings() {
@@ -399,6 +403,8 @@ export default {
             targetGroupResourceIds: campaignManagerFormData.targetGroupResourceIds.map(
               (item) => item.value
             ),
+            scheduledDateTimeZoneId: campaignManagerFormData.scheduledDateTimeZoneId,
+            scheduledDate: campaignManagerFormData.scheduledDate,
             distributionTypeId: advancedSettingsFormData.distributionTypeId,
             distributionSmtpDelayEvery: advancedSettingsFormData.distributionSmtpDelayEvery,
             distributionSmtpDelayTimeTypeId:
