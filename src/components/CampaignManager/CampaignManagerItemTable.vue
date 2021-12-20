@@ -60,6 +60,7 @@
           @on-stop="handleStop"
           @on-resume="handleResume"
           @on-pause="handlePause"
+          @on-launch="handleLaunch"
         />
       </template>
       <template #table-all-records>
@@ -84,8 +85,8 @@ import DataTable from '@/components/DataTable'
 import CampaignManagerItemRowActions from '@/components/CampaignManager/CampaignManagerItemRowActions'
 import {
   deletePhishingCampaignJob,
-  exportCampaignManager,
   exportCampaignManagerItem,
+  launchPhishingCampaign,
   pausePhishingCampaignJob,
   resumePhishingCampaignJob,
   searchCampaignPhishingJob,
@@ -382,6 +383,11 @@ export default {
     },
     handlePause(row = {}) {
       pausePhishingCampaignJob(row.resourceId).then(() => {
+        this.callForData()
+      })
+    },
+    handleLaunch(row = {}) {
+      launchPhishingCampaign(row.resourceId).then(() => {
         this.callForData()
       })
     }

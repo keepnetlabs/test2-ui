@@ -108,9 +108,10 @@ export default {
     getIconName() {
       switch (this.actionStatus) {
         case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.IDLE:
         case ACTION_STATUSES.CANCEL:
           return 'mdi-text-box'
+        case ACTION_STATUSES.IDLE:
+          return 'mdi-send'
         case ACTION_STATUSES.PAUSE:
         case ACTION_STATUSES.RUNNING:
           return 'mdi-pause'
@@ -121,9 +122,10 @@ export default {
     getTooltipText() {
       switch (this.actionStatus) {
         case ACTION_STATUSES.COMPLETE:
-        case ACTION_STATUSES.IDLE:
         case ACTION_STATUSES.CANCEL:
           return labels.ViewReport
+        case ACTION_STATUSES.IDLE:
+          return labels.Launch
         case ACTION_STATUSES.PAUSE:
           return labels.Resume
         case ACTION_STATUSES.RUNNING:
@@ -145,7 +147,10 @@ export default {
   },
   methods: {
     handleItemClick(act) {
-      if (!this.isMenuRender || act.action === 'on-view-report') {
+      if (
+        (!this.isMenuRender && this.actionStatus !== ACTION_STATUSES.IDLE) ||
+        act.action === 'on-view-report'
+      ) {
         return this.$router.push({
           name: 'Campaign Report',
           params: { id: this.scope.row.resourceId }
@@ -158,6 +163,9 @@ export default {
           break
         case ACTION_STATUSES.PAUSE:
           eventName = 'on-resume'
+          break
+        case ACTION_STATUSES.IDLE:
+          eventName = 'on-launch'
           break
         default:
           eventName = act.action
