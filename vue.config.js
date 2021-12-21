@@ -1,6 +1,4 @@
 // vue.config.js
-const path = require('path')
-const EncodingPlugin = require('webpack-encoding-plugin')
 module.exports = {
   publicPath: '/',
   productionSourceMap: process.env.NODE_ENV !== 'production',
@@ -37,11 +35,6 @@ module.exports = {
           ]
         }
       ]
-    },
-    plugins: [
-      new EncodingPlugin({
-        encoding: 'UTF-8'
-      })
-    ]
+    }
   }
 }

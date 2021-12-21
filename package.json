@@ -92,8 +92,7 @@
     "vue-jest": "^3.0.7",
     "vue-template-compiler": "2.6.12",
     "vuetify-loader": "1.6.0",
-    "webpack": "^4.44.1",
-    "webpack-encoding-plugin": "^0.3.1"
+    "webpack": "^4.44.1"
   },
   "eslintConfig": {
     "root": true,
