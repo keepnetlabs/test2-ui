@@ -134,7 +134,7 @@ export default {
               row['totalOpenedCount'],
               row['totalSubmittedCount']
             ],
-            progress: row['emailDeliveredUserCount'] / row['totalTargetUserCount'] || 0
+            progress: (row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100 || 0
           }))
         })
         .finally(this.setLoading)
