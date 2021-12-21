@@ -36,5 +36,15 @@ module.exports = {
         }
       ]
     }
+  },
+  chainWebpack: (config) => {
+    config.plugin('html').tap((args) => {
+      args[0].meta = {}
+      args[0].meta['content-type'] = {
+        'http-equiv': 'content-type',
+        content: 'text/html; charset=UTF-8'
+      }
+      return args
+    })
   }
 }
