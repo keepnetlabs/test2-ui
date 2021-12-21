@@ -25,8 +25,3 @@ const APP_CONFIG = (() => {
     VUE_APP_RECAPTCHA_SITEKEY: '6LfSWikcAAAAAIU4AtHzGDkC_0g2uIOsijvBTKcC'
   }
 })()
-if (document) {
-  const meta = document.createElement('meta')
-  meta.setAttribute('charset', 'UTF-8')
-  document.head.prepend(meta)
-}
