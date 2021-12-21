@@ -19,10 +19,6 @@ import VueTagManager from 'vue-tag-manager'
 import Vlf from 'vlf'
 import localforage from 'localforage'
 
-const meta = document.createElement('meta')
-meta.setAttribute('charset', 'UTF-8')
-document.head.prepend(meta)
-
 localforage.config({
   name: 'keepnet'
 })
