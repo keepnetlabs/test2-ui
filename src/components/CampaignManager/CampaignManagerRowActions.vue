@@ -96,33 +96,39 @@ export default {
         action: 'on-delete',
         disabled: !this.PERMISSIONS.DELETE.hasPermission
       }
+      const editItem = {
+        name: labels.Edit,
+        isNotShow: true,
+        id: 'btn-edit--row-actions-campaign-manager',
+        icon: 'mdi-pencil',
+        action: 'on-edit',
+        disabled: !this.PERMISSIONS.UPDATE.hasPermission
+      }
       switch (this.actionStatus) {
         case ACTION_STATUSES.IDLE:
-          copyOfRowActions.push({
-            name: labels.Edit,
-            isNotShow: true,
-            id: 'btn-edit--row-actions-campaign-manager',
-            icon: 'mdi-pencil',
-            action: 'on-edit',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
-          })
+          copyOfRowActions.push(editItem)
           copyOfRowActions.push(newInstanceItem)
           copyOfRowActions.push(duplicateItem)
           copyOfRowActions.push(deleteItem)
           break
         case ACTION_STATUSES.RUNNING:
+          copyOfRowActions.push(editItem)
           copyOfRowActions.push(newInstanceItem)
           copyOfRowActions.push(duplicateItem)
           copyOfRowActions.push(deleteItem)
           break
         case ACTION_STATUSES.COMPLETE:
+          copyOfRowActions.push(editItem)
           copyOfRowActions.push(newInstanceItem)
           copyOfRowActions.push(deleteItem)
           break
         case ACTION_STATUSES.CANCEL:
+          copyOfRowActions.push(editItem)
           copyOfRowActions.push(newInstanceItem)
           copyOfRowActions.push(deleteItem)
+          break
         default:
+          copyOfRowActions.push(editItem)
           copyOfRowActions.push(deleteItem)
           break
       }
