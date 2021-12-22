@@ -1,5 +1,12 @@
 <template>
   <div id="campaign-manager-report-submitted-data" class="campaign-manager-report-submitted-data">
+    <CampaignManagerReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
     <CampaignManagerReportHeader
       :title="labels.UserWhoSubmitted"
       :subtitle="phishingScenarioName"
@@ -11,7 +18,7 @@
       @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportSubmittedTable
-      ref="refSubmittedTable"
+      ref="refTable"
       class="mt-6"
       :id="id"
       :password-complexities="getPasswordComplexities"
@@ -27,13 +34,17 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
 import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
 import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
+import { useResend } from '@/hooks/useResend'
+import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 export default {
   name: 'CampaignManagerReportSubmittedData',
   components: {
+    CampaignManagerReportResendDialog,
     CampaignManagerReportSubmittedItemDetailDialog,
     CampaignManagerReportSubmittedTable,
     CampaignManagerReportHeader
   },
+  mixins: [useResend],
   props: {
     id: {
       type: String
@@ -65,11 +76,6 @@ export default {
     toggleShowDetailDialog() {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
-    },
-    handleOnResend(payload) {
-      resendPhishingCampaignToUserList(payload, this.id).then(() => {
-        this.$refs.refSubmittedTable.callForData()
-      })
     }
   }
 }
