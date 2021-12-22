@@ -6,7 +6,7 @@
     :title="getTitle"
     :subtitle="getSubtitle"
     :status="status"
-    custom-size="618"
+    custom-size="796"
     @changeStatus="handleClose"
   >
     <template #app-dialog-body>
@@ -84,7 +84,12 @@ export default {
       tableOptions: {
         isColumnFilterActive: false,
         serverSideEvents: { pagination: true, search: true, sort: true },
-        columns: [COLUMNS.DATE_REPORTED, COLUMNS.BROWSER, COLUMNS.GEOLOCATION],
+        columns: [
+          COLUMNS.DATE_REPORTED,
+          COLUMNS.BROWSER,
+          COLUMNS.IP_PHISHING_REPORTER,
+          COLUMNS.GEOLOCATION
+        ],
         addButton: {
           show: false
         },

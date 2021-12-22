@@ -1,5 +1,12 @@
 <template>
   <div id="campaign-manager-report-clicked" class="clicked">
+    <CampaignManagerReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
     <CampaignManagerReportHeader :title="labels.UserWhoClicked" :subtitle="phishingScenarioName" />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
@@ -8,7 +15,7 @@
       @on-close="toggleShowDetailDialog"
     />
     <CampaignManagerReportClickedTable
-      ref="refClickedTable"
+      ref="refTable"
       class="mt-6"
       :id="id"
       @on-resend="handleOnResend"
@@ -22,14 +29,17 @@ import CampaignManagerReportHeader from '@/components/CampaignManagerReport/Camp
 import labels from '@/model/constants/labels'
 import CampaignManagerReportClickedTable from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedTable'
 import CampaignManagerReportClickedItemDetailDialog from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClickedItemDetailDialog'
-import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
+import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
+import { useResend } from '@/hooks/useResend'
 export default {
   name: 'CampaignManagerReportClicked',
   components: {
+    CampaignManagerReportResendDialog,
     CampaignManagerReportClickedItemDetailDialog,
     CampaignManagerReportClickedTable,
     CampaignManagerReportHeader
   },
+  mixins: [useResend],
   props: {
     id: {
       type: String
@@ -53,11 +63,6 @@ export default {
     toggleShowDetailDialog() {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
-    },
-    handleOnResend(payload = {}) {
-      resendPhishingCampaignToUserList(payload, this.id).then(() => {
-        this.$refs.refClickedTable.callForData()
-      })
     }
   }
 }
