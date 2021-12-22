@@ -803,14 +803,7 @@
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
-                        :disabled="
-                          scope.row.status === 'Cancelled' ||
-                          scope.row.status === 'Canceled' ||
-                          scope.row.status === 'Expired' ||
-                          scope.row.status === 'Finished' ||
-                          scope.row.status === 'NoMatch' ||
-                          rowActions[1]['disabled']
-                        "
+                        :disabled="rowActions[1]['disabled']"
                         :id="`${rowActions[1].id}-${
                           scope.$index
                         }-${Math.random().toString().substring(2)}`"

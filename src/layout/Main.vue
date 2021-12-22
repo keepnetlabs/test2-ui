@@ -504,6 +504,36 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            id="btn--link-navigator-menu-reports-list-group"
+            prepend-icon="mdi-equalizer"
+            no-action
+            :class="[
+              'menu-with-item menu-link-default',
+              routerName !== 'Campaign Reports'
+                ? 'un-selected-list-item'
+                : 'primary--text active-menu-parent'
+            ]"
+          >
+            <template v-slot:activator>
+              <v-list-item-content class="menu-list-item">
+                <v-list-item-title>Reports</v-list-item-title>
+              </v-list-item-content>
+            </template>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/campaign-reports"
+                  id="btn--link-navigator-menu-reports"
+                  :class="['menu-link-default', routerName === 'Campaign Reports' && 'active-link']"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Campaign Reports</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+          <v-list-group
             v-if="checkCompanyPermissions()"
             id="btn--link-navigator-menu-company-list-group"
             prepend-icon="mdi-briefcase-variant"
@@ -611,36 +641,6 @@
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Audit Log</span>
-                  </v-list-item-title>
-                </router-link>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-group>
-          <v-list-group
-            id="btn--link-navigator-menu-reports-list-group"
-            prepend-icon="mdi-equalizer"
-            no-action
-            :class="[
-              'menu-with-item menu-link-default',
-              routerName !== 'Campaign Reports'
-                ? 'un-selected-list-item'
-                : 'primary--text active-menu-parent'
-            ]"
-          >
-            <template v-slot:activator>
-              <v-list-item-content class="menu-list-item">
-                <v-list-item-title>Reports</v-list-item-title>
-              </v-list-item-content>
-            </template>
-            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
-              <v-list-item-content class="menu-item-content">
-                <router-link
-                  to="/campaign-reports"
-                  id="btn--link-navigator-menu-reports"
-                  :class="['menu-link-default', routerName === 'Campaign Reports' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Campaign Reports</span>
                   </v-list-item-title>
                 </router-link>
               </v-list-item-content>
