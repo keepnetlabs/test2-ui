@@ -80,7 +80,7 @@ export default {
           COLUMNS.DELIVERY
         ],
         chartOptions: {
-          backgroundColor: ['#3f51b5', '#E6A23C', '#FBF280', '#F56C6C'],
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
           labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
           showTooltipLine: true
         },
@@ -134,7 +134,8 @@ export default {
               row['totalOpenedCount'],
               row['totalSubmittedCount']
             ],
-            progress: (row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100 || 0
+            progress:
+              Math.round((row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100) || 0
           }))
         })
         .finally(this.setLoading)
