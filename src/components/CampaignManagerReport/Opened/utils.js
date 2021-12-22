@@ -227,6 +227,18 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'text'
   },
+  IP_PHISHING_REPORTER: {
+    property: 'userIpAddressList',
+    align: 'left',
+    label: labels.Ip,
+    fixed: false,
+    sortable: true,
+    show: true,
+    type: 'text',
+    width: 180,
+    isEditable: false,
+    filterableType: 'text'
+  },
   SUBMITTED_DATA_IP: {
     property: 'userIpAddressList',
     align: 'left',
