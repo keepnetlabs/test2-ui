@@ -140,6 +140,9 @@ export default {
       this.toggleItemTableShowing()
     },
     handleOnBackClick() {
+      if (this.$refs.campaignManagerParentTable) {
+        this.$refs.campaignManagerParentTable.callForData()
+      }
       this.toggleItemTableShowing()
     },
     toggleItemTableShowing() {
