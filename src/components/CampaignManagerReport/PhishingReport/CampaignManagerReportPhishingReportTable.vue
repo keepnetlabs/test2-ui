@@ -83,7 +83,7 @@ export default {
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
           COLUMNS.LAST_REPORTED,
-          COLUMNS.TIMES_OPENED
+          COLUMNS.TIMES_REPORTED
         ],
         addButton: {
           show: false
