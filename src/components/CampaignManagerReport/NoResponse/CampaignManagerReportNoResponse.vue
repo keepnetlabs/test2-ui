@@ -1,11 +1,18 @@
 <template>
   <div id="campaign-manager-report-no-response" class="campaign-manager-report-no-response">
+    <CampaignManagerReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
     <CampaignManagerReportHeader
       :title="labels.UserWhoHaventOpened"
       :subtitle="phishingScenarioName"
     />
     <CampaignManagerReportNoResponseTable
-      ref="refNoResponseTable"
+      ref="refTable"
       class="mt-6"
       :id="id"
       @on-resend="handleOnResend"
@@ -21,9 +28,16 @@ import {
   resendNoResponsePhishingCampaignJob,
   resendPhishingCampaignToUserList
 } from '@/api/phishingsimulator'
+import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
+import { useResend } from '@/hooks/useResend'
 export default {
   name: 'CampaignManagerReportNoResponse',
-  components: { CampaignManagerReportNoResponseTable, CampaignManagerReportHeader },
+  components: {
+    CampaignManagerReportResendDialog,
+    CampaignManagerReportNoResponseTable,
+    CampaignManagerReportHeader
+  },
+  mixins: [useResend],
   props: {
     id: {
       type: String
@@ -35,13 +49,6 @@ export default {
   data() {
     return {
       labels
-    }
-  },
-  methods: {
-    handleOnResend(payload) {
-      resendPhishingCampaignToUserList(payload, this.id).then(() => {
-        this.$refs.refNoResponseTable.callForData()
-      })
     }
   }
 }

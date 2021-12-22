@@ -1,11 +1,18 @@
 <template>
   <div id="campaign-manager-report-sending-report" class="campaign-manager-report-sending-report">
+    <CampaignManagerReportResendDialog
+      v-if="isShowResendDialog"
+      :status="isShowResendDialog"
+      :is-action-button-disabled="isResendActionButtonDisabled"
+      @on-close="toggleIsShowResendDialog"
+      @on-confirm="resendItem"
+    />
     <CampaignManagerReportHeader
       :title="labels.EmailSendingReport"
       :subtitle="phishingScenarioName"
     />
     <CampaignManagerReportSendingReportTable
-      ref="refSendingReportTable"
+      ref="refTable"
       class="mt-6"
       :id="id"
       :last-sending-status-items="getLastSendingStatusItems"
@@ -20,9 +27,16 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportTable from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportTable'
 import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
+import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
+import { useResend } from '@/hooks/useResend'
 export default {
   name: 'CampaignManagerReportSendingReport',
-  components: { CampaignManagerReportSendingReportTable, CampaignManagerReportHeader },
+  components: {
+    CampaignManagerReportResendDialog,
+    CampaignManagerReportSendingReportTable,
+    CampaignManagerReportHeader
+  },
+  mixins: [useResend],
   props: {
     id: {
       type: String
@@ -54,11 +68,6 @@ export default {
     toggleShowDetailDialog() {
       if (this.isShowDetailDialog) this.selectedRow = null
       this.isShowDetailDialog = !this.isShowDetailDialog
-    },
-    handleOnResend(payload) {
-      resendPhishingCampaignToUserList(payload, this.id).then(() => {
-        this.$refs.refSendingReportTable.callForData()
-      })
     }
   }
 }
