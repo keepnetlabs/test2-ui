@@ -223,64 +223,6 @@ export default {
   },
   data() {
     return {
-      methodItems: [
-        {
-          resourceId: 'WNZt0sCVCWB3',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Click Only',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'DYC0gugxJMjT',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Data Submission',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: '7dLrW2kdBTDs',
-          genericCodeTypeId: 19,
-          genericCodeTypeName: 'Phishing Simulator Categories',
-          name: 'Attachment',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ],
-      difficultyItems: [
-        {
-          resourceId: 'mT0CeYGgKsVb',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Easy',
-          code: '1',
-          description: null,
-          orderNumber: 1
-        },
-        {
-          resourceId: 'Z5XeVlpw6Dps',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Medium',
-          code: '2',
-          description: null,
-          orderNumber: 2
-        },
-        {
-          resourceId: 'c4LCGEB9MayB',
-          genericCodeTypeId: 20,
-          genericCodeTypeName: 'Phishing Simulator Difficulties',
-          name: 'Hard',
-          code: '3',
-          description: null,
-          orderNumber: 3
-        }
-      ],
       editableFormValues: {},
       timeoutId: '',
       emailTemplateParams: {},
