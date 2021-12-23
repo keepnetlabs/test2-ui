@@ -67,6 +67,13 @@ export default {
           height += 16
         }
         if (height > this.numberHeight && height > 300) {
+          if (
+            window.navigator &&
+            window.navigator.appVersion &&
+            window.navigator.appVersion.toLowerCase().includes('windows')
+          ) {
+            height += 16
+          }
           height = height + 4
           this.height = height + 'px'
           this.stopCalculateFrame = true

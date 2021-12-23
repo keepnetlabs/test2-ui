@@ -311,6 +311,7 @@ export default {
     },
     getTemplates(isInitial, landingPageTemplateResourceId) {
       this.loadingTemplates = true
+      this.$emit('loading', true)
       if (isInitial && this.landingPageTemplateResourceId) {
         this.bodyData.filter.FilterGroups[1].FilterItems.push({
           FieldName: 'ResourceId',
@@ -358,6 +359,7 @@ export default {
         .finally(() => {
           this.loadingTemplates = false
           this.showLoader = false
+          this.$emit('loading', false)
         })
     },
     handleScroll(e) {
@@ -605,6 +607,8 @@ export default {
       &__sub-header {
         font-style: normal;
         font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 12px;
         line-height: 19px;
         color: #757575;

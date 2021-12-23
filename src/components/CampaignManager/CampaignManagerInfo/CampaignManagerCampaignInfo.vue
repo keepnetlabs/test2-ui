@@ -134,16 +134,28 @@
             color="#2196f3"
             value="3"
           />
-
-          <InputDate
-            v-model="formData.scheduledDate"
-            class="campaign-manager-schedule-datepicker ml-2"
-            type="datetime"
-            ref="refPicker"
-            placeholder="Select Date Select Time"
-            style="width: 100%; max-width: 222px;"
-            :disabled="isScheduledTimeDisabled"
-          />
+          <div :class="[!isDateValid && 'date-picker-error mb-n3']">
+            <InputDate
+              v-model="formData.scheduledDate"
+              class="campaign-manager-schedule-datepicker ml-2"
+              type="datetime"
+              ref="refPicker"
+              placeholder="Select Date Select Time"
+              style="width: 100%; max-width: 222px;"
+              :disabled="isScheduledTimeDisabled"
+            />
+            <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
+              <transition appear name="bounce">
+                <div class="v-messages theme--light error--text" role="alert">
+                  <div class="v-messages__wrapper">
+                    <div class="v-messages__message" style="padding-left: 10px;">
+                      Date is required
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+          </div>
 
           <KSelect
             v-model.trim="formData.scheduledDateTimeZoneId"
@@ -324,7 +336,8 @@ export default {
           (v) => validations.required(v, labels.Required),
           (v) => validations.startsWith(v, 'Cannot start with 0', 0)
         ]
-      }
+      },
+      isDateValid: true
     }
   },
   computed: {
@@ -355,6 +368,14 @@ export default {
     },
     selectedTimeZone(val) {
       this.formData.scheduledDateTimeZoneId = val
+    },
+    'formData.scheduledDate'(val) {
+      this.isDateValid = val && val.length > 0
+    },
+    'formData.scheduleTypeId'(val) {
+      if (val !== '3') {
+        this.isDateValid = true
+      }
     }
   },
   created() {

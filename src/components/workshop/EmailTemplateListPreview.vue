@@ -124,7 +124,10 @@
                     <div class="template-list--item template-list--item__header">
                       {{ item.name }}
                     </div>
-                    <div class="template-list--item template-list--item__sub-header">
+                    <div
+                      class="template-list--item template-list--item__sub-header"
+                      style="overflow: hidden; text-overflow: ellipsis;"
+                    >
                       {{ item.categoryName }}
                       <span class="template-list--item__sub-header--span"
                         ><span style="font-size: 20px; vertical-align: sub;">&bull;</span> by</span
@@ -315,6 +318,7 @@ export default {
     },
     getTemplates(isInitial, emailTemplateResourceId) {
       this.loadingTemplates = true
+      this.$emit('loading', true)
       if (isInitial && this.emailTemplateResourceId) {
         this.bodyData.filter.FilterGroups[1].FilterItems.push({
           FieldName: 'ResourceId',
@@ -357,6 +361,7 @@ export default {
         .finally(() => {
           this.loadingTemplates = false
           this.showLoader = false
+          this.$emit('loading', false)
         })
     },
     handleScroll(e) {
