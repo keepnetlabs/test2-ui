@@ -53,7 +53,7 @@ export default {
       this.$emit('on-close')
     },
     handleDelete() {
-      this.$emit('on-delete', this.item.resourceId)
+      this.$emit('on-delete', this.item)
     }
   }
 }

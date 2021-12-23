@@ -6,7 +6,6 @@
     filterable
     options
     is-server-side
-    is-server-side-selection
     :refName="'campaignReportTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -268,8 +267,8 @@ export default {
         params: { id: row.resourceId }
       })
     },
-    handleDelete(row = {}) {
-      this.$emit('on-delete', row.resourceId)
+    handleDelete(row) {
+      this.$emit('on-delete', row)
     }
   }
 }

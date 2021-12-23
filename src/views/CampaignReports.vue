@@ -5,7 +5,7 @@
         v-if="isShowDeleteDialog"
         :status="isShowDeleteDialog"
         :is-action-button-disabled="isActionButtonDisabled"
-        :resource-id="selectedRowResourceId"
+        :item="selectedRow"
         @on-close="toggleShowDeleteDialog"
         @on-delete="handleDeleteItem"
       />
@@ -24,21 +24,23 @@ export default {
   data() {
     return {
       isShowDeleteDialog: false,
-      selectedRowResourceId: '',
+      selectedRow: {},
       isActionButtonDisabled: false
     }
   },
   methods: {
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
-        this.selectedRowResourceId = ''
+        this.selectedRow = {}
       }
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
-    handleDeleteItem(resourceId = '') {
+    handleDeleteItem(row = {}) {
+      console.log('row', row)
       this.setDeleteDialogActionButtonDisabled(true)
-      deletePhishingCampaignJob(resourceId)
+      deletePhishingCampaignJob(row.resourceId)
         .then(() => {
+          this.$refs.refTable.$refs.refTable.unSelectRow(row)
           this.$refs.refTable.callForData()
         })
         .finally(() => {
@@ -49,8 +51,8 @@ export default {
     setDeleteDialogActionButtonDisabled(status = false) {
       this.isActionButtonDisabled = status
     },
-    handleTableDeleteClick(resourceId = '') {
-      this.selectedRowResourceId = resourceId
+    handleTableDeleteClick(row) {
+      this.selectedRow = row
       this.toggleShowDeleteDialog()
     }
   }
