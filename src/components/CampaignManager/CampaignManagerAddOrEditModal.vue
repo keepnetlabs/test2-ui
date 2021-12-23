@@ -380,7 +380,13 @@ export default {
         case 1:
           const { refCampaignManagerCampaignInfo } = this.$refs
           const { refForm } = refCampaignManagerCampaignInfo.$refs
-          if (refForm.validate()) this.changeStep()
+          if (
+            refCampaignManagerCampaignInfo.formData.scheduleTypeId === '3' &&
+            !refCampaignManagerCampaignInfo.formData.scheduledDate
+          ) {
+            refCampaignManagerCampaignInfo.isDateValid = false
+          }
+          if (refForm.validate() && refCampaignManagerCampaignInfo.isDateValid) this.changeStep()
           else this.showErrorMessage(refForm)
           break
         case 2:

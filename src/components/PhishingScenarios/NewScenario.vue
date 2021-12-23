@@ -161,6 +161,7 @@
                     :emailTemplateResourceId="emailTemplateResourceId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
+                    @loading="isSubmitDisabled = $event"
                   ></EmailTemplateListPreview>
                 </v-list-item-content>
               </v-list-item>
@@ -187,6 +188,7 @@
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                    @loading="isSubmitDisabled = $event"
                   ></LandingPageListPreview
                 ></v-list-item-content>
               </v-list-item>
@@ -572,7 +574,7 @@ export default {
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+          (v) => Validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
       editItemsDisabled: false,

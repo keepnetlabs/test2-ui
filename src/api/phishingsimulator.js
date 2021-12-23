@@ -409,5 +409,8 @@ export function exportCampaignReports(payload) {
 }
 
 export function bulkDeleteCampaignReports(payload) {
-  return testRequest.delete('/phishing-simulator/phishing-campaign/bulk-delete', { data: payload })
+  return testRequest.delete('/phishing-simulator/phishing-campaign/bulk-delete', {
+    data: payload,
+    snackbar: COMMON_SNACKBAR
+  })
 }
