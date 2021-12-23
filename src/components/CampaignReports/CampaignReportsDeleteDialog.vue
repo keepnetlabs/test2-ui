@@ -32,8 +32,8 @@ export default {
     status: {
       type: Boolean
     },
-    resourceId: {
-      type: String
+    item: {
+      type: Object
     },
     isActionButtonDisabled: {
       type: Boolean
@@ -53,7 +53,7 @@ export default {
       this.$emit('on-close')
     },
     handleDelete() {
-      this.$emit('on-delete', this.resourceId)
+      this.$emit('on-delete', this.item)
     }
   }
 }

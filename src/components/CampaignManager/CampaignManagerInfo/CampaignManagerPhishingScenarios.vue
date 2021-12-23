@@ -246,11 +246,7 @@ import labels from '@/model/constants/labels'
 import { methods, difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import {
-  getEmailTemplatePreviewContent,
-  getPhishingScenarioLandingPageAndEmailTemplate
-} from '@/api/phishingsimulator'
-import { getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 export default {
@@ -391,39 +387,38 @@ export default {
         if (!this.phishingScenarioItems.find((item) => item.resourceId === data.resourceId)) {
           this.phishingScenarioItems.push(data)
         }
-        const { emailTemplateResourceId, landingPageTemplateResourceId } = data
-        getPhishingScenarioLandingPageAndEmailTemplate(
-          emailTemplateResourceId,
-          landingPageTemplateResourceId
-        ).then((response) => {
-          const { data: { data = {} } = {} } = response
-          const { emailTemplate, landingPageTemplate } = data
-          const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
 
-          this.emailTemplateParams = {
-            fromName,
-            fromAddress,
-            name,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+        getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(this.value).then(
+          (response) => {
+            const { data: { data = {} } = {} } = response
+            const { emailTemplate, landingPageTemplate } = data
+            const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
+
+            this.emailTemplateParams = {
+              fromName,
+              fromAddress,
+              name,
+              difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+            }
+            this.emailTemplate = template
+            const {
+              name: landingPageName,
+              description,
+              landingPages,
+              urlTemplate,
+              difficultyTypeId,
+              methodTypeId
+            } = landingPageTemplate
+            this.landingPageParams = {
+              name: landingPageName,
+              description,
+              urlTemplate,
+              difficulty: difficulties[difficultyTypeId - 1].text,
+              method: methods[methodTypeId - 1].text
+            }
+            this.landingPageTemplate = landingPages[0].content
           }
-          this.emailTemplate = template
-          const {
-            name: landingPageName,
-            description,
-            landingPages,
-            urlTemplate,
-            difficultyTypeId,
-            methodTypeId
-          } = landingPageTemplate
-          this.landingPageParams = {
-            name: landingPageName,
-            description,
-            urlTemplate,
-            difficulty: difficulties[difficultyTypeId - 1].text,
-            method: methods[methodTypeId - 1].text
-          }
-          this.landingPageTemplate = landingPages[0].content
-        })
+        )
       })
     },
     callForPhishingScenarios() {

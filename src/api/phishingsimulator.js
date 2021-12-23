@@ -167,6 +167,10 @@ export function getPhishingScenarioLandingPageAndEmailTemplate(
   )
 }
 
+export function getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(id) {
+  return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${id}`)
+}
+
 export function getCampaignManagerPreview(resourceId = '') {
   return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
 }
@@ -402,4 +406,8 @@ export function exportCampaignReports(payload) {
       responseType: 'blob'
     }
   )
+}
+
+export function bulkDeleteCampaignReports(payload) {
+  return testRequest.delete('/phishing-simulator/phishing-campaign/bulk-delete', { data: payload })
 }
