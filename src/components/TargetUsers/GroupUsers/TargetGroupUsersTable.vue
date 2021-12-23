@@ -135,7 +135,7 @@ export default {
     return {
       axiosPayload: {
         pageNumber: 1,
-        pageSize: 1000000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -157,7 +157,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 1000000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
