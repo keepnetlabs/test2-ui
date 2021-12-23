@@ -167,6 +167,10 @@ export function getPhishingScenarioLandingPageAndEmailTemplate(
   )
 }
 
+export function getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(id) {
+  return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${id}`)
+}
+
 export function getCampaignManagerPreview(resourceId = '') {
   return testRequest.get(`/phishing-simulator/phishing-campaign/preview/${resourceId}`)
 }

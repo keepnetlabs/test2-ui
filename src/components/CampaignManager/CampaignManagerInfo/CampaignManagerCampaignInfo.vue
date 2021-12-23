@@ -371,7 +371,7 @@ export default {
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&
-        !this.$store?.getters['common/getTimezones'].length
+        !this.$store?.getters['common/getTimezones']?.timeZoneList?.length
       ) {
         this.$store.dispatch('common/getTimezone')
       }
@@ -476,12 +476,11 @@ export default {
             this.phishingScenarioItems = JSON.parse(JSON.stringify(data.results)) || []
           }
           this.phishingInitial = false
-          this.phishingScenarioSelectItems = this.phishingScenarioItems.map((item) => ({
+          this.phishingScenarioSelectItems = data.results.map((item) => ({
             text: item.name,
             value: item.resourceId,
             extraDatas: null
           }))
-
           if (
             this.phishingScenarioSelectItems.length &&
             !this.isEdit &&
