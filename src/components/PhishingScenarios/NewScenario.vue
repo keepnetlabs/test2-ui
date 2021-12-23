@@ -161,6 +161,7 @@
                     :emailTemplateResourceId="emailTemplateResourceId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
+                    @loading="isSubmitDisabled = $event"
                   ></EmailTemplateListPreview>
                 </v-list-item-content>
               </v-list-item>
@@ -187,6 +188,7 @@
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
                     :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                    @loading="isSubmitDisabled = $event"
                   ></LandingPageListPreview
                 ></v-list-item-content>
               </v-list-item>

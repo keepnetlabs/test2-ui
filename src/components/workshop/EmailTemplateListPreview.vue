@@ -318,6 +318,7 @@ export default {
     },
     getTemplates(isInitial, emailTemplateResourceId) {
       this.loadingTemplates = true
+      this.$emit('loading', true)
       if (isInitial && this.emailTemplateResourceId) {
         this.bodyData.filter.FilterGroups[1].FilterItems.push({
           FieldName: 'ResourceId',
@@ -360,6 +361,7 @@ export default {
         .finally(() => {
           this.loadingTemplates = false
           this.showLoader = false
+          this.$emit('loading', false)
         })
     },
     handleScroll(e) {

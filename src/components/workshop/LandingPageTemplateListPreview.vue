@@ -311,6 +311,7 @@ export default {
     },
     getTemplates(isInitial, landingPageTemplateResourceId) {
       this.loadingTemplates = true
+      this.$emit('loading', true)
       if (isInitial && this.landingPageTemplateResourceId) {
         this.bodyData.filter.FilterGroups[1].FilterItems.push({
           FieldName: 'ResourceId',
@@ -358,6 +359,7 @@ export default {
         .finally(() => {
           this.loadingTemplates = false
           this.showLoader = false
+          this.$emit('loading', false)
         })
     },
     handleScroll(e) {
