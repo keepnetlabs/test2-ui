@@ -605,6 +605,8 @@ export default {
       &__sub-header {
         font-style: normal;
         font-weight: 600;
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 12px;
         line-height: 19px;
         color: #757575;

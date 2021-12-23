@@ -101,7 +101,10 @@
                       <div class="template-list--item template-list--item__header">
                         {{ item.name }}
                       </div>
-                      <div class="template-list--item template-list--item__sub-header">
+                      <div
+                        class="template-list--item template-list--item__sub-header"
+                        style="overflow: hidden; text-overflow: ellipsis;"
+                      >
                         {{ item.method }}
                         &#8226;
                         <span class="template-list--item__sub-header--span">by</span>

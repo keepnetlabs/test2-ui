@@ -124,7 +124,10 @@
                     <div class="template-list--item template-list--item__header">
                       {{ item.name }}
                     </div>
-                    <div class="template-list--item template-list--item__sub-header">
+                    <div
+                      class="template-list--item template-list--item__sub-header"
+                      style="overflow: hidden; text-overflow: ellipsis;"
+                    >
                       {{ item.categoryName }}
                       <span class="template-list--item__sub-header--span"
                         ><span style="font-size: 20px; vertical-align: sub;">&bull;</span> by</span
