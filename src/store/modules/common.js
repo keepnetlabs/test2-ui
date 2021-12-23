@@ -12,7 +12,7 @@ const common = {
     errors: '',
     errorState: false,
     downloadModalStatus: false,
-    timezones: [],
+    timezones: {},
     sessionCheck: false,
     isReCaptcha: false,
     activePageRouterName: '',

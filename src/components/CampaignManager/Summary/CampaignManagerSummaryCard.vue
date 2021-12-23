@@ -103,6 +103,7 @@ export default {
     }
     &-item {
       display: flex;
+      align-items: center;
       font-size: 12px;
       line-height: 19px;
       color: #383b41;
@@ -122,6 +123,7 @@ export default {
         display: flex;
         font-weight: 600;
         flex-basis: 30%;
+        word-break: break-word;
         @media (max-width: 768px) {
           flex-basis: 50%;
         }

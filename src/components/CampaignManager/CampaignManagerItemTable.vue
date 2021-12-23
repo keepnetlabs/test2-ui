@@ -360,10 +360,11 @@ export default {
       this.selectedRow = row
       this.toggleShowDeleteDialog()
     },
-    handleOnDelete(resourceId) {
+    handleOnDelete(item = {}) {
       this.isDeleteDialogActionButtonDisabled = true
-      deletePhishingCampaignJob(resourceId)
+      deletePhishingCampaignJob(item.resourceId)
         .then(() => {
+          this.$refs.refTable.unSelectRow(item)
           this.callForData()
         })
         .finally(() => {

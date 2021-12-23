@@ -6,6 +6,7 @@
     filterable
     options
     is-server-side
+    is-server-side-selection
     :refName="'campaignManagerTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -33,6 +34,7 @@
     @on-table-settings-change="handleSetRenderedColumns"
     @downloadEvent="exportCampaignManagerList"
     @refreshAction="callForData"
+    @handleMultipleDelete="handleMultipleDeleteOfCampaigns"
   >
     <template v-slot:datatable-custom-column="{ scope, col }">
       <template v-if="scope.column.property === 'name'">
@@ -80,7 +82,11 @@ import {
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
-import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
+import {
+  bulkDeleteCampaignReports,
+  exportCampaignManager,
+  searchCampaignManager
+} from '@/api/phishingsimulator'
 import { getDefaultFilter } from '@/utils/functions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',
@@ -129,7 +135,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         columns: [
@@ -417,6 +423,18 @@ export default {
     },
     handleLaunch(row) {
       this.$emit(EMITS.ON_LAUNCH, row)
+    },
+    handleMultipleDeleteOfCampaigns(items, excludedItems, selectAll) {
+      const payload = {
+        items: selectAll ? [] : items.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.axiosPayload.filter
+      }
+      bulkDeleteCampaignReports(payload).then(() => {
+        this.$refs.refTable.resetSelectableParams()
+        this.callForData()
+      })
     }
   }
 }

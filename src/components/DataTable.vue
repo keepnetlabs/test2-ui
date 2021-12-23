@@ -2953,6 +2953,10 @@ export default {
     unSelectRow(row) {
       this.$refs.elTableRef.toggleRowSelection(row, false)
     },
+    changeServerSideSelectionCount(count = 0) {
+      this.serverSideSelectionCount += count
+      if (this.serverSideSelectionCount < 0) this.serverSideSelectionCount = 0
+    },
     handleEdit(selections, index) {
       this.isMultipleEdit = false
       if (index > -1) {
@@ -3004,10 +3008,17 @@ export default {
           this.$emit('deleteFunction', selections)
           break
         default:
-          this.$emit('handleMultipleDelete', this.multipleSelection)
+          if (this.isServerSideSelection) {
+            this.$emit(
+              'handleMultipleDelete',
+              selections,
+              ...Object.values(this.getServerSideSelectionParams())
+            )
+          } else {
+            this.$emit('handleMultipleDelete', this.multipleSelection)
+          }
           break
       }
-      // You should handle the Delete row action in here
     },
     handleWarning(selections) {
       this.$emit(

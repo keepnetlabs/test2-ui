@@ -213,12 +213,16 @@ export default {
     setDeleteDialogActionButtonDisabled(flag = false) {
       this.isDeleteDialogActionButtonDisabled = flag
     },
-    handleOnDelete(resourceId = '') {
+    handleOnDelete(item = {}) {
       const { CAMPAIGN_MANAGER_PARENT } = this.PERMISSIONS
       if (CAMPAIGN_MANAGER_PARENT.DELETE.hasPermission) {
         this.setDeleteDialogActionButtonDisabled(true)
-        deleteCampaignManager(resourceId)
+        deleteCampaignManager(item.resourceId)
           .then(() => {
+            this.$refs?.campaignManagerParentTable?.$refs?.refTable?.unSelectRow(item)
+            this.$refs?.campaignManagerParentTable?.$refs?.refTable?.changeServerSideSelectionCount(
+              -1
+            )
             this.$refs.campaignManagerParentTable.callForData()
           })
           .finally(() => {
