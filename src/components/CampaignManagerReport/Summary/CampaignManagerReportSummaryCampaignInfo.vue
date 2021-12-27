@@ -3,7 +3,7 @@
     <template #NotDelivered="{ props:{ key, val } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
-        <v-icon small class="ml-2" color="#F56C6C">mdi-alert-circle</v-icon>
+        <v-icon v-if="val !== 0" small class="ml-2" color="#F56C6C">mdi-alert-circle</v-icon>
       </div>
       <div class="campaign-manager-summary-card__body-item-value">{{ val }}</div>
     </template>

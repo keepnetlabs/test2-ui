@@ -20,6 +20,7 @@ export const useResend = {
       this.isResendActionButtonDisabled = true
       resendPhishingCampaignToUserList(this.resendPayload, this.id)
         .then(() => {
+          this.toggleIsShowResendDialog()
           this.$refs.refTable.callForData()
         })
         .finally(() => {

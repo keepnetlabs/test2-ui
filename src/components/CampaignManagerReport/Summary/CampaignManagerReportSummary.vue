@@ -25,7 +25,7 @@
       />
     </div>
     <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" />
-    <CampaignManagerReportSummaryLanginPage :form-data="getLandingPageTemplateData" />
+    <CampaignManagerReportSummaryLandingPage :form-data="getLandingPageTemplateData" />
   </div>
 </template>
 
@@ -38,14 +38,14 @@ import CampaignManagerReportSummaryTargetGroups from '@/components/CampaignManag
 import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
 import CampaignManagerReportSummaryScenarioStats from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioStats'
 import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
-import CampaignManagerReportSummaryLanginPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
+import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
-    CampaignManagerReportSummaryLanginPage,
+    CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryEmail,
     CampaignManagerReportSummaryScenarioStats,
     CampaignManagerReportSummaryScenarioInfo,

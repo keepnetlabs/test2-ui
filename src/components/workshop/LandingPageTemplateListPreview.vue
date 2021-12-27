@@ -637,7 +637,7 @@ export default {
   .template-preview {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 24px 0;
+    padding: 16px 0 24px 0;
     &__text {
       &--title {
         font-style: normal;
@@ -657,7 +657,7 @@ export default {
     &__icon {
       position: absolute;
       right: 8px;
-      top: 8px;
+      top: 13px;
       cursor: pointer;
     }
   }

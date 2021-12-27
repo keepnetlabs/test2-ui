@@ -94,6 +94,17 @@
                   >
                   <span v-else></span>
                 </span>
+                <span v-if="col.property === 'reason'">
+                  <v-tooltip bottom v-if="scope.row['reasonDescription']">
+                    <template #activator="{ on }">
+                      <span v-on="on">{{ scope.row.reason }}</span>
+                    </template>
+                    <span>{{ scope.row['reasonDescription'] }}</span>
+                  </v-tooltip>
+                  <span v-else>
+                    <span>{{ scope.row.reason }}</span></span
+                  >
+                </span>
               </template>
             </data-table>
           </div>
@@ -174,7 +185,7 @@ export default {
           fixed: false,
           show: true,
           width: 200,
-          type: 'text'
+          type: 'slot'
         },
         {
           property: 'analysisEnginePermalink',
@@ -214,7 +225,6 @@ export default {
         default:
           return '#00bcd4'
       }
-      return result
     },
     getResultOfAttachmentList(list) {
       let result = 'Excluded'

@@ -13,12 +13,12 @@
       />
     </FormGroup>
     <FormGroup
-      has-hint
       class-name="campaign-manager__target-groups"
       :title="labels.TargetGroups"
       :sub-title="labels.TargetGroupsSub"
     >
       <KSelect
+        v-show="false"
         v-model.trim="formData.targetGroupResourceIds"
         type="combobox"
         id="input--campaign-target-user-groups"
@@ -46,6 +46,7 @@
         </template>
       </KSelect>
       <v-btn
+        v-show="false"
         text
         class="campaign-manager__close-advanced-search"
         color="#2196F3"
@@ -57,19 +58,20 @@
     <CampaignManagerTargetGroups
       v-show="isShowAdvancedSearch"
       ref="refCampaignManagerTargetGroup"
-      class="mb-6"
+      class="mb-6 mt-2"
       :selected-target-groups="formData.targetGroupResourceIds"
       :response-of-target-groups-items="responseOfTargetGroupsItems"
       @handle-selection-change="handleTableSelectionChange"
     />
     <FormGroup
       v-if="showPhishingScenarios"
-      has-hint
+      style="margin-bottom: -2px;"
       class-name="campaign-manager__target-groups"
       :title="labels.PhishingScenarios"
       :sub-title="labels.PhishingScenariosSub"
     >
       <KSelect
+        v-show="false"
         v-model.trim="formData.phishingScenarioResourceId"
         id="input--campaign-phishing-scenarios"
         outlined
@@ -89,6 +91,7 @@
         </template>
       </KSelect>
       <v-btn
+        v-show="false"
         text
         class="campaign-manager__close-advanced-search"
         color="#2196F3"
@@ -370,7 +373,11 @@ export default {
       this.formData.scheduledDateTimeZoneId = val
     },
     'formData.scheduledDate'(val) {
-      this.isDateValid = val && val.length > 0
+      this.isDateValid = this.formData
+        ? this.formData.scheduleTypeId === '3'
+          ? val && val.length > 0
+          : true
+        : true
     },
     'formData.scheduleTypeId'(val) {
       if (val !== '3') {

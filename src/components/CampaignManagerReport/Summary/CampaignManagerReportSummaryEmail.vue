@@ -19,7 +19,13 @@
               :text="getBadgeText(formData.difficulty)"
               :outline="false"
             />
-            <Badge color="#E0E0E0" :text="getBadgeText(formData.method)" :outline="false" />
+            <Badge
+              color="#E0E0E0"
+              size="medium"
+              class-name="px-2 py-2"
+              :text="getBadgeText(formData.method)"
+              :outline="false"
+            />
           </div>
         </div>
         <div class="campaign-manager-last-step__email-template-body-header-sub">
