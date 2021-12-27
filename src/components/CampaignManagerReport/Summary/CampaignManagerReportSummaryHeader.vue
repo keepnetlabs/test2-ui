@@ -13,7 +13,9 @@
       <div class="campaign-manager-report-summary-header__title">
         {{ labels.CampaignSummary }}
       </div>
-      <div class="campaign-manager-report-summary-header__subtitle">{{ phishingScenarioName }}</div>
+      <div class="campaign-manager-report-summary-header__subtitle">
+        Summary of this phishing campaign
+      </div>
     </div>
     <div class="campaign-manager-report-summary-header__right">
       <v-btn

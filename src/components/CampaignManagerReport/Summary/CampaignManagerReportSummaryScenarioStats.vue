@@ -2,7 +2,7 @@
   <CampaignManagerSummaryCard
     class="campaign-manager-report-summary-scenario-stats ml-4"
     icon="mdi-equalizer"
-    :title="labels.ScenarioStats"
+    :title="labels.Stats"
   >
     <template #body>
       <div style="background-color: #fafafa; overflow: hidden;">

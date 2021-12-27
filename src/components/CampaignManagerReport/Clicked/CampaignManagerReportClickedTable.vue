@@ -98,7 +98,7 @@ export default {
           {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-opened',
-            icon: 'mdi-refresh',
+            icon: '$custom-resend',
             action: 'on-resend'
           },
           {

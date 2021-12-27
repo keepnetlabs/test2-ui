@@ -9,7 +9,7 @@
     />
     <CampaignManagerReportHeader
       :title="labels.UserWhoHaventOpened"
-      :subtitle="phishingScenarioName"
+      subtitle="List of users who had no interaction with the phishing email"
     />
     <CampaignManagerReportNoResponseTable
       ref="refTable"
