@@ -108,7 +108,7 @@ export default {
           {
             name: labels.Details,
             id: 'btn-details--row-actions-campaign-manager-report-opened',
-            icon: 'mdi-text-box',
+            icon: '$custom-details',
             action: 'on-detail'
           }
         ]
