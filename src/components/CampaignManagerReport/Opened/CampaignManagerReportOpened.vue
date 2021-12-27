@@ -7,7 +7,10 @@
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <CampaignManagerReportHeader :title="labels.UserWhoOpened" :subtitle="phishingScenarioName" />
+    <CampaignManagerReportHeader
+      :title="labels.UserWhoOpened"
+      subtitle="List of users who opened the email but didn’t click a link or downloaded file"
+    />
     <CampaignManagerReportOpenedItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"

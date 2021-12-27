@@ -60,6 +60,7 @@ export const labels = {
   UserAgent: 'User Agent',
   Opened: 'Opened',
   ScenarioStats: 'Scenario Stats',
+  Stats: 'Stats',
   DownloadReport: 'Download Report',
   ResendCampaign: 'Resend Campaign',
   ResetPassword: 'Reset Password',

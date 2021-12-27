@@ -16,7 +16,7 @@
             outlined
             color="#2196f3"
             @click="$emit('update:showBodyDetail', !showBodyDetail)"
-            >Details
+            >Preview
             <v-icon :color="'#2196f3'" class="ml-2" left medium>
               {{ showBodyDetail ? 'mdi-menu-up' : 'mdi-menu-down' }}
             </v-icon></v-btn

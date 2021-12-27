@@ -195,6 +195,10 @@
                 </div>
                 <div class="template-preview__text pl-2" v-if="!!templateHTML">
                   <div class="mb-2">
+                    <span class="template-preview__text--title">Template Name: </span>
+                    <span class="template-preview__text--body">{{ selectedTemplateHeader }}</span>
+                  </div>
+                  <div class="mb-2">
                     <span class="template-preview__text--title">Subject: </span>
                     <span class="template-preview__text--body">{{ templateSubject }}</span>
                   </div>
@@ -638,7 +642,7 @@ export default {
   .template-preview {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 24px 0;
+    padding: 16px 0 24px 0;
     &__text {
       &--title {
         font-style: normal;
@@ -658,7 +662,7 @@ export default {
     &__icon {
       position: absolute;
       right: 8px;
-      top: 8px;
+      top: 14px;
       cursor: pointer;
     }
   }

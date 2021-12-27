@@ -41,6 +41,10 @@
         <div v-show="!isPreviewLoading" class="template-preview">
           <div class="template-preview__text" v-if="!!templateHTML">
             <div>
+              <span class="template-preview__text--title">Template Name: </span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
+            </div>
+            <div>
               <span class="template-preview__text--title">From Name: </span>
               <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
             </div>

@@ -16,6 +16,7 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :disabled="!items.notDelivered"
             :value="5"
           >
             <template #label> Email failed to send {{ `(${items.notDelivered || 0})` }}</template>
@@ -24,6 +25,7 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :disabled="!items.openedEmail"
             :value="1"
           >
             <template #label> Only opened {{ `(${items.openedEmail || 0})` }}</template>
@@ -32,6 +34,7 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :disabled="!items.clickedEmail"
             :value="2"
           >
             <template #label> Only clicked {{ `(${items.clickedEmail || 0})` }}</template>
@@ -40,6 +43,7 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :disabled="!items.submittedEmail"
             :value="3"
           >
             <template #label> Only submitted {{ `(${items.submittedEmail || 0})` }}</template>
@@ -49,6 +53,7 @@
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
             hide-details
+            :disabled="!items.noResponseEmail"
             :value="4"
           >
             <template #label> No response {{ `(${items.noResponseEmail || 0})` }}</template>

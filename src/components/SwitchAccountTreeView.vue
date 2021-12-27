@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div class="switch-account__container">
-      <template v-show="!loading" v-for="(item, i) in items">
+    <div v-show="!loading" class="switch-account__container" :style="{ maxHeight: menuMaxHeight }">
+      <template v-for="(item, i) in items">
         <v-lazy
           transition="none"
           :key="item.name + i"
@@ -84,9 +84,49 @@ export default {
       type: Boolean
     }
   },
+  data() {
+    return {
+      menuMaxHeight: '300px'
+    }
+  },
+  watch: {
+    loading(val) {
+      if (!val) {
+        this.$nextTick(() => {
+          this.handleMenuHeight()
+        })
+      }
+    }
+  },
+  created() {
+    window.addEventListener('resize', this.handleResizeMenuHeight)
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResizeMenuHeight)
+  },
   methods: {
+    handleResizeMenuHeight() {
+      this.handleMenuHeight(true)
+    },
     handleTreeViewChange(item) {
       this.$emit('on-selected-account', { label: item.name, id: item.resourceId })
+    },
+    handleMenuHeight(resize = false) {
+      const menu = document.querySelector('.switch-account__container')
+      if (menu) {
+        const { bottom } = menu.getBoundingClientRect()
+        const { innerHeight } = window
+        const maxBottom = bottom + (300 - parseInt(this.menuMaxHeight.replace('px', '')))
+        if (maxBottom > innerHeight) {
+          const diff = Math.round(maxBottom - innerHeight) + 8
+          const newMaxHeight = 300 - diff
+          this.menuMaxHeight = `${newMaxHeight}px`
+        } else {
+          if (resize) {
+            this.menuMaxHeight = '300px'
+          }
+        }
+      }
     }
   }
 }
@@ -94,6 +134,7 @@ export default {
 <style lang="scss">
 .switch-account__container {
   max-height: 300px;
+  min-height: 150px;
   overflow-y: auto;
   padding: 8px 0;
   border-radius: 8px;

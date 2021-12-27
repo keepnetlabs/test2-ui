@@ -7,7 +7,10 @@
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <CampaignManagerReportHeader :title="labels.UserWhoClicked" :subtitle="phishingScenarioName" />
+    <CampaignManagerReportHeader
+      :title="labels.UserWhoClicked"
+      subtitle="List of users who clicked the phishing URL"
+    />
     <CampaignManagerReportClickedItemDetailDialog
       v-if="isShowDetailDialog"
       :item="selectedRow"

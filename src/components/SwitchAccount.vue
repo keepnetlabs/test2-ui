@@ -55,6 +55,7 @@
               @focus="handleSearchCompanyFocus"
             ></v-text-field>
             <switch-account-tree-view
+              ref="refSwitchAccountTreeView"
               :is-showing-menu="isMenuOpen"
               :items="orderedAccounts"
               :loading="isCompaniesLoading"
@@ -131,10 +132,6 @@ export default {
   },
   created() {
     this.isSwitchAccountDisabled = false
-    this.$store.watch((state) => {
-      if (state.dashboard.isSwitchDialogOpen) {
-      }
-    })
     this.isCompaniesLoading = true
     getMyCompanies()
       .then((response) => {
@@ -371,12 +368,6 @@ export default {
         return this.isLoadingFromStore
       },
       set() {}
-    }
-  },
-  watch: {
-    isSwitchDialogOpen(newVal, oldVal) {
-      if (newVal) {
-      }
     }
   }
 }

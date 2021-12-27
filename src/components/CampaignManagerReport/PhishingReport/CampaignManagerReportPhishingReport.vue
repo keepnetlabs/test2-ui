@@ -7,7 +7,10 @@
       @on-close="toggleIsShowResendDialog"
       @on-confirm="resendItem"
     />
-    <CampaignManagerReportHeader :title="labels.UserWhoReported" :subtitle="phishingScenarioName" />
+    <CampaignManagerReportHeader
+      :title="labels.UserWhoReported"
+      subtitle="List of users who reported the phishing email via Phishing Reporter add-in"
+    />
     <CampaignManagerReportPhishingReporterItemDetailDialog
       v-if="isShowDetailDialog"
       :status="isShowDetailDialog"

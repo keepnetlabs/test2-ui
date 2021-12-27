@@ -478,10 +478,10 @@
       </v-btn>
       <div class="new-phishing-scenario__right-col">
         <v-btn
-          @click="backStep(-1)"
+          v-if="step > 1"
           class="new-phishing-scenario__footer-btn-back mr-4"
           rounded
-          v-if="step > 1"
+          @click="backStep(-1)"
         >
           {{ labels.Back }}
         </v-btn>
@@ -693,6 +693,7 @@ export default {
     },
     backStep() {
       this.step -= 1
+      this.isSubmitDisabled = false
     },
     submit() {
       this.isSubmitDisabled = true
