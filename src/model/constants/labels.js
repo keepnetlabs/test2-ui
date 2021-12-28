@@ -9,6 +9,7 @@ export const labels = {
   ZoneID: 'Zone ID',
   ApiKey: 'API Key',
   Completed: 'Completed',
+  RequiredStar: '*Required',
   UserWhoOpened: 'User who opened the email',
   UserWhoHaventOpened: 'Users who haven’t opened the email',
   Connected: 'Connected',

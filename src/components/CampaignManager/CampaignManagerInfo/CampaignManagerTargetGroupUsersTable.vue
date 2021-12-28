@@ -161,6 +161,10 @@ export default {
     padding-top: 0;
   }
 
+  .v-card {
+    box-shadow: none !important;
+  }
+
   .card .pagination {
     padding: 12px 0;
   }

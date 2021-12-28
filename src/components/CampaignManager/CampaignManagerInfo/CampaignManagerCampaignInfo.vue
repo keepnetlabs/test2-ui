@@ -58,11 +58,13 @@
     <CampaignManagerTargetGroups
       v-show="isShowAdvancedSearch"
       ref="refCampaignManagerTargetGroup"
-      class="mb-6 mt-2"
+      class="mt-2"
       :selected-target-groups="formData.targetGroupResourceIds"
       :response-of-target-groups-items="responseOfTargetGroupsItems"
+      :is-valid="isTargetGroupsValid"
       @handle-selection-change="handleTableSelectionChange"
     />
+    <CustomError :is-valid="isTargetGroupsValid" class="mb-6 ml-2" />
     <FormGroup
       v-if="showPhishingScenarios"
       style="margin-bottom: -2px;"
@@ -109,6 +111,7 @@
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
     />
+    <CustomError :is-valid="isPhishingScenariosValid" class="mb-6 ml-2" />
     <FormGroup
       v-if="showSchedule"
       :title="labels.Schedule"
@@ -217,6 +220,7 @@ import { getScenariosList } from '@/api/scenarios'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerPhishingScenarios'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import { mapGetters } from 'vuex'
+import CustomError from '@/components/CustomError'
 const axiosPayloadOfPhishingScenarios = {
   pageNumber: 1,
   pageSize: 10,
@@ -242,6 +246,7 @@ const axiosPayloadOfPhishingScenarios = {
 export default {
   name: 'CampaignManagerCampaignInfo',
   components: {
+    CustomError,
     InputDate,
     CampaignManagerPhishingScenarios,
     CampaignManagerTargetGroups,
@@ -278,8 +283,10 @@ export default {
       initial: true,
       phishingInitial: true,
       isTargetGroupLoading: false,
+      isPhishingScenariosValid: true,
       isTargetGroupSearchLoading: false,
       isPhishingScenariosLoading: false,
+      isTargetGroupsValid: true,
       isTargetGroupFocused: false,
       isPhishingScenarioFocused: false,
       responseOfTargetGroupsItems: {},
@@ -383,6 +390,9 @@ export default {
       if (val !== '3') {
         this.isDateValid = true
       }
+    },
+    'formData.targetGroupResourceIds'(val) {
+      this.isTargetGroupsValid = !!val.length
     }
   },
   created() {

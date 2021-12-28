@@ -1,5 +1,5 @@
 <template>
-  <div class="emailTemplatePreview mb-8" style="min-height: auto !important;">
+  <div class="emailTemplatePreview" style="min-height: auto !important;">
     <AppDialog
       icon="mdi-eye"
       custom-size="1600"

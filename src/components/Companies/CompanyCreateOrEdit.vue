@@ -171,6 +171,7 @@
                     <k-file-upload
                       hint="Upload gif, png, jpg, svg. Suggested size: 180px * 60px. Max. file size 2MB"
                       id="input--company-logo"
+                      :extensions="['gif', 'jpg', 'jpeg', 'png', 'bmp', 'svg']"
                       @inputFile="onFileChanged"
                       :size="2"
                     />

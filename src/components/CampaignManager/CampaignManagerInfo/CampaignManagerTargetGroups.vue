@@ -6,7 +6,7 @@
       { 'campaign-manager-target-groups--empty': isTargetGroupEmpty }
     ]"
   >
-    <div class="campaign-manager-target-groups-card">
+    <div class="campaign-manager-target-groups-card" :style="getContainerStyle">
       <div class="campaign-manager-target-groups-card__header">
         <v-text-field
           v-model.trim="search"
@@ -64,7 +64,6 @@
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import CampaignManagerTargetGroupsTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupsTable'
 import CampaignManagerTargetGroupUsersTable from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerTargetGroupUsersTable'
-import { getMyCompanies } from '@/api/company'
 
 export default {
   name: 'CampaignManagerTargetGroups',
@@ -80,6 +79,9 @@ export default {
     },
     responseOfTargetGroupsItems: {
       type: Object
+    },
+    isValid: {
+      type: Boolean
     }
   },
   data() {
@@ -94,6 +96,9 @@ export default {
   computed: {
     getFilterButtonDisabled() {
       return !Boolean(this.filterChecked.length)
+    },
+    getContainerStyle() {
+      return !this.isValid ? { border: '1px solid #ff5252 !important' } : {}
     }
   },
   watch: {
@@ -154,7 +159,7 @@ export default {
     background: #ffffff;
     box-shadow: 0px 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
       0px 1px 5px rgba(80, 80, 80, 0.2);
-    border-radius: 20px;
+    border-radius: 12px;
     &__header {
       display: flex;
       padding: 24px 0 16px 16px;
