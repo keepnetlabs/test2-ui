@@ -386,7 +386,15 @@ export default {
           ) {
             refCampaignManagerCampaignInfo.isDateValid = false
           }
-          if (refForm.validate() && refCampaignManagerCampaignInfo.isDateValid) this.changeStep()
+          if (!refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.length) {
+            refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+          }
+          if (
+            refForm.validate() &&
+            refCampaignManagerCampaignInfo.isDateValid &&
+            refCampaignManagerCampaignInfo.isTargetGroupsValid
+          )
+            this.changeStep()
           else this.showErrorMessage(refForm)
           break
         case 2:
