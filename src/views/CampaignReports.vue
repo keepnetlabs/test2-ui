@@ -36,7 +36,6 @@ export default {
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
     handleDeleteItem(row = {}) {
-      console.log('row', row)
       this.setDeleteDialogActionButtonDisabled(true)
       deletePhishingCampaignJob(row.resourceId)
         .then(() => {
