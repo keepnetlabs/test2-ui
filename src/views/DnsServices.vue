@@ -4,11 +4,15 @@
       <v-col class="pl-0 dnsServices__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Domains" name="Domains" id="domains-content"
-              ><DomainsList v-if="tab === 'Domains'"
+            <el-tab-pane v-if="isDomainRender" label="Domains" name="Domains" id="domains-content"
+              ><DomainsList v-if="tab === 'Domains'" :PERMISSIONS="PERMISSIONS['DOMAIN']"
             /></el-tab-pane>
-            <el-tab-pane label="DNS Services" name="DNSServices" id="dns-services-content"
-              ><DnsServiceList v-if="tab === 'DNSServices'"
+            <el-tab-pane
+              v-if="isDNSRender"
+              label="DNS Services"
+              name="DNSServices"
+              id="dns-services-content"
+              ><DnsServiceList v-if="tab === 'DNSServices'" :PERMISSIONS="PERMISSIONS['DNS']"
             /></el-tab-pane>
           </el-tabs>
         </v-card>
@@ -20,6 +24,8 @@
 <script>
 import DnsServiceList from '@/components/DnsServices/DnsServicesList'
 import DomainsList from '@/components/Domains/DomainsList'
+import PERMISSIONS from '@/permissions'
+import { getPermissionsOfAllItems } from '@/utils/functions'
 export default {
   name: 'DNSandDomains',
   components: {
@@ -28,12 +34,35 @@ export default {
   },
   data() {
     return {
-      tab: 'Domains'
+      tab: 'Domains',
+      PERMISSIONS: {
+        DOMAIN: {},
+        DNS: {}
+      }
+    }
+  },
+  computed: {
+    isDomainRender() {
+      return this.PERMISSIONS?.DOMAIN?.SEARCH?.hasPermission
+    },
+    isDNSRender() {
+      return this.PERMISSIONS?.DNS?.SEARCH?.hasPermission
+    }
+  },
+  created() {
+    this.getPermissions()
+    if (!this.isDomainRender) {
+      this.tab = 'DNSServices'
     }
   },
   methods: {
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
+    },
+    getPermissions() {
+      const { DNS_PERMISSIONS, DOMAIN_PERMISSIONS } = PERMISSIONS
+      this.$set(this.PERMISSIONS, 'DNS', getPermissionsOfAllItems(DNS_PERMISSIONS))
+      this.$set(this.PERMISSIONS, 'DOMAIN', getPermissionsOfAllItems(DOMAIN_PERMISSIONS))
     }
   }
 }

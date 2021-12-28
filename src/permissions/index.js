@@ -1,3 +1,17 @@
+const ENUMS = {
+  DNS: {
+    ROOT_URL: 'phishing-simulator/dns-services'
+  },
+  DOMAIN: {
+    ROOT_URL: 'phishing-simulator/domain-records'
+  },
+  METHODS: {
+    POST: 'POST',
+    GET: 'GET',
+    PUT: 'PUT',
+    DELETE: 'DELETE'
+  }
+}
 export default {
   PLAYBOOK_PERMISSIONS: {
     MATCHING_PLAYBOOKS_SEARCH: {
@@ -157,6 +171,75 @@ export default {
       url: 'phishing-simulator/phishing-campaign/{resourceId}',
       hasPermission: false,
       method: 'PUT'
+    }
+  },
+  DNS_PERMISSIONS: {
+    CREATE: {
+      url: `${ENUMS.DNS.ROOT_URL}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: `${ENUMS.DNS.ROOT_URL}/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `${ENUMS.DNS.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `${ENUMS.DNS.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `${ENUMS.DNS.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `${ENUMS.DNS.ROOT_URL}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  DOMAIN_PERMISSIONS: {
+    CREATE: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    FORM_DETAILS: {
+      url: `${ENUMS.DOMAIN.ROOT_URL}/form-details`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   }
 }

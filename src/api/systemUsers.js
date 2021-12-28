@@ -45,3 +45,10 @@ export function getUserRoles(payload) {
 export function getSystemUsersRole() {
   return testRequest.get(`/roles`)
 }
+
+export function bulkDeleteSystemUsers(payload) {
+  return testRequest.delete('/system-users/bulk-delete', {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
