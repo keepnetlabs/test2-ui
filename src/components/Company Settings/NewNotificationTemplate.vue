@@ -61,6 +61,7 @@
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
           <email-template
+            v-if="!reRender"
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
             :edit-items-disabled="editItemsDisabled"
@@ -70,7 +71,6 @@
             :template.sync="formValues.template"
             :is-edit="!!selectedItem"
             @handleEditHtmlTemplate="formValues.template = $event"
-            v-if="!reRender"
           />
         </form-group>
       </v-form>
@@ -270,6 +270,10 @@ export default {
           }
           this.formValues[key] = value
         }
+        this.reRender = true
+        this.timeoutId = setTimeout(() => {
+          this.reRender = false
+        }, 100)
       })
     }
   },
@@ -279,6 +283,9 @@ export default {
       _this.formValues.template = _this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
     })
   },
+  beforeDestroy() {
+    clearTimeout(this.timeoutId)
+  },
   methods: {
     changeTemplateType(resId) {
       let htmlTemplate = this.categoryItems.find((item) => item.value === resId)?.template
@@ -286,7 +293,7 @@ export default {
       const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
       this.formValues.template = htmlTemplate.replaceAll(logoKey, logoUrl)
       this.reRender = true
-      setTimeout(() => {
+      this.timeoutId = setTimeout(() => {
         this.reRender = false
       }, 1)
     },
