@@ -22,6 +22,7 @@
         v-if="checkPermissions('system-users/search', 'POST')"
         id="system-users-people-data-table"
         ref="refSystemUsersList"
+        is-server-side-selection
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :total-number-of-records="totalNumberOfRecords"
@@ -57,6 +58,7 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
+        @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
         :isServerSide="true"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -74,7 +76,12 @@ import {
 } from '@/model/constants/commonConstants'
 import DataTable from '@/components/DataTable'
 import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
-import { deleteSystemUser, getSystemUsers, exportSystemUsers } from '@/api/systemUsers'
+import {
+  deleteSystemUser,
+  getSystemUsers,
+  exportSystemUsers,
+  bulkDeleteSystemUsers
+} from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
 import { checkPermission } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
@@ -211,7 +218,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: false,
+          delete: true,
           download: false
         },
         pageSizes: [5, 10, 25],
@@ -247,7 +254,7 @@ export default {
       },
       requestBody: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -268,7 +275,7 @@ export default {
       },
       defaultRequestBody: {
         pageNumber: 1,
-        pageSize: 75000,
+        pageSize: 10,
         orderBy: 'CreateTime',
         ascending: false,
         filter: {
@@ -324,6 +331,19 @@ export default {
       //generic
       this.requestBody.pageNumber = pageNumber
       this.callForListSystemUsers()
+    },
+    handleMultipleDeleteOfSystemUsers(items, excludedItems, selectAll) {
+      const payload = {
+        items: selectAll ? [] : items.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.requestBody.filter
+      }
+
+      bulkDeleteSystemUsers(payload).then(() => {
+        this.$refs.refSystemUsersList.resetSelectableParams()
+        this.callForListSystemUsers()
+      })
     },
     sortChanged({ order, prop } = {}) {
       //generic
@@ -536,6 +556,7 @@ export default {
       deleteSystemUser(row.resourceId)
         .then(() => {
           this.$refs.refSystemUsersList.unSelectRow(row)
+          this.$refs.refSystemUsersList.changeServerSideSelectionCount(-1)
           this.toggleShowDeleteSystemUserModal()
           this.callForListSystemUsers()
         })
