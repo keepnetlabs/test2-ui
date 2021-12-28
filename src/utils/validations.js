@@ -43,7 +43,6 @@ export function ipWithStars(value, message = 'Invalid IP address') {
 
 export function url(value, message = 'Invalid URL') {
   value = getValue(value)
-  //https?:\/\/(www\.)[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)
   return value
     ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
         value
@@ -102,6 +101,11 @@ export function startsWith(value = '', message = 'Cannot start with', startedVal
 export function startsWithSpace(value, message = 'Cannot start with space') {
   value = getValue(value)
   return !value.startsWith(' ') || message
+}
+
+export function noWhitespace(value, message = '') {
+  value = getValue(value)
+  return !value.includes(' ') || message
 }
 
 export function isNumber(value, message = 'Invalid File Size') {
