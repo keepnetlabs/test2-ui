@@ -15,7 +15,6 @@
       :selectedDnsService="selectedDnsService"
     />
     <data-table
-      v-if="checkPermissions('phishing-simulator/dns-services', 'POST')"
       id="dnsServiceList-data-table"
       ref="refDnsServiceListList"
       :loading="loading"
@@ -85,6 +84,11 @@ export default {
     NewEditDnsService,
     DataTable,
     DeleteServiceModal
+  },
+  props: {
+    PERMISSIONS: {
+      type: Object
+    }
   },
   data() {
     return {
@@ -161,21 +165,18 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.checkPermissions('phishing-simulator/dns-services/{resourceId}', 'PUT')
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/dns-services/{resourceId}',
-              'DELETE'
-            )
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions('phishing-simulator/dns-services/search/export', 'POST')
+          disabled: !this.PERMISSIONS.EXPORT.hasPermission
         },
         selectEvent: {
           clipboard: true,
@@ -195,7 +196,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a DNS Service',
           id: 'btn-add--DnsServiceList',
-          disabled: !this.checkPermissions('phishing-simulator/dns-services', 'POST')
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },
       modalStatus: false,
@@ -405,7 +406,8 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.checkPermissions('phishing-simulator/dns-services', 'POST')) {
+      const { SEARCH } = this.PERMISSIONS
+      if (SEARCH.hasPermission) {
         getDnsServiceList(this.bodyData)
           .then((response) => {
             const {

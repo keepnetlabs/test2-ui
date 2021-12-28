@@ -16,7 +16,6 @@
       :selectedDomain="selectedDomain"
     />
     <data-table
-      v-if="checkPermissions('phishing-simulator/domain-records', 'POST')"
       id="domains-data-table"
       ref="refDomainsListList"
       :loading="loading"
@@ -86,6 +85,11 @@ export default {
     NewEditDomain,
     DataTable,
     DeleteServiceModal
+  },
+  props: {
+    PERMISSIONS: {
+      type: Object
+    }
   },
   data() {
     return {
@@ -173,27 +177,18 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/domain-records/{resourceId}',
-              'PUT'
-            )
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/domain-records/{resourceId}',
-              'DELETE'
-            )
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions(
-            'phishing-simulator/domain-records/search/export',
-            'POST'
-          )
+          disabled: !this.PERMISSIONS.EXPORT.hasPermission
         },
         selectEvent: {
           clipboard: true,
@@ -213,7 +208,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Domain',
           id: 'btn-add--DomainList',
-          disabled: !this.checkPermissions('phishing-simulator/domain-records', 'POST')
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },
       modalStatus: false,
@@ -421,7 +416,8 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.checkPermissions('phishing-simulator/domain-records', 'POST')) {
+      const { SEARCH } = this.PERMISSIONS
+      if (SEARCH.hasPermission) {
         getDomainsList(this.bodyData)
           .then((response) => {
             const {
@@ -507,10 +503,12 @@ export default {
     }
   },
   created() {
-    getDomainData().then((response) => {
-      this.domainData = response.data.data
-      this.getDefaultFilterAndSearch()
-    })
+    const { FORM_DETAILS } = this.PERMISSIONS
+    if (FORM_DETAILS.hasPermission)
+      getDomainData().then((response) => {
+        this.domainData = response.data.data
+        this.getDefaultFilterAndSearch()
+      })
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.DOMAINS))
   }
 }
