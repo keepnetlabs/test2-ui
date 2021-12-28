@@ -355,7 +355,7 @@ export default {
         { text: 'Greater than', value: '>' },
         { text: 'Greater than or equal', value: '>=' },
         { text: 'Less than', value: '<' },
-        { text: 'Less than equal', value: '<=' }
+        { text: 'Less than or equal', value: '<=' }
       ],
       numberFilterItems: [
         { text: 'Equal', value: '=' },
@@ -363,7 +363,7 @@ export default {
         { text: 'Greater than', value: '>' },
         { text: 'Greater than or equal', value: '>=' },
         { text: 'Less than', value: '<' },
-        { text: 'Less than equal', value: '<=' }
+        { text: 'Less than or equal', value: '<=' }
       ],
       dateFilterItems: [
         { text: 'Exact date', value: '=', show: this.filterableOptions.exactDate },
