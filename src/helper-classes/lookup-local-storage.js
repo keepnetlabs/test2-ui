@@ -35,7 +35,7 @@ export default class LookupLocalStorage {
   }
 
   static checkCache(lastValidTime) {
-    const now = Date.now()
+    const now = parseInt(Date.now().toString().slice(0, -3))
     if (lastValidTime) {
       lastValidTime = parseInt(lastValidTime)
       if (lastValidTime > now) {
@@ -62,7 +62,7 @@ export default class LookupLocalStorage {
 
   static callApiByTypeListId(typeIds = []) {
     return getLookupListByTypeIdList({ typeidlist: typeIds }).then((response) => {
-      const { data: { data = [], headers = {} } = {} } = response
+      const { data: { data = [] } = {}, headers = {} } = response
       const stringTypeIds = typeIds.join(',')
       LookupLocalStorage.setCacheTime(ENUMS.LAST_VALID_TIME_MULTIPLE, headers)
       LookupLocalStorage.setTypeIdsToData(stringTypeIds, data)

@@ -751,7 +751,7 @@ export default {
     getLookupContents() {
       Promise.all([LookupLocalStorage.getMultiple([1, 2, 4, 5, 6, 7]), getLicences()]).then(
         (responses) => {
-          const res = responses[0]
+          const res = responses[0] || []
           this.countries = res.filter((item) => item.genericCodeTypeId === 1)
           this.industries = res.filter((item) => item.genericCodeTypeId === 2)
           this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)

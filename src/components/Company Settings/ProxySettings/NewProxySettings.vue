@@ -45,7 +45,15 @@
             hint="*Required"
             persistent-hint
             @input="saveDisable = true"
-            :rules="[(v) => validations.required(v)]"
+            :rules="[
+              (v) => validations.required(v),
+              (v) =>
+                validations.maxLength(
+                  v,
+                  2000,
+                  labels.getMaxLengthMessage('Proxy Address or IP', 2000)
+                )
+            ]"
           ></v-text-field>
         </form-group>
         <form-group :title="'Port'" has-hint>

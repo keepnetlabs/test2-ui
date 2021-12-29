@@ -99,8 +99,15 @@
               v-model.trim="formValues.email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.mail(v, labels.InvalidEmailAddress),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
+                (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+                (v) => validations.email(v, labels.InvalidEmailAddress),
+                (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                (v) => {
+                  if (validations.email(v)) {
+                    return validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                  }
+                  return false
+                }
               ]"
               height="40"
               @change="getDomainList"
@@ -301,8 +308,15 @@
               v-model.trim="ewsFormValues.Email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.mail(v, labels.InvalidEmailAddress),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email address', 64))
+                (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+                (v) => validations.email(v, labels.InvalidEmailAddress),
+                (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                (v) => {
+                  if (validations.email(v)) {
+                    return validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                  }
+                  return false
+                }
               ]"
               height="40"
             ></v-text-field>
@@ -460,7 +474,15 @@
               v-model.trim="googleWorkSpaceForm.email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.mail(v, 'Invalid  email address')
+                (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+                (v) => validations.email(v, labels.InvalidEmailAddress),
+                (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                (v) => {
+                  if (validations.email(v)) {
+                    return validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                  }
+                  return false
+                }
               ]"
               hint="*Required"
               persistent-hint
@@ -1020,13 +1042,19 @@ export default {
       ) {
         this.isGoogleWorkSpaceButtonDisabled = true
         this.$refs.testConnectionGoogleWorkspace.testConnection(true)
-        setTimeout(() => {
+        this.$nextTick(() => {
           let el = this.$el.querySelector('.test-connection__testing-content__item')
-          scrollToComponent(el)
-        }, 50)
+          if (el) {
+            scrollToComponent(el)
+          }
+        })
       } else {
-        const el = this.$refs.ewsMailConfiguration.$el
-        scrollToComponent(el)
+        this.$nextTick(() => {
+          const el = this?.$refs?.ewsMailConfiguration?.$el
+          if (el) {
+            scrollToComponent(el)
+          }
+        })
       }
     },
     handleGoogleWorkspaceTestConnection() {},
