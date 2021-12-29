@@ -344,7 +344,7 @@ export const COLUMNS = {
     filterableType: 'select',
     props: {
       style: {
-        maxWidth: '120px'
+        maxWidth: '100px'
       }
     }
   },
