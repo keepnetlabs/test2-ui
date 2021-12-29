@@ -1007,7 +1007,7 @@ export default {
             ) || 'Invalid URL'
           return isValid
         },
-        maxLength: (v) => Validations.maxLength(v, 1000, labels.getMaxLengthMessage('URL', 1000))
+        maxLength: (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage('URL', 2000))
       },
       apiKeyRules: {
         required: (v) => Validations.required(v),

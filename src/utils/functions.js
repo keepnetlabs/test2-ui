@@ -47,6 +47,9 @@ export function getBtnStatusColor(type) {
       return '#b83a3a'
     case 'quedued':
       return '#00bcd4'
+    case 'inqueue':
+    case 'in queue':
+      return '#1173C1'
     case 'none':
       return '#00bcd4'
     case 'running':
@@ -58,6 +61,8 @@ export function getBtnStatusColor(type) {
     case 'completed':
       return '#217124'
     case 'finished':
+      return '#217124'
+    case 'successful':
       return '#217124'
     case 'online':
       return '#217124'

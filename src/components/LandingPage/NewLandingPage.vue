@@ -332,15 +332,8 @@ import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
-import {
-  createPhishingEmailTemplate,
-  getEmailTemplatePreviewContent,
-  getLookups,
-  getMergedTextForPhishing,
-  updatePhishingEmailTemplate
-} from '@/api/phishingsimulator'
+import { getMergedTextForPhishing } from '@/api/phishingsimulator'
 import { scrollToComponent } from '@/utils/functions'
-import { getMergedTags } from '@/api/company'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'

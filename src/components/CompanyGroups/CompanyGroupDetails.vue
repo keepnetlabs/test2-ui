@@ -103,8 +103,8 @@ import {
   removeCompanyToCompanyGroup,
   searchGroupCompanies
 } from '@/api/company'
-import { getLookupListByTypeId } from '@/api/common'
 import RemoveModal from './RemoveModal'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
@@ -615,15 +615,15 @@ export default {
         this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     async getIndustries() {
-      await getLookupListByTypeId(2).then((response) => {
-        this.tableOptions.columns[1].filterableItems = response.data.data.map((x) => {
+      await LookupLocalStorage.getSingle(2).then((data) => {
+        this.tableOptions.columns[1].filterableItems = data.map((x) => {
           return { text: x.name, value: x.resourceId }
         })
       })
     },
     async getLicenceTypes() {
-      await getLookupListByTypeId(3).then((response) => {
-        this.tableOptions.columns[2].filterableItems = response.data.data.map((x) => {
+      await LookupLocalStorage.getSingle(3).then((data) => {
+        this.tableOptions.columns[2].filterableItems = data.map((x) => {
           return { text: x.name, value: x.resourceId }
         })
       })

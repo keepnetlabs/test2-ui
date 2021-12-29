@@ -143,15 +143,16 @@
               <div class="site-url__container mt-n4">
                 <span class="site-url__message site-url__message--3">Enterprise vault URL</span>
                 <v-text-field
+                  v-model.trim="formValues.enterpriseVaultUrl"
                   placeholder="Enter enterprise vault url"
                   id="input--phishing-reporter-enterprise-vault-url"
                   outlined
-                  :disabled="enterpriseVaultDisabled"
                   dense
                   class="k-textfield mt-2"
-                  v-model.trim="formValues.enterpriseVaultUrl"
                   height="40"
+                  :disabled="enterpriseVaultDisabled"
                   :readonly="!showForm"
+                  :rules="getVaultUrlRules"
                 ></v-text-field>
               </div>
             </transition>
@@ -247,6 +248,18 @@ export default {
   computed: {
     getHintValues() {
       return this.showForm && { persistentHint: true, hint: '*Required' }
+    },
+    getVaultUrlRules() {
+      const rules = []
+
+      if (this.formValues.enableEnterpriseVault && this.showForm) {
+        rules.push(
+          (v) => validations.required(v, labels.Required),
+          (v) => validations.url(v, labels.InvalidURL),
+          (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+        )
+      }
+      return rules
     }
   },
   methods: {

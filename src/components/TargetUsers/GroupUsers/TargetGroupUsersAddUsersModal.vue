@@ -8,6 +8,8 @@
     cancel-button-id="btn-cancel--target-users-group-add-users-group-modal"
     title-id="text--target-users-group-add-users-modal-title"
     icon-name="mdi-account-plus"
+    confirm-button-text="Add Selected Users"
+    :confirm-button-style="{ minWidth: '180px' }"
     @closeOverlay="closeOverlay"
     @submit="submit"
   >

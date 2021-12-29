@@ -33,11 +33,12 @@
               class="k-overlay__btn-save white--text"
               color="#2196f3"
               rounded
-              @click="submit"
+              :style="confirmButtonStyle"
               :id="confirmButtonId"
               :disabled="saveDisable"
+              @click="submit"
             >
-              {{ labels.Save }}
+              {{ confirmButtonText }}
             </v-btn>
           </slot>
         </div>
@@ -104,6 +105,13 @@ export default {
     },
     titleId: {
       type: String
+    },
+    confirmButtonText: {
+      type: String,
+      default: labels.Save
+    },
+    confirmButtonStyle: {
+      type: Object
     }
   },
   emits: ['closeOverlay', 'submit'],

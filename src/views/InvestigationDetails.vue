@@ -216,11 +216,13 @@
                       <div
                         class="investigation-details__container__stats__cards__card-left__icon"
                         :class="
-                          statsAndMenuData && statsAndMenuData.status == 'Running'
+                          statsAndMenuData && statsAndMenuData.status === 'Running'
                             ? 'bg-blue'
-                            : statsAndMenuData && statsAndMenuData.status == 'Finished'
+                            : statsAndMenuData && statsAndMenuData.status === 'Finished'
                             ? 'bg-green'
-                            : statsAndMenuData && statsAndMenuData.status == 'Expired'
+                            : statsAndMenuData &&
+                              (statsAndMenuData.status === 'Expired' ||
+                                statsAndMenuData.status === 'Canceled')
                             ? 'bg-red'
                             : 'bg-salmon'
                         "
@@ -274,7 +276,7 @@
                             : statsAndMenuData && statsAndMenuData.status == 'Finished'
                             ? 'bg-turquoise'
                             : statsAndMenuData && statsAndMenuData.status == 'Expired'
-                            ? 'bg-red'
+                            ? 'bg-macaroni'
                             : 'bg-macaroni'
                         "
                         :style="getHeaderCardBoxShadowSecond"
@@ -2051,6 +2053,8 @@ export default {
         ? (this.statusIcon = 'mdi-check')
         : this.statsAndMenuData.status == 'Expired'
         ? (this.statusIcon = 'mdi-clock')
+        : this.statsAndMenuData.status === 'Canceled'
+        ? (this.statusIcon = 'mdi-close-circle')
         : (this.statusIcon = 'mdi-close')
     },
     getStatusText(section, val) {
@@ -2614,8 +2618,8 @@ export default {
           : statsAndMenuData && statsAndMenuData.status === 'Finished'
           ? '0px 2px 5px rgba(0, 188, 212, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : statsAndMenuData && statsAndMenuData.status === 'Expired'
-          ? '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
-          : '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          ? '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
+          : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
         : ''
       return style
     },

@@ -8,7 +8,7 @@
     is-server-side
     is-server-side-selection
     :refName="'campaignManagerClickedTable'"
-    :loading="isLoading"
+    :loading="false"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
