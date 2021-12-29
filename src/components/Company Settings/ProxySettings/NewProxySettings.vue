@@ -153,7 +153,6 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeId } from '@/api/common'
 import {
   createProxySettings,
   getProxySettings,
