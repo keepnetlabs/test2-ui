@@ -568,7 +568,7 @@ export default {
         required: (v) => Validations.required(v),
         empty: (v) => Validations.startsWithSpace(v),
         maxLength: (v) =>
-          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.InvestigationName, 64))
+          Validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.InvestigationName, 300))
       },
       messageRules: {
         required: (v) => Validations.required(v),

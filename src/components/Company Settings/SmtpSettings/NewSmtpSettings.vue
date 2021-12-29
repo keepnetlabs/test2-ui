@@ -200,13 +200,18 @@
         </form-group>
         <form-group title="Custom Header">
           <v-textarea
+            v-model.trim="formValues.customHeader"
             outlined
             dense
             rows="2"
             no-resize
             placeholder="Enter Custom Header"
             height="100"
-            v-model.trim="formValues.customHeader"
+            :rules="[
+              (v) => validations.startsWithSpace(v),
+              (v) =>
+                validations.maxLength(v, 2048, labels.getMaxLengthMessage('Custom Header', 2048))
+            ]"
           ></v-textarea>
         </form-group>
         <form-group title="Test Email" sub-title="Send an email to test SMTP settings">
@@ -332,7 +337,7 @@ export default {
     },
     getPasswordRules() {
       const rules = [
-        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128))
+        (v) => validations.maxLength(v, 200, labels.getMaxLengthMessage(labels.Password, 200))
       ]
       if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
       return rules

@@ -45,7 +45,15 @@
             hint="*Required"
             persistent-hint
             @input="saveDisable = true"
-            :rules="[(v) => validations.required(v)]"
+            :rules="[
+              (v) => validations.required(v),
+              (v) =>
+                validations.maxLength(
+                  v,
+                  2000,
+                  labels.getMaxLengthMessage('Proxy Address or IP', 2000)
+                )
+            ]"
           ></v-text-field>
         </form-group>
         <form-group :title="'Port'" has-hint>
@@ -153,7 +161,6 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeId } from '@/api/common'
 import {
   createProxySettings,
   getProxySettings,

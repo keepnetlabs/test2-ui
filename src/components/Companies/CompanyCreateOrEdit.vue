@@ -573,15 +573,15 @@
 import * as validations from '@/utils/validations'
 import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-
 import { scrollToComponent } from '@/utils/functions'
-import { getLicences, getLookupListByTypeIdList } from '@/api/common'
+import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import ConfigureNewCompanyDialog from '@/components/Companies/ConfigureNewCompanyDialog'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 export default {
   name: 'CompanyCreateOrEdit',
@@ -681,10 +681,8 @@ export default {
   },
   mounted() {
     this.defaultFormData = JSON.parse(JSON.stringify(this.formData))
-
     this.getLookupContents()
     this.getCompanyGroups()
-
     if (this.edit) {
       this.stepLock = this.edit
       this.formData.logoURL = this.selectedExtend.logoUrl
@@ -751,58 +749,57 @@ export default {
       this.$emit('closeFormConfigureNewCompanyModal', this.createdCompanyResourceId)
     },
     getLookupContents() {
-      Promise.all([
-        getLookupListByTypeIdList({ typeidlist: [1, 2, 4, 5, 6, 7] }),
-        getLicences()
-      ]).then((responses) => {
-        const res = responses[0].data.data
-        this.countries = res.filter((item) => item.genericCodeTypeId === 1)
-        this.industries = res.filter((item) => item.genericCodeTypeId === 2)
-        this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
-        this.notificationTemplates = res
-          .filter((item) => item.genericCodeTypeId === 5)
-          .map((notificationTemplate, ind) => {
-            return {
-              ...notificationTemplate,
-              titleId: `item--notification-template-title-${ind}`,
-              descriptionId: `item--notification-template-description-${ind}`
-            }
-          })
-        this.trainingContents = res
-          .filter((item) => item.genericCodeTypeId === 6)
-          .map((trainingContent, ind) => {
-            return {
-              ...trainingContent,
-              titleId: `item--training-content-title-${ind}`,
-              descriptionId: `item--training-content-description-${ind}`
-            }
-          })
-        this.smtpConfigurations = res
-          .filter((item) => item.genericCodeTypeId === 7)
-          .map((smtpConfiguration, ind) => {
-            return {
-              ...smtpConfiguration,
-              titleId: `item--smtp-configuration-title-${ind}`,
-              descriptionId: `item--smtp-configuration-description-${ind}`
-            }
-          })
-        this.licenceTypes = responses[1].data.data.licenses
-        this.allModuleLicences = responses[1].data.data.allLicenseModules
-        if (this.edit) {
-          const license = this.licenceTypes.find(
-            (licence) => licence.name === this.formData.licenseTypeName
-          )
-          if (license.name !== 'Custom') {
-            this.formData.LicenseModuleResourceIdArray = license.licenseModules.reduce(
-              (acc, item) => {
-                acc.push(item.resourceId)
-                return acc
-              },
-              []
+      Promise.all([LookupLocalStorage.getMultiple([1, 2, 4, 5, 6, 7]), getLicences()]).then(
+        (responses) => {
+          const res = responses[0] || []
+          this.countries = res.filter((item) => item.genericCodeTypeId === 1)
+          this.industries = res.filter((item) => item.genericCodeTypeId === 2)
+          this.expiryPeriods = res.filter((item) => item.genericCodeTypeId === 4)
+          this.notificationTemplates = res
+            .filter((item) => item.genericCodeTypeId === 5)
+            .map((notificationTemplate, ind) => {
+              return {
+                ...notificationTemplate,
+                titleId: `item--notification-template-title-${ind}`,
+                descriptionId: `item--notification-template-description-${ind}`
+              }
+            })
+          this.trainingContents = res
+            .filter((item) => item.genericCodeTypeId === 6)
+            .map((trainingContent, ind) => {
+              return {
+                ...trainingContent,
+                titleId: `item--training-content-title-${ind}`,
+                descriptionId: `item--training-content-description-${ind}`
+              }
+            })
+          this.smtpConfigurations = res
+            .filter((item) => item.genericCodeTypeId === 7)
+            .map((smtpConfiguration, ind) => {
+              return {
+                ...smtpConfiguration,
+                titleId: `item--smtp-configuration-title-${ind}`,
+                descriptionId: `item--smtp-configuration-description-${ind}`
+              }
+            })
+          this.licenceTypes = responses[1].data.data.licenses
+          this.allModuleLicences = responses[1].data.data.allLicenseModules
+          if (this.edit) {
+            const license = this.licenceTypes.find(
+              (licence) => licence.name === this.formData.licenseTypeName
             )
+            if (license.name !== 'Custom') {
+              this.formData.LicenseModuleResourceIdArray = license.licenseModules.reduce(
+                (acc, item) => {
+                  acc.push(item.resourceId)
+                  return acc
+                },
+                []
+              )
+            }
           }
         }
-      })
+      )
     },
     getCompanyGroups() {
       searchCompanyGroups(this.companyGroupPayload).then((response) => {

@@ -187,8 +187,7 @@ import DataTable from '../DataTable'
 import DeleteEmailTemplates from './DeleteLandingPage'
 import NewLandingPage from './NewLandingPage'
 import AppDialog from '../AppDialog'
-import { deleteIntegration, disableIntegration, enableIntegration } from '@/api/integrations'
-import { getLookups } from '@/api/phishingsimulator'
+import { disableIntegration, enableIntegration } from '@/api/integrations'
 import {
   getStoreValue,
   PROPERTY_STORE,

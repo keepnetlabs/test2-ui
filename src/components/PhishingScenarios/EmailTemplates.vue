@@ -197,11 +197,9 @@ import { deleteIntegration, disableIntegration, enableIntegration } from '@/api/
 import {
   getEmailTemplatesList,
   exportEmailTemplates,
-  getEmailTemplatePreviewContent,
-  getLookups
+  getEmailTemplatePreviewContent
 } from '@/api/phishingsimulator'
 import {
-  COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
