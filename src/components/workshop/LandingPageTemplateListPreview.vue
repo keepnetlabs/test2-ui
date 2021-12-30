@@ -39,6 +39,8 @@
             persistent-hint
             @change="selectChange"
             return-object
+            :menu-props="{ offsetY: true }"
+            no-data-text="No landing page template available"
             class="selectChange"
           ></v-select>
           <span

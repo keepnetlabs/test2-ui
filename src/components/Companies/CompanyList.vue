@@ -156,10 +156,10 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
-import { getLookupListByTypeIdList } from '@/api/common'
 import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CompanyList',
   components: {
@@ -502,9 +502,9 @@ export default {
       }
     },
     getLookUpDatas() {
-      getLookupListByTypeIdList({ typeidlist: [2, 3] })
+      LookupLocalStorage.getMultiple([2, 3])
         .then((response) => {
-          const res = response.data.data
+          const res = response
           this.$set(
             this.tableOptions.columns[1],
             'filterableItems',
