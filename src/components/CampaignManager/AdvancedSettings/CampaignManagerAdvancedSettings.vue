@@ -31,6 +31,7 @@
         :error="isShowSmtpInputError"
         :error-messages="getSmtpInputErrorMessage"
         :disabled="isTestingConnection"
+        no-data-text="No SMTP setting available"
         @change="handleChangeSmtp"
         @focus="handleFocusOfSmtpSettingsInput"
         @focusout="handleFocusOutOfSmtpSettingsInput"

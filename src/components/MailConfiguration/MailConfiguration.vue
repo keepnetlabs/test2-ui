@@ -128,6 +128,7 @@
               item-text="name"
               class="pop-up-card__invite-member"
               multiple
+              no-data-text="No domain available"
               :disabled="
                 !formValues.applicationId ||
                 !formValues.applicationSecret ||

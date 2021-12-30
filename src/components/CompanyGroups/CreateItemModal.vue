@@ -54,7 +54,7 @@
               v-model.trim="selectedCompanies"
               id="input--company-group-add-members"
               :items="companies"
-              no-data-text="No companies displayed"
+              no-data-text="No company available"
               :return-object="true"
               :search-input.sync="search"
               auto-select-first

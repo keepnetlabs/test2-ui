@@ -34,6 +34,7 @@
             id="input--notification-template-type"
             :items="categoryItems"
             class="new-integration__select"
+            no-data-text="No template type available"
             dense
             :disabled="!!selectedItem || editItemsDisabled"
             outlined

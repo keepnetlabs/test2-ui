@@ -65,6 +65,7 @@
             hint="*Required"
             item-text="name"
             item-value="code"
+            no-data-text="No service provider available"
             :menu-props="{ offsetY: true }"
             persistent-hint
             @change="handleChangeServiceProvider"

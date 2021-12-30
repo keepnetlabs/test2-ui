@@ -46,6 +46,7 @@
             item-value="value"
             item-text="text"
             :rules="[(v) => validations.required(v, labels.Required)]"
+            no-data-text="No service type available"
             hint="*Required"
             persistent-hint
           ></k-select>

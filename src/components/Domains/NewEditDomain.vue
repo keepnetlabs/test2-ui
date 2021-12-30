@@ -44,6 +44,7 @@
             persistent-hint
             hint="*Required"
             item-value="value"
+            no-data-text="No DNS service available"
             item-text="text"
             :rules="[(v) => validations.required(v, labels.Required)]"
           ></k-select>
@@ -61,6 +62,7 @@
             item-value="value"
             hint="*Required"
             item-text="text"
+            no-data-text="No record type available"
             persistent-hint
             :rules="[(v) => validations.required(v, labels.Required)]"
           ></k-select>
