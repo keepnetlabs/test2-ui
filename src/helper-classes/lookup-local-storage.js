@@ -2,8 +2,8 @@ import { getLookupListByTypeId, getLookupListByTypeIdList } from '@/api/common'
 
 const ENUMS = {
   LOCAL_STORAGE_KEY: 'lookupLocalStorageStore',
-  LAST_VALID_TIME_SINGLE: 'lookupLastValidTimeSingle',
-  LAST_VALID_TIME_MULTIPLE: 'lookupLastValidTimeMultiple'
+  LAST_VALID_TIME_SINGLE_KEY: 'lookupLastValidTimeSingle',
+  LAST_VALID_TIME_MULTIPLE_KEY: 'lookupLastValidTimeMultiple'
 }
 
 export default class LookupLocalStorage {
@@ -14,18 +14,45 @@ export default class LookupLocalStorage {
 
   static getSingle(typeId) {
     const isCacheValid = LookupLocalStorage.checkCache(
-      localStorage.getItem(ENUMS.LAST_VALID_TIME_SINGLE)
+      localStorage.getItem(ENUMS.LAST_VALID_TIME_SINGLE_KEY)
     )
-    if (!isCacheValid) return LookupLocalStorage.callApiByTypeId(typeId)
-    else return Promise.resolve(LookupLocalStorage.getStore()[typeId.toString()])
+    const store = LookupLocalStorage.getStore()
+    const value = store[typeId.toString()]
+    if (!isCacheValid) {
+      LookupLocalStorage.deleteCachedItems(store)
+    }
+    if (!isCacheValid || !value) return LookupLocalStorage.callApiByTypeId(typeId)
+    else return Promise.resolve(value)
   }
 
   static getMultiple(typeIds = []) {
     const isCacheValid = LookupLocalStorage.checkCache(
-      localStorage.getItem(ENUMS.LAST_VALID_TIME_MULTIPLE)
+      localStorage.getItem(ENUMS.LAST_VALID_TIME_MULTIPLE_KEY)
     )
-    if (!isCacheValid) return LookupLocalStorage.callApiByTypeListId(typeIds)
-    else return Promise.resolve(LookupLocalStorage.getStore()[typeIds.join(',')])
+    const stringTypeIds = typeIds.join(',')
+    const store = LookupLocalStorage.getStore()
+    const value = store[stringTypeIds]
+    if (!isCacheValid) {
+      LookupLocalStorage.deleteCachedItems(store, true)
+    }
+    if (!isCacheValid || !value) {
+      return LookupLocalStorage.callApiByTypeListId(typeIds)
+    } else return Promise.resolve(value)
+  }
+
+  static deleteCachedItems(store, isMultiple = false) {
+    Object.keys(store).forEach((key) => {
+      if (isMultiple) {
+        if (keys.length > 1) {
+          delete store[key]
+        }
+      } else {
+        if (keys.length === 1) {
+          delete store[key]
+        }
+      }
+    })
+    localStorage.setItem(ENUMS.LOCAL_STORAGE_KEY, JSON.stringify(store))
   }
 
   static setTypeIdsToData(typeId, data) {
@@ -54,7 +81,7 @@ export default class LookupLocalStorage {
   static callApiByTypeId(typeId = '') {
     return getLookupListByTypeId(typeId).then((response) => {
       const { data: { data = [] } = {}, headers = {} } = response
-      LookupLocalStorage.setCacheTime(ENUMS.LAST_VALID_TIME_SINGLE, headers)
+      LookupLocalStorage.setCacheTime(ENUMS.LAST_VALID_TIME_SINGLE_KEY, headers)
       LookupLocalStorage.setTypeIdsToData(typeId, data)
       return LookupLocalStorage.getStore()[typeId]
     })
@@ -64,7 +91,7 @@ export default class LookupLocalStorage {
     return getLookupListByTypeIdList({ typeidlist: typeIds }).then((response) => {
       const { data: { data = [] } = {}, headers = {} } = response
       const stringTypeIds = typeIds.join(',')
-      LookupLocalStorage.setCacheTime(ENUMS.LAST_VALID_TIME_MULTIPLE, headers)
+      LookupLocalStorage.setCacheTime(ENUMS.LAST_VALID_TIME_MULTIPLE_KEY, headers)
       LookupLocalStorage.setTypeIdsToData(stringTypeIds, data)
       return LookupLocalStorage.getStore()[stringTypeIds]
     })

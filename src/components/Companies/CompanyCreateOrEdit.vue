@@ -404,6 +404,7 @@
                       small-chips
                       deletable-chips
                       outlined
+                      no-data-text="No company group available"
                       placeholder="Select company groups (optional)"
                     ></k-select>
                   </v-list-item-content>

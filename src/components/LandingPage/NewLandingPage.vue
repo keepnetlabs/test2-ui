@@ -62,6 +62,14 @@
                     height="100"
                     v-model.trim="formValues.description"
                     persistent-hint
+                    :rules="[
+                      (v) =>
+                        Validations.maxLength(
+                          v,
+                          300,
+                          labels.getMaxLengthMessage(labels.Description, 300)
+                        )
+                    ]"
                   ></v-textarea>
                 </form-group>
                 <form-group

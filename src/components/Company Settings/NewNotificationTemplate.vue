@@ -34,6 +34,7 @@
             id="input--notification-template-type"
             :items="categoryItems"
             class="new-integration__select"
+            no-data-text="No template type available"
             dense
             :disabled="!!selectedItem || editItemsDisabled"
             outlined
@@ -462,6 +463,7 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
+
       if (refForm.validate() && isValid) {
         this.saveDisable = true
         const payload = {
@@ -484,7 +486,6 @@ export default {
           }
         }
 
-        payload.template = document.getElementsByClassName('email-template-preview')[0].innerHTML
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
             .then(() => {

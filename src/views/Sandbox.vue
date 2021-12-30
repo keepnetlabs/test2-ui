@@ -19,6 +19,7 @@
                 :menu-props="{ offsetY: true }"
                 item-value="resourceId"
                 :disabled="incidentLoading"
+                no-data-text="No company available"
                 id="sandbox-company-select"
                 @change="changeCompanyData"
               />
@@ -35,6 +36,7 @@
                 item-value="name"
                 outlined
                 placeholder="Select integration type"
+                no-data-text="No integration available"
                 persistent-hint
                 @change="changeEngineType"
                 clearable

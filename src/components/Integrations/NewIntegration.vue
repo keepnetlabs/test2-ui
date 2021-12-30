@@ -104,6 +104,7 @@
               item-value="resourceId"
               outlined
               placeholder="Select integration type"
+              no-data-text="No integration available"
               :disabled="integrationTypeDisabled"
               @input="handleIntegrationTypeChange"
             ></k-select>
@@ -638,7 +639,7 @@
                   v-model="formValues.proxyResourceId"
                   id="input--new-integration-proxy"
                   :items="proxyItems"
-                  no-data-text="No proxy displayed"
+                  no-data-text="No proxy available"
                   :search-input.sync="search"
                   class="company-groups-select-company mt-2"
                   autocomplete="off"

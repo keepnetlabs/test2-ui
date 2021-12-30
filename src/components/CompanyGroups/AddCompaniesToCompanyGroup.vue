@@ -82,9 +82,8 @@ import {
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 import { addCompanyToCompanyGroup, searchCompanies } from '@/api/company'
-import { getLookupListByTypeIdList } from '@/api/common'
-
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'AddCompaniesToCompanyGroup',
   components: {
@@ -370,9 +369,9 @@ export default {
     },
     callForSearch() {
       this.loading = true
-      getLookupListByTypeIdList({ typeidlist: [2, 3] })
+      LookupLocalStorage.getMultiple([2, 3])
         .then((response) => {
-          const res = response.data.data
+          const res = response
           this.$set(
             this.tableOptions.columns[1],
             'filterableItems',
