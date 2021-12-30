@@ -462,6 +462,7 @@ export default {
         refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
+
       if (refForm.validate() && isValid) {
         this.saveDisable = true
         const payload = {
@@ -484,7 +485,6 @@ export default {
           }
         }
 
-        payload.template = document.getElementsByClassName('email-template-preview')[0].innerHTML
         if (this.selectedItem && this.selectedItem.resourceId) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
             .then(() => {
