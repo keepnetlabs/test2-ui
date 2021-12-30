@@ -62,6 +62,7 @@
                 </form-group>
                 <form-group title="Description" sub-title="Describe the template briefly">
                   <v-textarea
+                    v-model.trim="formValues.description"
                     id="input--new-phishing-scenarios-description"
                     outlined
                     dense
@@ -69,7 +70,14 @@
                     no-resize
                     placeholder="Description"
                     height="100"
-                    v-model.trim="formValues.description"
+                    :rules="[
+                      (v) =>
+                        Validations.maxLength(
+                          v,
+                          300,
+                          labels.getMaxLengthMessage(labels.Description, 300)
+                        )
+                    ]"
                     persistent-hint
                   ></v-textarea>
                 </form-group>

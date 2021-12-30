@@ -74,7 +74,8 @@
             v-model.trim="formValues.dnsRecord"
             :rules="[
               (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.IpAddress, 64))
+              (v) =>
+                validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.IpAddress, 2000))
             ]"
             hint="*Required"
             persistent-hint
