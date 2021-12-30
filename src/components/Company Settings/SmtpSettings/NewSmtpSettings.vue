@@ -238,7 +238,6 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
-import { getLookupListByTypeId } from '@/api/common'
 import {
   createSMTPSettings,
   getSmtpSettings,
@@ -253,6 +252,7 @@ import labels from '@/model/constants/labels'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmailDialog'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'NewSmtpSettings',
   components: {
@@ -538,8 +538,7 @@ export default {
       })
     },
     callForServiceProviderItems() {
-      getLookupListByTypeId(12).then((response) => {
-        const { data: { data = [] } = {} } = response
+      LookupLocalStorage.getSingle(12).then((data) => {
         this.serviceProviderItems = data
         if (this.isEdit && this.resourceId) {
           if (
