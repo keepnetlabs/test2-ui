@@ -2900,7 +2900,7 @@ export default {
       }
     },
     handleEdit(selectedRows = [], excludedResourceIdList = [], isSelectedAllEver = false) {
-      if (selectedRows.length > 1) {
+      if (selectedRows.length > 1 || (this.selectedCluster && !this.isShowingClusteredTable)) {
         const payload = {
           resourceIdList: []
         }
@@ -2923,6 +2923,14 @@ export default {
         }
         selectedRows.forEach((row) => {
           payload.resourceIdList.push(row.resourceId)
+          if (this.selectedCluster && !this.isShowingClusteredTable) {
+            const item = this.reportedEmailsData.find(
+              (clusteredRow) => clusteredRow.resourceId === row.resourceId
+            )
+            if (item) {
+              payload.resourceIdList.push(...item.clusteredResourceIdList)
+            }
+          }
           sets.result.add(row.result)
           sets.status.add(row.status)
           const tags = typeof row.tags === 'string' ? row.tags : row.tags.join(',') || ''
