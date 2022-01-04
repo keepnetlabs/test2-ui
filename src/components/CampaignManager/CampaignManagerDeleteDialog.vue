@@ -53,7 +53,7 @@ export default {
       multipleDeletedUserCount: 0,
       CONSTANTS: {
         icon: 'mdi-delete',
-        title: 'Delete Campaign?'
+        title: 'Delete Campaign(s)?'
       }
     }
   },
