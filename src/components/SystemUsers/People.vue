@@ -351,11 +351,16 @@ export default {
       this.toggleShowDeleteSystemUserModal()
     },
     callForMultipleDelete() {
-      bulkDeleteSystemUsers(this.multipleSystemUserPayload).then(() => {
-        this.$refs.refSystemUsersList.resetSelectableParams()
-        this.callForListSystemUsers()
-        this.toggleCreateOrEditSystemUser()
-      })
+      this.deleteButtonDisabled = true
+      bulkDeleteSystemUsers(this.multipleSystemUserPayload)
+        .then(() => {
+          this.$refs.refSystemUsersList.resetSelectableParams()
+          this.callForListSystemUsers()
+          this.toggleShowDeleteSystemUserModal()
+        })
+        .finally(() => {
+          this.deleteButtonDisabled = false
+        })
     },
     sortChanged({ order, prop } = {}) {
       //generic
