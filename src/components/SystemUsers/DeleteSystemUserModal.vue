@@ -3,10 +3,11 @@
     v-if="status"
     :status="status"
     icon="mdi-delete"
-    title="Delete System User?"
-    subtitle="The system user will deleted permanently"
+    title="Delete System User(s)?"
+    :subtitle="getSubTitle"
     title-id="text--system-user-delete-popup-title"
     subtitle-id="text--system-user-delete-popup-subtitle"
+    @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
       {{ getSystemUserName }} will be deleted and removed from system users.
@@ -45,11 +46,26 @@ export default {
     confirmButtonDisabled: {
       type: Boolean,
       default: false
+    },
+    isMultiple: {
+      type: Boolean,
+      default: false
+    },
+    userCount: {
+      type: Number,
+      default: 0
     }
   },
   computed: {
     getSystemUserName() {
-      return this.selectedRow && `${this.selectedRow['firstName']} ${this.selectedRow['lastName']}`
+      return this.selectedRow
+        ? `${this.selectedRow['firstName'] || ''} ${this.selectedRow['lastName'] || ''}`
+        : `${this.userCount} users`
+    },
+    getSubTitle() {
+      return `${
+        this.isMultiple ? `${this.userCount} user(s)` : 'The system user'
+      } will deleted permanently`
     }
   },
   methods: {
@@ -57,7 +73,11 @@ export default {
       this.$emit('closeOverlay')
     },
     handleDelete() {
-      this.$emit('handleDelete', this.selectedRow)
+      if (this.isMultiple) {
+        this.$emit('handleMultipleDelete')
+      } else {
+        this.$emit('handleDelete', this.selectedRow)
+      }
     }
   }
 }

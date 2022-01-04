@@ -6,8 +6,11 @@
         :status="isShowDeleteDialog"
         :item="selectedRow"
         :is-action-button-disabled="isDeleteDialogActionButtonDisabled"
+        :is-multiple="isMultipleDelete"
+        :user-count="multipleDeletedUserCount"
         @on-close="toggleShowDeleteDialog"
         @on-delete="handleOnDelete"
+        @on-multiple-delete="handleOnMultipleDelete"
       />
       <CampaignManagerPreview
         v-if="isShowPreviewDialog"
@@ -43,6 +46,7 @@
         @on-run="handleOnRun"
         @on-stop="handleStop"
         @on-launch="handleLaunch"
+        @on-multiple-delete="handleMultipleDelete"
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
@@ -66,6 +70,7 @@ import PERMISSIONS from '@/permissions'
 import { getDefaultAxiosPayload, getPermissionsOfAllItems } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import {
+  bulkDeleteCampaignReports,
   deleteCampaignManager,
   getCampaignManagerFormDetails,
   launchPhishingCampaign,
@@ -85,6 +90,8 @@ export default {
   },
   data() {
     return {
+      isMultipleDelete: false,
+      multipleDeletedUserCount: 0,
       axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
       axiosPayloadOfItem: getDefaultAxiosPayload({ orderBy: 'CreatedDate' }),
       selectedParentItem: null,
@@ -101,7 +108,8 @@ export default {
       PERMISSIONS: {
         CAMPAIGN_MANAGER_PARENT: {}
       },
-      formDetails: {}
+      formDetails: {},
+      multipleSystemUserPayload: {}
     }
   },
   computed: {
@@ -134,6 +142,24 @@ export default {
         'CAMPAIGN_MANAGER_PARENT',
         getPermissionsOfAllItems(CAMPAIGN_MANAGER_PARENT)
       )
+    },
+    handleMultipleDelete(payload = {}, totalUserCount = 0) {
+      this.multipleSystemUserPayload = payload
+      this.multipleDeletedUserCount = totalUserCount
+      this.isMultipleDelete = true
+      this.toggleShowDeleteDialog()
+    },
+    handleOnMultipleDelete() {
+      this.setDeleteDialogActionButtonDisabled(true)
+      bulkDeleteCampaignReports(this.multipleSystemUserPayload)
+        .then(() => {
+          this.$refs.campaignManagerParentTable.$refs.refTable.resetSelectableParams()
+          this.$refs.campaignManagerParentTable.callForData()
+          this.toggleShowDeleteDialog()
+        })
+        .finally(() => {
+          this.setDeleteDialogActionButtonDisabled(false)
+        })
     },
     handleOnRecordButtonClick(row) {
       this.selectedParentItem = row
@@ -207,6 +233,8 @@ export default {
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
         this.selectedRow = null
+        this.multipleSystemUserPayload = {}
+        this.isMultipleDelete = false
       }
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },

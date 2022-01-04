@@ -43,11 +43,11 @@ export default class LookupLocalStorage {
   static deleteCachedItems(store, isMultiple = false) {
     Object.keys(store).forEach((key) => {
       if (isMultiple) {
-        if (keys.length > 1) {
+        if (key.length > 1) {
           delete store[key]
         }
       } else {
-        if (keys.length === 1) {
+        if (key.length === 1) {
           delete store[key]
         }
       }

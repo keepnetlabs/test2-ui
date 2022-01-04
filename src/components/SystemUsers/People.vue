@@ -13,6 +13,8 @@
         :status="showDeleteSystemUserModal"
         :selected-row="selectedDeleteRow"
         :confirmButtonDisabled="deleteButtonDisabled"
+        :is-multiple="isMultipleDelete"
+        :user-count="multipleDeletedUserCount"
         @handleDelete="callForDeleteUser"
         @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
@@ -100,7 +102,10 @@ export default {
       loading: true,
       storedTableSettings: null,
       showAllRecords: false,
+      isMultipleDelete: false,
+      multipleDeletedUserCount: 0,
       totalNumberOfRecords: 0,
+      multipleSystemUserPayload: {},
       tableData: [],
       tableOptions: {
         downloadButton: {
@@ -333,16 +338,23 @@ export default {
       this.callForListSystemUsers()
     },
     handleMultipleDeleteOfSystemUsers(items, excludedItems, selectAll) {
-      const payload = {
+      this.isMultipleDelete = true
+      this.multipleDeletedUserCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : items.length
+      this.multipleSystemUserPayload = {
         items: selectAll ? [] : items.map((item) => item.resourceId),
         excludedItems,
         selectAll,
         filter: this.requestBody.filter
       }
-
-      bulkDeleteSystemUsers(payload).then(() => {
+      this.toggleShowDeleteSystemUserModal()
+    },
+    callForMultipleDelete() {
+      bulkDeleteSystemUsers(this.multipleSystemUserPayload).then(() => {
         this.$refs.refSystemUsersList.resetSelectableParams()
         this.callForListSystemUsers()
+        this.toggleCreateOrEditSystemUser()
       })
     },
     sortChanged({ order, prop } = {}) {
@@ -485,7 +497,9 @@ export default {
         this.$router.push('/')
       }
     },
-    deleteMultipleItems(selections) {},
+    deleteMultipleItems() {
+      this.callForMultipleDelete()
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       let items = []
@@ -516,24 +530,20 @@ export default {
         elem.FieldName = filter.FieldName
         requestBody.push(elem)
       }
-
       this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
       this.callForListSystemUsers()
     },
     columnFilterCleared(fieldName) {
       let items = []
       let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }
       })
-
       filterPayload = [...items]
       this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
       this.callForListSystemUsers()
-
       this.tableOptions.isColumnFilterActive =
         this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     },
@@ -544,6 +554,9 @@ export default {
     toggleShowDeleteSystemUserModal() {
       if (this.showDeleteSystemUserModal) {
         this.selectedDeleteRow = null
+        this.multipleSystemUserPayload = {}
+        this.isMultipleDelete = false
+        this.multipleDeletedUserCount = 0
       }
       this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
     },

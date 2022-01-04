@@ -431,10 +431,11 @@ export default {
         selectAll,
         filter: this.axiosPayload.filter
       }
-      bulkDeleteCampaignReports(payload).then(() => {
-        this.$refs.refTable.resetSelectableParams()
-        this.callForData()
-      })
+      this.$emit(
+        'on-multiple-delete',
+        payload,
+        selectAll ? this.serverSideProps.totalNumberOfRecords : items.length
+      )
     }
   }
 }
