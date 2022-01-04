@@ -79,7 +79,7 @@
                   />
                   <k-select
                     v-if="targetUserType === 'Groups'"
-                    type="combobox"
+                    type="autocomplete"
                     id="input--investigation-target-user-groups"
                     custom-menu-class="menu--investigation-target-user-groups"
                     :items="userGroupsItems"
@@ -101,10 +101,11 @@
                     :return-object="true"
                     prepend-inner-icon="mdi-magnify"
                     autocomplete="disabled"
+                    no-data-text="No user group available"
                   />
                   <k-select
                     v-if="targetUserType === 'SpecificUsers'"
-                    type="combobox"
+                    type="autocomplete"
                     id="input--investigation-target-user-specific-users"
                     custom-menu-class="menu--investigation-target-user-specific-users"
                     :items="specificUserItems"
@@ -121,7 +122,7 @@
                     small-chips
                     :return-object="false"
                     :rules="[targetUsers.required]"
-                    :no-data-text="'no data'"
+                    no-data-text="No specific user available"
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     prepend-inner-icon="mdi-magnify"
