@@ -126,7 +126,7 @@
           >
             <td>
               <img
-                alt="logo"
+                alt="notification-template-logo"
                 style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
                 :src="emailTemplateLogo"
               />
