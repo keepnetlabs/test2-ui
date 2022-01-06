@@ -128,7 +128,7 @@
               <img
                 alt="logo"
                 style="display: block; width: 100%; max-width: 200px; min-height: 72px;"
-                :src="$store.state.dashboard.selectedCompanyObject.logoUrl"
+                :src="emailTemplateLogo"
               />
             </td>
           </tr>
