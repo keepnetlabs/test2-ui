@@ -81,11 +81,11 @@
         </template>
       </app-dialog>
       <new-investigation
+        v-if="isWantToAddNewInvestigation"
         @closeWithRoute="handleRouteToInvestigationDetails"
         @closeAdd="isWantToAddNewInvestigation = false"
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
-        v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
         :is-ir="true"
       />

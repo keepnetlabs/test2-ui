@@ -1270,6 +1270,11 @@ export default {
     }
   },
   created() {
+    if (this.isIr) {
+      const index = this.filterListOption[0].children.findIndex((filter) => filter.id === 'to')
+      if (index === -1) return
+      this.filterListOption[0].children.splice(index, 1)
+    }
     this.callForGetTargetUsersItems(
       {
         pageNumber: 1,
@@ -1358,6 +1363,7 @@ export default {
       const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
       this.selectedMail.to &&
         toCase &&
+        !isIR &&
         this.selectedMail.to.map((item) => {
           this.filterList.push({
             option: 'to',
