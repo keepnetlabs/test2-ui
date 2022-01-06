@@ -23,8 +23,8 @@
             dense
             v-model.trim="formValues.domain"
             :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+              (v) => Validations.required(v, labels.Required),
+              (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
             ]"
             hint="*Required"
             persistent-hint
@@ -33,7 +33,7 @@
         </form-group>
         <form-group title="DNS Service" has-hint>
           <k-select
-            :items="domainData.dnsServiceProviders"
+            :items="domainData['dnsServiceProviders']"
             custom-menu-class="menu--provider"
             placeholder="Select DNS Service"
             dense
@@ -46,44 +46,44 @@
             item-value="value"
             no-data-text="No DNS service available"
             item-text="text"
-            :rules="[(v) => validations.required(v, labels.Required)]"
+            :rules="[(v) => Validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
-        <form-group title="Record Type" has-hint>
-          <k-select
-            v-model="formValues.recordTypeId"
-            :items="domainData.recordTypes"
-            custom-menu-class="menu--provider"
-            placeholder="Select Record Type"
-            dense
-            deletable-chips
-            autocomplete="off"
-            outlined
-            item-value="value"
-            hint="*Required"
-            item-text="text"
-            no-data-text="No record type available"
-            persistent-hint
-            :rules="[(v) => validations.required(v, labels.Required)]"
-          ></k-select>
-        </form-group>
-        <form-group title="DNS Record" has-hint>
-          <v-text-field
-            placeholder="Target IP or domain"
-            id="input--domain"
-            outlined
-            dense
-            v-model.trim="formValues.dnsRecord"
-            :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) =>
-                validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.IpAddress, 2000))
-            ]"
-            hint="*Required"
-            persistent-hint
-            height="40"
-          ></v-text-field>
-        </form-group>
+        <div v-if="isShowCustomizeDnsRecords">
+          <v-checkbox
+            v-model="isShowCustomizeDnsRecordsDetail"
+            :class="['k-checkbox', isShowCustomizeDnsRecordsDetail ? 'mb-4' : 'mb-7']"
+            label="Customize DNS Record"
+            color="#2196f3"
+            id="input--is-show-dns-records-detail"
+            hide-details
+          />
+          <form-group
+            v-if="isShowCustomizeDnsRecordsDetail"
+            class-name="dns-customize-records-detail"
+            has-hint
+            title="DNS Record"
+          >
+            <k-select
+              v-model.trim="formValues.recordTypeId"
+              style="max-width: 134px;"
+              :items="domainData['recordTypes']"
+              placeholder="Select option"
+              outlined
+              dense
+              :rules="[(v) => Validations.required(v, labels.Required)]"
+            />
+            <v-text-field
+              v-bind="getPropsByRecordTypeId"
+              v-model="formValues.dnsRecord"
+              class="ml-2"
+              outlined
+              dense
+              persistent-hint
+              hint="*Required"
+            ></v-text-field>
+          </form-group>
+        </div>
         <form-group title="Proxy Status">
           <div class="d-flex">
             <v-radio-group
@@ -120,7 +120,7 @@
                 :value="item.value"
                 :label="item.text"
                 class="mr-4"
-                :disabled="formValues.proxyStatusId == 2"
+                :disabled="formValues.proxyStatusId === '2'"
               />
             </v-radio-group>
           </div>
@@ -133,8 +133,8 @@
             dense
             v-model.trim="formValues.zoneId"
             :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.ZoneID, 64))
+              (v) => Validations.required(v, labels.Required),
+              (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.ZoneID, 64))
             ]"
             hint="*Required"
             persistent-hint
@@ -197,6 +197,10 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
 import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
 import TestConnection from '@/components/Domains/TestConnection'
+const ENUMS = {
+  CNAME: '1',
+  A: '2'
+}
 export default {
   name: 'NewEditDnsService',
   components: {
@@ -219,6 +223,61 @@ export default {
       required: false
     }
   },
+  data() {
+    return {
+      isShowCustomizeDnsRecordsDetail: false,
+      isValidate: null,
+      availableForRequests: [],
+      formValues: {
+        domain: null,
+        recordTypeId: null,
+        dnsServiceProviderId: null,
+        dnsRecord: null,
+        proxyStatusId: '1',
+        urlSchemaTypeId: '1',
+        zoneId: null,
+        active: true,
+        resourceId: null
+      },
+      nonEditableAvailableForRequests: [],
+      labels,
+      Validations,
+      saveButtonDisabled: false
+    }
+  },
+  computed: {
+    isShowCustomizeDnsRecords() {
+      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
+    },
+    getPropsByRecordTypeId() {
+      const props = {}
+      const { recordTypeId } = this.formValues
+      if (recordTypeId === ENUMS.A) {
+        props.placeholder = 'Enter IP Address'
+        props.rules = [
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.ip(v)
+        ]
+      } else if (recordTypeId === ENUMS.CNAME) {
+        props.placeholder = 'Server name (e.g. test.domain.com)'
+        props.rules = [
+          (v) => Validations.startsWithSpace(v),
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.url(v, labels.InvalidURL),
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+        ]
+      }
+      return props
+    }
+  },
+  watch: {
+    isShowCustomizeDnsRecordsDetail(val) {
+      if (val && !this.formValues.recordTypeId) {
+        this.formValues.recordTypeId = this.domainData['recordTypes'][1]?.value
+      }
+    }
+  },
   created() {
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
@@ -229,6 +288,11 @@ export default {
         this.formValues.zoneId = this.formValues.zoneId?.toString()
         this.formValues.urlSchemaTypeId = this.formValues.urlSchemaTypeId?.toString()
         this.formValues.dnsServiceProviderId = this.formValues.dnsServiceProviderId?.toString()
+
+        if (this.formValues.recordTypeId) {
+          this.isShowCustomizeDnsRecordsDetail = true
+        }
+
         delete this.formValues.availableForList
         if (this.$refs.refMakeAvailableFor) {
           this.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
@@ -242,34 +306,13 @@ export default {
       })
     }
   },
-  data() {
-    return {
-      isValidate: null,
-      availableForRequests: [],
-      formValues: {
-        domain: null,
-        recordTypeId: null,
-        dnsServiceProviderId: null,
-        dnsRecord: null,
-        proxyStatusId: null,
-        urlSchemaTypeId: null,
-        zoneId: null,
-        active: true,
-        resourceId: null
-      },
-      nonEditableAvailableForRequests: [],
-      labels,
-      validations: Validations,
-      saveButtonDisabled: false
-    }
-  },
   methods: {
     cancelDomain() {
       this.formValues = {
         domain: null,
         recordTypeId: null,
         dnsServiceProviderId: null,
-        dnsRecord: null,
+        dnsRecord: '',
         proxyStatusId: null,
         urlSchemaTypeId: null,
         zoneId: null,
@@ -324,8 +367,10 @@ export default {
 }
 </script>
 
-<style scoped>
-.v-input--radio-group {
-  margin-top: 0 !important;
+<style lang="scss">
+.dns-customize-records-detail {
+  .k-form-group__content {
+    display: flex;
+  }
 }
 </style>
