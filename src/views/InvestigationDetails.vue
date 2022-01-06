@@ -2604,7 +2604,7 @@ export default {
           : statsAndMenuData && statsAndMenuData.status === 'Finished'
           ? '0px 2px 5px rgba(67, 160, 71, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : (statsAndMenuData && statsAndMenuData.status === 'Expired') ||
-            (statsAndMenuData && statsAndMenuData.status === 'Expired')
+            (statsAndMenuData && statsAndMenuData.status === 'Canceled')
           ? '0px 2px 5px rgba(245, 108, 108, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
           : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
         : ''
