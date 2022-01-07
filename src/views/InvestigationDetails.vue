@@ -426,7 +426,7 @@
 
                           <v-list-item-content>
                             <v-list-item-title>
-                              Target Users
+                              Found Users
                               <span
                                 class="v-list-item-title__value"
                                 v-if="statsAndMenuData && statsAndMenuData.scannedUserCount"
