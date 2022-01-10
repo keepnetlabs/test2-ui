@@ -48,6 +48,14 @@
             <span>{{ scope.row.reason }}</span></span
           >
         </span>
+        <span v-if="col.property === PROPERTY_STORE.SCANTIME">
+          <span v-if="scope.row.scanTime">{{
+            scope.row.scanTime.includes('01/0001') || scope.row.scanTime.includes('01/0000')
+              ? 'In Progress'
+              : scope.row.scanTime
+          }}</span>
+          <span v-else></span>
+        </span>
       </template>
     </data-table>
   </div>
@@ -104,7 +112,7 @@ export default {
             show: true,
             fixed: false,
             width: 160,
-            type: 'text'
+            type: 'slot'
           },
           {
             property: PROPERTY_STORE.REASON,

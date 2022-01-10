@@ -388,7 +388,7 @@ export const columnStandards = [
   { property: 'firstName', width: '140' },
   { property: 'lastName', width: '200' },
   { property: 'email', width: '260' },
-  { property: 'department', width: '140' },
+  { property: 'department', width: '150' },
   { property: 'jobTitle', width: '140' },
   { property: 'companyName', width: '200' },
   { property: 'description', width: '340' },

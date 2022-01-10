@@ -179,7 +179,7 @@ export default {
             sortable: true,
             show: true,
             type: 'number',
-            width: 120,
+            width: 140,
             filterableType: 'number',
             emptyText: 0
           },
@@ -192,7 +192,7 @@ export default {
             sortable: true,
             show: true,
             type: 'number',
-            width: 160,
+            width: 180,
             filterableType: 'number',
             emptyText: 0
           },

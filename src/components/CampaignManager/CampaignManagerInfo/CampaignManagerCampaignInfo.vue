@@ -64,7 +64,11 @@
       :is-valid="isTargetGroupsValid"
       @handle-selection-change="handleTableSelectionChange"
     />
-    <CustomError :is-valid="isTargetGroupsValid" class="mb-6 ml-2" />
+    <CustomError
+      :is-valid="isTargetGroupsValid"
+      class="mb-6 ml-2"
+      :error-message="getTargetGroupErrorMessage"
+    />
     <FormGroup
       v-if="showPhishingScenarios"
       style="margin-bottom: -2px;"
@@ -291,6 +295,7 @@ export default {
       isPhishingScenarioFocused: false,
       responseOfTargetGroupsItems: {},
       isShowAdvancedSearch: true,
+      isShowTargetGroupUsersError: false,
       axiosPayloadOfTargetGroups: {
         pageNumber: 1,
         pageSize: 10,
@@ -354,6 +359,13 @@ export default {
     ...mapGetters({
       selectedTimeZone: 'common/getSelectedTimeZone'
     }),
+    getTargetGroupErrorMessage() {
+      return this.formData.targetGroupResourceIds.length
+        ? this.isShowTargetGroupUsersError
+          ? 'Target groups must have at least 1 user'
+          : 'Required'
+        : 'Required'
+    },
     isScheduledTimeDisabled() {
       return this.formData.scheduleTypeId !== '3'
     },

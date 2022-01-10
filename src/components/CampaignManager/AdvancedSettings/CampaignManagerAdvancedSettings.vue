@@ -160,7 +160,7 @@
     >
       {{ getDistributionText }}
     </div>
-    <FormGroup class="mt-6" :title="labels.OtherSettings" style="max-width: 600px;">
+    <FormGroup class="mt-6" :title="labels.OtherSettings" style="max-width: 640px;">
       <div>
         <v-checkbox
           v-model="formData.excludeFromReports"
@@ -173,6 +173,7 @@
           v-model="formData.sendOnlyActiveUsers"
           id="input--campaign-manager-advanced-settings-only-active-users"
           color="#2196f3"
+          :disabled="!isUsersOnline"
         >
           <template #label> Send only to active users on phishing reporter add-in</template>
         </v-checkbox>
@@ -187,15 +188,14 @@
           <span>Send this campaign to randomly selected</span>
           <v-text-field
             v-model="formData.sendRandomlyUsersCount"
-            v-mask="'###'"
+            v-mask="'#######'"
             id="input--campaign-manager-advanced-settings-other-settings-number"
             placeholder="Enter number"
             outlined
-            class="edit-name-textfield edit-select standard-height ml-2"
-            hide-details
-            style="max-width: 48px;"
+            class="edit-name-textfield edit-select standard-height ml-2 absolute-text-input-error"
+            style="max-width: 64px;"
             :disabled="getDisabledStatusOfRandomlySelected"
-            :rules="rules.number"
+            :rules="[...rules.number, userCountValidation]"
           ></v-text-field>
           <KSelect
             v-model.trim="formData.sendRandomlyUsersCalculateTypeId"
@@ -208,6 +208,7 @@
             style="max-width: 118px;"
             :items="formDetails['sendRandomlyUsersCalculateTypes']"
             :disabled="getDisabledStatusOfRandomlySelected"
+            @change="validateForm"
           />
           <span class="ml-2">of target users</span>
         </div>
@@ -251,7 +252,9 @@ export default {
       isTestingConnection: false,
       isShowCustomSmtpDialog: false,
       isShowSmtpErrorDialog: false,
+      isUsersOnline: false,
       isTestMailSend: false,
+      totalTargetUserCount: 0,
       smtpAxiosPayload: {
         pageNumber: 1,
         pageSize: 10,
@@ -299,7 +302,7 @@ export default {
       },
       rules: {
         number: [
-          (v) => validations.required(v, labels.Required),
+          (v) => validations.required(v, 'Enter a number higher than 0'),
           (v) => validations.startsWith(v, 'Cannot start with 0', 0),
           (v) => v < 1000000 || `${v} cannot exceed ${1000000}`
         ]
@@ -421,6 +424,22 @@ export default {
   methods: {
     getTestConnectionButtonStyle() {
       return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
+    },
+    validateForm() {
+      this.$refs.refForm.validate()
+    },
+    userCountValidation(v) {
+      const { sendRandomlyUsersCalculateTypeId } = this.formData
+      //that means percent
+      const val = parseInt(v)
+      if (sendRandomlyUsersCalculateTypeId === '1') {
+        return (val <= 100 && val >= 0) || 'This number cannot be higher than 100 percent'
+      } else {
+        return (
+          !(this.totalTargetUserCount < val) ||
+          'This number cannot be higher than number of total target users.'
+        )
+      }
     },
     calculateRatio(type = '') {
       let ratio = 1
@@ -628,6 +647,20 @@ export default {
   color: #383b41;
   .v-input--checkbox {
     padding-top: 2px !important;
+  }
+}
+.absolute-text-input-error {
+  .v-text-field__details {
+    position: absolute;
+    bottom: -24px;
+    overflow: visible;
+    padding-left: 0 !important;
+  }
+  .v-messages {
+    min-width: 280px;
+    &__wrapper {
+      width: 280px;
+    }
   }
 }
 </style>

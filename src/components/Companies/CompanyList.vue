@@ -240,7 +240,7 @@ export default {
           show: true,
           type: 'slot',
           filterableType: 'text',
-          width: 130,
+          width: 180,
           filterOptionProps: [
             { text: 'Contains', value: 'Contains' },
             { text: 'Equal', value: '=' },
