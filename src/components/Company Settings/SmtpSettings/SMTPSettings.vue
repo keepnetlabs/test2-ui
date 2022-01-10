@@ -167,7 +167,7 @@ export default {
             fixed: false,
             type: 'text',
             filterableType: 'text',
-            width: 150
+            width: 160
           },
           {
             property: PROPERTY_STORE.COMPANYNAME,

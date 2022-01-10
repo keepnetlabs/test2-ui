@@ -158,7 +158,7 @@ export default {
           },
           {
             property: PROPERTY_STORE.STATUS,
-            align: 'left',
+            align: 'center',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             fixed: false,

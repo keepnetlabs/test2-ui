@@ -192,7 +192,7 @@ export default {
             show: true,
             type: 'popup',
             minWidth: '80',
-            width: 160,
+            width: 170,
             emptyText: 'No Match'
           },
           {

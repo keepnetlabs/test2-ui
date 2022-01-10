@@ -1380,7 +1380,7 @@ export default {
         sortable: true,
         show: true,
         type: 'attachment',
-        minWidth: 120
+        minWidth: 150
       },
       {
         property: 'scanType',
@@ -1446,7 +1446,7 @@ export default {
         show: true,
         type: 'detected',
         filterableType: 'select',
-        minWidth: 150,
+        minWidth: 170,
         filterableItems: ['Online', 'Offline']
       },
       {
@@ -1479,7 +1479,7 @@ export default {
         fixed: false,
         sortable: true,
         show: true,
-        minWidth: 150,
+        minWidth: 170,
         type: 'badge',
         filterableType: 'select',
         filterableItems: ['Completed', 'Interrupted', 'Running'],
@@ -1505,7 +1505,7 @@ export default {
         fixed: false,
         sortable: false,
         show: true,
-        minWidth: 120,
+        minWidth: 140,
         type: 'slot'
       }
     ],
@@ -3322,7 +3322,6 @@ export default {
       margin-left: 0 !important;
     }
     .card .table-wrapper .el-table th > .cell {
-      margin-left: 8px;
     }
   }
 }

@@ -196,7 +196,7 @@ export default {
             sortable: true,
             show: true,
             type: 'slot',
-            width: 150,
+            width: 180,
             isEditable: false,
             props: {
               style: {
@@ -271,7 +271,7 @@ export default {
             type: 'text',
             isEditable: true,
             editComponent: 'textfield',
-            width: 140,
+            width: 150,
             filterableType: 'text'
             //minWidth: 80
           }
