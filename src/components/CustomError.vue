@@ -12,7 +12,7 @@
         <div class="v-messages theme--light error--text" role="alert">
           <div class="v-messages__wrapper">
             <div class="v-messages__message" style="padding-left: 10px;">
-              {{ labels.Required }}
+              {{ errorMessage }}
             </div>
           </div>
         </div>
@@ -28,6 +28,10 @@ export default {
   props: {
     isValid: {
       type: Boolean
+    },
+    errorMessage: {
+      type: String,
+      default: labels.Required
     }
   },
   data() {

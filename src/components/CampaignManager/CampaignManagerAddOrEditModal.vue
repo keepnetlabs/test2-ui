@@ -124,6 +124,7 @@ import {
   updateCampaignManager
 } from '@/api/phishingsimulator'
 import { searchTargetGroups } from '@/api/targetUsers'
+import { getPhishingReportSummary } from '@/api/phishingReporter'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -300,6 +301,71 @@ export default {
         this.selectedRowFormData = data
       })
     },
+    callForActiveOutlookUsers() {
+      const today = new Date()
+      const day = today.getUTCDate()
+      const month = today.getUTCMonth() + 1
+      const year = today.getUTCFullYear()
+      const hours = today.getUTCHours()
+      const minutes = today.getUTCMinutes()
+      const seconds = today.getUTCSeconds()
+      const fourMinutesBefore = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate(),
+        today.getHours(),
+        today.getMinutes() - 4,
+        today.getSeconds()
+      )
+      const fourMinutesBeforeMonth = fourMinutesBefore.getUTCMonth() + 1
+      const fourMinutesBeforeDay = fourMinutesBefore.getUTCDate()
+      const fourMinutesBeforeHours = fourMinutesBefore.getUTCHours()
+      const fourMinutesBeforeMinutes = fourMinutesBefore.getUTCMinutes()
+      const fourMinutesBeforeSeconds = fourMinutesBefore.getUTCSeconds()
+      const dateObj = {
+        endDate: `${year}-${this.getDateValue(month)}-${this.getDateValue(day)}-${this.getDateValue(
+          hours
+        )}-${this.getDateValue(minutes)}-${this.getDateValue(seconds)}`,
+        startDate: `${fourMinutesBefore.getUTCFullYear()}-${this.getDateValue(
+          fourMinutesBeforeMonth
+        )}-${this.getDateValue(fourMinutesBeforeDay)}-${this.getDateValue(
+          fourMinutesBeforeHours
+        )}-${this.getDateValue(fourMinutesBeforeMinutes)}-${this.getDateValue(
+          fourMinutesBeforeSeconds
+        )}`
+      }
+      return getPhishingReportSummary({
+        startDate: dateObj.startDate,
+        endDate: dateObj.endDate
+      })
+    },
+    callForSelectedTargetGroups(ids) {
+      return searchTargetGroups({
+        pageNumber: 1,
+        pageSize: 2000000,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [{ FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }],
+              FilterGroups: []
+            }
+          ]
+        }
+      })
+    },
+    getDateValue(value) {
+      value = typeof value == 'string' ? value : value.toString()
+      return value.length === 1 ? `0${value}` : `${value}`
+    },
     closeOverlay() {
       this.$emit(EMITS.ON_CLOSE)
     },
@@ -339,35 +405,35 @@ export default {
           this.step++
         }
       } else if (this.step === 1 && flag === 1) {
+        this.setActionButtonDisability(true)
+        this.callForActiveOutlookUsers().then((response) => {
+          const { data } = response.data
+          refCampaignManagerAdvancedSettings.isUsersOnline = !!data['onlineUsersCount']
+        })
         const ids = refCampaignManagerCampaignInfo.formData.targetGroupResourceIds.map(
           (item) => item.value
         )
-        searchTargetGroups({
-          pageNumber: 1,
-          pageSize: 2000000,
-          orderBy: 'CreateTime',
-          ascending: false,
-          filter: {
-            Condition: 'AND',
-            FilterGroups: [
-              {
-                Condition: 'AND',
-                FilterItems: [],
-                FilterGroups: []
-              },
-              {
-                Condition: 'OR',
-                FilterItems: [
-                  { FieldName: 'resourceId', Value: ids.join(','), Operator: 'Include' }
-                ],
-                FilterGroups: []
-              }
-            ]
-          }
-        }).then((response) => {
-          refCampaignManagerCampaignInfo.formData.selectedTargetGroups = response.data.data.results
-        })
-        this.step += flag
+        this.callForSelectedTargetGroups(ids)
+          .then((response) => {
+            const { results } = response?.data?.data || []
+            //User must have user count greater than 0
+            const totalUserCount = results.reduce((acc, item) => {
+              acc += item.userCount
+              return acc
+            }, 0)
+            refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
+            if (totalUserCount) {
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = true
+              this.step += flag
+            } else {
+              refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
+              refCampaignManagerCampaignInfo.isTargetGroupsValid = false
+              this.showErrorMessage(refCampaignManagerCampaignInfo.$refs.refForm)
+            }
+            refCampaignManagerCampaignInfo.formData.selectedTargetGroups = results
+          })
+          .finally(this.setActionButtonDisability)
       } else {
         this.step += flag
       }
