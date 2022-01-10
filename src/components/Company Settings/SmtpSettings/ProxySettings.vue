@@ -208,7 +208,7 @@ export default {
               { text: 'Yes', value: 'Yes' },
               { text: 'No', value: 'No' }
             ],
-            width: 150
+            width: 160
           },
           {
             property: 'createTime',

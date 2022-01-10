@@ -248,7 +248,7 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 130
+        width: 150
         //minWidth: 35
       },
       {
@@ -261,7 +261,7 @@ export default {
         show: true,
         type: 'progress',
         progressType: 'stats',
-        width: 120
+        width: 130
         // minWidth: 60
       }
     ],

@@ -137,7 +137,7 @@ export default {
           },
           {
             property: 'totalRequest',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Requests',
             sortable: true,
@@ -148,7 +148,7 @@ export default {
           },
           {
             property: 'harmfulRequest',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Found Harmful',
             sortable: true,
@@ -159,7 +159,7 @@ export default {
           },
           {
             property: 'undetectedRequest',
-            align: 'left',
+            align: 'right',
             editable: false,
             label: 'Undetected',
             fixed: false,

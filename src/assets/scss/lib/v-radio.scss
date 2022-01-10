@@ -13,7 +13,7 @@
     color: #2196F3;
     caret-color:#2196F3;
   }
-  &.v-item--active{
+  &.v-item--active:not(.v-radio--is-disabled){
     .v-label{
       font-size: 14px;
       font-weight: 600;
@@ -21,6 +21,6 @@
       letter-spacing: normal;
       color: #2196f3;
     }
-    }
+  }
 
 }

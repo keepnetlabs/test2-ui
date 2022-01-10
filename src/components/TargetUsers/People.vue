@@ -383,7 +383,7 @@ export default {
           sortable: true,
           show: true,
           type: 'text',
-          width: 150,
+          width: 160,
           filterableType: 'text',
           dbName: 'Department'
         }

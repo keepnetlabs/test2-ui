@@ -81,11 +81,11 @@
         </template>
       </app-dialog>
       <new-investigation
+        v-if="isWantToAddNewInvestigation"
         @closeWithRoute="handleRouteToInvestigationDetails"
         @closeAdd="isWantToAddNewInvestigation = false"
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
-        v-if="isWantToAddNewInvestigation"
         :selectedMail="selectedEmail"
         :is-ir="true"
       />
@@ -1261,7 +1261,7 @@ export default {
           show: true,
           isEditable: false,
           type: 'attachment',
-          width: 120
+          width: 160
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
@@ -3743,12 +3743,6 @@ export default {
   .k-table__wrapper {
     padding-bottom: 0;
     overflow-x: auto;
-    .card .table-wrapper .el-table th > .cell {
-      margin-left: 8px;
-    }
-    .card .table-wrapper .el-table td > .cell {
-      padding-left: 12px !important;
-    }
   }
   .v-card {
     border-radius: 12px;

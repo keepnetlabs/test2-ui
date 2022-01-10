@@ -210,9 +210,6 @@ export default {
 <style lang="scss">
 .matching-modal.version-history {
   .k-table__wrapper {
-    .card .table-wrapper .el-table td > .cell {
-      padding-left: 34.5px !important;
-    }
     .card .table-wrapper .el-table th > .cell.actions-label {
       margin-left: 0 !important;
     }

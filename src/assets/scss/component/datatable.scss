@@ -199,7 +199,7 @@
         }
 
         .el-table td > .cell {
-          color: #212121;
+          color: #383B41;
           font-family: "Open Sans", sans-serif !important;
           font-size: 12px;
           white-space: pre;
@@ -274,14 +274,25 @@
           }
         }
 
+
+        .el-table th.is-center:not(.el-table-column--selection).is-sortable > .cell {
+          padding-left:38px !important;
+        }
+        .el-table td.is-right:not(.actions-container) > .cell {
+          padding-right:58px !important;
+        }
+        .el-table td.is-right.actions-container--first > .cell{
+          padding-right:12px !important;
+        }
+
         .el-table th > .cell {
           font-family: "Open Sans", sans-serif !important;
           font-size: 12px;
           font-weight: 600;
           line-height: 1.3rem;
-          color: #000000;
+          color: #383B41;
           //min-height: 21px;
-          padding-left: 8px !important;
+          padding-left: 12px !important;
 
           .el-checkbox__input.is-indeterminate .el-checkbox__inner {
             background-color: #2196f3;
