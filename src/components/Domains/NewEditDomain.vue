@@ -49,8 +49,9 @@
             :rules="[(v) => Validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
-        <div v-if="isShowCustomizeDnsRecords">
+        <div v-if="true">
           <v-checkbox
+            v-if="false"
             v-model="isShowCustomizeDnsRecordsDetail"
             :class="['k-checkbox', isShowCustomizeDnsRecordsDetail ? 'mb-4' : 'mb-7']"
             label="Customize DNS Record"
@@ -225,12 +226,12 @@ export default {
   },
   data() {
     return {
-      isShowCustomizeDnsRecordsDetail: false,
+      isShowCustomizeDnsRecordsDetail: true,
       isValidate: null,
       availableForRequests: [],
       formValues: {
         domain: null,
-        recordTypeId: null,
+        recordTypeId: '2',
         dnsServiceProviderId: null,
         dnsRecord: null,
         proxyStatusId: '1',
