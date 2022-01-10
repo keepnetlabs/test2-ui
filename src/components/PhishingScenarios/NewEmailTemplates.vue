@@ -710,8 +710,8 @@ export default {
 
 <style lang="scss">
 .email-template {
-  .email-template__container {
-    padding: 24px !important;
+  .email-template__container { 
+
   }
 }
 .new-email-template__footer-btn-cancel {
