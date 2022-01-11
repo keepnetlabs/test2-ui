@@ -64,6 +64,11 @@
           >
             Once there choose the layout, use blocks, text, images and other features you need to
             design a responsive page, really fast
+            <img
+              style="margin-bottom: -10px;"
+              src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPG1hc2sgaWQ9Im1hc2swXzEwNzZfMTA2MjYiIHN0eWxlPSJtYXNrLXR5cGU6YWxwaGEiIG1hc2tVbml0cz0idXNlclNwYWNlT25Vc2UiIHg9IjciIHk9IjgiIHdpZHRoPSIxNyIgaGVpZ2h0PSIxNyI+CjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNOC41MTIxIDguNDU3NjNMOC41MDk4OCAxMS4xMTg2TDE5LjA0OTggMTEuMTE5Mkw3LjU1NjY5IDIyLjYxMjRMOS40NDIzMSAyNC40OThMMjAuOTM1NSAxMy4wMDQ4TDIwLjkzNjEgMjMuNTQ0OEwyMy41OTcgMjMuNTQyNkwyMy42MDk2IDguNDQ1MDRMOC41MTIxIDguNDU3NjNaIiBmaWxsPSJ3aGl0ZSIvPgo8L21hc2s+CjxnIG1hc2s9InVybCgjbWFzazBfMTA3Nl8xMDYyNikiPgo8cmVjdCB4PSItMTcuMzM1OSIgeT0iLTE3LjMzMyIgd2lkdGg9IjY2Ljc3OCIgaGVpZ2h0PSI2Ni42NjY3IiBmaWxsPSIjNzU3NTc1Ii8+CjxtYXNrIGlkPSJtYXNrMV8xMDc2XzEwNjI2IiBzdHlsZT0ibWFzay10eXBlOmFscGhhIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSItMTgiIHk9Ii0xOCIgd2lkdGg9IjY4IiBoZWlnaHQ9IjY4Ij4KPHJlY3QgeD0iLTE3LjMzNTkiIHk9Ii0xNy4zMzMiIHdpZHRoPSI2Ni43NzgiIGhlaWdodD0iNjYuNjY2NyIgZmlsbD0id2hpdGUiLz4KPC9tYXNrPgo8ZyBtYXNrPSJ1cmwoI21hc2sxXzEwNzZfMTA2MjYpIj4KPC9nPgo8L2c+Cjwvc3ZnPgo="
+              alt="show-button"
+            />
           </p>
           <p
             style="
