@@ -99,7 +99,11 @@ export default {
       this.isInitialResize = false
     },
     getValidElementHeight(style, height) {
-      if (!style.height.includes('%') && !style.height.includes('vh')) {
+      if (
+        !style.height.includes('auto') &&
+        !style.height.includes('%') &&
+        !style.height.includes('vh')
+      ) {
         return Number(style.height.replace('px', ''))
       }
 
@@ -119,6 +123,10 @@ export default {
             for (const element of elements) {
               let tempHeight = 0
               if (element) {
+                const { minHeight } = element?.style
+                if (minHeight) {
+                  element.style.minHeight = minHeight.replace('vh', '') + '%'
+                }
                 let elementStyle = getComputedStyle(element)
                 if (elementStyle) {
                   tempHeight = this.getValidElementHeight(elementStyle, height)

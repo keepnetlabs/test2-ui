@@ -441,7 +441,7 @@ export default {
         extensionTypeId: null,
         parameterTypeId: null,
         tags: [],
-        landingPages: [{ content: null }]
+        landingPages: [{ name: 'landing-page', content: null }]
       },
       commonRules: {
         hint: '*Required',
