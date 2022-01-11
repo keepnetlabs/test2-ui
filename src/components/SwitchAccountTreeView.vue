@@ -32,6 +32,8 @@
                   display: flex;
                   align-items: center;
                   cursor: pointer;
+                  object-fit: contain;
+                  transform: scale(1.2);
                 "
                 @click="handleTreeViewChange(item)"
               />
