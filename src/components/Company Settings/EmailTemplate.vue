@@ -19,7 +19,7 @@
         />
       </template>
     </app-modal>
-    <div class="email-template__item" v-if="!onlyGrapes">
+    <div class="email-template__item mx-4 pt-4" v-if="!onlyGrapes">
       <label>Subject</label>
       <v-text-field
         id="input--notification-template-subject"
@@ -38,7 +38,7 @@
         @input="$emit('update:subject', $event)"
       ></v-text-field>
     </div>
-    <div v-if="!onlyGrapes" class="email-template__item">
+    <div v-if="!onlyGrapes" class="email-template__item mx-4">
       <label>From Name</label>
       <v-text-field
         id="input--notification-template-sender-name"
@@ -57,7 +57,7 @@
         @input="$emit('update:fromName', $event)"
       ></v-text-field>
     </div>
-    <div v-if="!onlyGrapes" class="email-template__item">
+    <div v-if="!onlyGrapes" class="email-template__item mx-4">
       <label>From Email</label>
       <InputEmail
         id="input--notification-template-from-email"
@@ -66,7 +66,7 @@
         @input="$emit('update:fromAddress', $event)"
       />
     </div>
-    <div class="d-flex email-template__item" v-if="isPhishingTemplate && !onlyGrapes">
+    <div class="d-flex email-template__item mx-4" v-if="isPhishingTemplate && !onlyGrapes">
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
@@ -175,7 +175,7 @@ export default {
     }
   },
   mounted() {
-    this.defaultTemplate = this.$refs.refPreview.$el.outerHTML || this.template
+    this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
   },
   methods: {
     onFileChanged(file) {
