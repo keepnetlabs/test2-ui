@@ -7,6 +7,7 @@
     :style="{ height }"
     width="100%"
     :height="height"
+    sandbox="allow-same-origin"
     @load="resizeIframe"
   />
 </template>
