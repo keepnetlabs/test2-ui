@@ -366,18 +366,38 @@ export default {
       return `Last seen: ${diagnosticToolLastSeen}`
     },
     getStatusTooltipMessage(row = {}) {
-      const { operatingSystemEdition, addInDisabledReason, addInDisabledLastDisabledTime } = row
+      const {
+        osVersion,
+        addInDisabledReason,
+        addInDisabledLastDisabledTime,
+        hklmLoadBehaviorValue,
+        bootTime,
+        outlookArchitecture,
+        outlookVersion
+      } = row
       let text = ''
-      const textOS = `OS version: ${operatingSystemEdition ? operatingSystemEdition : 'Unknown'}`
+      const textOS = `OS version: ${osVersion ? osVersion : 'Unknown'}`
+      const textHKLM = `HKLM: ${hklmLoadBehaviorValue || 'N/A'}\n`
+      const textBootTime = `Boot time: ${bootTime ? `${bootTime} ms` : 'N/A'}\n`
+      const textOutlookVersion = `Outlook version: ${outlookVersion || 'N/A'}\n`
+      const textOutlookArchitecture = `Outlook architecture: ${outlookArchitecture || 'N/A'}\n`
 
       switch (row[PROPERTY_STORE.ADDINSTATUSNAME]) {
         case 'Online':
           text = 'Add-in is installed and active\n'
+          text += textHKLM
+          text += textBootTime
+          text += textOutlookVersion
+          text += textOutlookArchitecture
           text += textOS
           break
         case 'Offline':
           text = 'Add-in is installed\n'
           text += 'User is offline\n'
+          text += textHKLM
+          text += textBootTime
+          text += textOutlookVersion
+          text += textOutlookArchitecture
           text += textOS
           break
         case 'Disabled':
@@ -386,6 +406,10 @@ export default {
           text += `Disabled time: ${
             addInDisabledLastDisabledTime ? addInDisabledLastDisabledTime : 'Unknown'
           }\n`
+          text += textHKLM
+          text += textBootTime
+          text += textOutlookVersion
+          text += textOutlookArchitecture
           text += textOS
           break
         case 'NotInstalled':
