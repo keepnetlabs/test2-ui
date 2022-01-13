@@ -140,6 +140,9 @@
           border-bottom: unset !important;
           margin: 0 auto;
           width: 100% !important;
+          &--enable-row-transition .el-table__body td.el-table__cell{
+            transition:none !important;
+          }
         }
 
         .el-table::before {

@@ -40,11 +40,8 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <KEmailPreview
-            v-if="!!formData.emailTemplate"
-            :html="formData.emailTemplate"
-            is-extra-height
-          />
+          <DatatableLoading v-if="isLoading" :loading="isLoading" />
+          <KEmailPreview v-else :html="emailTemplate" is-extra-height />
         </div>
       </div>
     </template>
@@ -56,9 +53,13 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import labels from '@/model/constants/labels'
 import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { useLoading } from '@/hooks/useLoading'
+import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerReportSummaryEmail',
-  components: { KEmailPreview, Badge, CampaignManagerSummaryCard },
+  components: { DatatableLoading, KEmailPreview, Badge, CampaignManagerSummaryCard },
+  mixins: [useLoading],
   props: {
     formData: {
       type: Object
@@ -67,7 +68,8 @@ export default {
   data() {
     return {
       isShowEmailTemplate: false,
-      labels
+      labels,
+      emailTemplate: null
     }
   },
   computed: {
@@ -75,7 +77,25 @@ export default {
       return Object.keys(this.formData).length
     }
   },
+  watch: {
+    isShowEmailTemplate(val = false) {
+      if (val && !this.emailTemplate) {
+        this.callForTemplate()
+      }
+    }
+  },
   methods: {
+    callForTemplate() {
+      this.setLoading(true)
+      getEmailTemplatePreviewContent(this.formData.resourceId)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.emailTemplate = data.template
+        })
+        .finally(this.setLoading)
+    },
     getBadgeColor(text = '') {
       switch (text.toLowerCase()) {
         case 'easy':
