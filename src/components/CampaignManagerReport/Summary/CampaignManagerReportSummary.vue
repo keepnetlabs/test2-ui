@@ -206,43 +206,43 @@ export default {
       return campaignInfo['totalTargetUserCount'] || 0
     },
     getEmailTemplateData() {
-      const { emailTemplate = {} } = this.campaignSummary
+      const { emailTemplateInfo = {} } = this.campaignSummary
       const {
         name,
         difficultyResourceId,
         categoryResourceId,
         fromName,
         fromAddress,
-        template
-      } = emailTemplate
+        resourceId
+      } = emailTemplateInfo
 
-      return Object.keys(emailTemplate).length
+      return Object.keys(emailTemplateInfo).length
         ? {
             difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             method: methods.find((item) => item.value === categoryResourceId)?.text,
             fromName,
             fromAddress,
-            emailTemplate: template,
-            name
+            name,
+            resourceId
           }
         : {}
     },
     getLandingPageTemplateData() {
-      const { landingPageTemplate = {} } = this.campaignSummary
+      const { landingPageTemplateInfo = {} } = this.campaignSummary
       const {
-        urlTemplate,
         name,
-        landingPages,
+        urlTemplate,
         difficultyTypeId = 1,
-        methodTypeId = 1
-      } = landingPageTemplate
-      return Object.keys(landingPageTemplate).length
+        methodTypeId = 1,
+        resourceId
+      } = landingPageTemplateInfo
+      return Object.keys(landingPageTemplateInfo).length
         ? {
             name,
             urlTemplate,
-            landingPageTemplate: landingPages[0].content,
             method: methods[methodTypeId - 1].text,
-            difficulty: difficulties[difficultyTypeId - 1].text
+            difficulty: difficulties[difficultyTypeId - 1].text,
+            resourceId
           }
         : {}
     }

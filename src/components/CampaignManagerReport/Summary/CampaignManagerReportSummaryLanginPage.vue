@@ -36,12 +36,8 @@
         class="campaign-manager-last-step__email-template-body-preview-container"
       >
         <div class="campaign-manager-last-step__email-template-body-preview">
-          <KEmailPreview
-            v-if="!!formData.landingPageTemplate"
-            ref="refPreview"
-            :html="formData.landingPageTemplate"
-            is-extra-height
-          />
+          <DatatableLoading v-if="isLoading" :loading="isLoading" />
+          <KEmailPreview v-else ref="refPreview" :html="emailTemplate" is-extra-height />
         </div>
       </div>
     </template>
@@ -53,9 +49,13 @@ import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/Cam
 import Badge from '@/components/Badge'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
+import { useLoading } from '@/hooks/useLoading'
+import { getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'CampaignManagerReportSummaryLanginPage',
-  components: { KEmailPreview, Badge, CampaignManagerSummaryCard },
+  components: { DatatableLoading, KEmailPreview, Badge, CampaignManagerSummaryCard },
+  mixins: [useLoading],
   props: {
     formData: {
       type: Object
@@ -64,7 +64,8 @@ export default {
   data() {
     return {
       labels,
-      isShowLandingPageTemplate: false
+      isShowLandingPageTemplate: false,
+      emailTemplate: null
     }
   },
   computed: {
@@ -72,7 +73,25 @@ export default {
       return Object.keys(this.formData).length
     }
   },
+  watch: {
+    isShowLandingPageTemplate(val = false) {
+      if (val && !this.emailTemplate) {
+        this.callForTemplate()
+      }
+    }
+  },
   methods: {
+    callForTemplate() {
+      this.setLoading(true)
+      getLandingPageTemplatePreviewContent(this.formData.resourceId)
+        .then((response) => {
+          const {
+            data: { data }
+          } = response
+          this.emailTemplate = data.landingPages[0]?.content
+        })
+        .finally(this.setLoading)
+    },
     getBadgeColor(text = '') {
       switch (text.toLowerCase()) {
         case 'easy':
