@@ -7,6 +7,13 @@
       @handleCloseDialog="toggleWhiteLabelingDialog"
       @handleConfirm="handleResetWhiteLabeling"
     />
+    <WhiteLabelingDomainDialog
+      v-if="isShowDomainDialog"
+      :status="isShowDomainDialog"
+      :is-action-button-disabled="getActionButtonDisabled"
+      @on-close="toggleWhiteLabelingDomainDialog"
+      @on-confirm="submit"
+    />
     <DatatableLoading class="mt-5" :loading="isWhiteLabelLoading" v-if="isWhiteLabelLoading" />
     <v-form v-show="!isWhiteLabelLoading" ref="refForm" lazy-validation>
       <form-group has-hint :title="labels.BrandName" :sub-title="labels.BrandNameSubTitle">
@@ -298,9 +305,11 @@ import * as validations from '@/utils/validations'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import ResetToDefaultWhiteLabelingDialog from '@/components/Company Settings/ResetToDefaultWhiteLabelingDialog'
 import { getWhiteLabel } from '@/api/whitelabel'
+import WhiteLabelingDomainDialog from '@/components/Company Settings/WhiteLabelingDomainDialog'
 export default {
   name: 'WhiteLabeling',
   components: {
+    WhiteLabelingDomainDialog,
     ResetToDefaultWhiteLabelingDialog,
     DatatableLoading,
     KSelect,
@@ -324,10 +333,12 @@ export default {
   },
   data() {
     return {
+      isShowDomainDialog: false,
       isActionButtonDisabled: false,
       isWhiteLabelLoading: false,
       isResetToDefaultActionButtonDisabled: false,
       resetToDefaultWhiteLabelingDialogStatus: false,
+      acceptedDnsRecordSettingsDomain: '',
       formValues: {
         brandName: '',
         mainDomainUrl: '',
@@ -347,7 +358,8 @@ export default {
         isShowReleaseVersionNumber: true,
         isShowReleaseNotes: true,
         emailTemplateLogoUrl: null,
-        emailTemplateLogoFile: null
+        emailTemplateLogoFile: null,
+        acceptDnsRecordSettings: false
       },
       mainDomainItems: ['https://', 'http://'],
       configureCompanyWhitelabelingResourceId: '',
@@ -376,6 +388,11 @@ export default {
       return DELETE.hasPermission
     }
   },
+  watch: {
+    mainDomainUrl(val) {
+      this.formValues.acceptDnsRecordSettings = val === this.acceptedDnsRecordSettingsDomain
+    }
+  },
   created() {
     const { GET } = this.PERMISSIONS
     if (this.isCompanyConfigure) {
@@ -394,6 +411,9 @@ export default {
     },
     getImagePreview(url) {
       return url && typeof url === 'string' ? url : URL.createObjectURL(url)
+    },
+    toggleWhiteLabelingDomainDialog() {
+      this.isShowDomainDialog = !this.isShowDomainDialog
     },
     mainDomainCustomValidation(value = '') {
       if (value.startsWith('http') || value.startsWith('https')) {
@@ -428,9 +448,24 @@ export default {
               ...this.formValues,
               resourceId: this.configureCompanyWhitelabelingResourceId
             })
+            .then(() => {
+              this.formValues.acceptDnsRecordSettings = false
+              this.acceptedDnsRecordSettingsDomain = ''
+              this.isWhiteLabelLoading = false
+              this.isShowDomainDialog = false
+              this.callForData()
+            })
+            .catch((e) => {
+              if (e.response.status === 403) {
+                this.formValues.acceptDnsRecordSettings = true
+                this.acceptedDnsRecordSettingsDomain = this.formValues.mainDomainUrl
+                this.toggleWhiteLabelingDomainDialog()
+              } else {
+                this.callForData()
+              }
+            })
             .finally(() => {
               this.isActionButtonDisabled = false
-              this.callForData()
             })
         } else {
           return this.$nextTick(() => {

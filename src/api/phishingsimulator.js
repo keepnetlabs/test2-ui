@@ -414,3 +414,7 @@ export function bulkDeleteCampaignReports(payload) {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function calculateSendingInfo(payload) {
+  return testRequest.post(`/phishing-simulator/phishing-campaign/calculate-sending-info`, payload)
+}

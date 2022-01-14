@@ -73,7 +73,7 @@ export default {
             window.navigator.appVersion &&
             window.navigator.appVersion.toLowerCase().includes('windows')
           ) {
-            height += 16
+            height += 20
           }
           height = height + 4
           this.height = height + 'px'

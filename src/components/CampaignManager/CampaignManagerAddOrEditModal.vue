@@ -421,11 +421,14 @@ export default {
               acc += item.userCount
               return acc
             }, 0)
+
             refCampaignManagerAdvancedSettings.totalTargetUserCount = totalUserCount
+            refCampaignManagerAdvancedSettings.targetGroupResourceIds = ids
             if (totalUserCount) {
               refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = false
               refCampaignManagerCampaignInfo.isTargetGroupsValid = true
               this.step += flag
+              refCampaignManagerAdvancedSettings.callForCalculateSendingInfo()
             } else {
               refCampaignManagerCampaignInfo.isShowTargetGroupUsersError = true
               refCampaignManagerCampaignInfo.isTargetGroupsValid = false
