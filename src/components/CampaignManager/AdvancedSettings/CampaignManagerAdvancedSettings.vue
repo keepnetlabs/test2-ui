@@ -73,6 +73,7 @@
       <v-radio-group
         v-model="formData.distributionTypeId"
         class="campaign-manager-advanced-settings__distribution"
+        @change="callForCalculateSendingInfo"
       >
         <div class="campaign-manager-advanced-settings__distribution-item">
           <v-radio
@@ -93,6 +94,7 @@
             style="max-width: 48px;"
             :disabled="!distributionEmailOverTimeDisableStatus"
             :rules="rules.number"
+            @input="callForCalculateSendingInfo"
           ></v-text-field>
           <KSelect
             v-model.trim="formData.distributionSmtpDelayTimeTypeId"
@@ -105,6 +107,7 @@
             style="max-width: 118px;"
             :items="formDetails['distributionSmtpDelayTimeTypes']"
             :disabled="!distributionEmailOverTimeDisableStatus"
+            @change="callForCalculateSendingInfo"
           />
         </div>
         <div class="campaign-manager-advanced-settings__distribution-item mt-2">
@@ -126,6 +129,7 @@
             style="max-width: 48px;"
             :disabled="distributionEmailOverTimeDisableStatus"
             :rules="rules.number"
+            @change="callForCalculateSendingInfo"
           ></v-text-field>
           <KSelect
             v-model.trim="formData.distributionEmailOverTimeTypeId"
@@ -138,6 +142,7 @@
             style="max-width: 118px;"
             :disabled="distributionEmailOverTimeDisableStatus"
             :items="formDetails['distributionEmailOverTimeTypes']"
+            @change="callForCalculateSendingInfo"
           />
         </div>
       </v-radio-group>
@@ -152,6 +157,7 @@
         placeholder="Enter number"
         hint="*Required"
         :rules="rules.number"
+        @input="callForCalculateSendingInfo"
       ></v-text-field>
     </FormGroup>
     <div
@@ -227,6 +233,7 @@ import CampaignManagerSmtpSettingsDialog from '@/components/CampaignManager/Adva
 import * as validations from '@/utils/validations'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
+import { calculateSendingInfo } from '@/api/phishingsimulator'
 export default {
   name: 'CampaignManagerAdvancedSettings',
   components: {
@@ -253,6 +260,9 @@ export default {
       isShowCustomSmtpDialog: false,
       isShowSmtpErrorDialog: false,
       isUsersOnline: false,
+      totalSendSecond: 77720,
+      batchEverySendSecond: 0,
+      targetGroupResourceIds: [],
       isTestMailSend: false,
       totalTargetUserCount: 0,
       smtpAxiosPayload: {
@@ -318,15 +328,13 @@ export default {
     },
     getDistributionText() {
       return this.formData.distributionTypeId === '1'
-        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} 500 target users will take approx ${this.getApproximatedTime} hours`
-        : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to 500 targets users will take ${this.getEmailOverEndText}`
+        ? `Sending ${this.formData.sendingLimit} emails every ${this.formData.distributionSmtpDelayEvery} ${this.getSelectedSmtpDelayOverTimeType} ${this.totalTargetUserCount} target users will take approx ${this.getApproximatedTime}`
+        : `Sending  ${this.formData.sendingLimit} emails every ${this.getEmailOverMinutes} minutes to ${this.totalTargetUserCount} targets users will take ${this.getApproximatedTime}`
     },
     getEmailOverMinutes() {
-      const type = this.getSelectedEmailTimeType
-      let { distributionEmailOver, sendingLimit } = this.formData
-      let ratio = this.calculateRatio(type)
-      distributionEmailOver = Number(distributionEmailOver)
-      let seconds = (sendingLimit * ratio * distributionEmailOver) / 500
+      let seconds = this.batchEverySendSecond
+      seconds = seconds.toFixed()
+      if (seconds < 1) seconds = 1
       let minutes = 0
       if (seconds > 60) {
         minutes = seconds % 60
@@ -337,26 +345,6 @@ export default {
       return `${minutes.length === 1 ? `0${minutes}` : `${minutes}`}:${
         seconds.length === 1 ? `0${seconds}` : `${seconds}`
       }`
-    },
-    getEmailOverEndText() {
-      const type = this.getSelectedEmailTimeType
-      const number = this.formData.distributionEmailOver.toString()
-      if (type === 'hours') {
-        return `${number.length === 1 ? `0${number}` : `${number}`}:00:00 hours`
-      } else {
-        const { distributionEmailOver } = this.formData
-        let hours = 0
-        let minutes = distributionEmailOver
-        if (distributionEmailOver > 60) {
-          hours = Math.floor(minutes / 60)
-          minutes = minutes % 60
-        }
-        hours = hours.toString()
-        minutes = minutes.toString()
-        return `${hours.length === 1 ? `0${hours}` : `${hours}`}:${
-          minutes.length === 1 ? `0${minutes}` : `${minutes}`
-        }:00 hours`
-      }
     },
     getSelectedSmtpDelayOverTimeType() {
       return this.formDetails['distributionSmtpDelayTimeTypes'].find(
@@ -374,12 +362,7 @@ export default {
         : this.formData.sendingLimit && this.formData.distributionEmailOver
     },
     getApproximatedTime() {
-      const type = this.getSelectedSmtpDelayOverTimeType
-      let { distributionSmtpDelayEvery, sendingLimit } = this.formData
-      distributionSmtpDelayEvery = Number(distributionSmtpDelayEvery)
-      let ratio = this.calculateRatio(type)
-      sendingLimit = Number(sendingLimit)
-      let seconds = (500 * ratio * distributionSmtpDelayEvery) / sendingLimit
+      let seconds = this.totalSendSecond
       let minutes = 0
       let hours = 0
       if (seconds > 60) {
@@ -398,9 +381,9 @@ export default {
       minutes = minutes.toString()
       seconds = seconds.toString()
 
-      return `${hours.length === 1 ? `0${hours || 0}` : `${hours}`}:${
-        minutes.length === 1 ? `0${minutes || 0}` : `${minutes}`
-      }:${seconds.length === 1 ? `0${seconds || 0}` : `${seconds}`}`
+      return `${hours !== '0' ? `${hours} hours` : ''}${
+        minutes !== '0' ? `${minutes} minutes ` : ''
+      }${seconds !== '0' ? `and ${seconds} seconds` : ''}`
     },
     getDisabledStatusOfRandomlySelected() {
       return !this.formData.sendRandomlyUsers
@@ -484,6 +467,32 @@ export default {
             this.smtpItems.push(this.selectedSmtpSetting)
           }
         })
+    },
+    callForCalculateSendingInfo() {
+      if (!this.targetGroupResourceIds.length) return
+      this.debounce(() => {
+        const payload = {
+          targetGroupResourceIds: this.targetGroupResourceIds,
+          distributionTypeId: this.formData.distributionTypeId,
+          distributionSmtpDelayEvery: this.formData.distributionSmtpDelayEvery,
+          distributionSmtpDelayTimeTypeId: this.formData.distributionSmtpDelayTimeTypeId,
+          distributionEmailOver: this.formData.distributionEmailOver,
+          distributionEmailOverTimeTypeId: this.formData.distributionEmailOverTimeTypeId,
+          sendingLimit: this.formData.sendingLimit,
+          sendOnlyActiveUsers: this.formData.sendOnlyActiveUsers,
+          sendRandomlyUsers: this.formData.sendRandomlyUsers,
+          sendRandomlyUsersCount: this.formData.sendRandomlyUsersCount,
+          sendRandomlyUsersCalculateTypeId: this.formData.sendRandomlyUsersCalculateTypeId
+        }
+        calculateSendingInfo(payload).then((response) => {
+          const {
+            data: { data }
+          } = response
+          const { totalSendSecond, batchEverySendSecond } = data
+          this.totalSendSecond = totalSendSecond
+          this.batchEverySendSecond = batchEverySendSecond
+        })
+      }, 500)
     },
 
     toggleCustomSmtpDialog() {

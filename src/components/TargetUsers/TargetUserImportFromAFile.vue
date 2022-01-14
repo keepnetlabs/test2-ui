@@ -99,7 +99,13 @@
                       v-if="!step1Loading && excelInfo"
                     >
                       {{
-                        `This uploaded file contains ${excelInfo.rowCount} rows and ${excelInfo.columnCount} columns`
+                        `This uploaded file contains ${excelInfo.rowCount} rows and ${
+                          excelInfo.columnCount
+                        } columns ${
+                          excelInfo.duplicateCount
+                            ? `(${excelInfo.duplicateCount} duplicate row)`
+                            : ''
+                        }`
                       }}
                     </p>
                     <p class="target-user-import-file__total-excel-score" v-if="step1Loading">

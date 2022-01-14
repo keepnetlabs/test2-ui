@@ -40,6 +40,7 @@ import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
 import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
+import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -85,12 +86,36 @@ export default {
       urlMergedTexts: [{ value: '', name: 'No Merged Text' }]
     }
   },
+  created() {
+    this.callForImages()
+  },
   mounted() {
     this.setMergedTextsForLinks()
     this.setTraits()
     this.setGrapesEditor()
   },
   methods: {
+    callForImages() {
+      getUploadedFiles().then((res) => {
+        const am = this.editor.AssetManager
+        const {
+          data: { data }
+        } = res
+        console.log('data', data)
+        const assets = data.map((img) => {
+          const obj = {
+            src: '',
+            category: 'c1',
+            name: img['originalName'],
+            resourceId: img['resourceId']
+          }
+          obj.src = APP_CONFIG.VUE_APP_APP_API_TEST + img['previewLink']
+          return obj
+        })
+        am.add(assets)
+        am.render()
+      })
+    },
     destroyEditor() {
       this.editor.destroy()
     },
@@ -705,6 +730,22 @@ export default {
           md.setContent(container)
           codeViewer.setContent(html)
           viewer.refresh()
+        })
+        this.editor.on('asset:upload:end', (images) => {
+          const [image] = images.data
+          const url = image.src
+          fetch(url)
+            .then((res) => res.blob())
+            .then((blob) => {
+              const file = new File([blob], image.name, { type: blob.type })
+              const formData = new FormData()
+              formData.append('Files', file)
+              uploadFiles(formData)
+            })
+        })
+        this.editor.on('asset:remove', (props) => {
+          const { attributes } = props
+          deleteFiles([attributes.resourceId])
         })
       })
     },

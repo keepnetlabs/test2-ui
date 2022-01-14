@@ -103,7 +103,7 @@
       <v-icon class="mr-2 text-h6">mdi-pencil</v-icon> Edit</v-btn
     >
     <div class="email-template-preview" style="pointer-events: none;">
-      <k-email-preview v-if="template" ref="refPreview" :html="template" />
+      <k-email-preview v-if="template" :key="template" ref="refPreview" :html="template" />
       <template v-else>
         <landing-page-template-default
           v-if="templateType === 'landing'"

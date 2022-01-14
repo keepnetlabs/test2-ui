@@ -38,7 +38,7 @@
             dense
             :disabled="!!selectedItem || editItemsDisabled"
             outlined
-            placeholder="Select Option"
+            :placeholder="formValues.emailTemplateCategoryResourceId ? '' : 'Select Option'"
             @change="changeTemplateType"
           />
         </form-group>
