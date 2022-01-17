@@ -22,10 +22,10 @@ export default {
       default: 'filter__date-picker'
     },
     format: {
-      default: 'yyyy/MM/dd HH:mm'
+      default: getTimeZone() || 'yyyy/MM/dd HH:mm'
     },
     valueFormat: {
-      default: `yyyy/MM/dd HH:mm`
+      default: getTimeZone() || `yyyy/MM/dd HH:mm`
     },
     type: {
       default: 'date'
@@ -33,8 +33,6 @@ export default {
     defaultTime: {}
   },
   created() {
-    this.format = getTimeZone() || 'yyyy/MM/dd HH:mm'
-    this.valueFormat = getTimeZone() || `yyyy/MM/dd HH:mm`
     if (this._props.type === 'datetimerange') this.defaultTime = ['00:00:00', '23:59:00']
   }
 }
