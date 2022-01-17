@@ -1,16 +1,25 @@
 const scrollState = {
   isEventAttached: false,
   event: null,
+  isMenuOpen: false,
+  timeoutId: null,
+  lastScrollTop: null,
   handleScroll({ target }, vNode, callback) {
     const { scrollTop, scrollHeight, offsetHeight } = target
-    const { isInfiniteLoading, maximumApiCount, apiCount } = vNode.context
     if (
       scrollTop - (scrollHeight - offsetHeight) < 10 &&
-      scrollTop - (scrollHeight - offsetHeight) > -10 &&
-      !isInfiniteLoading &&
-      apiCount < maximumApiCount
+      scrollTop - (scrollHeight - offsetHeight) > -10
     ) {
-      callback()
+      if (!this.lastScrollTop) {
+        this.lastScrollTop = scrollTop
+      }
+      if (scrollTop < this.lastScrollTop) return
+
+      if (this.timeoutId) clearTimeout(this.timeoutId)
+      this.timeoutId = setTimeout(() => {
+        callback(true)
+        this.lastScrollTop = scrollTop
+      }, 500)
     }
   },
   attachEvent(targetString, vNode, callback) {
@@ -23,27 +32,33 @@ const scrollState = {
         this.isEventAttached = true
       }
     }
+  },
+  detachEvent(targetString) {
+    const target = document.querySelector(targetString)
+    if (!target) return
+    target.removeEventListener('scroll', this.event)
   }
 }
 
 const infiniteScroll = {
-  componentUpdated(el, { value }, vNode) {
-    const { target, callback } = value
-    if (scrollState.isEventAttached) {
-      return
-    }
-    scrollState.attachEvent(target, vNode, callback)
+  bind(el, { value }, vNode) {
+    vNode.componentInstance.$refs['refComponent'].$watch(
+      (vm) => vm.$_menuProps.value,
+      (val) => {
+        const { target, callback } = value
+        if (val && !scrollState.isEventAttached) {
+          scrollState.attachEvent(target, vNode, callback)
+        }
+      }
+    )
   },
   unbind(el, { value }) {
     const { target } = value
     scrollState.isEventAttached = false
     scrollState.event = null
-    if (scrollState.isEventAttached) {
-      const target = document.querySelector(target)
-      if (target) {
-        target.removeEventListener('scroll', scrollState.event)
-      }
-    }
+    scrollState.lastScrollTop = null
+    scrollState.detachEvent(target)
+    clearTimeout(scrollState.timeoutId)
   }
 }
 

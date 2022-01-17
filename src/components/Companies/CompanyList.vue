@@ -232,6 +232,19 @@ export default {
           width: 150
         },
         {
+          property: 'targetUserCount',
+          align: 'right',
+          editable: false,
+          label: labels.TargetUsers,
+          fixed: false,
+          sortable: true,
+          show: true,
+          type: 'number',
+          width: 160,
+          filterableType: 'number',
+          emptyText: 0
+        },
+        {
           property: PROPERTY_STORE.NUMBEROFUSERS,
           align: 'right',
           editable: false,
