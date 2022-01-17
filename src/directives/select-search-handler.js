@@ -4,10 +4,11 @@ const selectSearchHandlerState = {
 }
 const selectSearchHandler = {
   bind(el, { value }, vNode) {
-    const { callback } = value
+    const { callback, isLoadingKey } = value
     vNode.componentInstance.$refs['refComponent'].$watch(
       (vm) => vm.lazySearch,
       (val) => {
+        vNode.context[isLoadingKey] = true
         if (selectSearchHandlerState.timeoutId) clearTimeout(selectSearchHandlerState.timeoutId)
         selectSearchHandlerState.timeoutId = setTimeout(() => {
           if (val !== null) callback(val)
@@ -18,6 +19,7 @@ const selectSearchHandler = {
     vNode.componentInstance.$refs['refComponent'].$watch(
       (vm) => vm.$_menuProps.value,
       (val) => {
+        vNode.context[isLoadingKey] = true
         if (selectSearchHandlerState.timeoutId) clearTimeout(selectSearchHandlerState.timeoutId)
         selectSearchHandlerState.timeoutId = setTimeout(() => {
           if (!val && selectSearchHandlerState.searchVal) callback('')
