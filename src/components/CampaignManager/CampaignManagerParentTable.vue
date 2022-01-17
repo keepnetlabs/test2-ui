@@ -141,8 +141,8 @@ export default {
         columns: [
           COLUMNS.CAMPAIGN_NAME,
           COLUMNS.TARGET_USERS,
-          COLUMNS.CREATEDBY,
           COLUMNS.STATUS,
+          COLUMNS.CREATEDBY,
           COLUMNS.CREATE_TIME,
           COLUMNS.LAST_LAUNCH
         ],
