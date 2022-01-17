@@ -392,8 +392,11 @@
                   <v-list-item-content>
                     <label class="bottom-margin">Company Groups</label>
                     <k-select
+                      v-infinite-scroll="{
+                        target: '#input--company-group-groups .k-select__menu',
+                        callback: getCompanyGroups
+                      }"
                       type="autocomplete"
-                      :items="companyGroupList"
                       v-model="formData.CompanyGroupResourceIdArray"
                       id="input--company-group-groups"
                       chips
@@ -406,6 +409,7 @@
                       outlined
                       no-data-text="No company group available"
                       placeholder="Select company groups (optional)"
+                      :items="companyGroupList"
                     ></k-select>
                   </v-list-item-content>
                 </v-list-item>
@@ -583,7 +587,8 @@ import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import ConfigureNewCompanyDialog from '@/components/Companies/ConfigureNewCompanyDialog'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
-
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -599,9 +604,14 @@ export default {
     KFileUpload,
     InputDate
   },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
+  },
   data() {
     return {
       saveDisable: false,
+      totalNumberOfPagesOfCompanyGroups: 1,
       createdCompanyResourceId: null,
       isShowConfigurewNewCompany: false,
       labels,
@@ -653,7 +663,8 @@ export default {
       },
       validations: validations,
       companyGroupPayload: {
-        pageSize: 3000,
+        pageNumber: 1,
+        pageSize: 10,
         orderBy: 'createTime',
         ascending: false,
         filter: {
@@ -661,6 +672,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -745,7 +761,7 @@ export default {
     },
     confirmConfigureNewCompanyDialog() {
       this.formData = []
-      this.LicenseDates = null
+      this.LicenseDates = []
       this.activeStep = 1
       this.$emit('closeFormConfigureNewCompanyModal', this.createdCompanyResourceId)
     },
@@ -802,11 +818,31 @@ export default {
         }
       )
     },
-    getCompanyGroups() {
-      searchCompanyGroups(this.companyGroupPayload).then((response) => {
-        const { data: { data = [] } = [] } = response
-        this.companyGroupList = data.results
-      })
+    searchCompanyGroups(search = '') {
+      if (search) {
+        const copyOfPayload = JSON.parse(JSON.stringify(this.companyGroupPayload))
+        copyOfPayload.pageSize = 1000
+        copyOfPayload.filter.FilterGroups[1].FilterItems.push({
+          Value: search,
+          FieldName: 'name',
+          Operator: 'Contains'
+        })
+        searchCompanyGroups(copyOfPayload).then(this.setCompanyGroups)
+      } else {
+        this.getCompanyGroups()
+      }
+    },
+    setCompanyGroups(response) {
+      const { data: { data = [] } = [] } = response
+      this.companyGroupList = [...this.companyGroupList, ...data.results]
+      this.totalNumberOfPagesOfCompanyGroups = data.totalNumberOfPages
+    },
+    getCompanyGroups(addPage) {
+      if (addPage) {
+        this.companyGroupPayload.pageNumber += 1
+        if (this.companyGroupPayload.pageNumber > this.totalNumberOfPagesOfCompanyGroups) return
+      }
+      searchCompanyGroups(this.companyGroupPayload).then(this.setCompanyGroups)
     },
     closeConfigureNewCompanyDialog() {
       this.isShowConfigurewNewCompany = false
@@ -896,7 +932,7 @@ export default {
     },
     cancelForm() {
       this.formData = []
-      this.LicenseDates = null
+      this.LicenseDates = []
       this.activeStep = 1
       this.$emit('cancelForm')
     },
@@ -935,7 +971,7 @@ export default {
         this.formData.LicenseStartDate = ''
         this.formData.LicenseEndDate = ''
       }
-      this.LicenseDates = null
+      this.LicenseDates = []
     },
     dataPickerChange() {
       this.formData.LicenseStartDate = this.LicenseDates ? this.LicenseDates[0] : ''
