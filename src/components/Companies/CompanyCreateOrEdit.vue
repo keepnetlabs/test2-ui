@@ -107,6 +107,7 @@
                       placeholder="Select industry"
                       :rules="[(v) => validations.required(v)]"
                       hint="*Required"
+                      no-data-text="No industry available"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></k-select>
@@ -126,6 +127,7 @@
                       placeholder="Select country"
                       :rules="[(v) => validations.required(v)]"
                       hint="*Required"
+                      no-data-text="No country available"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></k-select>
@@ -444,6 +446,7 @@
                       placeholder="Select an option"
                       item-text="name"
                       item-value="resourceId"
+                      no-data-text="No notification template available"
                       :slots="{ item: true, selection: false }"
                     >
                       <template v-slot:item="{ item }">
@@ -473,6 +476,7 @@
                       placeholder="Select an option"
                       item-text="name"
                       item-value="resourceId"
+                      no-data-text="No training content available"
                       :slots="{ item: true, selection: false }"
                     >
                       <template v-slot:item="{ item }">
