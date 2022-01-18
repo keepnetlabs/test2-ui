@@ -79,6 +79,15 @@
                   />
                   <k-select
                     v-if="targetUserType === 'Groups'"
+                    key="groups"
+                    v-infinite-scroll="{
+                      target: '#input--investigation-target-user-groups .k-select__menu',
+                      callback: callForTargetGroups
+                    }"
+                    v-select-search-handler="{
+                      callback: callForSearchTargetGroups,
+                      isLoadingKey: 'isUserGroupsLoading'
+                    }"
                     type="autocomplete"
                     id="input--investigation-target-user-groups"
                     custom-menu-class="menu--investigation-target-user-groups"
@@ -89,7 +98,6 @@
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     v-model.trim="targetUsersValue"
-                    :search-input.sync="searchTargetUsersGroupsValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
                     multiple
@@ -101,10 +109,20 @@
                     :return-object="true"
                     prepend-inner-icon="mdi-magnify"
                     autocomplete="disabled"
-                    no-data-text="No user group available"
+                    :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
                   />
                   <k-select
                     v-if="targetUserType === 'SpecificUsers'"
+                    key="users"
+                    v-infinite-scroll="{
+                      target: '#input--investigation-target-user-specific-users .k-select__menu',
+                      callback: callForTargetUsers
+                    }"
+                    v-select-search-handler="{
+                      callback: callForSearchTargetUsers,
+                      isLoadingKey: 'isTargetUsersLoading'
+                    }"
+                    v-model.trim="targetUsersValue"
                     type="autocomplete"
                     id="input--investigation-target-user-specific-users"
                     custom-menu-class="menu--investigation-target-user-specific-users"
@@ -112,7 +130,6 @@
                     placeholder="Select target users"
                     item-text="email"
                     item-value="email"
-                    :search-input.sync="searchTargetUsersSpecificValue"
                     multiple
                     dense
                     persistent-hint
@@ -122,11 +139,12 @@
                     small-chips
                     :return-object="false"
                     :rules="[targetUsers.required]"
-                    no-data-text="No specific user available"
+                    :no-data-text="
+                      isTargetUsersLoading ? 'Loading...' : 'No specific user available'
+                    "
                     outlined
                     class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     prepend-inner-icon="mdi-magnify"
-                    v-model.trim="targetUsersValue"
                   />
                 </div>
               </v-list-item-content>
@@ -354,18 +372,22 @@
 <script>
 import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
-import {
-  getTargetGroups,
-  getTargetGroupsByName,
-  getTargetUsersByEmail
-} from '../../api/targetUsers'
+import { getTargetUsers, searchTargetGroups } from '../../api/targetUsers'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import { getTimeZoneForMoment, scrollToComponent } from '@/utils/functions'
+import {
+  getDefaultAxiosPayload,
+  getSelectSearchPayload,
+  getTimeZoneForMoment,
+  scrollToComponent
+} from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import * as Validations from '@/utils/validations'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
+import { searchCompanyGroups } from '@/api/company'
 export default {
   components: {
     MailConfigurationSelectSources,
@@ -374,6 +396,10 @@ export default {
     AppModal,
     InputDate,
     Treeselect
+  },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
   },
   watch: {
     date(val) {
@@ -390,38 +416,6 @@ export default {
     },
     filterList() {
       this.checkAllSingularity()
-    },
-    searchTargetUsersGroupsValue(val) {
-      if (val && val.length >= 3) {
-        this.debounce(() => {
-          const payload = {
-            pageNumber: 1,
-            pageSize: 10,
-            orderBy: 'Name',
-            ascending: false,
-            groupName: val
-          }
-          this.callForGetTargetGroupItems(payload)
-        }, 1000)
-      } else {
-        this.userGroupsItems = this.defaultUserGroupItems
-      }
-    },
-    searchTargetUsersSpecificValue(val) {
-      if (val && val.length >= 3) {
-        this.debounce(() => {
-          const payload = {
-            pageNumber: 1,
-            pageSize: 10,
-            orderBy: 'Email',
-            ascending: false,
-            email: val
-          }
-          this.callForGetTargetUsersItems(payload)
-        }, 1000)
-      } else {
-        this.specificUserItems = this.defaultSpecificUserItems
-      }
     }
   },
 
@@ -430,12 +424,16 @@ export default {
       warningMessage: null,
       saveDisable: false,
       isSubmitted: false,
+      targetGroupsAxiosPayload: getDefaultAxiosPayload(),
+      targetUsersAxiosPayload: getDefaultAxiosPayload(),
+      totalNumberOfPagesOfTargetGroups: 1,
+      totalNumberOfPagesOfTargetUsers: 1,
       labels,
       timeout: null,
-      defaultUserGroupItems: [],
-      searchTargetUsersSpecificValue: '',
       specificUserItems: [],
       errorMessages: [],
+      isUserGroupsLoading: false,
+      isTargetUsersLoading: false,
       pickerOptions: {
         onPick: (date) => {
           const { minDate, maxDate } = date
@@ -474,7 +472,6 @@ export default {
           }
         ]
       },
-      searchTargetUsersGroupsValue: '',
       placeholders: {
         ip: 'Enter an ip address ',
         from: 'Enter an email address',
@@ -599,6 +596,62 @@ export default {
     'isIr'
   ],
   methods: {
+    callForTargetGroups(addPage) {
+      if (addPage) {
+        this.targetGroupsAxiosPayload.pageNumber += 1
+        if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
+      }
+      searchTargetGroups(this.targetGroupsAxiosPayload)
+        .then((response) => {
+          this.setTargetGroups(response)
+          this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
+        })
+        .finally(() => (this.isUserGroupsLoading = false))
+    },
+    setTargetGroups(response) {
+      const { data: { data = [] } = [] } = response
+      this.userGroupsItems = [...this.userGroupsItems, ...data.results]
+    },
+    callForSearchTargetGroups(search = '') {
+      if (search) {
+        searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
+          .then(this.setTargetGroups)
+          .finally(() => {
+            this.isUserGroupsLoading = false
+          })
+      } else {
+        this.callForTargetGroups()
+      }
+    },
+    callForTargetUsers(addPage) {
+      if (addPage) {
+        this.targetUsersAxiosPayload.pageNumber += 1
+        if (this.targetUsersAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetUsers) return
+      }
+      getTargetUsers(this.targetUsersAxiosPayload)
+        .then((response) => {
+          this.setTargetUsers(response)
+          this.totalNumberOfPagesOfTargetUsers = response.data.data.totalNumberOfPages
+        })
+        .finally(() => {
+          this.isTargetUsersLoading = false
+        })
+    },
+    callForSearchTargetUsers(search = '') {
+      if (search) {
+        getTargetUsers(getSelectSearchPayload(this.targetUsersAxiosPayload, search, 'Email'))
+          .then(this.setTargetUsers)
+          .finally(() => {
+            this.isTargetUsersLoading = false
+          })
+      } else {
+        this.callForTargetUsers()
+      }
+    },
+    setTargetUsers(response) {
+      const { data: { data = [] } = [] } = response
+      this.specificUserItems = [...this.specificUserItems, ...data.results]
+    },
     checkAllSingularity() {
       this.filterList.forEach((item, index) => this.checkSingularity(item, index))
     },
@@ -753,32 +806,6 @@ export default {
         )
       }
       return rules
-    },
-    callForGetTargetUsersItems(payload, isDefault = false) {
-      getTargetUsersByEmail(payload).then((response) => {
-        const {
-          data: {
-            data: { results }
-          }
-        } = response
-        if (isDefault) {
-          this.defaultSpecificUserItems = results
-        }
-        this.specificUserItems = results || []
-      })
-    },
-    callForGetTargetGroupItems(payload, isDefault = false) {
-      getTargetGroupsByName(payload).then((response) => {
-        const {
-          data: {
-            data: { results }
-          }
-        } = response
-        if (isDefault) {
-          this.defaultUserGroupItems = results
-        }
-        this.userGroupsItems = results || []
-      })
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -1270,20 +1297,8 @@ export default {
     }
   },
   created() {
-    this.callForGetTargetUsersItems(
-      {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'Email',
-        ascending: false,
-        email: ''
-      },
-      true
-    )
-    getTargetGroups().then((response) => {
-      this.userGroupsItems = response.data.data
-      this.defaultUserGroupItems = response.data.data
-    })
+    this.callForTargetUsers()
+    this.callForTargetGroups()
     this.checkIsEdit()
     if (this.selectedMail) {
       this.filterList = []
