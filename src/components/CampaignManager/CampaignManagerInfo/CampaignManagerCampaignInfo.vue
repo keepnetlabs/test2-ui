@@ -115,7 +115,11 @@
       :is-phishing-scenarios-loading="isPhishingScenariosLoading"
       @on-item-change="handleOnPhishingScenarioChange"
     />
-    <CustomError :is-valid="isPhishingScenariosValid" class="mb-6 ml-2" />
+    <CustomError
+      v-if="showPhishingScenarios"
+      :is-valid="isPhishingScenariosValid"
+      class="mb-6 ml-2"
+    />
     <FormGroup
       v-if="showSchedule"
       :title="labels.Schedule"
