@@ -101,7 +101,6 @@ export default {
         const {
           data: { data }
         } = res
-        console.log('data', data)
         const assets = data.map((img) => {
           const obj = {
             src: '',
