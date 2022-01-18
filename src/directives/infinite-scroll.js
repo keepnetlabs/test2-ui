@@ -42,7 +42,11 @@ const scrollState = {
 
 const infiniteScroll = {
   bind(el, { value }, vNode) {
-    vNode.componentInstance.$refs['refComponent'].$watch(
+    const { isOriginalVuetifyComponent = false } = value
+    const objRef = isOriginalVuetifyComponent
+      ? vNode.componentInstance
+      : vNode.componentInstance.$refs['refComponent']
+    objRef.$watch(
       (vm) => vm.$_menuProps.value,
       (val) => {
         const { target, callback } = value

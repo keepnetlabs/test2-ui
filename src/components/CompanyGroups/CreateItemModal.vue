@@ -51,12 +51,21 @@
               You can select multiple companies
             </v-list-item-title>
             <v-autocomplete
+              v-infinite-scroll="{
+                target: '.input--company-group-add-members',
+                callback: getCompanies,
+                isOriginalVuetifyComponent: true
+              }"
+              v-select-search-handler="{
+                callback: getCompaniesSearch,
+                isLoadingKey: 'isCompaniesLoading',
+                isOriginalVuetifyComponent: true
+              }"
               v-model.trim="selectedCompanies"
               id="input--company-group-add-members"
+              :menu-props="{ contentClass: 'input--company-group-add-members' }"
               :items="companies"
-              no-data-text="No company available"
               :return-object="true"
-              :search-input.sync="search"
               auto-select-first
               deletable-chips
               class="company-groups-select-company"
@@ -68,13 +77,9 @@
               outlined
               persistent-hint
               placeholder="Select companies"
-              :loading="isCompaniesLoading"
-              :hide-no-data="isCompaniesLoading"
+              :no-data-text="isCompaniesLoading ? 'Loading...' : 'No company available'"
               @focus="showLoader = true"
             >
-              <template v-slot:progress>
-                <k-select-loading v-show="showLoader" />
-              </template>
             </v-autocomplete>
           </v-list-item-content>
         </v-list-item>
@@ -115,10 +120,19 @@ import {
 } from '@/api/company'
 import { maxLength, required, startsWithSpace } from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import KSelectLoading from '@/components/KSelectLoading'
-
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
+import { searchTargetGroups } from '@/api/targetUsers'
+import { getSelectSearchPayload } from '@/utils/functions'
 export default {
   name: 'CreateItemModal',
+  components: {
+    AppDialog
+  },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
+  },
   props: {
     isShow: {
       type: Boolean
@@ -135,10 +149,6 @@ export default {
       default: false
     }
   },
-  components: {
-    KSelectLoading,
-    AppDialog
-  },
   data() {
     return {
       saveDisable: false,
@@ -147,14 +157,16 @@ export default {
       search: null,
       groupName: '',
       companies: [],
-      selectedCompanies: null,
+      selectedCompanies: [],
       validations: {
         required,
         maxLength,
         startsWithSpace
       },
+      totalNumberOfPagesOfCompanies: 1,
       payload: {
-        pageSize: 100000,
+        pageNumber: 1,
+        pageSize: 10,
         orderBy: 'CompanyName',
         ascending: true,
         filter: {
@@ -162,6 +174,11 @@ export default {
           FilterGroups: [
             {
               Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
               FilterItems: [],
               FilterGroups: []
             }
@@ -172,26 +189,43 @@ export default {
     }
   },
   created() {
-    this.getDefaultCompanies()
+    this.getCompanies()
     if (this.selectedRow) {
       this.selectedCompanies = this.selectedRow
       this.editHandler()
     }
   },
   methods: {
-    getDefaultCompanies() {
+    getCompanies(addPage) {
+      if (addPage) {
+        this.payload.pageNumber += 1
+        if (this.payload.pageNumber > this.totalNumberOfPagesOfCompanies) return
+      }
       this.isCompaniesLoading = true
       searchCompanies(this.payload)
         .then((response) => {
-          this.companies =
-            response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
-              ? response.data.data.results
-              : []
+          this.setCompanies(response)
+          this.totalNumberOfPagesOfCompanies = response.data.data.totalNumberOfPages
         })
         .finally(() => {
           this.showLoader = false
           this.isCompaniesLoading = false
         })
+    },
+    setCompanies(response) {
+      const { data: { data = [] } = [] } = response
+      this.companies = [...this.companies, ...data.results]
+    },
+    getCompaniesSearch(search = '') {
+      if (search) {
+        searchTargetGroups(getSelectSearchPayload(this.payload, search, 'CompanyName'))
+          .then(this.setCompanies)
+          .finally(() => {
+            this.isCompaniesLoading = false
+          })
+      } else {
+        this.getCompanies()
+      }
     },
     editHandler() {
       if ((this.isShow && this.isEdit) || (this.isShow && this.forCompany)) {
@@ -207,6 +241,7 @@ export default {
                 response.data.data.results.length > 0
                   ? response.data.data.results
                   : []
+              this.companies.push(...this.selectedCompanies)
             })
             .catch(() => {})
         }
@@ -216,7 +251,7 @@ export default {
       if (value === false) {
         this.companies = null
         this.groupName = null
-        this.selectedCompanies = null
+        this.selectedCompanies = []
         this.$refs.refCreateGroupForm.reset()
       }
       this.$emit('changeModalStatus', value)

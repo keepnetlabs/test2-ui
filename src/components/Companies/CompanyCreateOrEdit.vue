@@ -588,7 +588,7 @@
 import * as validations from '@/utils/validations'
 import { createCompany, searchCompanies, searchCompanyGroups, updateCompany } from '@/api/company'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import { scrollToComponent } from '@/utils/functions'
+import { getSelectSearchPayload, scrollToComponent } from '@/utils/functions'
 import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputCompany from '@/components/Common/Inputs/InputCompany'
@@ -831,14 +831,7 @@ export default {
     },
     searchCompanyGroups(search = '') {
       if (search) {
-        const copyOfPayload = JSON.parse(JSON.stringify(this.companyGroupPayload))
-        copyOfPayload.pageSize = 1000
-        copyOfPayload.filter.FilterGroups[1].FilterItems.push({
-          Value: search,
-          FieldName: 'name',
-          Operator: 'Contains'
-        })
-        searchCompanyGroups(copyOfPayload)
+        searchCompanyGroups(getSelectSearchPayload(this.companyGroupPayload, search))
           .then(this.setCompanyGroups)
           .finally(() => {
             this.isCompanyGroupsLoading = false

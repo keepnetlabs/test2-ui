@@ -54,7 +54,17 @@
             required
           />
           <k-select
-            type="combobox"
+            v-if="investigateData.targetUserType === 'Groups'"
+            v-infinite-scroll="{
+              target: `#input--action-investigate-target-user-type${getParentIndex} .k-select__menu`,
+              callback: callForTargetGroups
+            }"
+            v-select-search-handler="{
+              callback: callForSearchTargetGroups,
+              isLoadingKey: 'isUserGroupsLoading'
+            }"
+            type="autocomplete"
+            key="groups"
             :items="userGroupsItems"
             :placeholder="
               investigateData.targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
@@ -74,7 +84,7 @@
             auto-select-first
             :return-object="false"
             autocomplete="off"
-            v-if="investigateData.targetUserType === 'Groups'"
+            :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
             hide-details
             :slots="{ selection: true, item: false }"
           >
@@ -87,20 +97,33 @@
               >
                 {{
                   userGroupsItems.find((item) => {
-                    return item.resourceId === data.item
+                    return item.resourceId === data.item.resourceId
                   }).name
                 }}
-                <v-icon right @click="data.parent.selectItem(data.item)" style="font-size: 18px;"
+                <v-icon
+                  right
+                  @click="data.parent.selectItem(data.item.resourceId)"
+                  style="font-size: 18px;"
                   >mdi-close-circle</v-icon
                 >
               </v-chip>
             </template>
           </k-select>
           <k-select
-            type="combobox"
-            :items="specificUserItems"
-            :id="`input--action-investigate-target-user-type${getParentIndex}`"
             v-if="investigateData.targetUserType === 'SpecificUsers'"
+            v-infinite-scroll="{
+              target: `#input--action-investigate-target-user-type${getParentIndex} .k-select__menu`,
+              callback: callForTargetUsers
+            }"
+            v-select-search-handler="{
+              callback: callForSearchTargetUsers,
+              isLoadingKey: 'isTargetUsersLoading'
+            }"
+            v-model="investigateData.targetUsers"
+            :id="`input--action-investigate-target-user-type${getParentIndex}`"
+            type="autocomplete"
+            key="users"
+            :items="specificUserItems"
             placeholder="Enter Email Addresses"
             item-text="email"
             item-value="email"
@@ -117,7 +140,6 @@
             outlined
             autocomplete="disabled"
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
-            v-model="investigateData.targetUsers"
             hide-details
           ></k-select>
         </div>
@@ -302,20 +324,22 @@
 </template>
 
 <script>
-import { required, minLength, maxLength } from '../../utils/validations'
+import { required, minLength, maxLength } from '@/utils/validations'
 import { mapGetters } from 'vuex'
-import {
-  getTargetGroups,
-  getTargetGroupsByName,
-  getTargetUsersByEmail
-} from '../../api/targetUsers'
+import { getTargetUsers, getTargetUsersByEmail, searchTargetGroups } from '@/api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
-
+import { getDefaultAxiosPayload, getSelectSearchPayload } from '@/utils/functions'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
 export default {
   name: 'Investigate',
   components: { MailConfigurationSelectSources, KSelect },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
+  },
   props: {
     act: {
       type: Object
@@ -345,6 +369,39 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      targetGroupsAxiosPayload: getDefaultAxiosPayload(),
+      targetUsersAxiosPayload: getDefaultAxiosPayload(),
+      totalNumberOfPagesOfTargetUsers: 1,
+      totalNumberOfPagesOfTargetGroups: 1,
+      labels,
+      filters: ['URLs', 'Attachments'],
+      investigationRange: 3,
+      investigationDuration: 3,
+      investigateAction: 'Delete email',
+      investigateActionNotification: 'Reporter',
+      investigateActionNotificationTemplate: '18',
+      investigateActionMessage: null,
+      targetUsersValue: [],
+      timeout: null,
+      targetUserType: 'AllUsers',
+      validations: {
+        required,
+        minLength,
+        maxLength
+      },
+      scanTypes: [],
+      targetUsers: {
+        required: (v) => (!!v && v.length > 0) || 'Required'
+      },
+      searchUserGroup: '',
+      userGroupsItems: [],
+      specificUserItems: [],
+      isUserGroupsLoading: false,
+      searchUser: ''
+    }
+  },
   computed: {
     ...mapGetters({
       targetUsersList: 'investigations/getTargetUsersListGetter' // for using getters
@@ -355,7 +412,7 @@ export default {
   },
   watch: {
     'investigateData.autoAction.type'(newValue, oldValue) {
-      if (newValue != oldValue) {
+      if (newValue !== oldValue) {
         this.$forceUpdate()
       }
     },
@@ -371,97 +428,64 @@ export default {
         const { type, mailConfigurationResourceId } = item
         return { type, mailConfigurationResourceId }
       })
-    },
-    searchUserGroup(val) {
-      if (val && val.length >= 3) {
-        this.debounce(() => {
-          const payload = {
-            pageNumber: 1,
-            pageSize: 10,
-            orderBy: 'Name',
-            ascending: false,
-            groupName: val
-          }
-          this.callForGetTargetGroupItems(payload)
-        }, 1000)
-      } else {
-        this.userGroupsItems = this.defaultUserGroupItems
-      }
-    },
-    searchUser(val) {
-      if (val && val.length >= 3) {
-        this.debounce(() => {
-          const payload = {
-            pageNumber: 1,
-            pageSize: 10,
-            orderBy: 'Email',
-            ascending: false,
-            email: val
-          }
-          this.callForGetTargetUsersItems(payload)
-        }, 1000)
-      } else {
-        this.specificUserItems = this.defaultSpecificUserItems
-      }
-    }
-  },
-  beforeDestroy() {},
-  data() {
-    return {
-      labels,
-      filters: ['URLs', 'Attachments'],
-      investigationRange: 3,
-      investigationDuration: 3,
-      investigateAction: 'Delete email',
-      investigateActionNotification: 'Reporter',
-      investigateActionNotificationTemplate: '18',
-      investigateActionMessage: null,
-      targetUsersValue: [],
-      defaultUserGroupItems: [],
-      timeout: null,
-      targetUserType: 'AllUsers',
-      validations: {
-        required,
-        minLength,
-        maxLength
-      },
-      scanTypes: [],
-      targetUsers: {
-        required: (v) => (!!v && v.length > 0) || 'Required'
-      },
-      searchUserGroup: '',
-      userGroupsItems: [],
-      specificUserItems: [],
-      searchUser: '',
-      defaultSpecificUserItems: []
     }
   },
   methods: {
-    callForGetTargetGroupItems(payload, isDefault = false) {
-      getTargetGroupsByName(payload).then((response) => {
-        const {
-          data: {
-            data: { results }
-          }
-        } = response
-        if (isDefault) {
-          this.defaultUserGroupItems = results
-        }
-        this.userGroupsItems = results || []
-      })
+    callForTargetGroups(addPage) {
+      if (addPage) {
+        this.targetGroupsAxiosPayload.pageNumber += 1
+        if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
+      }
+      searchTargetGroups(this.targetGroupsAxiosPayload)
+        .then((response) => {
+          this.setTargetGroups(response)
+          this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
+        })
+        .finally(() => (this.isUserGroupsLoading = false))
     },
-    callForGetTargetUsersItems(payload, isDefault = false) {
-      getTargetUsersByEmail(payload).then((response) => {
-        const {
-          data: {
-            data: { results }
-          }
-        } = response
-        if (isDefault) {
-          this.defaultSpecificUserItems = results
-        }
-        this.specificUserItems = results || []
-      })
+    setTargetGroups(response) {
+      const { data: { data = [] } = [] } = response
+      this.userGroupsItems = [...this.userGroupsItems, ...data.results]
+    },
+    callForSearchTargetGroups(search = '') {
+      if (search) {
+        searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
+          .then(this.setTargetGroups)
+          .finally(() => {
+            this.isUserGroupsLoading = false
+          })
+      } else {
+        this.callForTargetGroups()
+      }
+    },
+    callForTargetUsers(addPage) {
+      if (addPage) {
+        this.targetUsersAxiosPayload.pageNumber += 1
+        if (this.targetUsersAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetUsers) return
+      }
+      getTargetUsers(this.targetUsersAxiosPayload)
+        .then((response) => {
+          this.setTargetUsers(response)
+          this.totalNumberOfPagesOfTargetUsers = response.data.data.totalNumberOfPages
+        })
+        .finally(() => {
+          this.isTargetUsersLoading = false
+        })
+    },
+    callForSearchTargetUsers(search = '') {
+      if (search) {
+        getTargetUsers(getSelectSearchPayload(this.targetUsersAxiosPayload, search, 'Email'))
+          .then(this.setTargetUsers)
+          .finally(() => {
+            this.isTargetUsersLoading = false
+          })
+      } else {
+        this.callForTargetUsers()
+      }
+    },
+    setTargetUsers(response) {
+      const { data: { data = [] } = [] } = response
+      this.specificUserItems = [...this.specificUserItems, ...data.results]
     },
     debounce(fn, delay) {
       if (this.timeout) {
@@ -477,22 +501,9 @@ export default {
     }
   },
   created() {
-    getTargetGroups().then((response) => {
-      this.userGroupsItems = response.data.data
-      this.defaultUserGroupItems = response.data.data
-    })
+    this.callForTargetGroups()
+    this.callForTargetUsers()
     this.scanTypes = JSON.parse(JSON.stringify(this.investigateData.scanTypes))
-
-    this.callForGetTargetUsersItems(
-      {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'Email',
-        ascending: false,
-        email: ''
-      },
-      true
-    )
   }
 }
 </script>

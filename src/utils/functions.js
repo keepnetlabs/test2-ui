@@ -1075,3 +1075,18 @@ export function getDefaultAxiosPayload(props) {
     ...props
   })
 }
+
+export function getSelectSearchPayload(payload = {}, search, key = 'name', extraFilterItems = []) {
+  const copyOfPayload = JSON.parse(JSON.stringify(payload))
+  copyOfPayload.pageSize = 100
+  copyOfPayload.pageNumber = 1
+  copyOfPayload.filter.FilterGroups[1].FilterItems.push(
+    {
+      Value: search,
+      FieldName: key,
+      Operator: 'Contains'
+    },
+    ...extraFilterItems
+  )
+  return copyOfPayload
+}
