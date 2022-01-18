@@ -1077,7 +1077,6 @@ export function getDefaultAxiosPayload(props) {
 }
 
 export function getSelectSearchPayload(payload = {}, search, key = 'name', extraFilterItems = []) {
-  console.log('key', key)
   const copyOfPayload = JSON.parse(JSON.stringify(payload))
   copyOfPayload.pageSize = 100
   copyOfPayload.pageNumber = 1
