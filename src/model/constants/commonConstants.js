@@ -477,7 +477,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
 
 export const INTEGRATION_TYPES = {
   VMRAY: 'VMRay',
-  FORTINET: 'FortiNet',
+  FORTINET: 'FortiSandbox',
   VIRUSTOTAL: 'VirusTotal',
   IBMXFORCE: 'IBM X-Force',
   GOOGLESAFEBROWSER: 'Google Safe Browsing',

@@ -74,7 +74,7 @@ export default {
       isSandboxStatsDownloadModal: false,
       integrationTypesEnum: [
         { name: 'VirusTotal', value: 1 },
-        { name: 'FortiNet', value: 2 },
+        { name: 'FortiSandbox', value: 2 },
         { name: 'Vmray', value: 3 },
         { name: 'Ibm X-Force', value: 4 },
         { name: 'SpamHouseZen', value: 5 },

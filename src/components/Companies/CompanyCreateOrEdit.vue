@@ -398,6 +398,10 @@
                         target: '#input--company-group-groups .k-select__menu',
                         callback: getCompanyGroups
                       }"
+                      v-select-search-handler="{
+                        callback: searchCompanyGroups,
+                        isLoadingKey: 'isCompanyGroupsLoading'
+                      }"
                       type="autocomplete"
                       v-model="formData.CompanyGroupResourceIdArray"
                       id="input--company-group-groups"
@@ -409,7 +413,9 @@
                       small-chips
                       deletable-chips
                       outlined
-                      no-data-text="No company group available"
+                      :no-data-text="
+                        isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
+                      "
                       placeholder="Select company groups (optional)"
                       :items="companyGroupList"
                     ></k-select>
@@ -619,6 +625,7 @@ export default {
       createdCompanyResourceId: null,
       isShowConfigurewNewCompany: false,
       labels,
+      isCompanyGroupsLoading: false,
       stepLock: false,
       totalStep: 4,
       activeStep: 1,
@@ -831,7 +838,11 @@ export default {
           FieldName: 'name',
           Operator: 'Contains'
         })
-        searchCompanyGroups(copyOfPayload).then(this.setCompanyGroups)
+        searchCompanyGroups(copyOfPayload)
+          .then(this.setCompanyGroups)
+          .finally(() => {
+            this.isCompanyGroupsLoading = false
+          })
       } else {
         this.getCompanyGroups()
       }
@@ -839,14 +850,21 @@ export default {
     setCompanyGroups(response) {
       const { data: { data = [] } = [] } = response
       this.companyGroupList = [...this.companyGroupList, ...data.results]
-      this.totalNumberOfPagesOfCompanyGroups = data.totalNumberOfPages
+      return data
     },
     getCompanyGroups(addPage) {
       if (addPage) {
         this.companyGroupPayload.pageNumber += 1
         if (this.companyGroupPayload.pageNumber > this.totalNumberOfPagesOfCompanyGroups) return
       }
-      searchCompanyGroups(this.companyGroupPayload).then(this.setCompanyGroups)
+      searchCompanyGroups(this.companyGroupPayload)
+        .then(this.setCompanyGroups)
+        .then((data) => {
+          this.totalNumberOfPagesOfCompanyGroups = data.totalNumberOfPages
+        })
+        .finally(() => {
+          this.isCompanyGroupsLoading = false
+        })
     },
     closeConfigureNewCompanyDialog() {
       this.isShowConfigurewNewCompany = false
