@@ -17,7 +17,7 @@
     :slots="{ item: true }"
     :items="options"
     :item-disabled="checkIsItemDisabled"
-    :rules="[(v) => v.length || labels.Required]"
+    :rules="[(v) => !!v.length || labels.Required]"
     @input="handleInputChange"
   >
     <template #item="{item,index}">
