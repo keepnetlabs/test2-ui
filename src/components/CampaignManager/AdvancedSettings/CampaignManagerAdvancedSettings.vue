@@ -381,7 +381,7 @@ export default {
       minutes = minutes.toString()
       seconds = seconds.toString()
 
-      return `${hours !== '0' ? `${hours} hours` : ''}${
+      return `${hours !== '0' ? `${hours} hours ` : ''}${
         minutes !== '0' ? `${minutes} minutes ` : ''
       }${seconds !== '0' ? `and ${seconds} seconds` : ''}`
     },
