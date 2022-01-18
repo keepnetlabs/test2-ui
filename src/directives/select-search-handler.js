@@ -4,8 +4,11 @@ const selectSearchHandlerState = {
 }
 const selectSearchHandler = {
   bind(el, { value }, vNode) {
-    const { callback, isLoadingKey } = value
-    vNode.componentInstance.$refs['refComponent'].$watch(
+    const { callback, isLoadingKey, isOriginalVuetifyComponent } = value
+    const objRef = isOriginalVuetifyComponent
+      ? vNode.componentInstance
+      : vNode.componentInstance.$refs['refComponent']
+    objRef.$watch(
       (vm) => vm.lazySearch,
       (val) => {
         vNode.context[isLoadingKey] = true
@@ -16,7 +19,7 @@ const selectSearchHandler = {
         }, 500)
       }
     )
-    vNode.componentInstance.$refs['refComponent'].$watch(
+    objRef.$watch(
       (vm) => vm.$_menuProps.value,
       (val) => {
         vNode.context[isLoadingKey] = true

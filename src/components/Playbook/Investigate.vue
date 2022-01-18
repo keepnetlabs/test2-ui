@@ -446,7 +446,6 @@ export default {
     setTargetGroups(response) {
       const { data: { data = [] } = [] } = response
       this.userGroupsItems = [...this.userGroupsItems, ...data.results]
-      console.log('this.userGroupsItems', this.userGroupsItems)
     },
     callForSearchTargetGroups(search = '') {
       if (search) {
