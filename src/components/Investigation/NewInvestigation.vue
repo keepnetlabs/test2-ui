@@ -387,7 +387,6 @@ import * as Validations from '@/utils/validations'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
-import { searchCompanyGroups } from '@/api/company'
 export default {
   components: {
     MailConfigurationSelectSources,
