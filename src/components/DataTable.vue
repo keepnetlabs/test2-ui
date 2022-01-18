@@ -1471,7 +1471,9 @@ export default {
       totalLength,
       isFirstOpenSettings: false,
       isDownloadMenuOpen: false,
-      isMultipleEdit: false
+      isMultipleEdit: false,
+      firstOpenSettingsTimeout: null,
+      renderFixedItemsTimeout: null
     }
   },
   watch: {
@@ -1516,10 +1518,7 @@ export default {
             this.currentPage * pageSize
           )
         }
-
-        setTimeout(() => {
-          this.renderFixedItems()
-        }, 500)
+        this.reRenderFixedItems()
 
         if (!this.showClusterItemsRowAction) {
           this.hideChildRowActions()
@@ -1686,6 +1685,15 @@ export default {
     if (this.dynamicStyleRef && this.dynamicStyleRef.remove) {
       this.dynamicStyleRef.remove()
     }
+    if (this.timeout) {
+      clearTimeout(this.timeout)
+    }
+    if (this.renderFixedItemsTimeout) {
+      clearTimeout(this.renderFixedItemsTimeout)
+    }
+    if (this.firstOpenSettingsTimeout) {
+      clearTimeout(this.firstOpenSettingsTimeout)
+    }
   },
   methods: {
     handleRowClick(row, column, event) {
@@ -1789,6 +1797,14 @@ export default {
     },
     getSelectedMultipleValues() {
       return this.multipleSelection
+    },
+    reRenderFixedItems() {
+      if (this.renderFixedItemsTimeout) {
+        clearTimeout(this.renderFixedItemsTimeout)
+      }
+      this.renderFixedItemsTimeout = setTimeout(() => {
+        this.renderFixedItems()
+      }, 500)
     },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
@@ -2560,7 +2576,10 @@ export default {
       this.$emit('handleChangeIsSettingsOpen', !this.isSettingsOpened)
       this.isSettingsOpened = !this.isSettingsOpened
       this.isFirstOpenSettings = true
-      setTimeout(() => {
+      if (this.firstOpenSettingsTimeout) {
+        clearTimeout(this.firstOpenSettingsTimeout)
+      }
+      this.firstOpenSettingsTimeout = setTimeout(() => {
         this.isFirstOpenSettings = false
       }, 200)
     },
