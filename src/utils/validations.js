@@ -119,3 +119,10 @@ export function isDepartmentSpecialCharacter(
 ) {
   return /^([0-9]|[A-Z]|[-\/,&\söğüıçş]){0,64}$/gi.test(value) || message
 }
+
+export function isNameSpecialCharacter(
+  value,
+  message = `Only use letters, dash '-' and apostrophe '`
+) {
+  return /^([A-Z]|[-'\söğüıçş]){0,40}$/gi.test(value) || message
+}
