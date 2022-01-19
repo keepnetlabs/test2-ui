@@ -945,7 +945,6 @@ export default {
         .catch(() => {})
     },
     loginAction(payload) {
-      debugger
       if (this.verifiedCaptchaResponse) {
         payload.captchaResponse = this.verifiedCaptchaResponse
       }
@@ -968,7 +967,7 @@ export default {
         })
     },
     throwSentryEvent(e) {
-      if (!APP_CONFIG.VUE_APP_SENTRY_STATUS) return
+      if (!APP_CONFIG?.VUE_APP_SENTRY_STATUS) return
       Sentry.captureException(e)
     },
     onSuccessLogin(payload, response) {
