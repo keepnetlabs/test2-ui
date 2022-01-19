@@ -64,7 +64,7 @@ export function phone(value, message) {
 export function email(value, message = 'Invalid email address') {
   value = getValue(value)
   return value
-    ? /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/gi.test(
+    ? /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
         value
       ) || message
     : true
@@ -111,4 +111,18 @@ export function noWhitespace(value, message = '') {
 export function isNumber(value, message = 'Invalid File Size') {
   value = getValue(value)
   return /^\d+$/gi.test(value) || message
+}
+
+export function isDepartmentSpecialCharacter(
+  value,
+  message = "Only use letters, numbers, dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
+) {
+  return /^([0-9]|[A-Z]|[-\/,&\söğüıçş]){0,64}$/gi.test(value) || message
+}
+
+export function isNameSpecialCharacter(
+  value,
+  message = `Only use letters, dash '-' and apostrophe '`
+) {
+  return /^([A-Z]|[-'\söğüıçş]){0,40}$/gi.test(value) || message
 }

@@ -33,6 +33,7 @@
         </form-group>
         <form-group title="DNS Service" has-hint>
           <k-select
+            v-model="formValues.dnsServiceProviderId"
             :items="domainData['dnsServiceProviders']"
             custom-menu-class="menu--provider"
             placeholder="Select DNS Service"
@@ -40,7 +41,6 @@
             deletable-chips
             autocomplete="off"
             outlined
-            v-model="formValues.dnsServiceProviderId"
             persistent-hint
             hint="*Required"
             item-value="value"

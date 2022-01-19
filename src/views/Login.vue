@@ -347,8 +347,8 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="isPassworAreEqual()" class="login-error-container">
-                    <div v-if="isPassworAreEqual()" class="login-error-wrapper">
+                  <div v-if="isPasswordAreEqual()" class="login-error-container">
+                    <div v-if="isPasswordAreEqual()" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
@@ -546,7 +546,7 @@ import {
   resetPassword,
   resetPasswordByToken,
   setMFA
-} from '../api/auth'
+} from '@/api/auth'
 import PasswordChecker from '../components/Common/PasswordChecker/PasswordChecker'
 import indexStore from '../store/index'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
@@ -562,6 +562,8 @@ import MFASetup from '@/components/MFA/MFASetup'
 import MFACantLogin from '@/components/MFA/MFACantLogin'
 import MFALogin from '@/components/MFA/MFALogin'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
+import * as Sentry from '@sentry/browser'
+
 import { getSystemUserSettings } from '@/api/settings'
 export default {
   name: 'Login',
@@ -668,7 +670,11 @@ export default {
           this.onSuccessLogin({}, response)
         })
         .catch((err) => {
-          this.onErrorLogin({}, err)
+          try {
+            this.onErrorLogin({}, err)
+          } catch (e) {
+            this.throwSentryEvent(e)
+          }
         })
         .finally(() => {
           setTimeout(() => {
@@ -947,7 +953,11 @@ export default {
           this.onSuccessLogin(payload, response)
         })
         .catch((error) => {
-          this.onErrorLogin(payload, error)
+          try {
+            this.onErrorLogin(payload, error)
+          } catch (e) {
+            this.throwSentryEvent(e)
+          }
         })
         .finally(() => {
           this.$store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER, {
@@ -955,6 +965,10 @@ export default {
           })
           this.$refs?.recaptcha?.reset()
         })
+    },
+    throwSentryEvent(e) {
+      if (!APP_CONFIG?.VUE_APP_SENTRY_STATUS) return
+      Sentry.captureException(e)
     },
     onSuccessLogin(payload, response) {
       let _this = this
@@ -1178,7 +1192,7 @@ export default {
       this.pageNumber = 2
       this.clearError()
     },
-    isPassworAreEqual() {
+    isPasswordAreEqual() {
       if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
         return this.reNewPassword !== this.newPassword
       } else {
