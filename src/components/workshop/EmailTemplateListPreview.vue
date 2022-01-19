@@ -29,12 +29,17 @@
     <div class="emailTemplatePreview__container" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main">
         <div class="d-flex justify-space-between align-center mb-4">
-          <v-select
+          <k-select
+            v-infinite-scroll="{
+              target: '#input--email-template-list .k-select__menu',
+              callback: getDataAfterValidScroll
+            }"
             :items="listData"
             placeholder="Type"
             item-text="name"
             v-model="selectChangeValue"
             item-value="resourceId"
+            id="input--email-template-list"
             outlined
             persistent-hint
             @change="selectChange"
@@ -42,7 +47,7 @@
             :menu-props="{ offsetY: true }"
             no-data-text="No email template available"
             class="selectChange"
-          ></v-select>
+          ></k-select>
           <span
             @click="showAdvancedSearch = !showAdvancedSearch"
             class="toggle-advanced-search ml-4 mr-4"
@@ -73,11 +78,11 @@
                 </div>
                 <div>
                   <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
                     :items="methods"
                     placeholder="Type"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
                     item-value="value"
                     outlined
                     persistent-hint
@@ -117,7 +122,7 @@
               <div
                 class="template-list"
                 v-for="(item, index) in listData"
-                :key="index"
+                :key="item.name + index"
                 @click="setSelectedTemplate(item, index)"
                 :class="{ 'template-list--selected': item['selected'] }"
               >
@@ -130,24 +135,24 @@
                       class="template-list--item template-list--item__sub-header"
                       style="overflow: hidden; text-overflow: ellipsis;"
                     >
-                      {{ item.categoryName }}
+                      {{ item['categoryName'] }}
                       <span class="template-list--item__sub-header--span"
                         ><span style="font-size: 20px; vertical-align: sub;">&bull;</span> by</span
                       >
-                      {{ item.createdBy }}
+                      {{ item['createdBy'] }}
                     </div>
                   </div>
                   <div
                     class="template-list--item template-list--item__difficulty mr-8"
                     :class="
-                      item.difficultyName === 'Easy'
+                      item['difficultyName'] === 'Easy'
                         ? 'difficulty-easy'
-                        : item.difficultyName === 'Medium'
+                        : item['difficultyName'] === 'Medium'
                         ? 'difficulty-medium'
                         : 'difficulty-hard'
                     "
                   >
-                    {{ item.difficultyName }}
+                    {{ item['difficultyName'] }}
                   </div>
                 </div>
 
@@ -231,27 +236,32 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { getSelectedEmailPreview, searchNotifiedMail } from '@/api/threadSharing'
 import AppDialog from '../AppDialog'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
-import { scrollToComponent } from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
+import InfiniteScroll from '@/directives/infinite-scroll'
 export default {
   name: 'EmailTemplateListPreview',
   props: {
     scenarioDetailsLookup: { required: true },
     emailTemplateResourceId: { required: false }
   },
-  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
+  directives: {
+    'infinite-scroll': InfiniteScroll
+  },
+  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog, KSelect },
   data() {
     return {
       showAdvancedSearch: true,
       search: null,
       listData: [],
       backupListData: [],
+      defaultListData: [],
       templateFromName: null,
       templateSubject: null,
+      totalNumberOfPages: 1,
       templateFromEmail: null,
       methods: [
         { text: 'Click Only', value: 'WNZt0sCVCWB3' },
@@ -296,6 +306,7 @@ export default {
       },
       loadingTemplatePreview: false,
       templateHTML: null,
+      activeTemplateHTML: null,
       isTemplateDetails: null,
       selectedTemplateHeader: null,
       loadingTemplates: false,
@@ -308,6 +319,39 @@ export default {
     this.getTemplates(true, this.emailTemplateResourceId)
   },
   methods: {
+    callForSearch() {
+      this.debounce(() => {
+        const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
+        copyOfBodyData.pageNumber = 1
+        copyOfBodyData.pageSize = 100
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[1].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
+        this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
+        getEmailTemplatesList(copyOfBodyData)
+          .then((response) => {
+            const { data } = response
+            if (!response.data.data.results.length) {
+              this.listData = []
+              this.activeTemplateHTML = this.templateHTML
+              this.templateHTML = null
+            } else {
+              data.data.results = data.data.results.map((item) => {
+                return { ...item, selected: item.resourceId === this.emailTemplateResourceId }
+              })
+              this.listData = data.data.results
+            }
+          })
+          .finally(() => {
+            this.loadingTemplates = false
+            this.showLoader = false
+            this.$emit('loading', false)
+          })
+      }, 500)
+    },
     selectChange(item) {
       this.setSelectedTemplate(
         this.listData[
@@ -319,22 +363,30 @@ export default {
       this.$emit('selectedEmailTemplateResourceId', this.selectChangeValue.resourceId)
     },
     getTemplatesForSearch() {
-      this.bodyData.pageSize = 10
-      this.getTemplates(true)
+      this.bodyData.pageSize = 100
+      if (this.search) {
+        this.callForSearch()
+      } else {
+        this.getTemplates(true, this.emailTemplateResourceId, this.bodyData, true)
+      }
     },
-    getTemplates(isInitial, emailTemplateResourceId) {
+    checkAndAddResourceIdToPayload(isInitial, bodyData) {
       this.loadingTemplates = true
       this.$emit('loading', true)
       if (isInitial && this.emailTemplateResourceId) {
-        this.bodyData.filter.FilterGroups[1].FilterItems.push({
+        bodyData.filter.FilterGroups[1].FilterItems.push({
           FieldName: 'ResourceId',
           Operator: 'Include',
           value: this.emailTemplateResourceId
         })
       }
-      getEmailTemplatesList(this.bodyData)
+    },
+    getTemplates(isInitial, emailTemplateResourceId, bodyData = this.bodyData, isSearch) {
+      this.checkAndAddResourceIdToPayload(isInitial, bodyData)
+      getEmailTemplatesList(bodyData)
         .then((response) => {
           const { data } = response
+          this.totalNumberOfPages = data.data.totalNumberOfPages
           if (!response.data.data.results.length) {
             this.listData = []
             this.templateHTML = null
@@ -342,25 +394,29 @@ export default {
             data.data.results = data.data.results.map((item) => {
               return { ...item, selected: false }
             })
-            this.listData = data.data.results
+            if (isSearch) {
+              this.listData = data.data.results
+            } else {
+              this.listData = [...this.listData, ...data.data.results]
+              this.defaultListData = [...this.listData]
+            }
             if (!emailTemplateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
             }
             if (isInitial) {
               if (!!emailTemplateResourceId) {
-                this.setSelectedTemplate(
-                  this.listData[
-                    this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
-                  ],
-                  this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
+                const index = this.listData.findIndex(
+                  (item) => item.resourceId === emailTemplateResourceId
                 )
-                this.listData[
-                  this.listData.findIndex((item) => item.resourceId === emailTemplateResourceId)
-                ].selected = true
-                this.selectChangeValue = this.emailTemplateResourceId
+                if (index > -1) {
+                  this.setSelectedTemplate(this.listData[index], index)
+                  this.listData[index].selected = true
+                  this.selectChangeValue = this.emailTemplateResourceId
+                }
               } else {
                 if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
               }
+              this.defaultListData = [...this.listData]
             }
           }
         })
@@ -374,13 +430,16 @@ export default {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
       const scrollHeight = e.target.scrollHeight - 30
       if (scrollPosition > scrollHeight) {
-        if (this.bodyData.pageSize === this.listData.length) {
-          this.bodyData.pageSize += 10
-          this.debounce(() => {
-            this.loadingTemplates = true
-            this.getTemplates()
-          }, 250)
-        }
+        this.getDataAfterValidScroll()
+      }
+    },
+    getDataAfterValidScroll() {
+      if (this.bodyData.pageNumber < this.totalNumberOfPages && !this.search) {
+        this.bodyData.pageNumber += 1
+        this.debounce(() => {
+          this.loadingTemplates = true
+          this.getTemplates()
+        }, 250)
       }
     },
     setSelectedTemplate(item, index) {
@@ -390,7 +449,9 @@ export default {
       this.backupListData = this.backupListData.map((item) => {
         return { ...item, selected: false }
       })
-      this.listData[index].selected = true
+      if (this.listData[index]) {
+        this.listData[index].selected = true
+      }
       this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
       this.$emit('selectedEmailTemplateChange', item.id)
@@ -419,18 +480,20 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      let _this = this
-      this.loadingTemplates = true
-      if (newVal != oldVal) {
-        this.debounce(() => {
-          this.bodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[1].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
+      if (!newVal) {
+        if (
+          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+        ) {
           this.getTemplates(true)
-        }, 500)
+        } else {
+          this.listData = [...this.defaultListData]
+          this.templateHTML = this.activeTemplateHTML
+        }
+      } else {
+        if (newVal !== oldVal) {
+          this.callForSearch()
+        }
       }
     },
     emailTemplateResourceId(newVal, oldVal) {
