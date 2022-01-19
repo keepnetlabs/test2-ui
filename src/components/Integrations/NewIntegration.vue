@@ -1285,7 +1285,7 @@ export default {
 
           return obj
         })
-      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+      } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET) {
         data.apiCredentials = [
           {
             userName: this.formValues.userName,
@@ -1513,7 +1513,7 @@ export default {
             : ''
           response.data.data.proxyResourceId = response['data'].data.proxyResourceId
         }
-      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+      } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET) {
         const { userName, password, resourceId, proxyResourceId } = response['data'].data[
           'apiCredentials'
         ][0]
@@ -1642,7 +1642,7 @@ export default {
                 this.saveIntegration()
             })
         }
-      } else if (this.selectedIntegrationType.name === 'FortiNet') {
+      } else if (this.selectedIntegrationType.name === INTEGRATION_TYPES.FORTINET) {
         this.testFortiNetConnection(true)
       } else if (this.isRoksit) {
         this.testRoksitConnection(isSave)
