@@ -29,8 +29,13 @@
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
         <div class="d-flex justify-space-between align-center mb-4">
-          <v-select
+          <k-select
+            v-infinite-scroll="{
+              target: '#input--landing-page-template-list .k-select__menu',
+              callback: getDataAfterValidScroll
+            }"
             :items="listData"
+            id="input--landing-page-template-list"
             placeholder="Type"
             item-text="name"
             v-model="selectChangeValue"
@@ -42,7 +47,7 @@
             :menu-props="{ offsetY: true }"
             no-data-text="No landing page template available"
             class="selectChange"
-          ></v-select>
+          ></k-select>
           <span
             @click="showAdvancedSearch = !showAdvancedSearch"
             class="toggle-advanced-search ml-4 mr-4"
@@ -73,11 +78,11 @@
                 </div>
                 <div>
                   <v-select
+                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
                     :items="scenarioDetailsLookup.methodTypes"
                     placeholder="Type"
                     item-disabled="disabled"
                     item-text="text"
-                    v-model="bodyData.filter.FilterGroups[0].FilterItems[0].value"
                     item-value="text"
                     outlined
                     persistent-hint
@@ -117,7 +122,7 @@
               <div
                 class="template-list"
                 v-for="(item, index) in listData"
-                :key="index"
+                :key="item.name + index"
                 @click="setSelectedTemplate(item, index)"
                 :class="{ 'template-list--selected': item['selected'] }"
               >
@@ -131,7 +136,7 @@
                       <span class="template-list--item__sub-header--span">
                         <span style="font-size: 20px; vertical-align: sub;">&#8226;</span> by</span
                       >
-                      {{ item.createdBy }}
+                      {{ item['createdBy'] }}
                     </div>
                   </div>
                   <div
@@ -219,10 +224,10 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import { getSelectedEmailPreview, searchNotifiedMail } from '@/api/threadSharing'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import InfiniteScroll from '@/directives/infinite-scroll'
 import AppDialog from '../AppDialog'
 import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
-import { scrollToComponent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 export default {
@@ -231,16 +236,21 @@ export default {
     scenarioDetailsLookup: { required: true },
     landingPageTemplateResourceId: { required: false }
   },
-
-  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
+  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog, KSelect },
+  directives: {
+    'infinite-scroll': InfiniteScroll
+  },
   data() {
     return {
       showAdvancedSearch: true,
       search: null,
       listData: [],
       backupListData: [],
+      totalNumberOfPages: 1,
+      defaultListData: [],
       templateFromName: null,
       templateFromEmail: null,
+      activeTemplateHTML: null,
       methods: [
         { text: 'Click Only', value: 'WNZt0sCVCWB3' },
         { text: 'Data Submission', value: 'DYC0gugxJMjT' },
@@ -297,6 +307,39 @@ export default {
     this.getTemplates(true, this.landingPageTemplateResourceId)
   },
   methods: {
+    callForSearch() {
+      this.debounce(() => {
+        const copyOfBodyData = JSON.parse(JSON.stringify(this.bodyData))
+        copyOfBodyData.pageNumber = 1
+        copyOfBodyData.pageSize = 100
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[1].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
+        copyOfBodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
+        this.checkAndAddResourceIdToPayload(true, copyOfBodyData)
+        getLandingPageList(copyOfBodyData)
+          .then((response) => {
+            const { data } = response
+            if (!response.data.data.results.length) {
+              this.listData = []
+              this.activeTemplateHTML = this.templateHTML
+              this.templateHTML = null
+            } else {
+              data.data.results = data.data.results.map((item) => {
+                return { ...item, selected: item.resourceId === this.landingPageTemplateResourceId }
+              })
+              this.listData = data.data.results
+            }
+          })
+          .finally(() => {
+            this.loadingTemplates = false
+            this.showLoader = false
+            this.$emit('loading', false)
+          })
+      }, 500)
+    },
     selectChange(item) {
       this.setSelectedTemplate(
         this.listData[
@@ -308,10 +351,25 @@ export default {
       this.$emit('selectedLandingPageTemplateResourceId', this.selectChangeValue.resourceId)
     },
     getTemplatesForSearch() {
-      this.bodyData.pageSize = 10
-      this.getTemplates(true)
+      this.bodyData.pageSize = 100
+      if (this.search) {
+        this.callForSearch()
+      } else {
+        this.getTemplates(true, this.landingPageTemplateResourceId, this.bodyData, true)
+      }
     },
-    getTemplates(isInitial, landingPageTemplateResourceId) {
+    checkAndAddResourceIdToPayload(isInitial, bodyData) {
+      this.loadingTemplates = true
+      this.$emit('loading', true)
+      if (isInitial && this.landingPageTemplateResourceId) {
+        bodyData.filter.FilterGroups[1].FilterItems.push({
+          FieldName: 'ResourceId',
+          Operator: 'Include',
+          value: this.landingPageTemplateResourceId
+        })
+      }
+    },
+    getTemplates(isInitial, landingPageTemplateResourceId, bodyData = this.bodyData, isSearch) {
       this.loadingTemplates = true
       this.$emit('loading', true)
       if (isInitial && this.landingPageTemplateResourceId) {
@@ -323,38 +381,38 @@ export default {
       }
       getLandingPageList(this.bodyData)
         .then((response) => {
+          const { data } = response
+          this.totalNumberOfPages = data.data.totalNumberOfPages
           if (!response.data.data.results.length) {
             this.listData = []
             this.templateHTML = null
           } else {
-            const { data } = response
             data.data.results = data.data.results.map((item) => {
               return { ...item, selected: false }
             })
-            this.listData = data.data.results
-            if (!landingPageTemplateResourceId)
+            if (isSearch) {
+              this.listData = data.data.results
+            } else {
+              this.listData = [...this.listData, ...data.data.results]
+              this.defaultListData = [...this.listData]
+            }
+            if (!landingPageTemplateResourceId) {
               this.listData[this.selectedPreviousIndex].selected = true
+            }
             if (isInitial) {
               if (!!landingPageTemplateResourceId) {
-                this.setSelectedTemplate(
-                  this.listData[
-                    this.listData.findIndex(
-                      (item) => item.resourceId === landingPageTemplateResourceId
-                    )
-                  ],
-                  this.listData.findIndex(
-                    (item) => item.resourceId === landingPageTemplateResourceId
-                  )
+                const index = this.listData.findIndex(
+                  (item) => item.resourceId === landingPageTemplateResourceId
                 )
-                this.listData[
-                  this.listData.findIndex(
-                    (item) => item.resourceId === landingPageTemplateResourceId
-                  )
-                ].selected = true
-                this.selectChangeValue = this.landingPageTemplateResourceId
+                if (index > -1) {
+                  this.setSelectedTemplate(this.listData[index], index)
+                  this.listData[index].selected = true
+                  this.selectChangeValue = this.landingPageTemplateResourceId
+                }
               } else {
                 if (!landingPageTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
               }
+              this.defaultListData = [...this.listData]
             }
           }
         })
@@ -368,12 +426,16 @@ export default {
       const scrollPosition = e.target.scrollTop + e.target.offsetHeight
       const scrollHeight = e.target.scrollHeight - 30
       if (scrollPosition > scrollHeight) {
-        if (this.bodyData.pageSize === this.listData.length) {
-          this.bodyData.pageSize += 10
-          this.debounce(() => {
-            this.getTemplates()
-          }, 250)
-        }
+        this.getDataAfterValidScroll()
+      }
+    },
+    getDataAfterValidScroll() {
+      if (this.bodyData.pageNumber < this.totalNumberOfPages && !this.search) {
+        this.bodyData.pageNumber += 1
+        this.debounce(() => {
+          this.loadingTemplates = true
+          this.getTemplates()
+        }, 250)
       }
     },
     setSelectedTemplate(item, index) {
@@ -410,18 +472,20 @@ export default {
   },
   watch: {
     search(newVal, oldVal) {
-      let _this = this
-      this.loadingTemplates = true
-      if (newVal != oldVal) {
-        this.debounce(() => {
-          this.bodyData.filter.FilterGroups[1].FilterItems[0].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[1].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[2].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[3].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[4].value = this.search
-          this.bodyData.filter.FilterGroups[1].FilterItems[5].value = this.search
+      if (!newVal) {
+        if (
+          this.bodyData.filter.FilterGroups[0].FilterItems[0].value ||
+          this.bodyData.filter.FilterGroups[0].FilterItems[1].value
+        ) {
           this.getTemplates(true)
-        }, 500)
+        } else {
+          this.listData = [...this.defaultListData]
+          this.templateHTML = this.activeTemplateHTML
+        }
+      } else {
+        if (newVal !== oldVal) {
+          this.callForSearch()
+        }
       }
     },
     landingPageTemplateResourceId(newVal, oldVal) {

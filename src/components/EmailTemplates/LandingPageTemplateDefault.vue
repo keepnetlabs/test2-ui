@@ -1,5 +1,5 @@
 <template>
-  <table style="margin-top: 24px; border-spacing: 0; border: none !important; width: 100%;">
+  <table style="padding-top: 24px; border-spacing: 0; border: none !important; width: 100%;">
     <tbody>
       <tr
         style="
@@ -338,7 +338,7 @@
           </p>
         </td>
       </tr>
-      <tr style="background: #f2f2f2; height: 48px; font-family: 'Open Sans', sans-serif;">
+      <tr style="background: #f2f2f2; font-family: 'Open Sans', sans-serif;">
         <td
           style="
             font-family: 'Open Sans', sans-serif;
@@ -346,12 +346,12 @@
             font-weight: 600;
             font-size: 18px;
             line-height: 25px;
-            padding-left: 48px;
+            padding: 8px 0 8px 48px;
           "
         >
           Copyright 2021 - Privacy Policy
         </td>
-        <td style="padding-right: 48px; text-align: right;">
+        <td style="padding: 8px 48px 8px 0px; text-align: right;">
           <img
             src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iMTYiIGZpbGw9IiM0NTYxOUQiLz4KPHBhdGggZD0iTTE4LjU0MTkgMy44Mzk4NEMxNC4yMDM3IDMuODM5ODQgMTIuNzcxOSA1LjgzMDI4IDEyLjc3MTkgOS4yNDM4NFYxMS45NDU4SDkuOTIxODhWMTYuMDAxOEgxMi43NzE5VjI4LjE1OThIMTguMDI3OVYxNi4wMDE4SDIxLjU5OTlMMjIuMDc5OSAxMS45NDU4SDE4LjAyNzlWOS41MzU4NEMxOC4wMjc5IDguNDQ2NTQgMTguMjY2OSA3Ljg5Mzg0IDE5Ljk1NzkgNy44OTM4NEgyMi4wNzk5VjMuODM5ODRIMTguNTQxOVoiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo="
             alt="facebook-icon"

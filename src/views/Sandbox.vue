@@ -5,13 +5,21 @@
         <div class="pa-2">
           <div class="search-wrapper">
             <div class="w-100">
-              <v-select
-                :items="companyItem"
+              <k-select
+                v-infinite-scroll="{
+                  target: '#sandbox-company-select .k-select__menu',
+                  callback: callForCompanies
+                }"
+                v-select-search-handler="{
+                  callback: callForSearchCompanies,
+                  isLoadingKey: 'isCompaniesLoading'
+                }"
+                v-model="companyValue"
+                :items="companyItems"
                 :placeholder="'Select a company'"
                 outlined
                 class="edit-select"
                 max-width="100"
-                v-model="companyValue"
                 multiple
                 hide-details
                 clearable
@@ -19,7 +27,7 @@
                 :menu-props="{ offsetY: true }"
                 item-value="resourceId"
                 :disabled="incidentLoading"
-                no-data-text="No company available"
+                :no-data-text="isCompaniesLoading ? 'Loading...' : 'No company available'"
                 id="sandbox-company-select"
                 @change="changeCompanyData"
               />
@@ -361,23 +369,28 @@
 </template>
 
 <script>
-import { checkPermission, getTimeZoneForMoment } from '@/utils/functions'
+import {
+  checkPermission,
+  getDefaultAxiosPayload,
+  getSelectSearchPayload,
+  getTimeZoneForMoment
+} from '@/utils/functions'
 import CardLoading from '../components/SkeletonLoading/CardLoading'
 import labels from '@/model/constants/labels'
 import { getSandboxSummaryData } from '@/api/sandbox'
 import SandboxLog from '@/components/Sandbox/SandboxLog'
 import SandboxStats from '@/components/Sandbox/SandboxStats'
-import { getCompanyListForThreatSharing, getMyCompanies } from '@/api/company'
 import InputDate from '@/components/Common/Inputs/InputDate'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { getIntegrationTypes } from '@/api/integrations'
 import {
   COMMON_CONSTANTS,
   INTEGRATION_LABELS,
   INTEGRATION_TYPES
 } from '@/model/constants/commonConstants'
 import { searchRestApi } from '@/api/restApi'
-
+import { searchTargetGroups } from '@/api/targetUsers'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
 export default {
   name: 'Sandbox',
   components: {
@@ -387,13 +400,20 @@ export default {
     InputDate,
     KSelect
   },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
+  },
   data() {
     return {
       getFilterButtonDisabled: false,
       incidentLoading: true,
+      isCompaniesLoading: false,
       labels,
       search: null,
       tab: 0,
+      companyAxiosPayload: getDefaultAxiosPayload(),
+      totalPageOfCompanies: 1,
       summaryOptions: {
         filter: {
           Condition: 'AND',
@@ -424,7 +444,7 @@ export default {
       },
       summaryData: {},
       companyValue: '',
-      companyItem: [],
+      companyItems: [],
       filteredDateValue: null,
       filteredDateValueRange: null,
       filteredDateValueSelect: { name: 'All Time', value: '' },
@@ -509,22 +529,8 @@ export default {
     } else {
       this.filteredDateValue = dateValue
     }
-
     this.getSummaryData()
-    const payload = {
-      pageNumber: 1,
-      pageSize: 1000000,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          { Condition: 'AND', FilterItems: [], FilterGroups: [] },
-          { Condition: 'OR', FilterItems: [], FilterGroups: [] }
-        ]
-      }
-    }
-    searchRestApi(payload).then((response) => (this.companyItem = response.data.data.results))
+    this.callForCompanies()
     if (
       this.companyValue ||
       this.analysisEngineTypeResourceId ||
@@ -536,6 +542,34 @@ export default {
     }
   },
   methods: {
+    callForCompanies(addPage) {
+      if (addPage) {
+        this.companyAxiosPayload.pageNumber += 1
+        if (this.companyAxiosPayload.pageNumber > this.totalPageOfCompanies) return
+      }
+      searchRestApi(this.companyAxiosPayload)
+        .then((response) => {
+          this.setCompanies(response)
+          this.totalPageOfCompanies = response.data.data.totalNumberOfPages
+        })
+        .finally(() => {
+          this.isCompaniesLoading = false
+        })
+    },
+    callForSearchCompanies(search = '') {
+      if (search) {
+        searchTargetGroups(getSelectSearchPayload(this.companyAxiosPayload, search))
+          .then(this.setCompanies)
+          .finally(() => {
+            this.isCompaniesLoading = false
+          })
+      } else {
+        this.callForTargetGroups()
+      }
+    },
+    setCompanies(response) {
+      this.companyItems = [...this.companyItems, ...response.data.data.results]
+    },
     setFilterOptions() {
       if (this.companyValue) localStorage.setItem('sandboxCompany', this.companyValue.toString())
       if (this.analysisEngineTypeResourceId)
