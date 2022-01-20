@@ -601,7 +601,7 @@ export default {
     },
     closeCustomFieldsModalWithUpdate() {
       this.toggleCustomFieldsModal()
-      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.callForGetTargetUserCustomFieldsByCompanyId(true)
     },
     closeAddUserModalWithUpdate(showMainModal = false) {
       this.isWantToShowAddUsersModal = false
@@ -741,104 +741,108 @@ export default {
         })
         .finally(() => (this.loading = false))
     },
-    callForGetTargetUserCustomFieldsByCompanyId() {
+    callForGetTargetUserCustomFieldsByCompanyId(forceUpdate = false) {
       this.loading = true
-      getTargetUserCustomFieldsByCompanyId()
-        .then((response) => {
-          const { data } = response
-          this.customFields = data.data.filter((item) => {
-            return item.isActive
-          })
-          const sortProp = 'sortOrder'
-          this.customFields.sort((a, b) => {
-            if (a[sortProp] > b[sortProp]) {
-              return 1
-            } else if (a[sortProp] === b[sortProp]) {
-              return 0
-            }
-            return -1
-          })
-
-          const columnsOfCustomFields = this.customFields.map((field) => {
-            const { name, fieldDataType } = field
-            const filterableProps = {}
-            switch (fieldDataType.toLowerCase()) {
-              case 'string':
-                filterableProps['filterableType'] = 'text'
-                break
-              case 'email':
-                filterableProps['filterableType'] = 'text'
-                break
-              case 'number':
-                filterableProps['filterableType'] = 'text'
-                break
-              case 'boolean':
-                filterableProps['filterableType'] = 'select'
-                filterableProps['filterableItems'] = [
-                  { text: 'Yes', value: 1 },
-                  { text: 'No', value: 0 }
-                ]
-                break
-              case 'date':
-                filterableProps['filterableType'] = 'dateOnly'
-                filterableProps['type'] = 'date'
-                break
-              case 'datetime':
-                filterableProps['filterableType'] = 'date'
-                break
-              default:
-                break
-            }
-            return {
-              property: name,
-              type: 'text',
-              sortable: false,
-              filterable: true,
-              hideSort: true,
-              label: name,
-              align: 'left',
-              show: true,
-              width: 80 + name.length * 7,
-              ...filterableProps
-            }
-          })
-
-          const newColumns = [
-            ...this.tableOptions.defaultColumns,
-            ...columnsOfCustomFields,
-            ...this.tableOptions.lastColumns
-          ]
-
-          if (this.tableOptions.columns.length) {
-            this.tableOptions.columns.forEach((column) => {
-              const findedColumn = newColumns.find(
-                (newColumn) => newColumn.property === column.property
-              )
-              if (!findedColumn) {
-                return
+      if (this.customFields.length && !forceUpdate) {
+        this.callForTargetUsers()
+      } else {
+        getTargetUserCustomFieldsByCompanyId()
+          .then((response) => {
+            const { data } = response
+            this.customFields = data.data.filter((item) => {
+              return item.isActive
+            })
+            const sortProp = 'sortOrder'
+            this.customFields.sort((a, b) => {
+              if (a[sortProp] > b[sortProp]) {
+                return 1
+              } else if (a[sortProp] === b[sortProp]) {
+                return 0
               }
-              findedColumn.show = column.show
+              return -1
             })
-          }
-          if (this.storedTableSettings && this.storedTableSettings.renderedColumns.length) {
-            newColumns.forEach((column) => {
-              const item = this.storedTableSettings.renderedColumns.find(
-                (renderedColumnProp) => renderedColumnProp === column.property
-              )
-              column.show = !!item
+
+            const columnsOfCustomFields = this.customFields.map((field) => {
+              const { name, fieldDataType } = field
+              const filterableProps = {}
+              switch (fieldDataType.toLowerCase()) {
+                case 'string':
+                  filterableProps['filterableType'] = 'text'
+                  break
+                case 'email':
+                  filterableProps['filterableType'] = 'text'
+                  break
+                case 'number':
+                  filterableProps['filterableType'] = 'text'
+                  break
+                case 'boolean':
+                  filterableProps['filterableType'] = 'select'
+                  filterableProps['filterableItems'] = [
+                    { text: 'Yes', value: 1 },
+                    { text: 'No', value: 0 }
+                  ]
+                  break
+                case 'date':
+                  filterableProps['filterableType'] = 'dateOnly'
+                  filterableProps['type'] = 'date'
+                  break
+                case 'datetime':
+                  filterableProps['filterableType'] = 'date'
+                  break
+                default:
+                  break
+              }
+              return {
+                property: name,
+                type: 'text',
+                sortable: false,
+                filterable: true,
+                hideSort: true,
+                label: name,
+                align: 'left',
+                show: true,
+                width: 80 + name.length * 7,
+                ...filterableProps
+              }
             })
-          }
-          this.tableOptions.columns = newColumns
-        })
-        .catch(() => {
-          this.tableOptions.columns = [
-            ...this.tableOptions.defaultColumns,
-            ...this.tableOptions.lastColumns
-          ]
-        })
-        .finally(() => {
-          this.callForTargetUsers()
-        })
+
+            const newColumns = [
+              ...this.tableOptions.defaultColumns,
+              ...columnsOfCustomFields,
+              ...this.tableOptions.lastColumns
+            ]
+
+            if (this.tableOptions.columns.length) {
+              this.tableOptions.columns.forEach((column) => {
+                const findedColumn = newColumns.find(
+                  (newColumn) => newColumn.property === column.property
+                )
+                if (!findedColumn) {
+                  return
+                }
+                findedColumn.show = column.show
+              })
+            }
+            if (this.storedTableSettings && this.storedTableSettings.renderedColumns.length) {
+              newColumns.forEach((column) => {
+                const item = this.storedTableSettings.renderedColumns.find(
+                  (renderedColumnProp) => renderedColumnProp === column.property
+                )
+                column.show = !!item
+              })
+            }
+            this.tableOptions.columns = newColumns
+          })
+          .catch(() => {
+            this.tableOptions.columns = [
+              ...this.tableOptions.defaultColumns,
+              ...this.tableOptions.lastColumns
+            ]
+          })
+          .finally(() => {
+            this.callForTargetUsers()
+          })
+      }
     },
 
     exportTargetUserList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
