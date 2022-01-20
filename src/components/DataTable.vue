@@ -1694,6 +1694,7 @@ export default {
     if (this.firstOpenSettingsTimeout) {
       clearTimeout(this.firstOpenSettingsTimeout)
     }
+    window.removeEventListener('resize', this.renderFixedItems)
   },
   methods: {
     handleRowClick(row, column, event) {
@@ -2076,7 +2077,6 @@ export default {
       /*
       this.firstColFixed = true
       this.lastColFixed = true
-
        */
       this.$emit('handleListBulleted')
       this.multipleSelection = []
@@ -2140,7 +2140,6 @@ export default {
         this.serverSideSelectionCount += this.tableData.length
         if (this.isSelectedAllEver) {
           for (const item of this.tableData) {
-            //TODO burada kaldım
             this.findAndDeleteFromExcludedResourceIdList(item[this.rowKey])
           }
         }
