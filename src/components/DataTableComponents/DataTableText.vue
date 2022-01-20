@@ -27,9 +27,8 @@
             return item.fieldName.toLowerCase() == props.col.property.toLowerCase() && item.message
           })
       }"
+      >{{ props.scope.row[props.col.property] }}</span
     >
-      {{ props.scope.row[props.col.property] }}
-    </span>
     <span
       v-else
       :class="{
