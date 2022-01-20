@@ -93,14 +93,14 @@
           <div class="table-search" v-if="filterable">
             <slot name="table-search-left-side"> </slot>
             <v-text-field
+              v-model.trim="search"
               :id="`input--table-search-${Math.random().toString().substring(2)}`"
               class="filter-field"
               placeholder="Search"
               outlined
               prepend-inner-icon="mdi-magnify"
-              v-model.trim="search"
               ref="searchInput"
-              @keyup="searchChangedEvent"
+              @input="searchChangedEvent"
             />
             <data-table-filter-options
               v-if="showFilterOptions"
