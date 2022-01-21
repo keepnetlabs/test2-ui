@@ -489,7 +489,12 @@ export default {
       return !!retArr.length
     },
     handleTagItemChange(value) {
-      value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      const lastValue = value[value.length - 1].trim()
+      if (!lastValue) {
+        value.splice(value.length - 1, 1)
+      } else {
+        value[value.length - 1] = value[value.length - 1].substring(0, 20)
+      }
     },
     addAction() {
       this.actionList.push({ id: this.idCounter })
