@@ -229,25 +229,34 @@
           md="5"
         >
           <k-select
-            type="combobox"
-            :id="`input--action-target-users-${index}`"
-            :items="specificUserItems"
-            placeholder="Select target users"
+            v-infinite-scroll="{
+              target: `#input--action-system-users-${index} .k-select__menu`,
+              callback: callForSystemUsers
+            }"
+            v-select-search-handler="{
+              callback: callForSearchSystemUsers,
+              isLoadingKey: 'isSystemUsersLoading'
+            }"
+            v-model="tarUsers[index]"
+            key="systemUsers"
+            type="autocomplete"
+            :id="`input--action-system-users-${index}`"
+            :items="systemUsersItems"
+            placeholder="Select system users"
             outlined
             class="edit-select target-users-select-multi"
-            v-model="tarUsers[index]"
             item-text="email"
             item-value="email"
-            :search-input.sync="search[index]"
             multiple
             dense
             deletable-chips
             auto-select-first
             :return-object="false"
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
             small-chips
             hide-details
+            :rules="[(v) => validations.required(v)]"
+            :no-data-text="isSystemUsersLoading ? 'Loading...' : 'No user group available'"
           />
         </v-col>
         <v-col
@@ -255,7 +264,16 @@
           md="5"
         >
           <k-select
-            type="combobox"
+            key="groups"
+            v-infinite-scroll="{
+              target: `#input--action-target-groups-${index} .k-select__menu`,
+              callback: callForTargetGroups
+            }"
+            v-select-search-handler="{
+              callback: callForSearchTargetGroups,
+              isLoadingKey: 'isUserGroupsLoading'
+            }"
+            type="autocomplete"
             :id="`input--action-target-groups-${index}`"
             :items="userGroupsItems"
             placeholder="Select user groups"
@@ -264,16 +282,16 @@
             v-model="tarUsers[index]"
             item-text="name"
             item-value="resourceId"
-            :search-input.sync="searchInput[index]"
             multiple
             dense
             deletable-chips
             :return-object="false"
             auto-select-first
             persistent-hint
-            :rules="[(v) => validations.required(v, 'Required')]"
+            :rules="[(v) => validations.required(v)]"
             small-chips
             hide-details
+            :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
             :slots="{ selection: true, item: false }"
           >
             <template v-slot:selection="data" v-if="userGroupsItems.length > 0">
@@ -285,10 +303,13 @@
               >
                 {{
                   userGroupsItems.find((item) => {
-                    return item.resourceId === data.item
+                    return item.resourceId === data.item.resourceId
                   }).name
                 }}
-                <v-icon right @click="data.parent.selectItem(data.item)" style="font-size: 18px;"
+                <v-icon
+                  right
+                  @click="data.parent.selectItem(data.item.resourceId)"
+                  style="font-size: 18px;"
                   >mdi-close-circle</v-icon
                 >
               </v-chip>
@@ -354,20 +375,19 @@
 </template>
 
 <script>
-import { getAnalysisEngine } from '../../api/playbook'
+import { getAnalysisEngine } from '@/api/playbook'
 import AppDialog from '../AppDialog'
 import Investigate from './Investigate'
-import { required } from '../../utils/validations'
-import {
-  getTargetGroups,
-  getTargetGroupsByName,
-  getTargetUsersByEmail
-} from '../../api/targetUsers'
+import { required } from '@/utils/validations'
+import { searchTargetGroups } from '@/api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import { searchEmailTemplate } from '@/api/company'
-
+import { getDefaultAxiosPayload, getSelectSearchPayload } from '@/utils/functions'
+import { getSystemUsers } from '@/api/systemUsers'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
 export default {
   components: { AppDialogFooter, KSelect, AppDialog, Investigate },
   name: 'ActionItem',
@@ -385,6 +405,10 @@ export default {
     editedNotifications: Array,
     editedPlaybookActionInvestigations: Array
   },
+  directives: {
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
+  },
   computed: {
     getAllCheckboxSelection: {
       get() {
@@ -399,17 +423,15 @@ export default {
   data() {
     return {
       labels,
+      isSystemUsersLoading: false,
       searchEnginesData: null,
       searchEnginesModelInput: null,
       timerId: null,
       isLoading: false,
       search: [],
       targetUsersData: false,
-      searchInput: [],
       timeout: null,
-      defaultUserGroupItems: [],
-      defaultSpecificUserItems: [],
-      specificUserItems: [],
+      systemUsersItems: [],
       validations: {
         required
       },
@@ -424,11 +446,8 @@ export default {
       isFormValid: true,
       markAsOpts: 'Undetected',
       acceptCheckbox: false,
-      tagsearch: '',
       targetUserType: [],
       notifyTemplate: '1c95cf86d193',
-      searchUser: '',
-      searchGroup: '',
       targets: [],
       targetUsers: [],
       tarUsers: [],
@@ -561,10 +580,39 @@ export default {
         emailDateRangeType: 'ThreeDays'
       },
 
-      playbookActionAnalyzers: []
+      playbookActionAnalyzers: [],
+      systemUsersAxiosPayload: getDefaultAxiosPayload(),
+      targetGroupsAxiosPayload: getDefaultAxiosPayload(),
+      totalNumberOfPagesOfTargetGroups: 1,
+      totalNumberOfPagesOfSystemUsers: 1,
+      isUserGroupsLoading: false
     }
   },
   methods: {
+    callForSystemUsers(addPage) {
+      if (addPage) {
+        this.systemUsersAxiosPayload.pageNumber += 1
+        if (this.systemUsersAxiosPayload.pageNumber > this.totalNumberOfPagesOfSystemUsers) return
+      }
+      getSystemUsers(this.systemUsersAxiosPayload)
+        .then((response) => {
+          this.setSystemUsers(response)
+          this.totalNumberOfPagesOfSystemUsers = response.data.data.totalNumberOfPages
+        })
+        .finally(() => (this.isSystemUsersLoading = false))
+    },
+    setSystemUsers(response) {
+      const { data: { data = [] } = [] } = response
+      this.systemUsersItems = [...this.systemUsersItems, ...data.results]
+    },
+    callForSearchSystemUsers(search = '') {
+      if (!search) return
+      getSystemUsers(getSelectSearchPayload(this.systemUsersAxiosPayload, search, 'Email'))
+        .then(this.setSystemUsers)
+        .finally(() => {
+          this.isSystemUsersLoading = false
+        })
+    },
     handleActionSelectClick({ val }) {
       if (val === 'markAs') this.act.actionTypes[1].disabled = false
       else if (val === 'analyze') this.act.actionTypes[0].disabled = false
@@ -627,7 +675,7 @@ export default {
         value[value.length - 1] = value[value.length - 1].substring(0, 20)
       }
     },
-    validateIntegrations(v) {
+    validateIntegrations() {
       return !!this.getSelectedIntegrations() || 'Required'
     },
     openEngineModalFunc() {
@@ -638,32 +686,6 @@ export default {
       this.analysisEngines = this.initialAnalysisEngines
       this.openEnginesModal = false
       this.$refs.refForm.validate()
-    },
-    callForGetTargetGroupItems(payload, isDefault = false) {
-      getTargetGroupsByName(payload).then((response) => {
-        const {
-          data: {
-            data: { results }
-          }
-        } = response
-        if (isDefault) {
-          this.defaultUserGroupItems = results
-        }
-        this.userGroupsItems = results || []
-      })
-    },
-    callForGetTargetUsersItems(payload, isDefault = false) {
-      getTargetUsersByEmail(payload).then((response) => {
-        const {
-          data: {
-            data: { results }
-          }
-        } = response
-        if (isDefault) {
-          this.defaultSpecificUserItems = results
-        }
-        this.specificUserItems = results || []
-      })
     },
     searchEnginesModel(val) {
       if (this.searchEnginesModelInput) {
@@ -1138,31 +1160,39 @@ export default {
       searchEmailTemplate(payload).then((response) => {
         this.act.notifyTemplates = response.data.data.results
       })
+    },
+    callForTargetGroups(addPage) {
+      if (addPage) {
+        this.targetGroupsAxiosPayload.pageNumber += 1
+        if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
+      }
+      searchTargetGroups(this.targetGroupsAxiosPayload)
+        .then((response) => {
+          this.setTargetGroups(response)
+          this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
+        })
+        .finally(() => (this.isUserGroupsLoading = false))
+    },
+    setTargetGroups(response) {
+      const { data: { data = [] } = [] } = response
+      this.userGroupsItems = [...this.userGroupsItems, ...data.results]
+    },
+    callForSearchTargetGroups(search = '') {
+      if (!search) return
+      searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
+        .then(this.setTargetGroups)
+        .finally(() => {
+          this.isUserGroupsLoading = false
+        })
     }
   },
   created() {
     if (!this.playbookId) {
       this.addAction()
     }
-
+    this.callForTargetGroups()
     this.callForSearchEmailTemplate()
-
-    getTargetGroups().then((response) => {
-      this.userGroupsItems = response.data.data
-      this.defaultUserGroupItems = response.data.data
-    })
-
-    this.callForGetTargetUsersItems(
-      {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'Email',
-        ascending: false,
-        email: ''
-      },
-      true
-    )
-
+    this.callForSystemUsers()
     this.getAnalysisEngine()
   },
   watch: {
@@ -1176,44 +1206,6 @@ export default {
         if (isKeywordInArray) {
           this.act.investigateFilters.splice(5, 1)
         }
-      }
-    },
-    search(val) {
-      const value = val.find((item) => {
-        return item
-      })
-      if (value && value.length >= 3) {
-        this.debounce(() => {
-          const payload = {
-            pageNumber: 1,
-            pageSize: 10,
-            orderBy: 'Email',
-            ascending: false,
-            email: value
-          }
-          this.callForGetTargetUsersItems(payload)
-        }, 1000)
-      } else {
-        this.specificUserItems = this.defaultSpecificUserItems
-      }
-    },
-    searchInput(val) {
-      const value = val.find((item) => {
-        return item
-      })
-      if (value && value.length >= 3) {
-        this.debounce(() => {
-          const payload = {
-            pageNumber: 1,
-            pageSize: 10,
-            orderBy: 'Name',
-            ascending: false,
-            groupName: value
-          }
-          this.callForGetTargetGroupItems(payload)
-        }, 1000)
-      } else {
-        this.userGroupsItems = this.defaultUserGroupItems
       }
     },
     editedActions(val) {
@@ -1241,38 +1233,15 @@ export default {
         }
       })
     },
-    editedPlaybookActionAnalyzers(val) {
+    editedPlaybookActionAnalyzers() {
       this.updateAnalysisEngines()
     },
     analysisEngines(val) {},
     editedPlaybookActionInvestigations(investigations) {
-      /*
-      investigations.map((investigation, index) => {
-        const lastLength = this.addAction('investigate')
-
-        this.playbookActionInvestigations[lastLength - 1] = investigation
-      })
-
-       */
       investigations.map((investigation) => {
         const lastLength = this.addAction('investigate')
         this.playbookActionInvestigations[lastLength - 1] = investigation
       })
-      /*
-      setTimeout(() => {
-        const keys = Object.keys(this.$refs)
-        let valueIndex = 0
-        keys.map((key, index) => {
-          if (key !== 'refForm') {
-            this.$refs[key][0].investigateData = JSON.parse(
-              JSON.stringify(investigations[valueIndex])
-            )
-            valueIndex++
-          }
-        })
-      }, 1000)
-
-       */
     }
   }
 }

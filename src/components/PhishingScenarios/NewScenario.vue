@@ -757,6 +757,7 @@ export default {
           this.formValues.landingPageTemplateId = response.data.data.landingPageTemplateResourceId
           this.emailTemplateResourceId = response.data.data.emailTemplateResourceId
           this.landingPageTemplateResourceId = response.data.data.landingPageTemplateResourceId
+          this.formValues.tags = this.formValues.tags || []
           if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
           if (this.$refs.refMakeAvailableFor) {
             this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
