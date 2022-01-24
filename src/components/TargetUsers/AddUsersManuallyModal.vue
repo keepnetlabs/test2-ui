@@ -124,7 +124,7 @@ export default {
             property: 'email',
             align: 'left',
             editable: false,
-            label: 'E-mail',
+            label: 'Email',
             fixed: false,
             sortable: true,
             show: true,

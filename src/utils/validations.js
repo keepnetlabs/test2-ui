@@ -49,6 +49,14 @@ export function url(value, message = 'Invalid URL') {
       ) || message
     : true
 }
+export function urlWithPort(value, message = 'Invalid URL') {
+  value = getValue(value)
+  return value
+    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z])?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+        value
+      ) || message
+    : true
+}
 
 export function domain(value, message) {
   value = getValue(value)
