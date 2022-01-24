@@ -333,7 +333,6 @@ export const TABLE_SETTINGS_KEYS = {
 }
 
 export function getStoreValue(key, type) {
-  debugger
   key = key.trim().toUpperCase()
   let value = LABEL_STORE[key]
   switch (type) {
