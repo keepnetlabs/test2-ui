@@ -53,7 +53,7 @@
                 showForm
                   ? [
                       (v) => validations.required(v, labels.Required),
-                      (v) => validations.url(v, labels.InvalidURL),
+                      (v) => validations.urlWithPort(v, labels.InvalidURL),
                       (v) =>
                         validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
                     ]
