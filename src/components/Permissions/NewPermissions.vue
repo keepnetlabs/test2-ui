@@ -35,7 +35,7 @@
             ]"
           ></v-text-field>
         </form-group>
-        <form-group title="Description">
+        <form-group title="Description" has-hint>
           <v-textarea
             id="input--permission-description"
             outlined
@@ -60,13 +60,15 @@
           class="mb-2"
           :key="availableForKey"
         />
-        <form-group :title="'Privileges'" has-hint class-name="mt-8">
+        <form-group title="Privileges" has-hint>
           <v-text-field
+            v-model="search"
             id="input--permission-privileges"
-            placeholder="Search for privileges"
             outlined
             dense
-            v-model="search"
+            hide-details
+            placeholder="Search for privileges"
+            prepend-inner-icon="mdi-magnify"
           ></v-text-field>
         </form-group>
         <form-group class-name="max-width--780">
@@ -78,15 +80,14 @@
         <form-group class-name="max-width--780">
           <v-treeview
             v-model="formValues.permissionResourceIdList"
+            :key="treeViewKey"
             id="input--permission-description-list"
-            :items="permissions"
             item-key="permissionResourceId"
             selectable
-            :open.sync="open"
             item-disabled="isDisabled"
-            :search="search"
-            :filter="filter"
             open-on-click
+            :open.sync="open"
+            :items="getPrivilegesItems"
           >
             <template v-slot:prepend="{ item }">
               <p
@@ -116,14 +117,9 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
 import { scrollToComponent } from '@/utils/functions'
-import { getPermissionAll, createPermissionRoles, updatePermissionRoles } from '@/api/permissions'
-import KSelect from '@/components/Common/Inputs/KSelect'
+import { createPermissionRoles, updatePermissionRoles } from '@/api/permissions'
 import labels from '@/model/constants/labels'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import store from '@/store'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
 export default {
   name: 'NewPermissions',
   components: {
@@ -154,10 +150,11 @@ export default {
   data() {
     return {
       labels,
-      search: null,
+      search: '',
       saveDisable: false,
       open: [],
       showNoData: false,
+      treeViewKey: `scroll-key${Math.random().toString().substring(0, 5)}`,
       availableForRequests: [],
       formValues: {
         name: null,
@@ -170,15 +167,10 @@ export default {
     }
   },
   computed: {
-    filter() {
-      return (item, search, textKey = '') => {
-        if (item) {
-          if (item.permissionDescription) {
-            let text = item.permissionDescription.toLowerCase()
-            return text.indexOf(search.toLowerCase()) > -1
-          }
-        }
-      }
+    getPrivilegesItems() {
+      return this.search
+        ? this.getSearchedItems(JSON.parse(JSON.stringify(this.permissions)))
+        : this.permissions
     },
     getTitle() {
       return this.isEdit && this.resourceId ? 'Edit System User Role' : 'New System User Role'
@@ -209,7 +201,40 @@ export default {
       return rules
     }
   },
+  watch: {
+    search(val) {
+      if (!val.length) {
+        this.$nextTick(() => {
+          this.open = []
+        })
+      }
+    },
+    getPrivilegesItems(items) {
+      items.forEach((item) => {
+        this.open.push(item.permissionResourceId)
+      })
+      this.treeViewKey = `scroll-key${Math.random().toString().substring(0, 5)}`
+    }
+  },
   methods: {
+    getSearchedItems(items) {
+      return items.reduce((acc, item) => {
+        const { children } = item
+        if (children) {
+          item.children = this.getSearchedItems(children)
+        }
+        const { moduleName = '', groupName = '' } = item
+        if (
+          (moduleName && moduleName.toLowerCase().includes(this.search.toLowerCase())) ||
+          (groupName && groupName.toLowerCase().includes(this.search.toLowerCase()))
+        ) {
+          acc.push(item)
+        } else if (item && item.children && item.children.length) {
+          acc.push(item)
+        }
+        return acc
+      }, [])
+    },
     submit() {
       const { refForm, refMakeAvailableForNewPermissions } = this.$refs
       let isValid = true

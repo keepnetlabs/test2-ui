@@ -277,5 +277,11 @@ export default {
   span {
     color: #2196f3 !important;
   }
+
+  button.k-badge {
+    span {
+      color: inherit !important;
+    }
+  }
 }
 </style>

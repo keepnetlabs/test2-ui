@@ -192,6 +192,7 @@
                         :is-edit="!!isEdit"
                         :is-phishing-template="true"
                         @setAttachmentFile="setAttachmentFile"
+                        @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
                       />
                     </form-group>
@@ -443,8 +444,17 @@ export default {
     }
   },
   methods: {
+    handleAttachmentRemove(item, index, callback) {
+      this.formValues.attachmentFilesToRemove = item.fileName
+      const newAttachmentFilesFromApi = JSON.parse(
+        JSON.stringify(this.formValues.attachmentFilesFromApi)
+      )
+      newAttachmentFilesFromApi.splice(index, 1)
+      this.formValues.attachmentFilesFromApi = newAttachmentFilesFromApi
+      callback(newAttachmentFilesFromApi)
+    },
     setAttachmentFile(file) {
-      this.formValues.attachmentFiles = file
+      this.formValues.attachmentFiles = file || []
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
@@ -511,6 +521,7 @@ export default {
             this.availableForRequests
           )
         }
+        delete payload.attachments
         if (this.isEdit && !this.isDuplicate) {
           updatePhishingEmailTemplate(payload, this.emailTemplateId)
             .then((response) => {
@@ -710,8 +721,7 @@ export default {
 
 <style lang="scss">
 .email-template {
-  .email-template__container { 
-
+  .email-template__container {
   }
 }
 .new-email-template__footer-btn-cancel {

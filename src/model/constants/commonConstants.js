@@ -63,7 +63,7 @@ export const LABEL_STORE = {
   FIRSTNAME: 'First Name',
   RELIABILITYPOINT: 'Reliability Point',
   LASTNAME: 'Last Name',
-  EMAIL: 'E-Mail',
+  EMAIL: 'Email',
   HOSTNAME: 'Device',
   LASTSEEN: 'Last Seen',
   NAME: 'Name',

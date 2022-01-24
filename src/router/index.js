@@ -461,7 +461,7 @@ const router = new Router({
           },
           meta: {
             isAuthenticated: true,
-            parentName: 'Incident Responder'
+            parentName: 'Company'
           },
           props: true,
           params: true

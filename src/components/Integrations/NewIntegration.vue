@@ -640,7 +640,6 @@
                   id="input--new-integration-proxy"
                   :items="proxyItems"
                   no-data-text="No proxy available"
-                  :search-input.sync="search"
                   class="company-groups-select-company mt-2"
                   autocomplete="off"
                   item-value="resourceId"
@@ -648,7 +647,6 @@
                   outlined
                   persistent-hint
                   placeholder="Select proxy"
-                  @click="() => (proxyItems = defaultProxyItems)"
                 ></v-autocomplete>
                 <div
                   id="integration-api-key-footer-test-connection-proxy"
@@ -898,7 +896,6 @@ import {
   getIntegrationDetails,
   testAnalysis,
   updateIntegration,
-  getProxyItems,
   getAnalysisEngineFormOptions
 } from '@/api/integrations'
 import { INTEGRATION_TYPES, INTEGRATION_LABELS } from '@/model/constants/commonConstants'
@@ -936,7 +933,6 @@ export default {
       proxyLoading: false,
       proxyItems: [],
       defaultProxyItems: [],
-      search: null,
       customIntegrationTestLoading: false,
       customIntegrationTestLoadingStatus: null,
       customIntegrationTestLoadingStatusMessage: null,
@@ -1169,22 +1165,6 @@ export default {
       this.timeout = setTimeout(() => {
         fn()
       }, delay)
-    },
-    getProxyItems(searchValue = '', isDefault) {
-      this.debounce(() => {
-        if (!isDefault) this.proxyLoading = true
-        this.proxyBodyData.filter.FilterGroups[1].FilterItems[0].Value = searchValue
-        getProxyItems(this.proxyBodyData)
-          .then((response) => {
-            let proxyItems = response.data.data.results
-            this.addProxyItems(proxyItems, isDefault)
-          })
-          .finally(() => {
-            if (!isDefault) {
-              this.proxyLoading = false
-            }
-          })
-      }, 500)
     },
     addProxyItems(proxyItems, isDefault) {
       proxyItems.unshift({
@@ -1771,11 +1751,6 @@ export default {
         this.integrationTypes.find(
           (item) => item.resourceId === val.analysisEngineTypeResourceId
         ) || {}
-    },
-    search(newVal, oldVal) {
-      if (newVal !== oldVal) {
-        this.getProxyItems(newVal)
-      }
     }
   }
 }
