@@ -51,4 +51,13 @@
       color: #2196f3 !important;
     }
   }
+  .v-input__prepend-inner {
+    .v-input__icon {
+      i.mdi-magnify {
+        font-size: 22px;
+        margin-top: 1px;
+      }
+    }
+  }
 }
+
