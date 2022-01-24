@@ -36,6 +36,12 @@
       >
         {{ att.fileName }}
       </div>
+      <v-icon
+        v-if="isEmailTemplate && deletable"
+        style="position: absolute; right: 20px;"
+        @click="handleDelete"
+        >mdi-close</v-icon
+      >
     </template>
     <span id="text--attachment-preview-tooltip" v-if="!isEmailTemplate"
       >{{ !att.isHidden ? att.name : 'Hidden by Owner'
@@ -48,7 +54,12 @@
 <script>
 export default {
   name: 'AttachmentsPreview',
-  props: ['att', 'isEmailTemplate']
+  props: ['att', 'isEmailTemplate', 'deletable', 'index'],
+  methods: {
+    handleDelete() {
+      this.$emit('on-delete', this.index)
+    }
+  }
 }
 </script>
 
@@ -111,7 +122,7 @@ export default {
 
   .file-name {
     display: block;
-    max-width: 93%;
+    max-width: 66%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

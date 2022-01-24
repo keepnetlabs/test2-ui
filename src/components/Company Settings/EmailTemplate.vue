@@ -77,15 +77,21 @@
         @inputFile="onFileChanged"
         :size="2"
       />
-      <div class="email-template__attachment-list">
+      <div class="email-template__attachment-list" :key="attachmentListKey">
         <div
-          v-for="item in attachmentFilesFromApi"
+          v-for="(item, index) in attachmentFilesFromApi"
           :key="item.fileName"
           class="preview-attch-wrapper"
         >
-          <div class="attachment-wrapper">
+          <div class="attachment-wrapper" style="position: relative;">
             <div class="attachment blue-attach" :id="'email-template-' + item.fileName">
-              <AttachmentsPreview :att="item" :isEmailTemplate="true" />
+              <AttachmentsPreview
+                :deletable="true"
+                :att="item"
+                :index="index"
+                :isEmailTemplate="true"
+                @on-delete="handleFileDelete"
+              />
             </div>
           </div>
         </div>
@@ -160,7 +166,8 @@ export default {
       labels,
       showGrapesModal: false,
       grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
-      Validations
+      Validations,
+      attachmentListKey: `${Math.random().toString().substring(0, 7)}-key`
     }
   },
   computed: {
@@ -178,6 +185,18 @@ export default {
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
   },
   methods: {
+    handleFileDelete(index) {
+      this.$emit(
+        'handleAttachmentRemove',
+        this.attachmentFilesFromApi[index],
+        index,
+        (newFiles) => {
+          this.onFileChanged(newFiles)
+          this.attachmentListKey = `${Math.random().toString().substring(0, 7)}-key`
+          this.attachmentFilesFromApi = newFiles
+        }
+      )
+    },
     onFileChanged(file) {
       this.$emit('setAttachmentFile', file)
     },
