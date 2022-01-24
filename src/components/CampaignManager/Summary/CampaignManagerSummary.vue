@@ -263,6 +263,7 @@ export default {
 
 <style lang="scss">
 .campaign-manager-last-step {
+  padding-right: 71px;
   &__header {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
