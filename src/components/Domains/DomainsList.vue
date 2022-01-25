@@ -61,6 +61,42 @@
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @addAction="handleAdd"
     >
+      <template #datatable-row-actions="{scope}">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              :id="`${tableOptions.rowActions[0].id}-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
+              class="btn-hover mr-1"
+              icon
+              :disabled="getDisabledStatusOfEdit(scope.row)"
+              @click.native="handleEdit(scope.row)"
+            >
+              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ tableOptions.rowActions[0].name }}</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              :disabled="getDisabledStatusOfDelete(scope.row)"
+              class="btn-hover"
+              icon
+              :id="`${tableOptions.rowActions[1].id}-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
+              @click.native="handleActionDelete(scope.row)"
+            >
+              <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ tableOptions.rowActions[1].name }}</span>
+        </v-tooltip>
+      </template>
     </data-table>
   </div>
 </template>
@@ -260,6 +296,12 @@ export default {
     }
   },
   methods: {
+    getDisabledStatusOfEdit(row) {
+      return !row.isOwner
+    },
+    getDisabledStatusOfDelete(row) {
+      return !row.isOwner
+    },
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
       if (!value) this.resourceId = ''
