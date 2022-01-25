@@ -175,9 +175,6 @@ export default {
           options: this.urlMergedTexts
         }
       ]
-      /*if (this.urlMergedTexts.length > 1) {
-        this.traits.push()
-      }*/
     },
     setGrapesEditor() {
       let _this = this
@@ -644,9 +641,9 @@ export default {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
       this.editor.setComponents(html)
-      const newComponents = this.editor.DomComponents
       this.editor.on('load', () => {
-        document.querySelectorAll('.gjs-sm-title').forEach((item) => item.click())
+        // this line for clicking style manager tabs
+        document.querySelectorAll('.gjs-sm-sector-title').forEach((item) => item.click())
         try {
           document
             .querySelector('.gjs-pn-devices-c .gjs-pn-buttons .fa-desktop')
@@ -797,6 +794,7 @@ export default {
   .gjs-clm-sels-info,
   .gjs-sm-title,
   .gjs-sm-label,
+  .gjs-sm-sector-title,
   .gjs-traits-label {
     color: white !important;
   }

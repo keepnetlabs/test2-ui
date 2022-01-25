@@ -26,11 +26,9 @@
         :table="tableData"
         :refName="'smtpSettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
-        :total-number-of-records="totalNumberOfRecords"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :filterable="true"
-        :show-all-records="showAllRecords"
         :options="true"
         :download-button="tableOptions.downloadButton"
         :stored-table-settings="storedTableSettings"
@@ -49,7 +47,6 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearchSmtpSettings"
         @downloadEvent="exportSmtpSettingsList"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -141,8 +138,6 @@ export default {
       selectedEditSmtpSettings: null,
       storedTableSettings: null,
       isEdit: false,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableOptions: {
         columns: [
           {
@@ -216,7 +211,10 @@ export default {
           clipboard: true,
           edit: false,
           delete: this.PERMISSIONS.DELETE.hasPermission,
-          download: false
+          download: false,
+          disabledStatuses: {
+            delete: false
+          }
         },
         downloadButton: {
           show: true,
@@ -351,11 +349,6 @@ export default {
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS, JSON.stringify(tableSettings))
     },
-    handleAllRecordsClick() {
-      this.bodyOptions.pageSize = 75000
-      this.showAllRecords = false
-      this.callForSearchSmtpSettings()
-    },
     getDisabledStatusOfEdit({ isOwner } = {}) {
       return this.tableOptions.rowActions[0].disabled || !isOwner
     },
@@ -417,31 +410,27 @@ export default {
             const {
               data: { data }
             } = response
-            this.totalNumberOfRecords = totalNumberOfRecords
-
             const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             this.tableData = results
-            this.totalNumberOfRecords = totalNumberOfRecords
-
-            if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-
-            if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
-              this.showAllRecords = false
-            }
-
             this.tableData = data.results
+            this.changeMultipleDeleteDisability()
           })
           .finally(() => {
             this.loading = false
             this.isRestoredOrClearedFilters = false
           })
       }
+    },
+    changeMultipleDeleteDisability() {
+      this.$set(
+        this.tableOptions.selectEvent.disabledStatuses,
+        'delete',
+        this.tableData.every((row) => row.isOwner)
+      )
     },
     handleEditAction({ resourceId } = {}) {
       const { UPDATE, GET } = this.PERMISSIONS

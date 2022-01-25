@@ -23,7 +23,7 @@
     "chart.js": "^2.9.3",
     "chartjs-plugin-datalabels": "^0.7.0",
     "core-js": "^3.6.5",
-    "grapesjs": "^0.16.30",
+    "grapesjs": "^0.18.1",
     "grapesjs-blocks-avance": "0.0.32",
     "grapesjs-blocks-basic": "^0.1.8",
     "grapesjs-component-code-editor": "1.0.12",
