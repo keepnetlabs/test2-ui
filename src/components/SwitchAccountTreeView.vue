@@ -136,7 +136,6 @@ export default {
 <style lang="scss">
 .switch-account__container {
   max-height: 300px;
-  min-height: 150px;
   overflow-y: auto;
   padding: 8px 0;
   border-radius: 8px;

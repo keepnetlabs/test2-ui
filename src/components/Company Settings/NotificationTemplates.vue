@@ -72,7 +72,7 @@
                 }-${Math.random().toString().substring(2)}`"
                 class="btn-hover mr-1"
                 icon
-                :disabled="getDisabledStatusOfEdit(scope.row)"
+                :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
                 @click.native="handleEdit(scope.row)"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -83,14 +83,14 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
-                :disabled="getDisabledStatusOfDelete(scope.row)"
-                @click.native="handleDelete(scope.row)"
-                class="btn-hover"
-                icon
+                v-on="on"
                 :id="`${tableOptions.rowActions[1].id}-${
                   scope.$index
                 }-${Math.random().toString().substring(2)}`"
-                v-on="on"
+                class="btn-hover"
+                icon
+                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+                @click.native="handleDelete(scope.row)"
               >
                 <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
               </v-btn>
@@ -454,11 +454,8 @@ export default {
         })
       })
     },
-    getDisabledStatusOfEdit(row) {
-      return !row.isOwner
-    },
-    getDisabledStatusOfDelete(row) {
-      return !row.isOwner
+    getDisabledStatusOfAction(row, actionStatus) {
+      return !(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)
     },
     handleDelete(row) {
       this.selectedItem = row
