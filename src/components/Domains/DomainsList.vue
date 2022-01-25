@@ -71,7 +71,7 @@
               }-${Math.random().toString().substring(2)}`"
               class="btn-hover mr-1"
               icon
-              :disabled="getDisabledStatusOfEdit(scope.row)"
+              :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
               @click.native="handleEdit(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -83,12 +83,12 @@
           <template v-slot:activator="{ on }">
             <v-btn
               v-on="on"
-              :disabled="getDisabledStatusOfDelete(scope.row)"
-              class="btn-hover"
-              icon
               :id="`${tableOptions.rowActions[1].id}-${
                 scope.$index
               }-${Math.random().toString().substring(2)}`"
+              class="btn-hover"
+              icon
+              :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
               @click.native="handleActionDelete(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -296,11 +296,13 @@ export default {
     }
   },
   methods: {
-    getDisabledStatusOfEdit(row) {
-      return !row.isOwner
-    },
-    getDisabledStatusOfDelete(row) {
-      return !row.isOwner
+    getDisabledStatusOfAction(row, actionStatus) {
+      console.log(
+        '(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)',
+        this.PERMISSIONS[actionStatus].hasPermission && row.isOwner
+      )
+
+      return !(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)
     },
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
