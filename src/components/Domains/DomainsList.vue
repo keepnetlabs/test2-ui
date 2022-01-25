@@ -297,11 +297,6 @@ export default {
   },
   methods: {
     getDisabledStatusOfAction(row, actionStatus) {
-      console.log(
-        '(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)',
-        this.PERMISSIONS[actionStatus].hasPermission && row.isOwner
-      )
-
       return !(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)
     },
     changeStatus(value, restart) {
