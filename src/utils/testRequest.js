@@ -56,7 +56,10 @@ testService.interceptors.response.use(
       return Promise.reject(error)
     } else if (error.response.status === 401 || error.response.status === 306) {
       AuthenticationService.removeToken()
-      router.push({ name: 'login', params: { isSessionExpired: 'true' } })
+      //if router is in login dont need to push again
+      if (router?.history?.current?.name !== 'login') {
+        router.push({ name: 'login', params: { isSessionExpired: 'true' } }).catch(() => {})
+      }
     } else if (error.response && error.response.status !== 404) {
       if (
         error.request.responseType === 'blob' &&
@@ -110,18 +113,8 @@ testService.interceptors.response.use(
           { root: true }
         )
       }
-    }
-    if (
-      AuthenticationService.getToken() == null ||
-      error.response.status === 401 ||
-      error.response.status === 306
-    ) {
-      if (error.response.status === 401 || error.response.status === '401_UNAUTHORIZED') {
-        AuthenticationService.removeToken()
-        router.push({ name: 'login', params: { isSessionExpired: 'true' } })
-      } else {
-        router.push('/login')
-      }
+    } else if (!AuthenticationService.getToken()) {
+      router.push('/login').catch(() => {})
     }
     return Promise.reject(error)
   }
