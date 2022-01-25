@@ -143,7 +143,7 @@ describe('Datatable test cases suite', () => {
     //setting input value
     inputWrapper.element.value = 'custom data'
     wrapper.vm.search = 'custom data'
-    await inputWrapper.trigger('keyup')
+    await inputWrapper.trigger('input')
     //checking is data writed to the dom
     expect(inputWrapper.element.value).toBe('custom data')
     //adding wait function to make function async
