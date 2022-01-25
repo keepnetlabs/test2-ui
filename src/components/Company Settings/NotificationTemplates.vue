@@ -454,8 +454,8 @@ export default {
         })
       })
     },
-    getDisabledStatusOfAction(row, actionStatus) {
-      return !(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)
+    getDisabledStatusOfAction(row) {
+      return !row.isOwner
     },
     handleDelete(row) {
       this.selectedItem = row
