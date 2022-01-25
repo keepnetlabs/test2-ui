@@ -55,6 +55,7 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
+        @handleSelectionChange="handleTableSelectionChange"
         :isServerSide="true"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -134,6 +135,7 @@ export default {
       tableData: [],
       loading: false,
       selectedDeleteSmtpSettings: null,
+      selectedTableItems: [],
       isRestoredOrClearedFilters: false,
       selectedEditSmtpSettings: null,
       storedTableSettings: null,
@@ -299,6 +301,10 @@ export default {
     }
   },
   methods: {
+    handleTableSelectionChange(items) {
+      this.selectedTableItems = items
+      this.changeMultipleDeleteDisability()
+    },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
@@ -429,7 +435,7 @@ export default {
       this.$set(
         this.tableOptions.selectEvent.disabledStatuses,
         'delete',
-        this.tableData.every((row) => row.isOwner)
+        this.selectedTableItems.every((row) => row.isOwner)
       )
     },
     handleEditAction({ resourceId } = {}) {
