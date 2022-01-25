@@ -66,14 +66,14 @@
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
-                @click.native="handleEdit(scope.row)"
-                :disabled="getDisabledStatusOfEdit(scope.row)"
-                class="btn-hover mr-1"
-                icon
+                v-on="on"
                 :id="`${tableOptions.rowActions[0].id}-${
                   scope.$index
                 }-${Math.random().toString().substring(2)}`"
-                v-on="on"
+                class="btn-hover mr-1"
+                icon
+                :disabled="getDisabledStatusOfEdit(scope.row)"
+                @click.native="handleEdit(scope.row)"
               >
                 <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
               </v-btn>
@@ -455,7 +455,7 @@ export default {
       })
     },
     getDisabledStatusOfEdit(row) {
-      return false
+      return !row.isOwner
     },
     getDisabledStatusOfDelete(row) {
       return !row.isOwner
