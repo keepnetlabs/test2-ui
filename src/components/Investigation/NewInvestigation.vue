@@ -161,11 +161,11 @@
                 <div
                   class="filter-item"
                   v-for="(list, index) in filterList"
-                  :key="`${list.option}-${index}`"
+                  :key="`${list.renderKey}-${index}`"
                 >
                   <div class="filter-item__selectbox">
                     <Treeselect
-                      :key="index"
+                      :key="`${list.renderKey}-${index}`"
                       v-model="list.option"
                       :id="`input--investigation-search-criteria-${list.option}-${index}`"
                       disable-branch-nodes
@@ -178,7 +178,6 @@
                       :clearable="false"
                       :options="filterListOption"
                       :max-height="320"
-                      @input="changeSearchCriteria(list)"
                     />
                     <div
                       v-if="isSubmitted && !list.option"
@@ -199,7 +198,7 @@
                   <div class="filter-item__input">
                     <v-text-field
                       v-model.trim="list.text"
-                      :key="index"
+                      :key="`${list.renderKey}-${index}`"
                       :id="`input--investigation-search-criteria-value-${list.option}-${index}`"
                       :placeholder="
                         placeholders[list.option]
@@ -519,7 +518,9 @@ export default {
         { actionLabel: 'Move to trash', actionValue: 'MoveToTrash' },
         { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
-      filterList: [{}],
+      filterList: [
+        { renderKey: `column-key${Math.random().toString().substring(0, 5)}`, text: '' }
+      ],
       filterListOption: [
         {
           label: 'Header',
@@ -657,9 +658,6 @@ export default {
     handleInputSingularityChange(list, index) {
       this.checkSingularity({ ...list }, index)
       this.checkAllSingularity()
-    },
-    changeSearchCriteria(item) {
-      item.text = null
     },
     handleDeleteListItem(index) {
       this.filterList.splice(index, 1)
@@ -815,7 +813,10 @@ export default {
       }, delay)
     },
     addNewFilterListOption() {
-      this.filterList.push({})
+      this.filterList.push({
+        renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
+        text: ''
+      })
     },
     onCancelClicked() {
       this.$emit('closeAdd')

@@ -17,6 +17,7 @@
       :value="value"
       :options="treeSelectOptions"
       :disabled="disabled"
+      :open-direction="openDirection"
       :load-options="loadOptions"
       @close="validateAvailableFor"
       @open="handleMenuOpen"
@@ -75,7 +76,11 @@ export default {
     value: Array,
     disabled: Boolean,
     subTitle: String,
-    placeholder: String
+    placeholder: String,
+    openDirection: {
+      type: String,
+      default: 'auto'
+    }
   },
   directives: {
     'infinite-scroll': infiniteScroll
@@ -228,11 +233,13 @@ export default {
           this.treeSelectionStatus = false
           this.setTreeSelectOptions(this.treeSelectionStatus)
         }
-        this.$emit('input', emittedVal)
 
-        if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
-          if (this.$refs.refTreeSelect.menu.isOpen) {
-            this.$refs.refTreeSelect.menu.isOpen = false
+        if (emittedVal && emittedVal[0]) {
+          this.$emit('input', emittedVal)
+          if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
+            if (this.$refs.refTreeSelect['menu'].isOpen) {
+              this.$refs.refTreeSelect['menu'].isOpen = false
+            }
           }
         }
         this.validateAvailableFor(newVal)

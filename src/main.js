@@ -16,17 +16,7 @@ import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
-import Vlf from 'vlf'
-import localforage from 'localforage'
-
-localforage.config({
-  name: 'keepnet'
-})
-
-Vue.use(Vlf, localforage)
-
 require('vue-tour/dist/vue-tour.css')
-
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 //dynamic kullanımda bindingi gelmiyodu
@@ -43,12 +33,10 @@ const hotjarID = APP_CONFIG.VUE_APP_HOTJAR_ID
 const gtmID = APP_CONFIG.VUE_APP_GTM_ID
 const gtmPreviewEnv = APP_CONFIG.VUE_APP_GTM_ENV
 const gtmAuth = APP_CONFIG.VUE_APP_GTM_AUTH
-const fullstoryID = APP_CONFIG.VUE_APP_FULLSTORY_ID
 const isCloud = APP_CONFIG.VUE_APP_IS_CLOUD
 const sentryDSN = APP_CONFIG.VUE_APP_SENTRY_DSN
 const gtmStatus = APP_CONFIG.VUE_APP_GTM_STATUS
 const sentryStatus = APP_CONFIG.VUE_APP_SENTRY_STATUS
-const fullstoryStatus = APP_CONFIG.VUE_APP_FULLSTORY_STATUS
 const hotjarStatus = APP_CONFIG.VUE_APP_HOTJAR_STATUS
 const mixPanelStatus = APP_CONFIG.VUE_APP_MIX_PANEL_STATUS
 const mixPanelToken = APP_CONFIG.VUE_APP_MIX_PANEL_TOKEN
@@ -65,17 +53,8 @@ if (isCloud) {
         }),
         new Integrations.BrowserTracing()
       ],
-
-      // We recommend adjusting this value in production, or using tracesSampler
-      // for finer control
       tracesSampleRate: 1.0
     })
-
-  //Analytics
-  /* const VueAnalytics = require('vue-analytics').default
-   Vue.use(VueAnalytics, {
-     id: APP_CONFIG.VUE_APP_ANALYTICS_ID
-   })*/
 
   //Hotjar
   const Hotjar = require('vue-hotjar').default
@@ -95,12 +74,6 @@ if (isCloud) {
       }
     })
 
-  //FullSTORY
-  const FullStory = require('@fullstory/browser')
-  if (!!fullstoryStatus) {
-    FullStory.init({ orgId: fullstoryID })
-    Vue.prototype.$FullStory = FullStory
-  }
   //MixinPanel
   mixPanelStatus &&
     Vue.use(VueMixpanel, {
