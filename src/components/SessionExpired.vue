@@ -139,20 +139,6 @@ export default {
     })
   },
   created() {
-    if (localStorage.getItem('isRemember')) {
-      this.rememberMe = localStorage.getItem('isRemember')
-      this.$vlf.getItem('username', (err, username = '') => {
-        if (!err) {
-          this.email = username
-        }
-      })
-
-      this.$vlf.getItem('password', (err, password) => {
-        if (!err) {
-          this.password = password
-        }
-      })
-    }
     setTimeout(() => {
       this.$refs.email.focus()
     }, 100)
@@ -274,20 +260,6 @@ export default {
             this.pageNumber = 1
             _this.$router.push('/')
           }
-
-          setTimeout(() => {
-            if (_this.rememberMe) {
-              this.$vlf.setItem('username', _this.email)
-              this.$vlf.setItem('password', _this.password)
-              localStorage.setItem('isRemember', _this.rememberMe)
-            } else {
-              localStorage.removeItem('username')
-              localStorage.removeItem('password')
-              localStorage.removeItem('isRemember')
-              this.$vlf.removeItem('username')
-              this.$vlf.removeItem('password')
-            }
-          }, 500)
         })
         .catch((error) => {
           if (

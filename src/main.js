@@ -16,17 +16,7 @@ import { Vue as VueIntegration } from '@sentry/integrations'
 import { Integrations } from '@sentry/tracing'
 import { VAutocomplete, VCombobox, VSelect } from 'vuetify/lib'
 import VueTagManager from 'vue-tag-manager'
-import Vlf from 'vlf'
-import localforage from 'localforage'
-
-localforage.config({
-  name: 'keepnet'
-})
-
-Vue.use(Vlf, localforage)
-
 require('vue-tour/dist/vue-tour.css')
-
 Vue.component('SmartWidget', SmartWidget)
 Vue.component('SmartWidgetGrid', SmartWidgetGrid)
 //dynamic kullanımda bindingi gelmiyodu
@@ -65,17 +55,8 @@ if (isCloud) {
         }),
         new Integrations.BrowserTracing()
       ],
-
-      // We recommend adjusting this value in production, or using tracesSampler
-      // for finer control
       tracesSampleRate: 1.0
     })
-
-  //Analytics
-  /* const VueAnalytics = require('vue-analytics').default
-   Vue.use(VueAnalytics, {
-     id: APP_CONFIG.VUE_APP_ANALYTICS_ID
-   })*/
 
   //Hotjar
   const Hotjar = require('vue-hotjar').default
