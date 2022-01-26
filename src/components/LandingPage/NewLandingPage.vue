@@ -152,6 +152,7 @@
                 <make-available-for
                   v-model="availableForRequests"
                   ref="refMakeAvailableFor"
+                  open-direction="above"
                   :disabled="!showMakeAvailableFor"
                   :subTitle="'Select companies that should see this landing page template in their libraries'"
                   :placeholder="'Select companies or company groups'"

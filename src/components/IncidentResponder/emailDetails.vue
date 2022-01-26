@@ -114,8 +114,8 @@
               />
               <div class="border-for-header"></div>
               <KEmailPreview
+                v-if="!!mailDetails && !!mailDetails.htmlBody"
                 id="sframe"
-                v-if="!!mailDetails.htmlBody"
                 ref="refPreview"
                 :html="mailDetails.htmlBody"
               />

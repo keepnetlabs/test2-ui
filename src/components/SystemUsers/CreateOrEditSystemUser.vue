@@ -244,7 +244,8 @@ export default {
         this.formValues.statusName = statusName
         this.formValues.email = email
         this.formValues.statusId = statusId
-        this.formValues.phoneNumber = phoneNumber
+        this.formValues.phoneNumber =
+          typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber || ''
         _this.formValues.roleResourceIdList =
           allRoles &&
           allRoles.find((item) => {

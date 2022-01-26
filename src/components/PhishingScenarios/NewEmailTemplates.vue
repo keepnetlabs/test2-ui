@@ -155,6 +155,7 @@
                   v-if="isRenderMakeAvailableFor"
                   ref="refMakeAvailableFor"
                   v-model="availableForRequests"
+                  open-direction="above"
                 />
               </v-form>
             </div>

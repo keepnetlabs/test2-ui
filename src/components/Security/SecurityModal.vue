@@ -8,7 +8,7 @@
     title-id="text--login-popup-title"
     @changeStatus="$emit('changePasswordChange')"
     :max-height-size="'500'"
-    hideOverlay="trueReporterVersionDialoga"
+    :hideOverlay="true"
     custom-size="650"
     :max-height="true"
   >
@@ -361,28 +361,12 @@ export default {
         .catch(() => {})
     },
     setupMFA() {
-      let email, password
-      this.$vlf.getItem('username', (err, username = '') => {
-        if (!err) {
-          email = username
-        }
-      })
-
-      this.$vlf.getItem('password', (err, password) => {
-        if (!err) {
-          password = password
-          let payload = {
-            email,
-            password
-          }
-          getMfaSetup(payload)
-            .then((response) => {
-              this.mfaSetupDetails = response.data['data']
-              this.step = 4
-            })
-            .catch(() => {})
-        }
-      })
+      getMfaSetup()
+        .then((response) => {
+          this.mfaSetupDetails = response.data['data']
+          this.step = 4
+        })
+        .catch(() => {})
     },
     disableMFA() {
       const payload = { code: this.mfaCode }

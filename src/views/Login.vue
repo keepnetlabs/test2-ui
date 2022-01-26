@@ -685,14 +685,6 @@ export default {
         })
     }
 
-    if (localStorage.getItem('isRemember')) {
-      this.rememberMe = localStorage.getItem('isRemember')
-      this.$vlf.getItem('username', (err, username = '') => {
-        if (!err) {
-          this.email = username
-        }
-      })
-    }
     if (AuthenticationService.getAuthenticationStatus() === AuthenticationStatus.AUTHENTICATED) {
       if (
         (this.$route.query &&
@@ -1118,22 +1110,8 @@ export default {
             this.pageNumber = 1
           })
       }
-
-      setTimeout(() => {
-        if (_this.rememberMe) {
-          this.$vlf.setItem('username', _this.email)
-          localStorage.setItem('isRemember', _this.rememberMe)
-        } else {
-          localStorage.removeItem('username')
-          localStorage.removeItem('password')
-          localStorage.removeItem('isRemember')
-          this.$vlf.removeItem('username')
-          this.$vlf.removeItem('password')
-        }
-      }, 500)
     },
     onErrorLogin(payload, error) {
-      let _this = this
       if (
         error.response.data &&
         error.response.data.mfa &&
