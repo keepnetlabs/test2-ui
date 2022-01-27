@@ -455,7 +455,7 @@ export default {
       callback(newAttachmentFilesFromApi)
     },
     setAttachmentFile(file) {
-      this.formValues.attachmentFiles = file || []
+      this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
