@@ -190,6 +190,7 @@ export default {
             children: groups.results.map((item) => {
               return {
                 id: item.resourceId,
+                resourceId: item.resourceId,
                 label: item.name,
                 type: 'Group',
                 isDisabled: this.treeSelectionStatus

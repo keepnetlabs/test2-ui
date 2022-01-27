@@ -708,7 +708,7 @@ export default {
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.availableForRequests)
+        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
         isValid = refMakeAvailableFor.isAvailableForValid
       }
       if (this.isEdit && !this.isDuplicate) {
