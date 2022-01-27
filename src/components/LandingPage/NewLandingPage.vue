@@ -832,12 +832,13 @@ export default {
     )
   },
   created() {
-    this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0].value
-    this.formValues.domainRecordId = this.landingPageData.domainRecords[0].value
-    this.formValues.pathTypeId = this.landingPageData.pathTypes[0].value
-    this.formValues.extensionTypeId = this.landingPageData.extensionTypes[0].value
-    this.formValues.parameterTypeId = this.landingPageData.parameterTypes[0].value
-    if (!this.isEdit) this.formValues.methodTypeId = this.landingPageData.methodTypes[0].value
+    this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0]?.value || ''
+    this.formValues.domainRecordId = this.landingPageData.domainRecords[0]?.value || ''
+    this.formValues.pathTypeId = this.landingPageData.pathTypes[0]?.value || ''
+    this.formValues.extensionTypeId = this.landingPageData.extensionTypes[0]?.value || ''
+    this.formValues.parameterTypeId = this.landingPageData.parameterTypes[0]?.value || ''
+    if (!this.isEdit)
+      this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
     if (this.isEdit) {
