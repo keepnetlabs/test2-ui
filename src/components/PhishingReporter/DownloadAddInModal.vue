@@ -232,7 +232,7 @@ export default {
           link.click()
         })
         .catch((error) => {
-          if (error.response.status === 404) {
+          if (error && error.response && error.response.status === 404) {
             this.outlookSpinnerStatus = true
             this.downloadOutlookAddInTimeout = setTimeout(() => {
               this.callForDownloadOutlookAddIn(resourceId)
@@ -261,7 +261,8 @@ export default {
           link.click()
         })
         .catch((error) => {
-          if (error.response.status === 404) {
+          //if status is equal to 404 that mean it needs to call api again.
+          if (error && error.response && error.response.status === 404) {
             this.diagnosticToolSpinnerStatus = true
             this.diagnosticToolAddInTimeout = setTimeout(() => {
               this.callForDownloadDiagnosticTool(id)

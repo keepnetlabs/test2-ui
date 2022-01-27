@@ -714,7 +714,9 @@ export default {
           `/investigation-details/${this.$route.query.investigationDetailsResourceId}`
         )
       } else if (this.$route.query && !!this.$route.query.analysisDetailsResourceId) {
-        this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
+        this.$router.push(
+          `/incident-responder/reported-emails/email-details/${this.$route.query.analysisDetailsResourceId}`
+        )
       } else if (this.$route.query) {
         if (this.$route.query.cp) {
           this.pageNumber = 5
@@ -1043,7 +1045,9 @@ export default {
             localStorage.setItem('selectedTimeFormat', response.data.data.timeFormat)
           })
           .finally(() => {
-            this.$router.push(`/incident-responder/${this.$route.query.analysisDetailsResourceId}`)
+            this.$router.push(
+              `/incident-responder/reported-emails/email-details/${this.$route.query.analysisDetailsResourceId}`
+            )
             this.pageNumber = 1
           })
       } else if (this.$route.query && !!this.$route.query.showInvitation) {

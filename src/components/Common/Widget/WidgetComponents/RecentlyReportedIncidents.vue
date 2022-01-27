@@ -17,7 +17,7 @@
               <router-link
                 :id="`btn-link--recently-reported-incidents-${rowIndex}`"
                 class="k-widget-list__item"
-                :to="`/incident-responder/${row['resourceId']}`"
+                :to="`/incident-responder/reported-emails/email-details/${row['resourceId']}`"
                 >{{ value }}</router-link
               >
               <div

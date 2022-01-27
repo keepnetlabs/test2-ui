@@ -70,12 +70,13 @@
       <label>Attach File</label>
       <k-file-upload
         id="input--email-template-upload"
+        is-stand-alone
         class="mb-2"
         hint="Only jpg, png, gif, bmp files. Max. file size 2MB"
         ref="refFileUpload"
+        :is-show-file-progress="false"
         :value="AttachmentFiles"
         @inputFile="onFileChanged"
-        :size="2"
       />
       <div class="email-template__attachment-list" :key="attachmentListKey">
         <div
