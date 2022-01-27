@@ -235,8 +235,9 @@ export default {
       this.resetPageNumber()
       this.callForData()
     },
-    sortChanged({ order } = {}) {
+    sortChanged({ order, prop } = {}) {
       this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.orderBy = prop
       this.callForData()
     },
     resetPageNumber() {
