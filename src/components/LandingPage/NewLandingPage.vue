@@ -554,24 +554,24 @@ export default {
     changeDisabledLabel() {
       this.disabledLabel = `${
         this.landingPageData.urlSchemaTypes.find(
-          (item) => item.value == this.formValues.urlSchemaTypeId.toString()
-        ).text
+          (item) => item.value === this.formValues.urlSchemaTypeId?.toString() || ''
+        )?.text
       }${this.formValues.subDomain || 'subDomain'}.${
         this.landingPageData.domainRecords.find(
-          (item) => item.value == this.formValues.domainRecordId.toString()
+          (item) => item.value === this.formValues.domainRecordId?.toString() || ''
         )?.text || 'noDomain'
       }/${
         this.landingPageData.pathTypes.find(
-          (item) => item.value == this.formValues.pathTypeId.toString()
+          (item) => item.value === this.formValues.pathTypeId?.toString() || ''
         )?.text || 'noPath'
       }${
         this.landingPageData.extensionTypes.find(
-          (item) => item.value == this.formValues.extensionTypeId.toString()
+          (item) => item.value === this.formValues.extensionTypeId?.toString() || ''
         )?.text || 'noExtension'
       }?${
         this.landingPageData.parameterTypes.find(
-          (item) => item.value == this.formValues.parameterTypeId.toString()
-        ).text
+          (item) => item.value === this.formValues.parameterTypeId?.toString() || ''
+        )?.text
       }=${(Math.random() * 10 + 1).toString().replace('.', '')}`
     },
     setAttachmentFile(file) {
