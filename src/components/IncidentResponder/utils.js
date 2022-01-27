@@ -21,7 +21,7 @@ export const getEmailTypesAndEmailTemplates = () => {
     .then(({ data: { data } }) => {
       axiosPayload.filter.FilterGroups[0].FilterItems[0].Value = data.find(
         (item) => item.name === 'Suspicious Email Analysis Report Update'
-      )['resourceId']
+      )?.resourceId
       return data
     })
     .then((data) => {
