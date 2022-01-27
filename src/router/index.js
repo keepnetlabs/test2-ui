@@ -364,7 +364,7 @@ const router = new Router({
           params: true
         },
         {
-          path: '/incident-responder/:id',
+          path: '/incident-responder/reported-emails/email-details/:id',
           name: 'Analysis Details',
           component: EmailDetails,
           beforeEnter: (to, from, next) => {

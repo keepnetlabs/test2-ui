@@ -554,24 +554,24 @@ export default {
     changeDisabledLabel() {
       this.disabledLabel = `${
         this.landingPageData.urlSchemaTypes.find(
-          (item) => item.value == this.formValues.urlSchemaTypeId.toString()
-        ).text
+          (item) => item.value === this.formValues.urlSchemaTypeId?.toString() || ''
+        )?.text
       }${this.formValues.subDomain || 'subDomain'}.${
         this.landingPageData.domainRecords.find(
-          (item) => item.value == this.formValues.domainRecordId.toString()
+          (item) => item.value === this.formValues.domainRecordId?.toString() || ''
         )?.text || 'noDomain'
       }/${
         this.landingPageData.pathTypes.find(
-          (item) => item.value == this.formValues.pathTypeId.toString()
+          (item) => item.value === this.formValues.pathTypeId?.toString() || ''
         )?.text || 'noPath'
       }${
         this.landingPageData.extensionTypes.find(
-          (item) => item.value == this.formValues.extensionTypeId.toString()
+          (item) => item.value === this.formValues.extensionTypeId?.toString() || ''
         )?.text || 'noExtension'
       }?${
         this.landingPageData.parameterTypes.find(
-          (item) => item.value == this.formValues.parameterTypeId.toString()
-        ).text
+          (item) => item.value === this.formValues.parameterTypeId?.toString() || ''
+        )?.text
       }=${(Math.random() * 10 + 1).toString().replace('.', '')}`
     },
     setAttachmentFile(file) {
@@ -832,12 +832,13 @@ export default {
     )
   },
   created() {
-    this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0].value
-    this.formValues.domainRecordId = this.landingPageData.domainRecords[0].value
-    this.formValues.pathTypeId = this.landingPageData.pathTypes[0].value
-    this.formValues.extensionTypeId = this.landingPageData.extensionTypes[0].value
-    this.formValues.parameterTypeId = this.landingPageData.parameterTypes[0].value
-    if (!this.isEdit) this.formValues.methodTypeId = this.landingPageData.methodTypes[0].value
+    this.formValues.urlSchemaTypeId = this.landingPageData.urlSchemaTypes[0]?.value || ''
+    this.formValues.domainRecordId = this.landingPageData.domainRecords[0]?.value || ''
+    this.formValues.pathTypeId = this.landingPageData.pathTypes[0]?.value || ''
+    this.formValues.extensionTypeId = this.landingPageData.extensionTypes[0]?.value || ''
+    this.formValues.parameterTypeId = this.landingPageData.parameterTypes[0]?.value || ''
+    if (!this.isEdit)
+      this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
     if (this.isEdit) {
