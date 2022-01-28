@@ -126,6 +126,7 @@ export default {
       setTimeout(() => {
         if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
           if (!this.isLoadState) {
+            const tsIncidents = this.$refs
             this.$refs.tsIncidents.getIncidentList()
             this.$refs.tsIncidents.page = 1
             this.$refs.tsIncidents.itemsPerPage = 5
