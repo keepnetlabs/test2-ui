@@ -280,7 +280,6 @@
                             :is-edit="!!isEdit"
                             :is-phishing-template="true"
                             @setAttachmentFile="setAttachmentFile"
-                            @handleEditHtmlTemplate="formValues.landingPages[0].ontent = $event"
                             :onlyGrapes="true"
                           />
                         </el-tab-pane>
