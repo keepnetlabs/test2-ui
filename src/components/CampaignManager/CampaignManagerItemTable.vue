@@ -27,7 +27,7 @@
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :add-button="tableOptions.addButton"
-      @on-add-button-click="toggleAddCampaignManagerModal"
+      @on-add-button-click="handleOnAddButtonClick"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -150,7 +150,8 @@ export default {
           show: true,
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
-          id: 'btn-add--item-campaign-manager'
+          id: 'btn-add--item-campaign-manager',
+          disabled: false
         },
         rowActions: [
           {
@@ -347,8 +348,15 @@ export default {
     handleBackClick() {
       this.$emit(EMITS.ON_BACK_CLICK)
     },
-    toggleAddCampaignManagerModal() {
-      this.$emit('toggle-add-campaign-manager-modal')
+    handleOnAddButtonClick() {
+      this.tableOptions.addButton.disabled = true
+      launchPhishingCampaign(this.item.resourceId)
+        .then(() => {
+          this.callForData()
+        })
+        .finally(() => {
+          this.tableOptions.addButton.disabled = false
+        })
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
