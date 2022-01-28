@@ -438,6 +438,9 @@ export default {
       this.formValues.emailTemplateLogoFile = file
     },
     submit() {
+      if (this.isCompanyConfigure) {
+        return this.$emit('on-configure-company-submit')
+      }
       const { refForm } = this.$refs
       const { UPDATE } = this.PERMISSIONS
       if (UPDATE.hasPermission) {
