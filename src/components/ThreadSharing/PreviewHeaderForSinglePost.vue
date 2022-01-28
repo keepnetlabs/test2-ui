@@ -213,7 +213,7 @@ export default {
   },
   computed: {
     findDate() {
-      return this.uploadRespond?.headers?.find((item) => item.key === 'Date').value
+      return this.uploadRespond?.headers?.find((item) => item.key === 'Date')?.value
     }
   }
 }

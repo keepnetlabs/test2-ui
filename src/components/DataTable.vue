@@ -361,7 +361,11 @@
                   id="btn-delete-all--table-header"
                   class="btn-selected-hover mr-1"
                   icon
-                  :disabled="!selectEvent.disabledStatuses.delete"
+                  :disabled="
+                    selectEvent &&
+                    selectEvent.disabledStatuses &&
+                    selectEvent.disabledStatuses.delete
+                  "
                   @click="handleDelete(multipleSelection)"
                 >
                   <v-icon class="selection-icons" color="white">mdi-delete</v-icon>

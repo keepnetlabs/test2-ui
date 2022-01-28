@@ -207,7 +207,8 @@ export default {
     editHtmlTemplate() {
       this.$emit(
         'update:template',
-        this.template || this.$refs.refPreview.$refs.iframe.contentWindow.document.body.innerHTML
+        this.template ||
+          this.$refs?.refPreview?.$refs?.iframe?.contentWindow?.document?.body?.innerHTML
       )
       this.toggleShowGrapesModal()
     },

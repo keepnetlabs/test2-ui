@@ -457,24 +457,28 @@ export default {
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
       this.loading = true
-      getTargetUserCustomFieldsByCompanyId()
-        .then((response) => {
-          const { data } = response
-          this.customFields = data.data.filter((item) => {
-            return item.isActive
+      if (this.customFields.length) {
+        this.callForSearchTargetGroupUsers()
+      } else {
+        getTargetUserCustomFieldsByCompanyId()
+          .then((response) => {
+            const { data } = response
+            this.customFields = data.data.filter((item) => {
+              return item.isActive
+            })
+            const sortProp = 'sortOrder'
+            this.customFields.sort((a, b) => {
+              if (a[sortProp] > b[sortProp]) {
+                return 1
+              } else if (a[sortProp] === b[sortProp]) {
+                return 0
+              }
+              return -1
+            })
+            this.addCustomFieldColumns()
           })
-          const sortProp = 'sortOrder'
-          this.customFields.sort((a, b) => {
-            if (a[sortProp] > b[sortProp]) {
-              return 1
-            } else if (a[sortProp] === b[sortProp]) {
-              return 0
-            }
-            return -1
-          })
-          this.addCustomFieldColumns()
-        })
-        .finally(() => this.callForSearchTargetGroupUsers())
+          .finally(() => this.callForSearchTargetGroupUsers())
+      }
     },
     callForSearchTargetGroupUsers(id = this.resourceId) {
       this.loading = true

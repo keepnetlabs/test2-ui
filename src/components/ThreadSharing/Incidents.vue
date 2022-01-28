@@ -53,7 +53,7 @@
                   item-text="name"
                   :menu-props="{ offsetY: true }"
                   item-value="resourceId"
-                  @change="!isLoadState && getIncidentList('', '', true)"
+                  @change="callForIncidentList"
                   :disabled="incidentLoading"
                   id="threat-sharing-incidents-search-company"
                 />
@@ -70,7 +70,7 @@
                   :menu-props="{ offsetY: true }"
                   item-text="name"
                   item-value="resourceId"
-                  @change="!isLoadState && getIncidentList('', '', true)"
+                  @change="callForIncidentList"
                   :slots="{ selection: true }"
                   :disabled="incidentLoading"
                   id="threat-sharing-incidents-search-threat"
@@ -303,6 +303,9 @@ export default {
     }
   },
   methods: {
+    callForIncidentList(v) {
+      !this.isLoadState && this.getIncidentList('', '', true)
+    },
     checkDatatableIsEmpty() {
       let result = this.search || this.companyValue || this.threats.length
       return result
