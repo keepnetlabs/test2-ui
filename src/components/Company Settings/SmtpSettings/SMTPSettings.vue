@@ -435,7 +435,7 @@ export default {
       this.$set(
         this.tableOptions.selectEvent.disabledStatuses,
         'delete',
-        this.selectedTableItems.every((row) => row.isOwner)
+        !this.selectedTableItems.every((row) => row.isOwner)
       )
     },
     handleEditAction({ resourceId } = {}) {
