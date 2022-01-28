@@ -11,8 +11,9 @@
       v-if="isShowDomainDialog"
       :status="isShowDomainDialog"
       :is-action-button-disabled="getActionButtonDisabled"
+      :error-message="whiteLabelingErrorMessage"
       @on-close="toggleWhiteLabelingDomainDialog"
-      @on-confirm="submit"
+      @on-confirm="handleConfirmWhiteLabelingDomainDialog"
     />
     <DatatableLoading class="mt-5" :loading="isWhiteLabelLoading" v-if="isWhiteLabelLoading" />
     <v-form v-show="!isWhiteLabelLoading" ref="refForm" lazy-validation>
@@ -334,6 +335,7 @@ export default {
   data() {
     return {
       isShowDomainDialog: false,
+      whiteLabelingErrorMessage: false,
       isActionButtonDisabled: false,
       isWhiteLabelLoading: false,
       isResetToDefaultActionButtonDisabled: false,
@@ -406,6 +408,10 @@ export default {
     }
   },
   methods: {
+    handleConfirmWhiteLabelingDomainDialog() {
+      this.formValues.acceptDnsRecordSettings = true
+      this.submit()
+    },
     getFileUploadClasses(url = '') {
       return ['white-labeling__file-upload', { 'mb-6': !url }]
     },
@@ -453,14 +459,15 @@ export default {
             })
             .then(() => {
               this.formValues.acceptDnsRecordSettings = false
+              this.whiteLabelingErrorMessage = ''
               this.acceptedDnsRecordSettingsDomain = ''
               this.isWhiteLabelLoading = false
               this.isShowDomainDialog = false
               this.callForData()
             })
             .catch((e) => {
-              if (e.response.status === 403) {
-                this.formValues.acceptDnsRecordSettings = true
+              if (e && e.response && e.response.status === 404) {
+                this.whiteLabelingErrorMessage = e.response?.data?.message
                 this.acceptedDnsRecordSettingsDomain = this.formValues.mainDomainUrl
                 this.toggleWhiteLabelingDomainDialog()
               } else {
@@ -483,10 +490,12 @@ export default {
     },
     handleResetWhiteLabeling() {
       if (this.hasDeletePermission) {
+        this.isWhiteLabelLoading = true
         this.isResetToDefaultActionButtonDisabled = true
-        this.$store.dispatch('whitelabel/resetToDefault').finally(() => {
+        this.$store.dispatch('whitelabel/resetToDefault').then(() => {
           this.toggleWhiteLabelingDialog()
           this.isResetToDefaultActionButtonDisabled = false
+          this.callForData()
         })
       }
     },
