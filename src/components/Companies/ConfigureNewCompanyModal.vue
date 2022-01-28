@@ -54,6 +54,7 @@
               is-company-configure
               :created-company-id="createdCompanyResourceId"
               :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
+              @on-configure-company-submit="saveWhiteLabeling"
             />
           </v-stepper-content>
           <!--      <v-stepper-content class="k-stepper__content" :step="2">
@@ -251,23 +252,38 @@ export default {
     handleChangeStatus(val) {
       this.systemUserFormData.statusName = this.statusItems.find((item) => item.val === val).name
     },
+    saveWhiteLabeling(refWhiteLabeling = this.$refs.refWhiteLabeling || {}) {
+      const formData = new FormData()
+      const id = refWhiteLabeling.configureCompanyWhitelabelingResourceId
+      const payload = refWhiteLabeling.formValues
+      Object.keys(payload).map((key) => {
+        formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
+      })
+      updateWhiteLabel(formData, id, {
+        headers: { 'X-IR-COMPANY-ID': this.createdCompanyResourceId }
+      })
+        .then(() => {
+          refWhiteLabeling.formValues.acceptDnsRecordSettings = false
+          refWhiteLabeling.acceptedDnsRecordSettingsDomain = ''
+          refWhiteLabeling.isWhiteLabelLoading = false
+          refWhiteLabeling.isShowDomainDialog = false
+          this.changeStep()
+        })
+        .catch((e) => {
+          if (e.response.status === 403) {
+            refWhiteLabeling.formValues.acceptDnsRecordSettings = true
+            refWhiteLabeling.acceptedDnsRecordSettingsDomain =
+              refWhiteLabeling.formValues.mainDomainUrl
+            refWhiteLabeling.toggleWhiteLabelingDomainDialog()
+          }
+        })
+    },
     handleSaveAndContinue() {
       const { refWhiteLabeling } = this.$refs
       switch (this.step) {
         case 1:
           if (refWhiteLabeling.$refs.refForm.validate()) {
-            const formData = new FormData()
-            const id = refWhiteLabeling.configureCompanyWhitelabelingResourceId
-            const payload = refWhiteLabeling.formValues
-
-            Object.keys(payload).map((key) => {
-              formData.append(key.charAt(0).toLocaleUpperCase('en-EN') + key.slice(1), payload[key])
-            })
-            updateWhiteLabel(formData, id, {
-              headers: { 'X-IR-COMPANY-ID': this.createdCompanyResourceId }
-            }).then(() => {
-              this.changeStep()
-            })
+            this.saveWhiteLabeling(refWhiteLabeling)
           }
           break
         case 2:
