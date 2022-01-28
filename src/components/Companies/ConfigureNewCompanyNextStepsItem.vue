@@ -14,7 +14,9 @@ export default {
   name: 'ConfigureNewCompanyNextStepsItem',
   props: {
     routeLink: {
-      type: String
+      validator(value) {
+        return typeof value === 'string' || typeof value === 'object'
+      }
     },
     routeText: {
       type: String

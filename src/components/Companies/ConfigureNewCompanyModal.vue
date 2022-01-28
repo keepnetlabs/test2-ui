@@ -270,8 +270,8 @@ export default {
           this.changeStep()
         })
         .catch((e) => {
-          if (e.response.status === 403) {
-            refWhiteLabeling.formValues.acceptDnsRecordSettings = true
+          if (e && e.response && e.response.status === 404) {
+            refWhiteLabeling.whiteLabelingErrorMessage = e.response?.data?.message
             refWhiteLabeling.acceptedDnsRecordSettingsDomain =
               refWhiteLabeling.formValues.mainDomainUrl
             refWhiteLabeling.toggleWhiteLabelingDomainDialog()

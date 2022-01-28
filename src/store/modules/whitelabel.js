@@ -141,9 +141,7 @@ const whitelabel = {
       })
     },
     resetToDefault(context = {}) {
-      return deleteWhiteLabel(context.state.resourceId).then((response) => {
-        context.dispatch('callForData')
-      })
+      return deleteWhiteLabel(context.state.resourceId)
     },
     callForSystemVersion(context = {}) {
       getSystemVersion().then((response) => {

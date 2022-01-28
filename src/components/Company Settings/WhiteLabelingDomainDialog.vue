@@ -8,8 +8,8 @@
     :status="status"
     @changeStatus="handleCloseDialog"
   >
-    <template v-slot:app-dialog-body
-      >The domain may not work correctly. Are you sure to save this changes?
+    <template v-slot:app-dialog-body>
+      {{ errorMessage }}
     </template>
     <template v-slot:app-dialog-footer>
       <AppDialogFooter
@@ -35,6 +35,9 @@ export default {
     },
     isActionButtonDisabled: {
       type: Boolean
+    },
+    errorMessage: {
+      type: String
     }
   },
   methods: {
