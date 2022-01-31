@@ -116,7 +116,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import { createPermissionRoles, updatePermissionRoles } from '@/api/permissions'
 import labels from '@/model/constants/labels'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -156,6 +156,7 @@ export default {
       showNoData: false,
       treeViewKey: `scroll-key${Math.random().toString().substring(0, 5)}`,
       availableForRequests: [],
+      initialFormValues: null,
       formValues: {
         name: null,
         description: null,
@@ -284,10 +285,23 @@ export default {
         })
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeOverlay')
+          }
+        })
+      }
     }
   },
   mounted() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit && this.resourceId) {
       this.formValues = this.permissionEditData
       let _this = this
@@ -297,6 +311,7 @@ export default {
         )
         this.availableForKey = 'updatedKey'
       })
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
   }
 }

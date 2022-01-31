@@ -2,6 +2,7 @@
   <div id="permissionLogs" class="permission-logs">
     <new-permissions
       v-if="newPermissionsModalStatus"
+      ref="permissionsModal"
       :status="newPermissionsModalStatus"
       @closeOverlay="togglePermissionModalStatus"
       @closeOverlayWithUpdate="closeOverlayWithUpdate"
@@ -625,6 +626,11 @@ export default {
 
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    checkIfCanClosePermissionsModal() {
+      if (this.$refs.permissionsModal) {
+        this.$refs.permissionsModal.closeOverlay()
+      }
     }
   },
   created() {

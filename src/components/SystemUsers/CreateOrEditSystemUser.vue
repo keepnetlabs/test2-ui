@@ -55,6 +55,7 @@ import { getSystemUsersRole } from '@/api/systemUsers'
 import jwt_decode from 'jwt-decode'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
+import { isDifferent } from '@/utils/functions'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -82,6 +83,7 @@ export default {
       role: null,
       saveDisable: false,
       sendInformationEmailDisabled: false,
+      initialFormValues: null,
       formValues: new SystemUserModel(),
       showWelcomeEmailModal: false,
       statusItems: [
@@ -107,7 +109,17 @@ export default {
       })
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeOverlay')
+          }
+        })
+      }
     },
     handleChangeStatus(val) {
       this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
@@ -183,6 +195,10 @@ export default {
     this.role = tokenData.role
   },
   created() {
+    if (!this.selectedRow) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
+
     let payload = {
       pageNumber: 1,
       pageSize: 10,
@@ -271,6 +287,7 @@ export default {
           availableRoles.length &&
           availableRoles.find((role) => role.name === 'Company Admin').resourceId
       }
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     })
   }
 }
