@@ -332,6 +332,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
+import { isDifferent } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
@@ -397,6 +398,7 @@ export default {
       dataContainerWithSearchItems: [],
       isTextFieldsDisabled: false,
       roleItems: [],
+      initialFormValues: null,
       formValues: {
         name: '',
         idPEntityID: '',
@@ -440,8 +442,11 @@ export default {
     if (this.isEdit && this.selectedRow) {
       this.callForSamlSetting()
     }
-    this.callForGetDefaultSettings()
-    this.callForRoles()
+    this.callForGetDefaultSettings().then(() => {
+      this.callForRoles().then(() => {
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      })
+    })
   },
   methods: {
     downloadMetadata() {
@@ -490,53 +495,73 @@ export default {
       })
     },
     callForRoles() {
-      getSystemUsersRole({
-        pageNumber: 1,
-        pageSize: 10000,
-        orderBy: 'RoleName',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
+      return new Promise((res, rej) => {
+        getSystemUsersRole({
+          pageNumber: 1,
+          pageSize: 10000,
+          orderBy: 'RoleName',
+          ascending: true,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: [],
+                FilterGroups: []
+              },
+              {
+                Condition: 'AND',
+                FilterItems: [],
+                FilterGroups: []
+              }
+            ]
+          }
+        })
+          .then((response) => {
+            const { data } = response.data
+            this.roleItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
+            if (!this.isEdit && !this.selectedRow) {
+              this.formValues.defaultRoleResourceId = data.find(
+                (role) => role.name === labels.CompanyAdmin
+              )?.resourceId
             }
-          ]
-        }
-      }).then((response) => {
-        const { data } = response.data
-        this.roleItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
-        if (!this.isEdit && !this.selectedRow) {
-          this.formValues.defaultRoleResourceId = data.find(
-            (role) => role.name === labels.CompanyAdmin
-          )?.resourceId
-        }
-        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+            this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+            res()
+          })
+          .catch(rej)
       })
     },
     handleBatchImportClick() {
       this.toggleBatchImportPopup()
     },
     callForGetDefaultSettings() {
-      getDefaultSamlSettings().then((response) => {
-        const {
-          data: { data }
-        } = response
-        delete data.defaultRoleResourceId
-        for (const key of Object.keys(data)) {
-          this.formValues[key] = data[key]
-        }
+      return new Promise((res, rej) => {
+        getDefaultSamlSettings()
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            delete data.defaultRoleResourceId
+            for (const key of Object.keys(data)) {
+              this.formValues[key] = data[key]
+            }
+            res()
+          })
+          .catch(rej)
       })
     },
     closeOverlay() {
-      this.$emit('on-close')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('on-close')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('on-close')
+          }
+        })
+      }
     },
     handleCopyToClipboard(key = '') {
       navigator.clipboard.writeText(this.formValues[key] || this[key])

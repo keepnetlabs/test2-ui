@@ -104,13 +104,13 @@
         Attachment Count
       </div>
       <div id="text--email-details-attachment-count-value" class="details-content--item--value">
-        {{ mailDetails && mailDetails.attachments.length }}
+        {{ mailDetails && mailDetails.attachments && mailDetails.attachments.length }}
       </div>
     </div>
     <div class="details-content--item">
       <div id="text--email-details-url-count-key" class="details-content--item--key">Url Count</div>
       <div id="text--email-details-url-count-value" class="details-content--item--value">
-        {{ mailDetails && mailDetails.urls.length }}
+        {{ mailDetails && mailDetails.urls && mailDetails.urls.length }}
       </div>
     </div>
     <div class="details-content--item">

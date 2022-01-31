@@ -49,7 +49,7 @@ import {
   exportCampaignJobUserNoResponse,
   searchCampaignJobUserNoResponse
 } from '@/api/phishingsimulator'
-import { getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
 
 export default {
@@ -132,7 +132,10 @@ export default {
         )
       )
       if (!savedFilter || !savedFilter.filter.FilterGroups[0].FilterItems.length) return
-      const { filter = JSON.parse(JSON.stringify(defaultFilter)), filterValues } = savedFilter
+      const {
+        filter = JSON.parse(JSON.stringify(getDefaultFilter().filter)),
+        filterValues
+      } = savedFilter
       this.axiosPayload.filter = filter
       this.tableOptions.isColumnFilterActive = true
       this.$nextTick(() => {

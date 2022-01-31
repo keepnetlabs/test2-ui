@@ -2,6 +2,7 @@
   <div class="proxy-settings">
     <company-settings-header title="Proxy Settings" sub-title="Configure proxy" />
     <new-proxy-settings
+      ref="newProxySettings"
       :status="newProxyModalStatus"
       @closeOverlay="toggleProxyModalStatus"
       @handleDelete="handleDeleteProxySettings"
@@ -356,6 +357,10 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForSearchProxySettings()
+    },
+    checkIfCanCloseProxyModal() {
+      if (this.$refs.newProxySettings);
+      this.$refs.newProxySettings.closeOverlay()
     },
     toggleProxyModalStatus() {
       if (this.newProxyModalStatus) {

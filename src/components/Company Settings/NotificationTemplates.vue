@@ -6,6 +6,7 @@
     />
     <new-notification-template
       v-if="newNotificationTemplateStatus"
+      ref="newNotificationTemplate"
       :edit-items-disabled="editItemsDisabled"
       :selectedItem="selectedItem"
       :status="newNotificationTemplateStatus"
@@ -476,6 +477,9 @@ export default {
         this.selectedItem = null
       }
       this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
+    },
+    checkIfCanCloseNotificationTemplateModal() {
+      this.$refs.newNotificationTemplate.closeOverlay()
     },
     toggleNewNotificationTemplate() {
       if (this.newNotificationTemplateStatus) {

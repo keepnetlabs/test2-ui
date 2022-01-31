@@ -68,7 +68,6 @@
       v-if="checkPermissions('phishing-simulator/landing-page-template', 'POST')"
       id="landingPage-data-table"
       ref="refLandingPageList"
-      :key="tableKey"
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
@@ -218,7 +217,6 @@ export default {
   },
   data() {
     return {
-      tableKey: `key-${Math.random().toString().substring(5)}`,
       landingPageData: null,
       editableFormValues: {},
       loading: true,
@@ -470,7 +468,7 @@ export default {
       this.resetPageNumber()
       this.getDatatableList()
     },
-    getDefaultFilterAndSearch() {
+    getDefaultFilterAndSearch(callLookup = false) {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES)
       )
@@ -478,11 +476,13 @@ export default {
         this.bodyData.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refLandingPageList.filterValues = savedFilter.filterValues
-          this.$refs.refLandingPageList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
+          if (!callLookup) {
+            this.$refs.refLandingPageList.reRenderColumns(savedFilter.filterValues)
+          }
         })
+      }
+      if (callLookup) {
+        this.callForLookups(savedFilter?.filterValues)
       }
       this.getDatatableList()
     },
@@ -701,25 +701,27 @@ export default {
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
       this.getDatatableList()
+    },
+    callForLookups(filterValues) {
+      getLandingPageFormDetails().then((response) => {
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          response.data.data.methodTypes.map((item) => item.text)
+        )
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          response.data.data.difficultyTypes.map((item) => item.text)
+        )
+        this.$refs.refLandingPageList.reRenderColumns(filterValues || {})
+        this.landingPageData = response.data.data
+      })
     }
   },
   created() {
-    this.getDefaultFilterAndSearch()
-    getLandingPageFormDetails().then((response) => {
-      this.$set(
-        this.tableOptions.columns[1],
-        'filterableItems',
-        response.data.data.methodTypes.map((item) => item.text)
-      )
-      this.$set(
-        this.tableOptions.columns[2],
-        'filterableItems',
-        response.data.data.difficultyTypes.map((item) => item.text)
-      )
-      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
-      this.tableKey = `key-${Math.random().toString().substring(5)}`
-      this.landingPageData = response.data.data
-    })
+    this.getDefaultFilterAndSearch(true)
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.LANDINGPAGES))
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
