@@ -278,6 +278,7 @@ export function setGlobalUserData(userData) {
   localStorage.setItem('userId', currentUserData.id)
   localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
   localStorage.setItem('userName', userData.name || currentUserData.name)
+  localStorage.setItem('hostId', userData['user_id'])
   return currentUserData
 }
 
