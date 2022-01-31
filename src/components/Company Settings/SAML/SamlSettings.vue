@@ -13,6 +13,7 @@
     />
     <new-saml-settings
       v-if="isEditOrNewModalOpen"
+      ref="newSamlSettings"
       :status="isEditOrNewModalOpen"
       :is-edit="isEdit"
       :selected-row="selectedRow"
@@ -64,68 +65,68 @@
 </template>
 
 <script>
-import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import DataTable from '@/components/DataTable'
-import labels from '@/model/constants/labels'
-import { exportSamlSettings, searchSamlSettings } from '@/api/samlSettings'
+import CompanySettingsHeader from "@/components/Company Settings/CompanySettingsHeader";
+import DataTable from "@/components/DataTable";
+import labels from "@/model/constants/labels";
+import { exportSamlSettings, searchSamlSettings } from "@/api/samlSettings";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
 import {
   columnFilterChanged,
   columnFilterCleared,
-  downloadExportedFile
-} from '@/utils/helperFunctions'
-import DeleteSamlSettings from '@/components/Company Settings/SAML/DeleteSamlSettings'
-import NewSamlSettings from '@/components/Company Settings/SAML/NewSamlSettings'
+  downloadExportedFile,
+} from "@/utils/helperFunctions";
+import DeleteSamlSettings from "@/components/Company Settings/SAML/DeleteSamlSettings";
+import NewSamlSettings from "@/components/Company Settings/SAML/NewSamlSettings";
 export default {
-  name: 'SamlSettings',
+  name: "SamlSettings",
   components: { NewSamlSettings, DeleteSamlSettings, CompanySettingsHeader, DataTable },
   data() {
     return {
       axiosPayload: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'CreateTime',
+        orderBy: "CreateTime",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
+              FilterGroups: [],
+            },
+          ],
+        },
       },
       defaultAxiosPayload: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'CreateTime',
+        orderBy: "CreateTime",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
+              FilterGroups: [],
+            },
+          ],
+        },
       },
       labels,
       isEditOrNewModalOpen: false,
@@ -139,215 +140,222 @@ export default {
       tableOptions: {
         columns: [
           {
-            property: 'name',
-            align: 'left',
+            property: "name",
+            align: "left",
             editable: false,
             label: labels.SamlName,
-            fixed: 'left',
+            fixed: "left",
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 180,
-            filterableType: 'text'
+            filterableType: "text",
           },
           {
-            property: 'statusName',
-            align: 'center',
+            property: "statusName",
+            align: "center",
             editable: false,
             label: labels.SSOEnabled,
             fixed: false,
             sortable: true,
             show: true,
             width: 180,
-            type: 'badge',
-            filterableType: 'select',
+            type: "badge",
+            filterableType: "select",
             filterableItems: [
-              { text: 'Inactive', value: 'Inactive' },
-              { text: 'Active', value: 'Active' }
+              { text: "Inactive", value: "Inactive" },
+              { text: "Active", value: "Active" },
             ],
-            filterableCustomFieldName: 'status'
+            filterableCustomFieldName: "status",
           },
           {
-            property: 'createTime',
-            align: 'left',
+            property: "createTime",
+            align: "left",
             editable: false,
-            label: 'Date Added',
+            label: "Date Added",
             width: 180,
             sortable: true,
             show: true,
-            type: 'text',
-            filterableType: 'date'
-          }
+            type: "text",
+            filterableType: "date",
+          },
         ],
         isColumnFilterActive: false,
         addButton: {
           show: true,
-          action: 'addNewSamlSetting',
+          action: "addNewSamlSetting",
           tooltip: labels.SamlAddButtonTooltip,
-          id: 'btn-add--saml-settings'
+          id: "btn-add--saml-settings",
         },
         empty: {
           message: labels.EmptySamlTable,
           subMes: labels.EmptySamlTableSub,
           btn: labels.New,
-          icon: 'mdi-plus',
-          id: 'btn-empty--saml-settings'
+          icon: "mdi-plus",
+          id: "btn-empty--saml-settings",
         },
         rowActions: [
           {
-            name: 'Edit',
-            icon: 'mdi-pencil',
-            action: 'editAction',
-            id: 'btn-edit--saml-settings-row-actions'
+            name: "Edit",
+            icon: "mdi-pencil",
+            action: "editAction",
+            id: "btn-edit--saml-settings-row-actions",
           },
           {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction',
-            id: 'btn-delete--saml-settings-row-actions'
-          }
+            name: "Delete",
+            icon: "mdi-delete",
+            action: "deleteAction",
+            id: "btn-delete--saml-settings-row-actions",
+          },
         ],
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false
-        }
-      }
-    }
+          download: false,
+        },
+      },
+    };
   },
   created() {
-    this.setStoredTableSettings()
-    this.getDefaultFilterAndSearch()
-    this.callForSamlSettings()
+    this.setStoredTableSettings();
+    this.getDefaultFilterAndSearch();
+    this.callForSamlSettings();
   },
   methods: {
     callForSamlSettings() {
-      this.loading = true
+      this.loading = true;
       searchSamlSettings(this.axiosPayload)
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = results
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber },
+            },
+          } = response;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
+          this.tableData = results;
         })
-        .finally(() => (this.loading = false))
+        .finally(() => (this.loading = false));
     },
     columnFilterChanged(filter = {}) {
-      this.tableOptions.isColumnFilterActive = true
+      this.tableOptions.isColumnFilterActive = true;
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
         this.axiosPayload
-      )
-      this.callForSamlSettings()
+      );
+      this.callForSamlSettings();
     },
-    columnFilterCleared(fieldName = '') {
+    columnFilterCleared(fieldName = "") {
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.axiosPayload
-      )
+      );
       this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
-      this.callForSamlSettings()
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1;
+      this.callForSamlSettings();
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.axiosPayload.pageNumber = pageNumber
-      this.callForSamlSettings()
+      this.axiosPayload.pageNumber = pageNumber;
+      this.callForSamlSettings();
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.axiosPayload.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForSamlSettings()
+      this.axiosPayload.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.callForSamlSettings();
     },
     sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === 'ascending'
-      this.axiosPayload.orderBy = prop.toLowerCase() === 'statusname' ? 'StatusId' : prop
-      this.callForSamlSettings()
+      this.axiosPayload.ascending = order === "ascending";
+      this.axiosPayload.orderBy = prop.toLowerCase() === "statusname" ? "StatusId" : prop;
+      this.callForSamlSettings();
     },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.tableOptions.isColumnFilterActive = columnFilterActive;
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
-        )
-        return column.filterableType
-      })
+        );
+        return column.filterableType;
+      });
       filterItems.forEach((filter) => {
-        if (filter.FieldName === 'StatusName') {
-          filter.FieldName = 'Status'
+        if (filter.FieldName === "StatusName") {
+          filter.FieldName = "Status";
         }
-      })
-      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
-      this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
-      this.callForSamlSettings()
+      });
+      this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems];
+      this.resetPageNumber();
+      this.tableOptions.isColumnFilterActive = columnFilterActive;
+      this.callForSamlSettings();
     },
     resetPageNumber() {
-      this.axiosPayload.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.axiosPayload.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS, JSON.stringify(tableSettings))
+      localStorage.setItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS, JSON.stringify(tableSettings));
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SAMLSETTINGS)
-      )
+      );
       if (!savedFilter) {
-        return
+        return;
       }
-      const { filter, filterValues } = savedFilter
-      this.axiosPayload.filter = filter
-      this.tableOptions.isColumnFilterActive = true
+      const { filter, filterValues } = savedFilter;
+      this.axiosPayload.filter = filter;
+      this.tableOptions.isColumnFilterActive = true;
       this.$nextTick(() => {
-        this.$refs.refSamlSettings.filterValues = filterValues
+        this.$refs.refSamlSettings.filterValues = filterValues;
         this.$refs.refSamlSettings.columnKey = `column-key${Math.random()
           .toString()
-          .substring(0, 5)}`
-      })
+          .substring(0, 5)}`;
+      });
     },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
+    handleSetDefaultSearch(search = "", filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.SAMLSETTINGS,
         JSON.stringify({
           filter: this.axiosPayload.filter,
-          filterValues
+          filterValues,
         })
-      )
+      );
     },
     handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
-      this.callForSamlSettings()
+      this.getDefaultFilterAndSearch();
+      this.callForSamlSettings();
     },
     handleEditOrNewFormSuccess() {
-      this.selectedRow = null
-      this.isEdit = false
-      this.callForSamlSettings()
-      this.toggleNewSamlSettingsModalStatus()
+      this.selectedRow = null;
+      this.isEdit = false;
+      this.callForSamlSettings();
+      this.toggleNewSamlSettingsModalStatus();
     },
     handleClearFilters() {
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
-      this.$refs.refSamlSettings.filterValues = {}
-      this.$refs.refSamlSettings.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.callForSamlSettings()
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload));
+      this.$refs.refSamlSettings.filterValues = {};
+      this.$refs.refSamlSettings.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`;
+      this.callForSamlSettings();
     },
     setStoredTableSettings() {
-      this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS))
+      this.storedTableSettings = JSON.parse(
+        localStorage.getItem(TABLE_SETTINGS_KEYS.SAML_SETTINGS)
+      );
     },
     handleEditAction(row = {}) {
-      this.selectedRow = row
-      this.toggleNewSamlSettingsModalStatus(true)
+      this.selectedRow = row;
+      this.toggleNewSamlSettingsModalStatus(true);
+    },
+    checkIfCanCloseSamlSettingsModal() {
+      if (this.$refs.newSamlSettings) this.$refs.newSamlSettings.closeOverlay();
     },
     toggleNewSamlSettingsModalStatus(isEdit = false) {
-      this.isEdit = isEdit
-      if (!this.isEdit) this.selectedRow = null
-      this.isEditOrNewModalOpen = !this.isEditOrNewModalOpen
+      this.isEdit = isEdit;
+      if (!this.isEdit) this.selectedRow = null;
+      this.isEditOrNewModalOpen = !this.isEditOrNewModalOpen;
     },
     exportSamlSettings(downloadTypes = {}) {
       downloadTypes.exportTypes.forEach((exportType) => {
@@ -357,25 +365,25 @@ export default {
           orderBy: this.axiosPayload.orderBy,
           ascending: this.axiosPayload.ascending,
           reportAllPages: downloadTypes.reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: this.axiosPayload.filter
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter: this.axiosPayload.filter,
+        };
         exportSamlSettings(payload).then((response) => {
-          const { data } = response
-          downloadExportedFile(data, 'SAML Settings', exportType)
-        })
-      })
+          const { data } = response;
+          downloadExportedFile(data, "SAML Settings", exportType);
+        });
+      });
     },
     toggleDeletePopupStatus(row = null) {
-      this.selectedRow = row
-      this.isDeletePopupOpen = !this.isDeletePopupOpen
+      this.selectedRow = row;
+      this.isDeletePopupOpen = !this.isDeletePopupOpen;
     },
     handleOnDelete(selectedRow = {}) {
-      this.$refs.refSamlSettings.unSelectRow(selectedRow)
-      this.callForSamlSettings()
-    }
-  }
-}
+      this.$refs.refSamlSettings.unSelectRow(selectedRow);
+      this.callForSamlSettings();
+    },
+  },
+};
 </script>
 
 <style lang="scss"></style>

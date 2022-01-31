@@ -3,15 +3,15 @@
     v-if="status"
     :status="status"
     :id="isEdit ? 'edit-smtp-settings-modal' : 'new-smtp-settings-modal'"
+    :title="getTitle"
+    :saveDisable="saveDisable"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
     confirm-button-id="btn-save--smtp-settings-modal"
     cancel-button-id="btn-cancel--smtp-settings-modal"
     title-id="text--create-smtp-settings-modal-title"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
-    :title="getTitle"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
-    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <test-email-dialog
@@ -36,12 +36,6 @@
         <form-group :title="labels.SMTPSettingName" has-hint>
           <v-text-field
             v-model.trim="formValues.name"
-            id="input--smtp-settings-name"
-            placeholder="Enter SMTP setting name"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
@@ -50,8 +44,14 @@
                   v,
                   64,
                   labels.getMaxLengthMessage(labels.SMTPSettingNameSecondLower)
-                )
+                ),
             ]"
+            id="input--smtp-settings-name"
+            placeholder="Enter SMTP setting name"
+            outlined
+            dense
+            hint="*Required"
+            persistent-hint
           ></v-text-field>
         </form-group>
         <form-group :title="labels.ServiceProvider" has-hint>
@@ -87,7 +87,7 @@
                     v,
                     200,
                     labels.getMaxLengthMessage(labels.SMTPServerAddressSecondLower, 200)
-                  )
+                  ),
               ]"
             ></InputUrl>
             <v-text-field
@@ -99,7 +99,7 @@
               @input="onPortChange"
               :rules="[
                 (v) => validations.required(v),
-                (v) => validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Port, 10))
+                (v) => validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Port, 10)),
               ]"
               :value="formValues.serverPort"
             ></v-text-field>
@@ -211,7 +211,7 @@
             :rules="[
               (v) => validations.startsWithSpace(v),
               (v) =>
-                validations.maxLength(v, 2048, labels.getMaxLengthMessage('Custom Header', 2048))
+                validations.maxLength(v, 2048, labels.getMaxLengthMessage('Custom Header', 2048)),
             ]"
           ></v-textarea>
         </form-group>
@@ -234,28 +234,28 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal'
-import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import * as validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
+import AppModal from "@/components/AppModal";
+import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import * as validations from "@/utils/validations";
+import { scrollToComponent, isDifferent } from "@/utils/functions";
 import {
   createSMTPSettings,
   getSmtpSettings,
   testConnection,
-  updateSmtpSettings
-} from '@/api/smtpSettings'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InputUrl from '@/components/Common/Inputs/InputUrl'
-import InputEmail from '@/components/Common/Inputs/InputEmail'
-import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
-import labels from '@/model/constants/labels'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
-import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmailDialog'
-import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
-import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+  updateSmtpSettings,
+} from "@/api/smtpSettings";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import InputUrl from "@/components/Common/Inputs/InputUrl";
+import InputEmail from "@/components/Common/Inputs/InputEmail";
+import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
+import labels from "@/model/constants/labels";
+import { getAvailableForListFromBackend } from "@/utils/helperFunctions";
+import TestEmailDialog from "@/components/Company Settings/SmtpSettings/TestEmailDialog";
+import TestEmailErrorDialog from "@/components/Company Settings/SmtpSettings/TestEmailErrorDialog";
+import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
 export default {
-  name: 'NewSmtpSettings',
+  name: "NewSmtpSettings",
   components: {
     TestEmailErrorDialog,
     TestEmailDialog,
@@ -265,20 +265,20 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     InputUrl,
-    InputEmail
+    InputEmail,
   },
   props: {
     status: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isEdit: {
       type: Boolean,
-      default: false
+      default: false,
     },
     resourceId: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
@@ -289,40 +289,40 @@ export default {
       getTestConnectionDisableStatus: false,
       saveDisable: false,
       formValues: {
-        name: '',
+        name: "",
         availableForRequests: [],
-        serviceProvider: '',
-        serverAddress: '',
-        serverPort: '',
-        userName: '',
-        password: '',
+        serviceProvider: "",
+        serverAddress: "",
+        serverPort: "",
+        userName: "",
+        password: "",
         useAuthentication: false,
         useSSL: false,
         hasSMTPRelay: false,
-        replyTo: '',
-        errorTo: '',
-        cC: '',
-        bCC: '',
-        customHeader: ''
+        replyTo: "",
+        errorTo: "",
+        cC: "",
+        bCC: "",
+        customHeader: "",
       },
       initialFormValues: null,
       showPassword: false,
-      testEmailErrorMessage: '',
+      testEmailErrorMessage: "",
       nonEditableAvailableForRequests: [],
       serviceProviderItems: [],
       validations: validations,
-      isTestMailSend: false
-    }
+      isTestMailSend: false,
+    };
   },
   computed: {
     getTitle() {
-      return this.isEdit && this.resourceId ? labels.EditSMTPSetting : labels.NewSMTPSetting
+      return this.isEdit && this.resourceId ? labels.EditSMTPSetting : labels.NewSMTPSetting;
     },
     getUserNameAndPasswordCommonProps() {
       if (!this.formValues.useAuthentication) {
-        return null
+        return null;
       }
-      return { hint: '*Required', persistentHint: true }
+      return { hint: "*Required", persistentHint: true };
     },
     getUserNameRules() {
       const rules = [
@@ -331,38 +331,38 @@ export default {
             v,
             128,
             labels.getMaxLengthMessage(labels.UserNameOrEmailAddress, 320)
-          )
-      ]
-      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
-      return rules
+          ),
+      ];
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v));
+      return rules;
     },
     getPasswordRules() {
       const rules = [
-        (v) => validations.maxLength(v, 200, labels.getMaxLengthMessage(labels.Password, 200))
-      ]
-      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
-      return rules
-    }
+        (v) => validations.maxLength(v, 200, labels.getMaxLengthMessage(labels.Password, 200)),
+      ];
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v));
+      return rules;
+    },
   },
   methods: {
     submit() {
-      const { refForm, refMakeAvailableFor } = this.$refs
-      let isValid = true
+      const { refForm, refMakeAvailableFor } = this.$refs;
+      let isValid = true;
       if (refMakeAvailableFor) {
-        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests)
-        isValid = refMakeAvailableFor.isAvailableForValid
+        refMakeAvailableFor.validateAvailableFor(this.formValues.availableForRequests);
+        isValid = refMakeAvailableFor.isAvailableForValid;
       }
 
       if (refForm.validate() && isValid) {
         if (!this.isTestMailSend) {
-          this.isTestEmailDialogShowing = true
-          return false
+          this.isTestEmailDialogShowing = true;
+          return false;
         }
         if (JSON.stringify(this.initialFormValues) !== JSON.stringify(this.formValues)) {
-          this.isTestEmailDialogShowing = true
-          return false
+          this.isTestEmailDialogShowing = true;
+          return false;
         }
-        this.saveDisable = true
+        this.saveDisable = true;
         const {
           name,
           serverAddress,
@@ -377,8 +377,8 @@ export default {
           cC,
           bCC,
           customHeader,
-          availableForRequests
-        } = this.formValues
+          availableForRequests,
+        } = this.formValues;
         const payload = {
           name,
           availableForRequests: refMakeAvailableFor.getAvailableForValues(availableForRequests),
@@ -393,25 +393,25 @@ export default {
           errorTo,
           cC,
           bCC,
-          customHeader
-        }
+          customHeader,
+        };
 
         if (this.isEdit) {
-          this.callForUpdateSmtpSettings(payload)
+          this.callForUpdateSmtpSettings(payload);
         } else {
-          this.callForCreateSmtpSettings(payload)
+          this.callForCreateSmtpSettings(payload);
         }
       } else {
         return this.$nextTick(() => {
-          this.saveDisable = false
-          const el = refForm.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
+          this.saveDisable = false;
+          const el = refForm.$el.querySelector(".error--text");
+          scrollToComponent(el);
+        });
       }
     },
     callForTestConnection(testEmailPayload = {}) {
-      this.isTestEmailActionDisabled = true
-      this.saveDisable = true
+      this.isTestEmailActionDisabled = true;
+      this.saveDisable = true;
       const payload = {
         ...testEmailPayload,
         serverAddress: this.formValues.serverAddress,
@@ -420,77 +420,87 @@ export default {
         password: this.formValues.password,
         resourceId: this.resourceId,
         useAuthentication: Number(this.formValues.useAuthentication),
-        useSsl: Number(this.formValues.useSSL)
-      }
+        useSsl: Number(this.formValues.useSSL),
+      };
       testConnection(payload)
         .then(() => {
-          this.isTestEmailDialogShowing = false
-          this.isTestMailSend = true
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+          this.isTestEmailDialogShowing = false;
+          this.isTestMailSend = true;
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
         })
         .catch((error) => {
-          const { response } = error
-          this.testEmailErrorMessage = response.data.message
-          this.isTestEmailErrorDialogShowing = true
+          const { response } = error;
+          this.testEmailErrorMessage = response.data.message;
+          this.isTestEmailErrorDialogShowing = true;
         })
         .finally(() => {
-          this.isTestEmailActionDisabled = false
-          this.saveDisable = false
-        })
+          this.isTestEmailActionDisabled = false;
+          this.saveDisable = false;
+        });
     },
     callForCreateSmtpSettings(payload = {}) {
       createSMTPSettings(payload)
         .then(() => {
-          this.$emit('closeOverlayWithUpdate')
+          this.$emit("closeOverlayWithUpdate");
         })
         .finally(() => {
-          this.saveDisable = false
-        })
+          this.saveDisable = false;
+        });
     },
     callForUpdateSmtpSettings(payload = {}) {
       updateSmtpSettings({ ...payload, resourceId: this.resourceId })
         .then(() => {
-          this.$emit('closeOverlayWithUpdate')
+          this.$emit("closeOverlayWithUpdate");
         })
         .finally(() => {
-          this.saveDisable = false
-        })
+          this.saveDisable = false;
+        });
     },
-    handleChangeServiceProvider(item = '') {
-      if (item !== ':') {
-        const [serverAddress, serverPort] = item.split(':')
-        this.formValues.serverAddress = serverAddress
-        this.formValues.serverPort = serverPort
+    handleChangeServiceProvider(item = "") {
+      if (item !== ":") {
+        const [serverAddress, serverPort] = item.split(":");
+        this.formValues.serverAddress = serverAddress;
+        this.formValues.serverPort = serverPort;
       } else {
-        this.formValues.serverAddress = ''
-        this.formValues.serverPort = ''
+        this.formValues.serverAddress = "";
+        this.formValues.serverPort = "";
       }
     },
     handleTestConnection() {
-      this.toggleTestConnectionDialog()
+      this.toggleTestConnectionDialog();
       this.$nextTick(() => {
-        this.$refs.refTestEmailDialog.formValues.message = `This is a test email by ${this.formValues.name}`
-      })
+        this.$refs.refTestEmailDialog.formValues.message = `This is a test email by ${this.formValues.name}`;
+      });
     },
     toggleTestConnectionDialog() {
-      this.isTestEmailDialogShowing = !this.isTestEmailDialogShowing
+      this.isTestEmailDialogShowing = !this.isTestEmailDialogShowing;
     },
     toggleTestEmailErrorDialog() {
-      this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing
+      this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing;
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues);
+      if (!isChanged) {
+        return this.$emit("closeOverlay");
+      } else {
+        this.$store.dispatch("common/setIsShowLeavingDialog", {
+          show: true,
+          callback: () => {
+            this.$emit("closeOverlay");
+          },
+        });
+      }
     },
     onPortChange(val) {
       if (val.length) {
-        const numberVal = Number(val)
-        const newVal = isNaN(numberVal) ? '' : val
-        const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
-        this.formValues.serverPort = renderedValue
-        this.$refs.refTextField.lazyValue = renderedValue
+        const numberVal = Number(val);
+        const newVal = isNaN(numberVal) ? "" : val;
+        const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort;
+        this.formValues.serverPort = renderedValue;
+        this.$refs.refTextField.lazyValue = renderedValue;
       } else {
-        this.formValues.serverPort = ''
-        this.$refs.refTextField.lazyValue = ''
+        this.formValues.serverPort = "";
+        this.$refs.refTextField.lazyValue = "";
       }
     },
     callForGetSmtpSettings() {
@@ -511,60 +521,60 @@ export default {
               useAuthentication,
               useSSL,
               userName,
-              availableForList
-            } = {}
-          } = {}
-        } = response
+              availableForList,
+            } = {},
+          } = {},
+        } = response;
         if (this.$refs.refMakeAvailableFor) {
           this.formValues.availableForRequests = this.$refs.refMakeAvailableFor.getAvailableForListFromBackend(
             availableForList
-          )
+          );
         } else {
-          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList)
+          this.nonEditableAvailableForRequests = getAvailableForListFromBackend(availableForList);
         }
-        this.formValues.cC = cc
-        this.formValues.bCC = bcc
-        this.formValues.customHeader = customHeader
-        this.formValues.errorTo = errorTo
-        this.formValues.hasSMTPRelay = hasSMTPRelay
-        this.formValues.name = name
-        this.formValues.password = password
-        this.formValues.replyTo = replyTo
-        this.formValues.serverAddress = serverAddress
-        this.formValues.serverPort = serverPort
-        this.formValues.useAuthentication = useAuthentication
-        this.formValues.useSSL = useSSL
-        this.formValues.userName = userName
-        this.formValues.serviceProvider = `${serverAddress}:${serverPort}`
-      })
+        this.formValues.cC = cc;
+        this.formValues.bCC = bcc;
+        this.formValues.customHeader = customHeader;
+        this.formValues.errorTo = errorTo;
+        this.formValues.hasSMTPRelay = hasSMTPRelay;
+        this.formValues.name = name;
+        this.formValues.password = password;
+        this.formValues.replyTo = replyTo;
+        this.formValues.serverAddress = serverAddress;
+        this.formValues.serverPort = serverPort;
+        this.formValues.useAuthentication = useAuthentication;
+        this.formValues.useSSL = useSSL;
+        this.formValues.userName = userName;
+        this.formValues.serviceProvider = `${serverAddress}:${serverPort}`;
+      });
     },
     callForServiceProviderItems() {
       LookupLocalStorage.getSingle(12).then((data) => {
-        this.serviceProviderItems = data
+        this.serviceProviderItems = data;
         if (this.isEdit && this.resourceId) {
           if (
             !this.serviceProviderItems.find((item) => item.code === this.formValues.serviceProvider)
           ) {
             this.formValues.serviceProvider = this.serviceProviderItems.find(
-              (item) => item.name === 'Custom'
-            )
+              (item) => item.name === "Custom"
+            );
           }
         }
-        this.isTestMailSend = true
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-      })
-    }
+        this.isTestMailSend = true;
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+      });
+    },
   },
   created() {
     if (this.isEdit && this.resourceId) {
       this.callForGetSmtpSettings().finally(() => {
-        this.callForServiceProviderItems()
-      })
+        this.callForServiceProviderItems();
+      });
     } else {
-      this.callForServiceProviderItems()
+      this.callForServiceProviderItems();
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss">

@@ -31,7 +31,7 @@
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Proxy Name'))
+              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Proxy Name')),
             ]"
           ></v-text-field>
         </form-group>
@@ -52,7 +52,7 @@
                   v,
                   2000,
                   labels.getMaxLengthMessage('Proxy Address or IP', 2000)
-                )
+                ),
             ]"
           ></v-text-field>
         </form-group>
@@ -156,40 +156,39 @@
 </template>
 
 <script>
-import AppModal from '@/components/AppModal'
-import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import * as validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
+import AppModal from "@/components/AppModal";
+import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import * as validations from "@/utils/validations";
+import { scrollToComponent, isDifferent } from "@/utils/functions";
 import {
   createProxySettings,
   getProxySettings,
   testConnection,
-  updateProxySettings
-} from '@/api/proxySettings'
-import InputUrl from '@/components/Common/Inputs/InputUrl'
-import labels from '@/model/constants/labels'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+  updateProxySettings,
+} from "@/api/proxySettings";
+import InputUrl from "@/components/Common/Inputs/InputUrl";
+import labels from "@/model/constants/labels";
 export default {
-  name: 'NewProxySettings',
+  name: "NewProxySettings",
   components: {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    InputUrl
+    InputUrl,
   },
   props: {
     status: {
       type: Boolean,
-      default: false
+      default: false,
     },
     isEdit: {
       type: Boolean,
-      default: false
+      default: false,
     },
     resourceId: {
-      type: String
-    }
+      type: String,
+    },
   },
   data() {
     return {
@@ -201,34 +200,34 @@ export default {
       isTestEmailErrorDialogShowing: false,
       getTestConnectionDisableStatus: false,
       saveDisable: true,
-      formValues: {
-        name: '',
-        address: '',
-        port: '',
-        authenticationTypeId: 0,
-        username: '',
-        password: '',
-        isDefault: false,
-        testUrl: 'https://www.google.com'
-      },
       initialFormValues: null,
+      formValues: {
+        name: "",
+        address: "",
+        port: "",
+        authenticationTypeId: 0,
+        username: "",
+        password: "",
+        isDefault: false,
+        testUrl: "https://www.google.com",
+      },
       showPassword: false,
-      testEmailErrorMessage: '',
+      testEmailErrorMessage: "",
       nonEditableAvailableForRequests: [],
       serviceProviderItems: [],
       validations: validations,
-      isTestMailSend: false
-    }
+      isTestMailSend: false,
+    };
   },
   computed: {
     getTitle() {
-      return this.isEdit && this.resourceId ? 'Edit Proxy Setting' : 'Create Proxy Setting'
+      return this.isEdit && this.resourceId ? "Edit Proxy Setting" : "Create Proxy Setting";
     },
     getUserNameAndPasswordCommonProps() {
       if (!this.formValues.useAuthentication) {
-        return null
+        return null;
       }
-      return { hint: '*Required', persistentHint: true }
+      return { hint: "*Required", persistentHint: true };
     },
     getUserNameRules() {
       const rules = [
@@ -237,160 +236,165 @@ export default {
             v,
             128,
             labels.getMaxLengthMessage(labels.UserNameOrEmailAddress, 320)
-          )
-      ]
-      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
-      return rules
+          ),
+      ];
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v));
+      return rules;
     },
     getPasswordRules() {
       const rules = [
-        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128))
-      ]
-      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
-      return rules
+        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128)),
+      ];
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v));
+      return rules;
     },
     showMakeAvailableFor() {
-      return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
-    }
+      return this.$store.state.auth.userRoleName !== "CompanyAdmin";
+    },
   },
   methods: {
     submit() {
-      const { refForm } = this.$refs
+      const { refForm } = this.$refs;
       if (refForm.validate()) {
         const payload = {
           Address: this.formValues.address,
           Name: this.formValues.name,
           AuthenticationTypeId: this.formValues.authenticationTypeId,
-          Username: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.userName,
-          Password: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.password,
+          Username: this.formValues.authenticationTypeId === 0 ? "" : this.formValues.userName,
+          Password: this.formValues.authenticationTypeId === 0 ? "" : this.formValues.password,
           TestUrl: this.formValues.testUrl,
           Port: this.formValues.port,
-          IsDefault: this.formValues.isDefault
-        }
+          IsDefault: this.formValues.isDefault,
+        };
 
         if (this.isEdit) {
-          this.callForUpdateProxySettings(payload)
+          this.callForUpdateProxySettings(payload);
         } else {
-          this.callForCreateProxySettings(payload)
+          this.callForCreateProxySettings(payload);
         }
       } else {
         return this.$nextTick(() => {
-          this.saveDisable = false
-          const el = refForm.$el.querySelector('.error--text')
-          scrollToComponent(el)
-        })
+          this.saveDisable = false;
+          const el = refForm.$el.querySelector(".error--text");
+          scrollToComponent(el);
+        });
       }
     },
     callForCreateProxySettings(payload = {}) {
       createProxySettings(payload)
         .then(() => {
-          this.$emit('closeOverlayWithUpdate')
+          this.$emit("closeOverlayWithUpdate");
         })
         .finally(() => {
-          this.saveDisable = false
-        })
+          this.saveDisable = false;
+        });
     },
     callForUpdateProxySettings(payload = {}) {
       updateProxySettings({ ...payload, resourceId: this.resourceId })
         .then(() => {
-          this.$emit('closeOverlayWithUpdate')
+          this.$emit("closeOverlayWithUpdate");
         })
         .finally(() => {
-          this.saveDisable = false
-        })
+          this.saveDisable = false;
+        });
     },
-    handleChangeServiceProvider(item = '') {
-      if (item !== ':') {
-        const [serverAddress, serverPort] = item.split(':')
-        this.formValues.serverAddress = serverAddress
-        this.formValues.serverPort = serverPort
+    handleChangeServiceProvider(item = "") {
+      if (item !== ":") {
+        const [serverAddress, serverPort] = item.split(":");
+        this.formValues.serverAddress = serverAddress;
+        this.formValues.serverPort = serverPort;
       } else {
-        this.formValues.serverAddress = ''
-        this.formValues.serverPort = ''
+        this.formValues.serverAddress = "";
+        this.formValues.serverPort = "";
       }
     },
     handleTestConnection() {
-      const { refForm } = this.$refs
+      const { refForm } = this.$refs;
       if (refForm.validate() && !this.isTesting) {
-        this.isTesting = true
+        this.isTesting = true;
         let payload = {
           Address: this.formValues.address,
           AuthenticationTypeId: this.formValues.authenticationTypeId,
-          Username: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.userName,
-          Password: this.formValues.authenticationTypeId === 0 ? '' : this.formValues.password,
+          Username: this.formValues.authenticationTypeId === 0 ? "" : this.formValues.userName,
+          Password: this.formValues.authenticationTypeId === 0 ? "" : this.formValues.password,
           TestUrl: this.formValues.testUrl,
-          Port: this.formValues.port
-        }
+          Port: this.formValues.port,
+        };
         testConnection(payload)
           .then((response) => {
-            this.saveDisable = false
-            this.testConnectionSuccess = true
+            this.saveDisable = false;
+            this.testConnectionSuccess = true;
             setTimeout(() => {
-              this.testConnectionSuccess = false
-            }, 3000)
+              this.testConnectionSuccess = false;
+            }, 3000);
           })
           .catch(() => {
-            this.saveDisable = true
+            this.saveDisable = true;
           })
           .finally(() => {
-            this.isTesting = false
-          })
+            this.isTesting = false;
+          });
       }
     },
     toggleTestConnectionDialog() {
-      this.isTestEmailDialogShowing = !this.isTestEmailDialogShowing
+      this.isTestEmailDialogShowing = !this.isTestEmailDialogShowing;
     },
     toggleTestEmailErrorDialog() {
-      this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing
+      this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing;
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues);
+      if (!isChanged) {
+        return this.$emit("closeOverlay");
+      } else {
+        this.$store.dispatch("common/setIsShowLeavingDialog", {
+          show: true,
+          callback: () => {
+            this.$emit("closeOverlay");
+          },
+        });
+      }
     },
     onPortChange(val) {
       if (val.length) {
-        const numberVal = Number(val)
-        const newVal = isNaN(numberVal) ? '' : val
-        const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort
-        this.formValues.serverPort = renderedValue
-        this.$refs.refTextField.lazyValue = renderedValue
+        const numberVal = Number(val);
+        const newVal = isNaN(numberVal) ? "" : val;
+        const renderedValue = /[0-9]/gi.test(newVal) ? newVal : this.formValues.serverPort;
+        this.formValues.serverPort = renderedValue;
+        this.$refs.refTextField.lazyValue = renderedValue;
       } else {
-        this.formValues.serverPort = ''
-        this.$refs.refTextField.lazyValue = ''
+        this.formValues.serverPort = "";
+        this.$refs.refTextField.lazyValue = "";
       }
     },
     callForGetProxySettings() {
       return getProxySettings(this.resourceId).then((response) => {
         const {
           data: {
-            data: {
-              name,
-              address,
-              port,
-              authenticationTypeId,
-              username,
-              password,
-              isDefault,
-              testUrl
-            } = {}
-          } = {}
-        } = response
-        this.formValues.name = name
-        this.formValues.address = address
-        this.formValues.port = port
-        this.formValues.authenticationTypeId = authenticationTypeId
-        this.formValues.userName = username
-        this.formValues.password = password
-        this.formValues.isDefault = isDefault
-      })
-    }
+            data: { name, address, port, authenticationTypeId, username, password, isDefault } = {},
+          } = {},
+        } = response;
+        this.formValues.name = name;
+        this.formValues.address = address;
+        this.formValues.port = port;
+        this.formValues.authenticationTypeId = authenticationTypeId;
+        this.formValues.userName = username;
+        this.formValues.password = password;
+        this.formValues.isDefault = isDefault;
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+      });
+    },
   },
   created() {
-    if (this.isEdit && this.resourceId) {
-      this.callForGetProxySettings()
-      this.saveDisable = false
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
     }
-  }
-}
+    if (this.isEdit && this.resourceId) {
+      this.callForGetProxySettings();
+      this.saveDisable = false;
+    }
+  },
+};
 </script>
 
 <style lang="scss">

@@ -28,16 +28,16 @@
 </template>
 
 <script>
-import DataTable from '@/components/DataTable'
-import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
-import NewSmsSettings from '@/components/Company Settings/NewSmsSettings'
-import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
+import DataTable from "@/components/DataTable";
+import CompanySettingsHeader from "@/components/Company Settings/CompanySettingsHeader";
+import NewSmsSettings from "@/components/Company Settings/NewSmsSettings";
+import { getStoreValue, PROPERTY_STORE } from "@/model/constants/commonConstants";
 export default {
-  name: 'SmsSettings',
+  name: "SmsSettings",
   components: {
     CompanySettingsHeader,
     DataTable,
-    NewSmsSettings
+    NewSmsSettings,
   },
   data() {
     return {
@@ -45,70 +45,70 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.PROVIDER,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.PROVIDER),
             sortable: true,
             show: true,
-            fixed: 'left',
-            type: 'text',
-            width: 150
+            fixed: "left",
+            type: "text",
+            width: 150,
           },
           {
             property: PROPERTY_STORE.ACCOUNTSID,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.ACCOUNTSID),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
-            width: 150
+            type: "text",
+            width: 150,
           },
           {
             property: PROPERTY_STORE.CREATEDATE,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDATE),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
-            width: 150
-          }
+            type: "text",
+            width: 150,
+          },
         ],
         pageSizes: [5, 10, 25],
         rowActions: [
           {
-            name: 'Edit',
-            icon: 'mdi-pencil',
-            action: 'editAction'
+            name: "Edit",
+            icon: "mdi-pencil",
+            action: "editAction",
           },
           {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction'
-          }
+            name: "Delete",
+            icon: "mdi-delete",
+            action: "deleteAction",
+          },
         ],
         empty: {
-          message: 'You do not have any SMS integrations',
-          subMes: 'Create a new configuration',
-          btn: 'Create New SMS Integration',
-          icon: 'mdi-plus'
+          message: "You do not have any SMS integrations",
+          subMes: "Create a new configuration",
+          btn: "Create New SMS Integration",
+          icon: "mdi-plus",
         },
         addButton: {
           show: true,
-          action: 'handleAddNewSmsIntegration',
-          tooltip: 'Add a New Rest Api'
-        }
+          action: "handleAddNewSmsIntegration",
+          tooltip: "Add a New Rest Api",
+        },
       },
-      showSmsSettingsModal: false
-    }
+      showSmsSettingsModal: false,
+    };
   },
   methods: {
-    handleAddNewSmsIntegration() {}
-  }
-}
+    handleAddNewSmsIntegration() {},
+  },
+};
 </script>
 
 <style></style>
