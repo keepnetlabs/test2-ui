@@ -97,7 +97,7 @@ import { searchSmtpSettings } from '@/api/smtpSettings'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import message from '@/components/GrapesJs/Newsletter/mergedTexts/message'
@@ -195,6 +195,7 @@ export default {
           (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
         ]
       },
+      initialFormValues: null,
       formValues: {
         availableForRequests: [],
         name: '',
@@ -203,7 +204,7 @@ export default {
         fromAddress: '',
         fromName: '',
         subject: '',
-        template: null
+        template: undefined
       },
       categoryItems: [],
       smtpItems: [],
@@ -252,6 +253,9 @@ export default {
     }
   },
   created() {
+    if (!this.selectedItem) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     this.callForDatas()
     if (this.selectedItem && this.selectedItem.resourceId) {
       getEmailTemplate(this.selectedItem.resourceId).then((response) => {
@@ -275,6 +279,7 @@ export default {
         this.timeoutId = setTimeout(() => {
           this.reRender = false
         }, 100)
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   },
@@ -320,7 +325,17 @@ export default {
       return searchSmtpSettings(this.smtpAxiosPayload)
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeOverlay')
+          }
+        })
+      }
     },
     callForMergedTags(resourceId = '') {
       getMergedTags(resourceId).then((response) => {

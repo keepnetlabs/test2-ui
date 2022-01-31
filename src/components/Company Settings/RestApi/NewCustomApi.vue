@@ -212,7 +212,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import { createRestApi, generateClientCredentials, getRestApi, updateRestApi } from '@/api/restApi'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import RestApiModel from '@/components/Company Settings/RestApi/model'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -245,6 +245,7 @@ export default {
       editedClientSecret: '',
       saveDisable: false,
       labels,
+      initialFormValues: null,
       formValues: new RestApiModel(),
       Validations,
       roleItems: [],
@@ -282,62 +283,81 @@ export default {
     }
   },
   created() {
-    this.getRoles()
-    if (this.selectedRow && this.selectedRow.resourceId) {
-      getRestApi(this.selectedRow.resourceId).then((response) => {
-        const { data: { data = {} } = {} } = response
-        this.fillForm(data)
-      })
-    }
+    this.getRoles().then(() => {
+      if (!this.selectedRow) {
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      }
+      if (this.selectedRow && this.selectedRow.resourceId) {
+        getRestApi(this.selectedRow.resourceId).then((response) => {
+          const { data: { data = {} } = {} } = response
+          this.fillForm(data)
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        })
+      }
+    })
   },
   methods: {
     getRoles() {
-      let payload = {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'RoleName',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      let allRoles = []
-      let availableRoles = []
-
-      getSystemUsersRole(payload).then((response) => {
-        allRoles = response.data.data
-        availableRoles = []
-        availableRoles = allRoles
-        this.roleItems = availableRoles.map((item) => {
-          return {
-            name: item.name,
-            resourceId: item.resourceId
+      return new Promise((res, rej) => {
+        let payload = {
+          pageNumber: 1,
+          pageSize: 1000,
+          orderBy: 'RoleName',
+          ascending: true,
+          filter: {
+            Condition: 'AND',
+            FilterGroups: [
+              {
+                Condition: 'OR',
+                FilterItems: [],
+                FilterGroups: []
+              },
+              {
+                Condition: 'AND',
+                FilterItems: [],
+                FilterGroups: []
+              }
+            ]
           }
-        })
-        if (!this.selectedRow) {
-          this.formValues.roleResourceIdList =
-            availableRoles &&
-            availableRoles.length &&
-            availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
-              .resourceId
         }
+        let allRoles = []
+        let availableRoles = []
+
+        getSystemUsersRole(payload)
+          .then((response) => {
+            allRoles = response.data.data
+            availableRoles = []
+            availableRoles = allRoles
+            this.roleItems = availableRoles.map((item) => {
+              return {
+                name: item.name,
+                resourceId: item.resourceId
+              }
+            })
+            if (!this.selectedRow) {
+              this.formValues.roleResourceIdList =
+                availableRoles &&
+                availableRoles.length &&
+                availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
+                  .resourceId
+            }
+            res()
+          })
+          .catch(rej)
       })
     },
-
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeOverlay')
+          }
+        })
+      }
     },
     fillForm(data = {}) {
       for (const key of Object.keys(this.formValues)) {

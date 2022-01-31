@@ -3,6 +3,7 @@
     <div class="custom-apis__container">
       <new-custom-api
         v-if="showNewCustomApi"
+        ref="newCustomApi"
         :selectedRow="selectedRow"
         :status="showNewCustomApi"
         @closeOverlay="toggleNewCustomApiStatus"
@@ -453,6 +454,11 @@ export default {
         .finally(() => {
           this.saveDisableDelete = false
         })
+    },
+    checkIfCanCloseCustomApiModal() {
+      if (this.$refs.newCustomApi) {
+        this.$refs.newCustomApi.closeOverlay()
+      }
     },
     toggleNewCustomApiStatus() {
       if (this.showNewCustomApi) {

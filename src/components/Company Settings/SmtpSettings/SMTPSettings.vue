@@ -3,6 +3,7 @@
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
     <new-smtp-settings
       v-if="newSmtpModalStatus && PERMISSIONS.CREATE.hasPermission"
+      ref="newSmtpSettings"
       :status="newSmtpModalStatus"
       @closeOverlay="toggleSmtpModalStatus"
       @handleDelete="handleDeleteSmtpSettings"
@@ -344,6 +345,9 @@ export default {
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForSearchSmtpSettings()
+    },
+    checkIfCanCloseSmtpModal() {
+      this.$refs.newSmtpSettings.closeOverlay()
     },
     toggleSmtpModalStatus() {
       if (this.newSmtpModalStatus) {
