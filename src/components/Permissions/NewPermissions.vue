@@ -31,7 +31,7 @@
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Title)),
+              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Title))
             ]"
           ></v-text-field>
         </form-group>
@@ -50,7 +50,7 @@
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
-              (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description)),
+              (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description))
             ]"
           ></v-textarea>
         </form-group>
@@ -101,7 +101,7 @@
                 item.parentGroupName ||
                 item.groupName ||
                 item.moduleName ||
-                "No Name"
+                'No Name'
               }}
             </template>
           </v-treeview>
@@ -112,45 +112,45 @@
 </template>
 
 <script>
-import AppModal from "@/components/AppModal";
-import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import * as validations from "@/utils/validations";
-import { scrollToComponent, isDifferent } from "@/utils/functions";
-import { createPermissionRoles, updatePermissionRoles } from "@/api/permissions";
-import labels from "@/model/constants/labels";
-import MakeAvailableFor from "@/components/Common/MakeAvailableFor/MakeAvailableFor";
+import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import * as validations from '@/utils/validations'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { createPermissionRoles, updatePermissionRoles } from '@/api/permissions'
+import labels from '@/model/constants/labels'
+import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 export default {
-  name: "NewPermissions",
+  name: 'NewPermissions',
   components: {
     MakeAvailableFor,
     AppModal,
     AppModalBodyHeader,
-    FormGroup,
+    FormGroup
   },
   props: {
     status: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isEdit: {
       type: Boolean,
-      default: false,
+      default: false
     },
     resourceId: {
-      type: String,
+      type: String
     },
     permissions: {
-      required: false,
+      required: false
     },
     permissionEditData: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
       labels,
-      search: "",
+      search: '',
       saveDisable: false,
       open: [],
       showNoData: false,
@@ -160,27 +160,27 @@ export default {
       formValues: {
         name: null,
         description: null,
-        permissionResourceIdList: [],
+        permissionResourceIdList: []
       },
       validations: validations,
       caseSensitive: false,
-      availableForKey: "initialKey",
-    };
+      availableForKey: 'initialKey'
+    }
   },
   computed: {
     getPrivilegesItems() {
       return this.search
         ? this.getSearchedItems(JSON.parse(JSON.stringify(this.permissions)))
-        : this.permissions;
+        : this.permissions
     },
     getTitle() {
-      return this.isEdit && this.resourceId ? "Edit System User Role" : "New System User Role";
+      return this.isEdit && this.resourceId ? 'Edit System User Role' : 'New System User Role'
     },
     getUserNameAndPasswordCommonProps() {
       if (!this.formValues.useAuthentication) {
-        return null;
+        return null
       }
-      return { hint: "*Required", persistentHint: true };
+      return { hint: '*Required', persistentHint: true }
     },
     getUserNameRules() {
       const rules = [
@@ -189,132 +189,132 @@ export default {
             v,
             128,
             labels.getMaxLengthMessage(labels.UserNameOrEmailAddress, 320)
-          ),
-      ];
-      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v));
-      return rules;
+          )
+      ]
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
+      return rules
     },
     getPasswordRules() {
       const rules = [
-        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128)),
-      ];
-      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v));
-      return rules;
-    },
+        (v) => validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.Password, 128))
+      ]
+      if (this.formValues.useAuthentication) rules.unshift((v) => validations.required(v))
+      return rules
+    }
   },
   watch: {
     search(val) {
       if (!val.length) {
         this.$nextTick(() => {
-          this.open = [];
-        });
+          this.open = []
+        })
       }
     },
     getPrivilegesItems(items) {
       items.forEach((item) => {
-        this.open.push(item.permissionResourceId);
-      });
-      this.treeViewKey = `scroll-key${Math.random().toString().substring(0, 5)}`;
-    },
+        this.open.push(item.permissionResourceId)
+      })
+      this.treeViewKey = `scroll-key${Math.random().toString().substring(0, 5)}`
+    }
   },
   methods: {
     getSearchedItems(items) {
       return items.reduce((acc, item) => {
-        const { children } = item;
+        const { children } = item
         if (children) {
-          item.children = this.getSearchedItems(children);
+          item.children = this.getSearchedItems(children)
         }
-        const { moduleName = "", groupName = "" } = item;
+        const { moduleName = '', groupName = '' } = item
         if (
           (moduleName && moduleName.toLowerCase().includes(this.search.toLowerCase())) ||
           (groupName && groupName.toLowerCase().includes(this.search.toLowerCase()))
         ) {
-          acc.push(item);
+          acc.push(item)
         } else if (item && item.children && item.children.length) {
-          acc.push(item);
+          acc.push(item)
         }
-        return acc;
-      }, []);
+        return acc
+      }, [])
     },
     submit() {
-      const { refForm, refMakeAvailableForNewPermissions } = this.$refs;
-      let isValid = true;
+      const { refForm, refMakeAvailableForNewPermissions } = this.$refs
+      let isValid = true
       if (refMakeAvailableForNewPermissions) {
-        refMakeAvailableForNewPermissions.validateAvailableFor(this.availableForRequests);
-        isValid = refMakeAvailableForNewPermissions.isAvailableForValid;
+        refMakeAvailableForNewPermissions.validateAvailableFor(this.availableForRequests)
+        isValid = refMakeAvailableForNewPermissions.isAvailableForValid
       }
       if (refForm.validate() && isValid) {
-        this.saveDisable = true;
+        this.saveDisable = true
         const payload = {
           Name: this.formValues.name,
           Description: this.formValues.description,
           AvailableForRequests: refMakeAvailableForNewPermissions.getAvailableForValues(
             this.availableForRequests
           ),
-          PermissionResourceIdList: this.formValues.permissionResourceIdList,
-        };
+          PermissionResourceIdList: this.formValues.permissionResourceIdList
+        }
         if (this.isEdit) {
-          this.updatePermissionRoles(payload);
+          this.updatePermissionRoles(payload)
         } else {
-          this.createPermissionRoles(payload);
+          this.createPermissionRoles(payload)
         }
       } else {
         return this.$nextTick(() => {
-          this.saveDisable = false;
-          const el = refForm.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        });
+          this.saveDisable = false
+          const el = refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     updatePermissionRoles(payload) {
       updatePermissionRoles(payload, this.resourceId)
         .then(() => {
-          this.$emit("closeOverlayWithUpdate");
+          this.$emit('closeOverlayWithUpdate')
         })
         .finally(() => {
-          this.saveDisable = false;
-        });
+          this.saveDisable = false
+        })
     },
     createPermissionRoles(payload) {
       createPermissionRoles(payload)
         .then(() => {
-          this.$emit("closeOverlayWithUpdate");
+          this.$emit('closeOverlayWithUpdate')
         })
         .finally(() => {
-          this.saveDisable = false;
-        });
+          this.saveDisable = false
+        })
     },
     closeOverlay() {
-      const isChanged = isDifferent(this.formValues, this.initialFormValues);
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        return this.$emit("closeOverlay");
+        return this.$emit('closeOverlay')
       } else {
-        this.$store.dispatch("common/setIsShowLeavingDialog", {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
-            this.$emit("closeOverlay");
-          },
-        });
+            this.$emit('closeOverlay')
+          }
+        })
       }
-    },
+    }
   },
   mounted() {
     if (!this.isEdit) {
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
     if (this.isEdit && this.resourceId) {
-      this.formValues = this.permissionEditData;
-      let _this = this;
+      this.formValues = this.permissionEditData
+      let _this = this
       this.$nextTick(() => {
         _this.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
           _this.permissionEditData.availableForList
-        );
-        this.availableForKey = "updatedKey";
-      });
-      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+        )
+        this.availableForKey = 'updatedKey'
+      })
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss">
@@ -371,7 +371,7 @@ export default {
       color: #474747;
       position: relative;
       &:after {
-        content: "";
+        content: '';
         background-color: #e0e0e0;
         height: 8px;
         width: 8px;
