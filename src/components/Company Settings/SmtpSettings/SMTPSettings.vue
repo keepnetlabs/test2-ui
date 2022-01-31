@@ -107,29 +107,29 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   PROPERTY_STORE,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import CompanySettingsHeader from "@/components/Company Settings/CompanySettingsHeader";
-import DataTable from "@/components/DataTable";
-import NewSmtpSettings from "@/components/Company Settings/SmtpSettings/NewSmtpSettings";
-import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from "@/api/smtpSettings";
-import DeleteSmtpSettings from "@/components/Company Settings/SmtpSettings/DeleteSmtpSettings";
-import ClientTableExportHelper from "@/helper-classes/client-table-export-helper";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import labels from "@/model/constants/labels";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import DataTable from '@/components/DataTable'
+import NewSmtpSettings from '@/components/Company Settings/SmtpSettings/NewSmtpSettings'
+import { deleteSmtpSettings, exportSmtpSettings, searchSmtpSettings } from '@/api/smtpSettings'
+import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/DeleteSmtpSettings'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
 export default {
-  name: "SMTPSettings",
+  name: 'SMTPSettings',
   components: {
     DeleteSmtpSettings,
     CompanySettingsHeader,
     DataTable,
-    NewSmtpSettings,
+    NewSmtpSettings
   },
   props: {
     PERMISSIONS: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
@@ -145,68 +145,68 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.NAME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.NAME),
             sortable: true,
             show: true,
-            fixed: "left",
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            fixed: 'left',
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
             property: PROPERTY_STORE.SMTPADDRESS,
-            align: "left",
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.SMTPADDRESS),
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "text",
-            width: 160,
+            type: 'text',
+            filterableType: 'text',
+            width: 160
           },
           {
             property: PROPERTY_STORE.COMPANYNAME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATEDBY),
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "text",
-            width: 180,
+            type: 'text',
+            filterableType: 'text',
+            width: 180
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "date",
+            type: 'text',
+            filterableType: 'date'
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
-            align: "center",
+            align: 'center',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUS),
             sortable: true,
             show: true,
             fixed: false,
-            type: "badge",
-            filterableType: "select",
-            filterableCustomFieldName: "Status",
+            type: 'badge',
+            filterableType: 'select',
+            filterableCustomFieldName: 'Status',
             filterableItems: [
-              { text: "Running", value: "Running" },
-              { text: "Failed", value: "Failed" },
+              { text: 'Running', value: 'Running' },
+              { text: 'Failed', value: 'Failed' }
             ],
-            width: 150,
-          },
+            width: 150
+          }
         ],
         isColumnFilterActive: false,
         pageSizes: [5, 10, 25],
@@ -216,382 +216,382 @@ export default {
           delete: this.PERMISSIONS.DELETE.hasPermission,
           download: false,
           disabledStatuses: {
-            delete: false,
-          },
+            delete: false
+          }
         },
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission,
+          disabled: !this.PERMISSIONS.EXPORT.hasPermission
         },
         rowActions: [
           {
-            name: "Edit",
-            icon: "mdi-pencil",
-            action: "editAction",
-            id: "btn-edit--smtp-settings-row-actions",
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission,
+            name: 'Edit',
+            icon: 'mdi-pencil',
+            action: 'editAction',
+            id: 'btn-edit--smtp-settings-row-actions',
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
-            name: "Delete",
-            icon: "mdi-delete",
-            action: "deleteAction",
-            id: "btn-delete--smtp-settings-row-actions",
-            disabled: !this.PERMISSIONS.DELETE.hasPermission,
-          },
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            id: 'btn-delete--smtp-settings-row-actions',
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
+          }
         ],
         empty: {
           message: labels.EmptySmtpSettings,
           btn: labels.EmptySmtpSettingsSub,
-          icon: "mdi-plus",
-          id: "btn-empty--smtp-settings",
-          disabled: !this.PERMISSIONS.CREATE.hasPermission,
+          icon: 'mdi-plus',
+          id: 'btn-empty--smtp-settings',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
-          action: "addNewSmtpSetting",
-          tooltip: "Add SMTP Setting",
-          id: "btn-add--smtp-settings",
-          disabled: !this.PERMISSIONS.CREATE.hasPermission,
-        },
+          action: 'addNewSmtpSetting',
+          tooltip: 'Add SMTP Setting',
+          id: 'btn-add--smtp-settings',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
+        }
       },
       newSmtpModalStatus: false,
       deleteSmtpModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
         pageSize: 1000,
-        orderBy: "CreateTime",
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
-          Condition: "AND",
+          Condition: 'AND',
           FilterGroups: [
             {
-              Condition: "AND",
+              Condition: 'AND',
               FilterItems: [],
-              FilterGroups: [],
+              FilterGroups: []
             },
             {
-              Condition: "OR",
+              Condition: 'OR',
               FilterItems: [],
-              FilterGroups: [],
-            },
-          ],
-        },
+              FilterGroups: []
+            }
+          ]
+        }
       },
       defaultRequestBody: {
         pageNumber: 1,
         pageSize: 1000,
-        orderBy: "CreateTime",
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
-          Condition: "AND",
+          Condition: 'AND',
           FilterGroups: [
             {
-              Condition: "AND",
+              Condition: 'AND',
               FilterItems: [],
-              FilterGroups: [],
+              FilterGroups: []
             },
             {
-              Condition: "OR",
+              Condition: 'OR',
               FilterItems: [],
-              FilterGroups: [],
-            },
-          ],
-        },
+              FilterGroups: []
+            }
+          ]
+        }
       },
-      serverSideProps: new ServerSideProps(),
-    };
+      serverSideProps: new ServerSideProps()
+    }
   },
   methods: {
     handleTableSelectionChange(items) {
-      this.selectedTableItems = items;
-      this.changeMultipleDeleteDisability();
+      this.selectedTableItems = items
+      this.changeMultipleDeleteDisability()
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
       this.bodyOptions.filter.FilterGroups[1].FilterItems = this.bodyOptions.filter.FilterGroups[1].FilterItems.map(
         (item) => {
-          if (item.FieldName === "StatusName") {
-            item.FieldName = "Status";
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'Status'
           }
-          return item;
+          return item
         }
-      );
-      this.resetPageNumber();
-      this.tableOptions.isColumnFilterActive = filterActive;
-      this.callForSearchSmtpSettings();
+      )
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForSearchSmtpSettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
-      this.bodyOptions.pageNumber = pageNumber;
-      this.callForSearchSmtpSettings();
+      this.bodyOptions.pageNumber = pageNumber
+      this.callForSearchSmtpSettings()
     },
     sortChanged({ order, prop } = {}) {
       //generic
-      this.bodyOptions.ascending = order === "ascending";
-      this.bodyOptions.orderBy = prop === "statusName" ? "Status" : prop;
-      this.callForSearchSmtpSettings();
+      this.bodyOptions.ascending = order === 'ascending'
+      this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
+      this.callForSearchSmtpSettings()
     },
     resetPageNumber() {
       //generic
-      this.bodyOptions.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.bodyOptions.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
       //generic
-      this.bodyOptions.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.callForSearchSmtpSettings();
+      this.bodyOptions.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForSearchSmtpSettings()
     },
     checkIfCanCloseSmtpModal() {
-      this.$refs.newSmtpSettings.closeOverlay();
+      this.$refs.newSmtpSettings.closeOverlay()
     },
     toggleSmtpModalStatus() {
       if (this.newSmtpModalStatus) {
-        this.resourceId = null;
-        this.isEdit = false;
+        this.resourceId = null
+        this.isEdit = false
       }
-      this.newSmtpModalStatus = !this.newSmtpModalStatus;
+      this.newSmtpModalStatus = !this.newSmtpModalStatus
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS, JSON.stringify(tableSettings));
+      localStorage.setItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS, JSON.stringify(tableSettings))
     },
     getDisabledStatusOfEdit({ isOwner } = {}) {
-      return this.tableOptions.rowActions[0].disabled || !isOwner;
+      return this.tableOptions.rowActions[0].disabled || !isOwner
     },
     getDisabledStatusOfDelete({ isOwner } = {}) {
-      return this.tableOptions.rowActions[1].disabled || !isOwner;
+      return this.tableOptions.rowActions[1].disabled || !isOwner
     },
     exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const { EXPORT } = this.PERMISSIONS;
+      const { EXPORT } = this.PERMISSIONS
       if (EXPORT.hasPermission) {
         const clientTableExportHelper = new ClientTableExportHelper(
           JSON.parse(JSON.stringify(this.bodyOptions.filter)),
           this.$refs.refSmtpSettingsList,
-          "CreateTime"
-        );
+          'CreateTime'
+        )
         if (this.$refs.refSmtpSettingsList.search) {
-          clientTableExportHelper.addSearchItems(this.tableOptions.columns);
+          clientTableExportHelper.addSearchItems(this.tableOptions.columns)
           clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-            (item) => item.FieldName === "StatusName"
-          ).FieldName = "Status";
+            (item) => item.FieldName === 'StatusName'
+          ).FieldName = 'Status'
         }
         if (
           this.$refs.refSmtpSettingsList.sortProps &&
           this.$refs.refSmtpSettingsList.sortProps.order
         ) {
-          clientTableExportHelper.addSortItems();
+          clientTableExportHelper.addSortItems()
         }
 
-        const { filter, sortFilter } = clientTableExportHelper;
+        const { filter, sortFilter } = clientTableExportHelper
         exportTypes.map((exportType) => {
           const payload = {
             ...sortFilter,
             pageNumber: pageNumber,
             pageSize: pageSize,
             reportAllPages,
-            exportType: exportType === "XLS" ? "Excel" : exportType,
-            filter,
-          };
+            exportType: exportType === 'XLS' ? 'Excel' : exportType,
+            filter
+          }
           exportSmtpSettings(payload).then((response) => {
-            const { data } = response;
-            const link = document.createElement("a");
-            link.href = window.URL.createObjectURL(data);
+            const { data } = response
+            const link = document.createElement('a')
+            link.href = window.URL.createObjectURL(data)
             link.download = `Smtp Settings.${
-              exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
-            }`;
-            link.click();
-          });
-        });
+              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+            }`
+            link.click()
+          })
+        })
       }
     },
     toggleDeleteSmtpModalStatus() {
-      this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus;
+      this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
     },
     callForSearchSmtpSettings() {
-      const { SEARCH } = this.PERMISSIONS;
+      const { SEARCH } = this.PERMISSIONS
       if (SEARCH.hasPermission) {
-        this.loading = true;
+        this.loading = true
         searchSmtpSettings(this.bodyOptions)
           .then((response) => {
             const {
-              data: { data },
-            } = response;
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-            this.serverSideProps.pageNumber = pageNumber;
-            const { results = [] } = data;
-            this.tableData = results;
-            this.tableData = data.results;
-            this.changeMultipleDeleteDisability();
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+            this.tableData = data.results
+            this.changeMultipleDeleteDisability()
           })
           .finally(() => {
-            this.loading = false;
-            this.isRestoredOrClearedFilters = false;
-          });
+            this.loading = false
+            this.isRestoredOrClearedFilters = false
+          })
       }
     },
     changeMultipleDeleteDisability() {
       this.$set(
         this.tableOptions.selectEvent.disabledStatuses,
-        "delete",
+        'delete',
         this.selectedTableItems.every((row) => row.isOwner)
-      );
+      )
     },
     handleEditAction({ resourceId } = {}) {
-      const { UPDATE, GET } = this.PERMISSIONS;
+      const { UPDATE, GET } = this.PERMISSIONS
       if (UPDATE.hasPermission && GET.hasPermission) {
-        this.isEdit = true;
-        this.selectedEditSmtpSettings = resourceId;
-        this.toggleSmtpModalStatus();
+        this.isEdit = true
+        this.selectedEditSmtpSettings = resourceId
+        this.toggleSmtpModalStatus()
       }
     },
     closeOverlayWithUpdate() {
-      this.toggleSmtpModalStatus();
-      this.callForSearchSmtpSettings();
+      this.toggleSmtpModalStatus()
+      this.callForSearchSmtpSettings()
     },
     callForDeleteSmtpSettings(resourceId) {
-      const { DELETE } = this.PERMISSIONS;
+      const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         deleteSmtpSettings(resourceId)
           .then(() => {
-            this.callForSearchSmtpSettings();
+            this.callForSearchSmtpSettings()
           })
           .finally(() => {
-            this.selectedDeleteSmtpSettings = null;
-          });
+            this.selectedDeleteSmtpSettings = null
+          })
       }
     },
     handleDeleteSmtpSettings(row) {
-      const { DELETE } = this.PERMISSIONS;
+      const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
-        const { resourceId } = row;
-        this.$refs.refSmtpSettingsList.unSelectRow(row);
-        this.callForDeleteSmtpSettings(resourceId);
+        const { resourceId } = row
+        this.$refs.refSmtpSettingsList.unSelectRow(row)
+        this.callForDeleteSmtpSettings(resourceId)
       }
     },
     handleDeleteAction(selectedRow) {
-      const { DELETE } = this.PERMISSIONS;
+      const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
-        this.selectedDeleteSmtpSettings = selectedRow;
-        this.toggleDeleteSmtpModalStatus();
+        this.selectedDeleteSmtpSettings = selectedRow
+        this.toggleDeleteSmtpModalStatus()
       }
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true;
-      let items = [];
-      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems;
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
             if (x.FieldName !== i.FieldName) {
-              items.push(x);
+              items.push(x)
             }
-          });
+          })
         } else {
           if (x.FieldName !== filter.FieldName) {
-            items.push(x);
+            items.push(x)
           }
         }
-      });
+      })
 
-      requestBody = [...items];
+      requestBody = [...items]
       if (Array.isArray(filter)) {
         filter.forEach((x, i) => {
-          const elem = filter[i];
-          elem.FieldName = filter[i].FieldName;
-          requestBody.push(elem);
-        });
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
       } else {
-        const elem = filter;
-        elem.FieldName = filter.FieldName;
-        requestBody.push(elem);
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
       }
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody;
-      this.callForSearchSmtpSettings();
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForSearchSmtpSettings()
     },
     columnFilterCleared(fieldName) {
       if (this.isRestoredOrClearedFilters) {
-        return;
+        return
       }
-      let items = [];
-      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems;
+      let items = []
+      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
 
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
-          items.push(x);
+          items.push(x)
         }
-      });
+      })
 
-      filterPayload = [...items];
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload;
+      filterPayload = [...items]
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
       this.tableOptions.isColumnFilterActive =
-        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1;
-      this.callForSearchSmtpSettings();
+        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
+      this.callForSearchSmtpSettings()
     },
-    handleSetDefaultSearch(search = "", filterValues = {}) {
+    handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS,
         JSON.stringify({
           filter: this.bodyOptions.filter,
-          filterValues,
+          filterValues
         })
-      );
+      )
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true;
-      this.getDefaultFilterAndSearch();
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
     },
     handleMultipleDelete(selections) {
-      const { DELETE } = this.PERMISSIONS;
+      const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
-        this.selectedDeleteSmtpSettings = selections;
-        this.toggleDeleteSmtpModalStatus();
+        this.selectedDeleteSmtpSettings = selections
+        this.toggleDeleteSmtpModalStatus()
       }
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true;
-      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody));
-      this.$refs.refSmtpSettingsList.filterValues = {};
+      this.isRestoredOrClearedFilters = true
+      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refSmtpSettingsList.filterValues = {}
       this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
         .toString()
-        .substring(0, 5)}`;
-      this.callForSearchSmtpSettings();
+        .substring(0, 5)}`
+      this.callForSearchSmtpSettings()
     },
     handleDeleteMultipleSmtpSettings(selections) {
-      const { DELETE } = this.PERMISSIONS;
+      const { DELETE } = this.PERMISSIONS
       if (DELETE.hasPermission) {
         selections.forEach((item) => {
-          this.handleDeleteSmtpSettings(item);
-        });
+          this.handleDeleteSmtpSettings(item)
+        })
       }
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SMTP_SETTINGS)
-      );
+      )
       if (savedFilter) {
-        this.bodyOptions.filter = savedFilter.filter;
-        this.tableOptions.isColumnFilterActive = true;
+        this.bodyOptions.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refSmtpSettingsList.filterValues = savedFilter.filterValues;
+          this.$refs.refSmtpSettingsList.filterValues = savedFilter.filterValues
           this.$refs.refSmtpSettingsList.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`;
-        });
+            .substring(0, 5)}`
+        })
       }
-      this.callForSearchSmtpSettings();
-    },
+      this.callForSearchSmtpSettings()
+    }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS));
-    this.getDefaultFilterAndSearch();
-  },
-};
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SMTP_SETTINGS))
+    this.getDefaultFilterAndSearch()
+  }
+}
 </script>
 
 <style lang="scss"></style>

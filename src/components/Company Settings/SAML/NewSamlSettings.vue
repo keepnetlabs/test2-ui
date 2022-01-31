@@ -42,7 +42,7 @@
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
               (v) =>
-                validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SAMLSettingName)),
+                validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SAMLSettingName))
             ]"
           ></v-text-field>
         </form-group>
@@ -66,7 +66,7 @@
                   (v) => validations.required(v, labels.Required),
                   (v) =>
                     validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.Domain, 256)),
-                  (v) => validations.domain(v, labels.InvalidDomainName),
+                  (v) => validations.domain(v, labels.InvalidDomainName)
                 ]"
               ></v-text-field>
               <v-btn
@@ -133,7 +133,7 @@
                   v,
                   256,
                   labels.getMaxLengthMessage(labels.SAMLSettingName, 256)
-                ),
+                )
             ]"
             :disabled="isTextFieldsDisabled"
           ></v-text-field>
@@ -173,7 +173,7 @@
             :readonly="(isCertificateTextDisabled || isTextFieldsDisabled)"
             :class="[
               (isCertificateTextDisabled || isTextFieldsDisabled) &&
-                'saml-settings-text-area-disabled',
+                'saml-settings-text-area-disabled'
             ]"
           ></v-textarea>
         </form-group-horizontal-content>
@@ -328,31 +328,31 @@
 </template>
 
 <script>
-import AppModal from "@/components/AppModal";
-import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
-import labels from "@/model/constants/labels";
-import * as validations from "@/utils/validations";
-import { isDifferent } from "@/utils/functions";
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import InputUrl from "@/components/Common/Inputs/InputUrl";
-import InputWithCopyToClipboard from "@/components/Common/Inputs/InputWithCopyToClipboard";
+import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import labels from '@/model/constants/labels'
+import * as validations from '@/utils/validations'
+import { isDifferent } from '@/utils/functions'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
+import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
 import {
   createSamlSetting,
   getDefaultSamlSettings,
   getSamlSetting,
   parseMetadata,
-  updateSamlSetting,
-} from "@/api/samlSettings";
-import DataContainerWithSearch from "@/components/Common/Others/DataContainerWithSearch";
-import BatchImportPopup from "@/components/Company Settings/SAML/BatchImportPopup";
-import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
-import KFileUpload from "@/components/Common/FileUpload/FileUpload";
-import FormGroupHorizontalContent from "@/components/SmallComponents/FormGroupHorizontalContent";
-import { mapGetters } from "vuex";
-import { getSystemUsersRole } from "@/api/systemUsers";
-import KSelect from "@/components/Common/Inputs/KSelect";
+  updateSamlSetting
+} from '@/api/samlSettings'
+import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
+import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHorizontalContent'
+import { mapGetters } from 'vuex'
+import { getSystemUsersRole } from '@/api/systemUsers'
+import KSelect from '@/components/Common/Inputs/KSelect'
 export default {
-  name: "NewSamlSettings",
+  name: 'NewSamlSettings',
   components: {
     KSelect,
     FormGroupHorizontalContent,
@@ -363,36 +363,36 @@ export default {
     InputUrl,
     FormGroup,
     AppModalBodyHeader,
-    AppModal,
+    AppModal
   },
   props: {
     status: {
-      type: Boolean,
+      type: Boolean
     },
     isEdit: {
-      type: Boolean,
+      type: Boolean
     },
     selectedRow: {
-      type: Object,
-    },
+      type: Object
+    }
   },
-  emits: ["on-close", "on-success"],
+  emits: ['on-close', 'on-success'],
   data() {
     return {
       attributesMapping:
-        "{\t" +
+        '{\t' +
         "    email: 'john.doe@keepnetlabs.com', //required\n" +
         "        firstName: 'John', //required\n" +
         "        lastName: 'Doe', //required\n" +
-        "        spRole: 'CompanyAdmin', //required. \n        Default is \"CompanyAdmin\"\n" +
+        '        spRole: \'CompanyAdmin\', //required. \n        Default is "CompanyAdmin"\n' +
         "        phoneNumber: 'Phone' //optional     } \n" +
-        "",
+        '',
       labels,
       validations,
       isCertificateTextDisabled: false,
       resourceId: null,
-      certificateText: "",
-      roleSelectKey: "key-akskasksak",
+      certificateText: '',
+      roleSelectKey: 'key-akskasksak',
       isBatchImportPopupOpen: false,
       saveDisable: false,
       dataContainerWithSearchItems: [],
@@ -400,68 +400,68 @@ export default {
       roleItems: [],
       initialFormValues: null,
       formValues: {
-        name: "",
-        idPEntityID: "",
+        name: '',
+        idPEntityID: '',
         file: null,
-        idPSSOTargetUrl: "",
-        idPCertFingerprint: "",
+        idPSSOTargetUrl: '',
+        idPCertFingerprint: '',
         idPCertFingerprintTypeId: 1,
-        entityID: "",
-        metadataUrl: "",
-        ssoSignInUrl: "",
-        ssoSignOutUrl: "",
-        ssoCallbackUrl: "",
-        bypassSSOLoginUrl: "",
+        entityID: '',
+        metadataUrl: '',
+        ssoSignInUrl: '',
+        ssoSignOutUrl: '',
+        ssoCallbackUrl: '',
+        bypassSSOLoginUrl: '',
         enableSAMLSSO: true,
         domain: [],
-        domainToAdd: "",
-        defaultRoleResourceId: "",
-      },
-    };
+        domainToAdd: '',
+        defaultRoleResourceId: ''
+      }
+    }
   },
   computed: {
     ...mapGetters({
-      brandName: "whitelabel/getBrandName",
+      brandName: 'whitelabel/getBrandName'
     }),
     getMetadataLabel() {
-      return `${labels.SamlConfigurationFor} ${this.brandName}`;
+      return `${labels.SamlConfigurationFor} ${this.brandName}`
     },
     getId() {
-      return this.isEdit ? "edit-saml-settings-modal" : "new-saml-settings-modal";
+      return this.isEdit ? 'edit-saml-settings-modal' : 'new-saml-settings-modal'
     },
     getTitle() {
-      return this.isEdit ? labels.SamlModalBodyEditTitle : labels.SamlModalBodyTitle;
-    },
+      return this.isEdit ? labels.SamlModalBodyEditTitle : labels.SamlModalBodyTitle
+    }
   },
   watch: {
     certificateText(val) {
-      this.formValues.idPCertFingerprint = val;
-    },
+      this.formValues.idPCertFingerprint = val
+    }
   },
   created() {
     if (this.isEdit && this.selectedRow) {
-      this.callForSamlSetting();
+      this.callForSamlSetting()
     }
     this.callForGetDefaultSettings().then(() => {
       this.callForRoles().then(() => {
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
-      });
-    });
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+      })
+    })
   },
   methods: {
     downloadMetadata() {
       window
         .open(
           `${APP_CONFIG.VUE_APP_APP_API_TEST}/companies/saml-settings/download-metadata`,
-          "_blank"
+          '_blank'
         )
-        .focus();
+        .focus()
     },
     callForSamlSetting() {
       getSamlSetting(this.selectedRow.resourceId).then((response) => {
         const {
-          data: { data },
-        } = response;
+          data: { data }
+        } = response
 
         const {
           entityID,
@@ -474,141 +474,141 @@ export default {
           statusId,
           idPEntityID,
           idPCertificateFileContent,
-          defaultRoleResourceId,
-        } = data;
-        this.formValues.entityID = entityID;
-        this.formValues.idPEntityID = idPEntityID;
-        this.formValues.idPCertFingerprint = idPCertFingerprint;
-        this.formValues.idPCertFingerprintTypeId = idPCertFingerprintTypeId;
-        this.formValues.idPSSOTargetUrl = idPSSOTargetUrl;
-        this.formValues.name = name;
-        this.resourceId = resourceId;
-        this.formValues.enableSAMLSSO = !!statusId;
-        this.formValues.domain = domain;
-        this.formValues.defaultRoleResourceId = defaultRoleResourceId;
-        this.dataContainerWithSearchItems = domain.concat();
-        this.certificateText = idPCertificateFileContent;
+          defaultRoleResourceId
+        } = data
+        this.formValues.entityID = entityID
+        this.formValues.idPEntityID = idPEntityID
+        this.formValues.idPCertFingerprint = idPCertFingerprint
+        this.formValues.idPCertFingerprintTypeId = idPCertFingerprintTypeId
+        this.formValues.idPSSOTargetUrl = idPSSOTargetUrl
+        this.formValues.name = name
+        this.resourceId = resourceId
+        this.formValues.enableSAMLSSO = !!statusId
+        this.formValues.domain = domain
+        this.formValues.defaultRoleResourceId = defaultRoleResourceId
+        this.dataContainerWithSearchItems = domain.concat()
+        this.certificateText = idPCertificateFileContent
         if (this.certificateText) {
-          this.isCertificateTextDisabled = true;
+          this.isCertificateTextDisabled = true
         }
-        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`;
-      });
+        this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+      })
     },
     callForRoles() {
       return new Promise((res, rej) => {
         getSystemUsersRole({
           pageNumber: 1,
           pageSize: 10000,
-          orderBy: "RoleName",
+          orderBy: 'RoleName',
           ascending: true,
           filter: {
-            Condition: "AND",
+            Condition: 'AND',
             FilterGroups: [
               {
-                Condition: "OR",
+                Condition: 'OR',
                 FilterItems: [],
-                FilterGroups: [],
+                FilterGroups: []
               },
               {
-                Condition: "AND",
+                Condition: 'AND',
                 FilterItems: [],
-                FilterGroups: [],
-              },
-            ],
-          },
+                FilterGroups: []
+              }
+            ]
+          }
         })
           .then((response) => {
-            const { data } = response.data;
-            this.roleItems = data.map((item) => ({ text: item.name, value: item.resourceId }));
+            const { data } = response.data
+            this.roleItems = data.map((item) => ({ text: item.name, value: item.resourceId }))
             if (!this.isEdit && !this.selectedRow) {
               this.formValues.defaultRoleResourceId = data.find(
                 (role) => role.name === labels.CompanyAdmin
-              )?.resourceId;
+              )?.resourceId
             }
-            this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`;
-            res();
+            this.roleSelectKey = `key${Math.random().toString().substring(0, 5)}`
+            res()
           })
-          .catch(rej);
-      });
+          .catch(rej)
+      })
     },
     handleBatchImportClick() {
-      this.toggleBatchImportPopup();
+      this.toggleBatchImportPopup()
     },
     callForGetDefaultSettings() {
       return new Promise((res, rej) => {
         getDefaultSamlSettings()
           .then((response) => {
             const {
-              data: { data },
-            } = response;
-            delete data.defaultRoleResourceId;
+              data: { data }
+            } = response
+            delete data.defaultRoleResourceId
             for (const key of Object.keys(data)) {
-              this.formValues[key] = data[key];
+              this.formValues[key] = data[key]
             }
-            res();
+            res()
           })
-          .catch(rej);
-      });
+          .catch(rej)
+      })
     },
     closeOverlay() {
-      const isChanged = isDifferent(this.formValues, this.initialFormValues);
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        return this.$emit("on-close");
+        return this.$emit('on-close')
       } else {
-        this.$store.dispatch("common/setIsShowLeavingDialog", {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
-            this.$emit("on-close");
-          },
-        });
+            this.$emit('on-close')
+          }
+        })
       }
     },
-    handleCopyToClipboard(key = "") {
-      navigator.clipboard.writeText(this.formValues[key] || this[key]);
-      this.$store.dispatch("common/createSnackBar", {
-        message: "COPIED TO CLIPBOARD",
+    handleCopyToClipboard(key = '') {
+      navigator.clipboard.writeText(this.formValues[key] || this[key])
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'COPIED TO CLIPBOARD',
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: "mdi-check-circle",
-      });
+        icon: 'mdi-check-circle'
+      })
     },
     handleDomainToAddButtonClick() {
       if (
         this.$refs.refDomainToAddForm.validate() &&
         !this.dataContainerWithSearchItems.find((item) => item === this.formValues.domainToAdd)
       ) {
-        this.dataContainerWithSearchItems.unshift(this.formValues.domainToAdd);
-        this.formValues.domainToAdd = "";
-        this.$refs.refDomainToAddForm.resetValidation();
+        this.dataContainerWithSearchItems.unshift(this.formValues.domainToAdd)
+        this.formValues.domainToAdd = ''
+        this.$refs.refDomainToAddForm.resetValidation()
       }
     },
     onFileChange(file) {
-      this.certificateText = "";
-      this.formValues.file = file;
-      this.setCertificateText(file);
+      this.certificateText = ''
+      this.formValues.file = file
+      this.setCertificateText(file)
     },
     async setCertificateText(file) {
-      this.certificateText = await file.text();
-      this.isCertificateTextDisabled = true;
+      this.certificateText = await file.text()
+      this.isCertificateTextDisabled = true
     },
     onMetadataFileChange(file) {
-      this.callForParseMetadata(file);
+      this.callForParseMetadata(file)
     },
     callForParseMetadata(file) {
-      const formData = new FormData();
-      formData.append("File", file);
+      const formData = new FormData()
+      formData.append('File', file)
       parseMetadata(formData).then((response) => {
         const {
-          data: { data },
-        } = response;
+          data: { data }
+        } = response
         Object.keys(data).forEach((key) => {
-          this.formValues[key] = data[key];
-          if (key === "idPCertificate" && this.formValues[key]) {
-            this.certificateText = this.formValues[key];
-            this.formValues.idPCertFingerprint = this.formValues[key];
+          this.formValues[key] = data[key]
+          if (key === 'idPCertificate' && this.formValues[key]) {
+            this.certificateText = this.formValues[key]
+            this.formValues.idPCertFingerprint = this.formValues[key]
           }
-        });
-        this.isTextFieldsDisabled = true;
-      });
+        })
+        this.isTextFieldsDisabled = true
+      })
     },
     submit() {
       if (this.$refs.refForm.validate()) {
@@ -621,8 +621,8 @@ export default {
           enableSAMLSSO,
           idPEntityID,
           file,
-          defaultRoleResourceId,
-        } = this.formValues;
+          defaultRoleResourceId
+        } = this.formValues
         const formData = {
           name,
           idPSSOTargetUrl,
@@ -633,38 +633,38 @@ export default {
           statusId: Number(enableSAMLSSO),
           file,
           defaultRoleResourceId,
-          domain: this.dataContainerWithSearchItems,
-        };
-        this.saveDisable = true;
-        const payload = this.createFormDataPayload(formData);
+          domain: this.dataContainerWithSearchItems
+        }
+        this.saveDisable = true
+        const payload = this.createFormDataPayload(formData)
         const promise = !this.isEdit
           ? createSamlSetting(payload)
-          : updateSamlSetting(payload, this.resourceId);
+          : updateSamlSetting(payload, this.resourceId)
         promise
           .then(() => {
-            this.$emit("on-success");
+            this.$emit('on-success')
           })
           .finally(() => {
-            this.saveDisable = false;
-          });
+            this.saveDisable = false
+          })
       }
     },
     createFormDataPayload(payload = {}) {
-      const formData = new FormData();
+      const formData = new FormData()
       for (const key of Object.keys(payload)) {
-        formData.append(key.slice(0, 1).toUpperCase() + key.slice(1), payload[key]);
+        formData.append(key.slice(0, 1).toUpperCase() + key.slice(1), payload[key])
       }
-      return formData;
+      return formData
     },
     handleBatchImport(data = []) {
-      if (!data.length) return;
-      this.dataContainerWithSearchItems.unshift(...data);
+      if (!data.length) return
+      this.dataContainerWithSearchItems.unshift(...data)
     },
     toggleBatchImportPopup() {
-      this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen;
-    },
-  },
-};
+      this.isBatchImportPopupOpen = !this.isBatchImportPopupOpen
+    }
+  }
+}
 </script>
 
 <style lang="scss">

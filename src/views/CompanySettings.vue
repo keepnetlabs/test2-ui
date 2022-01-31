@@ -57,30 +57,30 @@
 </template>
 
 <script>
-import SMTPSettings from "@/components/Company Settings/SmtpSettings/SMTPSettings";
-import NotificationTemplates from "@/components/Company Settings/NotificationTemplates";
-import CustomApi from "@/components/Company Settings/RestApi/CustomApi";
-import WhiteLabeling from "@/components/Company Settings/WhiteLabeling";
-import PERMISSIONS from "@/permissions";
-import { getPermissionsOfAllItems } from "@/utils/functions";
-import SamlSettings from "@/components/Company Settings/SAML/SamlSettings";
-import ProxySettings from "@/components/Company Settings/SmtpSettings/ProxySettings";
-import { checkPermission } from "@/utils/functions";
+import SMTPSettings from '@/components/Company Settings/SmtpSettings/SMTPSettings'
+import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
+import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
+import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
+import PERMISSIONS from '@/permissions'
+import { getPermissionsOfAllItems } from '@/utils/functions'
+import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
+import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
+import { checkPermission } from '@/utils/functions'
 export default {
-  name: "CompanySettings",
+  name: 'CompanySettings',
   components: {
     SamlSettings,
     SMTPSettings,
     NotificationTemplates,
     CustomApi,
     WhiteLabeling,
-    ProxySettings,
+    ProxySettings
   },
   data() {
     return {
-      tab: "smtp-settings",
+      tab: 'smtp-settings',
       ENUM: {
-        COMPANYSETTINGS: "Company Settings",
+        COMPANYSETTINGS: 'Company Settings'
       },
       PERMISSIONS: {
         SMTP_SETTINGS_PERMISSIONS: {},
@@ -88,51 +88,51 @@ export default {
         REST_API_PERMISSIONS: {},
         WHITE_LABEL_PERMISSIONS: {},
         PROXY_SETTINGS_PERMISSIONS: {},
-        SAML_SETTINGS_PERMISSIONS: {},
-      },
-    };
+        SAML_SETTINGS_PERMISSIONS: {}
+      }
+    }
   },
   methods: {
     checkPermissions(permission, type) {
-      return checkPermission(permission, type);
+      return checkPermission(permission, type)
     },
     changeTabStatus(status) {
-      this.tab = status;
+      this.tab = status
     },
     getPermissions() {
       const {
         SMTP_SETTINGS_PERMISSIONS,
         WHITE_LABEL_PERMISSIONS,
-        PROXY_SETTINGS_PERMISSIONS,
-      } = PERMISSIONS;
+        PROXY_SETTINGS_PERMISSIONS
+      } = PERMISSIONS
       this.$set(
         this.PERMISSIONS,
-        "SMTP_SETTINGS_PERMISSIONS",
+        'SMTP_SETTINGS_PERMISSIONS',
         getPermissionsOfAllItems(SMTP_SETTINGS_PERMISSIONS)
-      );
+      )
       this.$set(
         this.PERMISSIONS,
-        "WHITE_LABEL_PERMISSIONS",
+        'WHITE_LABEL_PERMISSIONS',
         getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
-      );
+      )
       this.$set(
         this.PERMISSIONS,
-        "PROXY_SETTINGS_PERMISSIONS",
+        'PROXY_SETTINGS_PERMISSIONS',
         getPermissionsOfAllItems(PROXY_SETTINGS_PERMISSIONS)
-      );
+      )
     },
     changeTabByRoute() {
-      const { $route: { query } = {} } = this;
-      if (!query || !query.tab) return;
-      this.tab = query.tab;
+      const { $route: { query } = {} } = this
+      if (!query || !query.tab) return
+      this.tab = query.tab
       this.$nextTick(() => {
-        this.$router.replace(this.$route.fullPath.replace("tab=notification-template&", ""));
-      });
-    },
+        this.$router.replace(this.$route.fullPath.replace('tab=notification-template&', ''))
+      })
+    }
   },
   created() {
-    this.getPermissions();
-    this.changeTabByRoute();
+    this.getPermissions()
+    this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {
     const {
@@ -140,28 +140,28 @@ export default {
       refNotificationTemplates,
       refCustomApi,
       refProxySettings,
-      refSamlSettings,
-    } = this.$refs;
+      refSamlSettings
+    } = this.$refs
     if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
-      refSmtpSettings.checkIfCanCloseSmtpModal();
-      next(false);
+      refSmtpSettings.checkIfCanCloseSmtpModal()
+      next(false)
     } else if (refNotificationTemplates && refNotificationTemplates.newNotificationTemplateStatus) {
-      refNotificationTemplates.checkIfCanCloseNotificationTemplateModal();
-      next(false);
+      refNotificationTemplates.checkIfCanCloseNotificationTemplateModal()
+      next(false)
     } else if (refCustomApi && refCustomApi.showNewCustomApi) {
-      refCustomApi.checkIfCanCloseCustomApiModal();
-      next(false);
+      refCustomApi.checkIfCanCloseCustomApiModal()
+      next(false)
     } else if (refProxySettings && refProxySettings.newProxyModalStatus) {
-      refProxySettings.checkIfCanCloseProxyModal();
-      next(false);
+      refProxySettings.checkIfCanCloseProxyModal()
+      next(false)
     } else if (refSamlSettings && refSamlSettings.isEditOrNewModalOpen) {
-      refSamlSettings.checkIfCanCloseSamlSettingsModal();
-      next(false);
+      refSamlSettings.checkIfCanCloseSamlSettingsModal()
+      next(false)
     } else {
-      next();
+      next()
     }
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss">

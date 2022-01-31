@@ -147,8 +147,8 @@
               :style="[
                 !selectedCluster && {
                   backgroundColor: '#757575',
-                  borderColor: '#757575',
-                },
+                  borderColor: '#757575'
+                }
               ]"
             >
               <v-menu
@@ -182,7 +182,7 @@
                       <span
                         :class="[
                           'cluster-view__item',
-                          isEqualCluster(item.name) && 'cluster-view__item--selected',
+                          isEqualCluster(item.name) && 'cluster-view__item--selected'
                         ]"
                         >{{ item.name }}</span
                       >
@@ -214,7 +214,7 @@
                   </v-btn>
                 </template>
                 <span class="tooltip-span">{{
-                  (addButton && addButton.tooltip) || "Add Users"
+                  (addButton && addButton.tooltip) || 'Add Users'
                 }}</span>
               </v-tooltip>
             </slot>
@@ -230,7 +230,7 @@
                   <v-icon @click="handleRefresh">mdi-refresh</v-icon>
                 </v-btn>
               </template>
-              <span class="tooltip-span">{{ "Refresh" }}</span>
+              <span class="tooltip-span">{{ 'Refresh' }}</span>
             </v-tooltip>
             <v-menu
               v-model="isDownloadMenuOpen"
@@ -440,7 +440,7 @@
             :data="showfilteredData ? filteredData : tableData"
             :default-sort="{
               prop: defaultSort || '',
-              order: defaultSort || '',
+              order: defaultSort || ''
             }"
             :highlight-current-row="false"
             :row-class-name="tableRowClassName"
@@ -534,7 +534,7 @@
                     :errorStateValue="scope.row['scanResultMessage']"
                   />
                   <span v-else>
-                    {{ col.emptyText || "" }}
+                    {{ col.emptyText || '' }}
                   </span>
                 </div>
                 <div v-if="col.type === 'smallBadge'">
@@ -558,7 +558,7 @@
                     "
                   />
                   <span v-else>
-                    {{ col.emptyText || "" }}
+                    {{ col.emptyText || '' }}
                   </span>
                 </div>
                 <div v-if="col.type === 'priority'">
@@ -569,7 +569,7 @@
                     v-if="scope.row && scope.row['priority']"
                   />
                   <span v-else>
-                    {{ col.emptyText || "" }}
+                    {{ col.emptyText || '' }}
                   </span>
                 </div>
                 <div v-if="col.type === 'number'">
@@ -591,7 +591,7 @@
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
                   </template>
-                  <span>{{ col["headerTooltip"] }}</span>
+                  <span>{{ col['headerTooltip'] }}</span>
                 </v-tooltip>
                 <template v-else>
                   {{ column.label }}
@@ -945,13 +945,13 @@
             <span class="el-pagination__text el-pagination__text--2">
               {{
                 filteredDataLength === 0
-                  ? "0"
+                  ? '0'
                   : this.currentPage === 1
                   ? 1
                   : (this.currentPage - 1) * this.rowCount + 1
               }}-{{
                 filteredDataLength === 0
-                  ? "0"
+                  ? '0'
                   : this.currentPage * this.rowCount > filteredDataLength
                   ? filteredDataLength
                   : this.currentPage * this.rowCount
@@ -967,42 +967,42 @@
 </template>
 
 <script>
-import Vue from "vue";
-import DataTableText from "./DataTableComponents/DataTableText";
-import DataTableDate from "./DataTableComponents/DataTableDate";
-import DataTableTextArray from "./DataTableComponents/DataTableTextArray";
-import DataTableArray from "./DataTableComponents/DataTableArray";
-import DataTableAttachment from "./DataTableComponents/DataTableAttachment";
-import DataTableChart from "./DataTableComponents/DataTableChart";
-import DataTableDetected from "./DataTableComponents/DataTableDetected";
-import DataTableUserStatus from "./DataTableComponents/DataTableUserStatus";
-import DataTableFiber from "./DataTableComponents/DataTableFiber";
-import DataTableProgress from "./DataTableComponents/DataTableProgress";
-import DataTableService from "./DataTableComponents/DataTableService";
-import DataTableLink from "./DataTableComponents/DataTableLink";
-import DataTableTooltip from "./DataTableComponents/DataTableTooltip";
-import DownloadModal from "./DataTableComponents/DownloadModal";
-import Badge from "./Badge";
-import ExtendedView from "./ExtendedView";
-import DataTableSmallBadge from "./DataTableComponents/DataTableSmallBadge";
-import DatatableTextWithBadge from "./DataTableComponents/DatatableTextWithBadge";
-import DataTableFilter from "./DataTableComponents/DataTableFilter";
-import RowColorHandler from "@/directives/datatable-row-color-handler";
-window.Vue = Vue;
-import ElementUI from "element-ui";
-import "element-ui/lib/theme-chalk/index.css";
-import locale from "element-ui/lib/locale/lang/en";
-import { mapGetters } from "vuex";
+import Vue from 'vue'
+import DataTableText from './DataTableComponents/DataTableText'
+import DataTableDate from './DataTableComponents/DataTableDate'
+import DataTableTextArray from './DataTableComponents/DataTableTextArray'
+import DataTableArray from './DataTableComponents/DataTableArray'
+import DataTableAttachment from './DataTableComponents/DataTableAttachment'
+import DataTableChart from './DataTableComponents/DataTableChart'
+import DataTableDetected from './DataTableComponents/DataTableDetected'
+import DataTableUserStatus from './DataTableComponents/DataTableUserStatus'
+import DataTableFiber from './DataTableComponents/DataTableFiber'
+import DataTableProgress from './DataTableComponents/DataTableProgress'
+import DataTableService from './DataTableComponents/DataTableService'
+import DataTableLink from './DataTableComponents/DataTableLink'
+import DataTableTooltip from './DataTableComponents/DataTableTooltip'
+import DownloadModal from './DataTableComponents/DownloadModal'
+import Badge from './Badge'
+import ExtendedView from './ExtendedView'
+import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
+import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
+import DataTableFilter from './DataTableComponents/DataTableFilter'
+import RowColorHandler from '@/directives/datatable-row-color-handler'
+window.Vue = Vue
+import ElementUI from 'element-ui'
+import 'element-ui/lib/theme-chalk/index.css'
+import locale from 'element-ui/lib/locale/lang/en'
+import { mapGetters } from 'vuex'
 
-Vue.use(ElementUI, { locale });
-import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from "@/utils/functions";
-import { columnStandards } from "@/model/constants/commonConstants";
-import DataTableColorfulText from "./DataTableComponents/DataTableColorfulText";
-import DatatableLoading from "./SkeletonLoading/DatatableLoading";
-import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import DataTableFilterOptions from "@/components/DataTableComponents/DataTableFilterOptions";
-import DataTableLoadAllRecords from "@/components/DataTableComponents/DataTableLoadAllRecords";
+Vue.use(ElementUI, { locale })
+import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
+import { columnStandards } from '@/model/constants/commonConstants'
+import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
+import DatatableLoading from './SkeletonLoading/DatatableLoading'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
+import DataTableLoadAllRecords from '@/components/DataTableComponents/DataTableLoadAllRecords'
 export default {
   components: {
     DataTableLoadAllRecords,
@@ -1027,258 +1027,258 @@ export default {
     DatatableTextWithBadge,
     DatatableLoading,
     DataTableTextArray,
-    DataTableDate,
+    DataTableDate
   },
   directives: {
-    "row-color-handler": RowColorHandler,
+    'row-color-handler': RowColorHandler
   },
   props: {
     isShowDownloadModal: {
-      default: false,
+      default: false
     },
     noPaddingBottom: {
       type: Boolean,
-      default: false,
+      default: false
     },
     addRowClassName: {
-      type: Function,
+      type: Function
     },
     justCompareRowKey: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showPageSize: {
       type: Boolean,
       required: false,
-      default: true,
+      default: true
     },
     showFilterOptions: {
       type: Boolean,
       required: false,
-      default: true,
+      default: true
     },
     showPagination: {
       type: Boolean,
       required: false,
-      default: true,
+      default: true
     },
     isServerSideSelection: {
       type: Boolean,
-      default: false,
+      default: false
     },
     columns: {
       type: Array,
-      required: true,
+      required: true
     },
     showAllRecords: {
       type: Boolean,
-      default: false,
+      default: false
     },
     lazy: {
       type: Boolean,
-      default: false,
+      default: false
     },
     totalNumberOfRecords: {
       type: Number,
-      default: 0,
+      default: 0
     },
     hideParentRowActions: {
       type: Boolean,
-      default: false,
+      default: false
     },
     toggleAllRowExpansion: {
-      type: Boolean,
+      type: Boolean
     },
     activeCluster: {
-      type: String,
+      type: String
     },
     extendedViewLoading: {
-      type: Boolean,
+      type: Boolean
     },
     serverSideEvents: {
       type: Object,
-      default: () => ({ search: false, sort: false, pagination: false }),
+      default: () => ({ search: false, sort: false, pagination: false })
     },
     handleSetCellClass: {
-      type: Function,
+      type: Function
     },
     changeFooterPosition: {
       type: Boolean,
-      default: false,
+      default: false
     },
     extendedViewDisableChanger: {
-      type: Function,
+      type: Function
     },
     showClusterItemsRowAction: {
       type: Boolean,
-      default: true,
+      default: true
     },
     extendedViewOptions: {
       type: Object,
       default() {
-        return {};
-      },
+        return {}
+      }
     },
     isSettingsPopup: {
       type: Boolean,
-      default: true,
+      default: true
     },
     serverSideProps: {
       type: ServerSideProps,
-      default: () => new ServerSideProps(),
+      default: () => new ServerSideProps()
     },
     disableExtendedViewTransition: {
       type: Boolean,
-      default: false,
+      default: false
     },
     resizable: {
       type: Boolean,
-      default: true,
+      default: true
     },
     rowKey: {
       type: String,
-      default: "resourceId",
+      default: 'resourceId'
     },
     storedTableSettings: {
       type: Object,
-      default: null,
+      default: null
     },
     isExtendedViewCreateMode: {
       type: Boolean,
-      default: false,
+      default: false
     },
     extendedViewValue: {
       type: Array,
       default() {
-        return [];
-      },
+        return []
+      }
     },
     cellPadding: {
       type: Number,
-      default: 0,
+      default: 0
     },
     isEditableRuntime: {
       type: Boolean,
-      default: false,
+      default: false
     },
     setClassName: {
       type: Function,
-      default: () => {},
+      default: () => {}
     },
     editableStatusItems: {
       type: Array,
       default: () => {
-        return ["Active", "Inactive", "N/A"];
-      },
+        return ['Active', 'Inactive', 'N/A']
+      }
     },
     isPopupDateEditable: {
       type: Boolean,
-      default: true,
+      default: true
     },
     rowActionsMinWidth: {
       type: Number,
-      default: 60,
+      default: 60
     },
     table: {
       type: Array,
-      required: false,
+      required: false
     },
     refName: {
       type: String,
-      required: true,
+      required: true
     },
     title: {
       type: Object,
-      required: false,
+      required: false
     },
     pageSizes: {
       type: Array,
       required: false,
-      default: () => [5, 10, 25],
+      default: () => [5, 10, 25]
     },
     defaultSort: {
       type: String,
-      required: false,
+      required: false
     },
     isCustomOverflowedColumn: {
       type: Boolean,
-      default: false,
+      default: false
     },
     customOverflowProp: {
       type: String,
-      default: "",
+      default: ''
     },
     selectable: {
       type: Boolean,
-      required: false,
+      required: false
     },
     countRow: {
       type: Number,
-      required: false,
+      required: false
     },
     filterable: {
       type: Boolean,
-      required: false,
+      required: false
     },
     options: {
       type: Boolean,
-      required: false,
+      required: false
     },
     groupable: {
       type: Boolean,
-      required: false,
+      required: false
     },
     refreshButtonDisabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
     rowActions: {
       type: Array,
-      required: false,
+      required: false
     },
     addUsers: {
       type: Object,
-      required: false,
+      required: false
     },
     addButton: {
       type: Object,
-      required: false,
+      required: false
     },
     empty: {
       type: Object,
-      required: false,
+      required: false
     },
     selectEvent: {
       type: Object,
-      required: false,
+      required: false
     },
     chartOptions: {
       type: Object,
-      required: false,
+      required: false
     },
     clusterItems: {
       type: Array,
-      required: false,
+      required: false
     },
     border: {
       type: Boolean,
-      default: true,
+      default: true
     },
     requestParams: {
       type: Object,
-      required: false,
+      required: false
     },
     isServerSide: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showHeader: {
       type: Boolean,
-      default: true,
+      default: true
     },
     hideActionOptions: {
       type: Boolean,
-      default: false,
+      default: false
     },
     persistentState: {
       type: Object,
@@ -1288,7 +1288,7 @@ export default {
           expandedRows: [],
           firstColFixed: true,
           filteredDataLength: 0,
-          search: "",
+          search: '',
           showfilteredData: false,
           tableData: [],
           initialData: [],
@@ -1299,82 +1299,82 @@ export default {
           rowCount: this.countRow || 10,
           isSelectedAll: false,
           excludedResourceIdList: [],
-          selectedCluster: "",
+          selectedCluster: '',
           sortProps: null,
           unRenderedFilterData: [],
           totalLength: 0,
           renderedColumns: [],
           isSelectedAllEver: false,
           selectionRowCheckboxDeterminate: false,
-          multipleSelection: [],
-        };
-      },
+          multipleSelection: []
+        }
+      }
     },
     downloadButton: {
       type: Object,
       default: () => ({
         show: true,
-        disabled: false,
-      }),
+        disabled: false
+      })
     },
     settingsPopupStyle: {
-      type: Object,
+      type: Object
     },
     isColumnFilterActive: {
       type: Boolean,
-      default: false,
+      default: false
     },
     id: {
-      type: String,
+      type: String
     },
     loading: {
       type: Boolean,
-      default: false,
+      default: false
     },
     download: {
-      default: () => ({ xls: true, csv: true, pdf: true }),
+      default: () => ({ xls: true, csv: true, pdf: true })
     },
     isTesting: {
       type: Boolean,
-      default: false,
+      default: false
     },
     testProps: {
       type: Object,
       default: () => {
-        return { menuAttach: ".k-table__wrapper" };
-      },
-    },
+        return { menuAttach: '.k-table__wrapper' }
+      }
+    }
   },
   computed: {
     ...mapGetters({
-      isWantToDownload: "common/getDownloadModalStatus", // for using getters
+      isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
     isFiltered() {
-      return Object.keys(this.filterValues).length > 0;
+      return Object.keys(this.filterValues).length > 0
     },
     isShowAllRecords() {
-      return !this.isServerSide && this.showAllRecords;
+      return !this.isServerSide && this.showAllRecords
     },
     getTableHeaderRender() {
       const compareVal =
         this.isServerSide && this.isServerSideSelection
           ? this.serverSideSelectionCount
-          : this.multipleSelection.length;
-      return compareVal && this.tableData && this.tableData.length;
+          : this.multipleSelection.length
+      return compareVal && this.tableData && this.tableData.length
     },
     getSelectionText() {
       const selectionCount =
         this.isServerSide && this.isServerSideSelection
           ? this.serverSideSelectionCount
-          : this.multipleSelection.length;
-      return this.isSelectedAll ? "All selected" : `${selectionCount} item(s) selected`;
+          : this.multipleSelection.length
+      return this.isSelectedAll ? 'All selected' : `${selectionCount} item(s) selected`
     },
     getSelectionButtonText() {
-      const text = this.isSelectedAll ? "Unselect" : "Select";
+      const text = this.isSelectedAll ? 'Unselect' : 'Select'
       if (this.isServerSide) {
-        return `${text} all ${this.serverSideProps.totalNumberOfRecords} item(s)`;
+        return `${text} all ${this.serverSideProps.totalNumberOfRecords} item(s)`
       }
-      return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`;
+      return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
     },
     getTableHeaderClass() {
       if (this.serverSideEvents.search) {
@@ -1382,17 +1382,17 @@ export default {
           this.tableData.length === 0 &&
           !this.search &&
           !this.isColumnFilterActive &&
-          "table-header-disable"
-        );
+          'table-header-disable'
+        )
       } else {
         return this.tableData.length === 0 && !this.isColumnFilterActive
-          ? "table-header-disable"
-          : "";
+          ? 'table-header-disable'
+          : ''
       }
     },
     getSelectionCheckboxDisabledValue() {
-      return this.showfilteredData ? !this.filteredData.length : false;
-    },
+      return this.showfilteredData ? !this.filteredData.length : false
+    }
   },
   data() {
     const {
@@ -1418,10 +1418,10 @@ export default {
       expandedRows,
       selectionRowCheckboxDeterminate,
       serverSideSelectionCount,
-      isSelectedAllEver,
-    } = this.persistentState;
+      isSelectedAllEver
+    } = this.persistentState
     return {
-      columnKey: "column-key",
+      columnKey: 'column-key',
       cacheChecks: false,
       filteredData,
       renderedColumns,
@@ -1445,12 +1445,12 @@ export default {
       dynamicStyleRef: null,
       search,
       expandedRows,
-      downloadModalTitle: "",
+      downloadModalTitle: '',
       isSettingsOpened: false,
       isWantToEditRow: false,
       selectedMenuIndex: null,
       firstColFixed,
-      overFlowTooltipContent: "",
+      overFlowTooltipContent: '',
       overFlowTooltipStyle: {},
       lastColFixed,
       clusteredItems: [],
@@ -1459,10 +1459,10 @@ export default {
       isSelectedAllEver,
       filterValues,
       showOverFlowTooltip: false,
-      actionFixed: "right",
+      actionFixed: 'right',
       allHidden: false,
       clusterChevron: false,
-      downloadButtonOptions: ["Download Current Page", "Download All"],
+      downloadButtonOptions: ['Download Current Page', 'Download All'],
       selectionRowCheckboxDeterminate,
       renderedTotalLength: 0,
       totalLength,
@@ -1470,55 +1470,55 @@ export default {
       isDownloadMenuOpen: false,
       isMultipleEdit: false,
       firstOpenSettingsTimeout: null,
-      renderFixedItemsTimeout: null,
-    };
+      renderFixedItemsTimeout: null
+    }
   },
   watch: {
     table(table, oldTable) {
-      this.columnStandardisation(this.columns);
-      this.initialData = [...table];
+      this.columnStandardisation(this.columns)
+      this.initialData = [...table]
       //This is for refresh button when clicked caching refresh
       if ((!this.cacheChecks && !this.isServerSide) || (this.lazy && this.selectedCluster)) {
-        this.multipleSelection = [];
+        this.multipleSelection = []
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
-          this.$refs.elTableRef.clearSelection();
+          this.$refs.elTableRef.clearSelection()
         }
       } else {
         //If there is clustered items selected table has reselect bug. It solves it
       }
-      this.cacheChecks = false;
+      this.cacheChecks = false
 
       //totalTable length
-      this.totalLength = this.getTotalLength(table);
+      this.totalLength = this.getTotalLength(table)
       if (!table.length && this.showOverFlowTooltip) {
-        this.showOverFlowTooltip = false;
+        this.showOverFlowTooltip = false
       }
       //if there is filtered data and search go to search function
       if (this.showfilteredData && this.search) {
-        this.searchChangedEvent(0);
+        this.searchChangedEvent(0)
       }
       //if there is just sorting go to the sorting
       else if (this.sortProps && !this.isServerSide) {
-        this.sortChangedEvent(this.sortProps);
+        this.sortChangedEvent(this.sortProps)
       } else {
-        const pageSize = this.isServerSide ? this.serverSideProps.pageSize : this.rowCount;
-        let maxPage = Math.ceil(table.length / pageSize);
+        const pageSize = this.isServerSide ? this.serverSideProps.pageSize : this.rowCount
+        let maxPage = Math.ceil(table.length / pageSize)
         if (maxPage > this.currentPage) {
-          maxPage = this.currentPage;
+          maxPage = this.currentPage
         }
 
-        this.tableData = table.slice((maxPage - 1) * pageSize, maxPage * pageSize);
+        this.tableData = table.slice((maxPage - 1) * pageSize, maxPage * pageSize)
         if (table.length && !this.tableData.length && this.currentPage !== 1) {
-          this.currentPage -= 1;
+          this.currentPage -= 1
           this.tableData = [...table].slice(
             (this.currentPage - 1) * pageSize,
             this.currentPage * pageSize
-          );
+          )
         }
-        this.reRenderFixedItems();
+        this.reRenderFixedItems()
 
         if (!this.showClusterItemsRowAction) {
-          this.hideChildRowActions();
+          this.hideChildRowActions()
         }
       }
 
@@ -1530,100 +1530,100 @@ export default {
         !this.clusteredItems.length
       ) {
         this.$nextTick(() => {
-          this.getSelectedObjectAndSelectRows();
-        });
+          this.getSelectedObjectAndSelectRows()
+        })
       }
       if (this.isServerSide && this.isSelectedAllEver) {
         this.$nextTick(() => {
           this.$nextTick(() => {
             this.tableData.forEach((item) => {
               if (!this.excludedResourceIdList.find((id) => id === item[this.rowKey])) {
-                this.$refs.elTableRef.toggleRowSelection(item, true);
+                this.$refs.elTableRef.toggleRowSelection(item, true)
               }
-            });
-          });
-        });
+            })
+          })
+        })
       }
 
       if (this.groupable && this.clusteredItems.length && this.isServerSide) {
         this.$nextTick(() => {
-          const selections = JSON.parse(JSON.stringify(this.multipleSelection));
-          this.multipleSelection = [];
-          this.$refs.elTableRef.clearSelection();
-          const allItems = this.getAllItems(this.tableData, [], false, false);
+          const selections = JSON.parse(JSON.stringify(this.multipleSelection))
+          this.multipleSelection = []
+          this.$refs.elTableRef.clearSelection()
+          const allItems = this.getAllItems(this.tableData, [], false, false)
           selections.forEach((selectedItem, index) => {
             const thisTableItem = allItems.find((item) => {
-              return item[this.rowKey] === selectedItem[this.rowKey];
-            });
+              return item[this.rowKey] === selectedItem[this.rowKey]
+            })
 
             if (thisTableItem) {
-              this.$refs.elTableRef.toggleRowSelection(thisTableItem, true);
+              this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
             } else {
-              this.$refs.elTableRef.toggleRowSelection(selectedItem, true);
+              this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
             }
-          });
-        });
+          })
+        })
       }
 
       if (this.groupable && this.lazy && this.selectedCluster) {
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef) {
-          this.$refs.elTableRef.store.states.expandRows = [];
-          this.$refs.elTableRef.store.states.treeData = [];
+          this.$refs.elTableRef.store.states.expandRows = []
+          this.$refs.elTableRef.store.states.treeData = []
         }
       }
       if (this.toggleAllRowExpansion) {
         this.$nextTick(() => {
           for (const row of this.tableData) {
-            this.handleToggleOrLazyWhenCheckboxSelected(row);
+            this.handleToggleOrLazyWhenCheckboxSelected(row)
           }
-        });
+        })
       }
     },
     isWantToEditRow(val) {
-      this.$emit("on-extended-view-status-change", val);
+      this.$emit('on-extended-view-status-change', val)
     },
     tableData(data) {
-      this.calculateAllSelected();
+      this.calculateAllSelected()
       if (this.groupable && !this.lazy) {
-        this.calculateExpandedRows();
+        this.calculateExpandedRows()
       }
-      if (!this.tableData || this.tableData.length === 0) return [];
-      else return data;
+      if (!this.tableData || this.tableData.length === 0) return []
+      else return data
     },
     filteredData() {
-      this.calculateAllSelected();
+      this.calculateAllSelected()
       if (this.groupable && !this.lazy) {
-        this.calculateExpandedRows();
+        this.calculateExpandedRows()
       }
     },
     firstColFixed(val) {
       if (!val) {
-        const fixedCol = this.columns.filter((c) => c.fixed === "left");
+        const fixedCol = this.columns.filter((c) => c.fixed === 'left')
         if (fixedCol && fixedCol.length) {
-          fixedCol[0].fixed = false;
-          this.firstColFixed = false;
+          fixedCol[0].fixed = false
+          this.firstColFixed = false
           if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.columns.length) {
-            this.$refs.elTableRef.columns[0].fixed = false;
+            this.$refs.elTableRef.columns[0].fixed = false
           }
         }
       } else {
-        const disabledCol = this.columns.filter((c) => c.fixed === false);
-        disabledCol[0].fixed = "left";
-        this.firstColFixed = true;
+        const disabledCol = this.columns.filter((c) => c.fixed === false)
+        disabledCol[0].fixed = 'left'
+        this.firstColFixed = true
         if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.columns.length) {
-          this.$refs.elTableRef.columns[0].fixed = true;
+          this.$refs.elTableRef.columns[0].fixed = true
         }
       }
     },
     lastColFixed(val) {
       if (!val) {
-        this.actionFixed = false;
+        this.actionFixed = false
       } else {
-        this.actionFixed = "right";
+        this.actionFixed = 'right'
       }
     },
     multipleSelection() {
-      this.calculateAllSelected();
+      this.calculateAllSelected()
     },
     isSelectedAll(val = false) {
       if (val && !this.search) {
@@ -1633,69 +1633,69 @@ export default {
     columns: {
       deep: true,
       handler(val) {
-        this.setRenderedColumns();
-        this.allHidden = !val.some((col) => col.show);
-      },
-    },
+        this.setRenderedColumns()
+        this.allHidden = !val.some((col) => col.show)
+      }
+    }
   },
   created() {
     //Init column standardisation
-    if (this.persistentState) this.setPersistentStateToDataValues();
+    if (this.persistentState) this.setPersistentStateToDataValues()
 
-    this.columnStandardisation(this.columns);
+    this.columnStandardisation(this.columns)
 
     if (this.table && this.table.length) {
-      this.initialData = [...this.table];
-      this.tableData = [...this.table];
-      this.totalLength = this.getTotalLength(this.table);
+      this.initialData = [...this.table]
+      this.tableData = [...this.table]
+      this.totalLength = this.getTotalLength(this.table)
     }
     if (!this.showClusterItemsRowAction) {
-      this.hideChildRowActions();
+      this.hideChildRowActions()
     }
 
-    this.tableData = this.tableData.slice(0, this.rowCount);
+    this.tableData = this.tableData.slice(0, this.rowCount)
   },
   mounted() {
     //persistent state sorting
     if (this.persistentState && this.persistentState.sortProps) {
-      const { prop, order } = this.persistentState.sortProps;
-      this.$refs.elTableRef.sort(prop, order);
+      const { prop, order } = this.persistentState.sortProps
+      this.$refs.elTableRef.sort(prop, order)
     }
     if (window.outerWidth < 1023) {
-      this.actionFixed = false;
-      const leftFixed = this.columns.filter((col) => col.fixed === "left");
+      this.actionFixed = false
+      const leftFixed = this.columns.filter((col) => col.fixed === 'left')
       if (leftFixed && leftFixed.length) {
-        leftFixed[0].fixed = false;
-        this.firstColFixed = false;
+        leftFixed[0].fixed = false
+        this.firstColFixed = false
       }
-      const rightFixed = this.columns.filter((col) => col.fixed === "right");
+      const rightFixed = this.columns.filter((col) => col.fixed === 'right')
       if (rightFixed && rightFixed.length) {
-        rightFixed[0].fixed = false;
+        rightFixed[0].fixed = false
       }
-      this.lastColFixed = false;
-      this.actionFixed = false;
+      this.lastColFixed = false
+      this.actionFixed = false
     }
 
-    window.addEventListener("resize", this.renderFixedItems);
+    window.addEventListener('resize', this.renderFixedItems)
   },
   beforeDestroy() {
     if (this.dynamicStyleRef && this.dynamicStyleRef.remove) {
-      this.dynamicStyleRef.remove();
+      this.dynamicStyleRef.remove()
     }
     if (this.timeout) {
-      clearTimeout(this.timeout);
+      clearTimeout(this.timeout)
     }
     if (this.renderFixedItemsTimeout) {
-      clearTimeout(this.renderFixedItemsTimeout);
+      clearTimeout(this.renderFixedItemsTimeout)
     }
     if (this.firstOpenSettingsTimeout) {
-      clearTimeout(this.firstOpenSettingsTimeout);
+      clearTimeout(this.firstOpenSettingsTimeout)
     }
-    window.removeEventListener("resize", this.renderFixedItems);
+    window.removeEventListener('resize', this.renderFixedItems)
   },
   methods: {
     handleRowClick(row, column, event) {
-      this.$emit("row-click", row);
+      this.$emit('row-click', row)
     },
     getState() {
       return {
@@ -1721,66 +1721,66 @@ export default {
         serverSideSelectionCount: this.serverSideSelectionCount,
         isSelectedAllEver: this.isSelectedAllEver,
         excludedResourceIdList: this.excludedResourceIdList,
-        selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate,
-      };
+        selectionRowCheckboxDeterminate: this.selectionRowCheckboxDeterminate
+      }
     },
     //This is a element ui bug it doesnt cache it added to making caching
     getSelectedObjectAndSelectRows(
       selections = JSON.parse(JSON.stringify(this.multipleSelection))
     ) {
       this.$nextTick(() => {
-        this.multipleSelection = [];
-        this.$refs.elTableRef.clearSelection();
+        this.multipleSelection = []
+        this.$refs.elTableRef.clearSelection()
         selections.forEach((selectedItem) => {
           const thisTableItem = this.tableData.find((item) => {
-            return JSON.stringify(item) === JSON.stringify(selectedItem);
-          });
+            return JSON.stringify(item) === JSON.stringify(selectedItem)
+          })
           if (thisTableItem) {
-            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true);
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
           } else {
-            this.$refs.elTableRef.toggleRowSelection(selectedItem, true);
+            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
           }
-        });
-      });
+        })
+      })
     },
     getSelectedObjectAndSelectRowsByRowKey(
       selections = JSON.parse(JSON.stringify(this.multipleSelection))
     ) {
       this.$nextTick(() => {
-        this.multipleSelection = [];
-        this.$refs.elTableRef.clearSelection();
+        this.multipleSelection = []
+        this.$refs.elTableRef.clearSelection()
         selections.forEach((selectedItem) => {
           const thisTableItem = this.tableData.find((item) => {
-            return item[this.rowKey] === selectedItem[this.rowKey];
-          });
+            return item[this.rowKey] === selectedItem[this.rowKey]
+          })
           if (thisTableItem) {
-            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true);
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem, true)
           } else {
-            this.$refs.elTableRef.toggleRowSelection(selectedItem, true);
+            this.$refs.elTableRef.toggleRowSelection(selectedItem, true)
           }
-        });
-      });
+        })
+      })
     },
     setPersistentStateToDataValues() {
       const {
         renderedColumns = [],
         multipleSelection = [],
         firstColFixed,
-        lastColFixed,
-      } = this.persistentState;
+        lastColFixed
+      } = this.persistentState
 
       if (this.storedTableSettings) {
-        this.setStoredTableSettings();
+        this.setStoredTableSettings()
       } else {
-        if (!firstColFixed) this.columns[0].fixed = false;
-        if (!lastColFixed) this.actionFixed = false;
+        if (!firstColFixed) this.columns[0].fixed = false
+        if (!lastColFixed) this.actionFixed = false
         //setting rendered columns
         if (!renderedColumns.length) {
-          this.setRenderedColumns();
+          this.setRenderedColumns()
         } else {
           this.columns.forEach((col) => {
-            if (!renderedColumns.find((property) => property === col.property)) col.show = false;
-          });
+            if (!renderedColumns.find((property) => property === col.property)) col.show = false
+          })
         }
       }
 
@@ -1788,89 +1788,89 @@ export default {
       if (multipleSelection.length) {
         for (const row of multipleSelection) {
           this.$nextTick(() => {
-            this.$refs.elTableRef.toggleRowSelection(row, true);
-          });
+            this.$refs.elTableRef.toggleRowSelection(row, true)
+          })
         }
       }
     },
     getSelectedMultipleValues() {
-      return this.multipleSelection;
+      return this.multipleSelection
     },
     reRenderFixedItems() {
       if (this.renderFixedItemsTimeout) {
-        clearTimeout(this.renderFixedItemsTimeout);
+        clearTimeout(this.renderFixedItemsTimeout)
       }
       this.renderFixedItemsTimeout = setTimeout(() => {
-        this.renderFixedItems();
-      }, 500);
+        this.renderFixedItems()
+      }, 500)
     },
     handleExtendedViewEdit(val) {
-      this.$emit("handleEdit", val, this.excludedResourceIdList, this.isSelectedAllEver);
-      this.resetSelectableParams();
+      this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
+      this.resetSelectableParams()
     },
     resetSelectableParams() {
-      this.multipleSelection = [];
-      this.isSelectedAllEver = false;
-      this.excludedResourceIdList = [];
-      this.serverSideSelectionCount = 0;
-      this.$refs.elTableRef.clearSelection();
-      this.clusteredItems = [];
+      this.multipleSelection = []
+      this.isSelectedAllEver = false
+      this.excludedResourceIdList = []
+      this.serverSideSelectionCount = 0
+      this.$refs.elTableRef.clearSelection()
+      this.clusteredItems = []
     },
     handleExpandedRowChange(row, isExpanded) {
       let expandedRow = this.expandedRows.find(
         (item) => JSON.stringify(item.data) === JSON.stringify(row)
-      );
+      )
       if (expandedRow) {
-        expandedRow.isExpanded = isExpanded;
+        expandedRow.isExpanded = isExpanded
       } else {
-        this.expandedRows.push({ data: row, isExpanded });
+        this.expandedRows.push({ data: row, isExpanded })
       }
     },
     calculateExpandedRows() {
       this.$nextTick(() => {
         for (const item of this.expandedRows) {
           if (this.$refs && this.$refs.elTableRef) {
-            this.$refs.elTableRef.toggleRowExpansion(item.data, item.isExpanded);
+            this.$refs.elTableRef.toggleRowExpansion(item.data, item.isExpanded)
           }
         }
-      });
+      })
     },
     calculateAllSelected() {
-      let dataRef = this.showfilteredData ? this.filteredData : this.tableData;
-      const renderedTotalLength = this.getTotalLength(dataRef);
-      this.renderedTotalLength = renderedTotalLength;
-      const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length;
+      let dataRef = this.showfilteredData ? this.filteredData : this.tableData
+      const renderedTotalLength = this.getTotalLength(dataRef)
+      this.renderedTotalLength = renderedTotalLength
+      const comparedValueLength = this.groupable ? renderedTotalLength : dataRef.length
       if (
         this.groupable &&
         comparedValueLength >= this.getAllItems(dataRef, [], false, false).length
       ) {
-        dataRef = this.getAllItems(dataRef, [], false, false);
+        dataRef = this.getAllItems(dataRef, [], false, false)
       }
       const selectedItems = dataRef.filter((item) => {
         return this.multipleSelection.find((selectedItem) => {
           return this.justCompareRowKey
             ? selectedItem[this.rowKey] === item[this.rowKey]
-            : JSON.stringify(item) === JSON.stringify(selectedItem);
-        });
-      });
-      const comparedSelectionObj = this.isServerSide ? selectedItems : this.multipleSelection;
+            : JSON.stringify(item) === JSON.stringify(selectedItem)
+        })
+      })
+      const comparedSelectionObj = this.isServerSide ? selectedItems : this.multipleSelection
       if (this.isSelectedAll && comparedSelectionObj.length === this.totalLength) {
-        this.selectionCheckbox = true;
-        this.selectionRowCheckboxDeterminate = false;
+        this.selectionCheckbox = true
+        this.selectionRowCheckboxDeterminate = false
       } else if (selectedItems.length) {
         if (selectedItems.length === comparedValueLength) {
-          this.selectionCheckbox = true;
-          this.selectionRowCheckboxDeterminate = false;
+          this.selectionCheckbox = true
+          this.selectionRowCheckboxDeterminate = false
         } else {
-          this.selectionRowCheckboxDeterminate = true;
+          this.selectionRowCheckboxDeterminate = true
         }
       } else {
-        this.selectionCheckbox = false;
-        this.selectionRowCheckboxDeterminate = false;
+        this.selectionCheckbox = false
+        this.selectionRowCheckboxDeterminate = false
       }
       const length = this.groupable
         ? this.getTotalLength(this.initialData)
-        : this.initialData.length;
+        : this.initialData.length
 
       this.isSelectedAll =
         this.isServerSide && this.isServerSideSelection
@@ -1879,7 +1879,7 @@ export default {
           : this.isServerSide
           ? !!this.multipleSelection.length &&
             this.multipleSelection.length === this.serverSideProps.totalNumberOfRecords
-          : this.multipleSelection.length === length;
+          : this.multipleSelection.length === length
     },
     /**
      * This event comes from el-table for lazy-loading children
@@ -1889,27 +1889,27 @@ export default {
      * @param callback --> function
      */
     handleLoad(tree, treeNode, resolve) {
-      this.$emit("handleClusterLazyLoad", {
+      this.$emit('handleClusterLazyLoad', {
         tree,
         treeNode,
         resolve,
-        callback: this.callbackOfLazyLoad,
-      });
+        callback: this.callbackOfLazyLoad
+      })
     },
     /**
      *This function must use calls when lazy load used
      */
     callbackOfLazyLoad(rows = []) {
       for (let row of rows) {
-        this.addItemToClusteredItems(row);
+        this.addItemToClusteredItems(row)
         if (this.selectCheckboxesLazy || this.selectionCheckbox) {
-          this.$refs.elTableRef.toggleRowSelection(row, true);
+          this.$refs.elTableRef.toggleRowSelection(row, true)
         }
         //
       }
-      this.selectCheckboxesLazy = false;
-      this.totalLength = this.getTotalLength(this.initialData);
-      this.calculateAllSelected();
+      this.selectCheckboxesLazy = false
+      this.totalLength = this.getTotalLength(this.initialData)
+      this.calculateAllSelected()
     },
     /**
      * Override column props with standards
@@ -1918,17 +1918,17 @@ export default {
      */
     columnStandardisation(columns) {
       columnStandards.forEach((x) => {
-        let index = columns.findIndex((col) => col.property === x.property);
+        let index = columns.findIndex((col) => col.property === x.property)
         if (index > -1) {
           if (!columns[index].overrideWidth) {
-            columns[index] = { ...columns[index], ...x };
+            columns[index] = { ...columns[index], ...x }
           }
         }
-      });
+      })
     },
     handleSettingsPopupClickOutside() {
-      if (!this.isSettingsOpened || this.isFirstOpenSettings) return;
-      this.isSettingsOpened = false;
+      if (!this.isSettingsOpened || this.isFirstOpenSettings) return
+      this.isSettingsOpened = false
     },
     /**
      *
@@ -1938,32 +1938,32 @@ export default {
     handleSelectButtonClick() {
       if (this.isServerSide) {
         if (this.isSelectedAll) {
-          this.serverSideSelectionCount = 0;
-          this.excludedResourceIdList = [];
-          this.multipleSelection = [];
-          this.clusteredItems = [];
-          this.isSelectedAllEver = false;
-          this.isSelectedAll = false;
-          this.$refs.elTableRef.clearSelection();
-          this.$emit("on-selected-all-click", false);
+          this.serverSideSelectionCount = 0
+          this.excludedResourceIdList = []
+          this.multipleSelection = []
+          this.clusteredItems = []
+          this.isSelectedAllEver = false
+          this.isSelectedAll = false
+          this.$refs.elTableRef.clearSelection()
+          this.$emit('on-selected-all-click', false)
         } else {
           if (this.serverSideProps.totalNumberOfRecords > this.rowCount) {
-            this.isSelectedAllEver = true;
+            this.isSelectedAllEver = true
           }
-          this.selectAllItems();
-          this.isSelectedAll = true;
-          this.excludedResourceIdList = [];
-          this.serverSideSelectionCount = this.serverSideProps.totalNumberOfRecords;
+          this.selectAllItems()
+          this.isSelectedAll = true
+          this.excludedResourceIdList = []
+          this.serverSideSelectionCount = this.serverSideProps.totalNumberOfRecords
         }
       } else {
         if (this.isSelectedAll) {
-          this.multipleSelection = [];
-          this.isSelectedAll = false;
-          this.clusteredItems = [];
-          this.$refs.elTableRef.clearSelection();
+          this.multipleSelection = []
+          this.isSelectedAll = false
+          this.clusteredItems = []
+          this.$refs.elTableRef.clearSelection()
         } else {
-          this.selectAllItems();
-          this.isSelectedAll = true;
+          this.selectAllItems()
+          this.isSelectedAll = true
         }
       }
     },
@@ -1975,150 +1975,150 @@ export default {
     getAllItems(arr = [], retArr = [], addToClusterItems = true, deleteFromClusteredItems = false) {
       for (let item of arr) {
         if (item.children) {
-          this.getAllItems(item.children, retArr, addToClusterItems, deleteFromClusteredItems);
+          this.getAllItems(item.children, retArr, addToClusterItems, deleteFromClusteredItems)
         }
 
         if (item.isChild && addToClusterItems) {
-          this.addItemToClusteredItems(item);
+          this.addItemToClusteredItems(item)
         }
         if (deleteFromClusteredItems) {
-          this.deleteItemFromClusteredItems(item);
+          this.deleteItemFromClusteredItems(item)
         }
-        retArr.push(item);
+        retArr.push(item)
       }
-      return retArr;
+      return retArr
     },
     /**
      * This function selects all items on the table.
      */
     selectAllItems() {
-      this.multipleSelection = this.getAllItems(this.initialData, []);
+      this.multipleSelection = this.getAllItems(this.initialData, [])
       for (let item of this.multipleSelection) {
-        this.$refs.elTableRef.toggleRowSelection(item, true);
+        this.$refs.elTableRef.toggleRowSelection(item, true)
       }
     },
     handleRefresh() {
-      this.cacheChecks = true;
-      this.$emit("refreshAction");
+      this.cacheChecks = true
+      this.$emit('refreshAction')
     },
     /**
      * This function for rendering overflowed actions bug. This is element io bug and solved with this function
      */
     renderFixedItems() {
-      const table = this.$el;
+      const table = this.$el
       if (table) {
-        const tableFixedItem = table.querySelector(".el-table__fixed");
-        const tableFixedRightItem = table.querySelector(".el-table__fixed-right");
+        const tableFixedItem = table.querySelector('.el-table__fixed')
+        const tableFixedRightItem = table.querySelector('.el-table__fixed-right')
         if (tableFixedItem && tableFixedItem.style.height) {
           const bodyWrapperHeight = Number(
             getComputedStyle(
-              tableFixedItem.querySelector(".el-table__fixed-body-wrapper")
+              tableFixedItem.querySelector('.el-table__fixed-body-wrapper')
             ).height.slice(0, -2)
-          );
-          const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2));
+          )
+          const fixedItemHeight = Number(tableFixedItem.style.height.slice(0, -2))
           if (fixedItemHeight - bodyWrapperHeight < 45) {
-            const aggregate = window.innerWidth > 1300 ? 15 : 5;
+            const aggregate = window.innerWidth > 1300 ? 15 : 5
             tableFixedItem.style.height = `${
               Number(tableFixedItem.style.height.slice(0, -2)) + aggregate
-            }px`;
+            }px`
           }
         }
         if (tableFixedRightItem && tableFixedRightItem.style.height) {
           const bodyWrapperHeight = Number(
             getComputedStyle(
-              tableFixedRightItem.querySelector(".el-table__fixed-body-wrapper")
+              tableFixedRightItem.querySelector('.el-table__fixed-body-wrapper')
             ).height.slice(0, -2)
-          );
+          )
 
-          const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2));
+          const fixedItemHeight = Number(tableFixedRightItem.style.height.slice(0, -2))
           if (fixedItemHeight - bodyWrapperHeight < 45) {
-            const aggregate = window.innerWidth > 1300 ? 15 : 5;
+            const aggregate = window.innerWidth > 1300 ? 15 : 5
             tableFixedRightItem.style.height = `${
               Number(tableFixedRightItem.style.height.slice(0, -2)) + aggregate
-            }px`;
+            }px`
           }
         }
       }
     },
     handleChangeVisibilityOfColumn() {
-      this.setRenderedColumns();
-      this.$forceUpdate();
-      this.$emit("on-table-settings-change", {
+      this.setRenderedColumns()
+      this.$forceUpdate()
+      this.$emit('on-table-settings-change', {
         renderedColumns: this.renderedColumns,
         firstColFixed: this.firstColFixed,
-        lastColFixed: this.lastColFixed,
-      });
+        lastColFixed: this.lastColFixed
+      })
     },
     /**
      * This function sets rendered columns on table
      */
     setRenderedColumns() {
-      this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property);
+      this.renderedColumns = this.columns.filter((item) => item.show).map((i) => i.property)
     },
     /**
      * This function fires when someone click download button on table and make selection
      *
      * @param item --> String
      */
-    handleDownloadButtonClick(item = "") {
-      this.$emit("handleDownloadButtonClick");
-      this.isShowDownloadModal = true;
-      this.downloadModalTitle = item;
-      this.changeDownloadModalStatus(true);
+    handleDownloadButtonClick(item = '') {
+      this.$emit('handleDownloadButtonClick')
+      this.isShowDownloadModal = true
+      this.downloadModalTitle = item
+      this.changeDownloadModalStatus(true)
     },
     /**
      * This function fires when someone click list bulleted. Main purpose is deleting all clusters and make normal list view
      */
     handleListBulletedClick() {
-      this.selectedCluster = "";
+      this.selectedCluster = ''
       /*
       this.firstColFixed = true
       this.lastColFixed = true
        */
-      this.$emit("handleListBulleted");
-      this.multipleSelection = [];
-      this.$refs.elTableRef.clearSelection();
+      this.$emit('handleListBulleted')
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
     },
     /**
      * This function returns which cluster is selected
      * @param name --> String
      */
-    isEqualCluster(name = "") {
-      return name === this.selectedCluster;
+    isEqualCluster(name = '') {
+      return name === this.selectedCluster
     },
     handleMultipleSelectedEdits() {
-      this.isMultipleEdit = true;
+      this.isMultipleEdit = true
       this.extendedViewStyle = {
-        top: `${48}px`,
-      };
-      const selections = this.multipleSelection.filter((item) => !item.isParent);
+        top: `${48}px`
+      }
+      const selections = this.multipleSelection.filter((item) => !item.isParent)
       if (selections.length) {
         //temporary
         if (this.isSelectedAllEver && selections.length === 1) {
-          this.multipleSelection.push(selections[0]);
-          selections.push(selections[0]);
+          this.multipleSelection.push(selections[0])
+          selections.push(selections[0])
         }
 
-        this.$emit("onEditClick", {
+        this.$emit('onEditClick', {
           selected: selections,
           isEditPopupOpen: true,
           excludedResourceIdList: this.excludedResourceIdList,
           isSelectedAllEver: this.isSelectedAllEver,
-          isMultiple: true,
-        });
-        this.isWantToEditRow = true;
-        this.isSettingsOpened = false;
+          isMultiple: true
+        })
+        this.isWantToEditRow = true
+        this.isSettingsOpened = false
       } else {
         if (this.isSelectedAllEver) {
-          const selections = [this.tableData[0], this.tableData[1]];
-          this.$emit("onEditClick", {
+          const selections = [this.tableData[0], this.tableData[1]]
+          this.$emit('onEditClick', {
             selected: selections,
             isEditPopupOpen: true,
             excludedResourceIdList: this.excludedResourceIdList,
-            isSelectedAllEver: this.isSelectedAllEver,
-          });
-          this.isWantToEditRow = true;
-          this.isSettingsOpened = false;
+            isSelectedAllEver: this.isSelectedAllEver
+          })
+          this.isWantToEditRow = true
+          this.isSettingsOpened = false
         }
       }
     },
@@ -2126,104 +2126,104 @@ export default {
      * This functions removes visibility of the right actions columns.
      */
     hideChildRowActions() {
-      const objStyle = document.createElement("style");
+      const objStyle = document.createElement('style')
       objStyle.innerHTML =
-        ".el-table__row.el-table__row--level-1 .actions-container button {visibility:hidden}";
-      const ref = document.querySelector("script");
-      ref.parentNode.insertBefore(objStyle, ref);
+        '.el-table__row.el-table__row--level-1 .actions-container button {visibility:hidden}'
+      const ref = document.querySelector('script')
+      ref.parentNode.insertBefore(objStyle, ref)
     },
     handleSelectAll(selection) {
       if (this.isServerSide && this.isServerSideSelection) {
-        this.serverSideSelectionCount += this.tableData.length;
+        this.serverSideSelectionCount += this.tableData.length
         if (this.isSelectedAllEver) {
           for (const item of this.tableData) {
-            this.findAndDeleteFromExcludedResourceIdList(item[this.rowKey]);
+            this.findAndDeleteFromExcludedResourceIdList(item[this.rowKey])
           }
         }
       }
       if (this.groupable) {
         if (this.clusteredItems.length) {
           for (let item of this.clusteredItems) {
-            this.$refs.elTableRef.toggleRowSelection(item, false);
+            this.$refs.elTableRef.toggleRowSelection(item, false)
           }
-          this.selection = [];
-          this.clusteredItems = [];
+          this.selection = []
+          this.clusteredItems = []
         }
 
         for (let item of selection) {
-          this.selectChildren(item, selection);
+          this.selectChildren(item, selection)
           if (this.groupable) {
-            this.handleToggleOrLazyWhenCheckboxSelected(item);
+            this.handleToggleOrLazyWhenCheckboxSelected(item)
           }
         }
 
-        this.multipleSelection = selection;
+        this.multipleSelection = selection
         if (this.multipleSelection.length === 0) {
-          this.isWantToEditRow = false;
+          this.isWantToEditRow = false
         }
-        this.$emit("handleSelectionChange", selection);
+        this.$emit('handleSelectionChange', selection)
       }
     },
     selectChildren(item, selection) {
       if (item.children) {
         for (let child of item.children) {
           if (child.children) {
-            this.selectChildren(child, selection);
+            this.selectChildren(child, selection)
           }
-          this.$refs.elTableRef.toggleRowSelection(child, true);
-          this.handleToggleOrLazyWhenCheckboxSelected(child);
-          this.addItemToClusteredItems(child);
+          this.$refs.elTableRef.toggleRowSelection(child, true)
+          this.handleToggleOrLazyWhenCheckboxSelected(child)
+          this.addItemToClusteredItems(child)
           if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
-            selection.push(child);
+            selection.push(child)
           }
         }
       }
     },
     setStoredTableSettings() {
-      const { firstColFixed, lastColFixed, renderedColumns } = this.storedTableSettings;
-      if (!firstColFixed) this.columns[0].fixed = false;
-      if (!lastColFixed) this.actionFixed = false;
+      const { firstColFixed, lastColFixed, renderedColumns } = this.storedTableSettings
+      if (!firstColFixed) this.columns[0].fixed = false
+      if (!lastColFixed) this.actionFixed = false
 
       if (!renderedColumns.length) {
-        this.setRenderedColumns();
+        this.setRenderedColumns()
       } else {
         this.columns.forEach((col) => {
-          col.show = renderedColumns.find((property) => property === col.property);
-          this.renderedColumns = renderedColumns;
-        });
+          col.show = renderedColumns.find((property) => property === col.property)
+          this.renderedColumns = renderedColumns
+        })
       }
     },
     addItemToClusteredItems(item = {}) {
       const index = this.clusteredItems.findIndex(
         (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(item)
-      );
+      )
       if (index === -1) {
-        this.clusteredItems.push(item);
+        this.clusteredItems.push(item)
       }
     },
     deleteItemFromClusteredItems(item = {}) {
       const index = this.clusteredItems.findIndex(
         (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(item)
-      );
+      )
       if (index > -1) {
-        this.clusteredItems.splice(index, 1);
+        this.clusteredItems.splice(index, 1)
       }
     },
     calculateLength(children) {
       return children.reduce((acc, item) => {
         if (item.children) {
-          return acc + 1 + this.calculateLength(item.children);
+          return acc + 1 + this.calculateLength(item.children)
         } else {
-          return acc + 1;
+          return acc + 1
         }
-      }, 0);
+      }, 0)
     },
     getTotalLength(data) {
-      return this.calculateLength(data);
+      return this.calculateLength(data)
     },
     setCellClass(obj) {
       if (this.handleSetCellClass) {
-        return this.handleSetCellClass(obj);
+        return this.handleSetCellClass(obj)
       }
       /*
       const classNames = this.setClassName(obj)
@@ -2231,35 +2231,35 @@ export default {
       */
     },
     closeEditPopup() {
-      this.isWantToEditRow = false;
+      this.isWantToEditRow = false
     },
 
     getBtnStatusColor(type) {
-      return getBtnStatusColor(type);
+      return getBtnStatusColor(type)
     },
     getBtnPriorityColor(type) {
-      return getBtnPriorityColor(type);
+      return getBtnPriorityColor(type)
     },
     getDataTableFieldLabel(field) {
-      return getDataTableFieldLabel(field);
+      return getDataTableFieldLabel(field)
     },
     /**
      * This event fires when clicked in the cell
      */
     cellEnter(row, column, cell) {
-      this.hasOverflowTooltip(row, column, cell);
+      this.hasOverflowTooltip(row, column, cell)
     },
     /**
      * This event fires when clicked in the cell
      */
     cellClick(row, column, event) {
-      this.$emit("cellClick", { row, column, event });
+      this.$emit('cellClick', { row, column, event })
     },
     /**
      * This event fires when mouse leave on cell
      */
     cellLeave() {
-      this.showOverFlowTooltip = false;
+      this.showOverFlowTooltip = false
     },
     /**
      * This function calculates if there is an overflow on the cell
@@ -2268,142 +2268,142 @@ export default {
      * @param cell
      */
     hasOverflowTooltip(row, column, cell) {
-      const [firstColumn] = this.columns;
+      const [firstColumn] = this.columns
       const parentRect =
         this.isCustomOverflowedColumn &&
         firstColumn.isCustomOverflowedColumn &&
         firstColumn.property === column.property
           ? cell.querySelector(`.${this.columns[0].parentRect}`).getBoundingClientRect()
-          : cell.getBoundingClientRect();
+          : cell.getBoundingClientRect()
 
-      const widthOfParent = parentRect.width;
+      const widthOfParent = parentRect.width
       let span =
-        cell.querySelector("span:last-child") ||
-        cell.querySelector(".datatable-chart__empty") ||
-        cell.querySelector(".datatable-progress") ||
-        cell.querySelector("div");
-      if ([...span.classList].some((item) => item === "cell")) {
-        span = span.querySelector("div");
+        cell.querySelector('span:last-child') ||
+        cell.querySelector('.datatable-chart__empty') ||
+        cell.querySelector('.datatable-progress') ||
+        cell.querySelector('div')
+      if ([...span.classList].some((item) => item === 'cell')) {
+        span = span.querySelector('div')
       }
-      let aggregation = this.isCustomOverflowedColumn ? 0 : 20;
+      let aggregation = this.isCustomOverflowedColumn ? 0 : 20
       if (window.safari || navigator.vendor.match(/apple/i)) {
-        if ([...cell.parentNode.classList].some((item) => item === "el-table__row--level-1")) {
-          aggregation = 0;
+        if ([...cell.parentNode.classList].some((item) => item === 'el-table__row--level-1')) {
+          aggregation = 0
         }
       }
-      let spanWidth = span.getBoundingClientRect().width + aggregation + this.cellPadding;
-      const padding = getComputedStyle(cell).paddingLeft.slice(0, -2);
-      if (![...cell.classList].some((item) => item === "el-table-column--selection")) {
+      let spanWidth = span.getBoundingClientRect().width + aggregation + this.cellPadding
+      const padding = getComputedStyle(cell).paddingLeft.slice(0, -2)
+      if (![...cell.classList].some((item) => item === 'el-table-column--selection')) {
         if (padding) {
-          spanWidth += Number(padding);
+          spanWidth += Number(padding)
         }
       }
       if (spanWidth > widthOfParent) {
-        this.showOverFlowTooltip = true;
-        const typeOfProp = typeof row[column.property];
-        let text;
+        this.showOverFlowTooltip = true
+        const typeOfProp = typeof row[column.property]
+        let text
         switch (typeOfProp) {
-          case "object":
-            text = row[column.property] && row[column.property].join(",");
-            break;
-          case "string":
-            text = row[column.property];
-            break;
+          case 'object':
+            text = row[column.property] && row[column.property].join(',')
+            break
+          case 'string':
+            text = row[column.property]
+            break
           default:
-            break;
+            break
         }
-        this.overFlowTooltipContent = text;
+        this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + (this.isCustomOverflowedColumn ? 50 : 60)}px`,
-          left: `${parentRect.left + this.cellPadding + Number(padding)}px`,
-        };
+          left: `${parentRect.left + this.cellPadding + Number(padding)}px`
+        }
       }
     },
     sortChangedEvent(sortProps) {
-      this.sortProps = sortProps;
+      this.sortProps = sortProps
       if (this.isServerSide && this.serverSideEvents.sort) {
-        this.$emit("sortChangedEvent", sortProps);
+        this.$emit('sortChangedEvent', sortProps)
       } else {
         if (this.showfilteredData && this.filteredData && this.filteredData.length) {
-          const filteredData = this.sortFunction(this.unRenderedFilterData, sortProps);
+          const filteredData = this.sortFunction(this.unRenderedFilterData, sortProps)
 
-          let maxPage = Math.ceil(filteredData.length / this.rowCount);
+          let maxPage = Math.ceil(filteredData.length / this.rowCount)
           if (maxPage > this.currentPage) {
-            maxPage = this.currentPage;
+            maxPage = this.currentPage
           }
           this.filteredData = filteredData.slice(
             (maxPage - 1) * this.rowCount,
             maxPage * this.rowCount
-          );
-          return this.filteredData;
+          )
+          return this.filteredData
         } else {
-          const data = this.sortFunction(this.initialData, sortProps);
-          let maxPage = Math.ceil(data.length / this.rowCount);
+          const data = this.sortFunction(this.initialData, sortProps)
+          let maxPage = Math.ceil(data.length / this.rowCount)
           if (maxPage > this.currentPage) {
-            maxPage = this.currentPage;
+            maxPage = this.currentPage
           }
-          this.tableData = data.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount);
-          return this.tableData;
+          this.tableData = data.slice((maxPage - 1) * this.rowCount, maxPage * this.rowCount)
+          return this.tableData
         }
       }
     },
     sortFunction(data, sortProps) {
-      if (this.isServerSide) return;
+      if (this.isServerSide) return
       const isDate = function () {
         const isDate = data.reduce((acc, item) => {
           acc.push(
-            new Date(item[sortProps.prop]) !== "Invalid Date" &&
+            new Date(item[sortProps.prop]) !== 'Invalid Date' &&
               !isNaN(new Date(item[sortProps.prop]))
-          );
-          return acc;
-        }, []);
-        return isDate.includes(false);
-      };
-      let sortData = [];
+          )
+          return acc
+        }, [])
+        return isDate.includes(false)
+      }
+      let sortData = []
       if (!isDate()) {
         sortData = data.sort(function (a, b) {
-          if (sortProps.order === "descending" && sortProps.prop) {
-            return new Date(b[sortProps.prop]) - new Date(a[sortProps.prop]);
+          if (sortProps.order === 'descending' && sortProps.prop) {
+            return new Date(b[sortProps.prop]) - new Date(a[sortProps.prop])
           } else {
-            return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop]);
+            return new Date(a[sortProps.prop]) - new Date(b[sortProps.prop])
           }
-        });
+        })
       } else {
-        const collator = new Intl.Collator("tr");
+        const collator = new Intl.Collator('tr')
         sortData = data.sort(function (a, b) {
-          if (typeof a[sortProps.prop] === "string" || typeof b[sortProps.prop] === "string") {
-            let aProp = String(a[sortProps.prop]);
-            let bProp = String(b[sortProps.prop]);
-            if (aProp === "null") {
-              aProp = "";
+          if (typeof a[sortProps.prop] === 'string' || typeof b[sortProps.prop] === 'string') {
+            let aProp = String(a[sortProps.prop])
+            let bProp = String(b[sortProps.prop])
+            if (aProp === 'null') {
+              aProp = ''
             }
-            if (bProp === "null") {
-              bProp = "";
+            if (bProp === 'null') {
+              bProp = ''
             }
             if (aProp === bProp) {
-              return 0;
+              return 0
             }
             // nulls sort after anything else
-            else if (aProp === "null") {
-              return 1;
-            } else if (bProp === "null") {
-              return -1;
+            else if (aProp === 'null') {
+              return 1
+            } else if (bProp === 'null') {
+              return -1
             }
 
             // otherwise, if we're ascending, lowest sorts first
-            else if (sortProps.order === "ascending") {
+            else if (sortProps.order === 'ascending') {
               if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
                 collator.compare(aProp.charAt(0), bProp.charAt(0).toUpperCase()) === 0
               ) {
-                return -1;
+                return -1
               } else if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
                 collator.compare(bProp.charAt(0), aProp.charAt(0).toUpperCase()) === 0
               ) {
-                return 1;
+                return 1
               }
-              return collator.compare(aProp.toLowerCase(), bProp.toLowerCase());
+              return collator.compare(aProp.toLowerCase(), bProp.toLowerCase())
             }
             // if descending, highest sorts first
             else {
@@ -2411,240 +2411,240 @@ export default {
                 aProp.charAt(0) !== bProp.charAt(0) &&
                 collator.compare(aProp.charAt(0), bProp.charAt(0).toUpperCase()) === 0
               ) {
-                return 1;
+                return 1
               } else if (
                 aProp.charAt(0) !== bProp.charAt(0) &&
                 collator.compare(bProp.charAt(0), aProp.charAt(0).toUpperCase()) === 0
               ) {
-                return -1;
+                return -1
               }
               //aProp.toLowerCase() < bProp.toLowerCase() ? 1 : -1
-              return collator.compare(bProp.toLowerCase(), aProp.toLowerCase());
+              return collator.compare(bProp.toLowerCase(), aProp.toLowerCase())
             }
           } else {
             if (a[sortProps.prop] === b[sortProps.prop]) {
-              return 0;
+              return 0
             }
             // nulls sort after anything else
             else if (a[sortProps.prop] === null) {
-              return 1;
+              return 1
             } else if (b[sortProps.prop] === null) {
-              return -1;
+              return -1
             }
             // otherwise, if we're ascending, lowest sorts first
-            else if (sortProps.order === "ascending") {
-              return a[sortProps.prop] < b[sortProps.prop] ? -1 : 1;
+            else if (sortProps.order === 'ascending') {
+              return a[sortProps.prop] < b[sortProps.prop] ? -1 : 1
             }
             // if descending, highest sorts first
             else {
-              return a[sortProps.prop] < b[sortProps.prop] ? 1 : -1;
+              return a[sortProps.prop] < b[sortProps.prop] ? 1 : -1
             }
           }
-        });
+        })
       }
 
-      return sortData;
+      return sortData
     },
 
     paginationChangedEvent(paginationProps) {
       if (this.isServerSide && this.serverSideEvents.pagination)
-        this.$emit("paginationChangedEvent", paginationProps);
+        this.$emit('paginationChangedEvent', paginationProps)
     },
     debounce(fn, delay) {
       if (this.timeout) {
-        clearTimeout(this.timeout);
+        clearTimeout(this.timeout)
       }
       this.timeout = setTimeout(() => {
-        fn();
-      }, delay);
+        fn()
+      }, delay)
     },
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
         if (
           this.renderedColumns.find((property) => property === filterItem.property) &&
-          !filterItem["isCustomField"]
+          !filterItem['isCustomField']
         ) {
           acc.push({
             FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-            Operator: "Contains",
-            Value: this.search,
-          });
+            Operator: 'Contains',
+            Value: this.search
+          })
         }
-        return acc;
-      }, []);
+        return acc
+      }, [])
     },
     searchChangedEvent() {
-      const debounceTime = 750;
-      let _this = this;
+      const debounceTime = 750
+      let _this = this
       if (_this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
           const filterItems = _this.columns.reduce((acc, filterItem) => {
             if (
               this.renderedColumns.find((property) => property === filterItem.property) &&
-              !filterItem["isCustomField"]
+              !filterItem['isCustomField']
             ) {
               const obj = {
                 FieldName:
                   filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-                Operator: "Contains",
-                Value: this.search,
-              };
-              acc.push(obj);
+                Operator: 'Contains',
+                Value: this.search
+              }
+              acc.push(obj)
             }
-            return acc;
-          }, []);
+            return acc
+          }, [])
           const bodyDataFilter = {
             filter: {
-              Condition: "AND",
+              Condition: 'AND',
               FilterGroups: [
                 {
-                  Condition: "AND",
-                  FilterItems: filterItems,
-                },
-              ],
-            },
-          };
-          this.$emit("searchChangedEvent", bodyDataFilter, !!this.search);
-          if (this.isServerSideSelection) {
-            this.resetSelectableParams();
+                  Condition: 'AND',
+                  FilterItems: filterItems
+                }
+              ]
+            }
           }
-        }, debounceTime);
+          this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+          if (this.isServerSideSelection) {
+            this.resetSelectableParams()
+          }
+        }, debounceTime)
       } else {
         this.debounce(() => {
-          const searchValue = this.search;
-          this.showfilteredData = !!searchValue.length;
+          const searchValue = this.search
+          this.showfilteredData = !!searchValue.length
           if (!this.showfilteredData) {
             if (this.sortProps && this.sortProps.order) {
-              this.sortChangedEvent(this.sortProps);
+              this.sortChangedEvent(this.sortProps)
             } else {
               this.tableData = this.initialData.slice(
                 (this.currentPage - 1) * this.rowCount,
                 this.currentPage * this.rowCount
-              );
+              )
             }
           }
 
           const filteredData = this.initialData.reduce((acc, item) => {
             const row = this.renderedColumns.reduce((acc, key) => {
               if (
-                this.columns.find((column) => column.property === key && column["unSearchable"])
+                this.columns.find((column) => column.property === key && column['unSearchable'])
               ) {
-                return acc;
+                return acc
               }
-              acc[key] = item[key];
-              return acc;
-            }, {});
+              acc[key] = item[key]
+              return acc
+            }, {})
             const data = Object.values(row).find((i) => {
               if (
-                typeof i === "string" &&
+                typeof i === 'string' &&
                 i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
               )
-                return acc.push(item);
-            });
-            return acc;
-          }, []);
+                return acc.push(item)
+            })
+            return acc
+          }, [])
           if (!filteredData.length && this.showOverFlowTooltip) {
-            this.showOverFlowTooltip = false;
+            this.showOverFlowTooltip = false
           }
-          let maxPage = Math.ceil(filteredData.length / this.rowCount);
+          let maxPage = Math.ceil(filteredData.length / this.rowCount)
           if (maxPage > this.currentPage) {
-            maxPage = this.currentPage;
+            maxPage = this.currentPage
           }
           this.filteredData = filteredData.slice(
             (maxPage - 1) * this.rowCount,
             maxPage * this.rowCount
-          );
-          this.unRenderedFilterData = filteredData;
-          this.filteredDataLength = filteredData.length;
-          if (!this.showfilteredData) this.filteredData = [];
-        }, debounceTime);
+          )
+          this.unRenderedFilterData = filteredData
+          this.filteredDataLength = filteredData.length
+          if (!this.showfilteredData) this.filteredData = []
+        }, debounceTime)
       }
     },
     getColumnLabelClass(key) {
-      if (key === "priority" || key === "status" || key === "detected") {
-        return "popup__badge";
+      if (key === 'priority' || key === 'status' || key === 'detected') {
+        return 'popup__badge'
       }
     },
     toggleIsSettingsOpened() {
       if (this.isWantToEditRow) {
-        this.isWantToEditRow = false;
+        this.isWantToEditRow = false
       }
-      this.$emit("handleChangeIsSettingsOpen", !this.isSettingsOpened);
-      this.isSettingsOpened = !this.isSettingsOpened;
-      this.isFirstOpenSettings = true;
+      this.$emit('handleChangeIsSettingsOpen', !this.isSettingsOpened)
+      this.isSettingsOpened = !this.isSettingsOpened
+      this.isFirstOpenSettings = true
       if (this.firstOpenSettingsTimeout) {
-        clearTimeout(this.firstOpenSettingsTimeout);
+        clearTimeout(this.firstOpenSettingsTimeout)
       }
       this.firstOpenSettingsTimeout = setTimeout(() => {
-        this.isFirstOpenSettings = false;
-      }, 200);
+        this.isFirstOpenSettings = false
+      }, 200)
     },
     addButtonFunction(action, row) {
-      this.$emit(action, row);
+      this.$emit(action, row)
     },
     tableRowClassName(row) {
-      const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row));
-      let className = "";
+      const ans = this.multipleSelection.some((r) => JSON.stringify(r) === JSON.stringify(row.row))
+      let className = ''
 
-      if (ans) className += "selected-row";
+      if (ans) className += 'selected-row'
 
-      if (this.addRowClassName) className += this.addRowClassName(row);
-      return className;
+      if (this.addRowClassName) className += this.addRowClassName(row)
+      return className
     },
     getServerSideSelectionParams() {
-      const serverSideSelectionParams = {};
+      const serverSideSelectionParams = {}
       if (this.isServerSideSelection) {
-        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList;
-        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver;
+        serverSideSelectionParams.excludedResourceIdList = this.excludedResourceIdList
+        serverSideSelectionParams.isSelectedAllEver = this.isSelectedAllEver
       }
-      return serverSideSelectionParams;
+      return serverSideSelectionParams
     },
     handleSelectionChange(val) {
       //setting selections
-      this.multipleSelection = val;
+      this.multipleSelection = val
       //is no selection close edit modal
       if (this.multipleSelection.length === 0) {
-        this.isWantToEditRow = false;
+        this.isWantToEditRow = false
       }
       //emitting event
       this.$emit(
-        "handleSelectionChange",
+        'handleSelectionChange',
         val,
         ...Object.values(this.getServerSideSelectionParams())
-      );
+      )
       //is there multipleEdit check that
       if (this.isWantToEditRow && this.isMultipleEdit) {
-        this.handleMultipleSelectedEdits();
+        this.handleMultipleSelectedEdits()
       }
     },
     selectChildrenByRowCheckbox(rows = [], selection = []) {
       for (let row of rows) {
         if (row.children) {
-          this.selectChildrenByRowCheckbox(row.children, selection);
+          this.selectChildrenByRowCheckbox(row.children, selection)
         }
-        this.$refs.elTableRef.toggleRowSelection(row, true);
+        this.$refs.elTableRef.toggleRowSelection(row, true)
         if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
-          this.addItemToClusteredItems(row);
-          selection.push(row);
+          this.addItemToClusteredItems(row)
+          selection.push(row)
         }
       }
     },
     unSelectChildrenByRowCheckbox(rows = [], selection = []) {
       for (let row of rows) {
         if (row.children) {
-          this.unSelectChildrenByRowCheckbox(row.children, selection);
+          this.unSelectChildrenByRowCheckbox(row.children, selection)
         }
 
         const clusteredIndex = this.clusteredItems.findIndex(
           (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(row)
-        );
+        )
         if (clusteredIndex > -1) {
-          this.clusteredItems.splice(clusteredIndex, 1);
+          this.clusteredItems.splice(clusteredIndex, 1)
         }
-        this.$refs.elTableRef.toggleRowSelection(row, false);
-        const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row));
+        this.$refs.elTableRef.toggleRowSelection(row, false)
+        const ind = selection.findIndex((item) => JSON.stringify(item) === JSON.stringify(row))
         if (ind > -1) {
-          selection.splice(ind, 1);
+          selection.splice(ind, 1)
         }
       }
     },
@@ -2652,23 +2652,23 @@ export default {
       if (row.isChild) {
         const index = this.clusteredItems.findIndex(
           (item) => JSON.stringify(item) === JSON.stringify(row)
-        );
+        )
         if (index > -1) {
-          this.clusteredItems.splice(index, 1);
+          this.clusteredItems.splice(index, 1)
         } else {
-          this.clusteredItems.push(row);
+          this.clusteredItems.push(row)
         }
       }
     },
     handleSelect(selection, row) {
       if (this.isServerSide && this.isServerSideSelection) {
         if (selection.find((item) => item[this.rowKey] === row[this.rowKey])) {
-          this.serverSideSelectionCount++;
-          this.findAndDeleteFromExcludedResourceIdList(row[this.rowKey]);
+          this.serverSideSelectionCount++
+          this.findAndDeleteFromExcludedResourceIdList(row[this.rowKey])
         } else {
-          this.serverSideSelectionCount--;
+          this.serverSideSelectionCount--
           if (this.isSelectedAllEver) {
-            this.excludedResourceIdList.push(row[this.rowKey]);
+            this.excludedResourceIdList.push(row[this.rowKey])
           }
         }
       }
@@ -2676,204 +2676,204 @@ export default {
         this.handleToggleOrLazyWhenCheckboxSelected(
           row,
           !!selection.find((item) => JSON.stringify(item) === JSON.stringify(row))
-        );
+        )
 
         if (row.children) {
           if (selection.some((item) => JSON.stringify(item) === JSON.stringify(row))) {
-            this.toggleToTheClusterIfChild(row);
+            this.toggleToTheClusterIfChild(row)
             for (let child of row.children) {
               if (child.children) {
-                this.selectChildrenByRowCheckbox(child.children, selection);
+                this.selectChildrenByRowCheckbox(child.children, selection)
               }
-              this.$refs.elTableRef.toggleRowSelection(child, true);
-              this.handleToggleOrLazyWhenCheckboxSelected(child);
+              this.$refs.elTableRef.toggleRowSelection(child, true)
+              this.handleToggleOrLazyWhenCheckboxSelected(child)
               if (!selection.some((item) => JSON.stringify(item) === JSON.stringify(child))) {
-                this.addItemToClusteredItems(child);
-                selection.push(child);
+                this.addItemToClusteredItems(child)
+                selection.push(child)
               }
             }
           } else {
-            this.toggleToTheClusterIfChild(row);
+            this.toggleToTheClusterIfChild(row)
             for (let child of row.children) {
               if (child.children) {
-                this.unSelectChildrenByRowCheckbox(child.children, selection);
+                this.unSelectChildrenByRowCheckbox(child.children, selection)
               }
-              this.$refs.elTableRef.toggleRowSelection(child, false);
+              this.$refs.elTableRef.toggleRowSelection(child, false)
               const ind = selection.findIndex(
                 (item) => JSON.stringify(item) === JSON.stringify(child)
-              );
+              )
               const clusteredIndex = this.clusteredItems.findIndex(
                 (clusteredItem) => JSON.stringify(clusteredItem) === JSON.stringify(child)
-              );
+              )
               if (clusteredIndex > -1) {
-                this.clusteredItems.splice(clusteredIndex, 1);
+                this.clusteredItems.splice(clusteredIndex, 1)
               }
               if (ind > -1) {
-                selection.splice(ind, 1);
+                selection.splice(ind, 1)
               }
             }
           }
         } else {
-          this.toggleToTheClusterIfChild(row);
+          this.toggleToTheClusterIfChild(row)
         }
-        this.multipleSelection = selection;
+        this.multipleSelection = selection
         if (this.multipleSelection.length === 0) {
-          this.isWantToEditRow = false;
+          this.isWantToEditRow = false
         }
-        this.$emit("handleSelectionChange", selection);
+        this.$emit('handleSelectionChange', selection)
       }
     },
-    findAndDeleteFromExcludedResourceIdList(rowKey = "") {
-      const indexOfExcluded = this.excludedResourceIdList.indexOf(rowKey);
+    findAndDeleteFromExcludedResourceIdList(rowKey = '') {
+      const indexOfExcluded = this.excludedResourceIdList.indexOf(rowKey)
       if (indexOfExcluded === -1) {
-        return;
+        return
       }
-      this.excludedResourceIdList.splice(indexOfExcluded, 1);
+      this.excludedResourceIdList.splice(indexOfExcluded, 1)
     },
     handleToggleOrLazyWhenCheckboxSelected(row = {}, selection = true) {
-      const { hasChildren, children = [] } = row;
+      const { hasChildren, children = [] } = row
       if (hasChildren && !children.length) {
-        this.$refs.elTableRef.store.loadOrToggle(row);
-        this.selectCheckboxesLazy = true;
+        this.$refs.elTableRef.store.loadOrToggle(row)
+        this.selectCheckboxesLazy = true
       } else if (children && children.length) {
-        this.$refs.elTableRef.toggleRowExpansion(row, selection);
+        this.$refs.elTableRef.toggleRowExpansion(row, selection)
       }
     },
     changeDownloadModalStatus(status) {
-      this.$store.dispatch("common/changeDownloadModalStatus", status);
+      this.$store.dispatch('common/changeDownloadModalStatus', status)
     },
     deleteRow(index, rows) {
-      rows.splice(index, 1);
+      rows.splice(index, 1)
     },
     handleSizeChange(rows) {
-      this.rowCount = rows;
+      this.rowCount = rows
       if (this.currentPage === 1) {
-        this.tableData = this.initialData.slice(0, rows);
+        this.tableData = this.initialData.slice(0, rows)
       } else {
         const temp =
-          this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || [];
-        this.tableData = temp.length === 0 ? [{}] : temp;
+          this.initialData.slice((this.currentPage - 1) * rows, this.currentPage * rows) || []
+        this.tableData = temp.length === 0 ? [{}] : temp
       }
-      this.$emit("onSizeChanged");
-      this.calculateAllSelected();
+      this.$emit('onSizeChanged')
+      this.calculateAllSelected()
     },
     handleServerSideCurrentChange(pageNumber = 1) {
-      this.$emit("server-side-page-number-changed", pageNumber);
+      this.$emit('server-side-page-number-changed', pageNumber)
     },
     handleServerSideSizeChange(pageSize = 10) {
-      this.$emit("server-side-size-changed", pageSize);
+      this.$emit('server-side-size-changed', pageSize)
     },
     handleCurrentChange(pageNum) {
-      this.currentPage = pageNum;
+      this.currentPage = pageNum
       this.tableData = this.initialData.slice(
         (pageNum - 1) * this.rowCount,
         pageNum * this.rowCount
-      );
+      )
 
-      this.$emit("onPageChanged");
-      this.calculateAllSelected();
+      this.$emit('onPageChanged')
+      this.calculateAllSelected()
     },
 
     handleFilteredCurrentChange(pageNum) {
-      this.currentPage = pageNum;
+      this.currentPage = pageNum
       if (pageNum === 1) {
-        this.filteredData = this.unRenderedFilterData.slice(0, this.rowCount);
+        this.filteredData = this.unRenderedFilterData.slice(0, this.rowCount)
       } else {
         this.filteredData = this.unRenderedFilterData.slice(
           (pageNum - 1) * this.rowCount,
           pageNum * this.rowCount
-        );
+        )
       }
-      this.calculateAllSelected();
+      this.calculateAllSelected()
     },
     handleFilteredSizeChange(rows) {
-      this.rowCount = rows;
+      this.rowCount = rows
       if (this.currentPage === 1) {
-        this.filteredData = this.unRenderedFilterData.slice(0, rows);
+        this.filteredData = this.unRenderedFilterData.slice(0, rows)
       } else {
         const temp =
           this.unRenderedFilterData.slice((this.currentPage - 1) * rows, this.currentPage * rows) ||
-          [];
-        this.filteredData = temp.length === 0 ? [{}] : temp;
+          []
+        this.filteredData = temp.length === 0 ? [{}] : temp
       }
-      this.calculateAllSelected();
+      this.calculateAllSelected()
     },
     onEmptyBtnClicked(e) {
-      this.$emit("onEmptyBtnClicked", e);
+      this.$emit('onEmptyBtnClicked', e)
     },
     downloadEvent(downloadTypes) {
-      this.$emit("downloadEvent", {
+      this.$emit('downloadEvent', {
         exportTypes: downloadTypes,
         pageNumber: this.serverSideEvents.pagination
           ? this.serverSideProps.pageNumber
           : this.currentPage,
         pageSize: this.serverSideEvents.pagination ? this.serverSideProps.pageSize : this.rowCount,
-        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1],
-      });
+        reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
+      })
     },
     handleSubMenuItemClick(item) {
-      this.$emit("submenuItemClick", item);
+      this.$emit('submenuItemClick', item)
     },
     toggleAll(selections) {
       if (this.selectionCheckbox) {
         if (this.selectionRowCheckboxDeterminate) {
-          const dataRef = this.showfilteredData ? this.filteredData : this.tableData;
-          const allItems = this.getAllItems(dataRef, [], false, true);
+          const dataRef = this.showfilteredData ? this.filteredData : this.tableData
+          const allItems = this.getAllItems(dataRef, [], false, true)
           for (let item of allItems) {
             if (
               this.multipleSelection.find(
                 (selection) => selection[this.rowKey] === item[[this.rowKey]]
               )
             ) {
-              this.$refs.elTableRef.toggleRowSelection(item, false);
+              this.$refs.elTableRef.toggleRowSelection(item, false)
               if (this.isServerSide && this.isServerSideSelection) {
                 if (this.isSelectedAllEver) {
-                  this.excludedResourceIdList.push(item[this.rowKey]);
+                  this.excludedResourceIdList.push(item[this.rowKey])
                 }
-                this.serverSideSelectionCount--;
+                this.serverSideSelectionCount--
               }
             }
           }
-          this.selectionRowCheckboxDeterminate = false;
-          this.selectionCheckbox = false;
+          this.selectionRowCheckboxDeterminate = false
+          this.selectionCheckbox = false
         } else {
-          this.$refs.elTableRef.toggleAllSelection();
+          this.$refs.elTableRef.toggleAllSelection()
         }
       } else {
         const selectedItems = this.getAllItems(
           this.multipleSelection.filter((item) => {
-            const dataRef = this.showfilteredData ? this.filteredData : this.tableData;
+            const dataRef = this.showfilteredData ? this.filteredData : this.tableData
             return dataRef.find(
               (selectedItem) => JSON.stringify(item) === JSON.stringify(selectedItem)
-            );
+            )
           }),
           [],
           false,
           true
-        );
+        )
 
         if (selectedItems.length) {
           for (let selectedItem of selectedItems) {
             const thisTableItem = this.isServerSide
               ? this.tableData.find((item) => {
-                  return JSON.stringify(item) === JSON.stringify(selectedItem);
+                  return JSON.stringify(item) === JSON.stringify(selectedItem)
                 })
-              : selectedItem;
-            this.$refs.elTableRef.toggleRowSelection(thisTableItem);
+              : selectedItem
+            this.$refs.elTableRef.toggleRowSelection(thisTableItem)
             if (this.isServerSide && this.isServerSideSelection) {
-              this.serverSideSelectionCount--;
+              this.serverSideSelectionCount--
             }
             if (this.isSelectedAllEver) {
-              this.excludedResourceIdList.push(selectedItem[this.rowKey]);
+              this.excludedResourceIdList.push(selectedItem[this.rowKey])
             }
           }
         } else {
-          this.$refs.elTableRef.clearSelection();
+          this.$refs.elTableRef.clearSelection()
           if (this.isServerSide && this.isServerSideSelection) {
-            this.serverSideSelectionCount -= this.tableData.length;
+            this.serverSideSelectionCount -= this.tableData.length
             if (this.isSelectedAllEver) {
               for (const item of this.tableData) {
-                this.excludedResourceIdList.push(item[this.rowKey]);
+                this.excludedResourceIdList.push(item[this.rowKey])
               }
             }
           }
@@ -2882,200 +2882,200 @@ export default {
     },
     rowAct(action, row, scope) {
       switch (action) {
-        case "details":
-          this.$router.push("/analysis-details");
-          break;
-        case "stopInvestigationFunc":
-          this.$emit("stopInvestigationFunc", { row });
-          break;
-        case "investigationDetails":
-          this.$emit("investigationDetails", { row });
-          break;
-        case "deleteAndNotifyInvestigationDetails":
+        case 'details':
+          this.$router.push('/analysis-details')
+          break
+        case 'stopInvestigationFunc':
+          this.$emit('stopInvestigationFunc', { row })
+          break
+        case 'investigationDetails':
+          this.$emit('investigationDetails', { row })
+          break
+        case 'deleteAndNotifyInvestigationDetails':
           this.$emit(
-            "deleteAndNotifyInvestigationDetailsFunction",
+            'deleteAndNotifyInvestigationDetailsFunction',
             this.multipleSelection.length > 0 ? this.multipleSelection : row
-          );
-          break;
-        case "syncUser":
-          this.$emit("syncUser", scope);
-          break;
+          )
+          break
+        case 'syncUser':
+          this.$emit('syncUser', scope)
+          break
         default:
-          this.$emit(action, row);
-          return false;
+          this.$emit(action, row)
+          return false
       }
     },
     clusterSelected(name) {
-      this.selectedCluster = name;
+      this.selectedCluster = name
       /*
       this.firstColFixed = false
       this.lastColFixed = false
        */
-      this.$emit("clusterChanged", name);
-      this.multipleSelection = [];
-      this.$refs.elTableRef.clearSelection();
+      this.$emit('clusterChanged', name)
+      this.multipleSelection = []
+      this.$refs.elTableRef.clearSelection()
     },
     handleCopy(selections) {
       let headerKeys = this.columns.reduce((acc, item) => {
-        acc.push(item.property);
-        return acc;
-      }, []);
+        acc.push(item.property)
+        return acc
+      }, [])
       let headerText = this.columns.reduce((acc, item) => {
-        acc.push(item.label);
-        return acc;
-      }, []);
+        acc.push(item.label)
+        return acc
+      }, [])
 
-      let columnsLength = [];
-      let text = "";
-      let selectionsCopy = JSON.parse(JSON.stringify(selections));
+      let columnsLength = []
+      let text = ''
+      let selectionsCopy = JSON.parse(JSON.stringify(selections))
       selectionsCopy.forEach((item) => {
         headerKeys.forEach((a, i) => {
-          if (!item[a]) item[a] = "Empty";
-          let lengthOfItem = item[a].toString().length || 0;
-          lengthOfItem -= a.length - 1;
+          if (!item[a]) item[a] = 'Empty'
+          let lengthOfItem = item[a].toString().length || 0
+          lengthOfItem -= a.length - 1
           if (lengthOfItem < 0) {
-            lengthOfItem = 0;
+            lengthOfItem = 0
           }
 
           if (columnsLength[i]) {
             if (columnsLength[i] < lengthOfItem) {
-              columnsLength[i] = lengthOfItem;
+              columnsLength[i] = lengthOfItem
             }
           } else {
-            columnsLength.push(lengthOfItem);
+            columnsLength.push(lengthOfItem)
           }
-          text += `${item[a]} `;
-        });
-        text += "\n";
-      });
+          text += `${item[a]} `
+        })
+        text += '\n'
+      })
 
       const getHeader = headerText.reduce((acc, item, index) => {
-        acc += item;
+        acc += item
         for (let i = 0; i < columnsLength[index]; i++) {
-          acc += "\xa0";
+          acc += '\xa0'
         }
-        return acc;
-      }, "");
+        return acc
+      }, '')
 
       navigator.clipboard.writeText(text).then(() => {
-        this.$store.dispatch("common/createSnackBar", {
-          message: "COPIED TO CLIPBOARD",
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-          icon: "mdi-check-circle",
-        });
-      });
+          icon: 'mdi-check-circle'
+        })
+      })
     },
     unSelectRow(row) {
-      this.$refs.elTableRef.toggleRowSelection(row, false);
+      this.$refs.elTableRef.toggleRowSelection(row, false)
     },
     changeServerSideSelectionCount(count = 0) {
-      this.serverSideSelectionCount += count;
-      if (this.serverSideSelectionCount < 0) this.serverSideSelectionCount = 0;
+      this.serverSideSelectionCount += count
+      if (this.serverSideSelectionCount < 0) this.serverSideSelectionCount = 0
     },
     handleEdit(selections, index) {
-      this.isMultipleEdit = false;
+      this.isMultipleEdit = false
       if (index > -1) {
         this.extendedViewStyle = {
-          top: `${index * 48}px`,
-        };
+          top: `${index * 48}px`
+        }
       }
 
       if (this.isServerSide && this.isServerSideSelection) {
         if (!this.multipleSelection.find((item) => item[this.rowKey] === selections[this.rowKey])) {
-          this.findAndDeleteFromExcludedResourceIdList(selections[this.rowKey]);
-          this.serverSideSelectionCount++;
+          this.findAndDeleteFromExcludedResourceIdList(selections[this.rowKey])
+          this.serverSideSelectionCount++
         }
       }
-      if (typeof selections === "object" && !this.multipleSelection.length) {
-        this.multipleSelection.push(selections);
+      if (typeof selections === 'object' && !this.multipleSelection.length) {
+        this.multipleSelection.push(selections)
       }
 
       // Edit actions should handle here.
       // selections property is an array and has the selected row object data
       if (selections) {
-        this.$refs.elTableRef.toggleRowSelection(selections, true);
-        let tempArray = [];
-        if (selections.constructor.name !== "Array") {
-          tempArray.push(selections);
+        this.$refs.elTableRef.toggleRowSelection(selections, true)
+        let tempArray = []
+        if (selections.constructor.name !== 'Array') {
+          tempArray.push(selections)
         } else {
-          tempArray = selections;
+          tempArray = selections
         }
-        this.$emit("onEditClick", {
+        this.$emit('onEditClick', {
           selected: tempArray,
-          isEditPopupOpen: true,
-        });
-        this.isWantToEditRow = true;
-        this.isSettingsOpened = false;
+          isEditPopupOpen: true
+        })
+        this.isWantToEditRow = true
+        this.isSettingsOpened = false
       } else {
         // Nothing selected
       }
     },
     handleDelete(selections) {
       switch (this.refName) {
-        case "investigationDetailsListTable":
+        case 'investigationDetailsListTable':
           this.$emit(
-            "deleteInvestigationDetails",
+            'deleteInvestigationDetails',
             selections,
             ...Object.values(this.getServerSideSelectionParams())
-          );
-          break;
-        case "rulesListTable":
-          this.$emit("deleteFunction", selections);
-          break;
+          )
+          break
+        case 'rulesListTable':
+          this.$emit('deleteFunction', selections)
+          break
         default:
           if (this.isServerSideSelection) {
             this.$emit(
-              "handleMultipleDelete",
+              'handleMultipleDelete',
               selections,
               ...Object.values(this.getServerSideSelectionParams())
-            );
+            )
           } else {
-            this.$emit("handleMultipleDelete", this.multipleSelection);
+            this.$emit('handleMultipleDelete', this.multipleSelection)
           }
-          break;
+          break
       }
     },
     handleWarning(selections) {
       this.$emit(
-        "sendInvestigationDetailsWarningMessage",
+        'sendInvestigationDetailsWarningMessage',
         selections,
         ...Object.values(this.getServerSideSelectionParams())
-      );
+      )
     },
     handleResend(selections) {
-      this.$emit("on-resend", selections, ...Object.values(this.getServerSideSelectionParams()));
+      this.$emit('on-resend', selections, ...Object.values(this.getServerSideSelectionParams()))
     },
     handleDeleteAndNotify(selections) {
-      this.rowAct("deleteAndNotifyInvestigationDetails", selections);
+      this.rowAct('deleteAndNotifyInvestigationDetails', selections)
     },
     handleDownload(downloadTypes) {
       // You should handle the Download row action in here
     },
     loadWithDataArray(data, responseParams) {
-      this.initialData = data;
-      this.dataLength = responseParams && responseParams.totalNumberOfRecords;
+      this.initialData = data
+      this.dataLength = responseParams && responseParams.totalNumberOfRecords
       this.tableData =
         (data &&
           data.slice((this.currentPage - 1) * this.rowCount, this.currentPage * this.rowCount)) ||
-        [];
+        []
     },
     handleFilterColumn(filterObj) {
-      this.isSelectedAllEver = false;
-      this.$emit("columnFilterChanged", filterObj);
+      this.isSelectedAllEver = false
+      this.$emit('columnFilterChanged', filterObj)
     },
     handleClearColumnFilter(fieldName) {
-      this.isSelectedAllEver = false;
-      this.$delete(this.filterValues, fieldName);
-      this.$emit("columnFilterCleared", fieldName);
+      this.isSelectedAllEver = false
+      this.$delete(this.filterValues, fieldName)
+      this.$emit('columnFilterCleared', fieldName)
     },
     reRenderColumns(filterValues = {}) {
       this.$nextTick(() => {
-        this.filterValues = filterValues;
-        this.columnKey = `column-key${Math.random().toString().substring(0, 5)}`;
-      });
-    },
-  },
-};
+        this.filterValues = filterValues
+        this.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss">

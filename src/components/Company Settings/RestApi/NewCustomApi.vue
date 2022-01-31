@@ -34,7 +34,7 @@
                   v,
                   64,
                   labels.getMaxLengthMessage(labels.ClientNameSecondLower)
-                ),
+                )
             ]"
           ></v-text-field>
           <v-btn
@@ -207,94 +207,94 @@
 </template>
 
 <script>
-import AppModal from "@/components/AppModal";
-import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
-import FormGroup from "@/components/SmallComponents/FormGroup";
-import labels from "@/model/constants/labels";
-import { createRestApi, generateClientCredentials, getRestApi, updateRestApi } from "@/api/restApi";
-import { scrollToComponent, isDifferent } from "@/utils/functions";
-import RestApiModel from "@/components/Company Settings/RestApi/model";
-import * as Validations from "@/utils/validations";
-import { COMMON_CONSTANTS } from "@/model/constants/commonConstants";
-import InputIpAddress from "@/components/Common/Inputs/InputIpAddress";
-import * as validations from "../../../utils/validations";
-import { getSystemUsersRole } from "@/api/systemUsers";
+import AppModal from '@/components/AppModal'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import labels from '@/model/constants/labels'
+import { createRestApi, generateClientCredentials, getRestApi, updateRestApi } from '@/api/restApi'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
+import RestApiModel from '@/components/Company Settings/RestApi/model'
+import * as Validations from '@/utils/validations'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
+import * as validations from '../../../utils/validations'
+import { getSystemUsersRole } from '@/api/systemUsers'
 
 export default {
-  name: "NewCustomApi",
+  name: 'NewCustomApi',
   components: {
     AppModal,
     AppModalBodyHeader,
     FormGroup,
-    InputIpAddress,
+    InputIpAddress
   },
   props: {
     selectedRow: {
-      type: Object,
+      type: Object
     },
     status: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
-  emits: ["closeOverlayWithUpdate", "closeOverlay"],
+  emits: ['closeOverlayWithUpdate', 'closeOverlay'],
   data() {
     return {
       validations: validations,
       isGenerateClientBtnDisabled: false,
-      editedClientSecret: "",
+      editedClientSecret: '',
       saveDisable: false,
       labels,
       initialFormValues: null,
       formValues: new RestApiModel(),
       Validations,
       roleItems: [],
-      systemUserFormData: null,
-    };
+      systemUserFormData: null
+    }
   },
   computed: {
     getBodyTitle() {
       return this.selectedRow && this.selectedRow.resourceId
         ? labels.CustomApiEditBodyTitle
-        : labels.CustomApiBodyTitle;
+        : labels.CustomApiBodyTitle
     },
     getBodySubtitle() {
       return this.selectedRow && this.selectedRow.resourceId
         ? labels.CustomApiEditBodySubtitle
-        : labels.CustomApiBodySubtitle;
+        : labels.CustomApiBodySubtitle
     },
     getTitle() {
-      return this.selectedRow && this.selectedRow.resourceId ? labels.EditClient : labels.NewClient;
+      return this.selectedRow && this.selectedRow.resourceId ? labels.EditClient : labels.NewClient
     },
     getIconName() {
-      return this.selectedRow && this.selectedRow.resourceId ? "mdi-pencil" : "mdi-plus";
+      return this.selectedRow && this.selectedRow.resourceId ? 'mdi-pencil' : 'mdi-plus'
     },
     isShowGenerateCredentialsBtn() {
-      return !(this.selectedRow && this.selectedRow.resourceId);
+      return !(this.selectedRow && this.selectedRow.resourceId)
     },
     getConfirmButtonDisabled() {
-      const { clientId, clientSecret } = this.formValues;
-      return this.saveDisable || (!clientId && !clientSecret);
-    },
+      const { clientId, clientSecret } = this.formValues
+      return this.saveDisable || (!clientId && !clientSecret)
+    }
   },
   watch: {
-    "formValues.status"(newVal) {
-      this.formValues.statusId = Number(newVal);
-    },
+    'formValues.status'(newVal) {
+      this.formValues.statusId = Number(newVal)
+    }
   },
   created() {
     this.getRoles().then(() => {
       if (!this.selectedRow) {
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       }
       if (this.selectedRow && this.selectedRow.resourceId) {
         getRestApi(this.selectedRow.resourceId).then((response) => {
-          const { data: { data = {} } = {} } = response;
-          this.fillForm(data);
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
-        });
+          const { data: { data = {} } = {} } = response
+          this.fillForm(data)
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+        })
       }
-    });
+    })
   },
   methods: {
     getRoles() {
@@ -302,147 +302,147 @@ export default {
         let payload = {
           pageNumber: 1,
           pageSize: 1000,
-          orderBy: "RoleName",
+          orderBy: 'RoleName',
           ascending: true,
           filter: {
-            Condition: "AND",
+            Condition: 'AND',
             FilterGroups: [
               {
-                Condition: "OR",
+                Condition: 'OR',
                 FilterItems: [],
-                FilterGroups: [],
+                FilterGroups: []
               },
               {
-                Condition: "AND",
+                Condition: 'AND',
                 FilterItems: [],
-                FilterGroups: [],
-              },
-            ],
-          },
-        };
-        let allRoles = [];
-        let availableRoles = [];
+                FilterGroups: []
+              }
+            ]
+          }
+        }
+        let allRoles = []
+        let availableRoles = []
 
         getSystemUsersRole(payload)
           .then((response) => {
-            allRoles = response.data.data;
-            availableRoles = [];
-            availableRoles = allRoles;
+            allRoles = response.data.data
+            availableRoles = []
+            availableRoles = allRoles
             this.roleItems = availableRoles.map((item) => {
               return {
                 name: item.name,
-                resourceId: item.resourceId,
-              };
-            });
+                resourceId: item.resourceId
+              }
+            })
             if (!this.selectedRow) {
               this.formValues.roleResourceIdList =
                 availableRoles &&
                 availableRoles.length &&
-                availableRoles.find((role) => ["CompanyAdmin", "Company Admin"].includes(role.name))
-                  .resourceId;
+                availableRoles.find((role) => ['CompanyAdmin', 'Company Admin'].includes(role.name))
+                  .resourceId
             }
-            res();
+            res()
           })
-          .catch(rej);
-      });
+          .catch(rej)
+      })
     },
     closeOverlay() {
-      const isChanged = isDifferent(this.formValues, this.initialFormValues);
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
-        return this.$emit("closeOverlay");
+        return this.$emit('closeOverlay')
       } else {
-        this.$store.dispatch("common/setIsShowLeavingDialog", {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
-            this.$emit("closeOverlay");
-          },
-        });
+            this.$emit('closeOverlay')
+          }
+        })
       }
     },
     fillForm(data = {}) {
       for (const key of Object.keys(this.formValues)) {
-        if (key === "statusId") {
-          this.formValues["status"] = Boolean(data[key]);
+        if (key === 'statusId') {
+          this.formValues['status'] = Boolean(data[key])
         }
-        if (key === "clientSecret") {
-          this.editedClientSecret = data[key];
-          this.formValues["clientSecret"] = "*************************************";
+        if (key === 'clientSecret') {
+          this.editedClientSecret = data[key]
+          this.formValues['clientSecret'] = '*************************************'
         }
-        if (key === "allowedIpAddresses") {
-          this.formValues["allowedIpAddresses"] =
+        if (key === 'allowedIpAddresses') {
+          this.formValues['allowedIpAddresses'] =
             data.allowedIpAddresses &&
             data.allowedIpAddresses.map((item) => {
-              return { name: "", value: item };
-            });
+              return { name: '', value: item }
+            })
         }
-        if (key === "roleResourceIdList") {
-          this.formValues[key] = data.roleResourceIdList[0];
+        if (key === 'roleResourceIdList') {
+          this.formValues[key] = data.roleResourceIdList[0]
         } else {
-          this.formValues[key] = data[key];
+          this.formValues[key] = data[key]
         }
       }
       if (!this.formValues.allowedIpAddresses)
-        this.formValues.allowedIpAddresses = [{ name: "", value: "" }];
+        this.formValues.allowedIpAddresses = [{ name: '', value: '' }]
     },
-    handleCopyToClipboard(data = "") {
-      navigator.clipboard.writeText(data);
-      this.$store.dispatch("common/createSnackBar", {
-        message: "COPIED TO CLIPBOARD",
+    handleCopyToClipboard(data = '') {
+      navigator.clipboard.writeText(data)
+      this.$store.dispatch('common/createSnackBar', {
+        message: 'COPIED TO CLIPBOARD',
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: "mdi-check-circle",
-      });
+        icon: 'mdi-check-circle'
+      })
     },
     handleGenerateClientBtnClick() {
       if (!(this.selectedRow && this.selectedRow.resourceId)) {
-        this.isGenerateClientBtnDisabled = true;
+        this.isGenerateClientBtnDisabled = true
         generateClientCredentials()
           .then((response) => {
-            const { data: { data = {} } = {} } = response;
-            const { clientId, clientSecret } = data;
-            this.formValues.clientId = clientId;
-            this.formValues.clientSecret = clientSecret;
+            const { data: { data = {} } = {} } = response
+            const { clientId, clientSecret } = data
+            this.formValues.clientId = clientId
+            this.formValues.clientSecret = clientSecret
           })
-          .finally(() => (this.isGenerateClientBtnDisabled = false));
+          .finally(() => (this.isGenerateClientBtnDisabled = false))
       }
     },
     submit() {
-      const { refForm } = this.$refs;
+      const { refForm } = this.$refs
 
       if (refForm.validate()) {
-        this.saveDisable = true;
+        this.saveDisable = true
         let values = {
           ...this.formValues,
           allowedIpAddresses: this.formValues.allowedIpAddresses.map((item) => item.value),
-          roleResourceIdList: this.formValues.roleResourceIdList.split(),
-        };
-        if (!values.allowedIpAddresses[0]) values.allowedIpAddresses = [];
-        if (!values.hasIpAddressRestriction) values.allowedIpAddresses = [];
+          roleResourceIdList: this.formValues.roleResourceIdList.split()
+        }
+        if (!values.allowedIpAddresses[0]) values.allowedIpAddresses = []
+        if (!values.hasIpAddressRestriction) values.allowedIpAddresses = []
         if (this.selectedRow && this.selectedRow.resourceId) {
           updateRestApi(this.selectedRow.resourceId, values)
             .then(() => {
-              this.$emit("closeOverlayWithUpdate");
+              this.$emit('closeOverlayWithUpdate')
             })
             .finally(() => {
-              this.saveDisable = false;
-            });
+              this.saveDisable = false
+            })
         } else {
           createRestApi(values)
             .then(() => {
-              this.$emit("closeOverlayWithUpdate");
+              this.$emit('closeOverlayWithUpdate')
             })
             .finally(() => {
-              this.saveDisable = false;
-            });
+              this.saveDisable = false
+            })
         }
       } else {
         this.$nextTick(() => {
-          const el = refForm.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        });
+          const el = refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss">

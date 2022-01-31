@@ -67,21 +67,21 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
-import CompanySettingsHeader from "@/components/Company Settings/CompanySettingsHeader";
-import NewCustomApi from "@/components/Company Settings/RestApi/NewCustomApi";
+import DataTable from '@/components/DataTable'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import NewCustomApi from '@/components/Company Settings/RestApi/NewCustomApi'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import labels from "@/model/constants/labels";
-import { deleteRestApi, exportRestApi, searchRestApi } from "@/api/restApi";
-import DeleteCustomApi from "@/components/Company Settings/RestApi/DeleteCustomApi";
-import ClientTableExportHelper from "@/helper-classes/client-table-export-helper";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import labels from '@/model/constants/labels'
+import { deleteRestApi, exportRestApi, searchRestApi } from '@/api/restApi'
+import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomApi'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
-  name: "CustomApi",
+  name: 'CustomApi',
   data() {
     return {
       showAllRecords: false,
@@ -91,44 +91,44 @@ export default {
       axiosPayload: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: "CreateTime",
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
-          Condition: "AND",
+          Condition: 'AND',
           FilterGroups: [
             {
-              Condition: "AND",
+              Condition: 'AND',
               FilterItems: [],
-              FilterGroups: [],
+              FilterGroups: []
             },
             {
-              Condition: "OR",
+              Condition: 'OR',
               FilterItems: [],
-              FilterGroups: [],
-            },
-          ],
-        },
+              FilterGroups: []
+            }
+          ]
+        }
       },
       defaultAxiosPayload: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: "CreateTime",
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
-          Condition: "AND",
+          Condition: 'AND',
           FilterGroups: [
             {
-              Condition: "AND",
+              Condition: 'AND',
               FilterItems: [],
-              FilterGroups: [],
+              FilterGroups: []
             },
             {
-              Condition: "OR",
+              Condition: 'OR',
               FilterItems: [],
-              FilterGroups: [],
-            },
-          ],
-        },
+              FilterGroups: []
+            }
+          ]
+        }
       },
       loading: false,
       selectedRow: null,
@@ -140,56 +140,56 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.CLIENTNAME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: labels.ClientName,
             sortable: true,
             show: true,
-            fixed: "left",
-            type: "text",
-            filterableType: "text",
-            width: 260,
+            fixed: 'left',
+            type: 'text',
+            filterableType: 'text',
+            width: 260
           },
           {
             property: PROPERTY_STORE.CLIENTID,
-            align: "left",
+            align: 'left',
             editable: false,
             label: labels.ApiKey,
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "text",
-            width: 280,
+            type: 'text',
+            filterableType: 'text',
+            width: 280
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
-            align: "center",
+            align: 'center',
             editable: false,
             label: labels.Status,
             sortable: true,
             show: true,
             fixed: false,
-            type: "badge",
+            type: 'badge',
             width: 150,
-            filterableType: "select",
-            filterableCustomFieldName: "StatusId",
+            filterableType: 'select',
+            filterableCustomFieldName: 'StatusId',
             filterableItems: [
-              { text: labels.Active, value: "1" },
-              { text: labels.InActive, value: "0" },
-            ],
+              { text: labels.Active, value: '1' },
+              { text: labels.InActive, value: '0' }
+            ]
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: labels.CreateTime,
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "date",
-          },
+            type: 'text',
+            filterableType: 'date'
+          }
         ],
         pageSizes: [5, 10, 25],
         isColumnFilterActive: false,
@@ -197,297 +197,297 @@ export default {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         rowActions: [
           {
             name: labels.Edit,
-            icon: "mdi-pencil",
-            id: "btn-edit--rest-api-row-actions",
-            action: "editAction",
+            icon: 'mdi-pencil',
+            id: 'btn-edit--rest-api-row-actions',
+            action: 'editAction'
           },
           {
             name: labels.Delete,
-            icon: "mdi-delete",
-            id: "btn-delete--rest-api-row-actions",
-            action: "deleteAction",
-          },
+            icon: 'mdi-delete',
+            id: 'btn-delete--rest-api-row-actions',
+            action: 'deleteAction'
+          }
         ],
         empty: {
           message: labels.EmptyCustomApiMessage,
           subMes: labels.SubMesCustomApiMessage,
           btn: labels.New,
-          icon: "mdi-plus",
-          id: "btn-empty--rest-api",
+          icon: 'mdi-plus',
+          id: 'btn-empty--rest-api'
         },
         addButton: {
           show: true,
-          action: "handleAddNewCustomApi",
+          action: 'handleAddNewCustomApi',
           tooltip: labels.NewCustomApiBtnTooltip,
-          id: "btn-add--rest-api",
-        },
+          id: 'btn-add--rest-api'
+        }
       },
-      serverSideProps: new ServerSideProps(),
-    };
+      serverSideProps: new ServerSideProps()
+    }
   },
   components: {
     DeleteCustomApi,
     CompanySettingsHeader,
     DataTable,
-    NewCustomApi,
+    NewCustomApi
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.REST_API));
-    this.getDefaultFilterAndSearch();
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.REST_API))
+    this.getDefaultFilterAndSearch()
   },
   methods: {
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
       this.axiosPayload.filter.FilterGroups[1].FilterItems = this.axiosPayload.filter.FilterGroups[1].FilterItems.map(
         (item) => {
-          if (item.FieldName === "StatusName") {
-            item.FieldName = "StatusId";
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'StatusId'
           }
-          return item;
+          return item
         }
-      );
-      this.resetPageNumber();
-      this.tableOptions.isColumnFilterActive = filterActive;
-      this.callForSearch();
+      )
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForSearch()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
-      this.axiosPayload.pageNumber = pageNumber;
-      this.callForSearch();
+      this.axiosPayload.pageNumber = pageNumber
+      this.callForSearch()
     },
     sortChanged({ order, prop } = {}) {
       //generic
-      this.axiosPayload.ascending = order === "ascending";
-      this.axiosPayload.orderBy = prop === "statusName" ? "StatusId" : prop;
-      this.callForSearch();
+      this.axiosPayload.ascending = order === 'ascending'
+      this.axiosPayload.orderBy = prop === 'statusName' ? 'StatusId' : prop
+      this.callForSearch()
     },
     resetPageNumber() {
       //generic
-      this.axiosPayload.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.axiosPayload.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
       //generic
-      this.axiosPayload.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.callForSearch();
+      this.axiosPayload.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForSearch()
     },
     callForSearch() {
-      this.loading = true;
+      this.loading = true
       searchRestApi(this.axiosPayload)
         .then((response) => {
           const {
-            data: { data },
-          } = response;
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
-          const { results = [] } = data;
-          this.tableData = results;
-          this.totalNumberOfRecords = totalNumberOfRecords;
-          this.totalNumberOfRecords = totalNumberOfRecords;
+            data: { data }
+          } = response
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
+          this.totalNumberOfRecords = totalNumberOfRecords
           if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true;
+            this.showAllRecords = true
           }
           if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
-            this.showAllRecords = false;
+            this.showAllRecords = false
           }
-          this.tableData = data.results || [];
+          this.tableData = data.results || []
         })
         .finally(() => {
-          this.loading = false;
-          this.isRestoredOrClearedFilters = false;
-        });
+          this.loading = false
+          this.isRestoredOrClearedFilters = false
+        })
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.REST_API, JSON.stringify(tableSettings));
+      localStorage.setItem(TABLE_SETTINGS_KEYS.REST_API, JSON.stringify(tableSettings))
     },
     exportRestApi({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.axiosPayload.filter)),
         this.$refs.refCustomApiList,
-        "CreateTime"
-      );
+        'CreateTime'
+      )
       if (this.$refs.refCustomApiList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns);
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
         clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-          (item) => item.FieldName === "StatusName"
-        ).FieldName = "StatusId";
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'StatusId'
       }
       if (this.$refs.refCustomApiList.sortProps && this.$refs.refCustomApiList.sortProps.order) {
-        clientTableExportHelper.addSortItems();
+        clientTableExportHelper.addSortItems()
       }
 
-      const { filter, sortFilter } = clientTableExportHelper;
+      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
           ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
           reportAllPages,
-          exportType: exportType === "XLS" ? "Excel" : exportType,
-          filter,
-        };
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
         exportRestApi(payload).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `Rest Api.${
-            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     closeNewCustomApiWithUpdate() {
-      this.callForSearch();
-      this.toggleNewCustomApiStatus();
+      this.callForSearch()
+      this.toggleNewCustomApiStatus()
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true;
-      let items = [];
-      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems;
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
             if (x.FieldName !== i.FieldName) {
-              items.push(x);
+              items.push(x)
             }
-          });
+          })
         } else {
           if (x.FieldName !== filter.FieldName) {
-            items.push(x);
+            items.push(x)
           }
         }
-      });
+      })
 
-      requestBody = [...items];
+      requestBody = [...items]
       if (Array.isArray(filter)) {
         filter.forEach((x, i) => {
-          const elem = filter[i];
-          elem.FieldName = filter[i].FieldName;
-          requestBody.push(elem);
-        });
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
       } else {
-        const elem = filter;
-        elem.FieldName = filter.FieldName;
-        requestBody.push(elem);
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
       }
 
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody;
-      this.callForSearch();
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForSearch()
     },
     columnFilterCleared(fieldName) {
       if (this.isRestoredOrClearedFilters) {
-        return;
+        return
       }
 
-      let items = [];
-      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems;
+      let items = []
+      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
 
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
-          items.push(x);
+          items.push(x)
         }
-      });
+      })
 
-      filterPayload = [...items];
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload;
-      this.callForSearch();
+      filterPayload = [...items]
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.callForSearch()
 
       this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1;
+        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
-    handleSetDefaultSearch(search = "", filterValues = {}) {
+    handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.REST_API,
         JSON.stringify({
           filter: this.axiosPayload.filter,
-          filterValues,
+          filterValues
         })
-      );
+      )
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true;
-      this.getDefaultFilterAndSearch();
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
     },
     handleEdit(row = {}) {
-      this.selectedRow = row;
-      this.toggleNewCustomApiStatus();
+      this.selectedRow = row
+      this.toggleNewCustomApiStatus()
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true;
-      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload));
-      this.$refs.refCustomApiList.filterValues = {};
+      this.isRestoredOrClearedFilters = true
+      this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
+      this.$refs.refCustomApiList.filterValues = {}
       this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
         .toString()
-        .substring(0, 5)}`;
-      this.callForSearch();
+        .substring(0, 5)}`
+      this.callForSearch()
     },
     handleAllRecordsClick() {
-      this.axiosPayload.pageSize = 75000;
-      this.showAllRecords = false;
-      this.callForSearch();
+      this.axiosPayload.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearch()
     },
     handleDelete(row = {}) {
-      this.selectedRow = row;
-      this.toggleShowDeleteCustomApi();
+      this.selectedRow = row
+      this.toggleShowDeleteCustomApi()
     },
-    handleDeleteCustomApi(resourceId = "") {
-      this.saveDisableDelete = true;
+    handleDeleteCustomApi(resourceId = '') {
+      this.saveDisableDelete = true
       deleteRestApi(resourceId)
         .then(() => {
-          this.$refs.refCustomApiList.unSelectRow(this.selectedRow);
-          this.toggleShowDeleteCustomApi();
-          this.callForSearch();
+          this.$refs.refCustomApiList.unSelectRow(this.selectedRow)
+          this.toggleShowDeleteCustomApi()
+          this.callForSearch()
         })
         .finally(() => {
-          this.saveDisableDelete = false;
-        });
+          this.saveDisableDelete = false
+        })
     },
     checkIfCanCloseCustomApiModal() {
       if (this.$refs.newCustomApi) {
-        this.$refs.newCustomApi.closeOverlay();
+        this.$refs.newCustomApi.closeOverlay()
       }
     },
     toggleNewCustomApiStatus() {
       if (this.showNewCustomApi) {
-        this.selectedRow = null;
+        this.selectedRow = null
       }
-      this.showNewCustomApi = !this.showNewCustomApi;
+      this.showNewCustomApi = !this.showNewCustomApi
     },
     toggleShowDeleteCustomApi() {
       if (this.showDeleteCustomApi) {
-        this.selectedRow = null;
+        this.selectedRow = null
       }
-      this.showDeleteCustomApi = !this.showDeleteCustomApi;
+      this.showDeleteCustomApi = !this.showDeleteCustomApi
     },
     getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REST_API));
+      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.REST_API))
       if (savedFilter) {
-        this.axiosPayload.filter = savedFilter.filter;
-        this.tableOptions.isColumnFilterActive = true;
+        this.axiosPayload.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refCustomApiList.filterValues = savedFilter.filterValues;
+          this.$refs.refCustomApiList.filterValues = savedFilter.filterValues
           this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`;
-        });
+            .substring(0, 5)}`
+        })
       }
-      this.callForSearch();
-    },
-  },
-};
+      this.callForSearch()
+    }
+  }
+}
 </script>
 
 <style></style>

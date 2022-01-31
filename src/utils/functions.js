@@ -1,252 +1,252 @@
-import jwt_decode from "jwt-decode";
+import jwt_decode from 'jwt-decode'
 
 export function getBtnStatusColor(type) {
-  if (typeof type === "boolean" && type) {
-    type = "yes";
-  } else if (typeof type === "boolean" && !type) {
-    type = "no";
+  if (typeof type === 'boolean' && type) {
+    type = 'yes'
+  } else if (typeof type === 'boolean' && !type) {
+    type = 'no'
   }
   switch (type && type.toLowerCase()) {
-    case "pending":
-      return "#00bcd4";
-    case "clean":
-      return "#00bcd4";
-    case "active":
-      return "#1173C1";
-    case "inactive":
-      return "#b83a3a";
-    case "warning":
-      return "#b6791d";
-    case "malicious":
-      return "#b83a3a";
-    case "nonmalicious":
-      return "#00bcd4";
-    case "offline":
-      return "#B83A3A";
-    case "expired":
-      return "#B6791D";
-    case "paused":
-      return "#B6791D";
-    case "passive":
-      return "#b83a3a";
-    case "cancelled":
-      return "#b83a3a";
-    case "canceled":
-      return "#b83a3a";
-    case "quequed":
-      return "#0198AC";
-    case "phishing":
-      return "#b83a3a";
-    case "idle":
-      return "#0198AC";
-    case "excluded":
-      return "#757575";
-    case "disabled":
-      return "#b83a3a";
-    case "network error":
-      return "#b83a3a";
-    case "quedued":
-      return "#00bcd4";
-    case "inqueue":
-    case "in queue":
-      return "#1173C1";
-    case "none":
-      return "#00bcd4";
-    case "running":
-      return "#1173C1";
-    case "Running":
-      return "#1173C1";
-    case "Not Running":
-      return "#1173C1";
-    case "completed":
-      return "#217124";
-    case "finished":
-      return "#217124";
-    case "successful":
-      return "#217124";
-    case "online":
-      return "#217124";
-    case "deactivated":
-      return "#757575";
-    case "notinstalled":
-      return "#757575";
-    case "user unavailable":
-      return "#757575";
-    case "completedwitherror":
-      return "#6d6d6d";
-    case "itemnotfound":
-      return "#fafafa";
-    case "failed":
-      return "#b83a3a";
-    case "n/a":
-      return "#00bcd4";
-    case "stopped":
-      return "#b83a3a";
-    case "error":
-      return "#b83a3a";
-    case "exist":
-      return "#1173C1";
-    case "new":
-      return "#217124";
-    case "undetected":
-      return "#1173C1";
-    case "listed":
-      return "#b83a3a";
-    case "custom":
-      return "#f56c6c";
-    case "system":
-      return "#1173C1";
-    case "yes":
-      return "#1173c1";
-    case "no":
-      return "#757575";
-    case "not running":
-      return "#B83A3A";
-    case "easy":
-      return "rgba(33, 113, 36, 1)";
-    case "medium":
-      return "rgba(17, 115, 193, 1)";
-    case "hard":
-      return "rgba(184, 58, 58, 1)";
+    case 'pending':
+      return '#00bcd4'
+    case 'clean':
+      return '#00bcd4'
+    case 'active':
+      return '#1173C1'
+    case 'inactive':
+      return '#b83a3a'
+    case 'warning':
+      return '#b6791d'
+    case 'malicious':
+      return '#b83a3a'
+    case 'nonmalicious':
+      return '#00bcd4'
+    case 'offline':
+      return '#B83A3A'
+    case 'expired':
+      return '#B6791D'
+    case 'paused':
+      return '#B6791D'
+    case 'passive':
+      return '#b83a3a'
+    case 'cancelled':
+      return '#b83a3a'
+    case 'canceled':
+      return '#b83a3a'
+    case 'quequed':
+      return '#0198AC'
+    case 'phishing':
+      return '#b83a3a'
+    case 'idle':
+      return '#0198AC'
+    case 'excluded':
+      return '#757575'
+    case 'disabled':
+      return '#b83a3a'
+    case 'network error':
+      return '#b83a3a'
+    case 'quedued':
+      return '#00bcd4'
+    case 'inqueue':
+    case 'in queue':
+      return '#1173C1'
+    case 'none':
+      return '#00bcd4'
+    case 'running':
+      return '#1173C1'
+    case 'Running':
+      return '#1173C1'
+    case 'Not Running':
+      return '#1173C1'
+    case 'completed':
+      return '#217124'
+    case 'finished':
+      return '#217124'
+    case 'successful':
+      return '#217124'
+    case 'online':
+      return '#217124'
+    case 'deactivated':
+      return '#757575'
+    case 'notinstalled':
+      return '#757575'
+    case 'user unavailable':
+      return '#757575'
+    case 'completedwitherror':
+      return '#6d6d6d'
+    case 'itemnotfound':
+      return '#fafafa'
+    case 'failed':
+      return '#b83a3a'
+    case 'n/a':
+      return '#00bcd4'
+    case 'stopped':
+      return '#b83a3a'
+    case 'error':
+      return '#b83a3a'
+    case 'exist':
+      return '#1173C1'
+    case 'new':
+      return '#217124'
+    case 'undetected':
+      return '#1173C1'
+    case 'listed':
+      return '#b83a3a'
+    case 'custom':
+      return '#f56c6c'
+    case 'system':
+      return '#1173C1'
+    case 'yes':
+      return '#1173c1'
+    case 'no':
+      return '#757575'
+    case 'not running':
+      return '#B83A3A'
+    case 'easy':
+      return 'rgba(33, 113, 36, 1)'
+    case 'medium':
+      return 'rgba(17, 115, 193, 1)'
+    case 'hard':
+      return 'rgba(184, 58, 58, 1)'
     default:
-      return "#00bcd4";
+      return '#00bcd4'
   }
 }
 
 export function getBtnPriorityColor(type) {
   switch (type.toLowerCase()) {
-    case "active":
-      return "#00bcd4";
-    case "inactive":
-      return "#b83a3a";
-    case "low":
-      return "#00bcd4";
-    case "very low":
-      return "#757575";
-    case "verylow":
-      return "#757575";
-    case "medium":
-      return "#1173C1";
-    case "high":
-      return "#b6791d";
-    case "very high":
-      return "#b83a3a";
-    case "veryhigh":
-      return "#b83a3a";
-    case "n/a":
-      return "#00bcd4";
-    case "error":
-      return "#b83a3a";
-    case "exist":
-      return "#1173C1";
-    case "new":
-      return "#217124";
-    case "excluded":
-      return "#757575";
+    case 'active':
+      return '#00bcd4'
+    case 'inactive':
+      return '#b83a3a'
+    case 'low':
+      return '#00bcd4'
+    case 'very low':
+      return '#757575'
+    case 'verylow':
+      return '#757575'
+    case 'medium':
+      return '#1173C1'
+    case 'high':
+      return '#b6791d'
+    case 'very high':
+      return '#b83a3a'
+    case 'veryhigh':
+      return '#b83a3a'
+    case 'n/a':
+      return '#00bcd4'
+    case 'error':
+      return '#b83a3a'
+    case 'exist':
+      return '#1173C1'
+    case 'new':
+      return '#217124'
+    case 'excluded':
+      return '#757575'
     default:
-      break;
+      break
   }
 }
 
 export function getTextColor(type) {
   switch (type.toLowerCase()) {
-    case "open":
-      return "#f56c6c";
-    case "in progress":
-      return "#2196f3";
-    case "false positive":
-      return "#e6a23c";
-    case "closed":
-      return "#43a047";
-    case "very high":
-      return "#43a047";
-    case "medium":
-      return "#00bcd4";
-    case "low":
-      return "#e6a23c";
-    case "very low":
-      return "#f56c6c";
+    case 'open':
+      return '#f56c6c'
+    case 'in progress':
+      return '#2196f3'
+    case 'false positive':
+      return '#e6a23c'
+    case 'closed':
+      return '#43a047'
+    case 'very high':
+      return '#43a047'
+    case 'medium':
+      return '#00bcd4'
+    case 'low':
+      return '#e6a23c'
+    case 'very low':
+      return '#f56c6c'
     default:
-      break;
+      break
   }
 }
 
-export function getDataTableFieldLabel(field = "") {
-  field = String(field);
-  const defField = field;
-  field = field.trim().toLowerCase();
-  let upperCaseCount = 0;
+export function getDataTableFieldLabel(field = '') {
+  field = String(field)
+  const defField = field
+  field = field.trim().toLowerCase()
+  let upperCaseCount = 0
   for (let i = 0; i < field.length; i++) {
     if (upperCaseCount === 2) {
-      return `${field.slice(0, i)} ${field.slice(i, field.length)}`;
+      return `${field.slice(0, i)} ${field.slice(i, field.length)}`
     }
     if (field.charAt(i) === field.charAt(i).toUpperCase()) {
-      upperCaseCount++;
+      upperCaseCount++
     }
   }
   switch (field) {
-    case "beinganalyzed":
-      return "Being Analyzed";
-    case "inprogress":
-      return "In Progress";
-    case "falsepositive":
-      return "False Positive";
-    case "nonmalicious":
-      return "Clean";
-    case "veryhigh":
-      return "Very High";
-    case "verylow":
-      return "Very Low";
-    case "completedwitherror":
-      return "Completed with error";
-    case "itemnotfound":
-      return "Item not found";
-    case "Running":
-      return "Running";
-    case "Not Running":
-      return "Not Running";
-    case "n/a":
-      return "N/A";
-    case "notinstalled":
-      return "Not Installed";
-    case "waitingresponse":
-      return "Waiting Response";
-    case "unknown":
-      return "N/A";
-    case "Easy":
-      return "Easy";
-    case "Medium":
-      return "Medium";
-    case "Hard":
-      return "Hard";
+    case 'beinganalyzed':
+      return 'Being Analyzed'
+    case 'inprogress':
+      return 'In Progress'
+    case 'falsepositive':
+      return 'False Positive'
+    case 'nonmalicious':
+      return 'Clean'
+    case 'veryhigh':
+      return 'Very High'
+    case 'verylow':
+      return 'Very Low'
+    case 'completedwitherror':
+      return 'Completed with error'
+    case 'itemnotfound':
+      return 'Item not found'
+    case 'Running':
+      return 'Running'
+    case 'Not Running':
+      return 'Not Running'
+    case 'n/a':
+      return 'N/A'
+    case 'notinstalled':
+      return 'Not Installed'
+    case 'waitingresponse':
+      return 'Waiting Response'
+    case 'unknown':
+      return 'N/A'
+    case 'Easy':
+      return 'Easy'
+    case 'Medium':
+      return 'Medium'
+    case 'Hard':
+      return 'Hard'
     default:
-      return defField;
+      return defField
   }
 }
 
 export function isOwnerOrMember(membershipStatusId) {
   switch (membershipStatusId) {
     case 1:
-      return true;
+      return true
     case 2:
-      return true;
+      return true
     default:
-      return false;
+      return false
   }
 }
 
 export function isOwner(membershipStatusId) {
-  return membershipStatusId == 1;
+  return membershipStatusId == 1
 }
 
 export function isPostedByMe(isPostedByMe) {
-  return isPostedByMe;
+  return isPostedByMe
 }
 
 export function copyToClipboard(e) {}
 
 export function setGlobalUserData(userData) {
-  let currentUserData = {};
+  let currentUserData = {}
   currentUserData = {
     id: userData.user_company_resourceid,
     name: userData.user_company_name,
@@ -265,108 +265,108 @@ export function setGlobalUserData(userData) {
       resellerId: userData.user_company_parentcompany_resourceid,
       timeZone: userData && userData.user_dateformat,
       isDemo: false,
-      timeFormat: userData && userData.user_timeformat,
+      timeFormat: userData && userData.user_timeformat
     },
     role: {
-      name: userData.role.toString(),
-    },
-  };
-  localStorage.setItem("companyId", currentUserData.userCompany.id);
-  localStorage.setItem("companyRequestId", currentUserData.userCompany.id);
-  localStorage.setItem("companyResourceId", currentUserData.userCompany.id);
-  localStorage.setItem("companyName", currentUserData.userCompany.name);
-  localStorage.setItem("userId", currentUserData.id);
-  localStorage.setItem("businessCatId", currentUserData.userCompany.businessCategoryId);
-  localStorage.setItem("userName", userData.name || currentUserData.name);
-  return currentUserData;
+      name: userData.role.toString()
+    }
+  }
+  localStorage.setItem('companyId', currentUserData.userCompany.id)
+  localStorage.setItem('companyRequestId', currentUserData.userCompany.id)
+  localStorage.setItem('companyResourceId', currentUserData.userCompany.id)
+  localStorage.setItem('companyName', currentUserData.userCompany.name)
+  localStorage.setItem('userId', currentUserData.id)
+  localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
+  localStorage.setItem('userName', userData.name || currentUserData.name)
+  return currentUserData
 }
 
 export function passwordComplexity(pwd) {
   String.prototype.strReverse = function () {
-    var newstring = "";
+    var newstring = ''
     for (var s = 0; s < this.length; s++) {
-      newstring = this.charAt(s) + newstring;
+      newstring = this.charAt(s) + newstring
     }
-    return newstring;
+    return newstring
     //strOrig = ' texttotrim ';
     //strReversed = strOrig.revstring();
-  };
+  }
   function initPwdChk(restart) {
     /* Reset all form values to their default */
     var arrZeros = [
-      "nLength",
-      "nAlphaUC",
-      "nAlphaLC",
-      "nNumber",
-      "nSymbol",
-      "nMidChar",
-      "nRequirements",
-      "nAlphasOnly",
-      "nNumbersOnly",
-      "nRepChar",
-      "nConsecAlphaUC",
-      "nConsecAlphaLC",
-      "nConsecNumber",
-      "nSeqAlpha",
-      "nSeqNumber",
-      "nSeqSymbol",
-      "nLengthBonus",
-      "nAlphaUCBonus",
-      "nAlphaLCBonus",
-      "nNumberBonus",
-      "nSymbolBonus",
-      "nMidCharBonus",
-      "nRequirementsBonus",
-      "nAlphasOnlyBonus",
-      "nNumbersOnlyBonus",
-      "nRepCharBonus",
-      "nConsecAlphaUCBonus",
-      "nConsecAlphaLCBonus",
-      "nConsecNumberBonus",
-      "nSeqAlphaBonus",
-      "nSeqNumberBonus",
-      "nSeqSymbolBonus",
-    ];
+      'nLength',
+      'nAlphaUC',
+      'nAlphaLC',
+      'nNumber',
+      'nSymbol',
+      'nMidChar',
+      'nRequirements',
+      'nAlphasOnly',
+      'nNumbersOnly',
+      'nRepChar',
+      'nConsecAlphaUC',
+      'nConsecAlphaLC',
+      'nConsecNumber',
+      'nSeqAlpha',
+      'nSeqNumber',
+      'nSeqSymbol',
+      'nLengthBonus',
+      'nAlphaUCBonus',
+      'nAlphaLCBonus',
+      'nNumberBonus',
+      'nSymbolBonus',
+      'nMidCharBonus',
+      'nRequirementsBonus',
+      'nAlphasOnlyBonus',
+      'nNumbersOnlyBonus',
+      'nRepCharBonus',
+      'nConsecAlphaUCBonus',
+      'nConsecAlphaLCBonus',
+      'nConsecNumberBonus',
+      'nSeqAlphaBonus',
+      'nSeqNumberBonus',
+      'nSeqSymbolBonus'
+    ]
     var arrPassPars = [
-      "nAlphasOnlyBonus",
-      "nNumbersOnlyBonus",
-      "nRepCharBonus",
-      "nConsecAlphaUCBonus",
-      "nConsecAlphaLCBonus",
-      "nConsecNumberBonus",
-      "nSeqAlphaBonus",
-      "nSeqNumberBonus",
-      "nSeqSymbolBonus",
-    ];
+      'nAlphasOnlyBonus',
+      'nNumbersOnlyBonus',
+      'nRepCharBonus',
+      'nConsecAlphaUCBonus',
+      'nConsecAlphaLCBonus',
+      'nConsecNumberBonus',
+      'nSeqAlphaBonus',
+      'nSeqNumberBonus',
+      'nSeqSymbolBonus'
+    ]
     var arrPassDivs = [
-      "div_nAlphasOnly",
-      "div_nNumbersOnly",
-      "div_nRepChar",
-      "div_nConsecAlphaUC",
-      "div_nConsecAlphaLC",
-      "div_nConsecNumber",
-      "div_nSeqAlpha",
-      "div_nSeqNumber",
-      "div_nSeqSymbol",
-    ];
+      'div_nAlphasOnly',
+      'div_nNumbersOnly',
+      'div_nRepChar',
+      'div_nConsecAlphaUC',
+      'div_nConsecAlphaLC',
+      'div_nConsecNumber',
+      'div_nSeqAlpha',
+      'div_nSeqNumber',
+      'div_nSeqSymbol'
+    ]
     var arrFailPars = [
-      "nLengthBonus",
-      "nAlphaUCBonus",
-      "nAlphaLCBonus",
-      "nNumberBonus",
-      "nSymbolBonus",
-      "nMidCharBonus",
-      "nRequirementsBonus",
-    ];
+      'nLengthBonus',
+      'nAlphaUCBonus',
+      'nAlphaLCBonus',
+      'nNumberBonus',
+      'nSymbolBonus',
+      'nMidCharBonus',
+      'nRequirementsBonus'
+    ]
     var arrFailDivs = [
-      "div_nLength",
-      "div_nAlphaUC",
-      "div_nAlphaLC",
-      "div_nNumber",
-      "div_nSymbol",
-      "div_nMidChar",
-      "div_nRequirements",
-    ];
+      'div_nLength',
+      'div_nAlphaUC',
+      'div_nAlphaLC',
+      'div_nNumber',
+      'div_nSymbol',
+      'div_nMidChar',
+      'div_nRequirements'
+    ]
   }
   // Simultaneous variable declaration and value assignment aren't supported in IE apparently
   // so I'm forced to assign the same value individually per var to support a crappy browser *sigh*
@@ -393,153 +393,153 @@ export function passwordComplexity(pwd) {
     nSeqSymbol = 0,
     nSeqChar = 0,
     nReqChar = 0,
-    nMultConsecCharType = 0;
+    nMultConsecCharType = 0
   var nMultRepChar = 1,
-    nMultConsecSymbol = 1;
+    nMultConsecSymbol = 1
   var nMultMidChar = 2,
     nMultRequirements = 2,
     nMultConsecAlphaUC = 2,
     nMultConsecAlphaLC = 2,
-    nMultConsecNumber = 2;
+    nMultConsecNumber = 2
   var nReqCharType = 3,
     nMultAlphaUC = 3,
     nMultAlphaLC = 3,
     nMultSeqAlpha = 3,
     nMultSeqNumber = 3,
-    nMultSeqSymbol = 3;
+    nMultSeqSymbol = 3
   var nMultLength = 4,
-    nMultNumber = 4;
-  var nMultSymbol = 6;
-  var nTmpAlphaUC = "",
-    nTmpAlphaLC = "",
-    nTmpNumber = "",
-    nTmpSymbol = "";
-  var sAlphaUC = "0",
-    sAlphaLC = "0",
-    sNumber = "0",
-    sSymbol = "0",
-    sMidChar = "0",
-    sRequirements = "0",
-    sAlphasOnly = "0",
-    sNumbersOnly = "0",
-    sRepChar = "0",
-    sConsecAlphaUC = "0",
-    sConsecAlphaLC = "0",
-    sConsecNumber = "0",
-    sSeqAlpha = "0",
-    sSeqNumber = "0",
-    sSeqSymbol = "0";
-  var sAlphas = "abcdefghijklmnopqrstuvwxyz";
-  var sNumerics = "01234567890";
-  var sSymbols = ")!@#$%^&*()";
-  var sComplexity = "Too Short";
-  var sStandards = "Below";
-  var nMinPwdLen = 8;
+    nMultNumber = 4
+  var nMultSymbol = 6
+  var nTmpAlphaUC = '',
+    nTmpAlphaLC = '',
+    nTmpNumber = '',
+    nTmpSymbol = ''
+  var sAlphaUC = '0',
+    sAlphaLC = '0',
+    sNumber = '0',
+    sSymbol = '0',
+    sMidChar = '0',
+    sRequirements = '0',
+    sAlphasOnly = '0',
+    sNumbersOnly = '0',
+    sRepChar = '0',
+    sConsecAlphaUC = '0',
+    sConsecAlphaLC = '0',
+    sConsecNumber = '0',
+    sSeqAlpha = '0',
+    sSeqNumber = '0',
+    sSeqSymbol = '0'
+  var sAlphas = 'abcdefghijklmnopqrstuvwxyz'
+  var sNumerics = '01234567890'
+  var sSymbols = ')!@#$%^&*()'
+  var sComplexity = 'Too Short'
+  var sStandards = 'Below'
+  var nMinPwdLen = 8
   if (document.all) {
-    var nd = 0;
+    var nd = 0
   } else {
-    var nd = 1;
+    var nd = 1
   }
   if (pwd) {
-    nScore = parseInt(pwd.length * nMultLength);
-    nLength = pwd.length;
-    var arrPwd = pwd.replace(/\s+/g, "").split(/\s*/);
-    var arrPwdLen = arrPwd.length;
+    nScore = parseInt(pwd.length * nMultLength)
+    nLength = pwd.length
+    var arrPwd = pwd.replace(/\s+/g, '').split(/\s*/)
+    var arrPwdLen = arrPwd.length
 
     /* Loop through password to check for Symbol, Numeric, Lowercase and Uppercase pattern matches */
     for (var a = 0; a < arrPwdLen; a++) {
       if (arrPwd[a].match(/[A-Z]/g)) {
-        if (nTmpAlphaUC !== "") {
+        if (nTmpAlphaUC !== '') {
           if (nTmpAlphaUC + 1 == a) {
-            nConsecAlphaUC++;
-            nConsecCharType++;
+            nConsecAlphaUC++
+            nConsecCharType++
           }
         }
-        nTmpAlphaUC = a;
-        nAlphaUC++;
+        nTmpAlphaUC = a
+        nAlphaUC++
       } else if (arrPwd[a].match(/[a-z]/g)) {
-        if (nTmpAlphaLC !== "") {
+        if (nTmpAlphaLC !== '') {
           if (nTmpAlphaLC + 1 == a) {
-            nConsecAlphaLC++;
-            nConsecCharType++;
+            nConsecAlphaLC++
+            nConsecCharType++
           }
         }
-        nTmpAlphaLC = a;
-        nAlphaLC++;
+        nTmpAlphaLC = a
+        nAlphaLC++
       } else if (arrPwd[a].match(/[0-9]/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
-          nMidChar++;
+          nMidChar++
         }
-        if (nTmpNumber !== "") {
+        if (nTmpNumber !== '') {
           if (nTmpNumber + 1 == a) {
-            nConsecNumber++;
-            nConsecCharType++;
+            nConsecNumber++
+            nConsecCharType++
           }
         }
-        nTmpNumber = a;
-        nNumber++;
+        nTmpNumber = a
+        nNumber++
       } else if (arrPwd[a].match(/[^a-zA-Z0-9_]/g)) {
         if (a > 0 && a < arrPwdLen - 1) {
-          nMidChar++;
+          nMidChar++
         }
-        if (nTmpSymbol !== "") {
+        if (nTmpSymbol !== '') {
           if (nTmpSymbol + 1 == a) {
-            nConsecSymbol++;
-            nConsecCharType++;
+            nConsecSymbol++
+            nConsecCharType++
           }
         }
-        nTmpSymbol = a;
-        nSymbol++;
+        nTmpSymbol = a
+        nSymbol++
       }
       /* Internal loop through password to check for repeat characters */
-      var bCharExists = false;
+      var bCharExists = false
       for (var b = 0; b < arrPwdLen; b++) {
         if (arrPwd[a] == arrPwd[b] && a != b) {
           /* repeat character exists */
-          bCharExists = true;
+          bCharExists = true
           /*
       Calculate icrement deduction based on proximity to identical characters
       Deduction is incremented each time a new match is discovered
       Deduction amount is based on total password length divided by the
       difference of distance between currently selected match
       */
-          nRepInc += Math.abs(arrPwdLen / (b - a));
+          nRepInc += Math.abs(arrPwdLen / (b - a))
         }
       }
       if (bCharExists) {
-        nRepChar++;
-        nUnqChar = arrPwdLen - nRepChar;
-        nRepInc = nUnqChar ? Math.ceil(nRepInc / nUnqChar) : Math.ceil(nRepInc);
+        nRepChar++
+        nUnqChar = arrPwdLen - nRepChar
+        nRepInc = nUnqChar ? Math.ceil(nRepInc / nUnqChar) : Math.ceil(nRepInc)
       }
     }
 
     /* Check for sequential alpha string patterns (forward and reverse) */
     for (var s = 0; s < 23; s++) {
-      var sFwd = sAlphas.substring(s, parseInt(s + 3));
-      var sRev = sFwd.strReverse();
+      var sFwd = sAlphas.substring(s, parseInt(s + 3))
+      var sRev = sFwd.strReverse()
       if (pwd.toLowerCase().indexOf(sFwd) != -1 || pwd.toLowerCase().indexOf(sRev) != -1) {
-        nSeqAlpha++;
-        nSeqChar++;
+        nSeqAlpha++
+        nSeqChar++
       }
     }
 
     /* Check for sequential numeric string patterns (forward and reverse) */
     for (var s = 0; s < 8; s++) {
-      var sFwd = sNumerics.substring(s, parseInt(s + 3));
-      var sRev = sFwd.strReverse();
+      var sFwd = sNumerics.substring(s, parseInt(s + 3))
+      var sRev = sFwd.strReverse()
       if (pwd.toLowerCase().indexOf(sFwd) != -1 || pwd.toLowerCase().indexOf(sRev) != -1) {
-        nSeqNumber++;
-        nSeqChar++;
+        nSeqNumber++
+        nSeqChar++
       }
     }
 
     /* Check for sequential symbol string patterns (forward and reverse) */
     for (var s = 0; s < 8; s++) {
-      var sFwd = sSymbols.substring(s, parseInt(s + 3));
-      var sRev = sFwd.strReverse();
+      var sFwd = sSymbols.substring(s, parseInt(s + 3))
+      var sRev = sFwd.strReverse()
       if (pwd.toLowerCase().indexOf(sFwd) != -1 || pwd.toLowerCase().indexOf(sRev) != -1) {
-        nSeqSymbol++;
-        nSeqChar++;
+        nSeqSymbol++
+        nSeqChar++
       }
     }
 
@@ -547,113 +547,113 @@ export function passwordComplexity(pwd) {
 
     /* General point assignment */
     if (nAlphaUC > 0 && nAlphaUC < nLength) {
-      nScore = parseInt(nScore + (nLength - nAlphaUC) * 2);
-      sAlphaUC = "+ " + parseInt((nLength - nAlphaUC) * 2);
+      nScore = parseInt(nScore + (nLength - nAlphaUC) * 2)
+      sAlphaUC = '+ ' + parseInt((nLength - nAlphaUC) * 2)
     }
     if (nAlphaLC > 0 && nAlphaLC < nLength) {
-      nScore = parseInt(nScore + (nLength - nAlphaLC) * 2);
-      sAlphaLC = "+ " + parseInt((nLength - nAlphaLC) * 2);
+      nScore = parseInt(nScore + (nLength - nAlphaLC) * 2)
+      sAlphaLC = '+ ' + parseInt((nLength - nAlphaLC) * 2)
     }
     if (nNumber > 0 && nNumber < nLength) {
-      nScore = parseInt(nScore + nNumber * nMultNumber);
-      sNumber = "+ " + parseInt(nNumber * nMultNumber);
+      nScore = parseInt(nScore + nNumber * nMultNumber)
+      sNumber = '+ ' + parseInt(nNumber * nMultNumber)
     }
     if (nSymbol > 0) {
-      nScore = parseInt(nScore + nSymbol * nMultSymbol);
-      sSymbol = "+ " + parseInt(nSymbol * nMultSymbol);
+      nScore = parseInt(nScore + nSymbol * nMultSymbol)
+      sSymbol = '+ ' + parseInt(nSymbol * nMultSymbol)
     }
     if (nMidChar > 0) {
-      nScore = parseInt(nScore + nMidChar * nMultMidChar);
-      sMidChar = "+ " + parseInt(nMidChar * nMultMidChar);
+      nScore = parseInt(nScore + nMidChar * nMultMidChar)
+      sMidChar = '+ ' + parseInt(nMidChar * nMultMidChar)
     }
 
     /* Point deductions for poor practices */
     if ((nAlphaLC > 0 || nAlphaUC > 0) && nSymbol === 0 && nNumber === 0) {
       // Only Letters
-      nScore = parseInt(nScore - nLength);
-      nAlphasOnly = nLength;
-      sAlphasOnly = "- " + nLength;
+      nScore = parseInt(nScore - nLength)
+      nAlphasOnly = nLength
+      sAlphasOnly = '- ' + nLength
     }
     if (nAlphaLC === 0 && nAlphaUC === 0 && nSymbol === 0 && nNumber > 0) {
       // Only Numbers
-      nScore = parseInt(nScore - nLength);
-      nNumbersOnly = nLength;
-      sNumbersOnly = "- " + nLength;
+      nScore = parseInt(nScore - nLength)
+      nNumbersOnly = nLength
+      sNumbersOnly = '- ' + nLength
     }
     if (nRepChar > 0) {
       // Same character exists more than once
-      nScore = parseInt(nScore - nRepInc);
-      sRepChar = "- " + nRepInc;
+      nScore = parseInt(nScore - nRepInc)
+      sRepChar = '- ' + nRepInc
     }
     if (nConsecAlphaUC > 0) {
       // Consecutive Uppercase Letters exist
-      nScore = parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC);
-      sConsecAlphaUC = "- " + parseInt(nConsecAlphaUC * nMultConsecAlphaUC);
+      nScore = parseInt(nScore - nConsecAlphaUC * nMultConsecAlphaUC)
+      sConsecAlphaUC = '- ' + parseInt(nConsecAlphaUC * nMultConsecAlphaUC)
     }
     if (nConsecAlphaLC > 0) {
       // Consecutive Lowercase Letters exist
-      nScore = parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC);
-      sConsecAlphaLC = "- " + parseInt(nConsecAlphaLC * nMultConsecAlphaLC);
+      nScore = parseInt(nScore - nConsecAlphaLC * nMultConsecAlphaLC)
+      sConsecAlphaLC = '- ' + parseInt(nConsecAlphaLC * nMultConsecAlphaLC)
     }
     if (nConsecNumber > 0) {
       // Consecutive Numbers exist
-      nScore = parseInt(nScore - nConsecNumber * nMultConsecNumber);
-      sConsecNumber = "- " + parseInt(nConsecNumber * nMultConsecNumber);
+      nScore = parseInt(nScore - nConsecNumber * nMultConsecNumber)
+      sConsecNumber = '- ' + parseInt(nConsecNumber * nMultConsecNumber)
     }
     if (nSeqAlpha > 0) {
       // Sequential alpha strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqAlpha * nMultSeqAlpha);
-      sSeqAlpha = "- " + parseInt(nSeqAlpha * nMultSeqAlpha);
+      nScore = parseInt(nScore - nSeqAlpha * nMultSeqAlpha)
+      sSeqAlpha = '- ' + parseInt(nSeqAlpha * nMultSeqAlpha)
     }
     if (nSeqNumber > 0) {
       // Sequential numeric strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqNumber * nMultSeqNumber);
-      sSeqNumber = "- " + parseInt(nSeqNumber * nMultSeqNumber);
+      nScore = parseInt(nScore - nSeqNumber * nMultSeqNumber)
+      sSeqNumber = '- ' + parseInt(nSeqNumber * nMultSeqNumber)
     }
     if (nSeqSymbol > 0) {
       // Sequential symbol strings exist (3 characters or more)
-      nScore = parseInt(nScore - nSeqSymbol * nMultSeqSymbol);
-      sSeqSymbol = "- " + parseInt(nSeqSymbol * nMultSeqSymbol);
+      nScore = parseInt(nScore - nSeqSymbol * nMultSeqSymbol)
+      sSeqSymbol = '- ' + parseInt(nSeqSymbol * nMultSeqSymbol)
     }
 
     /* Determine if mandatory requirements have been met and set image indicators accordingly */
-    var arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol];
-    var arrCharsIds = ["nLength", "nAlphaUC", "nAlphaLC", "nNumber", "nSymbol"];
-    var arrCharsLen = arrChars.length;
+    var arrChars = [nLength, nAlphaUC, nAlphaLC, nNumber, nSymbol]
+    var arrCharsIds = ['nLength', 'nAlphaUC', 'nAlphaLC', 'nNumber', 'nSymbol']
+    var arrCharsLen = arrChars.length
     for (var c = 0; c < arrCharsLen; c++) {
-      if (arrCharsIds[c] == "nLength") {
-        var minVal = parseInt(nMinPwdLen - 1);
+      if (arrCharsIds[c] == 'nLength') {
+        var minVal = parseInt(nMinPwdLen - 1)
       } else {
-        var minVal = 0;
+        var minVal = 0
       }
       if (arrChars[c] == parseInt(minVal + 1)) {
-        nReqChar++;
+        nReqChar++
       } else if (arrChars[c] > parseInt(minVal + 1)) {
-        nReqChar++;
+        nReqChar++
       } else {
       }
     }
-    nRequirements = nReqChar;
+    nRequirements = nReqChar
     if (pwd.length >= nMinPwdLen) {
-      var nMinReqChars = 3;
+      var nMinReqChars = 3
     } else {
-      var nMinReqChars = 4;
+      var nMinReqChars = 4
     }
     if (nRequirements > nMinReqChars) {
       // One or more required characters exist
-      nScore = parseInt(nScore + nRequirements * 2);
-      sRequirements = "+ " + parseInt(nRequirements * 2);
+      nScore = parseInt(nScore + nRequirements * 2)
+      sRequirements = '+ ' + parseInt(nRequirements * 2)
     }
 
     /* Determine if additional bonuses need to be applied and set image indicators accordingly */
-    var arrChars = [nMidChar, nRequirements];
-    var arrCharsIds = ["nMidChar", "nRequirements"];
-    var arrCharsLen = arrChars.length;
+    var arrChars = [nMidChar, nRequirements]
+    var arrCharsIds = ['nMidChar', 'nRequirements']
+    var arrCharsLen = arrChars.length
     for (var c = 0; c < arrCharsLen; c++) {
-      if (arrCharsIds[c] == "nRequirements") {
-        var minVal = nMinReqChars;
+      if (arrCharsIds[c] == 'nRequirements') {
+        var minVal = nMinReqChars
       } else {
-        var minVal = 0;
+        var minVal = 0
       }
       if (arrChars[c] == parseInt(minVal + 1)) {
       } else if (arrChars[c] > parseInt(minVal + 1)) {
@@ -671,434 +671,434 @@ export function passwordComplexity(pwd) {
       nConsecNumber,
       nSeqAlpha,
       nSeqNumber,
-      nSeqSymbol,
-    ];
+      nSeqSymbol
+    ]
     var arrCharsIds = [
-      "nAlphasOnly",
-      "nNumbersOnly",
-      "nRepChar",
-      "nConsecAlphaUC",
-      "nConsecAlphaLC",
-      "nConsecNumber",
-      "nSeqAlpha",
-      "nSeqNumber",
-      "nSeqSymbol",
-    ];
-    var arrCharsLen = arrChars.length;
+      'nAlphasOnly',
+      'nNumbersOnly',
+      'nRepChar',
+      'nConsecAlphaUC',
+      'nConsecAlphaLC',
+      'nConsecNumber',
+      'nSeqAlpha',
+      'nSeqNumber',
+      'nSeqSymbol'
+    ]
+    var arrCharsLen = arrChars.length
     for (var c = 0; c < arrCharsLen; c++) {
       if (arrChars[c] > 0) {
       } else {
       }
     }
 
-    var level = "progress-bar-danger";
+    var level = 'progress-bar-danger'
 
     /* Determine complexity based on overall score */
     if (nScore > 100) {
-      nScore = 100;
+      nScore = 100
     } else if (nScore < 0) {
-      nScore = 0;
+      nScore = 0
     }
     if (nScore >= 0 && nScore < 20) {
-      sComplexity = "Very Weak";
+      sComplexity = 'Very Weak'
     } else if (nScore >= 20 && nScore < 40) {
-      sComplexity = "Weak";
+      sComplexity = 'Weak'
     } else if (nScore >= 40 && nScore < 60) {
-      sComplexity = "Good";
-      level = "progress-bar-warning";
+      sComplexity = 'Good'
+      level = 'progress-bar-warning'
     } else if (nScore >= 60 && nScore < 80) {
-      sComplexity = "Strong";
-      level = "progress-bar-success";
+      sComplexity = 'Strong'
+      level = 'progress-bar-success'
     } else if (nScore >= 80 && nScore <= 100) {
-      sComplexity = "Very Strong";
-      level = "progress-bar-info";
+      sComplexity = 'Very Strong'
+      level = 'progress-bar-info'
     }
 
-    return nScore;
+    return nScore
 
     /* Display updated score criteria to client */
   } else {
     /* Display default score criteria to client */
-    initPwdChk();
+    initPwdChk()
   }
 }
 
 export function scrollToComponent(
   el,
-  options = { behavior: "smooth", block: "center", inline: "center" }
+  options = { behavior: 'smooth', block: 'center', inline: 'center' }
 ) {
   if (window.safari || navigator.vendor.match(/apple/i)) {
-    el.scrollIntoView();
+    el.scrollIntoView()
   } else {
-    el.scrollIntoView(options);
+    el.scrollIntoView(options)
   }
 }
 
-export function setSafariClusterFix(obj = {}, param = "") {
+export function setSafariClusterFix(obj = {}, param = '') {
   if (obj.column.property === param) {
-    return "safari-cluster-icon-fix";
+    return 'safari-cluster-icon-fix'
   }
 }
 export function handleIsSafari() {
-  return window.safari || navigator.vendor.match(/apple/i);
+  return window.safari || navigator.vendor.match(/apple/i)
 }
 
 export function reviewElementBind(els, url) {
   if (els && els.length) {
     for (let i = 0, l = els.length; i < l; i++) {
-      let el = els[i];
-      el.setAttribute("target", "_blank");
+      let el = els[i]
+      el.setAttribute('target', '_blank')
       if (url.isHidden) {
-        url.isFlagged = false;
-        el.innerHTML = url.urlHtml || url.name || url.url;
-        el.innerHTML = "Hidden by Owner";
-        el.style.backgroundColor = "#757575";
-        el.style.color = "#ffffff";
-        el.style.position = "relative";
+        url.isFlagged = false
+        el.innerHTML = url.urlHtml || url.name || url.url
+        el.innerHTML = 'Hidden by Owner'
+        el.style.backgroundColor = '#757575'
+        el.style.color = '#ffffff'
+        el.style.position = 'relative'
       } else if (!!url && !!url.name) {
-        el.innerHTML = url.name;
-        el.setAttribute("href", url.url);
-        el.style.backgroundColor = "inherit";
-        el.style.color = "inherit";
+        el.innerHTML = url.name
+        el.setAttribute('href', url.url)
+        el.style.backgroundColor = 'inherit'
+        el.style.color = 'inherit'
       } else if (!!url && !!url.urlHtml) {
-        el.innerHTML = url.urlHtml;
-        el.setAttribute("href", url.url);
-        el.style.backgroundColor = "inherit";
-        el.style.color = "inherit";
+        el.innerHTML = url.urlHtml
+        el.setAttribute('href', url.url)
+        el.style.backgroundColor = 'inherit'
+        el.style.color = 'inherit'
       }
       if (url.isFlagged) {
-        const el = els[i];
-        el.setAttribute("target", "_blank");
-        el.setAttribute("data-title", "This link has been reported as a phishing");
-        el.style.backgroundColor = "#f3e1e5";
-        el.style.color = "#bb2a45";
-        el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`;
+        const el = els[i]
+        el.setAttribute('target', '_blank')
+        el.setAttribute('data-title', 'This link has been reported as a phishing')
+        el.style.backgroundColor = '#f3e1e5'
+        el.style.color = '#bb2a45'
+        el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
 
         //el.appendChild(iEl)
       } else if (!url.isFlagged && !url.isHidden) {
-        el.innerHTML = url.urlHtml || url.name || url.url;
-        el.style.backgroundColor = "inherit";
-        el.style.color = "inherit";
+        el.innerHTML = url.urlHtml || url.name || url.url
+        el.style.backgroundColor = 'inherit'
+        el.style.color = 'inherit'
       }
       if (url.isHidden) {
-        el.setAttribute("target", "_self");
+        el.setAttribute('target', '_self')
       }
     }
   }
-  let hiddenEls = document.getElementsByClassName(url.url);
+  let hiddenEls = document.getElementsByClassName(url.url)
   if (hiddenEls && hiddenEls.length) {
     for (let i = 0, l = hiddenEls.length; i < l; i++) {
-      let hiddenEl = hiddenEls[i];
-      hiddenEl.setAttribute("target", "_blank");
+      let hiddenEl = hiddenEls[i]
+      hiddenEl.setAttribute('target', '_blank')
       if (url.isHidden) {
-        hiddenEl.innerHTML = "Hidden by Owner";
-        hiddenEl.setAttribute("href", "#");
+        hiddenEl.innerHTML = 'Hidden by Owner'
+        hiddenEl.setAttribute('href', '#')
       }
       if (url.isFlagged) {
-        hiddenEl.classList.add("malicious-link");
-        let iEl = document.createElement("span");
+        hiddenEl.classList.add('malicious-link')
+        let iEl = document.createElement('span')
         iEl.className +=
-          "red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light";
-        hiddenEl.appendChild(iEl);
+          'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+        hiddenEl.appendChild(iEl)
       }
     }
   }
 }
 
 export function incidenPostReviewElementBind(url, id, rootId, isReview) {
-  let els;
-  if (url.url === "Hidden by Owner" || url.isHidden) {
+  let els
+  if (url.url === 'Hidden by Owner' || url.isHidden) {
     els = document
-      .getElementById(rootId || "last-preview-body-shadow-root")
-      .shadowRoot.querySelectorAll("[data-post-item-hidden]");
+      .getElementById(rootId || 'last-preview-body-shadow-root')
+      .shadowRoot.querySelectorAll('[data-post-item-hidden]')
     if (!els.length) {
       els = document
-        .getElementById(rootId || "last-preview-body-shadow-root")
-        .shadowRoot.querySelectorAll('[href="' + url.url + '"]');
+        .getElementById(rootId || 'last-preview-body-shadow-root')
+        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
     }
   } else {
     els = document
-      .getElementById(rootId || "last-preview-body-shadow-root")
-      .shadowRoot.querySelectorAll('[href="' + url.url + '"]');
+      .getElementById(rootId || 'last-preview-body-shadow-root')
+      .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
   }
 
   if (els && els.length) {
     for (let i = 0, l = els.length; i < l; i++) {
-      let el = els[i];
-      el.setAttribute("target", "_blank");
+      let el = els[i]
+      el.setAttribute('target', '_blank')
       if (url.isHidden) {
-        url.isFlagged = false;
-        el.style.backgroundColor = "#757575";
-        el.style.color = "#ffffff";
-        el.style.position = "relative";
-        el.innerHTML = "Hidden by Owner";
+        url.isFlagged = false
+        el.style.backgroundColor = '#757575'
+        el.style.color = '#ffffff'
+        el.style.position = 'relative'
+        el.innerHTML = 'Hidden by Owner'
       } else if (!!url && !!url.name) {
-        el.innerHTML = url.name;
-        el.setAttribute("href", url.url);
-        el.style.backgroundColor = "inherit";
-        el.style.color = "inherit";
+        el.innerHTML = url.name
+        el.setAttribute('href', url.url)
+        el.style.backgroundColor = 'inherit'
+        el.style.color = 'inherit'
       } else if (!!url && !!url.urlHtml) {
-        el.innerHTML = url.urlHtml;
-        el.setAttribute("href", url.url);
-        el.style.backgroundColor = "inherit";
-        el.style.color = "inherit";
+        el.innerHTML = url.urlHtml
+        el.setAttribute('href', url.url)
+        el.style.backgroundColor = 'inherit'
+        el.style.color = 'inherit'
       }
       if (url.isFlagged) {
-        el.setAttribute("target", "_blank");
-        el.setAttribute("data-title", "This link has been reported as a phishing");
-        el.style.backgroundColor = "#f3e1e5";
-        el.style.color = "#bb2a45";
-        el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`;
-        el.style.cursor = "default";
-        el.setAttribute("onclick", "return false;");
+        el.setAttribute('target', '_blank')
+        el.setAttribute('data-title', 'This link has been reported as a phishing')
+        el.style.backgroundColor = '#f3e1e5'
+        el.style.color = '#bb2a45'
+        el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+        el.style.cursor = 'default'
+        el.setAttribute('onclick', 'return false;')
         //el.appendChild(iEl)
       } else if (!url.isFlagged && !url.isHidden) {
-        !isReview && (el.innerHTML = url.urlHtml || url.name || url.url);
-        el.style.backgroundColor = "inherit";
-        el.style.color = "inherit";
+        !isReview && (el.innerHTML = url.urlHtml || url.name || url.url)
+        el.style.backgroundColor = 'inherit'
+        el.style.color = 'inherit'
       }
       if (url.isHidden) {
-        el.setAttribute("target", "_self");
+        el.setAttribute('target', '_self')
       }
     }
   }
-  let hiddenEls = document.getElementsByClassName(url.url);
+  let hiddenEls = document.getElementsByClassName(url.url)
   if (hiddenEls && hiddenEls.length) {
     for (let i = 0, l = hiddenEls.length; i < l; i++) {
-      let hiddenEl = hiddenEls[i];
-      hiddenEl.setAttribute("target", "_blank");
+      let hiddenEl = hiddenEls[i]
+      hiddenEl.setAttribute('target', '_blank')
       if (url.isHidden) {
-        hiddenEl.innerHTML = "Hidden by Owner";
-        hiddenEl.setAttribute("href", "#");
+        hiddenEl.innerHTML = 'Hidden by Owner'
+        hiddenEl.setAttribute('href', '#')
       }
       if (url.isFlagged) {
-        hiddenEl.classList.add("malicious-link");
-        let iEl = document.createElement("span");
+        hiddenEl.classList.add('malicious-link')
+        let iEl = document.createElement('span')
         iEl.className +=
-          "red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light";
-        hiddenEl.appendChild(iEl);
+          'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+        hiddenEl.appendChild(iEl)
       }
     }
   }
 }
 
 export function checkPermission(permission, type) {
-  let isTokenExist = JSON.parse(localStorage.getItem("auth-token"));
+  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
   if (isTokenExist) {
-    let token = JSON.parse(localStorage.getItem("auth-token")).token;
-    let tokenData = jwt_decode(token);
-    let permissions = tokenData.Permission;
-    return permissions.includes(`${permission}|${type}`);
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    let permissions = tokenData.Permission
+    return permissions.includes(`${permission}|${type}`)
   } else {
-    return true;
+    return true
   }
 }
 
 export function checkPermissionMultiple(permissionsList, contain = true) {
-  let isTokenExist = JSON.parse(localStorage.getItem("auth-token"));
+  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
   if (isTokenExist) {
-    let token = JSON.parse(localStorage.getItem("auth-token")).token;
-    let tokenData = jwt_decode(token);
-    let permissions = tokenData.Permission;
-    return permissionsList.map((item) => permissions.includes(item)).includes(contain);
+    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let tokenData = jwt_decode(token)
+    let permissions = tokenData.Permission
+    return permissionsList.map((item) => permissions.includes(item)).includes(contain)
   } else {
-    return true;
+    return true
   }
 }
 
 export function getPermissionsOfAllItems(PERMISSIONS = {}) {
-  const COPY_OF_PERMISSIONS = { ...PERMISSIONS };
-  const permissions = Object.keys(COPY_OF_PERMISSIONS);
+  const COPY_OF_PERMISSIONS = { ...PERMISSIONS }
+  const permissions = Object.keys(COPY_OF_PERMISSIONS)
   for (let permissionKey of permissions) {
-    const permission = COPY_OF_PERMISSIONS[permissionKey];
-    const { url, method } = permission;
-    permission.hasPermission = checkPermission(url, method);
+    const permission = COPY_OF_PERMISSIONS[permissionKey]
+    const { url, method } = permission
+    permission.hasPermission = checkPermission(url, method)
   }
-  return COPY_OF_PERMISSIONS;
+  return COPY_OF_PERMISSIONS
 }
 export function datePrettier(date) {
-  const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-  const newDate = new Date(date);
-  return newDate.toLocaleDateString("en-US", options);
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+  const newDate = new Date(date)
+  return newDate.toLocaleDateString('en-US', options)
 }
 export function eventFire(el, etype) {
   if (el.fireEvent) {
-    el.fireEvent("on" + etype);
+    el.fireEvent('on' + etype)
   } else {
     let evObj = document
-      .getElementsByClassName("gjs-frame")[0]
-      .contentWindow.document.createEvent("Events");
-    evObj.initEvent(etype, true, false);
-    el.dispatchEvent(evObj);
+      .getElementsByClassName('gjs-frame')[0]
+      .contentWindow.document.createEvent('Events')
+    evObj.initEvent(etype, true, false)
+    el.dispatchEvent(evObj)
   }
 }
 
 export function getTimeZone(isDate) {
-  let timeZone = localStorage.getItem("selectedDateFormat");
-  let timeFormat = localStorage.getItem("selectedTimeFormat");
-  let is12H = timeFormat === "12h";
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
+  let is12H = timeFormat === '12h'
 
   if (is12H) {
-    timeFormat = "hh";
+    timeFormat = 'hh'
   } else {
-    timeFormat = "HH";
+    timeFormat = 'HH'
   }
 
   if (isDate) {
     switch (timeZone) {
-      case "DD/MM/YYYY":
-        timeZone = `dd/MM/yyyy`;
+      case 'DD/MM/YYYY':
+        timeZone = `dd/MM/yyyy`
         //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break;
-      case "MM/DD/YYYY":
-        timeZone = `MM/dd/yyyy`;
+        break
+      case 'MM/DD/YYYY':
+        timeZone = `MM/dd/yyyy`
 
         //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break;
-      case "YYYY/MM/DD":
-        timeZone = `yyyy/MM/dd`;
+        break
+      case 'YYYY/MM/DD':
+        timeZone = `yyyy/MM/dd`
         //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break;
+        break
     }
   } else {
     switch (timeZone) {
-      case "DD/MM/YYYY":
-        timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+      case 'DD/MM/YYYY':
+        timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
         //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break;
-      case "MM/DD/YYYY":
-        timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+        break
+      case 'MM/DD/YYYY':
+        timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
 
         //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break;
-      case "YYYY/MM/DD":
-        timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+        break
+      case 'YYYY/MM/DD':
+        timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
         //timeZone = `yyyy-MM-dd HH:mm:ss`
-        break;
+        break
     }
   }
 
-  return timeZone;
+  return timeZone
 }
 
 export function getTimeValueFormatZone(isDate) {
-  let timeZone = localStorage.getItem("selectedDateFormat");
-  let timeFormat = localStorage.getItem("selectedTimeFormat");
-  let is12H = timeFormat === "12h";
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
+  let is12H = timeFormat === '12h'
 
   if (is12H) {
-    timeFormat = "hh";
+    timeFormat = 'hh'
   } else {
-    timeFormat = "HH";
+    timeFormat = 'HH'
   }
 
   switch (timeZone) {
-    case "DD/MM/YYYY":
-      timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+    case 'DD/MM/YYYY':
+      timeZone = `dd/MM/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
       //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break;
-    case "MM/DD/YYYY":
-      timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+      break
+    case 'MM/DD/YYYY':
+      timeZone = `MM/dd/yyyy ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
 
       //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break;
-    case "YYYY/MM/DD":
-      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+      break
+    case 'YYYY/MM/DD':
+      timeZone = `yyyy/MM/dd ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
       //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break;
+      break
   }
 
-  return timeZone;
+  return timeZone
 }
 
 export function getTimeZoneForMoment() {
-  let timeZone = localStorage.getItem("selectedDateFormat");
-  let timeFormat = localStorage.getItem("selectedTimeFormat");
+  let timeZone = localStorage.getItem('selectedDateFormat')
+  let timeFormat = localStorage.getItem('selectedTimeFormat')
 
-  let is12H = timeFormat === "12h";
+  let is12H = timeFormat === '12h'
 
   if (is12H) {
-    timeFormat = "hh";
+    timeFormat = 'hh'
   } else {
-    timeFormat = "HH";
+    timeFormat = 'HH'
   }
 
   switch (timeZone) {
-    case "DD/MM/YYYY":
-      timeZone = `DD/MM/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+    case 'DD/MM/YYYY':
+      timeZone = `DD/MM/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
       //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break;
-    case "MM/DD/YYYY":
-      timeZone = `MM/DD/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+      break
+    case 'MM/DD/YYYY':
+      timeZone = `MM/DD/YYYY ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
       //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break;
-    case "YYYY/MM/DD":
-      timeZone = `YYYY/MM/DD ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`;
+      break
+    case 'YYYY/MM/DD':
+      timeZone = `YYYY/MM/DD ${is12H ? `${timeFormat}:mm A` : `${timeFormat}:mm`}`
       //timeZone = `yyyy-MM-dd HH:mm:ss`
-      break;
+      break
   }
 
-  return timeZone;
+  return timeZone
 }
 
 export function deepCopyArray(data) {
-  return JSON.parse(JSON.stringify(data));
+  return JSON.parse(JSON.stringify(data))
 }
 
 export function getDefaultFilter() {
   return deepCopyArray({
     filter: {
-      Condition: "AND",
+      Condition: 'AND',
       FilterGroups: [
         {
-          Condition: "AND",
+          Condition: 'AND',
           FilterItems: [],
-          FilterGroups: [],
+          FilterGroups: []
         },
         {
-          Condition: "OR",
+          Condition: 'OR',
           FilterItems: [],
-          FilterGroups: [],
-        },
-      ],
-    },
-  });
+          FilterGroups: []
+        }
+      ]
+    }
+  })
 }
 
 export function getDefaultAxiosPayload(props) {
   return deepCopyArray({
     pageNumber: 1,
     pageSize: 10,
-    orderBy: "CreateTime",
+    orderBy: 'CreateTime',
     ascending: false,
     filter: getDefaultFilter().filter,
-    ...props,
-  });
+    ...props
+  })
 }
 
-export function getSelectSearchPayload(payload = {}, search, key = "name", extraFilterItems = []) {
-  const copyOfPayload = JSON.parse(JSON.stringify(payload));
-  copyOfPayload.pageSize = 100;
-  copyOfPayload.pageNumber = 1;
+export function getSelectSearchPayload(payload = {}, search, key = 'name', extraFilterItems = []) {
+  const copyOfPayload = JSON.parse(JSON.stringify(payload))
+  copyOfPayload.pageSize = 100
+  copyOfPayload.pageNumber = 1
   copyOfPayload.filter.FilterGroups[1].FilterItems.push(
     {
       Value: search,
       FieldName: key,
-      Operator: "Contains",
+      Operator: 'Contains'
     },
     ...extraFilterItems
-  );
-  return copyOfPayload;
+  )
+  return copyOfPayload
 }
 
 export function isDifferent(a, b) {
   return Object.keys(a).some((key) => {
     if (Array.isArray(a[key])) {
-      return a[key].length !== b[key].length;
+      return a[key].length !== b[key].length
     }
-    if (typeof a[key] === "object" && a[key] !== null) {
-      return isDifferent(a[key], b[key]);
+    if (typeof a[key] === 'object' && a[key] !== null) {
+      return isDifferent(a[key], b[key])
     }
-    return a[key] !== b[key];
-  });
+    return a[key] !== b[key]
+  })
 }

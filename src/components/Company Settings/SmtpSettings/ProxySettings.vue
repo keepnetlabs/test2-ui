@@ -106,28 +106,28 @@
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   PROPERTY_STORE,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import CompanySettingsHeader from "@/components/Company Settings/CompanySettingsHeader";
-import DataTable from "@/components/DataTable";
-import NewProxySettings from "@/components/Company Settings/ProxySettings/NewProxySettings";
-import { deleteProxySettings, exportProxySettings, searchProxySettings } from "@/api/proxySettings";
-import DeleteProxySettings from "@/components/Company Settings/ProxySettings/DeleteProxySettings";
-import ClientTableExportHelper from "@/helper-classes/client-table-export-helper";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
-import labels from "@/model/constants/labels";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import DataTable from '@/components/DataTable'
+import NewProxySettings from '@/components/Company Settings/ProxySettings/NewProxySettings'
+import { deleteProxySettings, exportProxySettings, searchProxySettings } from '@/api/proxySettings'
+import DeleteProxySettings from '@/components/Company Settings/ProxySettings/DeleteProxySettings'
+import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
+import labels from '@/model/constants/labels'
 export default {
-  name: "PROXYSettings",
+  name: 'PROXYSettings',
   components: {
     CompanySettingsHeader,
     DataTable,
     NewProxySettings,
-    DeleteProxySettings,
+    DeleteProxySettings
   },
   props: {
     PERMISSIONS: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
@@ -144,85 +144,85 @@ export default {
         columns: [
           {
             property: PROPERTY_STORE.NAME,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Proxy Name",
+            label: 'Proxy Name',
             sortable: true,
             show: true,
-            fixed: "left",
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            fixed: 'left',
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
             property: PROPERTY_STORE.ADDRESS,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "IP Address",
+            label: 'IP Address',
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "text",
-            width: 180,
+            type: 'text',
+            filterableType: 'text',
+            width: 180
           },
           {
             property: PROPERTY_STORE.PORT,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Port",
+            label: 'Port',
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "text",
-            width: 150,
+            type: 'text',
+            filterableType: 'text',
+            width: 150
           },
           {
             property: PROPERTY_STORE.AuthenticationTypeName,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Authentication",
+            label: 'Authentication',
             sortable: true,
             show: true,
             fixed: false,
-            type: "text",
-            filterableType: "select",
-            filterableCustomFieldName: "AuthenticationType",
+            type: 'text',
+            filterableType: 'select',
+            filterableCustomFieldName: 'AuthenticationType',
             filterableItems: [
-              { text: "Basic", value: "1" },
-              { text: "Transparent", value: "0" },
+              { text: 'Basic', value: '1' },
+              { text: 'Transparent', value: '0' }
             ],
-            width: 180,
+            width: 180
           },
           {
             property: PROPERTY_STORE.ISDEFAULT,
-            align: "center",
+            align: 'center',
             editable: false,
-            label: "Is Default?",
+            label: 'Is Default?',
             sortable: true,
             show: true,
             fixed: false,
-            type: "badge",
-            filterableType: "select",
+            type: 'badge',
+            filterableType: 'select',
             filterableItems: [
-              { text: "Yes", value: "Yes" },
-              { text: "No", value: "No" },
+              { text: 'Yes', value: 'Yes' },
+              { text: 'No', value: 'No' }
             ],
-            width: 160,
+            width: 160
           },
           {
-            property: "createTime",
-            align: "left",
+            property: 'createTime',
+            align: 'left',
             editable: false,
-            label: "Date Created",
-            fixed: "right",
+            label: 'Date Created',
+            fixed: 'right',
             sortable: true,
             show: true,
-            filterableType: "date",
-            type: "text",
-            width: 180,
-          },
+            filterableType: 'date',
+            type: 'text',
+            width: 180
+          }
         ],
         isColumnFilterActive: false,
         pageSizes: [5, 10, 25],
@@ -230,363 +230,363 @@ export default {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         downloadButton: {
           show: true,
-          disabled: false,
+          disabled: false
         },
         rowActions: [
           {
-            name: "Edit",
-            icon: "mdi-pencil",
-            action: "editAction",
-            id: "btn-edit--proxy-settings-row-actions",
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission,
+            name: 'Edit',
+            icon: 'mdi-pencil',
+            action: 'editAction',
+            id: 'btn-edit--proxy-settings-row-actions',
+            disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
-            name: "Delete",
-            icon: "mdi-delete",
-            action: "deleteAction",
-            id: "btn-delete--proxy-settings-row-actions",
-            disabled: !this.PERMISSIONS.DELETE.hasPermission,
-          },
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            id: 'btn-delete--proxy-settings-row-actions',
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
+          }
         ],
         empty: {
           message: labels.EmptyProxy,
           btn: labels.New,
-          icon: "mdi-plus",
-          id: "btn-empty--proxy-settings",
-          disabled: !this.PERMISSIONS.CREATE.hasPermission,
+          icon: 'mdi-plus',
+          id: 'btn-empty--proxy-settings',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
         },
         addButton: {
           show: true,
-          action: "addNewProxySetting",
-          tooltip: "Add Proxy Setting",
-          id: "btn-add--proxy-settings",
-          disabled: !this.PERMISSIONS.CREATE.hasPermission,
-        },
+          action: 'addNewProxySetting',
+          tooltip: 'Add Proxy Setting',
+          id: 'btn-add--proxy-settings',
+          disabled: !this.PERMISSIONS.CREATE.hasPermission
+        }
       },
       newProxyModalStatus: false,
       deleteProxyModalStatus: false,
       bodyOptions: {
         pageNumber: 1,
         pageSize: 1000,
-        orderBy: "CreateTime",
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
-          Condition: "AND",
+          Condition: 'AND',
           FilterGroups: [
             {
-              Condition: "AND",
+              Condition: 'AND',
               FilterItems: [],
-              FilterGroups: [],
+              FilterGroups: []
             },
             {
-              Condition: "OR",
+              Condition: 'OR',
               FilterItems: [],
-              FilterGroups: [],
-            },
-          ],
-        },
+              FilterGroups: []
+            }
+          ]
+        }
       },
       defaultRequestBody: {
         pageNumber: 1,
         pageSize: 1000,
-        orderBy: "CreateTime",
+        orderBy: 'CreateTime',
         ascending: false,
         filter: {
-          Condition: "AND",
+          Condition: 'AND',
           FilterGroups: [
             {
-              Condition: "AND",
+              Condition: 'AND',
               FilterItems: [],
-              FilterGroups: [],
+              FilterGroups: []
             },
             {
-              Condition: "OR",
+              Condition: 'OR',
               FilterItems: [],
-              FilterGroups: [],
-            },
-          ],
-        },
+              FilterGroups: []
+            }
+          ]
+        }
       },
-      serverSideProps: new ServerSideProps(),
-    };
+      serverSideProps: new ServerSideProps()
+    }
   },
   methods: {
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
       this.bodyOptions.filter.FilterGroups[1].FilterItems = this.bodyOptions.filter.FilterGroups[1].FilterItems.map(
         (item) => {
-          if (item.FieldName === "StatusName") {
-            item.FieldName = "Status";
+          if (item.FieldName === 'StatusName') {
+            item.FieldName = 'Status'
           }
-          if (item.FieldName === "AuthenticationTypeName") {
-            item.FieldName = "AuthenticationType";
+          if (item.FieldName === 'AuthenticationTypeName') {
+            item.FieldName = 'AuthenticationType'
           }
-          return item;
+          return item
         }
-      );
-      this.resetPageNumber();
-      this.tableOptions.isColumnFilterActive = filterActive;
-      this.callForSearchProxySettings();
+      )
+      this.resetPageNumber()
+      this.tableOptions.isColumnFilterActive = filterActive
+      this.callForSearchProxySettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
-      this.bodyOptions.pageNumber = pageNumber;
-      this.callForSearchProxySettings();
+      this.bodyOptions.pageNumber = pageNumber
+      this.callForSearchProxySettings()
     },
     sortChanged({ order, prop } = {}) {
       //generic
-      this.bodyOptions.ascending = order === "ascending";
-      this.bodyOptions.orderBy = prop === "statusName" ? "Status" : prop;
-      this.callForSearchProxySettings();
+      this.bodyOptions.ascending = order === 'ascending'
+      this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
+      this.callForSearchProxySettings()
     },
     resetPageNumber() {
       //generic
-      this.bodyOptions.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.bodyOptions.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
       //generic
-      this.bodyOptions.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.callForSearchProxySettings();
+      this.bodyOptions.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.callForSearchProxySettings()
     },
     checkIfCanCloseProxyModal() {
       if (this.$refs.newProxySettings);
-      this.$refs.newProxySettings.closeOverlay();
+      this.$refs.newProxySettings.closeOverlay()
     },
     toggleProxyModalStatus() {
       if (this.newProxyModalStatus) {
-        this.resourceId = null;
-        this.isEdit = false;
+        this.resourceId = null
+        this.isEdit = false
       }
-      this.newProxyModalStatus = !this.newProxyModalStatus;
+      this.newProxyModalStatus = !this.newProxyModalStatus
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS, JSON.stringify(tableSettings));
+      localStorage.setItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS, JSON.stringify(tableSettings))
     },
     handleAllRecordsClick() {
-      this.bodyOptions.pageSize = 75000;
-      this.showAllRecords = false;
-      this.callForSearchProxySettings();
+      this.bodyOptions.pageSize = 75000
+      this.showAllRecords = false
+      this.callForSearchProxySettings()
     },
     getDisabledStatusOfEdit() {
-      return this.tableOptions.rowActions[0].disabled;
+      return this.tableOptions.rowActions[0].disabled
     },
     getDisabledStatusOfDelete() {
-      return this.tableOptions.rowActions[1].disabled;
+      return this.tableOptions.rowActions[1].disabled
     },
     exportProxySettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.bodyOptions.filter)),
         this.$refs.refProxySettingsList,
-        "CreateTime"
-      );
+        'CreateTime'
+      )
       if (this.$refs.refProxySettingsList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns);
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
         clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-          (item) => item.FieldName === "StatusName"
-        ).FieldName = "Status";
+          (item) => item.FieldName === 'StatusName'
+        ).FieldName = 'Status'
       }
       if (
         this.$refs.refProxySettingsList.sortProps &&
         this.$refs.refProxySettingsList.sortProps.order
       ) {
-        clientTableExportHelper.addSortItems();
+        clientTableExportHelper.addSortItems()
       }
 
-      const { filter, sortFilter } = clientTableExportHelper;
+      const { filter, sortFilter } = clientTableExportHelper
       exportTypes.map((exportType) => {
         const payload = {
           ...sortFilter,
           pageNumber: pageNumber,
           pageSize: pageSize,
           reportAllPages,
-          exportType: exportType === "XLS" ? "Excel" : exportType,
-          filter,
-        };
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter
+        }
         exportProxySettings(payload).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `Proxy Settings.${
-            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     toggleDeleteProxyModalStatus() {
-      this.deleteProxyModalStatus = !this.deleteProxyModalStatus;
+      this.deleteProxyModalStatus = !this.deleteProxyModalStatus
     },
     callForSearchProxySettings() {
-      const { SEARCH } = this.PERMISSIONS;
-      if (!SEARCH.hasPermission) return;
-      this.loading = true;
+      const { SEARCH } = this.PERMISSIONS
+      if (!SEARCH.hasPermission) return
+      this.loading = true
       searchProxySettings(this.bodyOptions)
         .then((response) => {
           const {
-            data: { data },
-          } = response;
-          this.totalNumberOfRecords = totalNumberOfRecords;
+            data: { data }
+          } = response
+          this.totalNumberOfRecords = totalNumberOfRecords
 
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data;
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-          this.serverSideProps.pageNumber = pageNumber;
-          const { results = [] } = data;
-          this.tableData = results;
-          this.totalNumberOfRecords = totalNumberOfRecords;
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          const { results = [] } = data
+          this.tableData = results
+          this.totalNumberOfRecords = totalNumberOfRecords
 
           if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true;
+            this.showAllRecords = true
           }
 
           if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
-            this.showAllRecords = false;
+            this.showAllRecords = false
           }
 
-          this.tableData = data.results;
+          this.tableData = data.results
         })
         .finally(() => {
-          this.loading = false;
-          this.isRestoredOrClearedFilters = false;
-        });
+          this.loading = false
+          this.isRestoredOrClearedFilters = false
+        })
     },
     handleEditAction({ resourceId } = {}) {
-      this.isEdit = true;
-      this.selectedEditProxySettings = resourceId;
-      this.toggleProxyModalStatus();
+      this.isEdit = true
+      this.selectedEditProxySettings = resourceId
+      this.toggleProxyModalStatus()
     },
     closeOverlayWithUpdate() {
-      this.toggleProxyModalStatus();
-      this.callForSearchProxySettings();
+      this.toggleProxyModalStatus()
+      this.callForSearchProxySettings()
     },
     callForDeleteProxySettings(resourceId) {
       deleteProxySettings(resourceId)
         .then(() => {
-          this.callForSearchProxySettings();
+          this.callForSearchProxySettings()
         })
         .finally(() => {
-          this.selectedDeleteProxySettings = null;
-        });
+          this.selectedDeleteProxySettings = null
+        })
     },
     handleDeleteProxySettings(row) {
-      const { resourceId } = row;
-      this.$refs.refProxySettingsList.unSelectRow(row);
-      this.callForDeleteProxySettings(resourceId);
+      const { resourceId } = row
+      this.$refs.refProxySettingsList.unSelectRow(row)
+      this.callForDeleteProxySettings(resourceId)
     },
     handleDeleteAction(selectedRow) {
-      this.selectedDeleteProxySettings = selectedRow;
-      this.toggleDeleteProxyModalStatus();
+      this.selectedDeleteProxySettings = selectedRow
+      this.toggleDeleteProxyModalStatus()
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true;
-      let items = [];
-      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems;
+      this.tableOptions.isColumnFilterActive = true
+      let items = []
+      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
             if (x.FieldName !== i.FieldName) {
-              items.push(x);
+              items.push(x)
             }
-          });
+          })
         } else {
           if (x.FieldName !== filter.FieldName) {
-            items.push(x);
+            items.push(x)
           }
         }
-      });
+      })
 
-      requestBody = [...items];
+      requestBody = [...items]
       if (Array.isArray(filter)) {
         filter.forEach((x, i) => {
-          const elem = filter[i];
-          elem.FieldName = filter[i].FieldName;
-          requestBody.push(elem);
-        });
+          const elem = filter[i]
+          elem.FieldName = filter[i].FieldName
+          requestBody.push(elem)
+        })
       } else {
-        const elem = filter;
-        elem.FieldName = filter.FieldName;
-        requestBody.push(elem);
+        const elem = filter
+        elem.FieldName = filter.FieldName
+        requestBody.push(elem)
       }
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody;
-      this.callForSearchProxySettings();
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody
+      this.callForSearchProxySettings()
     },
     columnFilterCleared(fieldName) {
       if (this.isRestoredOrClearedFilters) {
-        return;
+        return
       }
-      let items = [];
-      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems;
+      let items = []
+      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
 
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
-          items.push(x);
+          items.push(x)
         }
-      });
+      })
 
-      filterPayload = [...items];
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload;
+      filterPayload = [...items]
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
       this.tableOptions.isColumnFilterActive =
-        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1;
-      this.callForSearchProxySettings();
+        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
+      this.callForSearchProxySettings()
     },
-    handleSetDefaultSearch(search = "", filterValues = {}) {
+    handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS,
         JSON.stringify({
           filter: this.bodyOptions.filter,
-          filterValues,
+          filterValues
         })
-      );
+      )
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true;
-      this.getDefaultFilterAndSearch();
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
     },
     handleMultipleDelete(selections) {
-      this.selectedDeleteProxySettings = selections;
-      this.toggleDeleteProxyModalStatus();
+      this.selectedDeleteProxySettings = selections
+      this.toggleDeleteProxyModalStatus()
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true;
-      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody));
-      this.$refs.refProxySettingsList.filterValues = {};
+      this.isRestoredOrClearedFilters = true
+      this.bodyOptions = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refProxySettingsList.filterValues = {}
       this.$refs.refProxySettingsList.columnKey = `column-key${Math.random()
         .toString()
-        .substring(0, 5)}`;
-      this.callForSearchProxySettings();
+        .substring(0, 5)}`
+      this.callForSearchProxySettings()
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.PROXY_SETTINGS)
-      );
+      )
       if (savedFilter) {
-        this.bodyOptions.filter = savedFilter.filter;
-        this.tableOptions.isColumnFilterActive = true;
+        this.bodyOptions.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refProxySettingsList.filterValues = savedFilter.filterValues;
+          this.$refs.refProxySettingsList.filterValues = savedFilter.filterValues
           this.$refs.refProxySettingsList.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`;
-        });
+            .substring(0, 5)}`
+        })
       }
-      this.callForSearchProxySettings();
-    },
+      this.callForSearchProxySettings()
+    }
   },
   created() {
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS));
-    this.getDefaultFilterAndSearch();
-  },
-};
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS))
+    this.getDefaultFilterAndSearch()
+  }
+}
 </script>
 
 <style lang="scss"></style>
