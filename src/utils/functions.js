@@ -727,6 +727,8 @@ export function scrollToComponent(
   el,
   options = { behavior: 'smooth', block: 'center', inline: 'center' }
 ) {
+  if (!el) return
+
   if (window.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView()
   } else {
