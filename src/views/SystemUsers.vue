@@ -27,44 +27,47 @@
 </template>
 
 <script>
-import People from '@/components/SystemUsers/People'
-import Permissions from '../views/Permissions'
-import { checkPermission } from '@/utils/functions'
+import People from "@/components/SystemUsers/People";
+import Permissions from "../views/Permissions";
+import { checkPermission } from "@/utils/functions";
 export default {
-  name: 'SystemUsers',
+  name: "SystemUsers",
   components: {
     People,
-    Permissions
+    Permissions,
   },
   data() {
     return {
-      tab: 'system-users--people'
-    }
+      tab: "system-users--people",
+    };
   },
   methods: {
     changeTabStatus(index) {
-      this.tab = index
+      this.tab = index;
     },
     checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    }
+      return checkPermission(permission, type);
+    },
   },
 
   beforeRouteLeave(to, from, next) {
-    const { refPeople } = this.$refs
+    const { refPeople, refPermissions } = this.$refs;
     if (refPeople && refPeople.showCreateOrEditSystemUserModal) {
-      refPeople.toggleCreateOrEditSystemUser()
-      next(false)
+      refPeople.checkIfCanCloseSystemUserModal();
+      next(false);
+    } else if (refPermissions && refPermissions.newPermissionsModalStatus) {
+      refPermissions.checkIfCanClosePermissionsModal();
+      next(false);
     } else {
-      next()
+      next();
     }
   },
   created() {
-    if (!this.checkPermissions('system-users/search', 'POST')) {
-      this.tab = 'system-users--roles'
+    if (!this.checkPermissions("system-users/search", "POST")) {
+      this.tab = "system-users--roles";
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss">

@@ -3,6 +3,7 @@
     <div class="system-users-people__container">
       <create-or-edit-system-user
         v-if="showCreateOrEditSystemUserModal"
+        ref="systemUserModal"
         :status="showCreateOrEditSystemUserModal"
         :selectedRow="selectedRow"
         @closeOverlayWithUpdate="closeOverlayWithUpdate"
@@ -19,7 +20,6 @@
         @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
-
       <data-table
         v-if="checkPermissions('system-users/search', 'POST')"
         id="system-users-people-data-table"
@@ -74,27 +74,27 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   PROPERTY_STORE,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import DataTable from '@/components/DataTable'
-import CreateOrEditSystemUser from '@/components/SystemUsers/CreateOrEditSystemUser'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import DataTable from "@/components/DataTable";
+import CreateOrEditSystemUser from "@/components/SystemUsers/CreateOrEditSystemUser";
 import {
   deleteSystemUser,
   getSystemUsers,
   exportSystemUsers,
-  bulkDeleteSystemUsers
-} from '@/api/systemUsers'
-import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
-import { checkPermission } from '@/utils/functions'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import labels from '@/model/constants/labels'
+  bulkDeleteSystemUsers,
+} from "@/api/systemUsers";
+import DeleteSystemUserModal from "@/components/SystemUsers/DeleteSystemUserModal";
+import { checkPermission } from "@/utils/functions";
+import ClientTableExportHelper from "@/helper-classes/client-table-export-helper";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import labels from "@/model/constants/labels";
 export default {
-  name: 'People',
+  name: "People",
   components: {
     DataTable,
     CreateOrEditSystemUser,
-    DeleteSystemUserModal
+    DeleteSystemUserModal,
   },
   data() {
     return {
@@ -110,329 +110,329 @@ export default {
       tableOptions: {
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions('system-users/search/export', 'POST')
+          disabled: !this.checkPermissions("system-users/search/export", "POST"),
         },
         isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.FIRSTNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.FIRSTNAME),
             sortable: true,
             show: true,
-            fixed: 'left',
-            type: 'text',
+            fixed: "left",
+            type: "text",
             width: 150,
-            filterableType: 'text',
-            filterableCustomFieldName: 'FirstName'
+            filterableType: "text",
+            filterableCustomFieldName: "FirstName",
           },
           {
             property: PROPERTY_STORE.LASTNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.LASTNAME),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
+            type: "text",
             width: 150,
-            filterableType: 'text',
-            filterableCustomFieldName: 'LastName'
+            filterableType: "text",
+            filterableCustomFieldName: "LastName",
           },
           {
             property: PROPERTY_STORE.EMAIL,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.EMAIL),
             sortable: true,
             show: true,
-            type: 'text',
+            type: "text",
             width: 275,
-            filterableType: 'text'
+            filterableType: "text",
           },
           {
             property: PROPERTY_STORE.COMPANYNAME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
+            type: "text",
             width: 180,
-            filterableType: 'text',
-            filterableCustomFieldName: 'CompanyName'
+            filterableType: "text",
+            filterableCustomFieldName: "CompanyName",
           },
           {
             property: PROPERTY_STORE.ROLES,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.ROLE),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
+            type: "text",
             width: 150,
-            filterableType: 'text',
-            filterableCustomFieldName: 'Roles'
+            filterableType: "text",
+            filterableCustomFieldName: "Roles",
           },
           {
             property: PROPERTY_STORE.PHONENUMBER,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.PHONENUMBER),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
+            type: "text",
             width: 150,
-            filterableType: 'text',
-            filterableCustomFieldName: 'PhoneNumber'
+            filterableType: "text",
+            filterableCustomFieldName: "PhoneNumber",
           },
           {
             property: PROPERTY_STORE.STATUSNAME,
-            align: 'center',
+            align: "center",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUSNAME),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'badge',
+            type: "badge",
             width: 150,
-            filterableType: 'select',
+            filterableType: "select",
             filterableItems: [
-              { text: 'Active', value: '1' },
-              { text: 'Inactive', value: '0' }
+              { text: "Active", value: "1" },
+              { text: "Inactive", value: "0" },
             ],
-            filterableCustomFieldName: 'StatusId'
+            filterableCustomFieldName: "StatusId",
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: 'left',
+            align: "left",
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             sortable: true,
             show: true,
             fixed: false,
-            type: 'text',
+            type: "text",
             width: 180,
-            filterableType: 'date'
-          }
+            filterableType: "date",
+          },
         ],
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: true,
-          download: false
+          download: false,
         },
         pageSizes: [5, 10, 25],
         rowActions: [
           {
-            name: 'Edit',
-            icon: 'mdi-pencil',
-            id: 'btn-edit--system-users-people-row-actions',
-            action: 'editAction',
-            disabled: !this.checkPermissions('system-users/{resourceId}', 'PUT')
+            name: "Edit",
+            icon: "mdi-pencil",
+            id: "btn-edit--system-users-people-row-actions",
+            action: "editAction",
+            disabled: !this.checkPermissions("system-users/{resourceId}", "PUT"),
           },
           {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction',
-            id: 'btn-delete--system-users-people-row-actions',
-            disabled: !this.checkPermissions('system-users/{resourceId}', 'DELETE')
-          }
+            name: "Delete",
+            icon: "mdi-delete",
+            action: "deleteAction",
+            id: "btn-delete--system-users-people-row-actions",
+            disabled: !this.checkPermissions("system-users/{resourceId}", "DELETE"),
+          },
         ],
         empty: {
-          message: 'You do not have any System Users',
+          message: "You do not have any System Users",
           btn: labels.New,
-          id: 'btn-empty--system-users-people',
-          icon: 'mdi-plus'
+          id: "btn-empty--system-users-people",
+          icon: "mdi-plus",
         },
         addButton: {
           show: true,
-          action: 'handleAddNewSystemUsers',
-          id: 'btn-add--system-users-people',
-          tooltip: 'Add a New System User',
-          disabled: !this.checkPermissions('system-users', 'POST')
-        }
+          action: "handleAddNewSystemUsers",
+          id: "btn-add--system-users-people",
+          tooltip: "Add a New System User",
+          disabled: !this.checkPermissions("system-users", "POST"),
+        },
       },
       requestBody: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'CreateTime',
+        orderBy: "CreateTime",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
+              FilterGroups: [],
+            },
+          ],
+        },
       },
       defaultRequestBody: {
         pageNumber: 1,
         pageSize: 10,
-        orderBy: 'CreateTime',
+        orderBy: "CreateTime",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
+              FilterGroups: [],
+            },
+          ],
+        },
       },
       showCreateOrEditSystemUserModal: false,
       selectedRow: null,
       showDeleteSystemUserModal: false,
       selectedDeleteRow: null,
-      serverSideProps: new ServerSideProps()
-    }
+      serverSideProps: new ServerSideProps(),
+    };
   },
   methods: {
     resetPageNumber() {
       //generic
-      this.requestBody.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.requestBody.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE, JSON.stringify(tableSettings))
+      localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE, JSON.stringify(tableSettings));
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
       this.requestBody.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
+        ...searchFilter.filter.FilterGroups[0].FilterItems,
+      ];
       this.requestBody.filter.FilterGroups[1].FilterItems = this.requestBody.filter.FilterGroups[1].FilterItems.map(
         (item) => {
-          if (item.FieldName === 'StatusName') {
-            item.FieldName = 'StatusId'
+          if (item.FieldName === "StatusName") {
+            item.FieldName = "StatusId";
           }
-          return item
+          return item;
         }
-      )
-      this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
-      this.callForListSystemUsers()
+      );
+      this.resetPageNumber();
+      this.tableOptions.isColumnFilterActive = filterActive;
+      this.callForListSystemUsers();
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
-      this.requestBody.pageNumber = pageNumber
-      this.callForListSystemUsers()
+      this.requestBody.pageNumber = pageNumber;
+      this.callForListSystemUsers();
     },
     handleMultipleDeleteOfSystemUsers(items, excludedItems, selectAll) {
-      this.isMultipleDelete = true
+      this.isMultipleDelete = true;
       this.multipleDeletedUserCount = selectAll
         ? this.serverSideProps.totalNumberOfRecords
-        : items.length
+        : items.length;
       this.multipleSystemUserPayload = {
         items: selectAll ? [] : items.map((item) => item.resourceId),
         excludedItems,
         selectAll,
-        filter: this.requestBody.filter
-      }
-      this.toggleShowDeleteSystemUserModal()
+        filter: this.requestBody.filter,
+      };
+      this.toggleShowDeleteSystemUserModal();
     },
     callForMultipleDelete() {
-      this.deleteButtonDisabled = true
+      this.deleteButtonDisabled = true;
       bulkDeleteSystemUsers(this.multipleSystemUserPayload)
         .then(() => {
-          this.$refs.refSystemUsersList.resetSelectableParams()
-          this.callForListSystemUsers()
-          this.toggleShowDeleteSystemUserModal()
+          this.$refs.refSystemUsersList.resetSelectableParams();
+          this.callForListSystemUsers();
+          this.toggleShowDeleteSystemUserModal();
         })
         .finally(() => {
-          this.deleteButtonDisabled = false
-        })
+          this.deleteButtonDisabled = false;
+        });
     },
     sortChanged({ order, prop } = {}) {
       //generic
-      this.requestBody.ascending = order === 'ascending'
-      this.requestBody.orderBy = prop
-      this.callForListSystemUsers()
+      this.requestBody.ascending = order === "ascending";
+      this.requestBody.orderBy = prop;
+      this.callForListSystemUsers();
     },
     serverSideSizeChanged(pageSize = 10) {
       //generic
-      this.requestBody.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.callForListSystemUsers()
+      this.requestBody.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.callForListSystemUsers();
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE)
-      )
+      );
       if (savedFilter) {
-        this.requestBody.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
+        this.requestBody.filter = savedFilter.filter;
+        this.tableOptions.isColumnFilterActive = true;
         this.$nextTick(() => {
-          this.$refs.refSystemUsersList.filterValues = savedFilter.filterValues
+          this.$refs.refSystemUsersList.filterValues = savedFilter.filterValues;
           this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`
-        })
+            .substring(0, 5)}`;
+        });
       }
-      this.callForListSystemUsers()
+      this.callForListSystemUsers();
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refSystemUsersList.filterValues = {}
+      this.isRestoredOrClearedFilters = true;
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody));
+      this.$refs.refSystemUsersList.filterValues = {};
       this.$refs.refSystemUsersList.columnKey = `column-key${Math.random()
         .toString()
-        .substring(0, 5)}`
-      this.callForListSystemUsers()
+        .substring(0, 5)}`;
+      this.callForListSystemUsers();
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
+      this.isRestoredOrClearedFilters = true;
+      this.getDefaultFilterAndSearch();
     },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
+    handleSetDefaultSearch(search = "", filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.SYSTEMUSERSPEOPLE,
         JSON.stringify({
           filter: this.requestBody.filter,
-          filterValues
+          filterValues,
         })
-      )
+      );
     },
     exportSystemUsers({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       const clientTableExportHelper = new ClientTableExportHelper(
         JSON.parse(JSON.stringify(this.requestBody.filter)),
         this.$refs.refSystemUsersList,
-        'CreateTime'
-      )
+        "CreateTime"
+      );
       if (this.$refs.refSystemUsersList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
+        clientTableExportHelper.addSearchItems(this.tableOptions.columns);
         clientTableExportHelper.filter.FilterGroups[1].FilterItems.find(
-          (item) => item.FieldName === 'StatusName'
-        ).FieldName = 'StatusId'
+          (item) => item.FieldName === "StatusName"
+        ).FieldName = "StatusId";
       }
       if (
         this.$refs.refSystemUsersList.sortProps &&
         this.$refs.refSystemUsersList.sortProps.order
       ) {
-        clientTableExportHelper.addSortItems()
+        clientTableExportHelper.addSortItems();
       }
 
-      const { filter, sortFilter } = clientTableExportHelper
+      const { filter, sortFilter } = clientTableExportHelper;
 
       exportTypes.map((exportType) => {
         const payload = {
@@ -440,156 +440,161 @@ export default {
           pageNumber: pageNumber,
           pageSize: pageSize,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter: filter
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+          filter: filter,
+        };
         exportSystemUsers(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
           link.download = `System Users.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+            exportType.toLocaleLowerCase() === "xls" ? "xlsx" : exportType.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
     },
     checkPermissions(permission, type) {
-      return checkPermission(permission, type)
+      return checkPermission(permission, type);
     },
     handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
-      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
+      this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal;
       if (!this.showCreateOrEditSystemUserModal) {
-        this.selectedRow = null
+        this.selectedRow = null;
       }
     },
     handleAllRecordsClick() {
-      this.requestBody.pageSize = 75000
-      this.showAllRecords = false
-      this.callForListSystemUsers()
+      this.requestBody.pageSize = 75000;
+      this.showAllRecords = false;
+      this.callForListSystemUsers();
     },
     closeOverlayWithUpdate() {
-      this.toggleCreateOrEditSystemUser()
-      this.callForListSystemUsers()
+      this.toggleCreateOrEditSystemUser();
+      this.callForListSystemUsers();
     },
     callForListSystemUsers() {
-      this.loading = true
-      if (this.checkPermissions('system-users/search', 'POST')) {
+      this.loading = true;
+      if (this.checkPermissions("system-users/search", "POST")) {
         getSystemUsers(this.requestBody)
           .then((response) => {
             const {
-              data: { data }
-            } = response
-            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-            this.serverSideProps.pageNumber = pageNumber
-            this.totalNumberOfRecords = totalNumberOfRecords
+              data: { data },
+            } = response;
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data;
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+            this.serverSideProps.pageNumber = pageNumber;
+            this.totalNumberOfRecords = totalNumberOfRecords;
             if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
+              this.showAllRecords = true;
             }
             if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
-              this.showAllRecords = false
+              this.showAllRecords = false;
             }
-            this.tableData = data.results || []
+            this.tableData = data.results || [];
           })
           .catch(() => {
-            this.tableData = []
+            this.tableData = [];
           })
-          .finally(() => (this.loading = false))
+          .finally(() => (this.loading = false));
       } else {
-        this.$router.push('/')
+        this.$router.push("/");
       }
     },
     deleteMultipleItems() {
-      this.callForMultipleDelete()
+      this.callForMultipleDelete();
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      this.tableOptions.isColumnFilterActive = true;
+      let items = [];
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems;
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
             if (x.FieldName !== i.FieldName) {
-              items.push(x)
+              items.push(x);
             }
-          })
+          });
         } else {
           if (x.FieldName !== filter.FieldName) {
-            items.push(x)
+            items.push(x);
           }
         }
-      })
+      });
 
-      requestBody = [...items]
+      requestBody = [...items];
       if (Array.isArray(filter)) {
         filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
+          const elem = filter[i];
+          elem.FieldName = filter[i].FieldName;
+          requestBody.push(elem);
+        });
       } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
+        const elem = filter;
+        elem.FieldName = filter.FieldName;
+        requestBody.push(elem);
       }
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
-      this.callForListSystemUsers()
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody;
+      this.callForListSystemUsers();
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+      let items = [];
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems;
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
-          items.push(x)
+          items.push(x);
         }
-      })
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
-      this.callForListSystemUsers()
+      });
+      filterPayload = [...items];
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload;
+      this.callForListSystemUsers();
       this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
+        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1;
     },
     handleEdit(row) {
-      this.selectedRow = row
-      this.toggleCreateOrEditSystemUser()
+      this.selectedRow = row;
+      this.toggleCreateOrEditSystemUser();
     },
     toggleShowDeleteSystemUserModal() {
       if (this.showDeleteSystemUserModal) {
-        this.selectedDeleteRow = null
-        this.multipleSystemUserPayload = {}
-        this.isMultipleDelete = false
-        this.multipleDeletedUserCount = 0
+        this.selectedDeleteRow = null;
+        this.multipleSystemUserPayload = {};
+        this.isMultipleDelete = false;
+        this.multipleDeletedUserCount = 0;
       }
-      this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal
+      this.showDeleteSystemUserModal = !this.showDeleteSystemUserModal;
     },
     handleDelete(row) {
-      this.selectedDeleteRow = row
-      this.toggleShowDeleteSystemUserModal()
+      this.selectedDeleteRow = row;
+      this.toggleShowDeleteSystemUserModal();
     },
     callForDeleteUser(row = {}) {
-      this.deleteButtonDisabled = true
+      this.deleteButtonDisabled = true;
       deleteSystemUser(row.resourceId)
         .then(() => {
-          this.$refs.refSystemUsersList.unSelectRow(row)
-          this.$refs.refSystemUsersList.changeServerSideSelectionCount(-1)
-          this.toggleShowDeleteSystemUserModal()
-          this.callForListSystemUsers()
+          this.$refs.refSystemUsersList.unSelectRow(row);
+          this.$refs.refSystemUsersList.changeServerSideSelectionCount(-1);
+          this.toggleShowDeleteSystemUserModal();
+          this.callForListSystemUsers();
         })
         .finally(() => {
-          this.deleteButtonDisabled = false
-        })
-    }
+          this.deleteButtonDisabled = false;
+        });
+    },
+    checkIfCanCloseSystemUserModal() {
+      if (this.$refs.systemUserModal) {
+        this.$refs.systemUserModal.closeOverlay();
+      }
+    },
   },
   created() {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE)
-    )
-    this.getDefaultFilterAndSearch()
-  }
-}
+    );
+    this.getDefaultFilterAndSearch();
+  },
+};
 </script>
 
 <style lang="scss"></style>
