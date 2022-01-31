@@ -121,7 +121,7 @@
               />
               <div class="border-for-header mt-8 mb-3"></div>
               <email-details-preview-footer
-                v-if="!!mailDetails.attachments.length"
+                v-if="isMailDetailsHaveAttachments"
                 :mail-details="mailDetails"
                 @on-attachment-click="handleAttachmentClick"
               />
@@ -298,7 +298,7 @@
                   </v-expansion-panel-content>
                 </v-expansion-panel>
               </v-expansion-panels>
-              <div class="empty-attachment" v-if="!mailDetails.attachments.length">
+              <div class="empty-attachment" v-if="!isMailDetailsHaveAttachments">
                 <h2>No Attachment to display</h2>
               </div>
             </template>
@@ -855,6 +855,11 @@ export default {
   created() {
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
+    }
+  },
+  computed: {
+    isMailDetailsHaveAttachments() {
+      return this.mailDetails?.attachments?.length
     }
   },
   watch: {

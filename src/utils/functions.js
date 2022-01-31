@@ -278,6 +278,7 @@ export function setGlobalUserData(userData) {
   localStorage.setItem('userId', currentUserData.id)
   localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
   localStorage.setItem('userName', userData.name || currentUserData.name)
+  localStorage.setItem('hostId', userData['user_id'])
   return currentUserData
 }
 
@@ -727,6 +728,8 @@ export function scrollToComponent(
   el,
   options = { behavior: 'smooth', block: 'center', inline: 'center' }
 ) {
+  if (!el) return
+
   if (window.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView()
   } else {
