@@ -16,6 +16,7 @@
     />
     <add-user-modal
       v-if="isWantToShowAddUsersModal"
+      ref="addUserModal"
       :status="isWantToShowAddUsersModal"
       @closeAddUserModal="closeAddUserModal"
       @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
@@ -682,6 +683,11 @@ export default {
       this.isMultipleDelete = false
       this.changeDeleteModalStatus(true)
       this.selectedRow = row
+    },
+    checkIfCanCloseAddUserModal() {
+      if (this.$refs.addUserModal) {
+        this.$refs.addUserModal.closeOverlay()
+      }
     },
     closeAddUserModal() {
       this.isWantToShowAddUsersModal = false
