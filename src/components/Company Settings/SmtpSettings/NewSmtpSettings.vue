@@ -3,15 +3,15 @@
     v-if="status"
     :status="status"
     :id="isEdit ? 'edit-smtp-settings-modal' : 'new-smtp-settings-modal'"
+    :title="getTitle"
+    :saveDisable="saveDisable"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
     confirm-button-id="btn-save--smtp-settings-modal"
     cancel-button-id="btn-cancel--smtp-settings-modal"
     title-id="text--create-smtp-settings-modal-title"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
-    :title="getTitle"
     icon-name="mdi-mailbox"
     class-name="new-smtp-setting"
-    :saveDisable="saveDisable"
   >
     <template v-slot:overlay-body>
       <test-email-dialog
@@ -36,12 +36,6 @@
         <form-group :title="labels.SMTPSettingName" has-hint>
           <v-text-field
             v-model.trim="formValues.name"
-            id="input--smtp-settings-name"
-            placeholder="Enter SMTP setting name"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
             :rules="[
               (v) => validations.required(v),
               (v) => validations.startsWithSpace(v),
@@ -52,6 +46,12 @@
                   labels.getMaxLengthMessage(labels.SMTPSettingNameSecondLower)
                 )
             ]"
+            id="input--smtp-settings-name"
+            placeholder="Enter SMTP setting name"
+            outlined
+            dense
+            hint="*Required"
+            persistent-hint
           ></v-text-field>
         </form-group>
         <form-group :title="labels.ServiceProvider" has-hint>
@@ -238,7 +238,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import {
   createSMTPSettings,
   getSmtpSettings,
@@ -250,7 +250,7 @@ import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import labels from '@/model/constants/labels'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmailDialog'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -479,7 +479,17 @@ export default {
       this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeOverlay')
+          }
+        })
+      }
     },
     onPortChange(val) {
       if (val.length) {

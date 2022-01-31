@@ -13,6 +13,7 @@
     />
     <new-saml-settings
       v-if="isEditOrNewModalOpen"
+      ref="newSamlSettings"
       :status="isEditOrNewModalOpen"
       :is-edit="isEdit"
       :selected-row="selectedRow"
@@ -343,6 +344,9 @@ export default {
     handleEditAction(row = {}) {
       this.selectedRow = row
       this.toggleNewSamlSettingsModalStatus(true)
+    },
+    checkIfCanCloseSamlSettingsModal() {
+      if (this.$refs.newSamlSettings) this.$refs.newSamlSettings.closeOverlay()
     },
     toggleNewSamlSettingsModalStatus(isEdit = false) {
       this.isEdit = isEdit

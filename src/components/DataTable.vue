@@ -41,18 +41,15 @@
             <v-icon @click="toggleIsSettingsOpened" class="close-icon">mdi-close</v-icon>
           </div>
           <div class="sub-header">Show / Hide Columns</div>
-          <div
-            :key="ind"
-            class="popup-row"
-            v-for="(col, ind) of columns"
-            v-if="ind !== 0 && !col.hideOnSettingsPopup"
-          >
-            {{ col.label }}
-            <v-switch
-              v-model="col.show"
-              color="#2196f3"
-              @change="handleChangeVisibilityOfColumn(ind)"
-            />
+          <div :key="ind" class="popup-row" v-for="(col, ind) of columns">
+            <template v-if="ind !== 0 && !col.hideOnSettingsPopup">
+              {{ col.label }}
+              <v-switch
+                v-model="col.show"
+                color="#2196f3"
+                @change="handleChangeVisibilityOfColumn(ind)"
+              />
+            </template>
           </div>
           <slot name="settings-popup-body"></slot>
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
@@ -697,7 +694,6 @@
                     </template>
                     <v-list class="v-cart-dropdown-list el-table__action-buttons">
                       <v-list-item
-                        v-if="!act.subElements && !act.isNotShow"
                         v-for="(act, ind) of rowActions"
                         :disabled="
                           act.disabled && act.disabled.constructor.name === 'Function'
@@ -710,34 +706,34 @@
                         }-${ind}-${Math.random().toString().substring(2)}`"
                         class="sub-menu-el datatable-row-action-list"
                       >
-                        <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
-                          <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                          <span>{{ act.name }}</span>
-                        </v-list-item-title>
+                        <template v-if="!act.subElements && !act.isNotShow">
+                          <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
+                            <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                            <span>{{ act.name }}</span>
+                          </v-list-item-title>
+                        </template>
                       </v-list-item>
-                      <v-list-item
-                        :key="ind + 'sub-item'"
-                        v-for="(act, ind) of rowActions"
-                        v-if="act.subElements && act.subElements.length"
-                      >
-                        <v-menu :content-class="'sub-menu-sub'" open-on-hover>
-                          <template v-slot:activator="{ on }">
-                            <v-list-item-title class="sub-element-wrapper" v-on="on">
-                              <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                              <span>{{ act.name }}</span>
-                              <v-icon style="float: right;">mdi-chevron-right</v-icon>
-                            </v-list-item-title>
-                          </template>
-                          <v-list>
-                            <v-list-item
-                              :key="item"
-                              @click="handleSubMenuItemClick(item)"
-                              v-for="item of act.subElements"
-                            >
-                              {{ item }}
-                            </v-list-item>
-                          </v-list>
-                        </v-menu>
+                      <v-list-item :key="ind + 'sub-item'" v-for="(act, ind) of rowActions">
+                        <template v-if="act.subElements && act.subElements.length">
+                          <v-menu :content-class="'sub-menu-sub'" open-on-hover>
+                            <template v-slot:activator="{ on }">
+                              <v-list-item-title class="sub-element-wrapper" v-on="on">
+                                <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                                <span>{{ act.name }}</span>
+                                <v-icon style="float: right;">mdi-chevron-right</v-icon>
+                              </v-list-item-title>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                :key="item"
+                                @click="handleSubMenuItemClick(item)"
+                                v-for="item of act.subElements"
+                              >
+                                {{ item }}
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </template>
                       </v-list-item>
                     </v-list>
                   </v-menu>
