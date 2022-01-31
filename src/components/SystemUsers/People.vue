@@ -3,6 +3,7 @@
     <div class="system-users-people__container">
       <create-or-edit-system-user
         v-if="showCreateOrEditSystemUserModal"
+        ref="systemUserModal"
         :status="showCreateOrEditSystemUserModal"
         :selectedRow="selectedRow"
         @closeOverlayWithUpdate="closeOverlayWithUpdate"
@@ -19,7 +20,6 @@
         @handleMultipleDelete="deleteMultipleItems"
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
-
       <data-table
         v-if="checkPermissions('system-users/search', 'POST')"
         id="system-users-people-data-table"
@@ -581,6 +581,11 @@ export default {
         .finally(() => {
           this.deleteButtonDisabled = false
         })
+    },
+    checkIfCanCloseSystemUserModal() {
+      if (this.$refs.systemUserModal) {
+        this.$refs.systemUserModal.closeOverlay()
+      }
     }
   },
   created() {

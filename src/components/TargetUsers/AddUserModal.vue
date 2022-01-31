@@ -190,7 +190,7 @@ import InputEmail from '@/components/Common/Inputs/InputEmail'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KCheckbox from '@/components/Common/Checkbox/KCheckbox'
-import { getTimeZone, getTimeValueFormatZone } from '@/utils/functions'
+import { getTimeZone, getTimeValueFormatZone, isDifferent } from '@/utils/functions'
 export default {
   name: 'AddUserModal',
   components: {
@@ -225,6 +225,7 @@ export default {
     return {
       saveDisable: false,
       labels,
+      initialFormValues: null,
       formValues: {
         firstName: '',
         lastName: '',
@@ -271,7 +272,17 @@ export default {
       return getTimeValueFormatZone(isDate)
     },
     closeOverlay() {
-      this.$emit('closeAddUserModal')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeAddUserModal')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeAddUserModal')
+          }
+        })
+      }
     },
     validatePicker(item = {}) {
       return (
@@ -439,6 +450,9 @@ export default {
     }
   },
   created() {
+    if (!this.editData) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     for (let field of this.customFields) {
       const { fieldDataType, resourceId } = field
       if (fieldDataType === 'Date' || fieldDataType === 'DateTime') {
@@ -463,6 +477,7 @@ export default {
         ...editedData,
         isActive: editedData.status === 'Active'
       }
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
   }
 }

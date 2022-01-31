@@ -33,6 +33,7 @@
     </v-layout>
   </div>
 </template>
+
 <script>
 import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
@@ -157,6 +158,15 @@ export default {
     },
     toggleShowLicenseExceededDialog() {
       this.showLicenseExceededDialog = !this.showLicenseExceededDialog
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refPeople } = this.$refs
+    if (refPeople && refPeople.isWantToShowAddUsersModal) {
+      refPeople.checkIfCanCloseAddUserModal()
+      next(false)
+    } else {
+      next()
     }
   }
 }
