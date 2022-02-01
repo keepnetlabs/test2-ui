@@ -504,6 +504,10 @@ export default {
       getWhiteLabel(config)
         .then((response) => {
           const payload = response.data.data
+          if (payload.faviconUrl) {
+            const favIcon = document.querySelector('link[rel="icon"]')
+            favIcon.href = payload.faviconUrl
+          }
           this.configureCompanyWhitelabelingResourceId = payload.resourceId
           delete payload.resourceId
           for (const key of Object.keys(payload)) {
