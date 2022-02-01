@@ -155,8 +155,8 @@
                         <div class="left-side d-flex align-center">
                           <p class="attachment-name">{{ attachment.name }}</p>
                           <p
-                            class="ml-6 not-found"
                             v-if="isFileUploaded(mailDetails.attachments[index].analysisList)"
+                            class="ml-6 not-found"
                           >
                             *This file was not uploaded to any integration
                           </p>
@@ -165,8 +165,8 @@
                     </div>
                     <div class="ed-header-btn-1 collapse-details d-flex align-center">
                       <badge
-                        :text="getTextOfType(mailDetails.attachments[index].analysisList)"
-                        :color="getColorOfType(mailDetails.attachments[index].analysisList)"
+                        :text="mailDetails.attachments[index].result"
+                        :color="getBtnStatusColor(mailDetails.attachments[index].result)"
                         size="small"
                         :outline="false"
                         class-name="mr-4 badge"
@@ -436,7 +436,7 @@ import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSingleP
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
 import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
-import { scrollToComponent } from '@/utils/functions'
+import { getBtnStatusColor, scrollToComponent } from '@/utils/functions'
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
@@ -677,6 +677,9 @@ export default {
     this.getPostDetails()
   },
   methods: {
+    getBtnStatusColor(type) {
+      return getBtnStatusColor(type)
+    },
     adjustScroll() {
       this.$nextTick(() => {
         scrollToComponent(document.getElementById('email-details--header'), {
@@ -702,22 +705,6 @@ export default {
     },
     getTextOfType(list) {
       return this.getResultOfAttachmentList(list)
-    },
-    getColorOfType(list) {
-      let result = this.getResultOfAttachmentList(list)
-      switch (result) {
-        case 'Undetected':
-          return '#2196f3'
-        case 'Malicious':
-          return '#b83a3a'
-        case 'Phishing':
-          return '#b83a3a'
-        case 'Excluded':
-          return '#757575'
-        default:
-          return '#00bcd4'
-      }
-      return result
     },
     handleAttachmentClick(index, id) {
       this.tab = 'fifth'
@@ -774,13 +761,6 @@ export default {
     handleDownloadEmail() {
       this.downloadModalStatus = true
     },
-    getHeaderRow(key, value) {
-      let outputValue = ''
-      if (value.includes(',')) {
-        outputValue = value.split(',')
-      }
-    },
-
     setSecondCollapse(event, index) {
       if (event.target.textContent.startsWith('COLLAPSE')) {
         this.showSecondCollapse.splice(

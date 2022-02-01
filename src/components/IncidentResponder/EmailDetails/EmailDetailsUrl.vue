@@ -27,8 +27,8 @@
               class-name="mr-4 badge"
               :id="`badge--incident-responder-email-details-url-${index}`"
               :outline="false"
-              :text="getTextOfType(url['analysisList'])"
-              :color="getColorOfType(url['analysisList'])"
+              :text="url.result"
+              :color="getBtnStatusColor(url.result)"
             />
             <div
               @click="handleCopyUrl(url.url)"
@@ -122,6 +122,7 @@ import Badge from '@/components/Badge'
 import DataTable from '@/components/DataTable'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
+import { getBtnStatusColor } from '@/utils/functions'
 export default {
   name: 'EmailDetailsUrl',
   components: {
@@ -202,54 +203,14 @@ export default {
     }
   },
   methods: {
+    getBtnStatusColor(type) {
+      return getBtnStatusColor(type)
+    },
     isFileUploaded(analysisList = []) {
       if (!analysisList) {
         return
       }
       return analysisList.some((item) => item.isSendFile || item.isSendFileHash)
-    },
-    getTextOfType(list) {
-      return this.getResultOfAttachmentList(list)
-    },
-    getColorOfType(list) {
-      let result = this.getResultOfAttachmentList(list)
-      switch (result) {
-        case 'Undetected':
-          return '#2196f3'
-        case 'Malicious':
-          return '#b83a3a'
-        case 'Phishing':
-          return '#b83a3a'
-        case 'Excluded':
-          return '#757575'
-        default:
-          return '#00bcd4'
-      }
-    },
-    getResultOfAttachmentList(list) {
-      let result = 'Excluded'
-      for (let item of list) {
-        if (item.result === 'Malicious') {
-          result = 'Malicious'
-          break
-        }
-        if (item.result === 'Phishing') {
-          result = 'Phishing'
-          continue
-        }
-        if (item.result === 'Undetected' && result !== 'Phishing' && result !== 'Malicious') {
-          result = 'Undetected'
-        }
-        if (
-          (item.result === 'Exclude' || item.result === 'Excluded') &&
-          result !== 'Undetected' &&
-          result !== 'Phishing' &&
-          result !== 'Malicious'
-        ) {
-          result = 'Excluded'
-        }
-      }
-      return result
     },
     handleCopyUrl(url = '') {
       navigator.clipboard.writeText(url)
