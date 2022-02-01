@@ -273,6 +273,9 @@ export default {
         return false
       }
     },
+    getCurrentValues() {
+      return this.formValues
+    },
     getFormValues() {
       if (this.$refs.refForm.validate()) {
         return this.formValues
@@ -309,6 +312,7 @@ export default {
       this.formValues.apiUrl =
         APP_CONFIG.VUE_APP_WEB_API_TEST || 'https://apitest.keepnetlabs.com/api'
     }
+    this.$emit('getInitialFormValues', this.formValues)
   }
 }
 </script>

@@ -57,11 +57,12 @@
                 </v-list-item-content>
               </v-list-item>
               <addin-settings
-                :showFooter="false"
-                @getFormValues="getAddinSettingsValues"
                 ref="refAddInSettings"
+                :showFooter="false"
                 :inModal="true"
                 :showHeader="false"
+                @getInitialFormValues="getInitialAddInSettings"
+                @getFormValues="getAddinSettingsValues"
               />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="2">
@@ -76,10 +77,11 @@
                 </v-list-item-content>
               </v-list-item>
               <email-settings
+                ref="refEmailSettings"
                 :showFooter="false"
                 :showHeader="false"
                 @getFormValues="getEmailSettingsValues"
-                ref="refEmailSettings"
+                @getInitialFormValues="getInitialEmailSettings"
               />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="3">
@@ -94,11 +96,12 @@
                 </v-list-item-content>
               </v-list-item>
               <other-settings
-                :showFooter="false"
-                @getFormValues="getOtherSettingsValues"
                 ref="refOtherSettings"
+                :showFooter="false"
                 :inModal="true"
                 :show-header="false"
+                @getFormValues="getOtherSettingsValues"
+                @getInitialFormValues="getInitialOtherSettings"
               />
             </v-stepper-content>
             <v-stepper-content class="k-stepper__content" :step="4">
@@ -106,6 +109,7 @@
                 ref="refDiagnosticTool"
                 :show-footer="false"
                 :show-header-link="false"
+                @getInitialFormValues="getInitialDiagnosticToolValues"
               />
             </v-stepper-content>
           </v-stepper-items>
@@ -163,10 +167,10 @@ import {
   generateDiagnosticTool,
   generateOutlookAddIn
 } from '@/api/phishingReporter'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
 import DiagnosticTool from './Settings/DiagnosticTool'
 import labels from '@/model/constants/labels'
+import { isDifferent } from '@/utils/functions'
 
 export default {
   name: 'AddInConfiguration',
@@ -187,6 +191,10 @@ export default {
     return {
       labels,
       step: 1,
+      initialAddInSettings: null,
+      initialEmailSettings: null,
+      initialOtherSettings: null,
+      initialDiagnosticToolValues: null,
       addingSettings: {},
       emailSettings: {},
       otherSettings: {},
@@ -197,9 +205,54 @@ export default {
     }
   },
   methods: {
+    checkIfAnyStepChanged() {
+      const currentAddInSettings = this.$refs.refAddInSettings.getCurrentValues()
+      const isAddInSettingsChanged = isDifferent(currentAddInSettings, this.initialAddInSettings)
+      if (isAddInSettingsChanged) return true
+
+      const currentEmailSettings = this.$refs.refEmailSettings.getCurrentValues()
+      const isEmailSettingsChanged = isDifferent(currentEmailSettings, this.initialEmailSettings)
+      if (isEmailSettingsChanged) return true
+
+      const currentOtherSettings = this.$refs.refOtherSettings.getCurrentValues()
+      const isOtherSettingsChanged = isDifferent(currentOtherSettings, this.initialOtherSettings)
+      if (isOtherSettingsChanged) return true
+
+      const currentDiagnosticTool = this.$refs.refDiagnosticTool.getCurrentValues()
+      const isDiagnosticToolChanged = isDifferent(
+        currentDiagnosticTool,
+        this.initialDiagnosticToolValues
+      )
+      if (isDiagnosticToolChanged) return true
+
+      return false
+    },
     closeOverlay() {
-      this.resetValues()
-      this.$emit('changeAddInConfigurationStatus', false)
+      const isChanged = this.checkIfAnyStepChanged()
+      if (!isChanged) {
+        this.resetValues()
+        this.$emit('changeAddInConfigurationStatus', false)
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.resetValues()
+          this.$emit('changeAddInConfigurationStatus', false)
+        }
+      })
+    },
+    getInitialAddInSettings(values) {
+      this.initialAddInSettings = { ...values }
+    },
+    getInitialEmailSettings(values) {
+      this.initialEmailSettings = { ...values }
+    },
+    getInitialOtherSettings(values) {
+      this.initialOtherSettings = { ...values }
+    },
+    getInitialDiagnosticToolValues(values) {
+      this.initialDiagnosticToolValues = { ...values }
     },
     callForGenerateOutlookAddIn() {
       generateOutlookAddIn().then((response) => {
@@ -306,13 +359,13 @@ export default {
       }
     },
     getEmailSettingsValues(formValues) {
-      this.addingSettings = formValues
+      this.addingSettings = { ...formValues }
     },
     getAddinSettingsValues(formValues) {
-      this.emailSettings = formValues
+      this.emailSettings = { ...formValues }
     },
     getOtherSettingsValues(formValues) {
-      this.otherSettings = formValues
+      this.otherSettings = { ...formValues }
     },
     handleContinue() {
       this.showModal = false

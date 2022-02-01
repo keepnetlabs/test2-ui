@@ -431,7 +431,7 @@ export default {
   beforeRouteLeave(to, from, next) {
     const refs = this.$refs
     if (refs && refs.refFirstTime && refs.refFirstTime.showAddInConfiguration) {
-      refs.refFirstTime.showAddInConfiguration = false
+      refs.refFirstTime.checkIfCanCloseOverlay()
       next(false)
     } else if (refs && refs.refUsers && refs.refUsers.isWantToDelete) {
       refs.refUsers.isWantToDelete = false
