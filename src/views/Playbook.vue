@@ -4,9 +4,9 @@
       <v-col class="p-0" cols="12">
         <v-card class="pr-card">
           <el-tabs v-model="tab">
-            <el-tab-pane label="Rules" name="rules" id="playbook--rules-content"
-              ><rules :PERMISSIONS="PERMISSIONS"
-            /></el-tab-pane>
+            <el-tab-pane label="Rules" name="rules" id="playbook--rules-content">
+              <rules :PERMISSIONS="PERMISSIONS" ref="refRules" />
+            </el-tab-pane>
           </el-tabs>
         </v-card>
       </v-col>
@@ -45,6 +45,15 @@ export default {
   },
   created() {
     this.getPermissions()
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refRules } = this.$refs
+    if (refRules && refRules.showRuleModal) {
+      refRules.checkIfCanCloseRuleModal()
+      next(false)
+    } else {
+      next()
+    }
   }
 }
 </script>

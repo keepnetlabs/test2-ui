@@ -285,7 +285,9 @@
                 id="integration-api-key-footer"
                 class="new-integration__api-key__footer"
                 :style="[
-                  (isIbmXForce || isCustomIntegration || isRoksit) && { justifyContent: 'flex-end' }
+                  (isIbmXForce || isCustomIntegration || isRoksit) && {
+                    justifyContent: 'flex-end'
+                  }
                 ]"
               >
                 <div
@@ -900,7 +902,7 @@ import {
 } from '@/api/integrations'
 import { INTEGRATION_TYPES, INTEGRATION_LABELS } from '@/model/constants/commonConstants'
 import AppModal from '../AppModal'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -947,6 +949,7 @@ export default {
       labels,
       isFortiNetTestingConnection: false,
       loadingState: [],
+      initialFormValues: null,
       formValues: {
         userName: '',
         password: '',
@@ -966,7 +969,7 @@ export default {
         apiUrl: null,
         apiKey: null,
         apiCreditionalResourceId: null,
-        proxyResourceId: null
+        proxyResourceId: ''
       },
       selectedIntegrationType: {
         isSendUrl: false,
@@ -1102,6 +1105,7 @@ export default {
   },
   created() {
     this.getFormOptions()
+    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
   methods: {
     getFormOptions() {
@@ -1395,7 +1399,16 @@ export default {
       }
     },
     closeOverlay() {
-      this.$emit('closeOverlay', false, true)
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay', false, true)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          return this.$emit('closeOverlay', false, true)
+        }
+      })
     },
     getTestConnectionDisableStatus() {
       if (

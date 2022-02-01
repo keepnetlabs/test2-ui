@@ -271,6 +271,7 @@ import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
 import { scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
+import { isDifferent } from '@/utils/functions'
 
 export default {
   name: 'CreateOrEditRule',
@@ -283,6 +284,7 @@ export default {
   },
   data() {
     return {
+      initialFormValues: null,
       saveDisable: false,
       labels,
       actionData: {},
@@ -826,7 +828,26 @@ export default {
       this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
     cancelForm() {
-      this.$emit('cancelForm')
+      const currentFormValues = {
+        name: this.name,
+        description: this.description,
+        priority: this.priority,
+        tags: this.tags,
+        isActive: this.isActive,
+        query: this.query,
+        actions: [...this.$refs.refActionItem.getCurrentActions()]
+      }
+
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('cancelForm')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('cancelForm')
+        }
+      })
     },
     updateTags() {
       this.$nextTick(() => {
@@ -907,6 +928,20 @@ export default {
   created() {
     if (this.playbookId) {
       this.callForGetPlaybook()
+    }
+    this.initialFormValues = {
+      name: this.name,
+      description: this.description,
+      priority: this.priority,
+      tags: this.tags,
+      isActive: this.isActive,
+      query: this.query,
+      actions: []
+    }
+  },
+  mounted() {
+    if (this.$refs.refActionItem) {
+      this.initialFormValues.actions = this.$refs.refActionItem.getCurrentActions()
     }
   }
 }
