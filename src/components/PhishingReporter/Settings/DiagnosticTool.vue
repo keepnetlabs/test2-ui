@@ -99,6 +99,9 @@ export default {
       this.$emit('updateForm', { ...this.formValues, isAddIn })
       return this.formValues
     },
+    getCurrentValues() {
+      return this.formValues
+    },
     getFormValues() {
       return this.formValues
     },
@@ -134,6 +137,7 @@ export default {
     if (this.formData) {
       this.formValues.isEnableAddIn = this.formData.isEnableAddIn
     }
+    this.$emit('getInitialFormValues', this.formValues)
   }
 }
 </script>

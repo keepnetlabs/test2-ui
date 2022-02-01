@@ -586,6 +586,9 @@ export default {
         return false
       }
     },
+    getCurrentValues() {
+      return this.formValues
+    },
     getFormValues() {
       if (this.$refs.refForm.validate()) {
         return this.formValues
@@ -681,6 +684,7 @@ export default {
       imageToBlob(PhishingReporterLogo, (err, blob) => {
         this.formValues.file = blob
       })
+      this.$emit('getInitialFormValues', this.formValues)
     }
   },
   watch: {
