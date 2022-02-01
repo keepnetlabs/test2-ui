@@ -4,7 +4,7 @@
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
       </div>
-      <div id="gjsNewsletterModal"></div>
+      <div id="gjsNewsletterModal" style="height: 100vh;"></div>
       <div id="blocksModal"></div>
     </div>
   </div>
