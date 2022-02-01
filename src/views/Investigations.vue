@@ -4,20 +4,20 @@
       <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
 
       <new-investigation
+        ref="refNewInvestigation"
+        v-if="isWantToAddNewCommunity"
+        :status="isWantToAddNewCommunity"
         @closeWithRoute="onAddClose"
         @closeAdd="isWantToAddNewCommunity = false"
         @refreshDatatable="refreshDatatable"
-        ref="refNewInvestigation"
-        :status="isWantToAddNewCommunity"
-        v-if="isWantToAddNewCommunity"
       />
       <app-dialog
         :status="isWantToStopInvestigation"
-        icon="mdi-alert"
         :title="labels.StopOngoingInvestigation"
         :subtitle="labels.DoYouWantToStopInvestigation"
         :body="labels.OnceYouStoppedInvestigation"
         @changeStatus="isWantToStopInvestigation = false"
+        icon="mdi-alert"
       >
         <template v-slot:app-dialog-footer>
           <app-dialog-footer
@@ -118,6 +118,7 @@
     </app-modal>
   </div>
 </template>
+
 <script>
 import Datatable from '../components/DataTable'
 import newInvestigation from '../components/Investigation/NewInvestigation'
@@ -134,7 +135,6 @@ import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import { checkPermission } from '@/utils/functions'
-
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 
 export default {
@@ -716,6 +716,15 @@ export default {
       tableState
     })
     this.$store.commit('investigations/SET_INVESTIGATIONLISTEMPY', [])
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refNewInvestigation } = this.$refs
+    if (refNewInvestigation && refNewInvestigation.status) {
+      refNewInvestigation.onCancelClicked()
+      next(false)
+    } else {
+      next()
+    }
   }
 }
 </script>
