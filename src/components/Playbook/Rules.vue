@@ -92,10 +92,11 @@
     >
       <template v-slot:overlay-body>
         <CreateOrEditRule
+          v-if="showRuleModal"
+          ref="refRuleModal"
           :playbookId="selectedPlaybookId"
           @cancelForm="toggleRuleModal"
           @closeFormWithUpdate="updateTable"
-          v-if="showRuleModal"
         />
       </template>
     </app-modal>
@@ -483,6 +484,11 @@ export default {
     },
     toggleMatchingModal() {
       this.showMatchingModal = !this.showMatchingModal
+    },
+    checkIfCanCloseRuleModal() {
+      if (this.$refs.refRuleModal) {
+        this.$refs.refRuleModal.cancelForm()
+      }
     },
     toggleRuleModal() {
       this.selectedPlaybookId = null
