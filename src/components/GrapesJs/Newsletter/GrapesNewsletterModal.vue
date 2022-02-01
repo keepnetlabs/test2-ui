@@ -15,7 +15,6 @@ import GrapesNewsletterModal from 'grapesjs'
 import 'grapesjs-blocks-basic'
 import 'grapesjs-preset-newsletter'
 import 'grapesjs-preset-webpage'
-import 'grapesjs-tooltip'
 import './assets/css/grapesjsstyle.scss'
 import 'grapesjs-plugin-forms'
 import exampleComponent from './components/exampleComponent'
@@ -235,8 +234,7 @@ export default {
           'gjs-preset-webpage',
           myNewComponentTypes,
           parserPostCSS,
-          componentEditor,
-          'grapesjs-tooltip'
+          componentEditor
         ],
         pluginsOpts: {
           'gjs-preset-newsletter': {
@@ -573,12 +571,6 @@ export default {
           }
         }
       })
-      setTimeout(() => {
-        document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
-          'none'
-        document.querySelector('span[title="Fullscreen"]').style.display = 'none'
-        document.querySelector('span[title="View code"]').style.display = 'none'
-      }, 500)
       blockManager.add('Submit Phishing Button', submitButton)
       this.editor.Css.setRule('.grapes-custom-button', {
         color: 'white',
@@ -636,13 +628,16 @@ export default {
     cloneUrlButtonCLick() {
       this.cloneUrlPage = this.cloneUrl
     },
-
     getGrapesWebModalDraw(html) {
       const domComponents = this.editor.DomComponents
       domComponents.clear()
       this.editor.setComponents(html)
       this.editor.on('load', () => {
         // this line for clicking style manager tabs
+        document.querySelector('.gjs-blocks-cs .gjs-blocks-no-cat:last-child').style.display =
+          'none'
+        document.querySelector('span[title="Fullscreen"]').style.display = 'none'
+        document.querySelector('span[title="View code"]').style.display = 'none'
         document.querySelectorAll('.gjs-sm-sector-title').forEach((item) => item.click())
         try {
           document
