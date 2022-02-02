@@ -180,7 +180,7 @@ export default {
           payload.ResourceId = this.isEdit.resourceId
         }
         checkApiConnectivityGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkApiConnectivity = 'success'
             this.isAllSuccess(true)
           })
@@ -193,7 +193,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkPrivilegesGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkPrivileges = 'success'
             this.isAllSuccess(true)
           })
@@ -206,7 +206,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkAllUsersAccessGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkAllUsersAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -219,7 +219,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkEmailAccessGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkEmailAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -232,7 +232,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkCreateNewCategoryGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkCreateNewCategory = 'success'
             this.isAllSuccess(true)
           })
@@ -244,9 +244,9 @@ export default {
               error.response.data.message
             this.isAllSuccess(false)
           })
-          .finally((response) => {
+          .finally(() => {
             checkUpdateCategoryGoogleWorkspace(payload)
-              .then((response) => {
+              .then(() => {
                 this.checkUpdateCategory = 'success'
                 this.isAllSuccess(true)
               })
@@ -259,7 +259,7 @@ export default {
               })
           })
         checkDeleteEmailGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkDeleteEmail = 'success'
             this.isAllSuccess(true)
           })
@@ -272,7 +272,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkInboxAccessGoogleWorkspace(payload)
-          .then((response) => {
+          .then(() => {
             this.checkInboxAccess = 'success'
             this.isAllSuccess(true)
           })
