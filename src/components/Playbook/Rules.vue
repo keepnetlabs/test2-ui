@@ -691,16 +691,6 @@ export default {
       }
       return obj
     },
-    getMatchingModalDownloadButton() {
-      const { MATCHING_PLAYBOOKS_EXPORT } = this.PERMISSIONS
-      const obj = {
-        show: false
-      }
-      if (!MATCHING_PLAYBOOKS_EXPORT.hasPermission) {
-        obj['disabled'] = true
-      }
-      return obj
-    },
     getModalRenderStatus() {
       const { CREATE, UPDATE } = this.PERMISSIONS
       return this.showRuleModal && (CREATE.hasPermission || UPDATE.hasPermission)

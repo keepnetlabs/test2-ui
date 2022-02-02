@@ -570,7 +570,6 @@ export default {
         actionType: 'NoAction',
         actionNotifyTargetUserType: 'Reporter',
         actionNotifyTargetUsers: [],
-        emailTempleditedPlaybookActionAnalyzersteId: 1,
         autoAction: {
           isPermanentDelete: false,
           type: 'NoAction',
@@ -936,7 +935,6 @@ export default {
           actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
             type: 'NoAction',
@@ -988,7 +986,6 @@ export default {
           actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
             type: 'NoAction',
@@ -1085,7 +1082,6 @@ export default {
           actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
             type: 'NoAction',

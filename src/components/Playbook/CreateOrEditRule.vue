@@ -265,7 +265,6 @@
 import VueQueryBuilder from 'vue-query-builder'
 import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
 import ActionItem from './ActionItem'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { maxLength, required } from '@/utils/validations'
 import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
 import { scrollToComponent } from '@/utils/functions'
@@ -293,9 +292,6 @@ export default {
       playbookAction: {},
       totalStep: 3,
       activeStep: 1,
-      form1: false,
-      form2: false,
-      form3: false,
       tagsearch: '',
       name: '',
       description: '',
@@ -304,94 +300,13 @@ export default {
       isActive: true,
       newQuery: null,
       playbookActionAnalyzers: null,
-      addedQuery: null,
       editedNotifications: [],
       editedPlaybookActionInvestigations: [],
       validations: {
         required,
         maxLength
       },
-      frontendObj: {},
       condition: {},
-      nameRules: {
-        required: (v) => (v && v.length <= 150) || 'Name must between 1-150 characters',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Name cannot start with space'
-      },
-      generalRules: {
-        ip: {
-          required: (v) => {
-            return (v && v.length <= 255) || 'IP must between 1 - 255 characters'
-          },
-          format: (v) => {
-            return (
-              /\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/gi.test(
-                v
-              ) || 'Invalid ip'
-            )
-          }
-        },
-        from: {
-          required: (v) => (v && v.length <= 255) || 'From must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid from address'
-        },
-        to: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid to address'
-        },
-        cc: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid cc address'
-        },
-        bcc: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => /\S+@\S+\.\S+/gi.test(v) || 'Invalid bcc address'
-        },
-        subject: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
-        },
-        from_name: {
-          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
-        },
-        senderName: {
-          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // string kontrolü
-        },
-        url: {
-          required: (v) => (v && v.length <= 1000) || 'It must between 1 - 1000 characters',
-          format: (v) =>
-            /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi.test(
-              v
-            ) || 'invalid url'
-        },
-        keyword: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => {
-            return (v && !v.startsWith(' ')) || 'Cannot start with space'
-          } // format ekle
-        },
-        size: {
-          required: (v) => false,
-          format: (v) => false
-        },
-        name: {
-          required: (v) => (v && v.length <= 255) || 'It must between 1 - 255 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
-        },
-        sha512: {
-          required: (v) => (v && v.length <= 512) || 'It must between 1 - 512 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
-        },
-        md5: {
-          required: (v) => (v && v.length <= 128) || 'It must between 1 - 128 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
-        },
-        extentions: {
-          required: (v) => (v && v.length <= 10) || 'It must between 1 - 10 characters',
-          format: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space' // format ekle
-        }
-      },
       label: {
         matchType: 'Match Type',
         matchTypes: [
@@ -516,7 +431,7 @@ export default {
       let playbookActionAnalyzers = []
       if (keys.length > 0) {
         let valueIndex = 0
-        keys.map((key, index) => {
+        keys.map((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
             playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
             valueIndex++
@@ -605,7 +520,7 @@ export default {
 
       if (keys.length > 0) {
         let valueIndex = 0
-        keys.map((key, index) => {
+        keys.map((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
             playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
             valueIndex++
@@ -729,10 +644,6 @@ export default {
         logicalOperator: a.operator,
         children: [...this.refGetQuery(a.conditionGroups, 'conditionGroups')]
       }
-      const aqsa = {
-        logicalOperator: this.newQuery.operator,
-        children: this.newQuery.children.map((item) => {})
-      }
     },
     refGetQuery(children, key) {
       return children.map((item) => {
@@ -746,9 +657,7 @@ export default {
           }
           let temp = []
           if (children.length > 1) {
-            const ret = []
             children.map((item) => {
-              let returnObj = {}
               item.map((i) => {
                 temp.push(i)
               })
@@ -802,7 +711,6 @@ export default {
     },
     findHasError(object) {
       const keys = Object.keys(object)
-
       keys.map((key) => {
         if (object.hasOwnProperty(key)) {
           if (
@@ -837,7 +745,6 @@ export default {
         query: this.query,
         actions: [...this.$refs.refActionItem.getCurrentActions()]
       }
-
       const isChanged = isDifferent(currentFormValues, this.initialFormValues)
       if (!isChanged) {
         return this.$emit('cancelForm')
@@ -859,70 +766,64 @@ export default {
         })
       })
     },
-    removeAction(event) {
-      let a = this.actionList.findIndex((x, i) => x.id == event)
-      this.actionList.splice(a, 1)
-    },
     callForGetPlaybook() {
-      getPlaybook(this.playbookId)
-        .then((response) => {
-          const { data } = response.data
-          this.name = data.name
-          this.isActive = data.isActive
-          this.description = data.description
-          this.priority = data.priority
-          this.tags = data.tags
-          this.query = {
-            logicalOperator: data.condition.operator.toUpperCase(),
-            children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
-          }
+      getPlaybook(this.playbookId).then((response) => {
+        const { data } = response.data
+        this.name = data.name
+        this.isActive = data.isActive
+        this.description = data.description
+        this.priority = data.priority
+        this.tags = data.tags
+        this.query = {
+          logicalOperator: data.condition.operator.toUpperCase(),
+          children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
+        }
 
-          data.playbookActionInvestigations.forEach((item) => {
-            item.scanTypes = item.scanConfigurationDetails.map((scan) => {
-              if (scan.type.toLowerCase() === 'outlook') {
-                scan['mailConfigurationName'] = 'Outlook'
-              }
-              return scan
-            })
+        data.playbookActionInvestigations.forEach((item) => {
+          item.scanTypes = item?.scanConfigurationDetails?.map((scan) => {
+            if (scan.type.toLowerCase() === 'outlook') {
+              scan['mailConfigurationName'] = 'Outlook'
+            }
+            return scan
           })
-          this.playbookAction = data.playbookAction
-          this.playbookActionAnalyzers = data.playbookActionAnalyzers
-          this.editedNotifications = data.playbookActionNotifications
-          this.editedPlaybookActionInvestigations = data.playbookActionInvestigations.filter(
-            (item) => {
-              return item.isCreatedByAnalyzer !== true
-            }
-          )
-
-          const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
-            return item.isCreatedByAnalyzer
-          })
-          if (indexOfAnalyzeItem !== -1) {
-            this.$refs.refActionItem.playbookActionInvestigationAnalyzeData =
-              data.playbookActionInvestigations[indexOfAnalyzeItem]
-            const hasAnalyze = this.$refs.refActionItem.actions.some((item) => {
-              return item.val === 'analyze'
-            })
-            if (!hasAnalyze) {
-              this.$refs.refActionItem.addAction('analyze')
-            }
-            this.$refs.refActionItem.analyzeCheckbox = true
-          } else {
-            if (this.playbookActionAnalyzers.length > 0) {
-              this.$refs.refActionItem.addAction('analyze')
-            }
-          }
-          if (
-            data.playbookActionStatus &&
-            data.playbookActionStatus.actionStatusType &&
-            data.playbookActionStatus.actionStatusType !== 'Unknown'
-          ) {
-            this.$refs.refActionItem.playbookActionStatus.actionStatusType =
-              data.playbookActionStatus.actionStatusType
-            this.$refs.refActionItem.addAction('status')
-          }
         })
-        .catch((error) => {})
+        this.playbookAction = data.playbookAction
+        this.playbookActionAnalyzers = data.playbookActionAnalyzers
+        this.editedNotifications = data.playbookActionNotifications
+        this.editedPlaybookActionInvestigations = data.playbookActionInvestigations.filter(
+          (item) => {
+            return item.isCreatedByAnalyzer !== true
+          }
+        )
+
+        const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
+          return item.isCreatedByAnalyzer
+        })
+        if (indexOfAnalyzeItem !== -1) {
+          this.$refs.refActionItem.playbookActionInvestigationAnalyzeData =
+            data.playbookActionInvestigations[indexOfAnalyzeItem]
+          const hasAnalyze = this.$refs.refActionItem.actions.some((item) => {
+            return item.val === 'analyze'
+          })
+          if (!hasAnalyze) {
+            this.$refs.refActionItem.addAction('analyze')
+          }
+          this.$refs.refActionItem.analyzeCheckbox = true
+        } else {
+          if (this.playbookActionAnalyzers.length > 0) {
+            this.$refs.refActionItem.addAction('analyze')
+          }
+        }
+        if (
+          data.playbookActionStatus &&
+          data.playbookActionStatus.actionStatusType &&
+          data.playbookActionStatus.actionStatusType !== 'Unknown'
+        ) {
+          this.$refs.refActionItem.playbookActionStatus.actionStatusType =
+            data.playbookActionStatus.actionStatusType
+          this.$refs.refActionItem.addAction('status')
+        }
+      })
     }
   },
   created() {

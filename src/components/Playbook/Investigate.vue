@@ -141,6 +141,7 @@
             autocomplete="disabled"
             class="edit-name-textfield edit-select target-users-select__specific-user-input target-users-select-multi"
             hide-details
+            :no-data-text="isTargetUsersLoading ? 'Loading...' : 'No user group available'"
           ></k-select>
         </div>
       </v-col>
@@ -326,7 +327,7 @@
 <script>
 import { required, minLength, maxLength } from '@/utils/validations'
 import { mapGetters } from 'vuex'
-import { getTargetUsers, getTargetUsersByEmail, searchTargetGroups } from '@/api/targetUsers'
+import { getTargetUsers, searchTargetGroups } from '@/api/targetUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
@@ -376,6 +377,7 @@ export default {
       totalNumberOfPagesOfTargetUsers: 1,
       totalNumberOfPagesOfTargetGroups: 1,
       labels,
+      isTargetUsersLoading: false,
       filters: ['URLs', 'Attachments'],
       investigationRange: 3,
       investigationDuration: 3,
