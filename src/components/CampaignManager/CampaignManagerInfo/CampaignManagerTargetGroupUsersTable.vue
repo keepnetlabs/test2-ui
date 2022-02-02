@@ -177,9 +177,8 @@ export default {
   background-color: #f2f2f2;
   display: flex;
   color: #383b41;
-  padding: 16px 6px;
   align-items: center;
-  padding-left: 20px;
+  padding: 16px 6px 16px 20px;
   &__text {
     font-size: 14px;
     line-height: 21px;

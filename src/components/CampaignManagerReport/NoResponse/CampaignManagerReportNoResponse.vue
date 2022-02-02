@@ -24,10 +24,6 @@
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import labels from '@/model/constants/labels'
 import CampaignManagerReportNoResponseTable from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponseTable'
-import {
-  resendNoResponsePhishingCampaignJob,
-  resendPhishingCampaignToUserList
-} from '@/api/phishingsimulator'
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 import { useResend } from '@/hooks/useResend'
 export default {

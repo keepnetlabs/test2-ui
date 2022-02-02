@@ -250,7 +250,6 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as validations from '../../../utils/validations'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import labels from '@/model/constants/labels'
-import * as Validations from '@/utils/validations'
 export default {
   extends: QueryBuilderRule,
   components: {
@@ -278,14 +277,14 @@ export default {
         this.query.format = 'Email'
       }
     },
-    'query.operand'(newVal = '', oldVal = '') {
+    'query.operand'(newVal = '') {
       if (newVal === 'AttachmentHash') {
         if (this.query.operator !== 'Equal' || this.query.operator !== 'IsNotEqual') {
           this.query.operator = 'Equal'
         }
       }
     },
-    '$parent.query.children'(children) {
+    '$parent.query.children'() {
       const { $children } = this.$parent
       this.getBadgeRender =
         $children && $children.length && $children[$children.length - 1].attachId !== this.attachId
@@ -304,10 +303,6 @@ export default {
     }
   },
   methods: {
-    getAttachedItem(item) {
-      item = `.${item}`
-      return document.querySelector(item)
-    },
     getRules() {
       if (this.query) {
         const { format, operator } = this.query
@@ -369,12 +364,6 @@ export default {
         case 'Group':
           return 'Enter a group name'
       }
-    },
-    getSenderIpRules() {
-      return [
-        (v) => this.validations.required(v, 'Required'),
-        (v) => this.validations.ip(v, 'Invalid ip address')
-      ]
     },
     getSubjectRules() {
       return [

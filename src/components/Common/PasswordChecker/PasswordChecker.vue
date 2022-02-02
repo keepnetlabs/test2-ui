@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { passwordComplexity } from '../../../utils/functions'
+import { passwordComplexity } from '@/utils/functions'
 
 export default {
   name: 'PasswordChecker',
@@ -130,7 +130,6 @@ export default {
         border: 1px solid #ffffff;
         border-radius: 4px;
         align-items: center;
-        text-align: center;
         justify-content: center;
         color: white;
         max-width: 20%;

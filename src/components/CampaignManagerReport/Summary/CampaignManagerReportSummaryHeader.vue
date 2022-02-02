@@ -125,7 +125,7 @@ export default {
       &,
       &:focus,
       &:active {
-        box-shadow: 0px 1px 4px 1px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 1px 4px 1px rgba(0, 0, 0, 0.08);
         filter: drop-shadow(0px 1px 4px rgba(17, 115, 193, 0.25));
       }
       .v-btn__content {

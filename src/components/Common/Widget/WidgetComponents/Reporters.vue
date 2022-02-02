@@ -61,7 +61,6 @@ import WidgetList from '@/components/Common/Widget/WidgetList'
 import { getTextColor } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import { getReporters } from '@/api/phishingReporter'
 import { mapGetters } from 'vuex'
 export default {
   name: 'Reporters',

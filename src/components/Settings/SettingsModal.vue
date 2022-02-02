@@ -101,7 +101,6 @@
 import labels from '@/model/constants/labels'
 import AppDialog from '@/components/AppDialog'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getSystemUserSettings, getTimezone, setSystemUserSettings } from '@/api/settings'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { deepCopyArray } from '@/utils/functions'
@@ -140,8 +139,7 @@ export default {
   },
   computed: {
     getTitle() {
-      let title = labels.Settings
-      return title
+      return labels.Settings
     }
   },
   methods: {
@@ -447,7 +445,7 @@ export default {
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 

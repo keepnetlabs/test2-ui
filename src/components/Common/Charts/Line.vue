@@ -10,7 +10,7 @@ export default {
     }
   },
   watch: {
-    chartData(newVal) {
+    chartData() {
       this.renderChart(this.chartData, this.chartOptions)
     }
   }

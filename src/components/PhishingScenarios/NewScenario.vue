@@ -713,7 +713,7 @@ export default {
       }
       if (this.isEdit && !this.isDuplicate) {
         updateScenario(this.formValues, this.scenarioId)
-          .then((response) => {
+          .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
           .finally(() => {
@@ -721,7 +721,7 @@ export default {
           })
       } else {
         createScenario(this.formValues)
-          .then((response) => {
+          .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
           .finally(() => {
@@ -824,7 +824,7 @@ export default {
     &-content {
       border-top: 1px solid #e0e0e0;
       background: #fafafa;
-      border-radius: 0px 0px 12px 12px;
+      border-radius: 0 0 12px 12px;
       padding: 24px;
       &__title {
         font-style: normal;
@@ -896,7 +896,6 @@ export default {
     }
   }
   &__title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 24px;
@@ -904,7 +903,6 @@ export default {
     color: #383b41;
   }
   &__sub-title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
