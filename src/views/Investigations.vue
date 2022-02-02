@@ -530,10 +530,7 @@ export default {
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
       }
-      this.$router
-        .push(`/investigation-details/${resp.data.data.resourceId}`)
-        .then((res) => console.log('route res', res))
-        .catch((err) => console.log('route err', err))
+      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
       this.isWantToAddNewCommunity = false
     },
     createCommunityFromMobileInfo() {
