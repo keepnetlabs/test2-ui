@@ -26,7 +26,6 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSendingReportTable from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportTable'
-import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 import { useResend } from '@/hooks/useResend'
 export default {
