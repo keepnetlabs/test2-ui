@@ -5,14 +5,20 @@
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
             <el-tab-pane v-if="isDomainRender" label="Domains" name="Domains" id="domains-content"
-              ><DomainsList v-if="tab === 'Domains'" :PERMISSIONS="PERMISSIONS['DOMAIN']"
+              ><DomainsList
+                v-if="tab === 'Domains'"
+                :PERMISSIONS="PERMISSIONS['DOMAIN']"
+                ref="refDomains"
             /></el-tab-pane>
             <el-tab-pane
               v-if="isDNSRender"
               label="DNS Services"
               name="DNSServices"
               id="dns-services-content"
-              ><DnsServiceList v-if="tab === 'DNSServices'" :PERMISSIONS="PERMISSIONS['DNS']"
+              ><DnsServiceList
+                v-if="tab === 'DNSServices'"
+                :PERMISSIONS="PERMISSIONS['DNS']"
+                ref="refDnsServiceList"
             /></el-tab-pane>
           </el-tabs>
         </v-card>
@@ -63,6 +69,18 @@ export default {
       const { DNS_PERMISSIONS, DOMAIN_PERMISSIONS } = PERMISSIONS
       this.$set(this.PERMISSIONS, 'DNS', getPermissionsOfAllItems(DNS_PERMISSIONS))
       this.$set(this.PERMISSIONS, 'DOMAIN', getPermissionsOfAllItems(DOMAIN_PERMISSIONS))
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refDomains, refDnsServiceList } = this.$refs
+    if (refDomains && refDomains.modalStatus) {
+      refDomains.checkIfCanCloseDomainModal()
+      next(false)
+    } else if (refDnsServiceList && refDnsServiceList.modalStatus) {
+      refDnsServiceList.checkIfCanCloseDnsServiceModal()
+      next(false)
+    } else {
+      next()
     }
   }
 }

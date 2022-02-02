@@ -69,7 +69,7 @@
             :rules="[(v) => validations.required(v)]"
           ></v-text-field>
         </form-group>
-        <form-group :title="'Auhtentication Method'" has-hint class-name="mb-4">
+        <form-group :title="'Authentication Method'" has-hint class-name="mb-4">
           <v-radio-group
             v-model="formValues.authenticationTypeId"
             class="send-welcome-email__radio-group"
@@ -199,6 +199,7 @@ export default {
       isTestEmailActionDisabled: false,
       isTestEmailErrorDialogShowing: false,
       getTestConnectionDisableStatus: false,
+      timeoutId: null,
       saveDisable: true,
       initialFormValues: null,
       formValues: {
@@ -266,7 +267,6 @@ export default {
           Port: this.formValues.port,
           IsDefault: this.formValues.isDefault
         }
-
         if (this.isEdit) {
           this.callForUpdateProxySettings(payload)
         } else {
@@ -308,6 +308,11 @@ export default {
         this.formValues.serverPort = ''
       }
     },
+    clearTimeoutIfHasTimeout() {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId)
+      }
+    },
     handleTestConnection() {
       const { refForm } = this.$refs
       if (refForm.validate() && !this.isTesting) {
@@ -321,10 +326,11 @@ export default {
           Port: this.formValues.port
         }
         testConnection(payload)
-          .then((response) => {
+          .then(() => {
             this.saveDisable = false
             this.testConnectionSuccess = true
-            setTimeout(() => {
+            this.clearTimeoutIfHasTimeout()
+            this.timeoutId = setTimeout(() => {
               this.testConnectionSuccess = false
             }, 3000)
           })
@@ -393,6 +399,9 @@ export default {
       this.callForGetProxySettings()
       this.saveDisable = false
     }
+  },
+  beforeDestroy() {
+    this.clearTimeoutIfHasTimeout()
   }
 }
 </script>
@@ -411,10 +420,9 @@ export default {
   }
   .btn-save-changes {
     color: #2196f3 !important;
-    border-color: #2196f3 !important;
     box-shadow: none !important;
     border-radius: 18px;
-    border: solid 1px #2196f3;
+    border: solid 1px #2196f3 !important;
   }
   .proxy-test-connection {
     display: flex;

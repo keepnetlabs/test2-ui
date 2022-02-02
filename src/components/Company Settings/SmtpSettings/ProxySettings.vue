@@ -25,11 +25,9 @@
         :table="tableData"
         :refName="'proxySettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
-        :total-number-of-records="totalNumberOfRecords"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :filterable="true"
-        :show-all-records="showAllRecords"
         :options="true"
         :download-button="tableOptions.downloadButton"
         :stored-table-settings="storedTableSettings"
@@ -48,7 +46,6 @@
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearchProxySettings"
         @downloadEvent="exportProxySettingsList"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -138,8 +135,6 @@ export default {
       selectedEditProxySettings: null,
       storedTableSettings: null,
       isEdit: false,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableOptions: {
         columns: [
           {
@@ -359,8 +354,7 @@ export default {
       this.callForSearchProxySettings()
     },
     checkIfCanCloseProxyModal() {
-      if (this.$refs.newProxySettings);
-      this.$refs.newProxySettings.closeOverlay()
+      if (this.$refs.newProxySettings) this.$refs.newProxySettings.closeOverlay()
     },
     toggleProxyModalStatus() {
       if (this.newProxyModalStatus) {
@@ -371,11 +365,6 @@ export default {
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.PROXY_SETTINGS, JSON.stringify(tableSettings))
-    },
-    handleAllRecordsClick() {
-      this.bodyOptions.pageSize = 75000
-      this.showAllRecords = false
-      this.callForSearchProxySettings()
     },
     getDisabledStatusOfEdit() {
       return this.tableOptions.rowActions[0].disabled
@@ -435,25 +424,12 @@ export default {
           const {
             data: { data }
           } = response
-          this.totalNumberOfRecords = totalNumberOfRecords
-
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           const { results = [] } = data
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyOptions.pageSize === 1000) {
-            this.showAllRecords = false
-          }
-
-          this.tableData = data.results
         })
         .finally(() => {
           this.loading = false

@@ -98,7 +98,7 @@ import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailable
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import message from '@/components/GrapesJs/Newsletter/mergedTexts/message'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
@@ -284,9 +284,8 @@ export default {
     }
   },
   mounted() {
-    let _this = this
     this.$nextTick(() => {
-      _this.formValues.template = _this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
+      this.formValues.template = this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
     })
   },
   beforeDestroy() {
