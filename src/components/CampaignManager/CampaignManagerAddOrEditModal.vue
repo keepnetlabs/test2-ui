@@ -380,7 +380,6 @@ export default {
     },
     closeOverlay() {
       const currentFormValues = this.getFormValues()
-      console.log(this.initialFormValues, currentFormValues)
       const isChanged = isDifferent(currentFormValues, this.initialFormValues)
       if (!isChanged) {
         return this.$emit(EMITS.ON_CLOSE)
