@@ -100,7 +100,6 @@ import DataTable from '../DataTable'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  PHISHING_REPORTER_FILTERABLE_ITEMS,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -475,14 +474,13 @@ export default {
           this.tableOptions.table =
             results.map((item) => {
               const { diagnosticToolStatus } = item
-              const newItem = {
+              return {
                 ...item,
                 diagnosticToolStatus:
                   diagnosticToolStatus === 'NotInstalled'
                     ? labels.NotInstalled
                     : diagnosticToolStatus
               }
-              return newItem
             }) || []
           this.isLoading = false
         })
