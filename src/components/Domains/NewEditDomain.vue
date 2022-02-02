@@ -346,7 +346,7 @@ export default {
             })
         } else {
           createDomain(payload)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeStatus', false, true)
             })
             .finally(() => {

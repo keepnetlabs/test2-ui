@@ -122,8 +122,7 @@
 import labels from '@/model/constants/labels'
 import AppModal from '../AppModal'
 import TestConnection from './TestConnection'
-import companyName from '@/components/GrapesJs/Newsletter/mergedTexts/companyName'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { scrollToComponent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -217,7 +216,7 @@ export default {
         }
         if (this.isEdit && !this.isDuplicate) {
           updateDnsServiceList(payload, this.resourceId)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeStatus', false, true)
             })
             .finally(() => {
@@ -225,7 +224,7 @@ export default {
             })
         } else {
           createDnsServiceList(payload)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeStatus', false, true)
             })
             .finally(() => {

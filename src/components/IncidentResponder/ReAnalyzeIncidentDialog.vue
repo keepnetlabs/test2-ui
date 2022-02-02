@@ -53,7 +53,7 @@ export default {
     confirm() {
       this.saveDisable = true
       reAnalyzeEmail(this.resourceId)
-        .then((response) => {
+        .then(() => {
           this.$emit('on-confirm')
         })
         .finally(() => {
