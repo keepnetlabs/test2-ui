@@ -457,11 +457,10 @@ export default {
       this.$emit('close-overlay')
     },
     confirm() {
-      const payload = {
-        companyResourceIdArray: this.selectedArray.map((item) => item['companyResourceId'])
-      }
       this.saveDisable = true
-      addCompanyToCompanyGroup(this.selectedGroup.resourceId, payload)
+      addCompanyToCompanyGroup(this.selectedGroup.resourceId, {
+        companyResourceIdArray: this.selectedArray.map((item) => item['companyResourceId'])
+      })
         .then(() => {
           this.$emit('close-overlay-with-update')
         })

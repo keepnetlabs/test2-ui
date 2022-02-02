@@ -222,17 +222,6 @@ export default {
         letterSpacing: 'normal'
       }
     },
-    getSubHeaderStyle() {
-      return {
-        maxWidth: '550px',
-        margin: '0 auto 14px auto',
-        fontSize: '18px',
-        fontWeight: 600,
-        lineHeight: 'normal',
-        letterSpacing: 'normal',
-        color: 'rgba(0, 0, 0, 0.87)'
-      }
-    },
     getHeaderStyle() {
       return {
         maxWidth: '550px',
