@@ -525,11 +525,15 @@ export default {
       this.getInvestigationList()
     },
     onAddClose(resp) {
+      console.log('response', resp)
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
       }
-      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      this.$router
+        .push(`/investigation-details/${resp.data.data.resourceId}`)
+        .then((res) => console.log('route res', res))
+        .catch((err) => console.log('route err', err))
       this.isWantToAddNewCommunity = false
     },
     createCommunityFromMobileInfo() {
@@ -720,6 +724,9 @@ export default {
   beforeRouteLeave(to, from, next) {
     const { refNewInvestigation } = this.$refs
     if (refNewInvestigation && refNewInvestigation.status) {
+      if (to.name === 'Investigation Details') {
+        return next()
+      }
       refNewInvestigation.onCancelClicked()
       next(false)
     } else {
