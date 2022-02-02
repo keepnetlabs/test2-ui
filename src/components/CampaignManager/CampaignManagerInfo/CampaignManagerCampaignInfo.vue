@@ -418,7 +418,10 @@ export default {
       this.getSelectedTimeZone()
     }
     if (this.showPhishingScenarios) {
-      this.callForPhishingScenarios()
+      this.callForPhishingScenarios().then(() => {
+        const initialFormValues = JSON.parse(JSON.stringify(this.formData))
+        this.$emit('initialFormValues', initialFormValues)
+      })
     }
     const initialFormValues = JSON.parse(JSON.stringify(this.formData))
     this.$emit('initialFormValues', initialFormValues)
@@ -528,40 +531,44 @@ export default {
     callForPhishingScenarios() {
       this.setPhishingScenarioLoading(true)
       this.$emit('update:isActionButtonDisabled', true)
-      getScenariosList(this.axiosPayloadOfPhishingScenarios)
-        .then((response) => {
-          const {
-            data: { data }
-          } = response
-          if (this.phishingInitial) {
-            this.phishingScenarioItems = JSON.parse(JSON.stringify(data.results)) || []
-          }
-          this.phishingInitial = false
-          this.phishingScenarioSelectItems = data.results.map((item) => ({
-            text: item.name,
-            value: item.resourceId,
-            extraDatas: null
-          }))
-          if (
-            this.phishingScenarioSelectItems.length &&
-            !this.isEdit &&
-            !this.formData.phishingScenarioResourceId
-          ) {
-            this.formData.phishingScenarioResourceId = this.phishingScenarioItems[0].resourceId
-          }
-        })
-        .finally(() => {
-          if (
-            this.formData.phishingScenario &&
-            !this.phishingScenarioSelectItems.find(
-              (item) => item.value === this.formData.phishingScenarioResourceId
-            )
-          ) {
-            this.phishingScenarioSelectItems.push(this.formData.phishingScenario)
-          }
-          this.setPhishingScenarioLoading()
-          this.$emit('update:isActionButtonDisabled', false)
-        })
+      return new Promise((res, rej) => {
+        getScenariosList(this.axiosPayloadOfPhishingScenarios)
+          .then((response) => {
+            const {
+              data: { data }
+            } = response
+            if (this.phishingInitial) {
+              this.phishingScenarioItems = JSON.parse(JSON.stringify(data.results)) || []
+            }
+            this.phishingInitial = false
+            this.phishingScenarioSelectItems = data.results.map((item) => ({
+              text: item.name,
+              value: item.resourceId,
+              extraDatas: null
+            }))
+            if (
+              this.phishingScenarioSelectItems.length &&
+              !this.isEdit &&
+              !this.formData.phishingScenarioResourceId
+            ) {
+              this.formData.phishingScenarioResourceId = this.phishingScenarioItems[0].resourceId
+            }
+          })
+          .finally(() => {
+            if (
+              this.formData.phishingScenario &&
+              !this.phishingScenarioSelectItems.find(
+                (item) => item.value === this.formData.phishingScenarioResourceId
+              )
+            ) {
+              this.phishingScenarioSelectItems.push(this.formData.phishingScenario)
+            }
+            this.setPhishingScenarioLoading()
+            this.$emit('update:isActionButtonDisabled', false)
+            res()
+          })
+          .catch(rej)
+      })
     },
     toggleShowAdvancedSearch() {
       this.isShowAdvancedSearch = !this.isShowAdvancedSearch
@@ -667,6 +674,7 @@ export default {
   }
 }
 </script>
+
 <style lang="scss">
 .campaign-manager-schedule-datepicker {
   input {

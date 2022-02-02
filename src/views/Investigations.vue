@@ -525,7 +525,6 @@ export default {
       this.getInvestigationList()
     },
     onAddClose(resp) {
-      console.log('response', resp)
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
