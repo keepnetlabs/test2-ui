@@ -29,7 +29,6 @@
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
-        :total-number-of-records="totalNumberOfRecords"
         :loading="loading"
         :filterable="true"
         :row-key="'resourceId'"
@@ -41,14 +40,12 @@
         :row-actions="tableOptions.rowActions"
         :stored-table-settings="storedTableSettings"
         :selectable="true"
-        :show-all-records="showAllRecords"
         :select-event="tableOptions.selectEvent"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @downloadEvent="exportNotificationTemplate"
         @handleAddNotificationTemplates="toggleNewNotificationTemplate"
         @onEmptyBtnClicked="toggleNewNotificationTemplate"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -59,7 +56,6 @@
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
         is-server-side
-        :isServerSide="true"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
       >
@@ -108,10 +104,8 @@
 import DataTable from '@/components/DataTable'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 import {
-  COMMON_CONSTANTS,
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
-  LABEL_STORE,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -141,8 +135,6 @@ export default {
       loading: false,
       storedTableSettings: null,
       tableData: [],
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       editItemsDisabled: false,
       tableOptions: {
         columns: [
@@ -521,13 +513,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
-            this.showAllRecords = false
-          }
           this.tableData = templateData.results
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
@@ -548,11 +533,6 @@ export default {
           this.loading = false
           this.isRestoredOrClearedFilters = false
         })
-    },
-    handleAllRecordsClick() {
-      this.axiosPayload.pageSize = 75000
-      this.showAllRecords = false
-      this.callForDatas()
     },
     handleEdit(row) {
       if (!row.isOwner) {

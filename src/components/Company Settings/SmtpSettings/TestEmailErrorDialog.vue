@@ -48,7 +48,6 @@ export default {
 <style lang="scss">
 .integration-error-message-popup {
   .k-dialog__header .v-cart-icon-wrapper {
-    display: block;
     justify-content: center;
     align-items: center;
     display: flex;

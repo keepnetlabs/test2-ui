@@ -666,7 +666,7 @@ export default {
           this.selectedExtend = response.data.data
           this.changeCreateOrEditModalStatus(true)
         })
-        .catch((error) => {
+        .catch(() => {
           this.isShowExtended = false
         })
     },
