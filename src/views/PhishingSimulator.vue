@@ -10,7 +10,7 @@
               name="scenarios"
               id="emailTemplates-scenarios"
             >
-              <Scenarios v-if="tab === 'scenarios'" />
+              <Scenarios v-if="tab === 'scenarios'" ref="refScenarios" />
             </el-tab-pane>
             <el-tab-pane
               v-if="checkPermission('phishing-simulator/email-templates', 'POST')"
@@ -18,7 +18,7 @@
               name="emailTemplates"
               id="emailTemplates-content"
             >
-              <EmailTemplates v-if="tab === 'emailTemplates'" />
+              <EmailTemplates v-if="tab === 'emailTemplates'" ref="refEmailTemplates" />
             </el-tab-pane>
             <el-tab-pane
               v-if="checkPermission('phishing-simulator/landing-page-template', 'POST')"
@@ -26,7 +26,7 @@
               name="landingPage"
               id="landing-page-content"
             >
-              <LandingPageList v-if="tab === 'landingPage'" />
+              <LandingPageList v-if="tab === 'landingPage'" ref="refLandingPageList" />
             </el-tab-pane>
           </el-tabs>
         </v-card>
@@ -58,6 +58,24 @@ export default {
     },
     checkPermission(permission, type) {
       return checkPermission(permission, type)
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
+    if (refScenarios && refScenarios.modalStatus) {
+      refScenarios.checkIfCanCLoseNewScenarioModal()
+      next(false)
+    } else if (refScenarios && refScenarios.isShowFastLaunch) {
+      refScenarios.checkIfCanCloseFastLaunchModal()
+      next(false)
+    } else if (refEmailTemplates && refEmailTemplates.modalStatus) {
+      refEmailTemplates.checkIfCanCloseNewEmailTemplate()
+      next(false)
+    } else if (refLandingPageList && refLandingPageList.modalStatus) {
+      refLandingPageList.checkIfCanCloseNewLandingPage()
+      next(false)
+    } else {
+      next()
     }
   }
 }
