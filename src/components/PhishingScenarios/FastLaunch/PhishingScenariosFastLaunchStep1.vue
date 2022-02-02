@@ -5,6 +5,7 @@
       :show-duration="false"
       :show-phishing-scenarios="false"
       :show-schedule="false"
+      @initialFormValues="getInitialFormValues"
     />
     <div>
       <v-checkbox
@@ -57,6 +58,7 @@
 import labels from '@/model/constants/labels'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
 import KSelect from '@/components/Common/Inputs/KSelect'
+
 export default {
   name: 'PhishingScenariosFastLaunchStep1',
   components: { KSelect, CampaignManagerCampaignInfo },
@@ -68,6 +70,7 @@ export default {
   data() {
     return {
       labels,
+      initialFormValues: {},
       formData: {
         excludeFromReports: false,
         sendRandomlyUsers: false,
@@ -82,6 +85,14 @@ export default {
     },
     getRandomlySelectedItems() {
       return this.formDetails['sendRandomlyUsersCalculateTypes']
+    }
+  },
+  methods: {
+    getInitialFormValues(values) {
+      this.initialFormValues = JSON.parse(JSON.stringify({ ...this.formData, ...values }))
+    },
+    getCurrentFormValues() {
+      return { ...this.formData, ...this.$refs.refCampaignManagerCampaignInfo.formData }
     }
   }
 }

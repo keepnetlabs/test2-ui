@@ -9,22 +9,23 @@
       v-if="modalStatus"
     >
       <NewLandingPage
+        ref="newLandingPage"
         :status="modalStatus"
         :emailTemplateId="emailTemplateId"
         :isEdit="isEdit"
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
-        @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
         :landingPageData="landingPageData"
+        @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
       />
     </v-overlay>
     <DeleteEmailTemplates
       :status="showDeleteModal"
+      :selectedEmailTemplate="selectedEmailTemplate"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
       @handleMultipleDelete="handleDeleteMultiple"
-      :selectedEmailTemplate="selectedEmailTemplate"
     />
     <app-dialog
       v-if="isTemplateDetails"
@@ -587,6 +588,11 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseNewLandingPage() {
+      if (this.$refs.newLandingPage) {
+        this.$refs.newLandingPage.changeNewEmailTemplateModalStatus()
+      }
+    },
     changeNewEmailTemplateModalStatus(status, restart) {
       this.modalStatus = status
       this.emailTemplateId = null

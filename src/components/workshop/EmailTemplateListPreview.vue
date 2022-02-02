@@ -409,12 +409,12 @@ export default {
                   (item) => item.resourceId === emailTemplateResourceId
                 )
                 if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index)
+                  this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
                   this.selectChangeValue = this.emailTemplateResourceId
                 }
               } else {
-                if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
+                if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
               }
               this.defaultListData = [...this.listData]
             }
@@ -442,7 +442,7 @@ export default {
         }, 250)
       }
     },
-    setSelectedTemplate(item, index) {
+    setSelectedTemplate(item, index, isInitial = false) {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
@@ -456,6 +456,9 @@ export default {
       this.loadingTemplatePreview = true
       this.$emit('selectedEmailTemplateChange', item.id)
       this.$emit('selectedEmailTemplateResourceId', item.resourceId)
+      if (isInitial) {
+        this.$emit('initialEmailTemplateId', item.id)
+      }
       getEmailTemplatePreviewContent(item.resourceId)
         .then((response) => {
           const { data } = response

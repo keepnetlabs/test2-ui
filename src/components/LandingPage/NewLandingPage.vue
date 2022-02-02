@@ -342,7 +342,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
 import * as Validations from '@/utils/validations'
 import { getMergedTextForPhishing } from '@/api/phishingsimulator'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
@@ -429,6 +429,7 @@ export default {
       Validations: Validations,
       validations: Validations,
       availableForRequests: [],
+      initialFormValues: {},
       formValues: {
         name: null,
         description: null,
@@ -583,7 +584,16 @@ export default {
     },
     handleTagItemChange() {},
     changeNewEmailTemplateModalStatus() {
-      this.$emit('changeNewEmailTemplateModalStatus', false)
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('changeNewEmailTemplateModalStatus', false)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        }
+      })
     },
     nextStep() {
       let isValid = true
@@ -840,6 +850,9 @@ export default {
       this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit) {
       getLandingPageTemplate(this.emailTemplateId).then((response) => {
         this.formValues = response.data.data
@@ -862,6 +875,7 @@ export default {
             response.data.data.availableForList
           )
         }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   }
