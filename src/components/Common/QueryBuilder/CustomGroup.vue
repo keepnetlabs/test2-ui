@@ -226,9 +226,7 @@ export default {
         border-color: #00bcd4;
         border-style: solid;
         border-width: 0 0 1px 1px;
-        border-radius: 4px;
-        border-bottom-right-radius: 0;
-        border-top-left-radius: 0;
+        border-radius: 0 4px 0 4px;
       }
       &:after {
         content: '';
@@ -295,9 +293,7 @@ export default {
         border-color: #2196f3;
         border-style: solid;
         border-width: 0 0 1px 1px;
-        border-radius: 4px;
-        border-bottom-right-radius: 0;
-        border-top-left-radius: 0;
+        border-radius: 0 4px 0 4px;
         @media (max-width: 768px) {
           top: -108px;
           height: calc(50% + 110px);
@@ -345,10 +341,7 @@ export default {
     margin-right: 0 !important;
   }
   .col {
-    padding-right: 8px !important;
-    padding-left: 0 !important;
-    padding-top: 16px !important;
-    padding-bottom: 0 !important;
+    padding: 16px 8px 0 0 !important;
     .v-select__selections {
       flex-wrap: nowrap;
     }
