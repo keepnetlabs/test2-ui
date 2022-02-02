@@ -1,19 +1,20 @@
 <template>
   <div id="domains">
     <NewEditDomain
+      ref="newEditDomainModal"
       v-if="modalStatus"
       :status="modalStatus"
-      @changeStatus="changeStatus"
       :resourceId="resourceId"
       :isEdit="isEdit"
       :domainData="domainData"
+      @changeStatus="changeStatus"
     />
     <DeleteServiceModal
       :status="showDeleteModal"
+      :selectedDomain="selectedDomain"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
       @handleCloseModal="showDeleteModal = false"
       @handleDelete="handleDelete($event)"
-      :selectedDomain="selectedDomain"
     />
     <data-table
       id="domains-data-table"
@@ -35,17 +36,20 @@
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :dataLength="tableData && tableData.totalNumberOfRecords"
+      :requestParams="bodyData"
+      :isServerSide="true"
+      :server-side-props="serverSideProps"
+      :download-button="tableOptions.downloadButton"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="handleActionDelete"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportDomains"
       @delete="handleActionDelete"
       @paginationChangedEvent="paginationChangedEvent($event)"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
       @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
@@ -56,9 +60,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
       @addAction="handleAdd"
     >
       <template #datatable-row-actions="{scope}">
@@ -298,6 +299,11 @@ export default {
   methods: {
     getDisabledStatusOfAction(row, actionStatus) {
       return !(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)
+    },
+    checkIfCanCloseDomainModal() {
+      if (this.$refs.newEditDomainModal) {
+        this.$refs.newEditDomainModal.cancelDomain()
+      }
     },
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus

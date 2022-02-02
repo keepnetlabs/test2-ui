@@ -1,6 +1,7 @@
 <template>
   <div id="dnsServiceList">
     <NewEditDnsService
+      ref="newEditDnsServiceModal"
       v-if="modalStatus"
       :status="modalStatus"
       @changeStatus="changeStatus"
@@ -248,6 +249,11 @@ export default {
     }
   },
   methods: {
+    checkIfCanCloseDnsServiceModal() {
+      if (this.$refs.newEditDnsServiceModal) {
+        this.$refs.newEditDnsServiceModal.canceldns()
+      }
+    },
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
       if (!value) this.resourceId = ''

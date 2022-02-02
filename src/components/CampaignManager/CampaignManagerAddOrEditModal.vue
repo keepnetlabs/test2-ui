@@ -46,6 +46,7 @@
               :default-values="getDefaultValuesOfCampaignInfo"
               :is-edit="isEdit"
               :is-action-button-disabled.sync="isActionButtonDisabled"
+              @initialFormValues="getInitialCampaignManagerCampaignInfo"
             />
           </v-stepper-content>
           <v-stepper-content class="k-stepper__content" :step="2">
@@ -115,7 +116,7 @@ import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import ConfigureCompanyStepHeader from '@/components/Companies/ConfigureCompanyStepHeader'
 import CampaignManagerCampaignInfo from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerCampaignInfo'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import CampaignManagerAdvancedSettings from '@/components/CampaignManager/AdvancedSettings/CampaignManagerAdvancedSettings'
 import CampaignManagerSummary from '@/components/CampaignManager/Summary/CampaignManagerSummary'
 import {
@@ -163,7 +164,8 @@ export default {
       isActionButtonDisabled: false,
       labels,
       step: 1,
-      selectedRowFormData: {}
+      selectedRowFormData: {},
+      initialFormValues: {}
     }
   },
   computed: {
@@ -292,6 +294,9 @@ export default {
     }
   },
   methods: {
+    getInitialCampaignManagerCampaignInfo(values) {
+      this.initialFormValues = { ...this.initialFormValues, ...values }
+    },
     callForData() {
       getCampaignManager(this.selectedRow.resourceId).then((response) => {
         const { data: { data = {} } = {} } = response
@@ -366,8 +371,25 @@ export default {
       value = typeof value == 'string' ? value : value.toString()
       return value.length === 1 ? `0${value}` : `${value}`
     },
+    getFormValues() {
+      const {
+        refCampaignManagerCampaignInfo: { formData: campaignManagerFormData },
+        refCampaignManagerAdvancedSettings: { formData: advancedSettingsFormData }
+      } = this.$refs
+      return { ...campaignManagerFormData, ...advancedSettingsFormData }
+    },
     closeOverlay() {
-      this.$emit(EMITS.ON_CLOSE)
+      const currentFormValues = this.getFormValues()
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit(EMITS.ON_CLOSE)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit(EMITS.ON_CLOSE)
+        }
+      })
     },
     showErrorMessage(ref) {
       this.$nextTick(() => {
@@ -520,6 +542,9 @@ export default {
           }
       }
     }
+  },
+  mounted() {
+    this.initialFormValues = this.getFormValues()
   }
 }
 </script>

@@ -2,7 +2,7 @@
   <app-modal
     :status="status"
     v-if="status"
-    @closeOverlay="status = false"
+    @closeOverlay="cancelDns"
     :icon-name="'mdi-book-search'"
     :title="
       status && resourceId ? 'Edit DNS Provider Integration' : 'Create New DNS Provider Integration'
@@ -123,7 +123,7 @@ import labels from '@/model/constants/labels'
 import AppModal from '../AppModal'
 import TestConnection from './TestConnection'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -152,6 +152,9 @@ export default {
     }
   },
   created() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDnsService(this.resourceId).then((res) => {
@@ -167,6 +170,7 @@ export default {
             res.data.data.availableForList
           )
         }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   },
@@ -175,6 +179,7 @@ export default {
       isValidate: null,
       providerTypes: [{ text: 'Cloudflare', value: 1 }],
       availableForRequests: [],
+      initialFormValues: {},
       formValues: {
         dnsServiceProviderTypeId: 1,
         dnsServiceProviderName: null,
@@ -190,7 +195,7 @@ export default {
   },
   methods: {
     testConnectionValues() {},
-    canceldns() {
+    resetForm() {
       this.formValues = {
         dnsServiceProviderTypeId: null,
         dnsServiceProviderName: null,
@@ -199,7 +204,21 @@ export default {
         availableForRequests: [],
         resourceId: null
       }
-      this.$emit('changeStatus')
+    },
+    canceldns() {
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        this.resetForm()
+        this.$emit('changeStatus')
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.resetForm()
+          this.$emit('changeStatus')
+        }
+      })
     },
     submit() {
       this.saveButtonDisabled = true
