@@ -301,7 +301,7 @@ export default {
 
   computed: {
     shouldRenderStatusBadge() {
-      return ['0', '1'].some(this.getStatusId)
+      return ['0', '1'].includes(this.getStatusId)
     },
     getStatusId() {
       return this.selectedExtend?.statusId?.toString()
