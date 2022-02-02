@@ -1,9 +1,4 @@
-import {
-  COMMON_CONSTANTS,
-  getStoreValue,
-  LABEL_STORE,
-  PROPERTY_STORE
-} from '@/model/constants/commonConstants'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 export const axiosPayload = {
   pageNumber: 1,

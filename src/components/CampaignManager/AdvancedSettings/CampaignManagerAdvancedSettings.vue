@@ -231,7 +231,6 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpSettingsDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpSettingsDialog'
 import * as validations from '@/utils/validations'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
 export default {
