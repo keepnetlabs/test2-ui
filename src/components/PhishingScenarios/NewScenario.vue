@@ -167,6 +167,7 @@
                     :scenarioDetailsLookup="scenarioDetailsLookup"
                     ref="RefEmailTemplateListPreview"
                     :emailTemplateResourceId="emailTemplateResourceId"
+                    @initialEmailTemplateId="getInitialEmailTemplateId"
                     @selectedEmailTemplateChange="selectedEmailTemplateChange"
                     @selectedEmailTemplateResourceId="selectedEmailTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
@@ -191,11 +192,12 @@
                 <v-list-item-content>
                   <LandingPageListPreview
                     v-if="step === 3"
-                    :scenarioDetailsLookup="scenarioDetailsLookup"
                     ref="RefEmailTemplateListPreview"
+                    :scenarioDetailsLookup="scenarioDetailsLookup"
+                    :landingPageTemplateResourceId="landingPageTemplateResourceId"
+                    @initialLandingPageTemplateId="getInitialLandingPageTemplateId"
                     @selectedLandingPageChange="selectedLandingPageChange"
                     @selectedLandingPageTemplateResourceId="selectedLandingPageTemplateResourceId"
-                    :landingPageTemplateResourceId="landingPageTemplateResourceId"
                     @loading="isSubmitDisabled = $event"
                   ></LandingPageListPreview
                 ></v-list-item-content>
@@ -529,7 +531,7 @@ import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createScenario, getScenario, getSummaryOfScenario, updateScenario } from '@/api/scenarios'
 import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPreview'
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'NewScenarios',
@@ -567,6 +569,7 @@ export default {
       labels,
       step: 1,
       Validations: Validations,
+      initialFormValues: {},
       formValues: {
         name: '',
         description: '',
@@ -615,6 +618,12 @@ export default {
     }
   },
   methods: {
+    getInitialEmailTemplateId(id) {
+      this.initialFormValues.emailTemplateId = id
+    },
+    getInitialLandingPageTemplateId(id) {
+      this.initialFormValues.landingPageTemplateId = id
+    },
     selectedEmailTemplateResourceId(id) {
       this.emailTemplateResourceId = id
     },
@@ -662,7 +671,16 @@ export default {
       }
     },
     changeNewScenarioModalStatus() {
-      this.$emit('changeNewScenarioModalStatus', false)
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('changeNewScenarioModalStatus', false)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('changeNewScenarioModalStatus', false)
+        }
+      })
     },
     nextStep() {
       const prevStep = JSON.parse(JSON.stringify(this.step))
@@ -713,7 +731,7 @@ export default {
       }
       if (this.isEdit && !this.isDuplicate) {
         updateScenario(this.formValues, this.scenarioId)
-          .then((response) => {
+          .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
           .finally(() => {
@@ -721,7 +739,7 @@ export default {
           })
       } else {
         createScenario(this.formValues)
-          .then((response) => {
+          .then(() => {
             this.$emit('changeNewScenarioModalStatus', false, true)
           })
           .finally(() => {
@@ -744,6 +762,9 @@ export default {
     }
   },
   created() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     let _this = this
     if (this.isEdit) {
       this.isSubmitDisabled = true
@@ -768,6 +789,7 @@ export default {
               response.data.data.availableForList
             )
           }
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
         })
         .finally(() => {
           this.isSubmitDisabled = false
@@ -824,7 +846,7 @@ export default {
     &-content {
       border-top: 1px solid #e0e0e0;
       background: #fafafa;
-      border-radius: 0px 0px 12px 12px;
+      border-radius: 0 0 12px 12px;
       padding: 24px;
       &__title {
         font-style: normal;
@@ -896,7 +918,6 @@ export default {
     }
   }
   &__title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 24px;
@@ -904,7 +925,6 @@ export default {
     color: #383b41;
   }
   &__sub-title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

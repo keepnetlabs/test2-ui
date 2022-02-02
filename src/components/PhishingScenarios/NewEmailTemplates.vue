@@ -195,6 +195,7 @@
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
+                        @handleInitialTemplate="handleInitialTemplate"
                       />
                     </form-group>
                   </v-form>
@@ -259,7 +260,7 @@ import {
   getMergedTextForPhishing,
   updatePhishingEmailTemplate
 } from '@/api/phishingsimulator'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
@@ -321,7 +322,7 @@ import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
 import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 
 export default {
   name: 'NewEmailTemplates',
@@ -343,6 +344,7 @@ export default {
       labels,
       step: 1,
       Validations: Validations,
+      initialFormValues: {},
       formValues: {
         name: '',
         description: '',
@@ -454,6 +456,9 @@ export default {
       this.formValues.attachmentFilesFromApi = newAttachmentFilesFromApi
       callback(newAttachmentFilesFromApi)
     },
+    handleInitialTemplate(value) {
+      this.initialFormValues.template = value
+    },
     setAttachmentFile(file) {
       this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
     },
@@ -489,7 +494,16 @@ export default {
       }
     },
     changeNewEmailTemplateModalStatus() {
-      this.$emit('changeNewEmailTemplateModalStatus', false)
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('changeNewEmailTemplateModalStatus', false)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        }
+      })
     },
     nextStep() {
       let isValid = true
@@ -525,7 +539,7 @@ export default {
         delete payload.attachments
         if (this.isEdit && !this.isDuplicate) {
           updatePhishingEmailTemplate(payload, this.emailTemplateId)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
@@ -533,7 +547,7 @@ export default {
             })
         } else {
           createPhishingEmailTemplate(payload)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
@@ -694,6 +708,9 @@ export default {
   },
   created() {
     this.callForMergedTags()
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = response.data.data
@@ -714,6 +731,7 @@ export default {
             JSON.stringify(this.formValues.attachments)
           )
         }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   }
@@ -759,7 +777,6 @@ export default {
     }
   }
   &__title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 24px;
@@ -767,7 +784,6 @@ export default {
     color: #383b41;
   }
   &__sub-title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

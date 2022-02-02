@@ -328,7 +328,10 @@ export default {
               this.templateHTML = null
             } else {
               data.data.results = data.data.results.map((item) => {
-                return { ...item, selected: item.resourceId === this.landingPageTemplateResourceId }
+                return {
+                  ...item,
+                  selected: item.resourceId === this.landingPageTemplateResourceId
+                }
               })
               this.listData = data.data.results
             }
@@ -405,12 +408,13 @@ export default {
                   (item) => item.resourceId === landingPageTemplateResourceId
                 )
                 if (index > -1) {
-                  this.setSelectedTemplate(this.listData[index], index)
+                  this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
                   this.selectChangeValue = this.landingPageTemplateResourceId
                 }
               } else {
-                if (!landingPageTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0)
+                if (!landingPageTemplateResourceId)
+                  this.setSelectedTemplate(this.listData[0], 0, true)
               }
               this.defaultListData = [...this.listData]
             }
@@ -438,7 +442,7 @@ export default {
         }, 250)
       }
     },
-    setSelectedTemplate(item, index) {
+    setSelectedTemplate(item, index, isInitial = false) {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
@@ -450,6 +454,9 @@ export default {
       this.loadingTemplatePreview = true
       this.$emit('selectedLandingPageChange', item.id)
       this.$emit('selectedLandingPageTemplateResourceId', item.resourceId)
+      if (isInitial) {
+        this.$emit('initialLandingPageTemplateId', item.id)
+      }
       getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
           const { data } = response

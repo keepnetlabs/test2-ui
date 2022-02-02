@@ -19,7 +19,7 @@ export default {
       this.options = {
         plugins: {
           datalabels: {
-            formatter: function (value) {
+            formatter: function () {
               return ''
             },
             color: '#575757'

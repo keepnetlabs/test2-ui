@@ -74,15 +74,8 @@
 
 <script>
 import AppDialog from '../AppDialog'
-import {
-  addCompanyToCompanyGroup,
-  exportCompanyGroup,
-  getCompanyGroups,
-  searchCompanyGroups,
-  updateCompanyGroup
-} from '../../api/company'
+import { addCompanyToCompanyGroup, exportCompanyGroup, searchCompanyGroups } from '@/api/company'
 import Datatable from '../../components/DataTable'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 
 import ServerSideProps from '@/helper-classes/server-side-table-props'

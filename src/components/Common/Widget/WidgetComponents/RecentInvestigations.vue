@@ -68,7 +68,6 @@ import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
-import { getRunningInvestigations } from '@/api/incidentResponder'
 import labels from '@/model/constants/labels'
 import { mapGetters } from 'vuex'
 export default {

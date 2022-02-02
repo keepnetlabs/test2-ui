@@ -9,6 +9,7 @@
       v-if="modalStatus"
     >
       <NewEmailTemplates
+        ref="newEmailTemplate"
         :status="modalStatus"
         :emailTemplateId="emailTemplateId"
         :isEdit="isEdit"
@@ -608,6 +609,11 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseNewEmailTemplate() {
+      if (this.$refs.newEmailTemplate) {
+        this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()
+      }
+    },
     changeNewEmailTemplateModalStatus(status, restart) {
       this.modalStatus = status
       this.emailTemplateId = null
@@ -632,17 +638,15 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportEmailTemplates(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `EmailTemplates.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-          })
-          .catch((error) => {})
+        exportEmailTemplates(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `EmailTemplates.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     getDatatableList() {

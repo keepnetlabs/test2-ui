@@ -2,7 +2,7 @@
   <AppDialog
     id="white-labeling--domain-popup"
     icon="mdi-sync"
-    title="Warning"
+    :title="title"
     title-id="text--whitelabeling-domain-popup-title"
     subtitle-id="text--whitelabeling-domain-popup-subtitle"
     :status="status"
@@ -37,6 +37,9 @@ export default {
       type: Boolean
     },
     errorMessage: {
+      type: String
+    },
+    title: {
       type: String
     }
   },

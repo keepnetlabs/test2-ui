@@ -184,6 +184,7 @@ export default {
   },
   mounted() {
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
+    this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
     handleFileDelete(index) {

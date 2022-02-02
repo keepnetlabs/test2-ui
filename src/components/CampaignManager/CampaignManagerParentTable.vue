@@ -82,11 +82,7 @@ import {
 import TheRecordsButton from '@/components/IncidentResponder/TheRecordsButton'
 import labels from '@/model/constants/labels'
 import CampaignManagerRowActions from '@/components/CampaignManager/CampaignManagerRowActions'
-import {
-  bulkDeleteCampaignReports,
-  exportCampaignManager,
-  searchCampaignManager
-} from '@/api/phishingsimulator'
+import { exportCampaignManager, searchCampaignManager } from '@/api/phishingsimulator'
 import { getDefaultFilter } from '@/utils/functions'
 const EMITS = {
   UPDATE_AXIOS_PAYLOAD: 'update:axios-payload',

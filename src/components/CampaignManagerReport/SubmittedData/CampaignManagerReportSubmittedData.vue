@@ -33,7 +33,6 @@ import labels from '@/model/constants/labels'
 import CampaignManagerReportHeader from '@/components/CampaignManagerReport/CampaignManagerReportHeader'
 import CampaignManagerReportSubmittedTable from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedTable'
 import CampaignManagerReportSubmittedItemDetailDialog from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedtemDetailDialog'
-import { resendPhishingCampaignToUserList } from '@/api/phishingsimulator'
 import { useResend } from '@/hooks/useResend'
 import CampaignManagerReportResendDialog from '@/components/CampaignManagerReport/CampaignManagerReportResendDialog'
 export default {

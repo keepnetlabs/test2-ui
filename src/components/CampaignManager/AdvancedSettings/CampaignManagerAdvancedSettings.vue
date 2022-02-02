@@ -231,7 +231,6 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { getSmtpSettings, searchSmtpSettings, testConnection } from '@/api/smtpSettings'
 import CampaignManagerSmtpSettingsDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpSettingsDialog'
 import * as validations from '@/utils/validations'
-import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import CampaignManagerSmtpErrorDialog from '@/components/CampaignManager/AdvancedSettings/CampaignManagerSmtpErrorDialog'
 import { calculateSendingInfo } from '@/api/phishingsimulator'
 export default {
@@ -423,16 +422,6 @@ export default {
           'This number cannot be higher than number of total target users.'
         )
       }
-    },
-    calculateRatio(type = '') {
-      let ratio = 1
-      if (type === 'minutes' || type === 'hours') {
-        ratio *= 60
-      }
-      if (type === 'hours') {
-        ratio *= 60
-      }
-      return ratio
     },
     handleChangeSmtp() {
       this.buttonKey = Math.random().toString()
