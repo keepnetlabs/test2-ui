@@ -51,19 +51,15 @@
 <script>
 import DataTable from '../DataTable'
 import {
-  COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
-  LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  INTEGRATION_TYPES,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxLog, getSandboxLog } from '@/api/sandbox'
-import { getIntegrationTypes } from '@/api/integrations'
 export default {
   name: 'sandbox',
   components: {
@@ -638,18 +634,16 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportSandboxLog(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `sandboxLog.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-            this.isSandboxLogDownloadModal = false
-          })
-          .catch((error) => {})
+        exportSandboxLog(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `sandboxLog.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+          this.isSandboxLogDownloadModal = false
+        })
       })
     },
     getDatatableList() {
@@ -710,7 +704,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
