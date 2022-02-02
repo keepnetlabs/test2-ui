@@ -190,7 +190,7 @@
 import labels from '@/model/constants/labels'
 import AppModal from '../AppModal'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -198,6 +198,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
 import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
 import TestConnection from '@/components/Domains/TestConnection'
+
 const ENUMS = {
   CNAME: '1',
   A: '2'
@@ -229,6 +230,7 @@ export default {
       isShowCustomizeDnsRecordsDetail: true,
       isValidate: null,
       availableForRequests: [],
+      initialFormValues: {},
       formValues: {
         domain: null,
         recordTypeId: '2',
@@ -280,6 +282,9 @@ export default {
     }
   },
   created() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit) {
       this.formValues.resourceId = this.resourceId
       getDomainEditData(this.resourceId).then((res) => {
@@ -304,11 +309,12 @@ export default {
             res.data.data.availableForList
           )
         }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   },
   methods: {
-    cancelDomain() {
+    resetForm() {
       this.formValues = {
         domain: null,
         recordTypeId: null,
@@ -321,7 +327,21 @@ export default {
         active: true,
         resourceId: null
       }
-      this.$emit('changeStatus')
+    },
+    cancelDomain() {
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        this.resetForm()
+        this.$emit('changeStatus')
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.resetForm()
+          this.$emit('changeStatus')
+        }
+      })
     },
     submit() {
       this.saveButtonDisabled = true
