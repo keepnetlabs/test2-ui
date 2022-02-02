@@ -9,6 +9,7 @@
       v-if="modalStatus"
     >
       <NewEmailTemplates
+        ref="newEmailTemplate"
         :status="modalStatus"
         :emailTemplateId="emailTemplateId"
         :isEdit="isEdit"
@@ -608,6 +609,11 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseNewEmailTemplate() {
+      if (this.$refs.newEmailTemplate) {
+        this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()
+      }
+    },
     changeNewEmailTemplateModalStatus(status, restart) {
       this.modalStatus = status
       this.emailTemplateId = null

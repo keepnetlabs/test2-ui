@@ -1,6 +1,7 @@
 <template>
   <div id="scenarios">
     <PhishingScenariosFastLaunch
+      ref="fastLaunch"
       v-if="isShowFastLaunch"
       :status="isShowFastLaunch"
       :selected-scenario="selectedRow"
@@ -15,6 +16,7 @@
       v-if="modalStatus"
     >
       <NewScenario
+        ref="newScenarioModal"
         :status="modalStatus"
         :scenarioId="scenarioId"
         :isEdit="isEdit"
@@ -572,6 +574,16 @@ export default {
       this.scenarioId = row.resourceId
     },
     handleAdd() {},
+    checkIfCanCLoseNewScenarioModal() {
+      if (this.$refs.newScenarioModal) {
+        this.$refs.newScenarioModal.changeNewScenarioModalStatus()
+      }
+    },
+    checkIfCanCloseFastLaunchModal() {
+      if (this.$refs.fastLaunch) {
+        this.$refs.fastLaunch.closeOverlay()
+      }
+    },
     changeNewScenarioModalStatus(status, restart) {
       this.modalStatus = status
       this.scenarioId = null

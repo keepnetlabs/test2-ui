@@ -525,6 +525,7 @@ export default {
       this.getInvestigationList()
     },
     onAddClose(resp) {
+      console.log('response', resp)
       // set mobile vision
       if (this.isMobileVisible && this.windowWidth < 769) {
         this.isMobileInfo = true
@@ -720,6 +721,9 @@ export default {
   beforeRouteLeave(to, from, next) {
     const { refNewInvestigation } = this.$refs
     if (refNewInvestigation && refNewInvestigation.status) {
+      if (to.name === 'Investigation Details') {
+        return next()
+      }
       refNewInvestigation.onCancelClicked()
       next(false)
     } else {

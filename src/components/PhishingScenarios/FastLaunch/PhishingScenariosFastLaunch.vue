@@ -98,6 +98,8 @@ import CampaignManagerSummary from '@/components/CampaignManager/Summary/Campaig
 import { getScenario } from '@/api/scenarios'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { searchTargetGroups } from '@/api/targetUsers'
+import { isDifferent } from '@/utils/functions'
+
 export default {
   name: 'PhishingScenariosFastLaunch',
   components: {
@@ -183,7 +185,9 @@ export default {
         const {
           data: { data }
         } = response
-        this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.formData.name = this.selectedScenario.name
+        this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+          this.selectedScenario.name
+        )
         const { emailTemplateResourceId, landingPageTemplateResourceId } = data
         getPhishingScenarioLandingPageAndEmailTemplate(
           emailTemplateResourceId,
@@ -223,7 +227,18 @@ export default {
       this.step += flag
     },
     closeOverlay() {
-      this.$emit('on-close')
+      const initialFormValues = { ...this.$refs.refFastLaunch.initialFormValues }
+      const currentFormValues = { ...this.$refs.refFastLaunch.getCurrentFormValues() }
+      const isChanged = isDifferent(currentFormValues, initialFormValues)
+      if (!isChanged) {
+        return this.$emit('on-close')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('on-close')
+        }
+      })
     },
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag

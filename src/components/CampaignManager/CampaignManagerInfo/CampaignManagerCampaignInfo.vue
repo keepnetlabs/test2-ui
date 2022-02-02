@@ -420,8 +420,15 @@ export default {
     if (this.showPhishingScenarios) {
       this.callForPhishingScenarios()
     }
+    const initialFormValues = JSON.parse(JSON.stringify(this.formData))
+    this.$emit('initialFormValues', initialFormValues)
   },
   methods: {
+    setInitialName(value) {
+      this.formData.name = value
+      const initialFormValues = JSON.parse(JSON.stringify(this.formData))
+      this.$emit('initialFormValues', initialFormValues)
+    },
     callForGetTimeZones() {
       if (
         this.$store?.getters['common/getTimezones'] &&

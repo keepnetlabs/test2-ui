@@ -195,6 +195,7 @@
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
+                        @handleInitialTemplate="handleInitialTemplate"
                       />
                     </form-group>
                   </v-form>
@@ -259,7 +260,7 @@ import {
   getMergedTextForPhishing,
   updatePhishingEmailTemplate
 } from '@/api/phishingsimulator'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
 import passwordURL from '@/components/GrapesJs/Newsletter/mergedTexts/passwordURL'
@@ -343,6 +344,7 @@ export default {
       labels,
       step: 1,
       Validations: Validations,
+      initialFormValues: {},
       formValues: {
         name: '',
         description: '',
@@ -454,6 +456,9 @@ export default {
       this.formValues.attachmentFilesFromApi = newAttachmentFilesFromApi
       callback(newAttachmentFilesFromApi)
     },
+    handleInitialTemplate(value) {
+      this.initialFormValues.template = value
+    },
     setAttachmentFile(file) {
       this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
     },
@@ -489,7 +494,16 @@ export default {
       }
     },
     changeNewEmailTemplateModalStatus() {
-      this.$emit('changeNewEmailTemplateModalStatus', false)
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('changeNewEmailTemplateModalStatus', false)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('changeNewEmailTemplateModalStatus', false)
+        }
+      })
     },
     nextStep() {
       let isValid = true
@@ -694,6 +708,9 @@ export default {
   },
   created() {
     this.callForMergedTags()
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
         this.formValues = response.data.data
@@ -714,6 +731,7 @@ export default {
             JSON.stringify(this.formValues.attachments)
           )
         }
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   }
