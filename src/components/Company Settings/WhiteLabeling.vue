@@ -12,6 +12,7 @@
       :status="isShowDomainDialog"
       :is-action-button-disabled="getActionButtonDisabled"
       :error-message="whiteLabelingErrorMessage"
+      :title="whiteLabelingErrorTitle"
       @on-close="toggleWhiteLabelingDomainDialog"
       @on-confirm="handleConfirmWhiteLabelingDomainDialog"
     />
@@ -336,6 +337,7 @@ export default {
     return {
       isShowDomainDialog: false,
       whiteLabelingErrorMessage: false,
+      whiteLabelingErrorTitle: '',
       isActionButtonDisabled: false,
       isWhiteLabelLoading: false,
       isResetToDefaultActionButtonDisabled: false,
@@ -467,8 +469,10 @@ export default {
             })
             .catch((e) => {
               if (e && e.response && e.response.status === 404) {
-                this.whiteLabelingErrorMessage = e.response?.data?.message
+                const [title, message] = e.response?.data?.validationMessages
+                this.whiteLabelingErrorMessage = message
                 this.acceptedDnsRecordSettingsDomain = this.formValues.mainDomainUrl
+                this.whiteLabelingErrorTitle = title
                 this.toggleWhiteLabelingDomainDialog()
               } else {
                 this.callForData()

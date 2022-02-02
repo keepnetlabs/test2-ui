@@ -271,7 +271,9 @@ export default {
         })
         .catch((e) => {
           if (e && e.response && e.response.status === 404) {
-            refWhiteLabeling.whiteLabelingErrorMessage = e.response?.data?.message
+            const [title, message] = e.response?.data?.validationMessages
+            refWhiteLabeling.whiteLabelingErrorMessage = message
+            refWhiteLabeling.whiteLabelingErrorTitle = title
             refWhiteLabeling.acceptedDnsRecordSettingsDomain =
               refWhiteLabeling.formValues.mainDomainUrl
             refWhiteLabeling.toggleWhiteLabelingDomainDialog()
