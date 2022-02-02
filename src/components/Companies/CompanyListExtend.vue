@@ -178,10 +178,10 @@
             </div>
             <div class="company-list-extend__body-value">
               <v-btn
-                v-if="selectedExtend.statusId == '0' || selectedExtend.statusId == '1'"
+                v-if="shouldRenderStatusBadge"
                 id="badge--company-status-extended-view-value"
-                :dark="selectedExtend.statusId == 0 ? false : true"
-                :disabled="selectedExtend.statusId == 0 ? true : false"
+                :dark="getStatusId === '1'"
+                :disabled="getStatusId === '0'"
                 color="#2196f3"
                 height="24"
                 depressed
@@ -296,6 +296,15 @@ export default {
         name: 'Company Group Details',
         params: { groupId: resourceId }
       })
+    }
+  },
+
+  computed: {
+    shouldRenderStatusBadge() {
+      return ['0', '1'].some(this.getStatusId)
+    },
+    getStatusId() {
+      return this.selectedExtend?.statusId?.toString()
     }
   },
 

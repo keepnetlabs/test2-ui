@@ -423,16 +423,6 @@ export default {
         )
       }
     },
-    calculateRatio(type = '') {
-      let ratio = 1
-      if (type === 'minutes' || type === 'hours') {
-        ratio *= 60
-      }
-      if (type === 'hours') {
-        ratio *= 60
-      }
-      return ratio
-    },
     handleChangeSmtp() {
       this.buttonKey = Math.random().toString()
       this.isTestMailSend = false

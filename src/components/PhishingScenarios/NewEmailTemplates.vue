@@ -321,7 +321,7 @@ import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
 import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 
 export default {
   name: 'NewEmailTemplates',
@@ -525,7 +525,7 @@ export default {
         delete payload.attachments
         if (this.isEdit && !this.isDuplicate) {
           updatePhishingEmailTemplate(payload, this.emailTemplateId)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
@@ -533,7 +533,7 @@ export default {
             })
         } else {
           createPhishingEmailTemplate(payload)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
@@ -759,7 +759,6 @@ export default {
     }
   }
   &__title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 24px;
@@ -767,7 +766,6 @@ export default {
     color: #383b41;
   }
   &__sub-title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;

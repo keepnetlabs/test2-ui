@@ -204,7 +204,7 @@
                       id="input--company-status"
                       :ripple="false"
                       dense
-                      :label="formData.statusId == '1' ? 'Active' : 'Inactive'"
+                      :label="formData.statusId === '1' ? 'Active' : 'Inactive'"
                       class="playbook-rule-form__switch"
                       color="#2196f3"
                       :true-value="'1'"
@@ -337,6 +337,7 @@
                     </v-list-item-title>
                     <div class="d-flex align-items-center">
                       <v-text-field
+                        v-mask="'###########'"
                         ref="userLimit"
                         :placeholder="
                           formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
@@ -351,14 +352,13 @@
                         :rules="
                           formData.IsNumberOfUsersLimited
                             ? [
-                                (v) => /^\d+$/gi.test(v) || 'Invalid number',
-                                (v) => validations.required(v, 'Required')
+                                (v) => validations.required(v, 'Required'),
+                                (v) => /^\d+$/gi.test(v) || 'Invalid number'
                               ]
                             : [true]
                         "
                         hint="*Required"
                         persistent-hint
-                        @keydown="onlyNumbers"
                       ></v-text-field>
                       <v-btn
                         height="40"
@@ -903,11 +903,13 @@ export default {
     },
     handleLicenseTypeChange(resourceId = '') {
       const selectedLicenceType = this.licenceTypes.find((item) => item.resourceId === resourceId)
-      const licenceModules = selectedLicenceType.licenseModules.reduce((acc, item) => {
-        acc.push(item.resourceId)
-        return acc
-      }, [])
-      this.formData.LicenseModuleResourceIdArray = licenceModules
+      this.formData.LicenseModuleResourceIdArray = selectedLicenceType.licenseModules.reduce(
+        (acc, item) => {
+          acc.push(item.resourceId)
+          return acc
+        },
+        []
+      )
     },
     nextStep() {
       let isFormValid = true
@@ -979,11 +981,11 @@ export default {
     expiryPeriodChange() {
       const end = new Date()
       const start = new Date()
-      if (this.formData.LicensePeriodTypeResourceId == 'HTHpWWXGJshG') {
+      if (this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
         this.formData.LicenseStartDate = this.$moment(start).format('YYYY-MM-DD')
         this.formData.LicenseEndDate = this.$moment(end).format('YYYY-MM-DD')
-      } else if (this.formData.LicensePeriodTypeResourceId == '6EXwfaM5ZDT4') {
+      } else if (this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
         this.formData.LicenseStartDate = this.$moment(start).format('YYYY-MM-DD')
         this.formData.LicenseEndDate = this.$moment(end).format('YYYY-MM-DD')
@@ -1001,27 +1003,6 @@ export default {
     },
     editStepLock() {
       this.stepLock = false
-    },
-    onlyNumbers(e) {
-      //
-      const key = e.charCode || e.keyCode || 0
-      // allow backspace, tab, delete, enter, arrows, numbers and keypad numbers ONLY
-      // home, end, period, and numpad decimal
-      if (
-        key == 8 ||
-        key == 9 ||
-        key == 13 ||
-        key == 46 ||
-        key == 110 ||
-        key == 190 ||
-        (key >= 35 && key <= 40) ||
-        (key >= 48 && key <= 57) ||
-        (key >= 96 && key <= 105)
-      ) {
-        return key
-      } else {
-        e.preventDefault()
-      }
     }
   },
   watch: {
@@ -1060,15 +1041,12 @@ export default {
       if (val && val.length > 2) {
         this.debounce(() => {
           this.payload.filter.FilterGroups[0].FilterItems[0].Value = val
-          searchCompanies(this.payload)
-            .then((response) => {
-              this.companies =
-                response.data.data.hasOwnProperty('results') &&
-                response.data.data.results.length > 0
-                  ? response.data.data.results
-                  : []
-            })
-            .catch((error) => {})
+          searchCompanies(this.payload).then((response) => {
+            this.companies =
+              response.data.data.hasOwnProperty('results') && response.data.data.results.length > 0
+                ? response.data.data.results
+                : []
+          })
         }, 1000)
       }
     }
