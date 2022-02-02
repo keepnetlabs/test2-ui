@@ -51,9 +51,12 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
-    const { refPeople } = this.$refs
+    const { refPeople, refPermissions } = this.$refs
     if (refPeople && refPeople.showCreateOrEditSystemUserModal) {
-      refPeople.toggleCreateOrEditSystemUser()
+      refPeople.checkIfCanCloseSystemUserModal()
+      next(false)
+    } else if (refPermissions && refPermissions.newPermissionsModalStatus) {
+      refPermissions.checkIfCanClosePermissionsModal()
       next(false)
     } else {
       next()

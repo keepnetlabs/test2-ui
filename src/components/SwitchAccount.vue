@@ -246,7 +246,7 @@ export default {
           return obj[path[last]] === undefined ? fallback : obj[path[last]]
         }
 
-        function filterTreeItem(item, search, textKey) {
+        function filterTreeItem(item, search = '', textKey) {
           const text = getObjectValueByPath(item, textKey)
           return text && text.toLocaleLowerCase().indexOf(search.toLocaleLowerCase()) > -1
         }

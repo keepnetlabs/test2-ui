@@ -2,6 +2,7 @@
   <div id="permissionLogs" class="permission-logs">
     <new-permissions
       v-if="newPermissionsModalStatus"
+      ref="permissionsModal"
       :status="newPermissionsModalStatus"
       @closeOverlay="togglePermissionModalStatus"
       @closeOverlayWithUpdate="closeOverlayWithUpdate"
@@ -396,13 +397,13 @@ export default {
         })
         this.permissions = sortedPermissions
         function search_and_delete(obj, search_term) {
-          if (obj['children'] === null) {
+          if (obj?.children === null) {
             delete obj['children']
           }
-          if (!obj['permissionResourceId']) {
+          if (!obj?.permissionResourceId) {
             obj.permissionResourceId = Math.random()
           }
-          if (obj.children) {
+          if (obj?.children) {
             obj.children = obj.children.filter((elem) => search_and_delete(elem, search_term))
           }
           return obj
@@ -625,6 +626,11 @@ export default {
 
       this.tableOptions.isColumnFilterActive =
         this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    checkIfCanClosePermissionsModal() {
+      if (this.$refs.permissionsModal) {
+        this.$refs.permissionsModal.closeOverlay()
+      }
     }
   },
   created() {

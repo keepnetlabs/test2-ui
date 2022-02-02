@@ -2564,7 +2564,9 @@ export default {
       }
     },
     handleRouteToInvestigationDetails(resp) {
-      this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      if (resp?.data?.data?.resourceId) {
+        this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
+      }
     },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId

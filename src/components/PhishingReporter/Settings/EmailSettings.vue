@@ -278,6 +278,9 @@ export default {
         return false
       }
     },
+    getCurrentValues() {
+      return this.formValues
+    },
     getFormValues() {
       const result = this.$refs.refForm.validate()
       if (result) {
@@ -297,6 +300,7 @@ export default {
       this.formValues.content = content || ''
       this.formValues.isSendInformationEmail = isSendInformationEmail
     }
+    this.$emit('getInitialFormValues', this.formValues)
   }
 }
 </script>

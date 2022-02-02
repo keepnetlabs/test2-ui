@@ -1,6 +1,7 @@
 <template>
   <div>
     <add-in-configuration
+      ref="addInConfiguration"
       v-if="showAddInConfiguration"
       :status="showAddInConfiguration"
       @changeAddInConfigurationStatus="changeAddInConfigurationStatus"
@@ -66,6 +67,11 @@ export default {
     submit() {},
     getReport() {
       this.$emit('getPhishingReport')
+    },
+    checkIfCanCloseOverlay() {
+      if (this.$refs.addInConfiguration) {
+        this.$refs.addInConfiguration.closeOverlay()
+      }
     }
   }
 }

@@ -160,7 +160,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import * as validations from '@/utils/validations'
-import { scrollToComponent } from '@/utils/functions'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import {
   createProxySettings,
   getProxySettings,
@@ -169,7 +169,6 @@ import {
 } from '@/api/proxySettings'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
 export default {
   name: 'NewProxySettings',
   components: {
@@ -201,6 +200,7 @@ export default {
       isTestEmailErrorDialogShowing: false,
       getTestConnectionDisableStatus: false,
       saveDisable: true,
+      initialFormValues: null,
       formValues: {
         name: '',
         address: '',
@@ -211,7 +211,6 @@ export default {
         isDefault: false,
         testUrl: 'https://www.google.com'
       },
-      initialFormValues: null,
       showPassword: false,
       testEmailErrorMessage: '',
       nonEditableAvailableForRequests: [],
@@ -344,7 +343,17 @@ export default {
       this.isTestEmailErrorDialogShowing = !this.isTestEmailErrorDialogShowing
     },
     closeOverlay() {
-      this.$emit('closeOverlay')
+      const isChanged = isDifferent(this.formValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeOverlay')
+      } else {
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeOverlay')
+          }
+        })
+      }
     },
     onPortChange(val) {
       if (val.length) {
@@ -362,16 +371,7 @@ export default {
       return getProxySettings(this.resourceId).then((response) => {
         const {
           data: {
-            data: {
-              name,
-              address,
-              port,
-              authenticationTypeId,
-              username,
-              password,
-              isDefault,
-              testUrl
-            } = {}
+            data: { name, address, port, authenticationTypeId, username, password, isDefault } = {}
           } = {}
         } = response
         this.formValues.name = name
@@ -381,10 +381,14 @@ export default {
         this.formValues.userName = username
         this.formValues.password = password
         this.formValues.isDefault = isDefault
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
   },
   created() {
+    if (!this.isEdit) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     if (this.isEdit && this.resourceId) {
       this.callForGetProxySettings()
       this.saveDisable = false

@@ -278,6 +278,7 @@ export function setGlobalUserData(userData) {
   localStorage.setItem('userId', currentUserData.id)
   localStorage.setItem('businessCatId', currentUserData.userCompany.businessCategoryId)
   localStorage.setItem('userName', userData.name || currentUserData.name)
+  localStorage.setItem('hostId', userData['user_id'])
   return currentUserData
 }
 
@@ -727,6 +728,8 @@ export function scrollToComponent(
   el,
   options = { behavior: 'smooth', block: 'center', inline: 'center' }
 ) {
+  if (!el) return
+
   if (window.safari || navigator.vendor.match(/apple/i)) {
     el.scrollIntoView()
   } else {
@@ -1089,4 +1092,16 @@ export function getSelectSearchPayload(payload = {}, search, key = 'name', extra
     ...extraFilterItems
   )
   return copyOfPayload
+}
+
+export function isDifferent(a, b) {
+  return Object.keys(a).some((key) => {
+    if (Array.isArray(a[key])) {
+      return a[key].length !== b[key].length
+    }
+    if (typeof a[key] === 'object' && a[key] !== null) {
+      return isDifferent(a[key], b[key])
+    }
+    return a[key] !== b[key]
+  })
 }

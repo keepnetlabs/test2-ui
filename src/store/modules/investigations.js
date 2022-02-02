@@ -53,19 +53,14 @@ const investigations = {
       let data = payload.data
       state.getInvestigationDetailsListData = data
     },
-    SET_INVESTIGATIONLISTEMPY(state, payload) {
+    SET_INVESTIGATIONLISTEMPY(state) {
       state.investigationList = []
     },
     SET_INVESTIGATIONDETAILSDATA(state, payload) {
-      //set target list data to vuex store
-      let data = payload.data
-      //data.asd = new Date()
-      state.getInvestigationDetailsData = data
+      state.getInvestigationDetailsData = payload.data
     },
     SET_STATSANDMENUDATA(state, payload) {
-      //set target list data to vuex store
-      let data = payload.data
-      state.getStatsAndMenuData = data
+      state.getStatsAndMenuData = payload.data
     },
     SET_INVESTIGATIONLIST(state, payload) {
       let data = payload.data
@@ -81,14 +76,10 @@ const investigations = {
       state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
     },
     SET_IRSUMMARY(state, payload) {
-      let data = payload.data
-      state.irSummary = data
+      state.irSummary = payload.data
     },
     SET_TARGETUSERSLIST(state, payload) {
-      //set target list data to vuex store
-      let data = payload.data
-      //data.unshift({ name: 'All', groupId: 'all' })
-      state.targetUsersList = data
+      state.targetUsersList = payload.data
     },
     SET_WIDGETS_LOADING(state, payload) {
       state.isWidgetsLoading = payload

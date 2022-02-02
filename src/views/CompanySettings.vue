@@ -135,15 +135,27 @@ export default {
     this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {
-    const { refSmtpSettings, refNotificationTemplates, refCustomApi } = this.$refs
+    const {
+      refSmtpSettings,
+      refNotificationTemplates,
+      refCustomApi,
+      refProxySettings,
+      refSamlSettings
+    } = this.$refs
     if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
-      refSmtpSettings.toggleSmtpModalStatus()
+      refSmtpSettings.checkIfCanCloseSmtpModal()
       next(false)
     } else if (refNotificationTemplates && refNotificationTemplates.newNotificationTemplateStatus) {
-      refNotificationTemplates.toggleNewNotificationTemplate()
+      refNotificationTemplates.checkIfCanCloseNotificationTemplateModal()
       next(false)
     } else if (refCustomApi && refCustomApi.showNewCustomApi) {
-      refCustomApi.toggleNewCustomApiStatus()
+      refCustomApi.checkIfCanCloseCustomApiModal()
+      next(false)
+    } else if (refProxySettings && refProxySettings.newProxyModalStatus) {
+      refProxySettings.checkIfCanCloseProxyModal()
+      next(false)
+    } else if (refSamlSettings && refSamlSettings.isEditOrNewModalOpen) {
+      refSamlSettings.checkIfCanCloseSamlSettingsModal()
       next(false)
     } else {
       next()

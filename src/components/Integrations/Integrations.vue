@@ -2,14 +2,15 @@
   <div id="integrations">
     <v-overlay
       id="add-new-community-overlay"
+      v-if="modalStatus"
       :value="modalStatus"
       :opacity="1"
       :z-index="99"
       color="white"
-      v-if="modalStatus"
     >
       <new-integration
         v-if="modalStatus"
+        ref="newIntegration"
         :showModal="modalStatus"
         :integrationId="integrationId"
         @closeOverlay="changeModalStatus"
@@ -480,6 +481,11 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseNewIntegrationModal() {
+      if (this.$refs.newIntegration) {
+        this.$refs.newIntegration.closeOverlay()
+      }
+    },
     changeModalStatus(status, restart) {
       this.integrationId = null
       this.modalStatus = status
