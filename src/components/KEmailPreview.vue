@@ -150,6 +150,7 @@ export default {
 .k-email-preview {
   border: none !important;
   pointer-events: none !important;
+  min-height: 90px;
   * {
     padding: 0;
     margin: 0;

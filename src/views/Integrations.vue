@@ -4,14 +4,15 @@
       <v-col class="pl-0 integrations__tab-container" cols="12">
         <v-card id="pr-card" class="pr-card pr-6 pb-0">
           <el-tabs v-model="tab">
+            <el-tab-pane label="Integrations" name="integrations" id="integrations-content">
+              <integrations ref="refIntegrations"></integrations>
+            </el-tab-pane>
             <el-tab-pane
-              v-for="item in tabItems"
-              :key="item.name"
-              :id="item.id"
-              :name="item.name"
-              :label="item.label"
+              :label="labels.AdvancedSettings"
+              :name="`${labels.AdvancedSettings.toLowerCase().replace(/\s/gi, '')}`"
+              :id="`${labels.AdvancedSettings.toLowerCase()}-content`"
             >
-              <component v-if="item.name === tab" :is="item.component" />
+              <advanced-settings ref="refAdvancedSettings"></advanced-settings>
             </el-tab-pane>
           </el-tabs>
         </v-card>
@@ -27,31 +28,27 @@ import AdvancedSettings from '@/components/Integrations/AdvancedSettings/Advance
 export default {
   name: 'Integrations',
   components: {
-    integration: Integrations
+    integrations: Integrations,
+    'advanced-settings': AdvancedSettings
   },
   data() {
     return {
       tab: 'integrations',
-      tabItems: [
-        {
-          label: 'Integrations',
-          name: 'integrations',
-          id: 'integrations-content',
-          component: Integrations
-        },
-        {
-          label: labels.AdvancedSettings,
-          name: labels.AdvancedSettings.toLowerCase().replace(/\s/gi, ''),
-          id: `${labels.AdvancedSettings.toLowerCase()}-content`,
-          component: AdvancedSettings
-        }
-      ],
       labels
     }
   },
   methods: {
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refIntegrations } = this.$refs
+    if (refIntegrations && refIntegrations.modalStatus) {
+      refIntegrations.checkIfCanCloseNewIntegrationModal()
+      next(false)
+    } else {
+      next()
     }
   }
 }

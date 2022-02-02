@@ -949,6 +949,9 @@ export default {
       this.checkMarkAsAndAnalyzeDisability()
       this.$forceUpdate()
     },
+    getCurrentActions() {
+      return this.actions
+    },
     addAction(actionVal = null) {
       this.checkMarkAsAndAnalyzeDisability()
       let nextAvailableAction

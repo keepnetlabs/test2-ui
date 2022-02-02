@@ -270,15 +270,7 @@
                     <div class="investigation-details__container__stats__cards__card-left">
                       <div
                         class="investigation-details__container__stats__cards__card-left__icon"
-                        :class="
-                          statsAndMenuData && statsAndMenuData.status == 'Running'
-                            ? 'bg-macaroni'
-                            : statsAndMenuData && statsAndMenuData.status == 'Finished'
-                            ? 'bg-turquoise'
-                            : statsAndMenuData && statsAndMenuData.status == 'Expired'
-                            ? 'bg-macaroni'
-                            : 'bg-macaroni'
-                        "
+                        :class="getHeaderCardBoxClassSecond"
                         :style="getHeaderCardBoxShadowSecond"
                       >
                         <v-icon medium left color="white">mdi-account</v-icon>
@@ -288,8 +280,8 @@
                       <h3 class="investigation-details__container__stats__cards__card-right__title">
                         {{
                           getStatusText(
-                            'notScannedUserCount',
-                            statsAndMenuData && statsAndMenuData.notScannedUserCount
+                            'onlineUserCount',
+                            statsAndMenuData && statsAndMenuData['onlineUserCount']
                           )
                         }}
                       </h3>
@@ -316,8 +308,7 @@
                       <div
                         class="investigation-details__container__stats__cards__card-left__icon bg-green"
                         style="
-                          box-shadow: 0px 2px 5px rgba(67, 160, 71, 0.3),
-                            0px 0px 3px rgba(0, 0, 0, 0.1);
+                          box-shadow: 0 2px 5px rgba(67, 160, 71, 0.3), 0 0 3px rgba(0, 0, 0, 0.1);
                         "
                       >
                         <v-icon medium left color="white">mdi-account-circle</v-icon>
@@ -442,7 +433,7 @@
                           id="btn--investigation-details-inbox"
                           link
                           @click="menuClick('Inbox')"
-                          :class="{ 'v-list-item--active': activeMenu == 'Inbox' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'Inbox' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-inbox</v-icon>
@@ -453,24 +444,8 @@
                               Inbox
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Inbox'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Inbox'
-                                  ).mailCount
-                                "
-                                >{{
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Inbox'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Inbox'
-                                  ).mailCount
-                                }}</span
+                                v-if="!!getMailCountByFolderName('Inbox')"
+                                >{{ getMailCountByFolderName('Inbox') }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -479,7 +454,7 @@
                           id="btn--investigation-details-junk"
                           link
                           @click="menuClick('JunkEmail')"
-                          :class="{ 'v-list-item--active': activeMenu == 'JunkEmail' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'JunkEmail' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-alert</v-icon>
@@ -490,24 +465,8 @@
                               Junk
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'JunkEmail'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'JunkEmail'
-                                  ).mailCount
-                                "
-                                >{{
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'JunkEmail'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'JunkEmail'
-                                  ).mailCount
-                                }}</span
+                                v-if="!!getMailCountByFolderName('JunkEmail')"
+                                >{{ getMailCountByFolderName('JunkEmail') }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -516,7 +475,7 @@
                           link
                           id="btn--investigation-details-draft"
                           @click="menuClick('Drafts')"
-                          :class="{ 'v-list-item--active': activeMenu == 'Drafts' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'Drafts' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-file</v-icon>
@@ -527,24 +486,8 @@
                               Draft
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Drafts'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Drafts'
-                                  ).mailCount
-                                "
-                                >{{
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Drafts'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'Drafts'
-                                  ).mailCount
-                                }}</span
+                                v-if="!!getMailCountByFolderName('Drafts')"
+                                >{{ getMailCountByFolderName('Drafts') }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -553,7 +496,7 @@
                           id="btn--investigation-details-sent"
                           link
                           @click="menuClick('SentItems')"
-                          :class="{ 'v-list-item--active': activeMenu == 'SentItems' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'SentItems' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-send</v-icon>
@@ -564,24 +507,8 @@
                               Sent
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'SentItems'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'SentItems'
-                                  ).mailCount
-                                "
-                                >{{
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'SentItems'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'SentItems'
-                                  ).mailCount
-                                }}</span
+                                v-if="!!getMailCountByFolderName('SentItems')"
+                                >{{ getMailCountByFolderName('SentItems') }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -590,7 +517,7 @@
                           id="btn--investigation-details-deleted-items"
                           link
                           @click="menuClick('DeletedItems')"
-                          :class="{ 'v-list-item--active': activeMenu == 'DeletedItems' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'DeletedItems' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-delete</v-icon>
@@ -601,24 +528,8 @@
                               Deleted Items
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'DeletedItems'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'DeletedItems'
-                                  ).mailCount
-                                "
-                                >{{
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'DeletedItems'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item.folderName == 'DeletedItems'
-                                  ).mailCount
-                                }}</span
+                                v-if="!!getMailCountByFolderName('DeletedItems')"
+                                >{{ getMailCountByFolderName('DeletedItems') }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -627,7 +538,7 @@
                           id="btn--investigation-details-others"
                           link
                           @click="menuClick('Others')"
-                          :class="{ 'v-list-item--active': activeMenu == 'Others' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'Others' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-plus-box</v-icon>
@@ -638,24 +549,8 @@
                               Others
                               <span
                                 class="v-list-item-title__value"
-                                v-if="
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item && item.folderName && item.folderName == 'Others'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item && item.folderName && item.folderName == 'Others'
-                                  ).mailCount
-                                "
-                                >{{
-                                  statsAndMenuData.folders &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item && item.folderName && item.folderName == 'Others'
-                                  ) &&
-                                  statsAndMenuData.folders.find(
-                                    (item) => item && item.folderName && item.folderName == 'Others'
-                                  ).mailCount
-                                }}</span
+                                v-if="!!getMailCountByFolderName('Others')"
+                                >{{ getMailCountByFolderName('Others') }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -671,7 +566,7 @@
                           link
                           @click="menuClick('Stored')"
                           class="v-list-item__archived--main"
-                          :class="{ 'v-list-item--active': activeMenu == 'Stored' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'Stored' }"
                         >
                           <div class="v-list-item__archived"></div>
                           <div class="v-list-item__archived--link">
@@ -684,24 +579,8 @@
                                 Stored
                                 <span
                                   class="v-list-item-title__value"
-                                  v-if="
-                                    statsAndMenuData.folders &&
-                                    statsAndMenuData.folders.find(
-                                      (item) => item.folderName == 'Stored'
-                                    ) &&
-                                    statsAndMenuData.folders.find(
-                                      (item) => item.folderName == 'Stored'
-                                    ).mailCount
-                                  "
-                                  >{{
-                                    statsAndMenuData.folders &&
-                                    statsAndMenuData.folders.find(
-                                      (item) => item.folderName == 'Inbox'
-                                    ) &&
-                                    statsAndMenuData.folders.find(
-                                      (item) => item.folderName == 'Inbox'
-                                    ).mailCount
-                                  }}</span
+                                  v-if="!!getMailCountByFolderName('Stored')"
+                                  >{{ getMailCountByFolderName('Stored') }}</span
                                 >
                               </v-list-item-title>
                             </v-list-item-content>
@@ -764,7 +643,7 @@
                       </div>
                     </div>
                     <div
-                      id="card--investigation-details-trigger"
+                      id="card--investigation-details-trigger-source"
                       class="investigation-details__container__content--right-menu__summary__item mt-2"
                     >
                       <div
@@ -849,37 +728,6 @@
                         Duplicate
                       </v-btn>
                     </div>
-                    <!--
-                    <div
-                      id="btn-auto-refresh-trigger--investigation-details-card"
-                      class="investigation-details__container__content--right-menu__summary__item--action-button"
-                      v-if="isRunning"
-                    >
-                      <v-menu offset-y transition="scale-transition">
-                        <template v-slot:activator="{ on }">
-                          <v-btn icon color="blue" v-on="on" style="border-color: red;">
-                            <v-icon>mdi-dots-vertical</v-icon>
-                          </v-btn>
-                        </template>
-                        <div>
-                          <v-list dense flat class="notification-wrapper__v-list">
-                            <v-list-item-group color="primary">
-                              <v-list-item @click="setAutoRefresh()">
-                                <v-list-item-content>
-                                  <v-list-item-title
-                                    >{{ isAutoRefreshActive ? '' : 'Enable' }} Auto-Refresh every 15
-                                    seconds</v-list-item-title
-                                  >
-                                </v-list-item-content>
-                                <v-list-item-icon>
-                                  <v-icon v-if="isAutoRefreshActive">mdi-check</v-icon>
-                                </v-list-item-icon>
-                              </v-list-item>
-                            </v-list-item-group>
-                          </v-list>
-                        </div>
-                      </v-menu>
-                    </div>-->
                   </div>
                 </div>
                 <div
@@ -1576,6 +1424,12 @@ export default {
         this.refreshDatatable()
       }
     },
+    getMailCountByFolderName(folderName = '') {
+      const { statsAndMenuData } = this
+      return (
+        statsAndMenuData?.folders?.find((item) => item['folderName'] === folderName)?.mailCount || 0
+      )
+    },
     serverSideSizeChangedForTargetUsers(pageSize = 10) {
       //generic
       this.investigationTargetUsersListBodyData.pageSize = pageSize
@@ -2061,7 +1915,6 @@ export default {
     getStatusText(section, val) {
       if (val == null) val = 0
       this.iconType()
-      //this.statsAndMenuData.estimatedTime = 'asd'
       switch (section) {
         case 'statusTime':
           switch (this.statsAndMenuData.status) {
@@ -2079,10 +1932,10 @@ export default {
               break
           }
           break
-        case 'notScannedUserCount':
+        case 'onlineUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `${val} User(s)`
+              return `${val} Online User(s)`
             case 'Canceled':
               return `${val} User(s)`
             case 'Expired':
@@ -2096,10 +1949,11 @@ export default {
         case 'totalUserCount':
           switch (this.statsAndMenuData.status) {
             case 'Running':
-              return `Could not be scanned`
-            case 'Canceled':
-              return `Could not be scanned`
+              return this.statsAndMenuData['onlineUserCount']
+                ? `of remaining ${this.statsAndMenuData.notScannedUserCount} users`
+                : `Waiting for users`
             case 'Expired':
+            case 'Canceled':
               return `Could not be scanned`
             case 'Finished':
               return 'No remaining users'
@@ -2627,6 +2481,18 @@ export default {
           : '0px 2px 5px rgba(230, 162, 60, 0.3), 0px 0px 3px rgba(0, 0, 0, 0.1)'
         : ''
       return style
+    },
+    getHeaderCardBoxClassSecond() {
+      const { statsAndMenuData } = this
+      return statsAndMenuData && statsAndMenuData.status === 'Running'
+        ? statsAndMenuData['onlineUserCount']
+          ? 'bg-turquoise'
+          : 'bg-macaroni'
+        : statsAndMenuData && statsAndMenuData.status === 'Finished'
+        ? 'bg-turquoise'
+        : statsAndMenuData && statsAndMenuData.status === 'Expired'
+        ? 'bg-macaroni'
+        : 'bg-macaroni'
     },
     getGoogleData() {
       return (

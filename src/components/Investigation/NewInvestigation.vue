@@ -368,6 +368,7 @@
     </template>
   </app-modal>
 </template>
+
 <script>
 import Treeselect from '@riophae/vue-treeselect'
 import AppModal from '../AppModal'
@@ -377,7 +378,8 @@ import {
   getDefaultAxiosPayload,
   getSelectSearchPayload,
   getTimeZoneForMoment,
-  scrollToComponent
+  scrollToComponent,
+  isDifferent
 } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
@@ -419,6 +421,7 @@ export default {
 
   data() {
     return {
+      initialFormValues: null,
       warningMessage: null,
       saveDisable: false,
       isSubmitted: false,
@@ -819,7 +822,25 @@ export default {
       })
     },
     onCancelClicked() {
-      this.$emit('closeAdd')
+      const currentFormValues = {
+        investigationName: this.investgationName,
+        targetUsers: this.targetUsers,
+        filterList: this.filterList,
+        date: this.date,
+        scanTypes: this.scanTypes,
+        selectedDuration: this.selectedDuration,
+        selectedAction: this.selectedAction
+      }
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeAdd')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('closeAdd')
+        }
+      })
     },
     filterData(data = []) {
       return data.reduce((acc, item) => {
@@ -1401,6 +1422,15 @@ export default {
       )}`
     }
     document.querySelector('.page-nav').style.zIndex = 8
+    this.initialFormValues = {
+      investigationName: this.investgationName,
+      targetUsers: this.targetUsers,
+      filterList: this.filterList,
+      date: this.date,
+      scanTypes: this.scanTypes,
+      selectedDuration: this.selectedDuration,
+      selectedAction: this.selectedAction
+    }
   },
   mounted() {},
   beforeDestroy() {
