@@ -9,20 +9,15 @@
       @deleteMultiple="handleDeleteUsers"
       @changeModalStatus="changeDeleteModalStatus"
     />
-    <add-users-manually-modal
-      :is-show="isWantToShowAddUsersManuallyModal"
-      v-if="isWantToShowAddUsersManuallyModal"
-      @changeModalStatus="changeAddUsersManuallyModalStatus"
-    />
     <add-user-modal
       v-if="isWantToShowAddUsersModal"
       ref="addUserModal"
       :status="isWantToShowAddUsersModal"
-      @closeAddUserModal="closeAddUserModal"
-      @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
       :editData="selectedRow"
       :custom-fields="customFields"
       :company-license="companyLicense"
+      @closeAddUserModal="closeAddUserModal"
+      @closeAddUserModalWithUpdate="closeAddUserModalWithUpdate"
     />
     <custom-fields-modal
       v-if="isWantToShowCustomFieldsModal"
@@ -32,12 +27,12 @@
     />
     <target-user-import-from-a-file
       v-if="isWantToImportFile"
+      ref="targetUserFromAFile"
       :status="isWantToImportFile"
+      :columns="tableOptions.columns"
+      :companyLicense="companyLicense"
       @closeAddUserModal="closeImportModal"
       @closeOverlay="isWantToImportFile = false"
-      :columns="tableOptions.columns"
-      ref="targetUserFromAFile"
-      :companyLicense="companyLicense"
     />
     <TargetUsersViewTargetUserGroups
       v-if="isShowingTargetUserViewTargetGroups"
@@ -66,6 +61,9 @@
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
       :setClassName="setCellClassName"
+      :isServerSide="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @addToGroup="handleAddToGroup"
       @createGroupWithUser="handleCreateGroupWithUser"
       @submenuItemClick="handleSubMenuItemClick"
@@ -87,9 +85,6 @@
       @clear-filters="handleClearFilters"
       @on-table-settings-change="handleSetRenderedColumns"
       @viewUserGroups="handleViewUserGroups"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     >
       <template v-slot:addUsers>
         <v-menu :offset-y="true" bottom left>
@@ -184,7 +179,6 @@
 <script>
 import Datatable from '../../components/DataTable'
 import DeleteUserModal from './DeleteUserModal'
-import AddUsersManuallyModal from './AddUsersManuallyModal'
 import AddUserModal from './AddUserModal'
 import labels from '@/model/constants/labels'
 import {
@@ -214,7 +208,6 @@ export default {
     CustomFieldsModal,
     DeleteUserModal,
     Datatable,
-    AddUsersManuallyModal,
     AddUserModal,
     TargetUserImportFromAFile
   },
@@ -277,7 +270,6 @@ export default {
     isMultipleDelete: false,
     isWantToShowDeleteUserModal: false,
     selectedSyncIndex: null,
-    isWantToShowAddUsersManuallyModal: false,
     selectedRow: null,
     customFields: [],
     isWantToShowAddUsersModal: false,
@@ -694,9 +686,6 @@ export default {
     },
     changeDeleteModalStatus(status) {
       this.isWantToShowDeleteUserModal = status
-    },
-    changeAddUsersManuallyModalStatus(status) {
-      this.isWantToShowAddUsersManuallyModal = status
     },
     handleDeleteUsers(selections) {
       selections.forEach((item) => this.handleDeleteUser(item, selections))

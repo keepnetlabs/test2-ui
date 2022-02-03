@@ -116,7 +116,7 @@ export default {
         refPeople.isWantToShowAddUsersManuallyModal = false
         next(false)
       } else if (refPeople.isWantToShowAddUsersModal) {
-        refPeople.isWantToShowAddUsersModal = false
+        refPeople.checkIfCanCloseAddUserModal()
         next(false)
       } else if (refPeople.isWantToShowImportUsersFromFileModal) {
         refPeople.isWantToShowImportUsersFromFileModal = false
@@ -158,15 +158,6 @@ export default {
     },
     toggleShowLicenseExceededDialog() {
       this.showLicenseExceededDialog = !this.showLicenseExceededDialog
-    }
-  },
-  beforeRouteLeave(to, from, next) {
-    const { refPeople } = this.$refs
-    if (refPeople && refPeople.isWantToShowAddUsersModal) {
-      refPeople.checkIfCanCloseAddUserModal()
-      next(false)
-    } else {
-      next()
     }
   }
 }
