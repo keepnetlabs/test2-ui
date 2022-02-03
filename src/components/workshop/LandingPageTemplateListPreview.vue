@@ -343,7 +343,7 @@ export default {
           })
       }, 500)
     },
-    selectChange(item) {
+    selectChange() {
       this.setSelectedTemplate(
         this.listData[
           this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
@@ -459,7 +459,6 @@ export default {
       }
       getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
-          const { data } = response
           this.selectedTemplateHeader = response.data.data.landingPages[0].name
           this.templateHTML = response.data.data.landingPages[0].content
           this.templateURL = response.data.data.urlTemplate
@@ -495,7 +494,7 @@ export default {
         }
       }
     },
-    landingPageTemplateResourceId(newVal, oldVal) {
+    landingPageTemplateResourceId(newVal) {
       this.selectChangeValue = newVal
     }
   }
@@ -617,7 +616,6 @@ export default {
         color: #2196f3 !important;
       }
       .v-chip .v-chip__content {
-        font-family: Open Sans !important;
         font-style: normal !important;
         font-weight: 600 !important;
         font-size: 12px !important;
@@ -642,7 +640,6 @@ export default {
     }
     &--item {
       .v-chip__content {
-        font-family: Open Sans;
         font-style: normal;
         font-weight: 600 !important;
         font-size: 12px !important;
@@ -694,7 +691,6 @@ export default {
         border: 1px solid #757575 !important;
         box-sizing: border-box;
         border-radius: 4px !important;
-        font-family: Open Sans;
         font-style: normal;
         font-weight: 600 !important;
         font-size: 12px !important;

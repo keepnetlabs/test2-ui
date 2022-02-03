@@ -8,8 +8,6 @@ import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import EmailDetails from '../components/IncidentResponder/emailDetails'
-import Workshop from '../views/Workshop.vue'
-import Test from '../views/Test'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 import InvestigationComponent from '../views/Investigations.vue'
@@ -315,22 +313,6 @@ const router = new Router({
           },
           props: true,
           params: true
-        },
-        {
-          path: '/test',
-          name: 'test',
-          component: Test,
-          meta: {
-            isAuthenticated: false
-          }
-        },
-        {
-          path: '/workshop',
-          name: 'Workshop',
-          component: Workshop,
-          meta: {
-            isAuthenticated: true
-          }
         },
         {
           path: '/reports',
