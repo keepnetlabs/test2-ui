@@ -2,13 +2,14 @@
   <div id="container--threat-sharing" class="component-threat-sharing page-wrapper">
     <v-overlay
       id="new-community-overlay"
+      ref="refNewCommunity"
       :value="isWantToAddNewCommunity"
       :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
       :opacity="1"
-      :z-index="999"
+      :z-index="9"
       color="white"
     >
-      <new-community @closeAdd="onAddClose" />
+      <new-community @closeAdd="onAddClose" ref="refNewCommunity" />
     </v-overlay>
     <v-layout id="ts-layout" wrap style="min-height: 79vh;">
       <v-col class="main-column pr-4 pl-4" cols="12" md="8">
@@ -74,24 +75,24 @@
 </template>
 
 <script>
-import Incidents from '../components/ThreadSharing/Incidents'
-import Communities from '../components/ThreadSharing/Communities'
-import RightColumn from '../components/ThreadSharing/RightColumn'
-import NewCommunity from '../components/ThreadSharing/NewCommunity'
-import { checkPermission } from '@/utils/functions'
+import Incidents from "../components/ThreadSharing/Incidents";
+import Communities from "../components/ThreadSharing/Communities";
+import RightColumn from "../components/ThreadSharing/RightColumn";
+import NewCommunity from "../components/ThreadSharing/NewCommunity";
+import { checkPermission } from "@/utils/functions";
 
 export default {
-  name: 'ThreatSharing',
+  name: "ThreatSharing",
   components: {
     Incidents,
     Communities,
     RightColumn,
-    NewCommunity
+    NewCommunity,
   },
   watch: {
     tab(value) {
-      this.getSelectedTabData()
-    }
+      this.getSelectedTabData();
+    },
   },
   data: () => ({
     tab: null,
@@ -101,111 +102,120 @@ export default {
     isTableReload: false,
     page: 1,
     subSelectedTab: null,
-    isStepDisabled: false
+    isStepDisabled: false,
   }),
+  beforeRouteLeave(to, from, next) {
+    const { refNewCommunity } = this.$refs;
+    if (this.isWantToAddNewCommunity) {
+      refNewCommunity.onCancelClicked();
+      next(false);
+    } else {
+      next();
+    }
+  },
   beforeRouteUpdate(to, from, next) {
-    next(true)
+    next(true);
   },
   created() {},
   methods: {
     setThreatSharingStepLoading(val) {
-      this.isStepDisabled = val
+      this.isStepDisabled = val;
     },
     setLoadState() {
-      this.isLoadState = false
-      this.isTableReload = false
+      this.isLoadState = false;
+      this.isTableReload = false;
     },
     checkPermissions(permission, type) {
-      return checkPermission(permission, type)
+      return checkPermission(permission, type);
     },
     joinRequestSuccess() {
-      this.getSelectedTabData()
+      this.getSelectedTabData();
     },
     getSelectedTabData() {
-      let _this = this
+      let _this = this;
       setTimeout(() => {
-        if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
+        if (this.tab === 0 && this.checkPermissions("community-posts/search", "POST")) {
           if (!this.isLoadState) {
             if (this.$refs && this.$refs.tsIncidents) {
-              this.$refs.tsIncidents.getIncidentList()
-              this.$refs.tsIncidents.page = 1
-              this.$refs.tsIncidents.itemsPerPage = 5
+              this.$refs.tsIncidents.getIncidentList();
+              this.$refs.tsIncidents.page = 1;
+              this.$refs.tsIncidents.itemsPerPage = 5;
             }
           }
         } else {
-          if (this.checkPermissions('communities/search/all', 'POST')) {
+          if (this.checkPermissions("communities/search/all", "POST")) {
             const communitiesDataGlobal =
-              _this.$store.state['communities'].communities &&
-              _this.$store.state['communities'].communities.communitiesData
+              _this.$store.state["communities"].communities &&
+              _this.$store.state["communities"].communities.communitiesData;
             this.page =
               (communitiesDataGlobal &&
                 communitiesDataGlobal.searchValues &&
                 communitiesDataGlobal.searchValues.page) ||
-              1
+              1;
             if (!this.isLoadState) {
               if (this.$refs.tsCommunities) {
-                this.$refs.tsCommunities.getAllCommunitiesListData()
-                this.$refs.tsCommunities.getInvitationCount()
-                this.$refs.tsCommunities.setInitialCommunityValues()
-                this.$refs.tsCommunities.isCommunity = false
+                this.$refs.tsCommunities.getAllCommunitiesListData();
+                this.$refs.tsCommunities.getInvitationCount();
+                this.$refs.tsCommunities.setInitialCommunityValues();
+                this.$refs.tsCommunities.isCommunity = false;
               }
             } else {
               if (this.isLoadState) {
               } else {
                 if (!this.isLoadState) {
-                  this.$refs.tsCommunities.getAllCommunitiesListData()
-                  this.$refs.tsCommunities.getInvitationCount()
-                  this.$refs.tsCommunities.setInitialCommunityValues()
-                  this.$refs.tsCommunities.isCommunity = false
+                  this.$refs.tsCommunities.getAllCommunitiesListData();
+                  this.$refs.tsCommunities.getInvitationCount();
+                  this.$refs.tsCommunities.setInitialCommunityValues();
+                  this.$refs.tsCommunities.isCommunity = false;
                 }
               }
             }
           }
         }
-      }, 50)
+      }, 50);
       setTimeout(() => {
-        this.setLoadState()
-      }, 100)
+        this.setLoadState();
+      }, 100);
     },
     openCreateCommunityModal() {
-      this.isWantToAddNewCommunity = true
+      this.isWantToAddNewCommunity = true;
     },
     onAddClose() {
-      this.isWantToAddNewCommunity = false
-      this.refreshMemberTable = !this.refreshMemberTable
-    }
+      this.isWantToAddNewCommunity = false;
+      this.refreshMemberTable = !this.refreshMemberTable;
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
       if (vm.$route.query.detailsId) {
-        vm.tab = 1
+        vm.tab = 1;
       } else if (vm.$route.params.isCommunity) {
-        vm.tab = 1
+        vm.tab = 1;
       } else if (vm.$route.query.showInvitation && !vm.isLoadState) {
-        vm.tab = 1
+        vm.tab = 1;
         setTimeout(() => {
-          vm.$refs.tsCommunities.subTabSelected('tab-2')
-        }, 1250)
+          vm.$refs.tsCommunities.subTabSelected("tab-2");
+        }, 1250);
       }
       if (
-        !vm.checkPermissions('community-posts/search', 'POST') &&
-        !vm.checkPermissions('communities/search/all', 'POST')
+        !vm.checkPermissions("community-posts/search", "POST") &&
+        !vm.checkPermissions("communities/search/all", "POST")
       ) {
-        vm.$router.push('/')
+        vm.$router.push("/");
       }
-      if (from.name === 'Community') {
-        const incidentsData = vm.$store.state['incidents'].incidents
-        const communitiesData = vm.$store.state['communities'].communities
-        const isTableReload = vm.$store.state['tableReload'].tableReload
+      if (from.name === "Community") {
+        const incidentsData = vm.$store.state["incidents"].incidents;
+        const communitiesData = vm.$store.state["communities"].communities;
+        const isTableReload = vm.$store.state["tableReload"].tableReload;
         if (incidentsData.incidentsData || communitiesData.communitiesData) {
-          vm.tab = !incidentsData.incidentsData ? 1 : 0
-          vm.isLoadState = true
-          vm.isTableReload = isTableReload
+          vm.tab = !incidentsData.incidentsData ? 1 : 0;
+          vm.isLoadState = true;
+          vm.isTableReload = isTableReload;
         }
       }
-    })
-  }
-}
+    });
+  },
+};
 </script>
 
 <style lang="scss">
@@ -224,7 +234,7 @@ export default {
 
   .right-side- {
     &title {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-style: normal;
@@ -243,7 +253,7 @@ export default {
     display: flex;
     margin-top: 10px;
     margin-left: 0px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: bold;
     font-style: normal;
@@ -302,7 +312,7 @@ export default {
 
   .ts-body {
     margin-top: 8px;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-style: normal;
@@ -313,7 +323,7 @@ export default {
   }
 
   .ts-user-comp {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -338,7 +348,7 @@ export default {
   }
 
   .ts-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 24px;
     font-weight: normal;
     font-style: normal;
@@ -432,7 +442,7 @@ export default {
   }
 
   .filter-field {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 13px;
     font-weight: 600;
     font-stretch: normal;
@@ -445,7 +455,7 @@ export default {
   .create-com-btn {
     background-color: #2196f3 !important;
     color: #fff;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -577,7 +587,7 @@ export default {
   }
 
   .community-notification__text {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -588,7 +598,7 @@ export default {
   }
 
   .right-side-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -599,7 +609,7 @@ export default {
   }
 
   .right-side-sub-title {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: 600;
     font-stretch: normal;
@@ -615,7 +625,7 @@ export default {
   }
 
   .about-community-statement {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -626,7 +636,7 @@ export default {
   }
 
   .about-community-table-td {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 16px;
     font-weight: normal;
     font-stretch: normal;
@@ -638,7 +648,7 @@ export default {
   }
 
   .about-community-table-td-sec {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -664,7 +674,7 @@ export default {
 
   .like-count,
   .comment-count {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -685,7 +695,7 @@ export default {
       0 3px 1px -2px rgba(80, 80, 80, 0.12);
 
     .suggested-title {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 16px;
       font-weight: normal;
       font-stretch: normal;
@@ -703,7 +713,7 @@ export default {
       font-size: 12px;
 
       .suggested-industry {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 12px;
         font-weight: normal;
         font-stretch: normal;
@@ -735,7 +745,7 @@ export default {
   }
 
   .community-notification-header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     padding-bottom: 30px;
@@ -751,7 +761,7 @@ export default {
     align-items: center;
     justify-content: space-between;
     height: 25px !important;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -772,7 +782,7 @@ export default {
   }
 
   .v-card-headline {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -810,7 +820,7 @@ export default {
   }
 
   .delete-info {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 13px;
     font-weight: normal;
     font-stretch: normal;
@@ -821,7 +831,7 @@ export default {
   }
 
   .invite-sub-header {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -840,7 +850,7 @@ export default {
     display: flex;
 
     .v-label {
-      font-family: 'Open Sans', sans-serif !important;
+      font-family: "Open Sans", sans-serif !important;
       font-size: 13px;
       font-weight: normal;
       font-stretch: normal;
@@ -856,7 +866,7 @@ export default {
       border-radius: 18px !important;
 
       > span > span {
-        font-family: 'Open Sans', sans-serif !important;
+        font-family: "Open Sans", sans-serif !important;
         font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
@@ -894,7 +904,7 @@ export default {
   }
 
   .empty-posts {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -905,14 +915,14 @@ export default {
   }
 
   .empty-suggested-span {
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 14px;
   }
 
   .create-first-btn {
     min-width: 70% !important;
     width: 221px !important;
-    font-family: 'Open Sans', sans-serif !important;
+    font-family: "Open Sans", sans-serif !important;
     font-size: 13px !important;
     font-weight: 400 !important;
     font-stretch: normal !important;

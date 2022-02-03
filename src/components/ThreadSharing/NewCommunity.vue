@@ -16,7 +16,7 @@
             color="#f56c6c"
             text
             id="threat-sharing-new-community-accept-modal-cancel-button"
-            @click=";(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
+            @click="(isWantToAccept = false), (privacystatusid = oldPrivacyValue)"
             >{{ labels.Cancel }}
           </v-btn>
           <v-btn
@@ -40,7 +40,7 @@
             <v-list-item-title
               title-id="text--threat-sharing-new-community-modal-title"
               class="v-card-headline"
-              >{{ resourceId ? 'Edit' : 'Create New' }} Community
+              >{{ resourceId ? "Edit" : "Create New" }} Community
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -57,7 +57,7 @@
                   nameRules.required,
                   nameRules.empty,
                   nameRules.minLength,
-                  nameRules.maxLength
+                  nameRules.maxLength,
                 ]"
                 class="edit-name-textfield"
                 outlined
@@ -84,7 +84,7 @@
                   descriptionRules.required,
                   descriptionRules.empty,
                   descriptionRules.minLength,
-                  descriptionRules.maxLength
+                  descriptionRules.maxLength,
                 ]"
                 class="edit-description"
                 name="description"
@@ -213,47 +213,47 @@
         text
         @click="onCreateClicked"
         id="threat-sharing-new-community-update-or-create-modal-button"
-        >{{ resourceId ? 'Update' : 'Create' }}
+        >{{ resourceId ? "Update" : "Create" }}
       </v-btn>
     </div>
   </div>
 </template>
 <script>
-import { createCommunity, listBusinessCategories, updateCommunity } from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import AppDialog from '../AppDialog'
-import { scrollToComponent } from '../../utils/functions'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import labels from '@/model/constants/labels'
-import * as validations from '@/utils/validations'
+import { createCommunity, listBusinessCategories, updateCommunity } from "../../api/threadSharing";
+import AppDialog from "../AppDialog";
+import { scrollToComponent, isDifferent } from "../../utils/functions";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import labels from "@/model/constants/labels";
+import * as validations from "@/utils/validations";
 
 export default {
   components: {
     KSelect,
-    AppDialog
+    AppDialog,
   },
   props: {
     resourceId: {
-      required: false
+      required: false,
     },
     communityItem: {
-      required: false
-    }
+      required: false,
+    },
   },
   data() {
     return {
       saveDisable: false,
       labels,
-      termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
+      termsAndConditionsUrl: "https://www.keepnetlabs.com/terms-conditions/",
       isWantToAccept: false,
       oldPrivacyValue: null,
-      name: '',
-      description: '',
+      initialFormValues: {},
+      name: "",
+      description: "",
       privacy: false,
       categories: [],
-      selectedCategory: '',
+      selectedCategory: "",
       valid: false,
-      privacystatusid: '1',
+      privacystatusid: "1",
       acceptCheckbox: false,
       isCheckboxChecked: false,
       nameRules: {
@@ -264,8 +264,8 @@ export default {
           validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
         regex: (v) =>
           /^[a-z\d\-_\s]+$/i.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space'
+          "Only use letters, digits, period, comma, underline and hyphen",
+        empty: (v) => (v && !v.startsWith(" ")) || "Community Name cannot start with space",
       },
       descriptionRules: {
         required: (v) => validations.required(v, labels.Required),
@@ -273,129 +273,152 @@ export default {
           validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
         maxLength: (v) =>
           validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
-        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
+        empty: (v) => (v && !v.startsWith(" ")) || "Description cannot start with space",
       },
       checkboxRule: {
         required: (v) => {
-          return v || 'You must accept terms and conditions before creating the community'
-        }
+          return v || "You must accept terms and conditions before creating the community";
+        },
       },
       categoryRules: {
-        required: (v) => (!!v && v.length < 1) || 'Category required for creating a community'
-      }
-    }
+        required: (v) => (!!v && v.length < 1) || "Category required for creating a community",
+      },
+    };
   },
   watch: {
     privacystatusid: function (newVal, oldVal) {
-      this.oldPrivacyValue = oldVal
+      this.oldPrivacyValue = oldVal;
       if (this.resourceId) {
         if (newVal == 1 && oldVal == 2) {
-          this.isWantToAccept = true
+          this.isWantToAccept = true;
         } else {
-          this.isWantToAccept = false
+          this.isWantToAccept = false;
         }
       }
-    }
+    },
   },
   computed: {
     categoryRule() {
       if (this.selectedCategory) {
-        return true
+        return true;
       } else {
-        return 'Category required for creating a community'
+        return "Category required for creating a community";
       }
-    }
+    },
   },
   methods: {
     blurIndustry() {
       if (!this.selectedCategory || !this.selectedCategory.name) {
-        this.selectedCategory = null
+        this.selectedCategory = null;
       }
     },
     checkCheckboxValidation() {
-      this.isCheckboxChecked = this.acceptCheckbox
+      this.isCheckboxChecked = this.acceptCheckbox;
     },
     onCancelClicked() {
-      this.$emit('closeAdd')
+      const currentFormValues = {
+        name: this.name,
+        description: this.description,
+        selectedCategory: this.selectedCategory,
+        privacystatusid: this.privacystatusid,
+        acceptCheckbox: this.acceptCheckbox,
+      };
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues);
+      if (!isChanged) {
+        return this.$emit("closeAdd");
+      }
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
+        show: true,
+        callback: () => {
+          this.$emit("closeAdd");
+        },
+      });
     },
     onCreateClicked() {
-      const refThis = this
+      const refThis = this;
       if (this.$refs.form.validate()) {
-        this.saveDisable = true
+        this.saveDisable = true;
         const payload = {
           name: this.name,
           description: this.description,
           privacystatusid: this.privacystatusid,
           industryresourceid: this.selectedCategory.resourceId,
-          istermsandconditionsaccepted: this.acceptCheckbox
-        }
+          istermsandconditionsaccepted: this.acceptCheckbox,
+        };
         if (!!this.resourceId) {
           updateCommunity(this.resourceId, payload)
             .then(() => {
-              refThis.$emit('closeAdd')
-              this.isWantToAccept = false
-              localStorage.setItem('communityName', this.name)
-              localStorage.setItem('communityResourceIdForRedirect', this.resourceId)
+              refThis.$emit("closeAdd");
+              this.isWantToAccept = false;
+              localStorage.setItem("communityName", this.name);
+              localStorage.setItem("communityResourceIdForRedirect", this.resourceId);
               refThis.$router.replace({
-                name: 'Community',
-                params: { communityName: this.name, rnd: Math.random(), id: this.resourceId }
-              })
-              this.$store.dispatch('tableReload/setTableReload', true)
+                name: "Community",
+                params: { communityName: this.name, rnd: Math.random(), id: this.resourceId },
+              });
+              this.$store.dispatch("tableReload/setTableReload", true);
               setTimeout(() => {
-                refThis.$parent.$parent.$parent.$parent.$parent.$parent.communityName = this.name
-              }, 200)
+                refThis.$parent.$parent.$parent.$parent.$parent.$parent.communityName = this.name;
+              }, 200);
             })
-            .finally(() => (this.saveDisable = false))
+            .finally(() => (this.saveDisable = false));
         } else {
           createCommunity(payload)
             .then((response) => {
-              this.isWantToAccept = false
-              localStorage.setItem('communityName', this.name)
-              localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
-              this.$store.dispatch('tableReload/setTableReload', true)
+              this.isWantToAccept = false;
+              localStorage.setItem("communityName", this.name);
+              localStorage.setItem("communityResourceIdForRedirect", response.data.data.resourceId);
+              this.$store.dispatch("tableReload/setTableReload", true);
               this.$router.push({
-                name: 'Community',
+                name: "Community",
                 params: {
                   communityName: this.name,
                   rnd: Math.random(),
-                  id: response.data.data.resourceId
-                }
-              })
+                  id: response.data.data.resourceId,
+                },
+              });
             })
-            .finally(() => (this.saveDisable = false))
+            .finally(() => (this.saveDisable = false));
         }
       } else {
-        this.saveDisable = false
-        const el = this.$refs.form.$el
-        scrollToComponent(el)
+        this.saveDisable = false;
+        const el = this.$refs.form.$el;
+        scrollToComponent(el);
       }
     },
     getBusinessCategories() {
       listBusinessCategories().then((response) => {
-        this.categories = response.data.data
+        this.categories = response.data.data;
         if (!!this.resourceId) {
-          this.name = this.communityItem.communityName
-          this.description = this.communityItem.communityDescription
-          this.privacystatusid = this.communityItem.privacyStatusId.toString()
+          this.name = this.communityItem.communityName;
+          this.description = this.communityItem.communityDescription;
+          this.privacystatusid = this.communityItem.privacyStatusId.toString();
           this.selectedCategory = {
             resourceId: this.communityItem.industryResourceId,
             name: this.categories.find(
               (item) => item.resourceId == this.communityItem.industryResourceId
-            ).name
-          }
+            ).name,
+          };
         }
-      })
-    }
+        this.initialFormValues = {
+          name: this.name,
+          description: this.description,
+          selectedCategory: this.selectedCategory,
+          privacystatusid: this.privacystatusid,
+          acceptCheckbox: this.acceptCheckbox,
+        };
+      });
+    },
   },
   mounted() {
-    this.getBusinessCategories()
+    this.getBusinessCategories();
   },
   created() {
-    document.querySelector('html').style.overflowY = 'hidden'
+    document.querySelector("html").style.overflowY = "hidden";
   },
   beforeDestroy() {
-    document.querySelector('html').style.overflowY = ''
-  }
-}
+    document.querySelector("html").style.overflowY = "";
+  },
+};
 </script>
 <style lang="scss" src="./NewCommunity.scss"></style>
