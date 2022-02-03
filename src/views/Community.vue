@@ -135,7 +135,6 @@ export default {
     y: 0,
     IsNotificationsEnabled: false,
     yourPosts: [],
-    isMobileInfo: false,
     mails: null,
     emailData: {
       regex: (v) =>
@@ -243,25 +242,12 @@ export default {
       this.windowWidth = window.outerWidth
     },
     onEditClose() {
-      if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true
-      }
       this.isWantToEditCommunity = false
     },
-    onCancelDelete() {
-      if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true
-      }
-      this.isWantToDeleteCommunity = false
-    },
     onCancelLeave() {
-      if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true
-      }
       this.isWantToLeaveFromCommunity = false
     },
     mobileInfoClicked() {
-      this.isMobileInfo = true
       this.$store.commit('threadSharing/SET_MOBILE_INFO', true)
     },
     beforeRouteLeave(to, from, next) {
@@ -338,7 +324,7 @@ export default {
 .ts-footer {
   display: flex;
   margin-top: 10px;
-  margin-left: 0px;
+  margin-left: 0;
   font-family: 'Open Sans', sans-serif !important;
   font-size: 12px;
   font-weight: bold;
@@ -356,7 +342,6 @@ export default {
   span {
     align-items: center;
     font-size: inherit;
-    line-height: unset;
     line-height: 2;
   }
 }
@@ -368,7 +353,6 @@ export default {
   span {
     align-items: center;
     font-size: inherit;
-    line-height: unset;
     line-height: 2;
   }
 }
@@ -380,7 +364,6 @@ export default {
   span {
     align-items: center;
     font-size: inherit;
-    line-height: unset;
     line-height: 2;
   }
 }
@@ -391,7 +374,6 @@ export default {
   span {
     align-items: center;
     font-size: inherit;
-    line-height: unset;
     line-height: 2;
   }
 }
@@ -475,7 +457,7 @@ export default {
 
 .community-notification__container {
   max-width: 364px !important;
-  padding: 32px 24px 0px 24px !important;
+  padding: 32px 24px 0 24px !important;
 }
 
 //search Input css
@@ -858,7 +840,6 @@ export default {
 }
 
 .v-card-sub-header {
-  font-family: Helvetica;
   font-size: 15px;
   font-weight: normal;
   font-stretch: normal;
@@ -1120,6 +1101,5 @@ export default {
 }
 ::v-deep .text-decoration-none {
   text-decoration: none !important;
-  text-decoration-line: none !important;
 }
 </style>

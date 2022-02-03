@@ -6,13 +6,13 @@
   >
     <div style="z-index: 999999;">
       <new-investigation
-        @closeAdd="closeNewInvestigationModal($event)"
+        v-if="isWantToAddNewInvestigation"
         ref="refNewInvestigation"
         :status="isWantToAddNewInvestigation"
-        v-if="isWantToAddNewInvestigation"
-        :selectedMail="selectedEmail"
+        :selected-mail="selectedEmail"
         :is-ts="true"
         style="z-index: 999999;"
+        @closeAdd="closeNewInvestigationModal($event)"
       />
     </div>
     <app-dialog
@@ -1142,7 +1142,8 @@ export default {
     hoverTool: false,
     details: {},
     shareSettings: {},
-    addCommentValue: ''
+    addCommentValue: '',
+    selectedEmail: {}
   }),
 
   watch: {
@@ -1329,10 +1330,8 @@ export default {
     },
     getPostDetails(postId, ind, bool) {
       this.post.isToggle = bool
-      //postId = '4pDtxLYSG0mb'
       if (bool) {
         this.getComments(this.post.communityPostResourceId)
-        //getSelectedEmailPreview('4pDtxLYSG0mb')
         getCommunityPostPreview(this.post.communityPostResourceId).then((response) => {
           const comId = this.post.communityPostResourceId
           this.postDetails = response.data.data

@@ -86,16 +86,7 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Dashboard'
           },
-          //redirect: { path: '/' },
-          component: Company,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-            next()
-          }
+          component: Company
         },
         {
           path: '/threat-sharing',
@@ -603,14 +594,6 @@ const router = new Router({
       ]
     },
     {
-      path: '/shared-incident',
-      name: 'Shared Incident',
-      //component: SharedIncident,
-      meta: {
-        isAuthenticated: false
-      }
-    },
-    {
       path: '*',
       redirect: '/'
     }
@@ -637,22 +620,4 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-/*router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.permissions)) {
-    // TODO if Auth next() else redirect to login
-    let isGrantedPermission = false
-    to.meta.permissions.forEach(item => {
-      if (isGranted(item)) {
-        isGrantedPermission = true
-      } // //////middleware
-    });
-
-    if (isGrantedPermission) {
-      next()
-    } else {
-      router.push('/login')
-    }
-  }
-  next()
-});*/
 export default router

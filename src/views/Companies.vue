@@ -5,18 +5,18 @@
         <template v-if="!$route.params.groupId && $route.name === 'Companies'">
           <el-tabs v-model="tab">
             <el-tab-pane
+              v-if="checkPermissions('companies/search', 'POST')"
               label="Companies"
               name="company-companies"
               id="company-companies-content"
-              v-if="checkPermissions('companies/search', 'POST')"
             >
               <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
             /></el-tab-pane>
             <el-tab-pane
+              v-if="checkPermissions('company-groups/search', 'POST')"
               label="Company Groups"
               name="company-company-groups"
               id="company-company-groups-content"
-              v-if="checkPermissions('company-groups/search', 'POST')"
             >
               <company-group-list
                 :isLoadState="isLoadState"
@@ -111,7 +111,7 @@ export default {
   min-height: 80vh !important;
   padding-top: 10px;
   &__container {
-    padding: 0px 16px 24px 16px !important;
+    padding: 0 16px 24px 16px !important;
     width: 100%;
     &-card {
       box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
