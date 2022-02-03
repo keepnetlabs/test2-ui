@@ -292,9 +292,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.phone-number-invalid {
-  border-color: #ff5252 !important;
-}
-</style>
