@@ -570,7 +570,6 @@ export default {
         actionType: 'NoAction',
         actionNotifyTargetUserType: 'Reporter',
         actionNotifyTargetUsers: [],
-        emailTempleditedPlaybookActionAnalyzersteId: 1,
         autoAction: {
           isPermanentDelete: false,
           type: 'NoAction',
@@ -687,10 +686,10 @@ export default {
       this.openEnginesModal = false
       this.$refs.refForm.validate()
     },
-    searchEnginesModel(val) {
+    searchEnginesModel() {
       if (this.searchEnginesModelInput) {
         this.searchEnginesData = this.analysisEngines.reduce((acc, item) => {
-          const data = Object.values(item).find((i) => {
+          Object.values(item).find((i) => {
             if (
               typeof i === 'string' &&
               i.toLocaleLowerCase().includes(this.searchEnginesModelInput.toLocaleLowerCase())
@@ -898,7 +897,7 @@ export default {
     setAvailableItems(value, oldValue, index) {
       this.actionsValues[index] = value
       this.actions[index] = value
-      this.act.actionTypes.map((item, index) => {
+      this.act.actionTypes.map((item) => {
         this.actionsValues.map((i) => {
           if (item.val === i.val && item.val !== 'investigate' && item.val !== 'notify') {
             item.disabled = true
@@ -936,7 +935,6 @@ export default {
           actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
             type: 'NoAction',
@@ -988,7 +986,6 @@ export default {
           actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
             type: 'NoAction',
@@ -1085,7 +1082,6 @@ export default {
           actionType: 'NoAction',
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
-          emailTempleditedPlaybookActionAnalyzersteId: 1,
           autoAction: {
             isPermanentDelete: false,
             type: 'NoAction',
@@ -1111,7 +1107,7 @@ export default {
     },
     updateAnalysisEngines() {
       if (this.analysisEngines.length > 0 && this.editedPlaybookActionAnalyzers) {
-        const dizi = this.analysisEngines.map((item) => {
+        this.analysisEngines = this.analysisEngines.map((item) => {
           const valuesItem = this.editedPlaybookActionAnalyzers.find((i) => {
             return i.integrationId === item.resourceId
           })
@@ -1126,7 +1122,6 @@ export default {
             return item
           }
         })
-        this.analysisEngines = dizi
       }
     },
     debounce(fn, delay) {

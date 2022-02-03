@@ -1,4 +1,4 @@
-import { getTimezones } from '../../api/common'
+import { getTimezones } from '@/api/common'
 import { getSystemUserSettings } from '@/api/settings'
 
 const common = {

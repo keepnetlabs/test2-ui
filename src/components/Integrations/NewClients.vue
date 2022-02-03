@@ -102,7 +102,7 @@
 
 <script>
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { createClient, updateClient } from '../../api/clients'
+import { createClient, generateApiKey, updateClient } from '../../api/clients'
 import labels from '@/model/constants/labels'
 
 export default {

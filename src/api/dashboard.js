@@ -6,14 +6,6 @@ export function getPhishingCampaigns(payload) {
   return request.get(`campaign/summary/${payload}`)
 }
 
-export function getCompanyInformation() {
-  return request.get('company/current')
-}
-
-export function getLastFiveCompaignsStats() {
-  return request.get('campaign/last')
-}
-
 export function getDropdownCompanies() {
   let payload = {
     pageNumber: 1,

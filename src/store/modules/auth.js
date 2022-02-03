@@ -1,7 +1,5 @@
-import { profile, getCurrentUser } from '../../api/auth'
-import { systemUser } from '../../api/threadSharing'
 import jwt_decode from 'jwt-decode'
-import { setGlobalUserData } from '../../utils/functions'
+import { setGlobalUserData } from '@/utils/functions'
 
 const auth = {
   namespaced: true,
@@ -43,9 +41,6 @@ const auth = {
       }
     }
   },
-  methods: {
-    setCurrentUserOnCompanySelect() {}
-  },
   actions: {
     getCurrentUser({ commit, dispatch }) {
       let token = JSON.parse(localStorage.getItem('auth-token')).token
@@ -56,7 +51,6 @@ const auth = {
           isSelectCompany: true,
           permissions: tokenData.Permission
         }
-        //commit('SET_SELECTED_COMPANY', payload.currentUserData)
         commit('SET_CURRENTUSER', payload)
         if (
           payload.currentUserData &&
@@ -77,16 +71,13 @@ const auth = {
         ) {
           dispatch('dashboard/selectCompany', currentUserData, { root: true })
         }
-        let payload = {
+
+        commit('SET_CURRENTUSER', {
           currentUserData: currentUserData,
           isSelectCompany: false,
           permissions: tokenData.Permission
-        }
-        commit('SET_CURRENTUSER', payload)
+        })
       }
-    },
-    getUserProfile({ commit }, payload) { // eslint-disable-line
-      profile(payload).then(() => {})
     }
   }
 }

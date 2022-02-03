@@ -1,7 +1,4 @@
-import axios from 'axios'
-import AuthenticationService from '../../services/authentication'
-import router from '../../router/index'
-import { searchPlaybook } from '../../api/playbook'
+import { searchPlaybook } from '@/api/playbook'
 
 const playbook = {
   namespaced: true,

@@ -73,7 +73,7 @@ export default {
         zoneId: this.values.zoneId
       }
       testDomainConnection(payload)
-        .then((response) => {
+        .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
           this.isAllSuccess(true)

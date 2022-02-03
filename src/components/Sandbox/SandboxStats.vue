@@ -51,19 +51,15 @@
 <script>
 import DataTable from '../DataTable'
 import {
-  COMMON_CONSTANTS,
   getStoreValue,
   PROPERTY_STORE,
-  LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  INTEGRATION_TYPES,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { checkPermission } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { exportSandboxStats, getSandboxLog, getSandboxStats } from '@/api/sandbox'
-import { getIntegrationTypes } from '@/api/integrations'
+import { exportSandboxStats, getSandboxStats } from '@/api/sandbox'
 export default {
   name: 'sandboxStats',
   components: {
@@ -622,23 +618,20 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportSandboxStats(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `sandboxStats.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-            this.isSandboxStatsDownloadModal = false
-          })
-          .catch((error) => {})
+        exportSandboxStats(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `sandboxStats.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+          this.isSandboxStatsDownloadModal = false
+        })
       })
     },
     getDatatableList() {
       this.loading = true
-      let _this = this
       getSandboxStats(this.bodyData)
         .then((response) => {
           const {
@@ -694,7 +687,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)

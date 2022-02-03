@@ -26,7 +26,6 @@
 <script>
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { getEmailTemplatePreviewContent, deleteEmailTemplate } from '@/api/phishingsimulator'
 import { deleteLandingPage } from '@/api/landingPage'
 export default {
   name: 'DeleteIntegration',
@@ -47,11 +46,9 @@ export default {
       this.$emit('handleCloseModal')
     },
     handleDelete() {
-      deleteLandingPage(this.selectedEmailTemplate.resourceId)
-        .then((response) => {
-          this.$emit('handleSuccessDeleteAction')
-        })
-        .catch((error) => {})
+      deleteLandingPage(this.selectedEmailTemplate.resourceId).then(() => {
+        this.$emit('handleSuccessDeleteAction')
+      })
       this.closeModal()
     }
   }

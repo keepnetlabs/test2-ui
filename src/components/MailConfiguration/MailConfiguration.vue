@@ -567,9 +567,7 @@
         :empty="tableOptions.iEmpty"
         :filterable="true"
         :options="true"
-        :show-all-records="showAllRecords"
         :pageSizes="tableOptions.pageSizes"
-        :total-number-of-records="totalNumberOfRecords"
         :refName="'peopleTable'"
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
@@ -584,7 +582,6 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="getTableData"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -757,9 +754,7 @@ export default {
     labels,
     isGoogleWorkSpaceEdit: false,
     delaySaveFunction: false,
-    showAllRecords: false,
     isGoogleWorkSpaceButtonDisabled: false,
-    totalNumberOfRecords: 0,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
     selectedGoogleWorkSpaceResourceId: '',
@@ -1194,11 +1189,6 @@ export default {
         }
       }
     },
-    handleAllRecordsClick() {
-      this.requestBody.pageSize = 75000
-      this.showAllRecords = false
-      this.getTableData()
-    },
     isValidate() {
       if (this.ewsStatus)
         return this.$refs.ewsMailConfiguration && this.$refs.ewsMailConfiguration.validate()
@@ -1290,20 +1280,10 @@ export default {
       this.loading = true
       getMailConfigurationList(this.requestBody)
         .then((response) => {
-          const {
-            data: { data }
-          } = response
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.tableOptions.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.tableOptions.pageSize === 1000) {
-            this.showAllRecords = false
-          }
           this.tableData = response.data.data.results
         })
         .finally(() => {

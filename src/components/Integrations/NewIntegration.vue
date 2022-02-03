@@ -565,7 +565,7 @@
                   left
                   medium
                   disabled
-                  style="cursor: default !important; font-size: '2px';"
+                  style="cursor: default !important;"
                   >mdi-rotate-left
                 </v-icon>
                 TESTING CONNECTION
@@ -1001,11 +1001,11 @@ export default {
       apiUrlRules: {
         required: (v) => Validations.required(v),
         format: (v) => {
-          const isValid =
+          return (
             /[(http(s)?):  \/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-z0-9]{1,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
               v
             ) || 'Invalid URL'
-          return isValid
+          )
         },
         maxLength: (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage('URL', 2000))
       },

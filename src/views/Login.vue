@@ -28,6 +28,7 @@
                 <div style="max-width: 180px; height: 60px;">
                   <img
                     id="img--login-main-logo"
+                    alt="main-logo"
                     style="height: 100%; max-width: 100%;"
                     :src="loginWhiteLabel.mainLogoUrl"
                   />
@@ -237,7 +238,7 @@
                   </v-btn>
                 </v-card-actions>
               </div>
-              <div v-if="pageNumber == 2">
+              <div v-if="pageNumber === 2">
                 <v-card-text>
                   <div id="text--login-reset-your-password-title" class="login-title">
                     Reset Your Password
@@ -264,7 +265,7 @@
                       <v-col md="6" sm="12">
                         <v-form ref="resetEmail">
                           <InputEmail
-                            v-model.trim="resePasswordModel"
+                            v-model.trim="mailForResetPassword"
                             id="input--login-reset-password"
                             class="reset-pass-textfield"
                             @click="resetPasswordError = false"
@@ -298,7 +299,7 @@
                   </v-btn>
                 </v-card-actions>
               </div>
-              <div v-if="pageNumber == 3" class="reset-password-wrapper__success">
+              <div v-if="pageNumber === 3" class="reset-password-wrapper__success">
                 <v-card-text>
                   <div id="text--login-check-your-email-title" class="login-title">
                     Check Your Email
@@ -539,7 +540,6 @@ import {
   cantLogin,
   createPasswordByToken,
   getMfaQRCode,
-  getSaml,
   loginAction,
   loginWithSaml,
   loginWithUsername,
@@ -556,12 +556,10 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getCompanyList } from '@/api/company'
 import jwt_decode from 'jwt-decode'
 import { setGlobalUserData } from '@/utils/functions'
-import store from '../store/index'
 import MFAWelcome from '@/components/MFA/MFAWelcome'
 import MFASetup from '@/components/MFA/MFASetup'
 import MFACantLogin from '@/components/MFA/MFACantLogin'
 import MFALogin from '@/components/MFA/MFALogin'
-import { getWhiteLabelByUrl } from '@/api/whitelabel'
 import * as Sentry from '@sentry/browser'
 
 import { getSystemUserSettings } from '@/api/settings'
@@ -609,12 +607,11 @@ export default {
       email: '',
       password: '',
       verificationCode: '',
-      resePasswordModel: '',
+      mailForResetPassword: '',
       rememberMe: '',
       rememberMeOnThisDevice: false,
       show1: false,
       show2: false,
-      show3: false,
       rules: {
         email: (v) => Validations.email(v),
         controlEmail: (v) => Validations.controlEmailLength(v, labels.InvalidEmailAddress),
@@ -628,10 +625,10 @@ export default {
             'Password must be at least 8 characters with 1 capital letter, 1 lowercase letter, 1 special character and 1 number'
           )
         },
-        equalToNewPassword: (v, t) => {
+        equalToNewPassword: (v) => {
           return v === this.reNewPassword || "'New password' and 'Confirm password' do not match"
         },
-        equalToConfirmPassword: (v, t) => {
+        equalToConfirmPassword: (v) => {
           return v === this.newPassword || "'New password' and 'Confirm password' do not match"
         }
       },
@@ -753,20 +750,6 @@ export default {
     localStorage.removeItem('isSelectCompany')
     localStorage.removeItem('selectedCompanyName')
     localStorage.removeItem('selectedCompanyRequestId')
-    if (this.$route.query) {
-      // TO-DO
-      // You should do redirect after login in here for users which come from email links
-      // And also you have to dispatch a accept Community invitaion or which parameter came on here.
-    }
-    /*
-      setTimeout(() => {
-        let labels = document.getElementsByClassName('v-label')
-        if (labels && labels.length) {
-          labels[0].classList.add('v-label--active')
-          labels[1].classList.add('v-label--active')
-        }
-      }, 0)
-      */
   },
   computed: {
     ...mapGetters({
@@ -1004,7 +987,7 @@ export default {
           permissions: tokenData.Permission
         }
         this.$store.commit('SET_CURRENTUSER', payload)
-        this.$store.dispatch('common/changeSessionExpiredStatus', false).then((response) => {
+        this.$store.dispatch('common/changeSessionExpiredStatus', false).then(() => {
           location.reload()
         })
       }
@@ -1202,7 +1185,7 @@ export default {
         switch (this.resetType) {
           case 'createPassword':
             createPasswordByToken(payload)
-              .then((response) => {
+              .then(() => {
                 let url = new URL(location.href)
                 this.$router.replace({ query: {} })
                 url.searchParams.delete('cp')
@@ -1219,7 +1202,7 @@ export default {
             break
           case 'resetPassword':
             resetPasswordByToken(payload)
-              .then((response) => {
+              .then(() => {
                 let url = new URL(location.href)
                 this.$router.replace({ query: {} })
                 url.searchParams.delete('rp')
@@ -1273,12 +1256,11 @@ export default {
     captchaVerifiedForReset() {
       this.resetPasswordError = false
       this.captchaVerified = true
-      //this.onResetClick()
     },
     onResetClick() {
       if (this.$refs.resetEmail.validate() && this.captchaVerified) {
-        resetPassword(this.resePasswordModel)
-          .then((response) => {
+        resetPassword(this.mailForResetPassword)
+          .then(() => {
             this.resetPasswordError = false
             this.resetPasswordErrorText = null
             this.pageNumber = 3
@@ -1481,7 +1463,6 @@ export default {
     i {
       color: #757575;
     }
-    cursor: pointer;
   }
   .reset-pass-textfield {
     padding: 0 8px !important;
@@ -1735,7 +1716,7 @@ export default {
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 

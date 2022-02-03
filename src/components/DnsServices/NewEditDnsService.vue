@@ -235,7 +235,7 @@ export default {
         }
         if (this.isEdit && !this.isDuplicate) {
           updateDnsServiceList(payload, this.resourceId)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeStatus', false, true)
             })
             .finally(() => {
@@ -243,7 +243,7 @@ export default {
             })
         } else {
           createDnsServiceList(payload)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeStatus', false, true)
             })
             .finally(() => {

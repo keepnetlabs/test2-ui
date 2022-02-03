@@ -16,8 +16,7 @@ const AuthenticationService = {
   getTokenModel() {
     let tokenString = localStorage.getItem(CookieKeys.AUTH_KEY)
     if (tokenString != null && tokenString !== '') {
-      let tokenModel = JSON.parse(tokenString)
-      return tokenModel
+      return JSON.parse(tokenString)
     } else {
       return null
     }

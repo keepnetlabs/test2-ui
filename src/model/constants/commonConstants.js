@@ -496,11 +496,3 @@ export const INTEGRATION_LABELS = {
   GOOGLESAFEBROWSER: ' Google Safe Browser',
   CyberXRay: 'Cyber X-Ray'
 }
-
-export const PHISHING_REPORTER_FILTERABLE_ITEMS = [
-  'Online',
-  'Offline',
-  'Disabled',
-  'NotInstalled',
-  'Undetected'
-]

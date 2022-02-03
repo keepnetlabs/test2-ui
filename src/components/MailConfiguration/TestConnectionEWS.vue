@@ -89,7 +89,7 @@ import {
   checkEmailBodyAccessEWS,
   checkEmailHeaderAccessEWS,
   checkEmailMailFilterEWS
-} from '../../api/mailConfiguration'
+} from '@/api/mailConfiguration'
 import TestConnectivityStatus from './TestConnectivityStatus'
 export default {
   inheritAttrs: true,
@@ -163,7 +163,7 @@ export default {
           payload.ResourceId = this.isEdit.ResourceId
         }
         checkApiConnectivityEWS(payload)
-          .then((response) => {
+          .then(() => {
             this.checkApiConnectivity = 'success'
             this.isAllSuccess(true)
           })
@@ -176,7 +176,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkPrivilegesEWS(payload)
-          .then((response) => {
+          .then(() => {
             this.checkPrivileges = 'success'
             this.isAllSuccess(true)
           })
@@ -189,7 +189,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkInboxAccessEWS(payload)
-          .then((response) => {
+          .then(() => {
             this.checkInboxAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -202,7 +202,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkEmailBodyAccessEWS(payload)
-          .then((response) => {
+          .then(() => {
             this.checkEmailBodyAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -215,7 +215,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkEmailHeaderAccessEWS(payload)
-          .then((response) => {
+          .then(() => {
             this.checkEmailHeaderAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -227,9 +227,9 @@ export default {
               error.response.data.message
             this.isAllSuccess(false)
           })
-          .finally((response) => {
+          .finally(() => {
             checkEmailMailFilterEWS(payload)
-              .then((response) => {
+              .then(() => {
                 this.checkEmailMailFilter = 'success'
                 this.isAllSuccess(true)
               })
@@ -242,7 +242,7 @@ export default {
               })
           })
         checkInboxAccessEWS(payload)
-          .then((response) => {
+          .then(() => {
             this.checkInboxAccess = 'success'
             this.isAllSuccess(true)
           })

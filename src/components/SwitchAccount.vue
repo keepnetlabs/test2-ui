@@ -20,7 +20,12 @@
             </div>
             <div class="d-flex">
               <div class="switch-account__content--current-user__logo">
-                <img v-if="!!getLogoImage" :src="getLogoImage" id="img--switch-account-logo" />
+                <img
+                  v-if="!!getLogoImage"
+                  :src="getLogoImage"
+                  id="img--switch-account-logo"
+                  alt="logo"
+                />
               </div>
               <div class="switch-account__content--current-user__details">
                 <span
@@ -31,7 +36,7 @@
                 <span
                   id="text--switch-account-user-role-name"
                   class="switch-account__content--current-user__details--role"
-                  >{{ getRolename }}</span
+                  >{{ getRoleName }}</span
                 >
               </div>
             </div>
@@ -333,34 +338,34 @@ export default {
         this.setSwitchDialog(newValue)
       }
     },
+    hasUser() {
+      return this.$store?.state?.auth?.user
+    },
+    hasCompanyName() {
+      return this.$store?.state?.auth?.companyName
+    },
+    hasUserRoleName() {
+      return this.$store?.state?.auth?.userRoleName
+    },
     getLogoImage() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.hasUser) return ''
       let image =
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
           : this.$store.state.auth.logoUrl
       return image || require('../assets/img/no-logo.png')
     },
-
     getSelectedCompanyName() {
-      if (this.$store.state.auth.companyName == undefined) {
-        return ''
-      }
+      if (!this.hasCompanyName) return ''
       return this.$store.state.auth.selectedCompanyName
     },
 
     getFirstName() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.hasUser) return ''
       return this.$store.state.auth.user.firstName
     },
-    getRolename() {
-      if (this.$store.state.auth.userRoleName == undefined) {
-        return ''
-      }
+    getRoleName() {
+      if (!this.hasUserRoleName) return ''
       return this.$store.state.auth.userRoleName
     },
     isLoading: {
@@ -424,7 +429,6 @@ export default {
   color: rgba(0, 0, 0, 0.54) !important;
 }
 .v-list-item__subtitle {
-  font-family: Helvetica;
   font-size: 14px;
   font-weight: normal;
   font-style: normal;

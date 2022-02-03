@@ -1,10 +1,6 @@
-import { loginAction, resetPassword, twoStepLogin } from '../../api/auth'
+import { resetPassword, twoStepLogin } from '@/api/auth'
 import AuthenticationService from '../../services/authentication'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import store from '../index'
-import { getCompanyList } from '../../api/company'
-import jwt_decode from 'jwt-decode'
-import { setGlobalUserData } from '../../utils/functions'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getWhiteLabelByUrl } from '@/api/whitelabel'
 
 const login = {
@@ -39,10 +35,6 @@ const login = {
           state.loginWhiteLabel[key] = payload[key]
         }
       }
-    },
-    LOGIN_SUCCESS(state, payload) {
-      AuthenticationService.setToken(payload.token, payload.expiredIn, payload.status)
-      return state
     },
     WRONG_LOGIN_ATTEMPT(state, payload) {
       state.wrongLoginAttempt += payload

@@ -2,7 +2,7 @@ import request from '../utils/request'
 import authTestRequest from '../utils/authTestRequest'
 import testRequest from '../utils/testRequest'
 import AuthenticationService from '../services/authentication'
-import { COMMON_SNACKBAR } from '../model/constants/commonConstants'
+import { COMMON_SNACKBAR } from '@/model/constants/commonConstants'
 import axios from 'axios'
 export function loginAction(payload) {
   const params = new URLSearchParams()
@@ -10,7 +10,7 @@ export function loginAction(payload) {
   if (payload.mfa && payload.mfa.StatusName === 'Active') {
     skipMfa = false
   } else if (payload.mfa && payload.mfa.StatusName === 'Inactive') {
-    skipMfa = payload.mfa.IsExpired ? false : true
+    skipMfa = !payload.mfa.IsExpired
   }
   if (payload.skipMfa === 'forced') skipMfa = false
   params.append('grant_type', 'password')
