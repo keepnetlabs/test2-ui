@@ -8,8 +8,6 @@ import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
 import EmailDetails from '../components/IncidentResponder/emailDetails'
-import Workshop from '../views/Workshop.vue'
-import Test from '../views/Test'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 import InvestigationComponent from '../views/Investigations.vue'
@@ -24,7 +22,6 @@ import Companies from '@/views/Companies'
 import Company from '@/views/Company'
 import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
-import Widgets from '@/views/Widgets'
 import TargetGroupUsers from '@/components/TargetUsers/GroupUsers/TargetGroupUsers'
 import PhishingSimulator from '@/views/PhishingSimulator'
 import Sandbox from '@/views/Sandbox'
@@ -60,7 +57,6 @@ const router = new Router({
     },
     {
       path: '/',
-      name: 'home',
       component: Main,
       children: [
         {
@@ -69,15 +65,7 @@ const router = new Router({
           meta: {
             isAuthenticated: true
           },
-          component: DashBoard,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-            next()
-          }
+          component: DashBoard
         },
         {
           path: '/',
@@ -92,16 +80,6 @@ const router = new Router({
           path: '/threat-sharing',
           name: 'Threat Sharing',
           component: ThreatSharing,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard'
@@ -113,16 +91,6 @@ const router = new Router({
           path: '/community/:id',
           name: 'Community',
           component: Community,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Threat Sharing'
@@ -135,15 +103,6 @@ const router = new Router({
           path: '/target-users',
           name: 'Target Users',
           component: TargetUsers,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Company'
@@ -164,15 +123,6 @@ const router = new Router({
           path: '/companies',
           name: 'Companies',
           component: Companies,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Company'
@@ -184,16 +134,6 @@ const router = new Router({
           path: '/company-group-details/:groupId',
           name: 'Company Group Details',
           component: Companies,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Companies'
@@ -205,14 +145,6 @@ const router = new Router({
           path: '/phishing-scenarios',
           name: 'Phishing Scenarios',
           component: PhishingSimulator,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard'
@@ -224,14 +156,6 @@ const router = new Router({
           path: '/services',
           name: 'DNS and Domains',
           component: DnsServices,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard'
@@ -243,12 +167,6 @@ const router = new Router({
           path: '/campaign-manager',
           name: 'Campaign Manager',
           component: CampaignManager,
-          beforeEnter: (to, from, next) => {
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard'
@@ -271,16 +189,6 @@ const router = new Router({
           path: '/incident-responder',
           name: 'Incident Responder',
           component: IncidentResponder,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard'
@@ -292,16 +200,6 @@ const router = new Router({
           path: '/company-settings',
           name: 'Company Settings',
           component: CompanySettings,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Company'
@@ -310,39 +208,9 @@ const router = new Router({
           params: true
         },
         {
-          path: '/widgets',
-          name: 'Widgets',
-          component: Widgets,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          meta: {
-            isAuthenticated: true
-          },
-          props: true,
-          params: true
-        },
-        {
           path: '/system-users',
           name: 'System Users',
           component: SystemUsers,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Company'
@@ -354,16 +222,6 @@ const router = new Router({
           path: '/incident-responder/reported-emails/email-details/:id',
           name: 'Analysis Details',
           component: EmailDetails,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
@@ -375,16 +233,6 @@ const router = new Router({
           path: '/phishing-reporter',
           name: 'Phishing Reporter',
           component: PhishingReporter,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Dashboard'
@@ -396,16 +244,6 @@ const router = new Router({
           path: '/integrations',
           name: 'Integrations',
           component: Integrations,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
@@ -420,32 +258,12 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
-          },
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
           }
         },
         {
           path: '/audit',
           name: 'Audit',
           component: Audit,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Company'
@@ -457,16 +275,6 @@ const router = new Router({
           path: '/mailConfiguration',
           name: 'Mail Configurations',
           component: MailConfiguration,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
@@ -478,16 +286,6 @@ const router = new Router({
           path: '/sandbox',
           name: 'Cross Company Integration',
           component: Sandbox,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
@@ -499,16 +297,6 @@ const router = new Router({
           path: '/investigations',
           name: 'Investigations',
           component: InvestigationComponent,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
@@ -519,58 +307,12 @@ const router = new Router({
           path: '/investigation-details/:id',
           name: 'Investigation Details',
           component: InvestigationDetailsComponent,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Investigations'
           },
           props: true,
           params: true
-        },
-        {
-          path: '/test',
-          name: 'test',
-          component: Test,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          meta: {
-            isAuthenticated: false
-          }
-        },
-        {
-          path: '/workshop',
-          name: 'Workshop',
-          component: Workshop,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          meta: {
-            isAuthenticated: true
-          }
         },
         {
           path: '/reports',

@@ -5,10 +5,11 @@
       :value="isWantToAddNewCommunity"
       :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
       :opacity="1"
-      :z-index="999"
+      :z-index="9"
       color="white"
     >
       <new-community
+        ref="newCommunityModal"
         :communityItem="communityItem"
         :resourceId="resourceId"
         @closeAdd="onAddClose"
@@ -1213,6 +1214,11 @@ export default {
       this.resourceId = item.communityResourceId
       this.communityItem = item
       this.isWantToAddNewCommunity = true
+    },
+    checkIfCanCloseCommunityModal() {
+      if (this.$refs.newCommunityModal) {
+        this.$refs.newCommunityModal.onCancelClicked()
+      }
     },
     onAddClose() {
       this.isWantToAddNewCommunity = false
