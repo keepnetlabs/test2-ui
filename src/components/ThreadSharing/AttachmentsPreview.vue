@@ -78,9 +78,7 @@ export default {
     align-items: center;
     display: flex;
     flex-direction: row;
-    margin: 16px;
-    margin-left: 0;
-    margin-top: 0;
+    margin: 0 16px 16px 0;
 
     .attach-icon {
       min-width: 40px;
