@@ -74,7 +74,7 @@ export default {
         resourceId: this.values.resourceId
       }
       testConnection(payload, this.values.resourceId)
-        .then((response) => {
+        .then(() => {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
           this.isAllSuccess(true)

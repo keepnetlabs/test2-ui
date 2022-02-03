@@ -310,124 +310,7 @@
 </template>
 
 <script>
-import KShadowFrame from '../KShadowFrame'
 import Badge from '@/components/Badge'
-Vue.customElement('k-shadow-frame', KShadowFrame, {
-  shadow: true,
-  shadowCss: `
- @import url('https://fonts.googleapis.com/css?family=Material+Icons');
- @import url('https://cdn.materialdesignicons.com/5.2.45/css/materialdesignicons.min.css');
- @import url('https://cdn.jsdelivr.net/npm/vuetify@2.2.29/dist/vuetify.min.css');
-.hidden-icon-link {
-  background-color: #757575;
-  color: #ffffff;
-}
-.malicious-style,
-.malicious-link {
-     color: #f56c6d !important;
-    border-color: #f56c6d !important;
-    background-color: #f3e1e5 !important;
-    text-decoration: none !important;
-    position: relative;
-  text-decoration: none !important;
-  border-bottom: 0 solid;
-  position:relative;
-  .share-setting-text {
-    text-decoration: none !important;
-    text-decoration-color: transparent !important;
-    text-decoration-style: unset !important;
-    border: none !important;
-    border-bottom: transparent !important;
-    border-bottom-color: transparent !important;
-    border-image: none !important;
-    border-image-width: 0 !important;
-  }
-}
-[data-title]:hover:after {
-    opacity: 1;
-
-    visibility: visible;
-}
-[data-title]:after {
-     content: attr(data-title);
-    position: absolute;
-    padding: 4px 8px;
-    bottom: -40px;
-    left: 0;
-    white-space: nowrap;
-    opacity: 0;
-    z-index: 99999;
-    visibility: hidden;
-   border-radius: 4px;
-    line-height: 1.33;
-    min-height: 24px;
-    background: #6d6d6d !important;
-    color: rgba(255, 255, 255, 0.87) !important;
-    font-family: "Open Sans", sans-serif !important;
-    font-size: 12px;
-    text-decoration:none;
-        font-weight: normal;
-
-}
-[data-title] {
-    position: relative;
-}
-.malicious-style {
-   color: #bb2a45 !important;
-    border-color: #bb2a45 !important;
-    background-color: #f3e1e5 !important;
-
-  text-decoration: none !important;
-  border-bottom: 1px solid;
-  position:relative;
-      text-indent: 0;
-}
-
-.malicious-icon {
- top: 0px;
-  background: transparent;
-  color: #f56c6c;
-  font-size: inherit !important;
-  padding: 0;
-}
-
-.red-malicious-alert {
-   color: #f56c6c !important;
-    caret-color: #f56c6c !important;
-    text-decoration: unset !important;
-    text-decoration-color: transparent !important;
-    font-size: inherit !important;
-    overflow: hidden;
-}
-
-.red-malicious-alert::before {
-  border: unset !important;
-}
-
-.hidden-icon-link {
-  background-color: #757575;
-  color: #ffffff;
-}
-
-.url-badge{
-  font-family: "Open Sans", sans-serif;
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    color: white;
-    background-color: #757575c2;
-    height: 10px;
-    width: 10px;
-    text-align: center;
-    border-radius: 30px;
-    font-size: 8px;
-    font-weight: 900;
-    line-height: 1.2 !important;
-}
-a{position:relative}
- `
-})
-
 import Datatable from '../../components/DataTable'
 import DownloadModal from './DownloadModal'
 import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
@@ -1114,7 +997,7 @@ export default {
     height: 2px;
     width: 100%;
     background-color: #e4e7ed;
-    bottom: 0px;
+    bottom: 0;
     left: 0;
     position: absolute;
   }
@@ -1310,7 +1193,6 @@ export default {
     span {
       align-items: center;
       font-size: inherit;
-      line-height: unset;
       line-height: 2;
       margin-left: 4px;
     }
@@ -1324,7 +1206,6 @@ export default {
     span {
       align-items: center;
       font-size: inherit;
-      line-height: unset;
       line-height: 2;
       margin-left: 4px;
     }
@@ -1338,7 +1219,6 @@ export default {
     span {
       align-items: center;
       font-size: inherit;
-      line-height: unset;
       line-height: 2;
     }
   }
@@ -1350,7 +1230,6 @@ export default {
     span {
       align-items: center;
       font-size: inherit;
-      line-height: unset;
       line-height: 2;
     }
   }
@@ -1464,7 +1343,6 @@ export default {
     border-radius: 12px;
     background-color: #ffffff;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8);
-    background-color: #ffffff;
   }
 
   .no-shadow .v-expansion-panel-content__wrap {
@@ -1606,10 +1484,7 @@ export default {
         align-items: center;
         display: flex;
         flex-direction: row;
-        margin: 16px;
-        margin-left: 0;
-        margin-top: 0;
-
+        margin: 0 16px 16px 0;
         .attach-icon {
           min-width: 40px;
           height: 32px;
@@ -1980,7 +1855,6 @@ export default {
     position: absolute;
     top: -55px;
     left: -35px;
-    border-radius: 4px;
     box-shadow: 0 5px 12px 2px rgba(200, 200, 200, 0.8) !important;
     padding: 8px;
 
@@ -2044,7 +1918,6 @@ export default {
     //edit
     color: #bb2a45 !important;
     border-bottom: 1px solid #bb2a45 !important;
-    border-color: #bb2a45 !important;
     background-color: #f3e1e5 !important;
 
     text-decoration: none !important;
@@ -2099,7 +1972,7 @@ export default {
 }
 .email-details__header {
   &-card {
-    padding: 36px 24px 0px 24px;
+    padding: 36px 24px 0 24px;
 
     &:not(:last-child) {
       margin-bottom: 24px;

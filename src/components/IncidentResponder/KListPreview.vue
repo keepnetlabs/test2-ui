@@ -30,10 +30,11 @@
             </slot>
           </div>
           <div class="k-list-preview-card__content-right">
-            <slot name="right-content"
-              ><k-shadow-frame
-                :content="selectedItemTemplate"
-                :key="selectedItemTemplate + 'appDialog'"
+            <slot name="right-content">
+              <k-email-preview
+                v-if="selectedItemTemplate"
+                :key="selectedItemTemplate"
+                :html="selectedItemTemplate"
               />
             </slot>
           </div>
@@ -45,9 +46,10 @@
 
 <script>
 import KListPreviewItem from '@/components/IncidentResponder/KListPreviewItem'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
   name: 'KListPreview',
-  components: { KListPreviewItem },
+  components: { KEmailPreview, KListPreviewItem },
   props: {
     searchable: {
       type: Boolean,
@@ -127,7 +129,7 @@ export default {
 .k-list-preview {
   &-card {
     background: #ffffff;
-    box-shadow: 0px 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
+    box-shadow: 0 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
       0px 1px 5px rgba(80, 80, 80, 0.2);
     border-radius: 20px;
     &__header {

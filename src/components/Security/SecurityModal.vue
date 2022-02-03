@@ -262,8 +262,6 @@ import PasswordChecker from '@/components/Common/PasswordChecker/PasswordChecker
 import {
   disableMfaStatus,
   getMfaStatus,
-  getMfaQRCode,
-  setMFA,
   updatePassword,
   getMfaSetup,
   setMfaResync
@@ -371,7 +369,7 @@ export default {
     disableMFA() {
       const payload = { code: this.mfaCode }
       if (this.$refs.refDisableMfa.validate()) {
-        disableMfaStatus(payload).then((response) => {
+        disableMfaStatus(payload).then(() => {
           this.$emit('changePasswordChange')
         })
       }
@@ -385,7 +383,7 @@ export default {
         .then((response) => {
           this.mfaStatus = response.data.data.statusId
         })
-        .catch((response) => {
+        .catch(() => {
           this.$emit('changePasswordChange')
         })
         .finally(() => {
@@ -586,10 +584,7 @@ export default {
 
   .v-card-login-wrapper {
     border-radius: 20px !important;
-    padding-top: 24px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 80px;
+    padding: 24px 24px 80px;
   }
 
   .background {
@@ -654,7 +649,7 @@ export default {
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    -webkit-box-shadow: 0 0 0 1000px #fff inset;
     transition: background-color 5000s ease-in-out 0s;
   }
 

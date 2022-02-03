@@ -304,10 +304,9 @@ export default {
     }
     if (this.isEdit && this.resourceId) {
       this.formValues = this.permissionEditData
-      let _this = this
       this.$nextTick(() => {
-        _this.availableForRequests = _this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
-          _this.permissionEditData.availableForList
+        this.availableForRequests = this.$refs.refMakeAvailableForNewPermissions.getAvailableForListFromBackend(
+          this.permissionEditData.availableForList
         )
         this.availableForKey = 'updatedKey'
       })
@@ -332,7 +331,7 @@ export default {
   &__treeview-title {
     display: flex;
     justify-content: space-between;
-    padding: 0px 30px;
+    padding: 0 30px;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;

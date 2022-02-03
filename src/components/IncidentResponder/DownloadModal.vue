@@ -57,8 +57,6 @@
 import AppDialog from '../AppDialog'
 import { required } from '@/utils/validations'
 import { downloadMsgFiles } from '@/api/notifiedEmail'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-
 export default {
   name: 'DownloadModal',
   props: {

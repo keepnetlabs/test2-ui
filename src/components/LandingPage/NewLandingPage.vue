@@ -404,7 +404,7 @@ import fromEmail from '@/components/GrapesJs/Newsletter/mergedTexts/fromEmail'
 import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
-import { getAvailableForListFromBackend, getAvailableForValues } from '@/utils/helperFunctions'
+import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
 
 export default {
@@ -636,7 +636,7 @@ export default {
             })
         } else {
           createLandingPage(payload)
-            .then((response) => {
+            .then(() => {
               this.$emit('changeNewEmailTemplateModalStatus', false, true)
             })
             .finally(() => {
@@ -811,7 +811,7 @@ export default {
         vm.formValues.domainRecordId,
         vm.formValues.parameterTypeId
       ],
-      (val) => {
+      () => {
         this.disabledLabel = `${
           this.landingPageData.urlSchemaTypes.find(
             (item) => item.value == this.formValues.urlSchemaTypeId.toString()
@@ -921,7 +921,6 @@ export default {
     }
   }
   &__title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 24px;
@@ -929,7 +928,6 @@ export default {
     color: #383b41;
   }
   &__sub-title {
-    font-family: Open Sans;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -943,7 +941,7 @@ export default {
   width: 0;
 }
 .landing-page-tab-content {
-  box-shadow: 0px 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
+  box-shadow: 0 3px 1px -2px rgba(80, 80, 80, 0.12), 0px 2px 2px rgba(80, 80, 80, 0.14),
     0px 1px 5px rgba(80, 80, 80, 0.2);
   padding: 24px;
   .el-tabs__content {

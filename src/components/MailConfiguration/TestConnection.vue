@@ -106,7 +106,7 @@ import {
   checkInboxAccess,
   checkPrivileges,
   checkUpdateCategory
-} from '../../api/mailConfiguration'
+} from '@/api/mailConfiguration'
 import TestConnectivityStatus from './TestConnectivityStatus'
 export default {
   inheritAttrs: true,
@@ -184,7 +184,7 @@ export default {
           payload.resourceId = this.isEdit.resourceId
         }
         checkApiConnectivity(payload)
-          .then((response) => {
+          .then(() => {
             this.checkApiConnectivity = 'success'
             this.isAllSuccess(true)
           })
@@ -197,7 +197,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkPrivileges(payload)
-          .then((response) => {
+          .then(() => {
             this.checkPrivileges = 'success'
             this.isAllSuccess(true)
           })
@@ -210,7 +210,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkAllUsersAccess(payload)
-          .then((response) => {
+          .then(() => {
             this.checkAllUsersAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -223,7 +223,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkEmailAccess(payload)
-          .then((response) => {
+          .then(() => {
             this.checkEmailAccess = 'success'
             this.isAllSuccess(true)
           })
@@ -236,7 +236,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkCreateNewCategory(payload)
-          .then((response) => {
+          .then(() => {
             this.checkCreateNewCategory = 'success'
             this.isAllSuccess(true)
           })
@@ -248,9 +248,9 @@ export default {
               error.response.data.message
             this.isAllSuccess(false)
           })
-          .finally((response) => {
+          .finally(() => {
             checkUpdateCategory(payload)
-              .then((response) => {
+              .then(() => {
                 this.checkUpdateCategory = 'success'
                 this.isAllSuccess(true)
               })
@@ -263,7 +263,7 @@ export default {
               })
           })
         checkDeleteEmail(payload)
-          .then((response) => {
+          .then(() => {
             this.checkDeleteEmail = 'success'
             this.isAllSuccess(true)
           })
@@ -276,7 +276,7 @@ export default {
             this.isAllSuccess(false)
           })
         checkInboxAccess(payload)
-          .then((response) => {
+          .then(() => {
             this.checkInboxAccess = 'success'
             this.isAllSuccess(true)
           })

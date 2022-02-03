@@ -311,6 +311,7 @@ export default {
               this.$router.push({ name: 'Campaign Manager' })
             })
             .finally(this.setActionButtonDisability)
+          break
         default:
           break
       }

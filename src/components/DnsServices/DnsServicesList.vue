@@ -377,7 +377,7 @@ export default {
         this.getDatatableList()
       })
     },
-    handleEdit(row, isDuplicate) {
+    handleEdit(row) {
       this.resourceId = row.resourceId
       this.isEdit = true
       this.modalStatus = true
@@ -397,17 +397,15 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.bodyData.filter
         }
-        exportDnsService(payload)
-          .then((response) => {
-            const { data } = response
-            const link = document.createElement('a')
-            link.href = window.URL.createObjectURL(data)
-            link.download = `DnsServices.${
-              exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-            }`
-            link.click()
-          })
-          .catch((error) => {})
+        exportDnsService(payload).then((response) => {
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
+          link.download = `DnsServices.${
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
       })
     },
     getDatatableList() {
@@ -467,7 +465,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
