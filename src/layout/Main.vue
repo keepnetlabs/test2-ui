@@ -2606,11 +2606,6 @@ export default {
     height: 50px;
   }
 
-  .ButtonOriantation {
-    padding: 0 auto;
-    font-size: 32px;
-  }
-
   .v-dialog {
     //overflow: hidden !important;
   }
