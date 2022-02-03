@@ -1,14 +1,12 @@
 <template>
   <div class="investigations">
     <div class="investigations__container">
-      <!-- New investigation popup starts here. You can define all props here. If you want to open that overlay, you have to set isWantToAddNewCommunity to true -->
-
       <new-investigation
+        v-if="isShowNewInvestigationModal"
         ref="refNewInvestigation"
-        v-if="isWantToAddNewCommunity"
-        :status="isWantToAddNewCommunity"
+        :status="isShowNewInvestigationModal"
         @closeWithRoute="onAddClose"
-        @closeAdd="isWantToAddNewCommunity = false"
+        @closeAdd="isShowNewInvestigationModal = false"
         @refreshDatatable="refreshDatatable"
       />
       <app-dialog
@@ -19,7 +17,7 @@
         @changeStatus="isWantToStopInvestigation = false"
         icon="mdi-alert"
       >
-        <template v-slot:app-dialog-footer>
+        <template #app-dialog-footer>
           <app-dialog-footer
             cancel-button-id="btn-cancel--investigations-popup"
             confirm-button-id="btn-stop--investigations-popup"
@@ -34,15 +32,12 @@
           v-bind="tableState"
           is-server-side
           :loading="loading"
-          :show-all-records="showAllRecords"
           :is-column-filter-active="isColumnFilterActive"
           id="investigations-data-table"
           ref="investigationTable"
           :refName="'investigationTable'"
           :columns="columns"
-          :totalNumberOfRecords="totalNumberOfRecords"
           :table="tableData.data"
-          :pageSizes="pageSizes"
           :defaultSort="'date'"
           :selectable="true"
           :filterable="true"
@@ -53,21 +48,17 @@
           :empty="iEmpty"
           :selectEvent="selectEvent"
           :chartOptions="chartOptions"
-          :sizeable="true"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
-          @createCommunityFromMobileInfo="createCommunityFromMobileInfo()"
+          @startNewInvestigation="startNewInvestigation"
           @stopInvestigationFunc="stopInvestigationFunc($event)"
           @investigationDetails="investigationDetails($event)"
           @downloadEvent="exportInvestigationList"
           @paginationChangedEvent="paginationChangedEvent($event)"
-          @onEmptyBtnClicked="isWantToAddNewCommunity = true"
+          @onEmptyBtnClicked="isShowNewInvestigationModal = true"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
           @refreshAction="getInvestigationList"
-          @on-all-records-button-click="handleAllRecordsClick"
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
@@ -76,7 +67,6 @@
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
           @sortChangedEvent="sortChanged"
-          @handleSelectionChange="handleSelectionChange"
         >
           <template v-slot:datatable-custom-column="{ scope }">
             <span
@@ -89,7 +79,6 @@
             <span
               :key="item.resourceId"
               v-else
-              :to="{ name: 'Playbook', params: { playbookId: item.resourceId } }"
               v-for="item in scope.row.matchingPlaybooks"
               class="popup-link"
               @click="togglePlaybookModalWithSelected(item.resourceId)"
@@ -159,21 +148,17 @@ export default {
     }
   },
   data: () => ({
-    tableState: false,
-    showAllRecords: false,
-    totalNumberOfRecords: 0,
+    tableState: null,
     stopInvestigateButtonDisabled: false,
     loading: false,
     showPlaybookModal: false,
     selectedPlaybookId: null,
-    isWantToAddNewCommunity: false,
+    isShowNewInvestigationModal: false,
     isWantToStopInvestigation: false,
     init: true,
     labels,
-    investigationListDataLength: 0,
     storedTableSettings: null,
     columns: [
-      // Should be defined to show the table
       {
         property: 'incident',
         align: 'left',
@@ -199,7 +184,6 @@ export default {
         type: 'slot',
         width: 240,
         filterableType: 'text'
-        //minWidth: 80
       },
       {
         property: 'status',
@@ -225,7 +209,6 @@ export default {
         show: true,
         type: 'text',
         filterableType: 'date'
-        //minWidth: 80
       },
       {
         property: 'expireDate',
@@ -237,7 +220,6 @@ export default {
         show: true,
         type: 'text',
         filterableType: 'date'
-        //minWidth: 80
       },
       {
         property: 'userStatus',
@@ -249,7 +231,6 @@ export default {
         show: true,
         type: 'chart',
         width: 150
-        //minWidth: 35
       },
       {
         property: 'progress',
@@ -262,10 +243,8 @@ export default {
         type: 'progress',
         progressType: 'stats',
         width: 130
-        // minWidth: 60
       }
     ],
-    pageSizes: [5, 10, 25],
     rowActions: [
       {
         name: labels.Details,
@@ -285,7 +264,7 @@ export default {
     addUsers: {
       show: true,
       tooltip: labels.StartAnInvestigation,
-      action: 'createCommunityFromMobileInfo',
+      action: 'startNewInvestigation',
       id: 'btn-add--investigations',
       disabled: !checkPermission('investigations', 'POST')
     },
@@ -352,9 +331,6 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
-    handleSelectionChange(asd) {
-      //https://element.eleme.io/#/en-US/component/table
-    },
     handleSearchChange(searchFilter = {}, columnFilterActive = false) {
       this.isColumnFilterActive = columnFilterActive
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
@@ -395,10 +371,7 @@ export default {
         this.bodyData.filter = savedFilter.filter
         this.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.investigationTable.filterValues = savedFilter.filterValues
-          this.$refs.investigationTable.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
+          this.$refs.investigationTable.reRenderColumns(savedFilter.filterValues)
         })
       }
       this.getInvestigationList()
@@ -430,11 +403,6 @@ export default {
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
-    },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getInvestigationList()
     },
     handeRuleNameClick(resourceId) {
       this.selectedPlaybookId = resourceId
@@ -485,7 +453,7 @@ export default {
       this.bodyData.filter.FilterGroups[0].FilterItems = []
       this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           this.bodyData.filter.FilterGroups[0].FilterItems.push(filter[i])
         })
       } else {
@@ -502,7 +470,7 @@ export default {
     },
     columnFilterCleared(fieldName) {
       let items = []
-      this.bodyData.filter.FilterGroups[0].FilterItems.map((x, i, t) => {
+      this.bodyData.filter.FilterGroups[0].FilterItems.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         }
@@ -525,18 +493,13 @@ export default {
       this.getInvestigationList()
     },
     onAddClose(resp) {
-      // set mobile vision
-      if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true
-      }
       if (resp?.data?.data?.resourceId) {
         this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
       }
-      this.isWantToAddNewCommunity = false
+      this.isShowNewInvestigationModal = false
     },
-    createCommunityFromMobileInfo() {
-      // open new investigation overlay
-      this.isWantToAddNewCommunity = true
+    startNewInvestigation() {
+      this.isShowNewInvestigationModal = true
     },
     investigationDetails(value) {
       this.$router.push({
@@ -590,7 +553,6 @@ export default {
     },
     getInvestigationList() {
       this.loading = true
-
       this.$store
         .dispatch('investigations/getInvestigationList', this.bodyData)
         .finally(() => {
@@ -602,31 +564,21 @@ export default {
         })
         .then((response) => {
           const {
-            data: { data }
+            data: {}
           } = response
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
+              data: { totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
     }
   },
   computed: {
     ...mapGetters({
-      // get table data via vuex.
       tableData: 'investigations/investigationListGetter' // for using getters
     }),
     getTitle() {
@@ -644,13 +596,12 @@ export default {
     }
   },
   created() {
-    // triggered to relevant action at investigations.js
     if (!this.checkPermissions('investigations/search', 'POST')) {
       this.$router.push('/incident-responder')
     }
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
     if (this.$route.params && this.$route.params.selectedEmail) {
-      this.isWantToAddNewCommunity = true
+      this.isShowNewInvestigationModal = true
     }
     this.$nextTick(() => {
       if (this.$route.params && this.$route.params.selectedEmail) {
@@ -660,52 +611,12 @@ export default {
         }
       }
     })
-    if (false) {
-      const tableState =
-        this.$store.state['datatable'].tables['Investigations'] &&
-        this.$store.state['datatable'].tables['Investigations'].tableState
-      if (tableState) {
-        this.serverSideProps = tableState.serverSideProps
-        tableState.currentPage = tableState.serverSideProps.pageNumber
-        const { filterValues = {} } = tableState
-        if (Object.keys(filterValues).length) {
-          this.isColumnFilterActive = true
-          for (const [key, value] of Object.entries(filterValues)) {
-            if (value.selectValue === 'between') {
-              this.bodyData.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue[0],
-                FieldName: key,
-                Operator: '>='
-              })
-              this.bodyData.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue[1],
-                FieldName: key,
-                Operator: '<='
-              })
-            } else {
-              this.bodyData.filter.FilterGroups[0].FilterItems.push({
-                Value: value.textValue,
-                FieldName: key,
-                Operator: value.selectValue
-              })
-            }
-          }
-        }
-        this.serverSideProps.pageNumber = tableState.serverSideProps.pageNumber
-        this.serverSideProps.pageSize = tableState.serverSideProps.pageSize
-        this.serverSideProps.orderBy = tableState.serverSideProps.orderBy
-        this.tableState = { persistentState: tableState }
-        this.getInvestigationList()
-      }
-    } else {
-      this.storedTableSettings = JSON.parse(
-        localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS)
-      )
-      this.getDefaultFilterAndSearch()
-    }
+
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
+    this.getDefaultFilterAndSearch()
 
     if (this.$route.query.openPopup) {
-      this.isWantToAddNewCommunity = true
+      this.isShowNewInvestigationModal = true
     }
   },
   beforeDestroy() {

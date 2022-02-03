@@ -50,7 +50,6 @@
 import DataTable from '../components/DataTable'
 import {
   COMMON_CONSTANTS,
-  getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -433,7 +432,7 @@ export default {
 
       requestBody = [...items]
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName = filter[i].FieldName
           requestBody.push(elem)
@@ -455,7 +454,7 @@ export default {
       let items = []
       let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
           items.push(x)
         } else if (x.FieldName === 'logDate') {
