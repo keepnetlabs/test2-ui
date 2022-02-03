@@ -736,5 +736,8 @@ export default {
   .v-overlay__content {
     overflow-x: hidden;
   }
+  .k-overlay__container {
+    padding: 0 !important;
+  }
 }
 </style>

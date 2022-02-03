@@ -2307,7 +2307,6 @@ export default {
         }
       }
       if (spanWidth > widthOfParent) {
-        this.showOverFlowTooltip = true
         const typeOfProp = typeof row[column.property]
         let text
         switch (typeOfProp) {
@@ -2320,6 +2319,8 @@ export default {
           default:
             break
         }
+        if (!text) return
+        this.showOverFlowTooltip = true
         this.overFlowTooltipContent = text
         this.overFlowTooltipStyle = {
           top: `${parentRect.top + (this.isCustomOverflowedColumn ? 50 : 60)}px`,

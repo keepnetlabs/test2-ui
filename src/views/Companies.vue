@@ -1,33 +1,35 @@
 <template>
-  <div class="companies">
-    <v-layout wrap class="companies__container">
-      <v-card class="companies__container-card">
-        <template v-if="!$route.params.groupId && $route.name === 'Companies'">
-          <el-tabs v-model="tab">
-            <el-tab-pane
-              v-if="checkPermissions('companies/search', 'POST')"
-              label="Companies"
-              name="company-companies"
-              id="company-companies-content"
-            >
-              <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
-            /></el-tab-pane>
-            <el-tab-pane
-              v-if="checkPermissions('company-groups/search', 'POST')"
-              label="Company Groups"
-              name="company-company-groups"
-              id="company-company-groups-content"
-            >
-              <company-group-list
-                :isLoadState="isLoadState"
-                v-if="tab === 'company-company-groups'"
-            /></el-tab-pane>
-          </el-tabs>
-        </template>
-        <template v-else>
-          <company-group-details :groupId="$route.params.groupId" />
-        </template>
-      </v-card>
+  <div class="k-container">
+    <v-layout wrap style="min-height: 80vh;">
+      <v-col class="k-container__tab-container" cols="12">
+        <v-card class="k-card">
+          <template v-if="!$route.params.groupId && $route.name === 'Companies'">
+            <el-tabs v-model="tab">
+              <el-tab-pane
+                v-if="checkPermissions('companies/search', 'POST')"
+                label="Companies"
+                name="company-companies"
+                id="company-companies-content"
+              >
+                <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
+              /></el-tab-pane>
+              <el-tab-pane
+                v-if="checkPermissions('company-groups/search', 'POST')"
+                label="Company Groups"
+                name="company-company-groups"
+                id="company-company-groups-content"
+              >
+                <company-group-list
+                  :isLoadState="isLoadState"
+                  v-if="tab === 'company-company-groups'"
+              /></el-tab-pane>
+            </el-tabs>
+          </template>
+          <template v-else>
+            <company-group-details :groupId="$route.params.groupId" />
+          </template>
+        </v-card>
+      </v-col>
     </v-layout>
   </div>
 </template>
@@ -105,20 +107,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.companies {
-  min-height: 80vh !important;
-  padding-top: 10px;
-  &__container {
-    padding: 0 16px 24px 16px !important;
-    width: 100%;
-    &-card {
-      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-      padding: 10px 24px 0 24px !important;
-      border-radius: 20px !important;
-      width: 100%;
-    }
-  }
-}
-</style>

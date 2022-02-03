@@ -854,8 +854,6 @@ export default {
       }
     }
   }
-
-  padding-top: 24px;
   .add-users__title {
     font-size: 14px;
     letter-spacing: normal;
