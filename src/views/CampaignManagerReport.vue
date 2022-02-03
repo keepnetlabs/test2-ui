@@ -1,11 +1,8 @@
 <template>
-  <div
-    id="campaign-manager-report"
-    class="campaign-manager-report integrations campaign-manager-report"
-  >
+  <div id="campaign-manager-report" class="k-container">
     <v-layout id="ts-layout" wrap style="min-height: 80vh;">
-      <v-col class="pl-0 integrations__tab-container" cols="12">
-        <v-card id="pr-card" class="pr-card pr-6">
+      <v-col class="k-container__tab-container" cols="12">
+        <v-card id="campaign-manager-report-card" class="k-card">
           <el-tabs v-model="tab">
             <el-tab-pane
               v-for="item in tabItems"
@@ -111,11 +108,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-report {
-  .k-table__wrapper {
-    padding-bottom: 6px;
-  }
-}
-</style>

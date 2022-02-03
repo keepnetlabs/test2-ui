@@ -4,7 +4,7 @@
       :title="labels.AdvancedSettings"
       :sub-title="labels.AdvancedSettingsSubTitle"
     />
-    <el-tabs v-model="tab" id="settings-el-tabs">
+    <el-tabs v-model="tab" id="settings-el-tabs" class="k-sub-tab">
       <el-tab-pane
         v-for="item in tabItems"
         :key="item.name"
@@ -94,23 +94,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.advanced-settings {
-  .el-tabs__header {
-    background-color: rgb(245, 247, 250);
-    border-color: rgb(245, 247, 250);
-  }
-  .el-tabs__nav {
-    margin-left: 16px;
-  }
-  .el-tabs__item {
-    font-size: 14px !important;
-    height: 48px;
-    line-height: 48px;
-  }
-  .el-tabs__active-bar {
-    min-width: 34px !important;
-  }
-}
-</style>
