@@ -377,10 +377,7 @@ export default {
 
   .v-card-login-wrapper {
     border-radius: 20px !important;
-    padding-top: 24px;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 80px;
+    padding: 24px 24px 80px;
   }
 
   .background {

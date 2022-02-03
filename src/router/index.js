@@ -7,11 +7,9 @@ import ThreatSharing from '../views/ThreatSharing'
 import Community from '../views/Community'
 import TargetUsers from '../views/TargetUsers'
 import IncidentResponder from '../views/IncidentResponder'
-import AnalysisDetails from '../views/AnalysisDetails'
 import EmailDetails from '../components/IncidentResponder/emailDetails'
 import Workshop from '../views/Workshop.vue'
 import Test from '../views/Test'
-import PermissionTypes from '../model/constants/permissionTypes'
 import AuthenticationService from '../services/authentication'
 import AuthenticationStatus from '../model/constants/authenticationStatus'
 import InvestigationComponent from '../views/Investigations.vue'
@@ -24,7 +22,6 @@ import MailConfiguration from '../components/MailConfiguration/MailConfiguration
 import store from '../store'
 import Companies from '@/views/Companies'
 import Company from '@/views/Company'
-import ExampleGrapesJS from '../components/GrapesJs/ExampleGrapesJS'
 import CompanySettings from '@/views/CompanySettings'
 import SystemUsers from '@/views/SystemUsers'
 import Widgets from '@/views/Widgets'
@@ -70,8 +67,7 @@ const router = new Router({
           path: '/',
           name: 'Dashboard',
           meta: {
-            isAuthenticated: true,
-            permissions: [PermissionTypes.Permissions_Administrator]
+            isAuthenticated: true
           },
           component: DashBoard,
           beforeEnter: (to, from, next) => {
@@ -545,26 +541,6 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Investigations'
-          },
-          props: true,
-          params: true
-        },
-        {
-          path: '/analysis-details',
-          name: 'Analysis Details',
-          component: AnalysisDetails,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
-          meta: {
-            isAuthenticated: true
           },
           props: true,
           params: true

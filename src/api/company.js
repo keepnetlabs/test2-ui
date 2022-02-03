@@ -7,11 +7,6 @@ export function searchCompanies(payload) {
 export function searchGroupCompanies(id, payload) {
   return testRequest.post(`/company-groups/${id}/companies/search`, payload)
 }
-export function searchMyCompanies(payload) {
-  return testRequest.post(`/companies/my/search`, payload, {
-    isCompanySelect: true
-  })
-}
 
 export function getMyCompanies() {
   return testRequest.get('/companies/my')
@@ -45,9 +40,6 @@ export function getCompanyByID(id, loading = true) {
 }
 export function searchCompanyGroups(payload) {
   return testRequest.post(`/company-groups/search`, payload)
-}
-export function getCompanyGroups() {
-  return testRequest.get(`/company-groups/search`)
 }
 export function getCompanyGroupsById(id) {
   return testRequest.get(`/company-groups/${id}`)
