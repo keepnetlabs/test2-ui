@@ -24,7 +24,3 @@ export function updateClient(id, payload) {
 export function deleteClient(id) {
   return testRequest.delete(`${API_URL}/${id}`, { snackbar: COMMON_SNACKBAR })
 }
-
-export function getClientDetails(id) {
-  return testRequest.get(`${API_URL}/${id}`)
-}
