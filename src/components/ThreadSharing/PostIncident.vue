@@ -68,7 +68,7 @@
                 id="text--threat-sharing-incident-select-incident"
                 :class="{
                   'active-step-span': step === 1,
-                  'hide-step': step === 3 || step === 4 || step === 5,
+                  'hide-step': step === 3 || step === 4 || step === 5
                 }"
                 class="step-name"
                 >Select Incident</span
@@ -86,7 +86,7 @@
                 id="text--threat-sharing-incident-general-info"
                 :class="{
                   'active-step-span': step === 2,
-                  'hide-step': step === 1 || step === 4 || step === 5,
+                  'hide-step': step === 1 || step === 4 || step === 5
                 }"
                 class="step-name"
                 >General Info</span
@@ -104,7 +104,7 @@
                 id="text--threat-sharing-incident-details"
                 :class="{
                   'active-step-span': step === 3,
-                  'hide-step': step === 1 || step === 2 || step === 5,
+                  'hide-step': step === 1 || step === 2 || step === 5
                 }"
                 class="step-name"
                 >Incident Details</span
@@ -122,7 +122,7 @@
                 id="text--threat-sharing-incident-attributes"
                 :class="{
                   'active-step-span': step === 4,
-                  'hide-step': step === 1 || step === 2 || step === 3,
+                  'hide-step': step === 1 || step === 2 || step === 3
                 }"
                 class="step-name"
                 >Attributes</span
@@ -140,7 +140,7 @@
                 id="text--threat-sharing-incident-preview"
                 :class="{
                   'active-step-span': step === 5,
-                  'hide-step': step === 1 || step === 2 || step === 3 || step === 4,
+                  'hide-step': step === 1 || step === 2 || step === 3 || step === 4
                 }"
                 class="step-name"
                 >Preview</span
@@ -210,7 +210,7 @@
                       <div class="file-type-wrap">
                         <v-icon
                           :style="{
-                            visibility: item.attachmentCount != 0 ? 'visible' : 'hidden',
+                            visibility: item.attachmentCount != 0 ? 'visible' : 'hidden'
                           }"
                           class="email-icon"
                           >mdi-paperclip
@@ -221,7 +221,7 @@
                             item.result === 'BeingAnalyzed' ? 'btn-pending' : '',
                             item.result === 'Malicious' ? 'btn-cancelled' : '',
                             item.result === 'non-malicious' ? 'btn-active' : '',
-                            item.result === 'Phishing' ? 'btn-warning' : '',
+                            item.result === 'Phishing' ? 'btn-warning' : ''
                           ]"
                         >
                           <span>{{ item.result }}</span>
@@ -330,7 +330,7 @@
                         :class="[
                           att.isFlagged ? 'red-attach' : '',
                           !att.isFlagged ? 'blue-attach' : '',
-                          !att.isHidden ? 'clean-attach' : '',
+                          !att.isHidden ? 'clean-attach' : ''
                         ]"
                       >
                         <AttachmentsPreview :att="att" />
@@ -370,7 +370,7 @@
                     titleRule.regex,
                     titleRule.required,
                     titleRule.empty,
-                    titleRule.minLength,
+                    titleRule.minLength
                   ]"
                   hint="*Required"
                   persistent-hint
@@ -437,7 +437,7 @@
                     'errored-selectbox':
                       uploadRespond &&
                       uploadRespond.CategoryResourceIdArray &&
-                      uploadRespond.CategoryResourceIdArray.length < 1,
+                      uploadRespond.CategoryResourceIdArray.length < 1
                   }"
                   hint="*Required"
                   persistent-hint
@@ -500,7 +500,7 @@
                           backgroundColor: item.color,
                           width: '16px',
                           height: '16px',
-                          border: '1px solid #000000',
+                          border: '1px solid #000000'
                         }"
                       ></div>
                     </v-list-item-avatar>
@@ -548,7 +548,7 @@
                       ? [
                           explanationRules.empty,
                           explanationRules.minLength,
-                          explanationRules.required,
+                          explanationRules.required
                         ]
                       : []
                   "
@@ -624,7 +624,7 @@
                           scopeRules.regex,
                           scopeRules.empty,
                           scopeRules.minLength,
-                          scopeRules.required,
+                          scopeRules.required
                         ]
                       : []
                   "
@@ -698,7 +698,7 @@
                       :class="[
                         att.isFlagged ? 'red-attach' : '',
                         !att.isFlagged ? 'blue-attach' : '',
-                        !att.isHidden ? 'clean-attach' : '',
+                        !att.isHidden ? 'clean-attach' : ''
                       ]"
                     >
                       <AttachmentsPreview :att="att" />
@@ -1627,7 +1627,7 @@
                                 :class="[
                                   att.isFlagged ? 'red-attach' : '',
                                   !att.isFlagged ? 'blue-attach' : '',
-                                  !att.isHidden ? 'clean-attach' : '',
+                                  !att.isHidden ? 'clean-attach' : ''
                                 ]"
                               >
                                 <AttachmentsPreview :att="att" />
@@ -1685,7 +1685,7 @@
                                 {{
                                   !uploadRespond.isSubjectHidden
                                     ? uploadRespond.subject
-                                    : "Hidden by Owner"
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1710,7 +1710,7 @@
                                 {{
                                   !uploadRespond.isFromHidden
                                     ? uploadRespond.from
-                                    : "Hidden by Owner"
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1732,7 +1732,7 @@
                                 {{
                                   !uploadRespond.isToHidden
                                     ? uploadRespond.to.toString()
-                                    : "Hidden by Owner"
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1758,7 +1758,7 @@
                                 {{
                                   !uploadRespond.isCcHidden
                                     ? uploadRespond.cc.toString()
-                                    : "Hidden by Owner"
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -1787,7 +1787,7 @@
                                 {{
                                   !uploadRespond.isBccHidden
                                     ? uploadRespond.bcc.toString()
-                                    : "Hidden by Owner"
+                                    : 'Hidden by Owner'
                                 }}
                               </p>
                               <p
@@ -2037,9 +2037,9 @@
   </div>
 </template>
 <script>
-import PreviewHeader from "./PreviewHeader";
-import PreviewHeaderForSinglePost from "./PreviewHeaderForSinglePost";
-import VClamp from "vue-clamp";
+import PreviewHeader from './PreviewHeader'
+import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
+import VClamp from 'vue-clamp'
 import {
   createCommunityPost,
   getCommunityPost,
@@ -2048,20 +2048,20 @@ import {
   parseEmail,
   searchNotifiedMail,
   updateCommunityPost,
-  uploadEmlOrMsg,
-} from "../../api/threadSharing";
-import { COMMON_CONSTANTS } from "../../model/constants/commonConstants";
-import KShadowFrame from "../KShadowFrame";
-import KFileUpload from "@/components/Common/FileUpload/FileUpload";
-import AppModal from "../AppModal";
-import labels from "@/model/constants/labels";
-import GrapesNewsletterModal from "../GrapesJs/Newsletter/GrapesNewsletterModal";
-import { incidenPostReviewElementBind, scrollToComponent } from "../../utils/functions";
-import AttachmentsPreview from "./AttachmentsPreview";
-import KSelect from "@/components/Common/Inputs/KSelect";
-import * as Validations from "@/utils/validations";
-import KSelectLoading from "@/components/KSelectLoading";
-Vue.customElement("k-shadow-frame", KShadowFrame, {
+  uploadEmlOrMsg
+} from '../../api/threadSharing'
+import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+import KShadowFrame from '../KShadowFrame'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import AppModal from '../AppModal'
+import labels from '@/model/constants/labels'
+import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
+import { incidenPostReviewElementBind, scrollToComponent, isDifferent } from '@/utils/functions'
+import AttachmentsPreview from './AttachmentsPreview'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import * as Validations from '@/utils/validations'
+import KSelectLoading from '@/components/KSelectLoading'
+Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `
  @import url('https://fonts.googleapis.com/css?family=Material+Icons');
@@ -2174,8 +2174,8 @@ Vue.customElement("k-shadow-frame", KShadowFrame, {
     line-height: 1.2 !important;
 }
 a{position:relative}
- `,
-});
+ `
+})
 
 export default {
   components: {
@@ -2187,28 +2187,28 @@ export default {
     GrapesNewsletterModal,
     AppModal,
     PreviewHeaderForSinglePost,
-    AttachmentsPreview,
+    AttachmentsPreview
   },
   props: {
     editItem: {
       type: Object,
-      required: false,
+      required: false
     },
     updatePost: {
       type: String,
-      required: false,
+      required: false
     },
     isEditMode: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     communityName: {
-      type: String,
+      type: String
     },
     refreshData: {
-      required: false,
-    },
+      required: false
+    }
   },
   computed: {
     checkHeaderSelected() {
@@ -2219,86 +2219,86 @@ export default {
         this.uploadRespond.isCcHidden ||
         this.uploadRespond.isBccHidden
       ) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
     },
     maliciousCount() {
-      let count = 0;
+      let count = 0
       if (this.uploadRespond.isFromFlagged) {
-        count = count + 1;
+        count = count + 1
       }
       if (this.uploadRespond.isSubjectFlagged) {
-        count = count + 1;
+        count = count + 1
       }
       if (this.uploadRespond.isToFlagged) {
-        count = count + 1;
+        count = count + 1
       }
       if (this.uploadRespond.isCcFlagged) {
-        count = count + 1;
+        count = count + 1
       }
       if (this.uploadRespond.isBccFlagged) {
-        count = count + 1;
+        count = count + 1
       }
       count =
         count +
         this.uploadRespond.urls.reduce((acc, item) => {
-          if (item.isFlagged) acc = acc + 1;
-          return acc;
-        }, 0);
+          if (item.isFlagged) acc = acc + 1
+          return acc
+        }, 0)
       count =
         count +
         this.uploadRespond.attachments.reduce((acc, item) => {
-          if (item.isFlagged) acc = acc + 1;
-          return acc;
-        }, 0);
-      return count;
-    },
+          if (item.isFlagged) acc = acc + 1
+          return acc
+        }, 0)
+      return count
+    }
   },
   data: () => ({
-    initialFormValues:{},
+    initialFormValues: {},
     over20: false,
     saveDisable: false,
     labels,
     visibleBodyForPreview: null,
-    termsAndConditionsUrl: "https://www.keepnetlabs.com/terms-conditions/",
+    termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
     acceptCheckbox: false,
     editHtmlData: null,
     showNewsletterPageGrapes: false,
     isFindIncidentLoading: true,
     showLoader: false,
-    value: "wFlYRDMW946M",
+    value: 'wFlYRDMW946M',
     isInit: true,
     items2: [
       {
-        text: "TLP: WHITE",
-        value: "wFlYRDMW946M",
-        color: "#ffffff",
-        cssClass: "tlp-select__chip--white",
-        desc: "Disclosure is not limited.",
+        text: 'TLP: WHITE',
+        value: 'wFlYRDMW946M',
+        color: '#ffffff',
+        cssClass: 'tlp-select__chip--white',
+        desc: 'Disclosure is not limited.'
       },
       {
-        text: "TLP: GREEN",
-        value: "wKBhLuFZ46y9",
-        color: "#2cde00",
-        cssClass: "tlp-select__chip--green",
-        desc: "Limited disclosure, restricted to the community.",
+        text: 'TLP: GREEN',
+        value: 'wKBhLuFZ46y9',
+        color: '#2cde00',
+        cssClass: 'tlp-select__chip--green',
+        desc: 'Limited disclosure, restricted to the community.'
       },
       {
-        text: "TLP: AMBER",
-        value: "RhHwRcLlZxek",
-        color: "#ffc000",
-        cssClass: "tlp-select__chip--amber",
-        desc: "Limited disclosure, restricted to participants’ organizations.",
+        text: 'TLP: AMBER',
+        value: 'RhHwRcLlZxek',
+        color: '#ffc000',
+        cssClass: 'tlp-select__chip--amber',
+        desc: 'Limited disclosure, restricted to participants’ organizations.'
       },
       {
-        text: "TLP: RED",
-        value: "YpUZxVhYJlKg",
-        color: "#ff0033",
-        cssClass: "tlp-select__chip--red",
-        desc: "Not for disclosure, restricted to participants only.",
-      },
+        text: 'TLP: RED',
+        value: 'YpUZxVhYJlKg',
+        color: '#ff0033',
+        cssClass: 'tlp-select__chip--red',
+        desc: 'Not for disclosure, restricted to participants only.'
+      }
     ],
     fromSettings: false,
     toSettings: false,
@@ -2308,132 +2308,132 @@ export default {
     currentCompany: null,
     listData: [],
     step: 1,
-    search: "",
-    searchIncident: "",
+    search: '',
+    searchIncident: '',
     items: [],
-    categories: ["Malicious", "Non-malicious", "Phishing"],
+    categories: ['Malicious', 'Non-malicious', 'Phishing'],
     model: [],
     activator: null,
     attach: null,
-    colors: ["#e0e0e0"],
+    colors: ['#e0e0e0'],
     editing: null,
     index: -1,
     nonce: 1,
     menu: false,
     x: 0,
     warnItem: true,
-    selectedEmail: "",
+    selectedEmail: '',
     affectSearch: null,
     emails: [
       {
-        name: "File Format Exploit",
-        icon: "mdi-paperclip",
-        type: "Malicious",
-        time: "1w",
+        name: 'File Format Exploit',
+        icon: 'mdi-paperclip',
+        type: 'Malicious',
+        time: '1w'
       },
       {
-        name: "File Format Exploit",
-        icon: "mdi-paperclip",
-        type: "Malicious",
-        time: "1w",
+        name: 'File Format Exploit',
+        icon: 'mdi-paperclip',
+        type: 'Malicious',
+        time: '1w'
       },
       {
-        name: "File Format Exploit",
-        icon: "mdi-paperclip",
-        type: "Malicious",
-        time: "1w",
-      },
+        name: 'File Format Exploit',
+        icon: 'mdi-paperclip',
+        type: 'Malicious',
+        time: '1w'
+      }
     ],
     header: {
       allHeader: true,
       subject: true,
       sender: true,
-      receiver: true,
+      receiver: true
     },
     body: {
       allLinks: true,
       phishingLinks: true,
       phishing1: true,
-      phishing2: false,
+      phishing2: false
     },
     footer: {
       allAttachments: true,
       attachment1: true,
-      attachment2: true,
+      attachment2: true
     },
     valid: false,
     categoryValid: false,
     validDisc: false,
     validAffect: false,
     validScope: false,
-    autocomplete: [(v) => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ""],
-    title: [(v) => !!v || "Title is required"],
-    category: [(v) => (!!v && v.length >= 1) || "Required"],
+    autocomplete: [(v) => (!!v && /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v)) || ''],
+    title: [(v) => !!v || 'Title is required'],
+    category: [(v) => (!!v && v.length >= 1) || 'Required'],
     titleRule: {
       required: (v) => Validations.required(v),
-      default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage("Title")),
+      default: (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage('Title')),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        "Only use letters, digits, period, comma, underline and hyphen",
-      empty: (v) => (v && !v.startsWith(" ")) || "Cannot start with space",
-      minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4)),
+        'Only use letters, digits, period, comma, underline and hyphen',
+      empty: (v) => (v && !v.startsWith(' ')) || 'Cannot start with space',
+      minLength: (v) => Validations.minLength(v, 4, labels.getMinLengthMessage(labels.Title, 4))
     },
     descRule: {
-      default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage("Description", 300)),
+      default: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Description', 300)),
       required: (v) => Validations.required(v),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        "Only use letters, digits, period, comma, underline and hyphen",
+        'Only use letters, digits, period, comma, underline and hyphen',
       empty: (v) => {
-        if (!v) return true;
-        return (v && !v.startsWith(" ")) || "Cannot start with space";
+        if (!v) return true
+        return (v && !v.startsWith(' ')) || 'Cannot start with space'
       },
       minLength: (v) =>
-        Validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
+        Validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5))
     },
 
     checkboxRule: {
       required: (v) => {
-        return v || "You must accept terms and conditions before creating the community";
-      },
+        return v || 'You must accept terms and conditions before creating the community'
+      }
     },
     explanationRules: {
       default: (v) => Validations.required(v),
       required: (v) =>
-        Validations.maxLength(v, 300, labels.getMaxLengthMessage("Discovery and detection", 300)),
-      empty: (v) => (v && !v.startsWith(" ")) || "Discovery and detection cannot start with space",
+        Validations.maxLength(v, 300, labels.getMaxLengthMessage('Discovery and detection', 300)),
+      empty: (v) => (v && !v.startsWith(' ')) || 'Discovery and detection cannot start with space',
       minLength: (v) =>
-        Validations.minLength(v, 5, labels.getMinLengthMessage("Discovery and detection", 5)),
+        Validations.minLength(v, 5, labels.getMinLengthMessage('Discovery and detection', 5))
     },
     scopeRules: {
       default: (v) => Validations.required(v),
-      required: (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage("Scope", 200)),
+      required: (v) => Validations.maxLength(v, 200, labels.getMaxLengthMessage('Scope', 200)),
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        "Only use letters, digits, period, comma, underline and hyphen",
-      empty: (v) => (v && !v.startsWith(" ")) || "Scope cannot start with space",
-      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage("Scope", 5)),
+        'Only use letters, digits, period, comma, underline and hyphen',
+      empty: (v) => (v && !v.startsWith(' ')) || 'Scope cannot start with space',
+      minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Scope', 5))
     },
     affectRules: {
       regex: (v) =>
         /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-        "Only use letters, digits, period, comma, underline and hyphen",
+        'Only use letters, digits, period, comma, underline and hyphen'
     },
     createInc: {
-      postId: "",
-      title: "Subject: Subject comes here",
-      description: "",
-      category: "",
-      discovery: "",
+      postId: '',
+      title: 'Subject: Subject comes here',
+      description: '',
+      category: '',
+      discovery: '',
       affect: [],
       affectSearch: null,
-      scope: "",
-      select: ["add-tags-with", "enter", "tab", "paste"],
+      scope: '',
+      select: ['add-tags-with', 'enter', 'tab', 'paste'],
       items: [],
-      search: "",
-      createUser: "",
-      createCompany: "",
-      onPreview: true,
+      search: '',
+      createUser: '',
+      createCompany: '',
+      onPreview: true
     },
     filterOpened: true,
     flagData: {
@@ -2442,7 +2442,7 @@ export default {
       receiver: false,
       phishing: false,
       link: false,
-      attachment: false,
+      attachment: false
     },
     subChevron: false,
     fromChevron: false,
@@ -2456,287 +2456,287 @@ export default {
     expanded: false,
     tab: 0,
     commentOpened: false,
-    userComment: "",
+    userComment: '',
     comments: [],
     hoverTool: false,
     seeComments: false,
     date: new Date().toISOString().slice(0, 10),
     uploadRespond: {
-      DiscoveryAndDetection: " ",
+      DiscoveryAndDetection: ' '
     },
     shareSettings: {},
     allHeader: false,
     allLinks: false,
     allAttachments: false,
     isAnonym: false,
-    onUploadProgress: null,
+    onUploadProgress: null
   }),
   watch: {
     searchIncident(val) {
-      val !== this.select && this.querySelections(val);
+      val !== this.select && this.querySelections(val)
     },
     affectSearch(val) {
       //let value1 = val
-    },
+    }
   },
   created() {
-    document.querySelector("html").style.overflowY = "hidden";
-    document.querySelector(".page-nav").style.zIndex = 8;
+    document.querySelector('html').style.overflowY = 'hidden'
+    document.querySelector('.page-nav').style.zIndex = 8
   },
   methods: {
     handleLoadingState() {
       if (this.isInit) {
-        this.showLoader = true;
+        this.showLoader = true
       }
     },
     setVisibleBody() {
-      let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden);
+      let urls = this.uploadRespond.urls.filter((item, index) => item.isHidden)
       for (let url of urls) {
         let els = document
-          .getElementById("last-preview-body-shadow-root-for-preview")
-          .shadowRoot.querySelectorAll('[href="' + url.url + '"]');
+          .getElementById('last-preview-body-shadow-root-for-preview')
+          .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
         if (els && els.length) {
           for (let i = 0, l = els.length; i < l; i++) {
-            let el = els[i];
-            el.style.pointerEvents = "auto";
-            el.style.cursor = "pointer";
-            el.removeAttribute("data-title");
-            el.setAttribute("data-post-item-hidden", "false");
-            el.innerHTML = "Hidden by Owner";
-            el.style.backgroundColor = "#757575";
-            el.style.color = "#ffffff";
-            el.style.position = "relative";
-            el.style.pointerEvents = "none";
-            el.url = "Hidden by Owner";
-            el.setAttribute("href", "#");
+            let el = els[i]
+            el.style.pointerEvents = 'auto'
+            el.style.cursor = 'pointer'
+            el.removeAttribute('data-title')
+            el.setAttribute('data-post-item-hidden', 'false')
+            el.innerHTML = 'Hidden by Owner'
+            el.style.backgroundColor = '#757575'
+            el.style.color = '#ffffff'
+            el.style.position = 'relative'
+            el.style.pointerEvents = 'none'
+            el.url = 'Hidden by Owner'
+            el.setAttribute('href', '#')
           }
         }
       }
       this.uploadRespond.visibleBodyForPreview = document.getElementById(
-        "last-preview-body-shadow-root-for-preview"
-      ).shadowRoot.innerHTML;
+        'last-preview-body-shadow-root-for-preview'
+      ).shadowRoot.innerHTML
     },
     handleTagItemChange(value) {
-      this.querySelections(this.searchIncident || "");
-      if (this.isFindIncidentLoading) return false;
+      this.querySelections(this.searchIncident || '')
+      if (this.isFindIncidentLoading) return false
     },
     checkCheckboxValidation() {
-      this.isCheckboxChecked = this.acceptCheckbox;
+      this.isCheckboxChecked = this.acceptCheckbox
     },
     closeGrapesJs() {
-      this.showNewsletterPageGrapes = false;
+      this.showNewsletterPageGrapes = false
       setTimeout(() => {
-        document.querySelector("html").style.overflowY = "hidden";
-      }, 250);
+        document.querySelector('html').style.overflowY = 'hidden'
+      }, 250)
     },
     saveGrapesJs() {
-      let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent();
-      let payload = { htmlBody: editedHtml };
+      let editedHtml = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+      let payload = { htmlBody: editedHtml }
       parseEmail(payload).then((response) => {
         let urls = response.data.data.map((item) => {
-          return { ...item, isFlagged: false, isHidden: false };
-        });
-        document.querySelector("html").style.overflowY = "hidden";
-        this.showNewsletterPageGrapes = false;
-        this.uploadRespond.urls = urls;
-        this.uploadRespond.editableBody = editedHtml;
-        this.uploadRespond.visibleBodyForPreview = editedHtml;
-        this.setShadowRootMalicousLink("last-preview-body-shadow-root");
-      });
+          return { ...item, isFlagged: false, isHidden: false }
+        })
+        document.querySelector('html').style.overflowY = 'hidden'
+        this.showNewsletterPageGrapes = false
+        this.uploadRespond.urls = urls
+        this.uploadRespond.editableBody = editedHtml
+        this.uploadRespond.visibleBodyForPreview = editedHtml
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
+      })
     },
     editHtmlTemplate() {
-      this.editHtmlData = this.uploadRespond.editableBody || this.uploadRespond.initialBody;
-      this.showNewsletterPageGrapes = true;
+      this.editHtmlData = this.uploadRespond.editableBody || this.uploadRespond.initialBody
+      this.showNewsletterPageGrapes = true
     },
     querySelections(val) {
-      let _this = this;
+      let _this = this
       setTimeout(() => {
         if (!val) {
-          this.listData = this.backupListData;
+          this.listData = this.backupListData
         } else {
           if (this.listData && this.backupListData) {
             _this.listData = this.backupListData.reduce((acc, item) => {
               Object.values(item).find((i) => {
                 if (
-                  typeof i === "string" &&
+                  typeof i === 'string' &&
                   i.toLocaleLowerCase().includes(val.toLocaleLowerCase())
                 )
-                  return acc.push(item);
-              });
-              return acc;
-            }, []);
+                  return acc.push(item)
+              })
+              return acc
+            }, [])
           }
           setTimeout(() => {
-            _this.$forceUpdate();
-          }, 50);
+            _this.$forceUpdate()
+          }, 50)
         }
-      }, 500);
+      }, 500)
     },
     getByValue() {
-      return this.uploadRespond.PostedUserFullName || localStorage.getItem("userName");
+      return this.uploadRespond.PostedUserFullName || localStorage.getItem('userName')
     },
     getFromValue() {
-      return this.uploadRespond.PostedUserCompanyName || localStorage.getItem("companyName");
+      return this.uploadRespond.PostedUserCompanyName || localStorage.getItem('companyName')
     },
     contentCopy(contentBody) {
-      navigator.clipboard.writeText(contentBody);
-      this.$store.dispatch("common/createSnackBar", {
+      navigator.clipboard.writeText(contentBody)
+      this.$store.dispatch('common/createSnackBar', {
         color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        message: "Content has been copied",
-      });
+        message: 'Content has been copied'
+      })
     },
     findCategory(id) {
       switch (id) {
-        case "Ps0SSyl7rVNe":
-          return "Malicious";
-        case "bEuAD1pdbRXF":
-          return "Non-Malicious";
-        case "NGLCc9UCxJvw":
-          return "Phishing";
-        case "Gwt67E1ftYtr":
-          return "Spam";
+        case 'Ps0SSyl7rVNe':
+          return 'Malicious'
+        case 'bEuAD1pdbRXF':
+          return 'Non-Malicious'
+        case 'NGLCc9UCxJvw':
+          return 'Phishing'
+        case 'Gwt67E1ftYtr':
+          return 'Spam'
         default:
-          return "";
+          return ''
       }
     },
     urlSwitchChange(url, id, rootId) {
       //this.setShadowRootMalicousLink('last-preview-body-shadow-root')
-      this.checkUrlChangeForAllLinksSwitch();
+      this.checkUrlChangeForAllLinksSwitch()
       let els = document
-        .getElementById(rootId || "last-preview-body-shadow-root")
-        .shadowRoot.querySelectorAll('[href="' + url.url + '"]');
+        .getElementById(rootId || 'last-preview-body-shadow-root')
+        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
       if (els && els.length) {
         for (let i = 0, l = els.length; i < l; i++) {
-          let el = els[i];
-          el.style.pointerEvents = "auto";
-          el.style.cursor = "pointer";
-          el.setAttribute("target", "_blank");
-          el.setAttribute("index", url.index);
-          el.removeAttribute("data-title");
+          let el = els[i]
+          el.style.pointerEvents = 'auto'
+          el.style.cursor = 'pointer'
+          el.setAttribute('target', '_blank')
+          el.setAttribute('index', url.index)
+          el.removeAttribute('data-title')
           if (url.isHidden) {
-            url.isFlagged = false;
-            el.innerHTML = url.urlHtml || url.name || url.url;
-            el.innerHTML = el.innerHTML + `<span class="hidden-icon mdi mdi-eye-off"></span>`;
-            el.style.backgroundColor = "#757575";
-            el.style.color = "#ffffff";
-            el.style.position = "relative";
-            el.style.pointerEvents = "none";
+            url.isFlagged = false
+            el.innerHTML = url.urlHtml || url.name || url.url
+            el.innerHTML = el.innerHTML + `<span class="hidden-icon mdi mdi-eye-off"></span>`
+            el.style.backgroundColor = '#757575'
+            el.style.color = '#ffffff'
+            el.style.position = 'relative'
+            el.style.pointerEvents = 'none'
           } else if (!!url && !!url.name) {
-            el.innerHTML = url.name;
-            el.setAttribute("href", url.url);
-            el.style.backgroundColor = "inherit";
-            el.style.color = "inherit";
+            el.innerHTML = url.name
+            el.setAttribute('href', url.url)
+            el.style.backgroundColor = 'inherit'
+            el.style.color = 'inherit'
           } else if (!!url && !!url.urlHtml) {
-            el.innerHTML = url.urlHtml;
-            el.setAttribute("href", url.url);
-            el.style.backgroundColor = "inherit";
-            el.style.color = "inherit";
+            el.innerHTML = url.urlHtml
+            el.setAttribute('href', url.url)
+            el.style.backgroundColor = 'inherit'
+            el.style.color = 'inherit'
           }
           if (url.isFlagged) {
-            const el = els[i];
-            el.setAttribute("target", "_blank");
-            el.setAttribute("data-title", "This link has been reported as a phishing");
-            el.style.backgroundColor = "#f3e1e5";
-            el.style.color = "#bb2a45";
-            el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`;
-            el.style.cursor = "default";
-            el.setAttribute("onclick", "return false;");
+            const el = els[i]
+            el.setAttribute('target', '_blank')
+            el.setAttribute('data-title', 'This link has been reported as a phishing')
+            el.style.backgroundColor = '#f3e1e5'
+            el.style.color = '#bb2a45'
+            el.innerHTML = el.innerHTML + `<span class="malicious-link mdi mdi-alert"></span>`
+            el.style.cursor = 'default'
+            el.setAttribute('onclick', 'return false;')
 
             //el.appendChild(iEl)
           } else if (!url.isFlagged && !url.isHidden) {
-            el.innerHTML = url.urlHtml || url.name || url.url;
-            el.style.backgroundColor = "inherit";
-            el.style.color = "inherit";
+            el.innerHTML = url.urlHtml || url.name || url.url
+            el.style.backgroundColor = 'inherit'
+            el.style.color = 'inherit'
           }
           if (this.step === 4) {
-            el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.orderNumber}</span>`;
+            el.innerHTML = el.innerHTML + ` <span class="url-badge">${url.orderNumber}</span>`
           }
         }
       }
-      let hiddenEls = document.getElementsByClassName(url.url);
+      let hiddenEls = document.getElementsByClassName(url.url)
       if (hiddenEls && hiddenEls.length) {
         for (let i = 0, l = hiddenEls.length; i < l; i++) {
-          let hiddenEl = hiddenEls[i];
-          hiddenEl.setAttribute("target", "_blank");
+          let hiddenEl = hiddenEls[i]
+          hiddenEl.setAttribute('target', '_blank')
           if (url.isHidden) {
-            hiddenEl.innerHTML = "Hidden by Owner";
+            hiddenEl.innerHTML = 'Hidden by Owner'
             //hiddenEl.setAttribute('href', '#')
           } else if (!!url && !!url.urlHtml) {
-            hiddenEl.innerHTML = url.urlHtml;
-            hiddenEl.setAttribute("href", url.url);
+            hiddenEl.innerHTML = url.urlHtml
+            hiddenEl.setAttribute('href', url.url)
           }
           if (url.isFlagged) {
-            hiddenEl.classList.add("malicious-link");
-            let iEl = document.createElement("span");
+            hiddenEl.classList.add('malicious-link')
+            let iEl = document.createElement('span')
             iEl.className +=
-              "red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light";
-            hiddenEl.appendChild(iEl);
+              'red-malicious-alert v-icon notranslate ml-2 malicious-icon mdi mdi-alert theme--light'
+            hiddenEl.appendChild(iEl)
           }
         }
       }
     },
     setShadowRootMalicousLink(id) {
-      let _this = this;
+      let _this = this
       setTimeout(() => {
         let recrusiveFunctionForDom = () =>
-          document.getElementById(id) && document.getElementById(id).shadowRoot;
-        if (!recrusiveFunctionForDom) recrusiveFunctionForDom();
+          document.getElementById(id) && document.getElementById(id).shadowRoot
+        if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
         _this.uploadRespond.urls = _this.uploadRespond.urls.map((item, index) => {
           let urlItem = document
             .getElementById(id)
-            .shadowRoot.querySelectorAll('[href="' + item.url + '"]');
+            .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
           return {
             ...item,
-            url: item.url.replace(/amp;/g, ""),
+            url: item.url.replace(/amp;/g, ''),
             name: item.name,
             urlHtml: !!urlItem.length && urlItem[0].innerHTML ? urlItem[0].innerHTML : null,
-            index: index + 1,
-          };
-        });
-        if (id === "incident-preview-1" || id === "last-preview-body-shadow-root-review") {
+            index: index + 1
+          }
+        })
+        if (id === 'incident-preview-1' || id === 'last-preview-body-shadow-root-review') {
           for (let url of this.uploadRespond.urls) {
-            incidenPostReviewElementBind(url, null, id, true);
+            incidenPostReviewElementBind(url, null, id, true)
           }
         } else {
           for (let url of this.uploadRespond.urls) {
-            this.urlSwitchChange(url, null, id);
+            this.urlSwitchChange(url, null, id)
           }
         }
-      }, 500);
+      }, 500)
     },
     allUrlsValChange(val) {
       this.uploadRespond.urls = this.uploadRespond.urls.map((item) => {
-        item.isHidden = val;
-        item.isFlagged = false;
-        this.urlSwitchChange(item);
-        return { ...item, isHidden: val };
-      });
+        item.isHidden = val
+        item.isFlagged = false
+        this.urlSwitchChange(item)
+        return { ...item, isHidden: val }
+      })
     },
     checkUrlChangeForAllLinksSwitch() {
-      this.allLinks = !this.uploadRespond.urls.find((item) => !item.isHidden);
+      this.allLinks = !this.uploadRespond.urls.find((item) => !item.isHidden)
     },
     allAttachmentsValChange(val) {
       this.uploadRespond.attachments = this.uploadRespond.attachments.map((item) => {
-        item.isHidden = val;
-        item.isFlagged = false;
-        return { ...item, isHidden: val };
-      });
+        item.isHidden = val
+        item.isFlagged = false
+        return { ...item, isHidden: val }
+      })
     },
     checkAttachmentsChangeForAllLinksSwitch(att, index) {
-      this.allAttachments = !this.uploadRespond.attachments.find((item) => !item.isHidden);
-      att.isFlagged = false;
+      this.allAttachments = !this.uploadRespond.attachments.find((item) => !item.isHidden)
+      att.isFlagged = false
     },
     headerValChange(val) {
-      this.uploadRespond.isSubjectHidden = val;
-      this.uploadRespond.isFromHidden = val;
-      this.uploadRespond.isToHidden = val;
-      this.uploadRespond.isCcHidden = val;
-      this.uploadRespond.isBccHidden = val;
-      this.uploadRespond.isSubjectFlagged = false;
-      this.uploadRespond.isFromFlagged = false;
-      this.uploadRespond.isToFlagged = false;
-      this.uploadRespond.isCcFlagged = false;
-      this.uploadRespond.isBccFlagged = false;
+      this.uploadRespond.isSubjectHidden = val
+      this.uploadRespond.isFromHidden = val
+      this.uploadRespond.isToHidden = val
+      this.uploadRespond.isCcHidden = val
+      this.uploadRespond.isBccHidden = val
+      this.uploadRespond.isSubjectFlagged = false
+      this.uploadRespond.isFromFlagged = false
+      this.uploadRespond.isToFlagged = false
+      this.uploadRespond.isCcFlagged = false
+      this.uploadRespond.isBccFlagged = false
     },
     checkAllHeaderCheck() {
       this.allHeader =
@@ -2744,47 +2744,47 @@ export default {
         (!this.uploadRespond.from || this.uploadRespond.isFromHidden) &&
         (!this.uploadRespond.to.length || this.uploadRespond.isToHidden) &&
         (!this.uploadRespond.cc.length || this.uploadRespond.isCcHidden) &&
-        (!this.uploadRespond.bcc.length || this.uploadRespond.isBccHidden);
+        (!this.uploadRespond.bcc.length || this.uploadRespond.isBccHidden)
     },
     subjectValChange(val) {
-      if (val) this.uploadRespond.isSubjectFlagged = false;
-      this.checkAllHeaderCheck();
+      if (val) this.uploadRespond.isSubjectFlagged = false
+      this.checkAllHeaderCheck()
     },
     fromValChange(val) {
-      if (val) this.uploadRespond.isFromFlagged = false;
-      this.checkAllHeaderCheck();
+      if (val) this.uploadRespond.isFromFlagged = false
+      this.checkAllHeaderCheck()
     },
     toValChange(val) {
-      if (val) this.uploadRespond.isToFlagged = false;
-      this.checkAllHeaderCheck();
+      if (val) this.uploadRespond.isToFlagged = false
+      this.checkAllHeaderCheck()
     },
     ccValChange(val) {
-      if (val) this.uploadRespond.isCcFlagged = false;
-      this.checkAllHeaderCheck();
+      if (val) this.uploadRespond.isCcFlagged = false
+      this.checkAllHeaderCheck()
     },
     bccValChange(val) {
-      if (val) this.uploadRespond.isBccFlagged = false;
-      this.checkAllHeaderCheck();
+      if (val) this.uploadRespond.isBccFlagged = false
+      this.checkAllHeaderCheck()
     },
     getListThreatCategories() {
       listThreatCategories().then((response) => {
-        this.categories = response.data.data;
-      });
+        this.categories = response.data.data
+      })
     },
     uploadFile(e) {
-      this.msgEmlFile = e;
+      this.msgEmlFile = e
 
       uploadEmlOrMsg(this.msgEmlFile, (e) => {
-        this.onUploadProgress = e;
+        this.onUploadProgress = e
       }).then((response) => {
-        this.selectedEmail = response.data.data.from;
-        this.uploadRespond = response.data.data;
-        this.uploadRespond.initialBody = response.data.data.initialBody;
-        this.uploadRespond.visibleBody = response.data.data.initialBody;
-        this.uploadRespond.editableBody = response.data.data.initialBody;
-        this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody;
-        this.setShadowRootMalicousLink("incident-preview-1");
-      });
+        this.selectedEmail = response.data.data.from
+        this.uploadRespond = response.data.data
+        this.uploadRespond.initialBody = response.data.data.initialBody
+        this.uploadRespond.visibleBody = response.data.data.initialBody
+        this.uploadRespond.editableBody = response.data.data.initialBody
+        this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
+        this.setShadowRootMalicousLink('incident-preview-1')
+      })
     },
     clearUpload() {
       //this.uploadFile(null)
@@ -2793,93 +2793,130 @@ export default {
       const payload = {
         pageNumber: 1,
         pageSize: 500000,
-        orderBy: "createTime",
+        orderBy: 'createTime',
         ascending: false,
-        clusteredBy: "",
-      };
+        clusteredBy: ''
+      }
       searchNotifiedMail(payload)
         .then((response) => {
-          const { data } = response;
+          const { data } = response
           if (this.searchIncident) {
-            this.backupListData = JSON.parse(JSON.stringify(data.data.results));
+            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
             this.$nextTick(() => {
               this.listData = this.backupListData.reduce((acc, item) => {
                 Object.values(item).find((i) => {
                   if (
-                    typeof i === "string" &&
+                    typeof i === 'string' &&
                     i.toLocaleLowerCase().includes(this.searchIncident.toLocaleLowerCase())
                   )
-                    return acc.push(item);
-                });
-                return acc;
-              }, []);
-            });
+                    return acc.push(item)
+                })
+                return acc
+              }, [])
+            })
           } else {
-            this.listData = data.data.results;
-            this.backupListData = JSON.parse(JSON.stringify(data.data.results));
+            this.listData = data.data.results
+            this.backupListData = JSON.parse(JSON.stringify(data.data.results))
           }
         })
         .finally(() => {
-          this.isFindIncidentLoading = false;
-          this.showLoader = false;
-        });
+          this.isFindIncidentLoading = false
+          this.showLoader = false
+        })
     },
-    getSelectedEmailPreview(selectedItem,isInitial = false) {
-      const _this = this;
-      if (_this.editItem) {
-        getCommunityPost(_this.editItem.communityPostResourceId).then((response) => {
-          const { data } = response;
-          _this.uploadRespond = data.data.communityPostEmail;
-          _this.uploadRespond.visibleBodyForPreview =
+    getSelectedEmailPreview(selectedItem, isInitial = false) {
+      if (this.editItem) {
+        getCommunityPost(this.editItem.communityPostResourceId).then((response) => {
+          const { data } = response
+          this.uploadRespond = data.data.communityPostEmail
+          this.uploadRespond.visibleBodyForPreview =
             data.data.communityPostEmail.editableBody ||
             data.data.communityPostEmail.visibleBody ||
-            data.data.communityPostEmail.initialBody;
-          if (_this.editItem) {
-            _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId;
-            _this.uploadRespond.Title = _this.editItem.title;
-            _this.uploadRespond.Description = _this.editItem.description;
-            _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection;
-            _this.uploadRespond.Scope = _this.editItem.scope;
-            _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray;
-            _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName;
-            _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName;
-            _this.uploadRespond.PostedTime = _this.editItem.postedTime;
-            _this.uploadRespond.LikeCount = _this.editItem.likeCount;
-            _this.uploadRespond.CommentCount = _this.editItem.commentCount;
-            _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount;
-            _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment;
-            _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId;
-            _this.uploadRespond.CommunityName = this.editItem.communityName;
-            _this.uploadRespond.AffectArea = data.data.affectArea;
+            data.data.communityPostEmail.initialBody
+          if (this.editItem) {
+            this.uploadRespond.CommunityPostResourceId = this.editItem.communityPostResourceId
+            this.uploadRespond.Title = this.editItem.title
+            this.uploadRespond.Description = this.editItem.description
+            this.uploadRespond.DiscoveryAndDetection = this.editItem.discoveryAndDetection
+            this.uploadRespond.Scope = this.editItem.scope
+            this.uploadRespond.CategoryResourceIdArray = this.editItem.categoryResourceIdArray
+            this.uploadRespond.PostedUserFullName = this.editItem.postedUserFullName
+            this.uploadRespond.PostedUserCompanyName = this.editItem.postedUserCompanyName
+            this.uploadRespond.PostedTime = this.editItem.postedTime
+            this.uploadRespond.LikeCount = this.editItem.likeCount
+            this.uploadRespond.CommentCount = this.editItem.commentCount
+            this.uploadRespond.HarmfulItemCount = this.editItem.harmfulItemCount
+            this.uploadRespond.HasAttachment = this.editItem.hasAttachment
+            this.uploadRespond.CommunityResourceId = this.editItem.communityResourceId
+            this.uploadRespond.CommunityName = this.editItem.communityName
+            this.uploadRespond.AffectArea = data.data.affectArea || []
           }
-          if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = [];
-          if (!_this.uploadRespond.cc) _this.uploadRespond.cc = [];
-          if (!_this.uploadRespond.to) _this.uploadRespond.to = [];
-          this.setShadowRootMalicousLink("incident-preview-1");
+          if (!this.uploadRespond.bcc) this.uploadRespond.bcc = []
+          if (!this.uploadRespond.cc) this.uploadRespond.cc = []
+          if (!this.uploadRespond.to) this.uploadRespond.to = []
+          this.setShadowRootMalicousLink('incident-preview-1')
           //this.listData = data.data.results
-        });
+          if (isInitial) {
+            this.initialFormValues = {
+              ...this.initialFormValues,
+              uploadRespond: {
+                ...this.initialFormValues.uploadRespond,
+                ...this.uploadRespond
+              }
+            }
+          }
+        })
       } else {
         getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
-          const { data } = response;
-          this.uploadRespond = data.data;
-          this.uploadRespond.initialBody = data.data.initialBody;
-          this.uploadRespond.visibleBody = data.data.initialBody;
-          this.uploadRespond.editableBody = response.data.data.initialBody;
-          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody;
+          const { data } = response
+          this.uploadRespond = data.data
+          this.uploadRespond.initialBody = data.data.initialBody
+          this.uploadRespond.visibleBody = data.data.initialBody
+          this.uploadRespond.editableBody = response.data.data.initialBody
+          this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
           // this.setShadowRootMalicousLink('incident-preview-1')
           // this.listData = data.data.results
-        });
+          if (isInitial) {
+            this.initialFormValues = {
+              ...this.initialFormValues,
+              uploadRespond: {
+                ...this.initialFormValues.uploadRespond,
+                ...this.uploadRespond
+              }
+            }
+          }
+        })
       }
     },
     onCancelClicked() {
-      this.$emit("refreshData");
-      this.$emit("closeIncidentModal");
+      const currentFormValues = {
+        selectedEmail: this.selectedEmail,
+        uploadRespond: this.uploadRespond,
+        currentCommunityName: this.currentCommunityName,
+        currentCompany: this.currentCompany,
+        value: this.value,
+        isAnonym: this.isAnonym,
+        acceptCheckbox: this.acceptCheckbox
+      }
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        this.$emit('refreshData')
+        this.$emit('closeIncidentModal')
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('refreshData')
+          this.$emit('closeIncidentModal')
+        }
+      })
     },
     stepChange(num) {
-      this.step = num;
+      this.step = num
     },
     onContinue() {
-      return this.step++;
+      return this.step++
     },
     onSecondStep() {
       if (
@@ -2888,52 +2925,51 @@ export default {
         !this.$refs.categoryInput.validate() ||
         !this.stepTwoDisabled()
       ) {
-        this.$refs.titleInput.validate();
-        this.$refs.descriptionInput.validate();
-        this.$refs.categoryInput.validate();
-        return false;
+        this.$refs.titleInput.validate()
+        this.$refs.descriptionInput.validate()
+        this.$refs.categoryInput.validate()
+        return false
       } else {
-        this.step++;
+        this.step++
       }
     },
     onThirdStep() {
       if (this.uploadRespond.AffectArea && !this.$refs.affectInput.validate()) {
-        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate();
-        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate();
-        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate();
-        return false;
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
       }
       if (this.uploadRespond.DiscoveryAndDetection && !this.$refs.discoveryInput.validate()) {
-        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate();
-        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate();
-        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate();
-        return false;
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
       }
       if (this.uploadRespond.Scope && !this.$refs.scopeInput.validate()) {
-        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate();
-        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate();
-        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate();
-        return false;
+        if (this.uploadRespond.DiscoveryAndDetection) this.$refs.discoveryInput.validate()
+        if (this.uploadRespond.AffectArea) this.$refs.affectInput.validate()
+        if (this.uploadRespond.Scope) this.$refs.scopeInput.validate()
+        return false
       } else {
-        if (!this.uploadRespond.DiscoveryAndDetection)
-          this.uploadRespond.DiscoveryAndDetection = "";
-        if (!this.uploadRespond.Scope) this.uploadRespond.Scope = "";
-        if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = "";
-        this.step++;
-        this.setShadowRootMalicousLink("last-preview-body-shadow-root");
+        if (!this.uploadRespond.DiscoveryAndDetection) this.uploadRespond.DiscoveryAndDetection = ''
+        if (!this.uploadRespond.Scope) this.uploadRespond.Scope = ''
+        if (!this.uploadRespond.AffectArea) this.uploadRespond.AffectArea = ''
+        this.step++
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
       }
     },
     onBeforeLastStep() {
-      this.setVisibleBody();
-      this.step++;
-      this.setShadowRootMalicousLink("last-preview-body-shadow-root-review");
+      this.setVisibleBody()
+      this.step++
+      this.setShadowRootMalicousLink('last-preview-body-shadow-root-review')
     },
     onPreviousButtonClick() {
-      this.step = this.step - 1;
+      this.step = this.step - 1
       if (this.step == 4) {
-        this.setShadowRootMalicousLink("last-preview-body-shadow-root");
+        this.setShadowRootMalicousLink('last-preview-body-shadow-root')
       } else if (this.step == 1) {
-        this.setShadowRootMalicousLink("incident-preview-1");
+        this.setShadowRootMalicousLink('incident-preview-1')
       }
     },
     onFinish() {
@@ -2941,13 +2977,13 @@ export default {
       if (!this.$refs.accept_terms_and_conditions_checkbox.validate()) {
         return this.$nextTick(() => {
           const el = this.$refs.accept_terms_and_conditions_checkbox.$el.querySelector(
-            ".error--text"
-          );
-          scrollToComponent(el);
-        });
+            '.error--text'
+          )
+          scrollToComponent(el)
+        })
       }
       if (this.editItem) {
-        this.saveDisable = true;
+        this.saveDisable = true
         const payload = {
           CommunityResourceId: this.$route.params.id || this.editItem.communityResourceId,
           Title: this.uploadRespond.Title,
@@ -2980,25 +3016,25 @@ export default {
             sentTime: this.uploadRespond.sentTime,
             urls: this.uploadRespond.urls,
             attachments: this.uploadRespond.attachments,
-            emailTexts: [],
+            emailTexts: []
           },
-          IsTermsAndConditionsAccepted: this.acceptCheckbox,
-        };
+          IsTermsAndConditionsAccepted: this.acceptCheckbox
+        }
         //CommunityResourceId:this.$route.params.id ,
         updateCommunityPost(this.editItem.communityPostResourceId, payload)
           .then(() => {
-            this.saveDisable = false;
-            this.$store.dispatch("tableReload/setTableReload", true);
-            this.onCancelClicked();
+            this.saveDisable = false
+            this.$store.dispatch('tableReload/setTableReload', true)
+            this.onCancelClicked()
             setTimeout(() => {
-              this.$store.dispatch("rightColumn/changeReloadRightColumnData", true);
-            }, 500);
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
           })
           .catch(() => {
-            this.saveDisable = false;
-          });
+            this.saveDisable = false
+          })
       } else {
-        this.saveDisable = true;
+        this.saveDisable = true
         const payload = {
           CommunityResourceId: this.$route.params.id,
           Title: this.uploadRespond.Title,
@@ -3031,19 +3067,19 @@ export default {
             sentTime: this.uploadRespond.sentTime,
             urls: this.uploadRespond.urls,
             attachments: this.uploadRespond.attachments,
-            emailTexts: [],
+            emailTexts: []
           },
-          IsTermsAndConditionsAccepted: this.acceptCheckbox,
-        };
+          IsTermsAndConditionsAccepted: this.acceptCheckbox
+        }
         createCommunityPost(payload)
           .then(() => {
-            this.$store.dispatch("tableReload/setTableReload", true);
-            this.onCancelClicked();
+            this.$store.dispatch('tableReload/setTableReload', true)
+            this.onCancelClicked()
             setTimeout(() => {
-              this.$store.dispatch("rightColumn/changeReloadRightColumnData", true);
-            }, 500);
+              this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
+            }, 500)
           })
-          .finally(() => (this.saveDisable = false));
+          .finally(() => (this.saveDisable = false))
       }
     },
     updateTags() {
@@ -3055,17 +3091,17 @@ export default {
           }
           */
       this.$nextTick(() => {
-        this.createInc.select.push(...this.createInc.search.split(","));
+        this.createInc.select.push(...this.createInc.search.split(','))
         this.$nextTick(() => {
-          this.search = "";
-        });
-      });
+          this.search = ''
+        })
+      })
     },
     closePreview() {
-      this.selectedEmail = "";
-      this.uploadRespond = {};
-      this.msgEmlFile = null;
-      this.shareSettings = {};
+      this.selectedEmail = ''
+      this.uploadRespond = {}
+      this.msgEmlFile = null
+      this.shareSettings = {}
     },
     stepTwoDisabled() {
       if (
@@ -3076,9 +3112,9 @@ export default {
         this.uploadRespond.CategoryResourceIdArray &&
         this.uploadRespond.CategoryResourceIdArray.length > 0
       ) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
     },
     stepThreeDisabled() {
@@ -3093,38 +3129,38 @@ export default {
         this.regexChar(this.uploadRespond.Scope) &&
         this.regexChar(this.uploadRespond.AffectArea)
       ) {
-        return true;
+        return true
       } else {
-        return false;
+        return false
       }
     },
     regexChar(val) {
-      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(val);
+      return /^[A-Za-z0-9ışŞğĞçÇöÖüÜİ\/,\/.\/\-\/_\s]*$/gi.test(val)
     },
     edit(index, item) {
       if (!this.editing) {
-        this.editing = item;
-        this.index = index;
+        this.editing = item
+        this.index = index
       } else {
-        this.editing = null;
-        this.index = -1;
+        this.editing = null
+        this.index = -1
       }
     },
     validateAffectArea() {
-      const refThis = this;
+      const refThis = this
       setTimeout(function () {
         refThis.uploadRespond.AffectArea = refThis.uploadRespond.AffectArea.map((item) => {
-          return item.slice(0, 20);
-        });
+          return item.slice(0, 20)
+        })
         if (refThis.uploadRespond && refThis.uploadRespond.AffectArea) {
-          let i = refThis.uploadRespond.AffectArea.length;
+          let i = refThis.uploadRespond.AffectArea.length
           while (i--) {
             if (!refThis.regexChar(refThis.uploadRespond.AffectArea[i])) {
-              refThis.uploadRespond.AffectArea.splice(i, 1);
+              refThis.uploadRespond.AffectArea.splice(i, 1)
             }
           }
         }
-      }, 300);
+      }, 300)
     },
     allFiltersClosed() {
       /*
@@ -3143,31 +3179,44 @@ export default {
       } else {
         return false
       }*/
-    },
+    }
   },
   mounted() {
-    if (this.editItem) {
-      this.value = this.editItem.securityLabelResourceIdArray[0];
-      this.selectedEmail = this.editItem.communityPostResourceId;
-      //let val = { resourceId: '4pDtxLYSG0mb' }
-      let val = { resourceId: this.editItem.communityPostResourceId };
-      this.getSelectedEmailPreview(val,true);
+    this.initialFormValues = {
+      ...this.initialFormValues,
+      selectedEmail: '',
+      isAnonym: false,
+      acceptCheckbox: false
     }
-    this.searchNotifiedMail();
-    this.getListThreatCategories();
+    if (this.editItem) {
+      this.value = this.editItem.securityLabelResourceIdArray[0]
+      this.selectedEmail = this.editItem.communityPostResourceId
+      this.initialFormValues = {
+        ...this.initialFormValues,
+        selectedEmail: this.selectedEmail,
+        value: this.value
+      }
+      //let val = { resourceId: '4pDtxLYSG0mb' }
+      let val = { resourceId: this.editItem.communityPostResourceId }
+      this.getSelectedEmailPreview(val, true)
+    }
+    this.searchNotifiedMail()
+    this.getListThreatCategories()
     this.currentCompany =
       (this.editItem && this.editItem.postedUserCompanyName) ||
-      localStorage.getItem("selectedCompanyName");
+      localStorage.getItem('selectedCompanyName')
     this.currentCommunityName =
-      (this.editItem && this.editItem.communityName) || localStorage.getItem("communityName");
+      (this.editItem && this.editItem.communityName) || localStorage.getItem('communityName')
     this.initialFormValues = {
-
+      ...this.initialFormValues,
+      currentCompany: this.currentCompany,
+      currentCommunityName: this.currentCommunityName
     }
   },
   beforeDestroy() {
-    document.querySelector("html").style.overflowY = "initial";
-    document.querySelector(".page-nav").style.zIndex = 19;
-  },
-};
+    document.querySelector('html').style.overflowY = 'initial'
+    document.querySelector('.page-nav').style.zIndex = 19
+  }
+}
 </script>
 <style lang="scss" src="./PostIncident.scss"></style>
