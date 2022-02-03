@@ -51,9 +51,9 @@
                 :isCommunity="this.$route.params.isCommunity"
                 :isLoadState="isLoadState"
                 :isTableReload="isTableReload"
+                :page="page"
                 @setLoadState="setLoadState"
                 @setThreatSharingStepLoading="setThreatSharingStepLoading"
-                :page="page"
               />
             </v-tab-item>
           </v-tabs-items>
@@ -105,9 +105,12 @@ export default {
     isStepDisabled: false,
   }),
   beforeRouteLeave(to, from, next) {
-    const { refNewCommunity } = this.$refs;
+    const { refNewCommunity, tsCommunities } = this.$refs;
     if (this.isWantToAddNewCommunity) {
       refNewCommunity.onCancelClicked();
+      next(false);
+    } else if (tsCommunities.isWantToAddNewCommunity) {
+      tsCommunities.checkIfCanCloseCommunityModal();
       next(false);
     } else {
       next();

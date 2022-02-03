@@ -1,19 +1,19 @@
 <template>
   <div>
     <v-overlay
-      id="new-community-overlay"
+      v-if="showPostIncident"
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
-      :z-index="22"
+      :z-index="9"
       color="white"
-      v-if="showPostIncident"
+      id="new-community-overlay"
     >
       <post-incident
+        v-if="showPostIncident"
         :editItem="editItem"
         @closeIncidentModal="closeIncidentModal"
         @refreshData="refreshDataFunc"
-        v-if="showPostIncident"
       />
     </v-overlay>
     <v-card id="component-incidents" flat color="basil">
@@ -29,7 +29,6 @@
             <div class="search-wrapper">
               <div>
                 <v-text-field
-                  @mouseover.native="hover = true"
                   placeholder="Search"
                   outlined
                   class="filter-field search-wrapper__search-filter"
@@ -38,41 +37,42 @@
                   hide-details
                   prepend-inner-icon="mdi-magnify"
                   :disabled="incidentLoading"
+                  @mouseover.native="hover = true"
                 ></v-text-field>
               </div>
               <div>
                 <v-select
+                  v-model="companyValue"
                   :items="companyItem"
                   :placeholder="'Company'"
+                  :disabled="incidentLoading"
+                  @change="callForIncidentList"
                   outlined
                   class="edit-select"
                   max-width="100"
-                  v-model="companyValue"
                   hide-details
                   clearable
                   item-text="name"
                   :menu-props="{ offsetY: true }"
                   item-value="resourceId"
-                  @change="callForIncidentList"
-                  :disabled="incidentLoading"
                   id="threat-sharing-incidents-search-company"
                 />
               </div>
               <div class="d-flex">
                 <k-select
+                  v-model="threats"
                   :items="threatsList"
+                  :menu-props="{ offsetY: true }"
+                  :slots="{ selection: true }"
+                  :disabled="incidentLoading"
+                  @change="callForIncidentList"
                   placeholder="Threat"
                   outlined
                   class="edit-select"
-                  v-model="threats"
                   multiple
                   hide-details
-                  :menu-props="{ offsetY: true }"
                   item-text="name"
                   item-value="resourceId"
-                  @change="callForIncidentList"
-                  :slots="{ selection: true }"
-                  :disabled="incidentLoading"
                   id="threat-sharing-incidents-search-threat"
                 >
                   <template v-slot:selection="{ item, index }">
@@ -101,17 +101,15 @@
                 <v-expansion-panel
                   v-for="(item, ind) of props.items"
                   :key="ind + item.communityPostResourceId"
+                  popout
                   style="border-image: none !important;"
                   class="mb-4 mt-0"
                   id="edit-incident-post"
-                  popout
                 >
                   <singlePost
-                    @refreshData="refreshDataFunc"
                     :post="item"
                     :postIndex="ind"
                     :totalPostCount="props.items.length"
-                    @openEditPopupItem="openEditPopupItemFunc"
                     :key="$route.query.postId || '1'"
                     :searchValues="{
                       search,
@@ -120,9 +118,11 @@
                       page,
                       totalNumberOfRecords,
                       totalNumberOfPages,
-                      itemsPerPage
+                      itemsPerPage,
                     }"
                     :incidents="incidentList"
+                    @refreshData="refreshDataFunc"
+                    @openEditPopupItem="openEditPopupItemFunc"
                   />
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -135,16 +135,16 @@
                   <span class="no-community pt-4">
                     {{
                       checkDatatableIsEmpty()
-                        ? 'Search criteria has no results'
-                        : 'No incident has been shared'
+                        ? "Search criteria has no results"
+                        : "No incident has been shared"
                     }}
                   </span>
                   <div
                     v-if="!search && !companyValue && !threats && routerName === 'Community'"
-                    class="create-post-incident"
-                    @click="showPostIncident = true"
                     block
                     rounded
+                    @click="showPostIncident = true"
+                    class="create-post-incident"
                     id="threat-sharing-post-incident-button"
                   >
                     Post The First Incident
@@ -155,18 +155,18 @@
           </template>
           <template v-slot:footer>
             <v-row
+              v-if="incidentList && incidentList.length"
               class="mt-2"
               justify="end"
               style="margin: 5px !important;"
-              v-if="incidentList && incidentList.length"
             >
               <el-pagination
-                layout="sizes, prev, pager, next,slot"
-                @size-change="handleSizeChange"
                 :current-page.sync="page"
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
                 :total="incidentList && totalNumberOfRecords"
+                layout="sizes, prev, pager, next,slot"
+                @size-change="handleSizeChange"
                 @current-change="onChangePagination"
               >
                 <template>
@@ -187,58 +187,57 @@
 </template>
 
 <script>
-import SinglePost from '../ThreadSharing/SinglePost'
+import SinglePost from "../ThreadSharing/SinglePost";
 import {
-  getCommunityDetails,
   getCOmmunityIncidentList,
   getCommunityPost,
   getIncidentList,
-  listThreatCategories
-} from '../../api/threadSharing'
-import PostIncident from '../ThreadSharing/PostIncident'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getCompanyList, getCompanyListForThreatSharing } from '../../api/company'
-import KSelect from '@/components/Common/Inputs/KSelect'
+  listThreatCategories,
+} from "../../api/threadSharing";
+import PostIncident from "../ThreadSharing/PostIncident";
+import { COMMON_CONSTANTS } from "../../model/constants/commonConstants";
+import { getCompanyListForThreatSharing } from "../../api/company";
+import KSelect from "@/components/Common/Inputs/KSelect";
 
 export default {
   components: {
     KSelect,
     PostIncident,
-    SinglePost
+    SinglePost,
   },
   computed: {
     numberOfPages() {
-      return Math.ceil(this.incidentList && this.totalNumberOfRecords / this.itemsPerPage)
+      return Math.ceil(this.incidentList && this.totalNumberOfRecords / this.itemsPerPage);
     },
     routerName() {
-      return this.$route.name
-    }
+      return this.$route.name;
+    },
   },
   props: {
     posts: {
       type: Array,
-      required: false
+      required: false,
     },
     incidentsCommunityName: {
       type: Boolean,
-      required: false
+      required: false,
     },
     refreshIncidents: {
       type: Boolean,
-      required: false
+      required: false,
     },
     isLoadState: {
-      type: Boolean
+      type: Boolean,
     },
     setLoadState: {
-      required: false
+      required: false,
     },
     isTableReload: {
-      required: false
+      required: false,
     },
     setThreatSharingStepLoading: {
-      required: false
-    }
+      required: false,
+    },
   },
   data: () => ({
     search: null,
@@ -255,341 +254,341 @@ export default {
     editItem: null,
     openEditPopupItem: null,
     showPostIncident: false,
-    status: 'SUCCESS',
-    code: 'RESOURCE_RETRIEVED',
-    message: 'Resource retrieved',
+    status: "SUCCESS",
+    code: "RESOURCE_RETRIEVED",
+    message: "Resource retrieved",
     itemsPerPageOptions: [5, 10, 20],
-    items2: ['Incidents', 'Communities', 'Members'],
+    items2: ["Incidents", "Communities", "Members"],
     toggle: false,
     tab: null,
     incidentList: [],
-    incidentLoading: true
+    incidentLoading: true,
   }),
   watch: {
     incidentLoading: function (newVal, oldVal) {
       if (oldVal != newVal) {
-        this.$emit('setThreatSharingStepLoading', newVal)
+        this.$emit("setThreatSharingStepLoading", newVal);
       }
     },
     openEditPopupItem: function (newVal, oldVal) {
       if (oldVal != newVal) {
-        this.showPostIncident = true
+        this.showPostIncident = true;
       }
     },
     refreshIncidents: function (newVal, oldVal) {
       if (newVal && !this.isLoadState) {
-        this.getIncidentList()
+        this.getIncidentList();
       }
     },
     search: function (newVal, oldVal) {
       if (newVal !== oldVal) {
         if (!newVal) {
           if (!this.isLoadState) {
-            this.getIncidentList('', '', true)
+            this.getIncidentList("", "", true);
           }
         } else {
           if (!this.isLoadState) {
             this.debounce(() => {
-              this.getIncidentList('', '', true)
-            }, 1000)
+              this.getIncidentList("", "", true);
+            }, 1000);
           }
         }
       }
     },
     watch: {
-      '$route.query.postId'(val) {
-        this.$forceUpdate()
-      }
-    }
+      "$route.query.postId"(val) {
+        this.$forceUpdate();
+      },
+    },
   },
   methods: {
     callForIncidentList(v) {
-      !this.isLoadState && this.getIncidentList('', '', true)
+      !this.isLoadState && this.getIncidentList("", "", true);
     },
     checkDatatableIsEmpty() {
-      let result = this.search || this.companyValue || this.threats.length
-      return result
+      let result = this.search || this.companyValue || this.threats.length;
+      return result;
     },
     handleSizeChange(val) {
-      this.itemsPerPage = val
+      this.itemsPerPage = val;
       if (!this.isLoadState) {
-        this.getIncidentList('', '', true)
+        this.getIncidentList("", "", true);
       }
     },
     onChangePagination() {
       if (!this.isLoadState) {
-        this.getIncidentList()
+        this.getIncidentList();
       }
     },
     debounce(fn, delay) {
       if (this.timeout) {
-        clearTimeout(this.timeout)
+        clearTimeout(this.timeout);
       }
       this.timeout = setTimeout(() => {
-        fn()
-      }, delay)
+        fn();
+      }, delay);
     },
     openEditPopupItemFunc(post) {
-      this.editItem = post
-      this.showPostIncident = true
+      this.editItem = post;
+      this.showPostIncident = true;
     },
     closeIncidentModal() {
-      this.showPostIncident = false
+      this.showPostIncident = false;
     },
     refreshDataFunc() {
       if (!this.isLoadState) {
-        this.getIncidentList()
+        this.getIncidentList();
       }
     },
     getThreats() {
       listThreatCategories().then((response) => {
-        this.threatsList = response.data.data
-      })
+        this.threatsList = response.data.data;
+      });
     },
     getSharedPost() {
-      let _this = this
+      let _this = this;
       getCommunityPost(this.$route.query.postId)
         .then((response) => {
-          let item = response.data.data
-          this.numberOfPages = 1
-          this.totalNumberOfRecords = 1
-          item.isToggle = true
-          item.communityPostResourceId = this.$route.query.postId
-          this.incidentList.push(item)
-          this.incidentLoading = false
+          let item = response.data.data;
+          this.numberOfPages = 1;
+          this.totalNumberOfRecords = 1;
+          item.isToggle = true;
+          item.communityPostResourceId = this.$route.query.postId;
+          this.incidentList.push(item);
+          this.incidentLoading = false;
         })
         .catch((error) => {
           if (error.response.status === 403) {
             this.$router
               .push({
-                name: 'Threat Sharing',
+                name: "Threat Sharing",
                 params: {
                   isCommunity: true,
                   postId: _this.$route.query.postId,
-                  communityId: _this.$route.params['id'],
-                  communityName: localStorage.getItem('communityName')
-                }
+                  communityId: _this.$route.params["id"],
+                  communityName: localStorage.getItem("communityName"),
+                },
               })
               .finally(() => {
-                this.$store.dispatch('common/createSnackBar', {
+                this.$store.dispatch("common/createSnackBar", {
                   color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                   message: `you need to join the ${localStorage.getItem(
-                    'communityName'
-                  )} before viewing the post`
-                })
-              })
+                    "communityName"
+                  )} before viewing the post`,
+                });
+              });
           }
         })
         .finally(() => {
-          this.incidentLoading = false
-        })
+          this.incidentLoading = false;
+        });
     },
     getIncidentList(memberId, companyId, isSearch) {
-      let companyResourceId = Array.isArray(this.companyValue) ? null : this.companyValue
+      let companyResourceId = Array.isArray(this.companyValue) ? null : this.companyValue;
       const payload = {
         postedCompanyResourceId: companyId || companyResourceId,
         pageNumber: isSearch ? 1 : this.page,
         pageSize: this.itemsPerPage,
-        orderBy: 'PostedTime',
+        orderBy: "PostedTime",
         ascending: false,
         filter: {
-          Condition: 'AND',
+          Condition: "AND",
           FilterGroups: [
             {
-              Condition: 'OR',
+              Condition: "OR",
               FilterItems: [
                 {
                   Value: this.search,
-                  FieldName: 'Title',
-                  Operator: 'Contains'
+                  FieldName: "Title",
+                  Operator: "Contains",
                 },
                 {
                   Value: this.search,
-                  FieldName: 'Description',
-                  Operator: 'Contains'
+                  FieldName: "Description",
+                  Operator: "Contains",
                 },
                 {
                   Value: this.search,
-                  FieldName: 'DiscoveryAndDetection',
-                  Operator: 'Contains'
+                  FieldName: "DiscoveryAndDetection",
+                  Operator: "Contains",
                 },
                 {
                   Value: this.search,
-                  FieldName: 'Scope',
-                  Operator: 'Contains'
-                }
+                  FieldName: "Scope",
+                  Operator: "Contains",
+                },
               ],
-              FilterGroups: []
+              FilterGroups: [],
             },
             {
-              Condition: 'AND',
+              Condition: "AND",
               FilterItems: [
                 {
-                  FieldName: 'CategoryResourceId',
-                  Operator: 'Include',
-                  Value: this.threats.toString()
-                }
+                  FieldName: "CategoryResourceId",
+                  Operator: "Include",
+                  Value: this.threats.toString(),
+                },
               ],
-              FilterGroups: []
-            }
-          ]
-        }
-      }
-      this.incidentLoading = true
-      const _this = this
-      this.incidentList = []
+              FilterGroups: [],
+            },
+          ],
+        },
+      };
+      this.incidentLoading = true;
+      const _this = this;
+      this.incidentList = [];
       if (memberId) {
         getCOmmunityIncidentList(this.$route.params.id, payload)
           .then((response) => {
-            if (isSearch) this.page = 1
-            this.incidentList = response.data.data.results
+            if (isSearch) this.page = 1;
+            this.incidentList = response.data.data.results;
             this.incidentList = this.incidentList.map((item) => {
-              return { ...item, isToggle: false }
-            })
-            this.incidentLoading = false
-            this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-            this.totalNumberOfPages = response.data.data.totalNumberOfPages
+              return { ...item, isToggle: false };
+            });
+            this.incidentLoading = false;
+            this.totalNumberOfRecords = response.data.data.totalNumberOfRecords;
+            this.totalNumberOfPages = response.data.data.totalNumberOfPages;
           })
           .catch((error) => {
             if (
               error.response &&
               error.response.data &&
-              error.response.data.code === 'RESOURCE_NOT_FOUND'
+              error.response.data.code === "RESOURCE_NOT_FOUND"
             ) {
-              this.incidentList = []
-              this.incidentLoading = false
+              this.incidentList = [];
+              this.incidentLoading = false;
             }
-          })
+          });
       } else {
-        if (this.$router.currentRoute.name === 'Community') {
+        if (this.$router.currentRoute.name === "Community") {
           getCOmmunityIncidentList(this.$route.params.id, payload)
             .then((response) => {
-              if (isSearch) this.page = 1
-              this.incidentList = response.data.data.results
+              if (isSearch) this.page = 1;
+              this.incidentList = response.data.data.results;
               _this.incidentList = _this.incidentList.map((item) => {
-                return { ...item, isToggle: false }
-              })
-              this.incidentLoading = false
-              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-              this.totalNumberOfPages = response.data.data.totalNumberOfPages
-              _this.incidentLoading = false
+                return { ...item, isToggle: false };
+              });
+              this.incidentLoading = false;
+              this.totalNumberOfRecords = response.data.data.totalNumberOfRecords;
+              this.totalNumberOfPages = response.data.data.totalNumberOfPages;
+              _this.incidentLoading = false;
             })
             .catch((error) => {
               if (
                 error.response &&
                 error.response.data &&
-                error.response.data.code === 'RESOURCE_NOT_FOUND'
+                error.response.data.code === "RESOURCE_NOT_FOUND"
               ) {
-                this.incidentList = []
-                this.incidentLoading = false
+                this.incidentList = [];
+                this.incidentLoading = false;
               }
               if (
                 error.response &&
                 error.response.data &&
-                error.response.data.message === 'No permission to access resource'
+                error.response.data.message === "No permission to access resource"
               ) {
                 this.$router
                   .push({
-                    name: 'Threat Sharing',
+                    name: "Threat Sharing",
                     params: {
                       isCommunity: true,
                       postId: _this.$route.query.postId,
-                      communityId: _this.$route.params['id'],
-                      communityName: localStorage.getItem('communityName')
-                    }
+                      communityId: _this.$route.params["id"],
+                      communityName: localStorage.getItem("communityName"),
+                    },
                   })
                   .finally(() => {
-                    this.$store.dispatch('common/createSnackBar', {
+                    this.$store.dispatch("common/createSnackBar", {
                       color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
                       message: `you need to join the ${localStorage.getItem(
-                        'communityName'
-                      )} before viewing the post`
-                    })
-                  })
+                        "communityName"
+                      )} before viewing the post`,
+                    });
+                  });
               }
-            })
+            });
         } else {
           if (!this.isLoadState || this.isTableReload) {
             getIncidentList(payload)
               .then((response) => {
-                if (isSearch) this.page = 1
-                this.incidentList = response.data.data.results
+                if (isSearch) this.page = 1;
+                this.incidentList = response.data.data.results;
                 this.incidentList = this.incidentList.map((item) => {
-                  return { ...item, isToggle: false }
-                })
-                this.totalNumberOfRecords = response.data.data.totalNumberOfRecords
-                this.totalNumberOfPages = response.data.data.totalNumberOfPages
-                this.incidentLoading = false
+                  return { ...item, isToggle: false };
+                });
+                this.totalNumberOfRecords = response.data.data.totalNumberOfRecords;
+                this.totalNumberOfPages = response.data.data.totalNumberOfPages;
+                this.incidentLoading = false;
               })
               .catch((error) => {
                 if (
                   error.response &&
                   error.response.data &&
-                  error.response.data.code === 'RESOURCE_NOT_FOUND'
+                  error.response.data.code === "RESOURCE_NOT_FOUND"
                 ) {
-                  this.incidentList = []
-                  this.incidentLoading = false
+                  this.incidentList = [];
+                  this.incidentLoading = false;
                 }
-              })
+              });
           }
         }
       }
     },
     nextPage() {
-      if (this.page + 1 <= this.numberOfPages) this.page += 1
+      if (this.page + 1 <= this.numberOfPages) this.page += 1;
     },
     formerPage() {
-      if (this.page - 1 >= 1) this.page -= 1
+      if (this.page - 1 >= 1) this.page -= 1;
     },
     updateItemsPerPage(number) {
-      this.itemsPerPage = number
-    }
+      this.itemsPerPage = number;
+    },
   },
   created() {
-    getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data))
-    this.getThreats()
-    let _this = this
+    getCompanyListForThreatSharing().then((response) => (this.companyItem = response.data.data));
+    this.getThreats();
+    let _this = this;
     if (this.$route.query && this.$route.query.postId) {
-      this.isSharedPost = true
-      this.getSharedPost()
+      this.isSharedPost = true;
+      this.getSharedPost();
     } else {
       if (this.isLoadState) {
-        const incidentsData = this.$store.state['incidents'].incidents.incidentsData
+        const incidentsData = this.$store.state["incidents"].incidents.incidentsData;
         if (incidentsData) {
-          this.incidentList = incidentsData.tableData
+          this.incidentList = incidentsData.tableData;
           this.incidentList = this.incidentList.map((item) => {
-            return { ...item, isToggle: false }
-          })
-          this.page = incidentsData.searchValues.page
-          this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords
-          this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages
-          this.itemsPerPage = incidentsData.searchValues.itemsPerPage
-          this.search = incidentsData.searchValues.search
-          this.companyValue = incidentsData.searchValues.companyValue
-          this.threats = incidentsData.searchValues.threats
-          this.incidentLoading = false
+            return { ...item, isToggle: false };
+          });
+          this.page = incidentsData.searchValues.page;
+          this.totalNumberOfRecords = incidentsData.searchValues.totalNumberOfRecords;
+          this.totalNumberOfPages = incidentsData.searchValues.totalNumberOfPages;
+          this.itemsPerPage = incidentsData.searchValues.itemsPerPage;
+          this.search = incidentsData.searchValues.search;
+          this.companyValue = incidentsData.searchValues.companyValue;
+          this.threats = incidentsData.searchValues.threats;
+          this.incidentLoading = false;
           setTimeout(() => {
-            _this.$emit('setLoadState')
-          }, 100)
+            _this.$emit("setLoadState");
+          }, 100);
         } else {
-          this.getIncidentList()
+          this.getIncidentList();
         }
         if (this.isTableReload) {
-          this.page = 1
-          this.search = null
-          this.companyValue = []
-          this.threats = []
-          this.getIncidentList()
-          this.$store.dispatch('tableReload/setTableReload', false)
+          this.page = 1;
+          this.search = null;
+          this.companyValue = [];
+          this.threats = [];
+          this.getIncidentList();
+          this.$store.dispatch("tableReload/setTableReload", false);
         }
       } else {
         if (!this.isLoadState) {
-          this.getIncidentList()
+          this.getIncidentList();
         }
       }
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss" src="./Incidents.scss"></style>
