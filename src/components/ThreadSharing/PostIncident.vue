@@ -1,19 +1,18 @@
 <template>
   <div class="incident-wrapper">
     <app-modal
-      :status="showNewsletterPageGrapes"
       v-if="showNewsletterPageGrapes"
+      :status="showNewsletterPageGrapes"
+      :show-header="false"
       icon-name="mdi-check"
       title="Edit Post Email"
-      z-index="999999"
-      :show-header="false"
       id="threat-sharing-post-incident-create-edit-modal"
     >
       <template v-slot:overlay-body>
         <GrapesNewsletterModal
+          v-if="showNewsletterPageGrapes"
           ref="grapesJsPostIncident"
           :htmlData="editHtmlData"
-          v-if="showNewsletterPageGrapes"
           :blockManagerComponents="{}"
         ></GrapesNewsletterModal>
       </template>
@@ -356,6 +355,7 @@
               </div>
               <v-form onSubmit="return false;" v-model="valid" ref="titleInput">
                 <v-text-field
+                  v-model.trim="uploadRespond.Title"
                   id="input--threat-sharing-incident-title"
                   placeholder="Enter Title"
                   @mouseover.native="hover = true"
@@ -363,7 +363,6 @@
                   outlined
                   dense
                   class="title-field filter-field pt-4"
-                  v-model.trim="uploadRespond.Title"
                   solo
                   validate-on-blur
                   :rules="[
@@ -573,9 +572,9 @@
               </div>
               <v-form onSubmit="return false;" v-model="validAffect" ref="affectInput">
                 <k-select
+                  v-model.trim="uploadRespond.AffectArea"
                   type="combobox"
                   id="input--threat-sharing-incident-impact-range"
-                  v-model.trim="uploadRespond.AffectArea"
                   :search-input.sync="affectSearch"
                   label="Windows 10 etc."
                   multiple
@@ -2057,7 +2056,7 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '../AppModal'
 import labels from '@/model/constants/labels'
 import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
-import { incidenPostReviewElementBind, scrollToComponent } from '../../utils/functions'
+import { incidenPostReviewElementBind, scrollToComponent, isDifferent } from '@/utils/functions'
 import AttachmentsPreview from './AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
@@ -2258,6 +2257,7 @@ export default {
     }
   },
   data: () => ({
+    initialFormValues: {},
     over20: false,
     saveDisable: false,
     labels,
@@ -2824,39 +2824,47 @@ export default {
           this.showLoader = false
         })
     },
-    getSelectedEmailPreview(selectedItem) {
-      const _this = this
-      if (_this.editItem) {
-        getCommunityPost(_this.editItem.communityPostResourceId).then((response) => {
+    getSelectedEmailPreview(selectedItem, isInitial = false) {
+      if (this.editItem) {
+        getCommunityPost(this.editItem.communityPostResourceId).then((response) => {
           const { data } = response
-          _this.uploadRespond = data.data.communityPostEmail
-          _this.uploadRespond.visibleBodyForPreview =
+          this.uploadRespond = data.data.communityPostEmail
+          this.uploadRespond.visibleBodyForPreview =
             data.data.communityPostEmail.editableBody ||
             data.data.communityPostEmail.visibleBody ||
             data.data.communityPostEmail.initialBody
-          if (_this.editItem) {
-            _this.uploadRespond.CommunityPostResourceId = _this.editItem.communityPostResourceId
-            _this.uploadRespond.Title = _this.editItem.title
-            _this.uploadRespond.Description = _this.editItem.description
-            _this.uploadRespond.DiscoveryAndDetection = _this.editItem.discoveryAndDetection
-            _this.uploadRespond.Scope = _this.editItem.scope
-            _this.uploadRespond.CategoryResourceIdArray = _this.editItem.categoryResourceIdArray
-            _this.uploadRespond.PostedUserFullName = _this.editItem.postedUserFullName
-            _this.uploadRespond.PostedUserCompanyName = _this.editItem.postedUserCompanyName
-            _this.uploadRespond.PostedTime = _this.editItem.postedTime
-            _this.uploadRespond.LikeCount = _this.editItem.likeCount
-            _this.uploadRespond.CommentCount = _this.editItem.commentCount
-            _this.uploadRespond.HarmfulItemCount = _this.editItem.harmfulItemCount
-            _this.uploadRespond.HasAttachment = _this.editItem.hasAttachment
-            _this.uploadRespond.CommunityResourceId = _this.editItem.communityResourceId
-            _this.uploadRespond.CommunityName = this.editItem.communityName
-            _this.uploadRespond.AffectArea = data.data.affectArea
+          if (this.editItem) {
+            this.uploadRespond.CommunityPostResourceId = this.editItem.communityPostResourceId
+            this.uploadRespond.Title = this.editItem.title
+            this.uploadRespond.Description = this.editItem.description
+            this.uploadRespond.DiscoveryAndDetection = this.editItem.discoveryAndDetection
+            this.uploadRespond.Scope = this.editItem.scope
+            this.uploadRespond.CategoryResourceIdArray = this.editItem.categoryResourceIdArray
+            this.uploadRespond.PostedUserFullName = this.editItem.postedUserFullName
+            this.uploadRespond.PostedUserCompanyName = this.editItem.postedUserCompanyName
+            this.uploadRespond.PostedTime = this.editItem.postedTime
+            this.uploadRespond.LikeCount = this.editItem.likeCount
+            this.uploadRespond.CommentCount = this.editItem.commentCount
+            this.uploadRespond.HarmfulItemCount = this.editItem.harmfulItemCount
+            this.uploadRespond.HasAttachment = this.editItem.hasAttachment
+            this.uploadRespond.CommunityResourceId = this.editItem.communityResourceId
+            this.uploadRespond.CommunityName = this.editItem.communityName
+            this.uploadRespond.AffectArea = data.data.affectArea || []
           }
-          if (!_this.uploadRespond.bcc) _this.uploadRespond.bcc = []
-          if (!_this.uploadRespond.cc) _this.uploadRespond.cc = []
-          if (!_this.uploadRespond.to) _this.uploadRespond.to = []
+          if (!this.uploadRespond.bcc) this.uploadRespond.bcc = []
+          if (!this.uploadRespond.cc) this.uploadRespond.cc = []
+          if (!this.uploadRespond.to) this.uploadRespond.to = []
           this.setShadowRootMalicousLink('incident-preview-1')
           //this.listData = data.data.results
+          if (isInitial) {
+            this.initialFormValues = {
+              ...this.initialFormValues,
+              uploadRespond: {
+                ...this.initialFormValues.uploadRespond,
+                ...this.uploadRespond
+              }
+            }
+          }
         })
       } else {
         getSelectedEmailPreview(selectedItem.resourceId).then((response) => {
@@ -2868,12 +2876,41 @@ export default {
           this.uploadRespond.visibleBodyForPreview = response.data.data.initialBody
           // this.setShadowRootMalicousLink('incident-preview-1')
           // this.listData = data.data.results
+          if (isInitial) {
+            this.initialFormValues = {
+              ...this.initialFormValues,
+              uploadRespond: {
+                ...this.initialFormValues.uploadRespond,
+                ...this.uploadRespond
+              }
+            }
+          }
         })
       }
     },
     onCancelClicked() {
-      this.$emit('refreshData')
-      this.$emit('closeIncidentModal')
+      const currentFormValues = {
+        selectedEmail: this.selectedEmail,
+        uploadRespond: this.uploadRespond,
+        currentCommunityName: this.currentCommunityName,
+        currentCompany: this.currentCompany,
+        value: this.value,
+        isAnonym: this.isAnonym,
+        acceptCheckbox: this.acceptCheckbox
+      }
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        this.$emit('refreshData')
+        this.$emit('closeIncidentModal')
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('refreshData')
+          this.$emit('closeIncidentModal')
+        }
+      })
     },
     stepChange(num) {
       this.step = num
@@ -3145,12 +3182,23 @@ export default {
     }
   },
   mounted() {
+    this.initialFormValues = {
+      ...this.initialFormValues,
+      selectedEmail: '',
+      isAnonym: false,
+      acceptCheckbox: false
+    }
     if (this.editItem) {
       this.value = this.editItem.securityLabelResourceIdArray[0]
       this.selectedEmail = this.editItem.communityPostResourceId
+      this.initialFormValues = {
+        ...this.initialFormValues,
+        selectedEmail: this.selectedEmail,
+        value: this.value
+      }
       //let val = { resourceId: '4pDtxLYSG0mb' }
       let val = { resourceId: this.editItem.communityPostResourceId }
-      this.getSelectedEmailPreview(val)
+      this.getSelectedEmailPreview(val, true)
     }
     this.searchNotifiedMail()
     this.getListThreatCategories()
@@ -3159,6 +3207,11 @@ export default {
       localStorage.getItem('selectedCompanyName')
     this.currentCommunityName =
       (this.editItem && this.editItem.communityName) || localStorage.getItem('communityName')
+    this.initialFormValues = {
+      ...this.initialFormValues,
+      currentCompany: this.currentCompany,
+      currentCommunityName: this.currentCommunityName
+    }
   },
   beforeDestroy() {
     document.querySelector('html').style.overflowY = 'initial'

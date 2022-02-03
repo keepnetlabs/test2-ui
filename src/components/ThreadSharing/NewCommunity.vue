@@ -220,9 +220,8 @@
 </template>
 <script>
 import { createCommunity, listBusinessCategories, updateCommunity } from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import AppDialog from '../AppDialog'
-import { scrollToComponent } from '../../utils/functions'
+import { scrollToComponent, isDifferent } from '../../utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
@@ -247,6 +246,7 @@ export default {
       termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
       isWantToAccept: false,
       oldPrivacyValue: null,
+      initialFormValues: {},
       name: '',
       description: '',
       privacy: false,
@@ -316,7 +316,23 @@ export default {
       this.isCheckboxChecked = this.acceptCheckbox
     },
     onCancelClicked() {
-      this.$emit('closeAdd')
+      const currentFormValues = {
+        name: this.name,
+        description: this.description,
+        selectedCategory: this.selectedCategory,
+        privacystatusid: this.privacystatusid,
+        acceptCheckbox: this.acceptCheckbox
+      }
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeAdd')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('closeAdd')
+        }
+      })
     },
     onCreateClicked() {
       const refThis = this
@@ -383,6 +399,13 @@ export default {
               (item) => item.resourceId == this.communityItem.industryResourceId
             ).name
           }
+        }
+        this.initialFormValues = {
+          name: this.name,
+          description: this.description,
+          selectedCategory: this.selectedCategory,
+          privacystatusid: this.privacystatusid,
+          acceptCheckbox: this.acceptCheckbox
         }
       })
     }

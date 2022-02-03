@@ -2,13 +2,14 @@
   <div id="container--threat-sharing" class="component-threat-sharing page-wrapper">
     <v-overlay
       id="new-community-overlay"
+      ref="refNewCommunity"
       :value="isWantToAddNewCommunity"
       :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
       :opacity="1"
-      :z-index="999"
+      :z-index="9"
       color="white"
     >
-      <new-community @closeAdd="onAddClose" />
+      <new-community @closeAdd="onAddClose" ref="refNewCommunity" />
     </v-overlay>
     <v-layout id="ts-layout" wrap style="min-height: 79vh;">
       <v-col class="main-column pr-4 pl-4" cols="12" md="8">
@@ -50,9 +51,9 @@
                 :isCommunity="this.$route.params.isCommunity"
                 :isLoadState="isLoadState"
                 :isTableReload="isTableReload"
+                :page="page"
                 @setLoadState="setLoadState"
                 @setThreatSharingStepLoading="setThreatSharingStepLoading"
-                :page="page"
               />
             </v-tab-item>
           </v-tabs-items>
@@ -103,6 +104,21 @@ export default {
     subSelectedTab: null,
     isStepDisabled: false
   }),
+  beforeRouteLeave(to, from, next) {
+    const { refNewCommunity, tsCommunities, tsIncidents } = this.$refs
+    if (this.isWantToAddNewCommunity) {
+      refNewCommunity.onCancelClicked()
+      next(false)
+    } else if (tsCommunities && tsCommunities.isWantToAddNewCommunity) {
+      tsCommunities.checkIfCanCloseCommunityModal()
+      next(false)
+    } else if (tsIncidents && tsIncidents.showPostIncident) {
+      tsIncidents.checkIfCanCloseIncidentModal()
+      next(false)
+    } else {
+      next()
+    }
+  },
   beforeRouteUpdate(to, from, next) {
     next(true)
   },

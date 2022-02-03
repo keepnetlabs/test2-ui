@@ -1,19 +1,20 @@
 <template>
   <div>
     <v-overlay
-      id="new-community-overlay"
+      v-if="showPostIncident"
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
-      :z-index="22"
+      :z-index="9"
       color="white"
-      v-if="showPostIncident"
+      id="new-community-overlay"
     >
       <post-incident
+        v-if="showPostIncident"
+        ref="incidentModal"
         :editItem="editItem"
         @closeIncidentModal="closeIncidentModal"
         @refreshData="refreshDataFunc"
-        v-if="showPostIncident"
       />
     </v-overlay>
     <v-card id="component-incidents" flat color="basil">
@@ -29,7 +30,6 @@
             <div class="search-wrapper">
               <div>
                 <v-text-field
-                  @mouseover.native="hover = true"
                   placeholder="Search"
                   outlined
                   class="filter-field search-wrapper__search-filter"
@@ -38,41 +38,42 @@
                   hide-details
                   prepend-inner-icon="mdi-magnify"
                   :disabled="incidentLoading"
+                  @mouseover.native="hover = true"
                 ></v-text-field>
               </div>
               <div>
                 <v-select
+                  v-model="companyValue"
                   :items="companyItem"
                   :placeholder="'Company'"
+                  :disabled="incidentLoading"
+                  @change="callForIncidentList"
                   outlined
                   class="edit-select"
                   max-width="100"
-                  v-model="companyValue"
                   hide-details
                   clearable
                   item-text="name"
                   :menu-props="{ offsetY: true }"
                   item-value="resourceId"
-                  @change="callForIncidentList"
-                  :disabled="incidentLoading"
                   id="threat-sharing-incidents-search-company"
                 />
               </div>
               <div class="d-flex">
                 <k-select
+                  v-model="threats"
                   :items="threatsList"
+                  :menu-props="{ offsetY: true }"
+                  :slots="{ selection: true }"
+                  :disabled="incidentLoading"
+                  @change="callForIncidentList"
                   placeholder="Threat"
                   outlined
                   class="edit-select"
-                  v-model="threats"
                   multiple
                   hide-details
-                  :menu-props="{ offsetY: true }"
                   item-text="name"
                   item-value="resourceId"
-                  @change="callForIncidentList"
-                  :slots="{ selection: true }"
-                  :disabled="incidentLoading"
                   id="threat-sharing-incidents-search-threat"
                 >
                   <template v-slot:selection="{ item, index }">
@@ -101,17 +102,15 @@
                 <v-expansion-panel
                   v-for="(item, ind) of props.items"
                   :key="ind + item.communityPostResourceId"
+                  popout
                   style="border-image: none !important;"
                   class="mb-4 mt-0"
                   id="edit-incident-post"
-                  popout
                 >
                   <singlePost
-                    @refreshData="refreshDataFunc"
                     :post="item"
                     :postIndex="ind"
                     :totalPostCount="props.items.length"
-                    @openEditPopupItem="openEditPopupItemFunc"
                     :key="$route.query.postId || '1'"
                     :searchValues="{
                       search,
@@ -123,6 +122,8 @@
                       itemsPerPage
                     }"
                     :incidents="incidentList"
+                    @refreshData="refreshDataFunc"
+                    @openEditPopupItem="openEditPopupItemFunc"
                   />
                 </v-expansion-panel>
               </v-expansion-panels>
@@ -141,10 +142,10 @@
                   </span>
                   <div
                     v-if="!search && !companyValue && !threats && routerName === 'Community'"
-                    class="create-post-incident"
-                    @click="showPostIncident = true"
                     block
                     rounded
+                    @click="showPostIncident = true"
+                    class="create-post-incident"
                     id="threat-sharing-post-incident-button"
                   >
                     Post The First Incident
@@ -155,18 +156,18 @@
           </template>
           <template v-slot:footer>
             <v-row
+              v-if="incidentList && incidentList.length"
               class="mt-2"
               justify="end"
               style="margin: 5px !important;"
-              v-if="incidentList && incidentList.length"
             >
               <el-pagination
-                layout="sizes, prev, pager, next,slot"
-                @size-change="handleSizeChange"
                 :current-page.sync="page"
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
                 :total="incidentList && totalNumberOfRecords"
+                layout="sizes, prev, pager, next,slot"
+                @size-change="handleSizeChange"
                 @current-change="onChangePagination"
               >
                 <template>
@@ -189,7 +190,6 @@
 <script>
 import SinglePost from '../ThreadSharing/SinglePost'
 import {
-  getCommunityDetails,
   getCOmmunityIncidentList,
   getCommunityPost,
   getIncidentList,
@@ -197,7 +197,7 @@ import {
 } from '../../api/threadSharing'
 import PostIncident from '../ThreadSharing/PostIncident'
 import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getCompanyList, getCompanyListForThreatSharing } from '../../api/company'
+import { getCompanyListForThreatSharing } from '../../api/company'
 import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
@@ -332,6 +332,11 @@ export default {
     openEditPopupItemFunc(post) {
       this.editItem = post
       this.showPostIncident = true
+    },
+    checkIfCanCloseIncidentModal() {
+      if (this.$refs.incidentModal) {
+        this.$refs.incidentModal.onCancelClicked()
+      }
     },
     closeIncidentModal() {
       this.showPostIncident = false
