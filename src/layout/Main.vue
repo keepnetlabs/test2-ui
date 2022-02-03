@@ -1167,7 +1167,6 @@ export default {
       getErrors: 'common/getErrors',
       getColor: 'common/getColor',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
-      isSessionExpired: 'dashboard/getIsSessionExpired',
       getTourData: 'tour/getTourData',
       isTourActive: 'tour/isTourActive',
       menuList: 'dashboard/getMenuList',

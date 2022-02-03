@@ -1,24 +1,16 @@
-import axios from 'axios'
-import AuthenticationService from '../../services/authentication'
-import router from '../../router/index'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
 import {
   investigationList,
   cancelInvestigation,
-  investigationDetails,
-  createInvestigation,
-  InvestigationGroups,
   getTargetUsers,
   saveNewInvestigation,
   getStatsAndMenuDataFunction,
   getInvestigationDetailsDataFunction,
-  SET_INVESTIGATIONLISTEMPY,
   investigationDetailsListFunction,
   investigationDetailsTargetUsersListFunction,
   sendInvestigationWarningMessage,
   deleteInvestigationDetailsItem,
   irSummary
-} from '../../api/investigations'
+} from '@/api/investigations'
 
 const investigations = {
   namespaced: true,
@@ -45,13 +37,11 @@ const investigations = {
     isWidgetsLoadingGetter: (state) => state.isWidgetsLoading
   },
   mutations: {
-    SET_INVESTIGATIONDETAILSTargetUsersLISTDATA(state, payload) {
-      let data = payload.data
-      state.getInvestigationDetailsTargetUsersListData = data
+    SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA(state, payload) {
+      state.getInvestigationDetailsTargetUsersListData = payload.data
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
-      let data = payload.data
-      state.getInvestigationDetailsListData = data
+      state.getInvestigationDetailsListData = payload.data
     },
     SET_INVESTIGATIONLISTEMPY(state) {
       state.investigationList = []
@@ -89,43 +79,35 @@ const investigations = {
     setWidgetsLoading({ commit }, payload) {
       commit('SET_WIDGETS_LOADING', payload)
     },
-    SET_INVESTIGATIONLISTEMPY(state, payload) {
+    SET_INVESTIGATIONLISTEMPY(state) {
       state.investigationList = []
     },
     async deleteInvestigationDetailsItem({ commit, dispatch }, obj) {
-      // get investigaiton list via axious
-
-      await deleteInvestigationDetailsItem(obj.data, obj.id).then((response) => {})
+      await deleteInvestigationDetailsItem(obj.data, obj.id)
     },
     async sendInvestigationWarningMessage({ commit, dispatch }, obj) {
-      // get investigaiton list via axious
-
-      await sendInvestigationWarningMessage(obj.data, obj.id).then((response) => {})
+      await sendInvestigationWarningMessage(obj.data, obj.id)
     },
     async cancelInvestigation({ commit, dispatch }, id) {
-      // get investigaiton list via axious
-
-      await cancelInvestigation(id).then(() => {})
+      await cancelInvestigation(id)
     },
     async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
-      // get investigaiton details
       return await investigationDetailsTargetUsersListFunction(obj.data, obj.id).then(
         (response) => {
           const result = response.data
-          commit('SET_INVESTIGATIONDETAILSTargetUsersLISTDATA', result)
+          commit('SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA', result)
           return response
         }
       )
     },
     async getInvestigationDetailsListData({ commit, dispatch }, obj) {
-      // get investigaiton details
       if (obj.id) {
         return await investigationDetailsListFunction(obj.data, obj.id)
           .then((response) => {
             commit('SET_INVESTIGATIONDETAILSLISTDATA', response.data)
             return response
           })
-          .catch((error) => {
+          .catch(() => {
             const payload = {
               data: {
                 pageNumber: 1,
@@ -140,7 +122,6 @@ const investigations = {
       }
     },
     async getInvestigationDetailsData({ commit, dispatch }, id) {
-      // get investigaiton details
       if (id) {
         await getInvestigationDetailsDataFunction(id).then((response) => {
           const result = response.data
@@ -149,15 +130,12 @@ const investigations = {
       }
     },
     async getStatsAndMenuData({ commit, dispatch }, id) {
-      // get investigaiton list via axious
-
       await getStatsAndMenuDataFunction(id).then((response) => {
         const result = response.data
         commit('SET_STATSANDMENUDATA', result)
       })
     },
     async getInvestigationList({ commit, dispatch }, obj) {
-      // get investigaiton list via axious
       return await investigationList(obj).then((response) => {
         const result = response.data
         commit('SET_INVESTIGATIONLIST', result)
@@ -173,38 +151,15 @@ const investigations = {
       })
     },
 
-    async getTargetUsersList({ commit, dispatch }) {
-      // get target list via axious
-
+    async getTargetUsersList({ commit }) {
       await getTargetUsers().then((response) => {
         const result = response.data
         commit('SET_TARGETUSERSLIST', result)
       })
     },
     async createInvestigation({ commit, dispatch }, obj) {
-      // create investigaiton list via axious. obj is a data parameter ( body ).
-      // if you want to manipulate the obj, do it before.
       return await saveNewInvestigation(obj).then((resp) => {
         return Promise.resolve(resp)
-      })
-    },
-    async getNotifications({ commit, dispatch }, id) {
-      await listNotifications(id, localStorage.getItem('companyId')).then((response) => {
-        const res = response.data
-        commit('SET_NOTIFICATIONS', res)
-      })
-    },
-    async saveNotifications({ commit, dispatch }, obj) {
-      await saveNotifications(obj).then(() => {
-        dispatch(
-          'common/createSnackBar',
-          {
-            color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-            message: 'Saved Successfully'
-          },
-          { root: true }
-        )
-        commit('SET_NOTIFICATIONS', obj)
       })
     }
   }
