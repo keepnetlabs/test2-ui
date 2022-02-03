@@ -352,7 +352,7 @@ export default {
           })
       }, 500)
     },
-    selectChange(item) {
+    selectChange() {
       this.setSelectedTemplate(
         this.listData[
           this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
@@ -461,7 +461,6 @@ export default {
       }
       getEmailTemplatePreviewContent(item.resourceId)
         .then((response) => {
-          const { data } = response
           this.selectedTemplateHeader = response.data.data.name
           this.templateHTML = response.data.data.template
           this.templateFromName = response.data.data.fromName
@@ -499,7 +498,7 @@ export default {
         }
       }
     },
-    emailTemplateResourceId(newVal, oldVal) {
+    emailTemplateResourceId(newVal) {
       this.selectChangeValue = newVal
     }
   }
@@ -621,7 +620,6 @@ export default {
         color: #2196f3 !important;
       }
       .v-chip .v-chip__content {
-        font-family: Open Sans !important;
         font-style: normal !important;
         font-weight: 600 !important;
         font-size: 12px !important;
@@ -646,7 +644,6 @@ export default {
     }
     &--item {
       .v-chip__content {
-        font-family: Open Sans;
         font-style: normal;
         font-weight: 600 !important;
         font-size: 12px !important;
