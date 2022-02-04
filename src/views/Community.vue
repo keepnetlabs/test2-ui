@@ -8,7 +8,7 @@
         :z-index="9"
         color="white"
       >
-        <new-community @closeAdd="onAddClose" />
+        <new-community ref="refNewCommunity" @closeAdd="onAddClose" />
       </v-overlay>
       <v-overlay
         id="new-community-overlay"
@@ -256,14 +256,14 @@ export default {
     }
   },
   beforeRouteLeave(to, from, next) {
-    const { refPostIncident, refIncidents } = this.$refs
+    const { refPostIncident, refIncidents, refNewCommunity } = this.$refs
     if (this.showPostIncident) {
       refPostIncident.onCancelClicked()
       next(false)
     } else if (refIncidents && refIncidents.showPostIncident) {
       refIncidents.checkIfCanCloseIncidentModal()
       next(false)
-    } else if (this.isWantToAddNewCommunity) {
+    } else if (this.isWantToAddNewCommunity && !refNewCommunity.isSubmitted) {
       this.isWantToAddNewCommunity = false
       next(false)
     } else {

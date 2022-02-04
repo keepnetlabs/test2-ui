@@ -62,10 +62,12 @@ export default {
   },
   beforeRouteLeave(to, from, next) {
     const { refScenarios, refEmailTemplates, refLandingPageList } = this.$refs
+
     if (refScenarios && refScenarios.modalStatus) {
       refScenarios.checkIfCanCLoseNewScenarioModal()
       next(false)
     } else if (refScenarios && refScenarios.isShowFastLaunch) {
+      if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
       refScenarios.checkIfCanCloseFastLaunchModal()
       next(false)
     } else if (refEmailTemplates && refEmailTemplates.modalStatus) {

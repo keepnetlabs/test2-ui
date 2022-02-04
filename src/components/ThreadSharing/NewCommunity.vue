@@ -242,6 +242,7 @@ export default {
   data() {
     return {
       saveDisable: false,
+      isSubmitted: false,
       labels,
       termsAndConditionsUrl: 'https://www.keepnetlabs.com/terms-conditions/',
       isWantToAccept: false,
@@ -348,6 +349,7 @@ export default {
         if (!!this.resourceId) {
           updateCommunity(this.resourceId, payload)
             .then(() => {
+              this.isSubmitted = true
               refThis.$emit('closeAdd')
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
@@ -365,6 +367,7 @@ export default {
         } else {
           createCommunity(payload)
             .then((response) => {
+              this.isSubmitted = true
               this.isWantToAccept = false
               localStorage.setItem('communityName', this.name)
               localStorage.setItem('communityResourceIdForRedirect', response.data.data.resourceId)
