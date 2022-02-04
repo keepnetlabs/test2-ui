@@ -6,21 +6,24 @@
         :key="index"
         :disabled="panelIndex && panelIndex !== index"
       >
-        <v-expansion-panel-header :color="item.isFinished ? 'success lighten-1' : ''">
+        <v-expansion-panel-header>
           <span class="w-5" style="width: 100px;">{{ item.jobId }}</span>
           <span class="w-25">{{ item.name }}</span>
           <span class="w-25 text-center">{{ item.createTime }}</span>
           <span class="w-25 text-right">{{ item.progress }} %</span>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <v-progress-linear
-            class="mt-3"
-            :color="item.isFinished ? 'success lighten-1' : 'primary'"
-            :value="item.progress"
-            height="25"
-          >
-            <strong>{{ item.progress }}%</strong>
-          </v-progress-linear>
+          <v-list-item>
+            <v-progress-linear
+              class="mt-3"
+              rounded
+              :color="item.isFinished ? 'success lighten-1' : 'primary'"
+              :value="item.progress"
+              height="25"
+            >
+              <strong>{{ item.progress }}%</strong>
+            </v-progress-linear>
+          </v-list-item>
           <template v-for="(process, index) in item.process">
             <v-list-item three-line :key="index">
               <v-list-item-content>
@@ -28,7 +31,8 @@
                   dense
                   outlined
                   :type="
-                    process.targetCount === process.currentCount && process.isFinished
+                    (process.targetCount === process.currentCount && process.isFinished) ||
+                    (process.targetCount === 0 && process.currentCount === 0)
                       ? 'success'
                       : 'info'
                   "
@@ -37,15 +41,15 @@
                     <span>{{ process.name }}</span>
                     <template v-if="process.targetCount !== 0">
                       <span class="ml-auto" v-if="process.isFinished"
-                        >Finished at {{ process.endTime }}</span
+                      >Finished at {{ process.endTime }}</span
                       >
                       <span class="ml-auto" v-else
-                        >{{ process.estimatedTime.toFixed(0) }} seconds left</span
+                      >{{ process.estimatedTime.toFixed(0) }} seconds left</span
                       >
                     </template>
                   </v-list-item-title>
                   <v-list-item-subtitle
-                    >{{ process.currentCount }} /
+                  >{{ process.currentCount }} /
                     {{ process.targetCount }}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle>
@@ -60,6 +64,7 @@
                       "
                       :value="process.progress"
                       height="25"
+                      rounded
                     >
                       <strong>{{ process.progress }}%</strong>
                     </v-progress-linear>
@@ -138,7 +143,7 @@ export default {
         this.handleJobDetail(resourceId)
         this.processInterval = setInterval(() => {
           this.handleJobDetail(resourceId)
-        }, 5000)
+        }, 2500)
       } else {
         clearInterval(this.processInterval)
         this.handleAllJobs()
@@ -150,6 +155,10 @@ export default {
   },
   created() {
     this.handleAllJobs()
+  },
+  destroyed() {
+    clearInterval(this.jobInterval)
+    clearInterval(this.processInterval)
   }
 }
 </script>
