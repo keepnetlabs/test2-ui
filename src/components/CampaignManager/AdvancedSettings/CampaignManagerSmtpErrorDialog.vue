@@ -3,7 +3,7 @@
     v-if="status"
     title="Error"
     icon="mdi-alert"
-    className="integration-error-message-popup"
+    className="k-dialog-error"
     :status="status"
     :body="message"
     @changeStatus="handleClose"

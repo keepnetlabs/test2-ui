@@ -242,4 +242,32 @@ export default {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none;
 }
+.k-dialog-error {
+  .k-dialog__header .v-cart-icon-wrapper {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    background: #f56c6c !important;
+    border-color: #f56c6c !important;
+    i {
+      color: white !important;
+    }
+  }
+  .k-dialog__title {
+    color: #f56c6c !important;
+  }
+}
+.delete-user {
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    &-button {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.71;
+      letter-spacing: normal;
+    }
+  }
+}
 </style>
