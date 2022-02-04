@@ -157,3 +157,11 @@ export function importTmpUsers(payload, id) {
 export function getTargetUserViewUserGroups(resourceId = '', payload) {
   return testRequest.post(`target-users/${resourceId}/groups`, payload)
 }
+
+export function getAllJobs() {
+  return testRequest.get(`/jobs`)
+}
+
+export function getJobDetail(id = '') {
+  return testRequest.get(`/jobs/${id}`)
+}

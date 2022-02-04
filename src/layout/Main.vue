@@ -645,6 +645,23 @@
                 </router-link>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item
+              style="padding-left: 0 !important; margin-left: -5px;"
+              :class="[routerName === 'Job Log' && 'active-link']"
+              v-if="checkPermissionMultiple(['audit-logs|POST']) && !isProd()"
+            >
+              <v-list-item-content class="menu-item-content" style="border: 0 !important;">
+                <router-link
+                  to="/job-log"
+                  id="btn--link-navigator-menu-job-log"
+                  class="menu-link-default"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Job Log</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
         </v-list>
         <navigation-drawer-footer :is-mini="getMini" :navigatorMenuProps="navigatorMenuProps" />
@@ -1492,6 +1509,14 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    isProd() {
+      const location = window.location.href
+      return !(
+        location.includes('dev') ||
+        location.includes('test') ||
+        location.includes('localhost')
+      )
+    },
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },
