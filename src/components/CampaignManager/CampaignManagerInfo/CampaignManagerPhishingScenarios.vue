@@ -219,7 +219,7 @@
                 </el-tabs>
               </div>
             </template>
-            <div class="campaign-manager-phishing-scenarios-empty" v-else>
+            <div class="custom-empty-table-message" v-else>
               <div class="empty-inline">
                 <slot name="empty-table-inline">
                   <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
@@ -472,19 +472,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-phishing-scenarios-empty {
-  h2 {
-    font-style: normal;
-    font-weight: normal;
-    font-size: 24px;
-    color: #383b41;
-  }
-  p {
-    font-weight: normal;
-    font-size: 14px;
-    color: #383b41;
-  }
-}
-</style>

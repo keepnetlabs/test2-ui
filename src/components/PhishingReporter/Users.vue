@@ -236,7 +236,7 @@ export default {
             show: true,
             type: 'slot',
             isEditable: true,
-            width: 160,
+            width: 165,
             filterableType: 'select',
             filterableItems: [
               { text: 'Not Installed', value: 'NotInstalled' },

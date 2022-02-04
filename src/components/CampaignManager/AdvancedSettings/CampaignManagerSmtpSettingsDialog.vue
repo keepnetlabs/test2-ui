@@ -177,8 +177,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-#campaign-manager-smtp-settings-data-table {
-  padding-bottom: 0;
-}
-</style>

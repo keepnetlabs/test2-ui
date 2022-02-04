@@ -168,7 +168,7 @@
               class="dashboard-cards mr-2"
               :class="{
                 'no-data__opacity-red': isNotifiedEmailEmpty(irSummary),
-                'incident-analysis': !isNotifiedEmailEmpty(irSummary)
+                'bg-image-incident-analysis': !isNotifiedEmailEmpty(irSummary)
               }"
             >
               <div class="card-header">

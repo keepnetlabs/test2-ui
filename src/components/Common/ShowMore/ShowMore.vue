@@ -128,31 +128,6 @@ export default {
         }
         this.unRenderedBadgeCount = this.computedData.length - this.renderedBadgeCount
       }
-
-      /*
-      let averageChipWidth = 0
-      if (this.computedData.length > 0) {
-        averageChipWidth =
-          this.computedData.reduce((acc, item, index) => {
-            let width = 0
-            const keys = Object.keys(item)
-            for (let key of keys) {
-              width += key.length * 9 + item[key].length * 9
-            }
-            if (width > 300) {
-              width = 300
-            }
-            acc += width
-            return acc
-          }, 0) / this.computedData.length
-        this.renderedBadgeCount = Math.floor(containerWidth / averageChipWidth)
-        this.unRenderedBadgeCount =
-          this.computedData.length - this.renderedBadgeCount < 0
-            ? 0
-            : this.computedData.length - this.renderedBadgeCount
-      }
-
-       */
     },
     produceData() {
       this.computedData = this.data.reduce((acc, item) => {

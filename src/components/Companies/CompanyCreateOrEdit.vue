@@ -8,7 +8,7 @@
       @on-confirm="confirmConfigureNewCompanyDialog"
     />
 
-    <v-card flat light class="header">
+    <v-card flat light class="header" style="padding: 32px 96px 0 96px;">
       <v-list-item class="pl-0 pr-0">
         <div class="v-btn v-cart-icon-wrapper">
           <v-icon medium left color="blue" class="ml-2">mdi-domain</v-icon>
@@ -1327,11 +1327,5 @@ export default {
   .k-checkbox:nth-child(2n) {
     margin-left: 120px;
   }
-}
-.my-dialog {
-  opacity: 1;
-  -webkit-backdrop-filter: blur(3px);
-  backdrop-filter: blur(3px);
-  background-color: rgba(0, 0, 0, 0.23);
 }
 </style>

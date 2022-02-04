@@ -32,7 +32,7 @@
       />
       <v-btn
         id="btn-save--advanced-settings-url"
-        class="white--text btn-util btn-save-changes mb-6"
+        class="white--text btn-util btn-save-changes"
         color="#2196f3"
         style="margin-top: 14px;"
         rounded
