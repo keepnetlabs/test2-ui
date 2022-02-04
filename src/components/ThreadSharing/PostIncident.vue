@@ -2898,7 +2898,7 @@ export default {
         isAnonym: this.isAnonym,
         acceptCheckbox: this.acceptCheckbox
       }
-      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      const isChanged = isDifferent(this.initialFormValues, currentFormValues)
       if (!isChanged) {
         this.$emit('refreshData')
         this.$emit('closeIncidentModal')
