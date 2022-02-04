@@ -52,19 +52,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.delete-user {
-  &__footer {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    &-button {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-    }
-  }
-}
-</style>

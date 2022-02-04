@@ -3,7 +3,7 @@
     v-if="isShowErrorMessage"
     title="Error Occurred"
     icon="mdi-alert"
-    className="integration-error-message-popup"
+    className="k-dialog-error"
     title-id="text--smtp-settings-test-email-error-popup-title"
     :status="isShowErrorMessage"
     :body="errorMessage"
@@ -44,18 +44,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.integration-error-message-popup {
-  .k-dialog__header .v-cart-icon-wrapper {
-    justify-content: center;
-    align-items: center;
-    display: flex;
-    background: #f56c6c !important;
-    border-color: #f56c6c !important;
-    i {
-      color: white !important;
-    }
-  }
-}
-</style>

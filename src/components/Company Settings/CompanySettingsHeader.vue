@@ -1,5 +1,5 @@
 <template>
-  <div class="company-settings__header">
+  <div class="company-settings__header mt-6">
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="company-settings__title">
@@ -26,9 +26,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.company-settings__header {
-  margin-top: 24px;
-}
-</style>
