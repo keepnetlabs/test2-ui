@@ -648,7 +648,7 @@
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
               :class="[routerName === 'Job Log' && 'active-link']"
-              v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              v-if="checkPermissionMultiple(['audit-logs|POST']) && !isProd()"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <router-link
@@ -1509,6 +1509,14 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    isProd() {
+      const location = window.location.href
+      return !(
+        location.includes('dev') ||
+        location.includes('test') ||
+        location.includes('localhost')
+      )
+    },
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },
