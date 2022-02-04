@@ -1304,8 +1304,8 @@ export default {
         updateIntegration(this.integrationId, data)
           .then(() => {
             this.saveDisable = false
-            this.closeOverlay()
             this.showConfirmModal = false
+            this.$emit('closeOverlay', false, true)
           })
           .catch(() => {
             this.saveDisable = false
@@ -1316,8 +1316,8 @@ export default {
       } else {
         createIntegration(data)
           .then(() => {
-            this.closeOverlay()
             this.showConfirmModal = false
+            this.$emit('closeOverlay', false, true)
           })
           .finally(() => {
             this.saveDisable = false
