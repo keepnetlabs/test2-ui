@@ -1,28 +1,68 @@
 <template>
   <div>
-    <v-expansion-panels style="margin-top: 50px; margin-bottom: 50px;" popout v-model="panelIndex">
+    <v-expansion-panels class="my-10" popout v-model="panelIndex">
       <v-expansion-panel
         v-for="(item, index) in jobs"
         :key="index"
         :disabled="panelIndex && panelIndex !== index"
       >
-        <v-expansion-panel-header>
-          <span>{{ item.name }}</span>
-          <span class="ml-auto text-right">{{ item.progress }} %</span>
+        <v-expansion-panel-header :color="item.isFinished ? 'success lighten-1' : ''">
+          <span class="w-5" style="width: 100px;">{{ item.jobId }}</span>
+          <span class="w-25">{{ item.name }}</span>
+          <span class="w-25 text-center">{{ item.createTime }}</span>
+          <span class="w-25 text-right">{{ item.progress }} %</span>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
+          <v-progress-linear
+            class="mt-3"
+            :color="item.isFinished ? 'success lighten-1' : 'primary'"
+            :value="item.progress"
+            height="25"
+          >
+            <strong>{{ item.progress }}%</strong>
+          </v-progress-linear>
           <template v-for="(process, index) in item.process">
-            <v-list-item two-line :key="index">
+            <v-list-item three-line :key="index">
               <v-list-item-content>
                 <v-alert
                   dense
                   outlined
-                  :type="process.targetCount === process.currentCount ? 'success' : 'info'"
+                  :type="
+                    process.targetCount === process.currentCount && process.isFinished
+                      ? 'success'
+                      : 'info'
+                  "
                 >
-                  <v-list-item-title>{{ process.name }}</v-list-item-title>
+                  <v-list-item-title class="d-flex">
+                    <span>{{ process.name }}</span>
+                    <template v-if="process.targetCount !== 0">
+                      <span class="ml-auto" v-if="process.isFinished"
+                        >Finished at {{ process.endTime }}</span
+                      >
+                      <span class="ml-auto" v-else
+                        >{{ process.estimatedTime.toFixed(0) }} seconds left</span
+                      >
+                    </template>
+                  </v-list-item-title>
                   <v-list-item-subtitle
                     >{{ process.currentCount }} /
                     {{ process.targetCount }}
+                  </v-list-item-subtitle>
+                  <v-list-item-subtitle>
+                    <v-progress-linear
+                      v-if="!process.isFinished && process.targetCount !== 0"
+                      :color="
+                        process.existError
+                          ? 'red'
+                          : process.isFinished
+                          ? 'success lighten-1'
+                          : 'primary'
+                      "
+                      :value="process.progress"
+                      height="25"
+                    >
+                      <strong>{{ process.progress }}%</strong>
+                    </v-progress-linear>
                   </v-list-item-subtitle>
                 </v-alert>
               </v-list-item-content>
@@ -82,12 +122,13 @@ export default {
       getJobDetail(resourceId).then((response) => {
         const {
           data: {
-            data: { progress, processResults }
+            data: { progress, processResults, isFinished }
           }
         } = response
         const job = this.jobs.find((job) => job.resourceId === resourceId)
         job.process = processResults
         job.progress = progress
+        job.isFinished = isFinished
         this.jobs = [...this.jobs]
       })
     },
@@ -114,128 +155,10 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.import-users-file {
-  &__overlay {
-    .v-overlay__content {
-      width: 100%;
-      height: 100%;
-      position: fixed;
-      left: 0;
-      top: 0;
-      overflow-y: auto;
-    }
-  }
-
-  &__container {
-    padding: 32px 96px 0 96px;
-    box-shadow: none;
-
-    .v-list-item {
-      padding: 0;
-
-      &__content {
-        padding: 0;
-      }
-    }
-  }
-
-  &__footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background-color: #f5f7fa;
-    padding: 16px 96px !important;
-    display: flex;
-    justify-content: space-between;
-    z-index: 10;
-
-    @media (max-width: 768px) {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-      justify-content: space-around;
-    }
-
-    &-btn-cancel {
-      color: #f56c6c !important;
-      border: 1px solid #f56c6c !important;
-      box-shadow: none !important;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      width: 86px;
-      height: 36px !important;
-    }
-
-    &-btn-next {
-      color: #ffffff !important;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      width: 72px;
-      height: 36px !important;
-      border-radius: 18px;
-      box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3);
-      background-color: #2196f3;
-    }
-
-    &-btn-back {
-      width: 68px;
-      height: 36px !important;
-      border-radius: 18px;
-      border: solid 1px #00bcd4;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.71;
-      letter-spacing: normal;
-      color: #00bcd4 !important;
-      box-shadow: none !important;
-    }
-  }
-
-  &__title {
-    font-size: 24px;
-    font-weight: normal;
-    line-height: 1.29;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-
-  &__sub-title {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 1.3;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
+.w-25 {
+  width: 25%;
 }
-
-.map-fields {
-  &__list-item {
-    .v-list-item__content {
-      padding: 1px;
-      overflow-x: auto;
-    }
-
-    &--1 {
-      margin-top: 24px;
-    }
-
-    &--2 {
-    }
-  }
-
-  &__title {
-    font-size: 18px;
-    font-weight: 600;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-    margin-top: -2px;
-  }
-
-  &__select {
-    max-width: 205px;
-  }
+.w-5 {
+  width: 5%;
 }
 </style>
