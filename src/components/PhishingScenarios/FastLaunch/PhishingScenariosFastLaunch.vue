@@ -98,7 +98,7 @@ import CampaignManagerSummary from '@/components/CampaignManager/Summary/Campaig
 import { getScenario } from '@/api/scenarios'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { searchTargetGroups } from '@/api/targetUsers'
-import { isDifferent } from '@/utils/functions'
+import { isDifferent, scrollToComponent } from '@/utils/functions'
 
 export default {
   name: 'PhishingScenariosFastLaunch',
@@ -126,7 +126,8 @@ export default {
       emailTemplate: null,
       emailTemplateParams: null,
       landingPageParams: null,
-      landingPageTemplate: null
+      landingPageTemplate: null,
+      isSubmitted: false
     }
   },
   computed: {
@@ -243,6 +244,12 @@ export default {
     setActionButtonDisability(flag = false) {
       this.isActionButtonDisabled = flag
     },
+    showErrorMessage(ref) {
+      this.$nextTick(() => {
+        const el = ref.$el.querySelector('.error--text')
+        scrollToComponent(el)
+      })
+    },
     handleSubmit() {
       const { refFastLaunch } = this.$refs
       const { refCampaignManagerCampaignInfo } = refFastLaunch.$refs
@@ -308,6 +315,7 @@ export default {
           }
           createCampaignManager(payload)
             .then(() => {
+              this.isSubmitted = true
               this.$router.push({ name: 'Campaign Manager' })
             })
             .finally(this.setActionButtonDisability)
