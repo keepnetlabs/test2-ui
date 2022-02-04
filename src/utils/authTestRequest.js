@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '../router'
 import AuthenticationService from '../services/authentication'
 import store from '../store'
 import { COMMON_CONSTANTS } from '../model/constants/commonConstants'
@@ -18,7 +17,7 @@ authTestService.interceptors.request.use(
     }
     return config
   },
-  (error) => {
+  () => {
     store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
   }
 )

@@ -659,9 +659,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.target-users-groups {
-  padding-top: 24px;
-}
-</style>

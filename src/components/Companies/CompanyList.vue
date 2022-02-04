@@ -769,58 +769,6 @@ export default {
 .company-list {
   margin-top: 24px;
 }
-.people {
-  padding-top: 24px;
-  .add-users__title {
-    font-size: 14px;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87) !important;
-  }
-  .edit-fields {
-    display: flex;
-    justify-content: flex-end;
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.71;
-    letter-spacing: normal;
-    margin-top: 10px;
-    cursor: pointer;
-    color: #2196f3;
-  }
-  .btn-add {
-    width: 36px;
-    height: 36px;
-    border-radius: 18px;
-    box-shadow: 0 2px 5px 0 rgba(100, 181, 246, 0.5);
-    background-color: #2196f3;
-    color: white;
-
-    .v-icon {
-      font-size: 18px !important;
-      color: white;
-    }
-  }
-}
-.clock-wise {
-  .cell {
-    * {
-      visibility: visible !important;
-    }
-  }
-  i {
-    animation: antiClockwiseSpin 1s infinite ease-in;
-    animation-delay: 0s;
-    color: #2196f3 !important;
-  }
-}
-@keyframes antiClockwiseSpin {
-  0% {
-    transform: rotate(360deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
 .company-create-edit {
   .k-overlay__container {
     padding: 0 !important;

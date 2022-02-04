@@ -60,14 +60,9 @@
       :selectable="true"
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
-      :setClassName="setCellClassName"
       :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      @addToGroup="handleAddToGroup"
-      @createGroupWithUser="handleCreateGroupWithUser"
-      @submenuItemClick="handleSubMenuItemClick"
-      @syncUser="handleSyncUser"
       @deleteAction="handleDelete"
       @editTargetUsers="handleEditTargetUsers"
       @onEmptyBtnClicked="handleClickEmptyBtnClicked"
@@ -269,7 +264,6 @@ export default {
     loading: true,
     isMultipleDelete: false,
     isWantToShowDeleteUserModal: false,
-    selectedSyncIndex: null,
     selectedRow: null,
     customFields: [],
     isWantToShowAddUsersModal: false,
@@ -481,30 +475,25 @@ export default {
       )
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.payload.pageNumber = pageNumber
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.payload.ascending = order === 'ascending'
       this.payload.orderBy = prop
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     resetPageNumber() {
-      //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     columnFilterChanged(filter) {
-      //generic
       this.tableOptions.isColumnFilterActive = true
       let items = []
       let requestBody = this.payload.filter.FilterGroups[0].FilterItems
@@ -540,7 +529,6 @@ export default {
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     columnFilterCleared(fieldName) {
-      //generic
       let items = []
       let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
 
@@ -611,61 +599,6 @@ export default {
       }
       this.toggleCustomFieldsModal()
     },
-    setCellClassName(obj) {
-      if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
-        return 'clock-wise'
-      }
-    },
-    handleAddToGroup(row) {},
-    handleCreateGroupWithUser(row) {},
-    handleSubMenuItemClick(exportType) {},
-    handleSyncUser(scope) {
-      this.selectedSyncIndex = scope.$index
-      this.tableOptions.rowActions = [
-        {
-          name: 'Sync User',
-          icon: 'mdi-sync',
-          action: 'syncUser'
-        }
-      ]
-      setTimeout(() => {
-        this.tableOptions.rowActions = [
-          {
-            name: 'Edit this row',
-            icon: 'mdi-pencil',
-            action: 'edit',
-            isNotShow: true
-          },
-          {
-            name: 'Add to a group',
-            icon: 'mdi-account-multiple-plus',
-            action: 'addToGroup'
-          },
-          {
-            name: 'Create a group with user',
-            icon: 'mdi-account-multiple',
-            action: 'createGroupWithUser'
-          },
-          {
-            name: 'Download',
-            icon: 'mdi-download',
-            action: 'download',
-            subElements: ['PDF', 'CSV', 'XLS']
-          },
-          {
-            name: 'Sync User',
-            icon: 'mdi-sync',
-            action: 'syncUser'
-          },
-          {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'delete'
-          }
-        ]
-        this.selectedSyncIndex = null
-      }, 5000)
-    },
     handleMultipleDelete(selections = []) {
       this.isMultipleDelete = true
       this.changeDeleteModalStatus(true)
@@ -707,7 +640,6 @@ export default {
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -922,8 +854,6 @@ export default {
       }
     }
   }
-
-  padding-top: 24px;
   .add-users__title {
     font-size: 14px;
     letter-spacing: normal;
@@ -952,26 +882,6 @@ export default {
       font-size: 18px !important;
       color: white;
     }
-  }
-}
-.clock-wise {
-  .cell {
-    * {
-      visibility: visible !important;
-    }
-  }
-  i {
-    animation: antiClockwiseSpin 1s infinite ease-in;
-    animation-delay: 0s;
-    color: #2196f3 !important;
-  }
-}
-@keyframes antiClockwiseSpin {
-  0% {
-    transform: rotate(360deg);
-  }
-  100% {
-    transform: rotate(0deg);
   }
 }
 </style>

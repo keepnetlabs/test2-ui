@@ -151,7 +151,7 @@
           <div :class="[!isDateValid && 'date-picker-error mb-n3']">
             <InputDate
               v-model="formData.scheduledDate"
-              class="campaign-manager-schedule-datepicker ml-2"
+              class="date-picker-height-40 ml-2"
               type="datetime"
               ref="refPicker"
               placeholder="Select Date Select Time"
@@ -674,11 +674,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-schedule-datepicker {
-  input {
-    min-height: 40px !important;
-  }
-}
-</style>

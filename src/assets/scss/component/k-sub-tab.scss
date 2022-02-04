@@ -1,0 +1,17 @@
+.k-sub-tab {
+  .el-tabs__header {
+    background-color: rgb(245, 247, 250);
+    border-color: rgb(245, 247, 250);
+  }
+  .el-tabs__nav {
+    margin-left: 16px;
+  }
+  .el-tabs__item {
+    font-size: 14px !important;
+    height: 48px;
+    line-height: 48px;
+  }
+  .el-tabs__active-bar {
+    min-width: 34px !important;
+  }
+}

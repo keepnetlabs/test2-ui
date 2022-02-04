@@ -294,5 +294,14 @@ export default {
   .campaign-manager-summary-card__body-item {
     justify-content: space-between;
   }
+  &-scenario-stats {
+    &__chart {
+      &-container {
+        max-width: 350px;
+        margin: -60px auto;
+        max-height: 350px;
+      }
+    }
+  }
 }
 </style>

@@ -222,7 +222,7 @@
             <template v-slot:skeleton-content>
               <div
                 id="card--incident-responder-incident-analysis"
-                class="dashboard-cards incident-analysis mr-2"
+                class="dashboard-cards bg-image-incident-analysis mr-2"
               >
                 <div class="card-header">
                   <span class="head">Found Phishing</span>
@@ -972,9 +972,6 @@ export default {
     border-radius: 8px;
     box-shadow: 0px 1px 10px 0px rgb(0 0 0 / 20%), 0px 0px 0px 0px rgb(0 0 0 / 14%),
       0px 0px 0px 0px rgb(0 0 0 / 12%) !important;
-  }
-  .incident-analysis {
-    background: #f56c6c;
   }
   .roi-summary {
     background: #1173c1;

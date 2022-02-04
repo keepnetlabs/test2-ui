@@ -1695,24 +1695,4 @@ export default {
     }
   }
 }
-.clock-wise {
-  .cell {
-    * {
-      visibility: visible !important;
-    }
-  }
-  i {
-    animation: antiClockwiseSpin 1s infinite ease-in;
-    animation-delay: 0s;
-    color: #2196f3 !important;
-  }
-}
-@keyframes antiClockwiseSpin {
-  0% {
-    transform: rotate(360deg);
-  }
-  100% {
-    transform: rotate(0deg);
-  }
-}
 </style>
