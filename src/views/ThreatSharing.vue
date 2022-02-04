@@ -106,7 +106,7 @@ export default {
   }),
   beforeRouteLeave(to, from, next) {
     const { refNewCommunity, tsCommunities, tsIncidents } = this.$refs
-    if (this.isWantToAddNewCommunity) {
+    if (this.isWantToAddNewCommunity && !refNewCommunity.isSubmitted) {
       refNewCommunity.onCancelClicked()
       next(false)
     } else if (tsCommunities && tsCommunities.isWantToAddNewCommunity) {
