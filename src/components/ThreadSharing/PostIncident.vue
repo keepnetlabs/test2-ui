@@ -3025,7 +3025,8 @@ export default {
           .then(() => {
             this.saveDisable = false
             this.$store.dispatch('tableReload/setTableReload', true)
-            this.onCancelClicked()
+            this.$emit('refreshData')
+            this.$emit('closeIncidentModal')
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
@@ -3074,7 +3075,8 @@ export default {
         createCommunityPost(payload)
           .then(() => {
             this.$store.dispatch('tableReload/setTableReload', true)
-            this.onCancelClicked()
+            this.$emit('refreshData')
+            this.$emit('closeIncidentModal')
             setTimeout(() => {
               this.$store.dispatch('rightColumn/changeReloadRightColumnData', true)
             }, 500)
