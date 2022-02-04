@@ -151,11 +151,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.campaign-manager-preview-dialog {
-  .k-dialog__body {
-    padding-top: 8px;
-  }
-}
-</style>
