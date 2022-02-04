@@ -5,7 +5,7 @@
         :value="isWantToAddNewCommunity"
         :class="{ newCommunityOverlay: isWantToAddNewCommunity }"
         :opacity="1"
-        :z-index="999"
+        :z-index="9"
         color="white"
       >
         <new-community @closeAdd="onAddClose" />
@@ -15,10 +15,14 @@
         :value="showPostIncident"
         :class="{ newCommunityOverlay: showPostIncident }"
         :opacity="1"
-        :z-index="999"
+        :z-index="9"
         color="white"
       >
-        <post-incident @closeIncidentModal="closeIncidentModal" @refreshData="refreshDataFunc" />
+        <post-incident
+          ref="refPostIncident"
+          @closeIncidentModal="closeIncidentModal"
+          @refreshData="refreshDataFunc"
+        />
       </v-overlay>
       <v-layout wrap>
         <v-col class="main-column pr-0" cols="12" md="8">
@@ -249,12 +253,21 @@ export default {
     },
     mobileInfoClicked() {
       this.$store.commit('threadSharing/SET_MOBILE_INFO', true)
-    },
-    beforeRouteLeave(to, from, next) {
-      if (this.isWantToAddNewCommunity) {
-        this.isWantToAddNewCommunity = false
-        next(false)
-      }
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    const { refPostIncident, refIncidents } = this.$refs
+    if (this.showPostIncident) {
+      refPostIncident.onCancelClicked()
+      next(false)
+    } else if (refIncidents && refIncidents.showPostIncident) {
+      refIncidents.checkIfCanCloseIncidentModal()
+      next(false)
+    } else if (this.isWantToAddNewCommunity) {
+      this.isWantToAddNewCommunity = false
+      next(false)
+    } else {
+      next()
     }
   },
   watch: {

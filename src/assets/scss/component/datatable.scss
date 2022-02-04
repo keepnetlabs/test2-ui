@@ -263,6 +263,7 @@
             @supports (-webkit-appearance:none) {
               text-overflow: ellipsis;
               overflow: hidden;
+              white-space: nowrap;
             }
           }
           @-moz-document url-prefix() {
@@ -1139,5 +1140,19 @@
 .safari-cluster-icon-fix{
   .cell{
     grid-template-columns:1fr;
+  }
+}
+
+.custom-empty-table-message {
+  h2 {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 24px;
+    color: #383b41;
+  }
+  p {
+    font-weight: normal;
+    font-size: 14px;
+    color: #383b41;
   }
 }

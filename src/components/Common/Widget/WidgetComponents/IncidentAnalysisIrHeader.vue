@@ -10,7 +10,7 @@
         class="dashboard-cards"
         :class="{
           'no-data__opacity-red': isNotifiedEmailEmpty(notifiedEmailResultCount),
-          'incident-analysis': !isNotifiedEmailEmpty(notifiedEmailResultCount)
+          'bg-image-incident-analysis': !isNotifiedEmailEmpty(notifiedEmailResultCount)
         }"
       >
         <div class="card-header">
@@ -93,9 +93,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.incident-analysis {
-  background-image: linear-gradient(to bottom, #f3a0a0, #f56c6c 99%);
-}
-</style>

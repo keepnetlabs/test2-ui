@@ -7,7 +7,7 @@
     <template v-slot:skeleton-content>
       <div
         id="card--incident-responder-investigations"
-        class="dashboard-cards investigations"
+        class="dashboard-cards investigations bg-investigation-green"
         :class="{
           'no-data__opacity-green': !isInvestigationsEmpty(investigationTypeCount)
         }"
@@ -129,9 +129,3 @@ export default {
   }
 }
 </script>
-
-<style lang="scss">
-.dashboard-cards.investigations {
-  background-color: #43a047;
-}
-</style>

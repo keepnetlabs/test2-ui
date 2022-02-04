@@ -1,35 +1,37 @@
 <template>
-  <div class="target-users" id="target-users">
-    <v-layout wrap class="target-users__container">
-      <target-users-check-license-dialog
-        v-if="showLicenseExceededDialog"
-        :status="showLicenseExceededDialog"
-        :dialogBody="getDialogBody"
-        @close-overlay="toggleShowLicenseExceededDialog"
-      />
-      <v-card class="target-users__container-card">
-        <el-tabs v-model="tab">
-          <el-tab-pane
-            label="People"
-            name="target-users--people"
-            id="target-users--people-content"
-            v-if="checkPermissions('target-users/search', 'POST')"
-            ><people
-              ref="refPeople"
-              v-if="tab === 'target-users--people'"
-              :company-license="companyLicense"
-              @call-for-company-licenses="callForLicenseCheck"
-          /></el-tab-pane>
-          <el-tab-pane
-            label="Groups"
-            name="target-users--group"
-            id="target-users--group-content"
-            v-if="checkPermissions('target-groups/search', 'POST')"
-          >
-            <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
-          /></el-tab-pane>
-        </el-tabs>
-      </v-card>
+  <div class="k-container" id="target-users">
+    <v-layout wrap style="min-height: 80vh;">
+      <v-col class="k-container__tab-container" cols="12">
+        <v-card class="k-card">
+          <target-users-check-license-dialog
+            v-if="showLicenseExceededDialog"
+            :status="showLicenseExceededDialog"
+            :dialogBody="getDialogBody"
+            @close-overlay="toggleShowLicenseExceededDialog"
+          />
+          <el-tabs v-model="tab">
+            <el-tab-pane
+              label="People"
+              name="target-users--people"
+              id="target-users--people-content"
+              v-if="checkPermissions('target-users/search', 'POST')"
+              ><people
+                ref="refPeople"
+                v-if="tab === 'target-users--people'"
+                :company-license="companyLicense"
+                @call-for-company-licenses="callForLicenseCheck"
+            /></el-tab-pane>
+            <el-tab-pane
+              label="Groups"
+              name="target-users--group"
+              id="target-users--group-content"
+              v-if="checkPermissions('target-groups/search', 'POST')"
+            >
+              <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
+            /></el-tab-pane>
+          </el-tabs>
+        </v-card>
+      </v-col>
     </v-layout>
   </div>
 </template>
@@ -162,19 +164,3 @@ export default {
   }
 }
 </script>
-<style lang="scss">
-.target-users {
-  min-height: 80vh !important;
-  padding-top: 10px;
-  &__container {
-    padding: 0px 16px 24px 16px !important;
-    width: 100%;
-    &-card {
-      box-shadow: 0 10px 15px -5px rgba(205, 205, 205, 0.5) !important;
-      padding: 10px 24px 0 24px !important;
-      border-radius: 20px !important;
-      width: 100%;
-    }
-  }
-}
-</style>
