@@ -283,7 +283,26 @@ export default {
   },
   data() {
     return {
-      initialFormValues: null,
+      initialFormValues: {
+        name: '',
+        description: '',
+        priority: 'Medium',
+        tags: [],
+        isActive: true,
+        query: {
+          logicalOperator: 'AND',
+          children: [
+            {
+              type: 'query-builder-group',
+              query: {
+                logicalOperator: 'AND',
+                children: []
+              }
+            }
+          ]
+        },
+        actions: []
+      },
       saveDisable: false,
       labels,
       actionData: {},
@@ -745,6 +764,7 @@ export default {
         query: this.query,
         actions: [...this.$refs.refActionItem.getCurrentActions()]
       }
+      console.log(currentFormValues, this.initialFormValues)
       const isChanged = isDifferent(currentFormValues, this.initialFormValues)
       if (!isChanged) {
         return this.$emit('cancelForm')
@@ -823,26 +843,22 @@ export default {
             data.playbookActionStatus.actionStatusType
           this.$refs.refActionItem.addAction('status')
         }
+        this.initialFormValues = {
+          ...this.initialFormValues,
+          name: this.name,
+          description: this.description,
+          priority: this.priority,
+          tags: this.tags,
+          isActive: this.isActive,
+          query: this.query,
+          actions: [...this.$refs.refActionItem.getCurrentActions()]
+        }
       })
     }
   },
   created() {
     if (this.playbookId) {
       this.callForGetPlaybook()
-    }
-    this.initialFormValues = {
-      name: this.name,
-      description: this.description,
-      priority: this.priority,
-      tags: this.tags,
-      isActive: this.isActive,
-      query: this.query,
-      actions: []
-    }
-  },
-  mounted() {
-    if (this.$refs.refActionItem) {
-      this.initialFormValues.actions = this.$refs.refActionItem.getCurrentActions()
     }
   }
 }

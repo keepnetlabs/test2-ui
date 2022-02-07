@@ -41,15 +41,15 @@
                     <span>{{ process.name }}</span>
                     <template v-if="process.targetCount !== 0">
                       <span class="ml-auto" v-if="process.isFinished"
-                      >Finished at {{ process.endTime }}</span
+                        >Finished at {{ process.endTime }}</span
                       >
                       <span class="ml-auto" v-else
-                      >{{ process.estimatedTime.toFixed(0) }} seconds left</span
+                        >{{ process.estimatedTime.toFixed(0) }} seconds left</span
                       >
                     </template>
                   </v-list-item-title>
                   <v-list-item-subtitle
-                  >{{ process.currentCount }} /
+                    >{{ process.currentCount }} /
                     {{ process.targetCount }}
                   </v-list-item-subtitle>
                   <v-list-item-subtitle>
