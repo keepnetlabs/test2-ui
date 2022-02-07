@@ -1,19 +1,23 @@
 <template>
   <div class="mail-configuration">
     <app-modal
-      :status="status"
       v-if="status"
-      @closeOverlay="status = false"
+      ref="mail-configuration__modal"
       :icon-name="'mdi-book-search'"
       :title="getTitle"
+      :status="status"
+      @closeOverlay="status = false"
       className="mail-configuration__modal"
-      ref="mail-configuration__modal"
       title-id="text--create-o365-mail-configuration-modal-title"
     >
       <template v-slot:overlay-body>
         <v-form ref="mailConfiguration">
           <app-modal-body-header
-            :title="editData ? 'Edit O365 Mail Configuration' : 'New O365 Mail Configuration'"
+            :title="
+              editData
+                ? 'Edit O365 Mail Configuration'
+                : 'New O365 Mail Configuration'
+            "
             sub-title="Select filters and date options to start an investigation"
           />
           <form-group title="Name" has-hint>
@@ -25,7 +29,12 @@
               v-model.trim="formValues.name"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage(labels.Name, 64)
+                  ),
               ]"
               hint="*Required"
               persistent-hint
@@ -42,7 +51,11 @@
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) =>
-                  validations.maxLength(v, 64, labels.getMaxLengthMessage('Application ID', 64))
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage('Application ID', 64)
+                  ),
               ]"
               hint="*Required"
               persistent-hint
@@ -63,7 +76,11 @@
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) =>
-                  validations.maxLength(v, 64, labels.getMaxLengthMessage('Application secret', 64))
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage('Application secret', 64)
+                  ),
               ]"
               autocomplete="disabled"
               height="40"
@@ -79,7 +96,12 @@
               v-model.trim="formValues.directoryId"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Directory ID', 64))
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage('Directory ID', 64)
+                  ),
               ]"
               hint="*Required"
               persistent-hint
@@ -99,15 +121,24 @@
               v-model.trim="formValues.email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+                (v) =>
+                  validations.startsWithSpace(v, labels.CannotStartWithSpace),
                 (v) => validations.email(v, labels.InvalidEmailAddress),
-                (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    320,
+                    labels.getMaxLengthMessage(labels.Email, 320)
+                  ),
                 (v) => {
                   if (validations.email(v)) {
-                    return validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                    return (
+                      validations.controlEmailLength(v) ||
+                      labels.InvalidEmailAddress
+                    );
                   }
-                  return false
-                }
+                  return false;
+                },
               ]"
               height="40"
               @change="getDomainList"
@@ -183,7 +214,11 @@
       v-if="ewsStatus"
       @closeOverlay="ewsStatus = false"
       :icon-name="'mdi-book-search'"
-      :title="this.ewsEditData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
+      :title="
+        this.ewsEditData
+          ? 'Edit EWS Configuration'
+          : 'Create EWS Mail Configuration'
+      "
       className="mail-configuration__modal"
       ref="ews-configuration__modal"
       title-id="text--create-ews-mail-configuration-modal-title"
@@ -191,7 +226,11 @@
       <template v-slot:overlay-body>
         <v-form ref="ewsMailConfiguration">
           <app-modal-body-header
-            :title="ewsEditData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
+            :title="
+              ewsEditData
+                ? 'Edit EWS Configuration'
+                : 'Create EWS Mail Configuration'
+            "
             sub-title="Select filters and date options to start an investigation"
           />
           <form-group title="Name" has-hint>
@@ -203,7 +242,12 @@
               v-model.trim="ewsFormValues.Name"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage(labels.Name, 64)
+                  ),
               ]"
               hint="*Required"
               persistent-hint
@@ -272,7 +316,12 @@
               v-model.trim="ewsFormValues.Username"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Username', 64))
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage('Username', 64)
+                  ),
               ]"
               hint="*Required"
               persistent-hint
@@ -289,7 +338,12 @@
               v-model.trim="ewsFormValues.Password"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Password', 64))
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    64,
+                    labels.getMaxLengthMessage('Password', 64)
+                  ),
               ]"
               hint="*Required"
               persistent-hint
@@ -309,15 +363,24 @@
               v-model.trim="ewsFormValues.Email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+                (v) =>
+                  validations.startsWithSpace(v, labels.CannotStartWithSpace),
                 (v) => validations.email(v, labels.InvalidEmailAddress),
-                (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    320,
+                    labels.getMaxLengthMessage(labels.Email, 320)
+                  ),
                 (v) => {
                   if (validations.email(v)) {
-                    return validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                    return (
+                      validations.controlEmailLength(v) ||
+                      labels.InvalidEmailAddress
+                    );
                   }
-                  return false
-                }
+                  return false;
+                },
               ]"
               height="40"
             ></v-text-field>
@@ -426,14 +489,14 @@
             <template #subtitle>
               <div>
                 {{
-                  `${isGoogleWorkSpaceEdit ? labels.Edit : 'Create a new'} ${
+                  `${isGoogleWorkSpaceEdit ? labels.Edit : "Create a new"} ${
                     labels.GoogleWorkSpaceSubTitle
                   }`
                 }}
                 <a
                   href="https://doc.keepnetlabs.com/technical-guide/phishing-incident-responder/api-settings/gsuite-api-configuration-guide"
                   target="_blank"
-                  style="color: #1173c1; cursor: pointer; text-decoration: none;"
+                  style="color: #1173c1; cursor: pointer; text-decoration: none"
                   >{{ labels.HowToCredJSON }}</a
                 >
               </div>
@@ -475,15 +538,24 @@
               v-model.trim="googleWorkSpaceForm.email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
-                (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+                (v) =>
+                  validations.startsWithSpace(v, labels.CannotStartWithSpace),
                 (v) => validations.email(v, labels.InvalidEmailAddress),
-                (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                (v) =>
+                  validations.maxLength(
+                    v,
+                    320,
+                    labels.getMaxLengthMessage(labels.Email, 320)
+                  ),
                 (v) => {
                   if (validations.email(v)) {
-                    return validations.controlEmailLength(v) || labels.InvalidEmailAddress
+                    return (
+                      validations.controlEmailLength(v) ||
+                      labels.InvalidEmailAddress
+                    );
                   }
-                  return false
-                }
+                  return false;
+                },
               ]"
               hint="*Required"
               persistent-hint
@@ -542,7 +614,8 @@
       @changeStatus="closeDeleteDialog"
     >
       <template v-slot:app-dialog-body>
-        {{ deleteDialogName }} will be deleted and removed from all integrations.
+        {{ deleteDialogName }} will be deleted and removed from all
+        integrations.
       </template>
       <template v-slot:app-dialog-footer>
         <app-dialog-footer
@@ -573,11 +646,14 @@
         :selectEvent="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
         :setClassName="setCellClassName"
+        :is-downloadable="true"
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @syncUser="handleSyncUser"
         @delete="handleDelete"
         @editTargetUsers="handleEditMailConfiguration"
         @onEmptyBtnClicked="status = true"
-        :is-downloadable="true"
         @downloadEvent="exportMailConfigurationList"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -590,9 +666,6 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -603,25 +676,29 @@
                     id="btn-add--mail-configurations"
                     class="button-new"
                     rounded
-                    style="margin-right: 10px;"
+                    style="margin-right: 10px"
                     color="#2196f3"
                     v-on="{ ...tooltip, ...menu }"
-                    :disabled="!checkPermissions('mail-configurations/o365', 'POST')"
+                    :disabled="
+                      !checkPermissions('mail-configurations/o365', 'POST')
+                    "
                   >
-                    <v-icon color="white" style="font-size: 20px; margin-top: 1px;"
+                    <v-icon
+                      color="white"
+                      style="font-size: 20px; margin-top: 1px"
                       >mdi-plus</v-icon
                     >
                     <span class="button-new__text">NEW</span>
                   </v-btn>
                 </template>
-                <span class="tooltip-span">{{ 'Add Mail Configuration' }}</span>
+                <span class="tooltip-span">{{ "Add Mail Configuration" }}</span>
               </v-tooltip>
             </template>
             <v-list>
               <v-list-item
+                v-for="item in mailConfigurationTypes"
                 :key="item"
                 @click="handleAddMailConfiguration(item)"
-                v-for="item in mailConfigurationTypes"
               >
                 <v-list-item-title
                   class="add-users__title"
@@ -646,7 +723,9 @@
             <p class="mail-configuration__no-data__header">
               {{ labels.EmptyMailConfiguration }}
             </p>
-            <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
+            <p class="mail-configuration__no-data__body">
+              {{ labels.EmptyMailConfigurationSub }}
+            </p>
             <div class="mail-configuration__no-data__buttons">
               <div
                 id="btn-empty--mail-configurations-google-workspace"
@@ -655,7 +734,7 @@
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon
                 ><img
-                  style="margin-bottom: -4px;"
+                  style="margin-bottom: -4px"
                   alt="outlook"
                   src="../../assets/img/google-workspace.png"
                 />
@@ -685,16 +764,16 @@
 </template>
 
 <script>
-import Datatable from '../../components/DataTable'
-import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
+import Datatable from "../../components/DataTable";
+import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   getStoreValue,
   PROPERTY_STORE,
-  TABLE_SETTINGS_KEYS
-} from '@/model/constants/commonConstants'
-import AppModal from '../AppModal'
-import AppDialog from '../AppDialog'
+  TABLE_SETTINGS_KEYS,
+} from "@/model/constants/commonConstants";
+import AppModal from "../AppModal";
+import AppDialog from "../AppDialog";
 import {
   createEWS,
   createGoogleWorkSpace,
@@ -711,22 +790,23 @@ import {
   getO365MailData,
   updateEWS,
   updateGoogleWorkSpace,
-  updateO365
-} from '@/api/mailConfiguration'
-import * as validations from '@/utils/validations'
-import TestConnection from './TestConnection'
-import TestConnectionEWS from './TestConnectionEWS'
-import FormGroup from '@/components/SmallComponents/FormGroup'
-import { checkPermission, scrollToComponent } from '@/utils/functions'
-import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import labels from '@/model/constants/labels'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
-import KSelect from '@/components/Common/Inputs/KSelect'
-import InputUrl from '@/components/Common/Inputs/InputUrl'
-import { getTargetGroups } from '@/api/targetUsers'
-import TestConnectionGoogleWorkspace from '@/components/MailConfiguration/TestConnectionGoogleWorkspace'
+  updateO365,
+} from "@/api/mailConfiguration";
+import * as validations from "@/utils/validations";
+import { isDifferent } from "@/utils/functions";
+import TestConnection from "./TestConnection";
+import TestConnectionEWS from "./TestConnectionEWS";
+import FormGroup from "@/components/SmallComponents/FormGroup";
+import { checkPermission, scrollToComponent } from "@/utils/functions";
+import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
+import labels from "@/model/constants/labels";
+import ServerSideProps from "@/helper-classes/server-side-table-props";
+import KSelect from "@/components/Common/Inputs/KSelect";
+import InputUrl from "@/components/Common/Inputs/InputUrl";
+import { getTargetGroups } from "@/api/targetUsers";
+import TestConnectionGoogleWorkspace from "@/components/MailConfiguration/TestConnectionGoogleWorkspace";
 export default {
-  name: 'MailConfiguration',
+  name: "MailConfiguration",
   components: {
     TestConnectionGoogleWorkspace,
     AppDialogFooter,
@@ -738,17 +818,19 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     KSelect,
-    InputUrl
+    InputUrl,
   },
   computed: {
     getTitle() {
-      return this.editData ? 'Edit O365 Mail Configuration' : 'Create O365 Mail Configuration'
+      return this.editData
+        ? "Edit O365 Mail Configuration"
+        : "Create O365 Mail Configuration";
     },
     getGoogleWorkSpaceTitle() {
       return this.isGoogleWorkSpaceEdit
         ? `${labels.Edit} ${labels.GoogleWorkSpaceTitle}`
-        : `${labels.New} ${labels.GoogleWorkSpaceTitle}`
-    }
+        : `${labels.New} ${labels.GoogleWorkSpaceTitle}`;
+    },
   },
   data: () => ({
     labels,
@@ -757,11 +839,11 @@ export default {
     isGoogleWorkSpaceButtonDisabled: false,
     saveButtonDisabled: false,
     isTestConnectionWorkedBefore: false,
-    selectedGoogleWorkSpaceResourceId: '',
+    selectedGoogleWorkSpaceResourceId: "",
     googleWorkSpaceForm: {
-      name: '',
-      authJson: '',
-      email: ''
+      name: "",
+      authJson: "",
+      email: "",
     },
     deletedItem: null,
     statusGoogleWorkSpace: false,
@@ -780,7 +862,7 @@ export default {
       applicationSecret: null,
       directoryId: null,
       email: null,
-      allowedDomains: []
+      allowedDomains: [],
     },
     exchangeVersions: [],
     targetGroupsList: [],
@@ -795,7 +877,7 @@ export default {
       Email: null,
       XAnchorMailBoxHeader: false,
       TargetGroupResourceIdList: [],
-      IsAllTargetGroupsSelected: true
+      IsAllTargetGroupsSelected: true,
     },
     initialFormValues: null,
     ewsInitialFormValues: null,
@@ -815,10 +897,10 @@ export default {
     isWantToShowImportUsersFromFileModal: false,
     isWantToShowCustomFieldsModal: false,
     items: [
-      { title: 'Click Me1' },
-      { title: 'Click Me2' },
-      { title: 'Click Me3' },
-      { title: 'Click Me4' }
+      { title: "Click Me1" },
+      { title: "Click Me2" },
+      { title: "Click Me3" },
+      { title: "Click Me4" },
     ],
     tableOptions: {
       isColumnFilterActive: false,
@@ -826,70 +908,70 @@ export default {
       columns: [
         {
           property: PROPERTY_STORE.NAME,
-          align: 'left',
+          align: "left",
           editable: false,
-          label: 'Name',
-          fixed: 'left',
+          label: "Name",
+          fixed: "left",
           sortable: true,
           show: true,
-          type: 'text',
-          filterableType: 'text'
+          type: "text",
+          filterableType: "text",
         },
         {
-          property: 'platform',
-          align: 'left',
+          property: "platform",
+          align: "left",
           editable: false,
-          label: 'Platform',
+          label: "Platform",
           sortable: true,
           show: true,
-          type: 'text',
+          type: "text",
           width: 150,
-          filterableType: 'select',
+          filterableType: "select",
           filterableItems: [
-            { text: 'Google Workspace', value: 'Google Workspace' },
-            'O365',
-            'Exchange'
-          ]
+            { text: "Google Workspace", value: "Google Workspace" },
+            "O365",
+            "Exchange",
+          ],
         },
         {
           property: PROPERTY_STORE.EMAIL,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.EMAIL),
           sortable: true,
           show: true,
-          type: 'text',
-          filterableType: 'text'
+          type: "text",
+          filterableType: "text",
         },
         {
-          property: 'statusName',
-          align: 'center',
+          property: "statusName",
+          align: "center",
           editable: false,
-          label: 'Status',
+          label: "Status",
           sortable: true,
           show: true,
-          type: 'badge',
+          type: "badge",
           width: 150,
           props: {
             style: {
-              maxWidth: '100px'
-            }
+              maxWidth: "100px",
+            },
           },
-          filterableType: 'select',
-          filterableItems: ['Running', 'Not Running']
+          filterableType: "select",
+          filterableItems: ["Running", "Not Running"],
         },
         {
           property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
+          align: "left",
           editable: false,
           label: getStoreValue(PROPERTY_STORE.CREATETIME),
           sortable: true,
           show: true,
           fixed: false,
-          type: 'text',
+          type: "text",
           width: 180,
-          filterableType: 'date'
-        }
+          filterableType: "date",
+        },
       ],
       defaultColumns: [
         // Should be defined to show the table
@@ -899,81 +981,87 @@ export default {
         clipboard: true,
         edit: false,
         delete: false,
-        download: false
+        download: false,
       },
       iEmpty: {
         message: labels.EmptyMailConfiguration,
-        btn: 'O365',
-        icon: 'mdi-microsoft-office',
-        subMes: labels.EmptyMailConfigurationSub
+        btn: "O365",
+        icon: "mdi-microsoft-office",
+        subMes: labels.EmptyMailConfigurationSub,
       },
       addButton: {
         show: true,
-        action: 'addButton'
+        action: "addButton",
       },
       rowActions: [
         {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          id: 'btn-empty--mail-configurations',
-          action: 'editTargetUsers',
+          name: "Edit this row",
+          icon: "mdi-pencil",
+          id: "btn-empty--mail-configurations",
+          action: "editTargetUsers",
           isNotShow: true,
-          disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'PUT')
+          disabled: !checkPermission(
+            "mail-configurations/o365/{resourceId}",
+            "PUT"
+          ),
         },
         {
-          name: 'Delete',
-          id: 'btn-delete--mail-configurations',
-          icon: 'mdi-delete',
-          action: 'delete',
-          disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'DELETE')
-        }
-      ]
+          name: "Delete",
+          id: "btn-delete--mail-configurations",
+          icon: "mdi-delete",
+          action: "delete",
+          disabled: !checkPermission(
+            "mail-configurations/o365/{resourceId}",
+            "DELETE"
+          ),
+        },
+      ],
     },
-    mailConfigurationTypes: ['Google Workspace', 'O365', 'EWS'],
+    mailConfigurationTypes: ["Google Workspace", "O365", "EWS"],
     validations: validations,
     requestBody: {
       pageNumber: 1,
       pageSize: 75000,
-      orderBy: 'CreateTime',
+      orderBy: "CreateTime",
       ascending: false,
       filter: {
-        Condition: 'AND',
+        Condition: "AND",
         FilterGroups: [
           {
-            Condition: 'AND',
+            Condition: "AND",
             FilterItems: [],
-            FilterGroups: []
+            FilterGroups: [],
           },
           {
-            Condition: 'OR',
+            Condition: "OR",
             FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
+            FilterGroups: [],
+          },
+        ],
+      },
     },
     defaultRequestBody: {
       pageNumber: 1,
       pageSize: 75000,
-      orderBy: 'CreateTime',
+      orderBy: "CreateTime",
       ascending: false,
       filter: {
-        Condition: 'AND',
+        Condition: "AND",
         FilterGroups: [
           {
-            Condition: 'AND',
+            Condition: "AND",
             FilterItems: [],
-            FilterGroups: []
+            FilterGroups: [],
           },
           {
-            Condition: 'OR',
+            Condition: "OR",
             FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
+            FilterGroups: [],
+          },
+        ],
+      },
     },
-    serverSideProps: new ServerSideProps()
+    serverSideProps: new ServerSideProps(),
   }),
   methods: {
     getDomainList(selectedRow) {
@@ -988,21 +1076,23 @@ export default {
           applicationSecret: this.formValues?.applicationSecret,
           directoryId: this.formValues?.directoryId,
           email: this.formValues?.email,
-          resourceId: selectedRow?.resourceId
-        }
-        getDomainList(payload).then((response) => (this.domainList = response.data.data))
+          resourceId: selectedRow?.resourceId,
+        };
+        getDomainList(payload).then(
+          (response) => (this.domainList = response.data.data)
+        );
       }
     },
     handleGroupTypeChange() {
       if (this.ewsFormValues.IsAllTargetGroupsSelected) {
-        this.ewsFormValues.TargetGroupResourceIdList = []
+        this.ewsFormValues.TargetGroupResourceIdList = [];
       }
     },
     afterSuccessCreateOrUpdateGoogleWorkSpace() {
-      this.statusGoogleWorkSpace = false
-      this.resetGoogleWorkSpaceForm()
-      this.getTableData()
-      this.selectedGoogleWorkSpaceResourceId = ''
+      this.statusGoogleWorkSpace = false;
+      this.resetGoogleWorkSpaceForm();
+      this.getTableData();
+      this.selectedGoogleWorkSpaceResourceId = "";
     },
     handleSubmitGoogleWorkspace() {
       if (
@@ -1010,227 +1100,276 @@ export default {
           JSON.stringify(this.googleWorkSpaceInitialValues) &&
         this.googleWorkSpaceEditData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        this.isTestConnectionWorkedBefore = false;
       }
       if (
         this.$refs.googleWorkSpaceConfigurationForm.validate() &&
         this.isTestConnectionWorkedBefore
       ) {
-        this.isGoogleWorkSpaceButtonDisabled = true
+        this.isGoogleWorkSpaceButtonDisabled = true;
         if (this.isGoogleWorkSpaceEdit) {
-          updateGoogleWorkSpace(this.googleWorkSpaceForm, this.selectedGoogleWorkSpaceResourceId)
+          updateGoogleWorkSpace(
+            this.googleWorkSpaceForm,
+            this.selectedGoogleWorkSpaceResourceId
+          )
             .then(this.afterSuccessCreateOrUpdateGoogleWorkSpace)
             .finally(() => {
-              this.isGoogleWorkSpaceButtonDisabled = false
-              this.googleWorkSpaceEditData = null
-            })
+              this.isGoogleWorkSpaceButtonDisabled = false;
+              this.googleWorkSpaceEditData = null;
+            });
         } else {
           createGoogleWorkSpace(this.googleWorkSpaceForm)
             .then(this.afterSuccessCreateOrUpdateGoogleWorkSpace)
             .finally(() => {
-              this.isGoogleWorkSpaceButtonDisabled = false
-              this.googleWorkSpaceEditData = null
-            })
+              this.isGoogleWorkSpaceButtonDisabled = false;
+              this.googleWorkSpaceEditData = null;
+            });
         }
       } else if (
         this.$refs.googleWorkSpaceConfigurationForm.validate() &&
         !this.isTestConnectionWorkedBefore
       ) {
-        this.isGoogleWorkSpaceButtonDisabled = true
-        this.$refs.testConnectionGoogleWorkspace.testConnection(true)
+        this.isGoogleWorkSpaceButtonDisabled = true;
+        this.$refs.testConnectionGoogleWorkspace.testConnection(true);
         this.$nextTick(() => {
-          let el = this.$el.querySelector('.test-connection__testing-content__item')
+          let el = this.$el.querySelector(
+            ".test-connection__testing-content__item"
+          );
           if (el) {
-            scrollToComponent(el)
+            scrollToComponent(el);
           }
-        })
+        });
       } else {
         this.$nextTick(() => {
-          const el = this?.$refs?.ewsMailConfiguration?.$el
+          const el = this?.$refs?.ewsMailConfiguration?.$el;
           if (el) {
-            scrollToComponent(el)
+            scrollToComponent(el);
           }
-        })
+        });
       }
     },
     handleGoogleWorkspaceTestConnection() {},
     cancelEWS() {
-      this.ewsStatus = false
-      this.ewsInitialFormValues = null
+      const isChanged = isDifferent(
+        this.ewsInitialFormValues,
+        this.ewsFormValues
+      );
+      if (!isChanged) {
+        this.ewsStatus = false;
+        this.ewsInitialFormValues = null;
+        return;
+      }
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
+        show: true,
+        callback: () => {
+          this.ewsStatus = false;
+          this.ewsInitialFormValues = null;
+        },
+      });
     },
     submitEWS() {
       if (
-        JSON.stringify(this.ewsFormValues) !== JSON.stringify(this.ewsInitialFormValues) &&
+        JSON.stringify(this.ewsFormValues) !==
+          JSON.stringify(this.ewsInitialFormValues) &&
         this.ewsEditData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        this.isTestConnectionWorkedBefore = false;
       }
-      if (this.$refs.ewsMailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
-        this.saveButtonDisabled = true
+      if (
+        this.$refs.ewsMailConfiguration.validate() &&
+        this.isTestConnectionWorkedBefore
+      ) {
+        this.saveButtonDisabled = true;
         if (this.ewsEditData) {
-          let ewsEditData = this.ewsFormValues
+          let ewsEditData = this.ewsFormValues;
           updateEWS(ewsEditData, this.ewsEditData.ResourceId).then(() => {
-            this.ewsStatus = false
-            this.ewsEditData = null
-            this.getTableData()
-          })
+            this.ewsStatus = false;
+            this.ewsEditData = null;
+            this.getTableData();
+          });
         } else {
           createEWS(this.ewsFormValues).then(() => {
-            this.ewsStatus = false
-            this.ewsEditData = null
-            this.getTableData()
-          })
+            this.ewsStatus = false;
+            this.ewsEditData = null;
+            this.getTableData();
+          });
         }
-      } else if (this.$refs.ewsMailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
-        this.saveButtonDisabled = true
-        this.$refs.testConnectionEWS.testConnection(true)
+      } else if (
+        this.$refs.ewsMailConfiguration.validate() &&
+        !this.isTestConnectionWorkedBefore
+      ) {
+        this.saveButtonDisabled = true;
+        this.$refs.testConnectionEWS.testConnection(true);
         setTimeout(() => {
-          let el = this.$el.querySelector('.test-connection__testing-content__item')
-          scrollToComponent(el)
-        }, 50)
+          let el = this.$el.querySelector(
+            ".test-connection__testing-content__item"
+          );
+          scrollToComponent(el);
+        }, 50);
       } else {
-        const el = this.$refs.ewsMailConfiguration.$el
-        scrollToComponent(el)
+        const el = this.$refs.ewsMailConfiguration.$el;
+        scrollToComponent(el);
       }
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION, JSON.stringify(tableSettings))
+      localStorage.setItem(
+        TABLE_SETTINGS_KEYS.MAILCONFIGURATION,
+        JSON.stringify(tableSettings)
+      );
     },
     resetPageNumber() {
       //generic
-      this.requestBody.pageNumber = 1
-      this.serverSideProps.pageNumber = 1
+      this.requestBody.pageNumber = 1;
+      this.serverSideProps.pageNumber = 1;
     },
     handleSearchChange(searchFilter = {}, filterActive = false) {
       //generic
       this.requestBody.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems
-      ]
-      this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
-      this.getTableData()
+        ...searchFilter.filter.FilterGroups[0].FilterItems,
+      ];
+      this.resetPageNumber();
+      this.tableOptions.isColumnFilterActive = filterActive;
+      this.getTableData();
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       //generic
-      this.requestBody.pageNumber = pageNumber
-      this.getTableData()
+      this.requestBody.pageNumber = pageNumber;
+      this.getTableData();
     },
     sortChanged({ order, prop } = {}) {
       //generic
-      this.requestBody.ascending = order === 'ascending'
-      this.requestBody.orderBy = prop
-      this.getTableData()
+      this.requestBody.ascending = order === "ascending";
+      this.requestBody.orderBy = prop;
+      this.getTableData();
     },
     serverSideSizeChanged(pageSize = 10) {
       //generic
-      this.requestBody.pageSize = pageSize
-      this.serverSideProps.pageSize = pageSize
-      this.resetPageNumber()
-      this.getTableData()
+      this.requestBody.pageSize = pageSize;
+      this.serverSideProps.pageSize = pageSize;
+      this.resetPageNumber();
+      this.getTableData();
     },
     getDefaultFilterAndSearch() {
-      const savedFilter = JSON.parse(localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG))
+      const savedFilter = JSON.parse(
+        localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG)
+      );
       if (savedFilter) {
-        this.requestBody.filter = savedFilter.filter
-        this.tableOptions.isColumnFilterActive = true
+        this.requestBody.filter = savedFilter.filter;
+        this.tableOptions.isColumnFilterActive = true;
         this.$nextTick(() => {
-          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
+          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues;
           this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`
-        })
+            .substring(0, 5)}`;
+        });
       }
-      this.getTableData()
+      this.getTableData();
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true
-      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refPeopleTable.filterValues = {}
-      this.$refs.refPeopleTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
-      this.getTableData()
+      this.isRestoredOrClearedFilters = true;
+      this.requestBody = JSON.parse(JSON.stringify(this.defaultRequestBody));
+      this.$refs.refPeopleTable.filterValues = {};
+      this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
+        .toString()
+        .substring(0, 5)}`;
+      this.getTableData();
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true
-      this.getDefaultFilterAndSearch()
+      this.isRestoredOrClearedFilters = true;
+      this.getDefaultFilterAndSearch();
     },
-    handleSetDefaultSearch(search = '', filterValues = {}) {
+    handleSetDefaultSearch(search = "", filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.MAILCONFIG,
         JSON.stringify({
           filter: this.requestBody.filter,
-          filterValues
+          filterValues,
         })
-      )
+      );
     },
     checkPermissions(permission, type) {
-      return checkPermission(permission, type)
+      return checkPermission(permission, type);
     },
     testConnectionValues(isSuccess, isSave) {
       if (isSuccess) {
-        this.isTestConnectionWorkedBefore = true
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-        this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
+        this.isTestConnectionWorkedBefore = true;
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+        this.ewsInitialFormValues = JSON.parse(
+          JSON.stringify(this.ewsFormValues)
+        );
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
-            if (this.status) this.submit()
-            if (this.ewsStatus) this.submitEWS()
-          })
+            if (this.status) this.submit();
+            if (this.ewsStatus) this.submitEWS();
+          });
         }
       }
     },
     testConnectionGoogleWorkspaceValues(isSuccess, isSave) {
       if (isSuccess) {
-        this.isTestConnectionWorkedBefore = true
-        this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
+        this.isTestConnectionWorkedBefore = true;
+        this.googleWorkSpaceInitialValues = JSON.parse(
+          JSON.stringify(this.googleWorkSpaceForm)
+        );
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
-            this.handleSubmitGoogleWorkspace()
-          })
+            this.handleSubmitGoogleWorkspace();
+          });
         }
       }
     },
     isValidate() {
       if (this.ewsStatus)
-        return this.$refs.ewsMailConfiguration && this.$refs.ewsMailConfiguration.validate()
-      return this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
+        return (
+          this.$refs.ewsMailConfiguration &&
+          this.$refs.ewsMailConfiguration.validate()
+        );
+      return (
+        this.$refs.mailConfiguration && this.$refs.mailConfiguration.validate()
+      );
     },
     isValidateGoogleWorkSpace() {
       return (
         this.$refs.googleWorkSpaceConfigurationForm &&
         this.$refs.googleWorkSpaceConfigurationForm.validate()
-      )
+      );
     },
     closeDeleteDialog() {
-      this.deleteDialog = false
-      this.deleteDialogName = null
-      this.deleteDialogId = null
+      this.deleteDialog = false;
+      this.deleteDialogName = null;
+      this.deleteDialogId = null;
     },
     handleDeleteDialog() {
-      if (this.deleteItemType === 'Exchange') {
+      if (this.deleteItemType === "Exchange") {
         deleteEWS(this.deleteDialogId).then(() => {
-          this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
-          this.closeDeleteDialog()
-          this.getTableData()
-        })
+          this.$refs.refPeopleTable.unSelectRow(this.deletedItem);
+          this.closeDeleteDialog();
+          this.getTableData();
+        });
       } else if (
-        this.deleteItemType === 'Google Workspace' ||
-        this.deleteItemType === 'GSuite' ||
-        this.deleteItemType === 'GoogleWorkspace'
+        this.deleteItemType === "Google Workspace" ||
+        this.deleteItemType === "GSuite" ||
+        this.deleteItemType === "GoogleWorkspace"
       ) {
         deleteGoogleWorkSpace(this.deleteDialogId).then(() => {
-          this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
-          this.closeDeleteDialog()
-          this.getTableData()
-        })
+          this.$refs.refPeopleTable.unSelectRow(this.deletedItem);
+          this.closeDeleteDialog();
+          this.getTableData();
+        });
       } else {
         deleteO365(this.deleteDialogId).then(() => {
-          this.$refs.refPeopleTable.unSelectRow(this.deletedItem)
-          this.closeDeleteDialog()
-          this.getTableData()
-        })
+          this.$refs.refPeopleTable.unSelectRow(this.deletedItem);
+          this.closeDeleteDialog();
+          this.getTableData();
+        });
       }
     },
-    exportMailConfigurationList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
+    exportMailConfigurationList({
+      exportTypes,
+      reportAllPages,
+      pageNumber,
+      pageSize,
+    }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
@@ -1238,113 +1377,157 @@ export default {
           orderBy: PROPERTY_STORE.CREATETIME,
           ascending: false,
           reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType
-        }
+          exportType: exportType === "XLS" ? "Excel" : exportType,
+        };
         exportMailConfiguration(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
+          const { data } = response;
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(data);
           link.download = `Mail Configurations.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
+            exportType.toLocaleLowerCase() === "xls"
+              ? "xlsx"
+              : exportType.toLocaleLowerCase()
+          }`;
+          link.click();
+        });
+      });
     },
-    cancelO365() {
-      this.status = false
-      this.editData = null
+    resetO365Form() {
       this.formValues = {
         name: null,
         applicationId: null,
         applicationSecret: null,
         directoryId: null,
-        email: null
+        email: null,
+      };
+    },
+    cancelO365() {
+      const isChanged = isDifferent(this.initialFormValues, this.formValues);
+      if (!isChanged) {
+        this.status = false;
+        this.editData = null;
+        this.resetO365Form();
+        this.domainList = [];
+        this.initialFormValues = null;
+        return;
       }
-      this.domainList = []
-      this.initialFormValues = null
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
+        show: true,
+        callback: () => {
+          this.status = false;
+          this.editData = null;
+          this.resetO365Form();
+          this.domainList = [];
+          this.initialFormValues = null;
+        },
+      });
     },
     cancelGoogleWorkSpace() {
-      this.statusGoogleWorkSpace = false
-      this.resetGoogleWorkSpaceForm()
-      this.isGoogleWorkSpaceEdit = false
+      const isChanged = isDifferent(
+        this.googleWorkSpaceInitialValues,
+        this.googleWorkSpaceForm
+      );
+      if (!isChanged) {
+        this.statusGoogleWorkSpace = false;
+        this.resetGoogleWorkSpaceForm();
+        this.isGoogleWorkSpaceEdit = false;
+        return;
+      }
+      this.$store.dispatch("common/setIsShowLeavingDialog", {
+        show: true,
+        callback: () => {
+          this.statusGoogleWorkSpace = false;
+          this.resetGoogleWorkSpaceForm();
+          this.isGoogleWorkSpaceEdit = false;
+        },
+      });
     },
     resetGoogleWorkSpaceForm() {
       this.googleWorkSpaceForm = {
-        name: '',
-        authJson: '',
-        email: ''
-      }
+        name: "",
+        authJson: "",
+        email: "",
+      };
     },
     getTableData() {
-      this.loading = true
+      this.loading = true;
       getMailConfigurationList(this.requestBody)
         .then((response) => {
-          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
-          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
-          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
-          this.serverSideProps.pageNumber = pageNumber
-          this.tableData = response.data.data.results
+          const { totalNumberOfRecords, totalNumberOfPages, pageNumber } =
+            response.data.data;
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
+          this.serverSideProps.pageNumber = pageNumber;
+          this.tableData = response.data.data.results;
         })
         .finally(() => {
-          this.loading = false
-        })
+          this.loading = false;
+        });
     },
     handleDelete(item) {
-      this.deleteItemType = item.platform
-      this.deleteDialogName = item.name
-      this.deleteDialogId = item.resourceId
-      this.deletedItem = item
-      this.deleteDialog = true
+      this.deleteItemType = item.platform;
+      this.deleteDialogName = item.name;
+      this.deleteDialogId = item.resourceId;
+      this.deletedItem = item;
+      this.deleteDialog = true;
     },
     submit() {
       if (
-        JSON.stringify(this.formValues) !== JSON.stringify(this.initialFormValues) &&
+        JSON.stringify(this.formValues) !==
+          JSON.stringify(this.initialFormValues) &&
         this.editData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        this.isTestConnectionWorkedBefore = false;
       }
-      if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
-        this.saveButtonDisabled = true
+      if (
+        this.$refs.mailConfiguration.validate() &&
+        this.isTestConnectionWorkedBefore
+      ) {
+        this.saveButtonDisabled = true;
         if (this.editData) {
-          let editData = this.formValues
+          let editData = this.formValues;
           updateO365(editData, this.editData.resourceId).then(() => {
-            this.status = false
-            this.editData = null
-            this.getTableData()
-          })
+            this.status = false;
+            this.editData = null;
+            this.getTableData();
+          });
         } else {
           createO365(this.formValues).then(() => {
-            this.status = false
-            this.editData = null
-            this.getTableData()
-          })
+            this.status = false;
+            this.editData = null;
+            this.getTableData();
+          });
         }
-      } else if (this.$refs.mailConfiguration.validate() && !this.isTestConnectionWorkedBefore) {
-        this.saveButtonDisabled = true
-        this.$refs.testConnection.testConnection(true)
+      } else if (
+        this.$refs.mailConfiguration.validate() &&
+        !this.isTestConnectionWorkedBefore
+      ) {
+        this.saveButtonDisabled = true;
+        this.$refs.testConnection.testConnection(true);
         setTimeout(() => {
-          let el = this.$el.querySelector('.test-connection__testing-content__item')
-          scrollToComponent(el)
-        }, 50)
+          let el = this.$el.querySelector(
+            ".test-connection__testing-content__item"
+          );
+          scrollToComponent(el);
+        }, 50);
       } else {
-        const el = this.$refs.mailConfiguration.$el
-        scrollToComponent(el)
+        const el = this.$refs.mailConfiguration.$el;
+        scrollToComponent(el);
       }
     },
     closeImportModal() {
-      this.isWantToImportFile = false
+      this.isWantToImportFile = false;
     },
     handleAddMailConfiguration(item) {
-      /*
-
-       */
       switch (item) {
         case this.mailConfigurationTypes[0]:
-          this.statusGoogleWorkSpace = true
-          this.googleWorkSpaceEditData = null
-          this.isTestConnectionWorkedBefore = false
-          break
+          this.statusGoogleWorkSpace = true;
+          this.googleWorkSpaceEditData = null;
+          this.isTestConnectionWorkedBefore = false;
+          this.googleWorkSpaceInitialValues = JSON.parse(
+            JSON.stringify(this.googleWorkSpaceForm)
+          );
+          break;
         case this.mailConfigurationTypes[1]:
           this.formValues = {
             name: null,
@@ -1352,13 +1535,14 @@ export default {
             applicationSecret: null,
             directoryId: null,
             email: null,
-            allowedDomains: []
-          }
-          this.editData = null
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.status = true
-          break
+            allowedDomains: [],
+          };
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+          this.editData = null;
+          this.isTestConnectionWorkedBefore = false;
+          this.saveButtonDisabled = false;
+          this.status = true;
+          break;
         case this.mailConfigurationTypes[2]:
           this.ewsFormValues = {
             Name: null,
@@ -1370,74 +1554,82 @@ export default {
             Email: null,
             XAnchorMailBoxHeader: false,
             TargetGroupResourceIdList: [],
-            IsAllTargetGroupsSelected: true
-          }
-          this.ewsEditData = null
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.ewsStatus = true
-          break
+            IsAllTargetGroupsSelected: true,
+          };
+          this.ewsInitialFormValues = JSON.parse(
+            JSON.stringify(this.ewsFormValues)
+          );
+          this.ewsEditData = null;
+          this.isTestConnectionWorkedBefore = false;
+          this.saveButtonDisabled = false;
+          this.ewsStatus = true;
+          break;
         default:
-          break
+          break;
       }
     },
     closeCustomFieldsModalWithUpdate() {
-      this.isWantToShowCustomFieldsModal = false
-      this.callForGetTargetUserCustomFieldsByCompanyId()
+      this.isWantToShowCustomFieldsModal = false;
+      this.callForGetTargetUserCustomFieldsByCompanyId();
     },
     closeAddUserModalWithUpdate() {
-      this.isWantToShowAddUsersModal = false
-      this.callForTargetUsers()
+      this.isWantToShowAddUsersModal = false;
+      this.callForTargetUsers();
     },
     handleEditMailConfiguration(selectedRow) {
-      if (selectedRow.platform === 'Exchange') {
+      if (selectedRow.platform === "Exchange") {
         getEWSMailData(selectedRow.resourceId).then((response) => {
-          const apiData = response.data.data
+          const apiData = response.data.data;
           this.ewsFormValues = {
             Name: apiData.name,
             ServiceUrl: apiData.serviceUrl,
-            ExchangeVersionLookupResourceId: apiData.ewsSchemaVersionLookupResourceId,
+            ExchangeVersionLookupResourceId:
+              apiData.ewsSchemaVersionLookupResourceId,
             AccountType: apiData.accountType,
             Username: apiData.userName,
-            Password: '********************',
+            Password: "********************",
             Email: apiData.email,
             XAnchorMailBoxHeader: apiData.xAnchorMailBoxHeader,
             TargetGroupResourceIdList: apiData.targetGroupResourceIdList,
             IsAllTargetGroupsSelected: apiData.isAllTargetGroupsSelected,
-            ResourceId: selectedRow.resourceId
-          }
-          this.ewsEditData = this.ewsFormValues
-          this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.formValues))
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.ewsStatus = true
-        })
+            ResourceId: selectedRow.resourceId,
+          };
+          this.ewsEditData = this.ewsFormValues;
+          this.ewsInitialFormValues = JSON.parse(
+            JSON.stringify(this.formValues)
+          );
+          this.isTestConnectionWorkedBefore = false;
+          this.saveButtonDisabled = false;
+          this.ewsStatus = true;
+        });
       } else if (
-        selectedRow.platform === 'GSuite' ||
-        selectedRow.platform === 'Google Workspace' ||
-        selectedRow.platform === 'GoogleWorkspace'
+        selectedRow.platform === "GSuite" ||
+        selectedRow.platform === "Google Workspace" ||
+        selectedRow.platform === "GoogleWorkspace"
       ) {
         getGoogleWorkSpace(selectedRow.resourceId).then((response) => {
-          const apiData = response.data.data
+          const apiData = response.data.data;
           this.googleWorkSpaceForm = {
             name: apiData.name,
             authJson: apiData.authJson,
-            email: apiData.email
-          }
+            email: apiData.email,
+          };
           this.googleWorkSpaceEditData = {
             ...this.googleWorkSpaceForm,
-            resourceId: selectedRow.resourceId
-          }
-          this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
-          this.isGoogleWorkSpaceEdit = true
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.statusGoogleWorkSpace = true
-          this.selectedGoogleWorkSpaceResourceId = selectedRow.resourceId
-        })
+            resourceId: selectedRow.resourceId,
+          };
+          this.googleWorkSpaceInitialValues = JSON.parse(
+            JSON.stringify(this.googleWorkSpaceForm)
+          );
+          this.isGoogleWorkSpaceEdit = true;
+          this.isTestConnectionWorkedBefore = false;
+          this.saveButtonDisabled = false;
+          this.statusGoogleWorkSpace = true;
+          this.selectedGoogleWorkSpaceResourceId = selectedRow.resourceId;
+        });
       } else {
         getO365MailData(selectedRow.resourceId).then((response) => {
-          const apiData = response.data.data
+          const apiData = response.data.data;
           this.formValues = {
             name: apiData.name,
             applicationId: apiData.applicationId,
@@ -1445,136 +1637,150 @@ export default {
             directoryId: apiData.directoryId,
             email: apiData.email,
             resourceId: selectedRow.resourceId,
-            allowedDomains: apiData.allowedDomains
-          }
-          this.getDomainList(selectedRow)
-          this.editData = this.formValues
-          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-          this.isTestConnectionWorkedBefore = false
-          this.saveButtonDisabled = false
-          this.status = true
-        })
+            allowedDomains: apiData.allowedDomains,
+          };
+          this.getDomainList(selectedRow);
+          this.editData = this.formValues;
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues));
+          this.isTestConnectionWorkedBefore = false;
+          this.saveButtonDisabled = false;
+          this.status = true;
+        });
       }
     },
     handleEditFieldsClick() {
-      this.isWantToShowCustomFieldsModal = true
+      this.isWantToShowCustomFieldsModal = true;
     },
     setCellClassName(obj) {
       if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
-        return 'clock-wise'
+        return "clock-wise";
       }
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      this.tableOptions.isColumnFilterActive = true;
+      let items = [];
+      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems;
       requestBody.map((x) => {
         if (Array.isArray(filter)) {
           filter.forEach((i) => {
             if (x.FieldName !== i.FieldName) {
-              items.push(x)
+              items.push(x);
             }
-          })
+          });
         } else {
           if (x.FieldName !== filter.FieldName) {
-            items.push(x)
+            items.push(x);
           }
         }
-      })
+      });
 
-      requestBody = [...items]
+      requestBody = [...items];
       if (Array.isArray(filter)) {
         filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
+          const elem = filter[i];
+          elem.FieldName = filter[i].FieldName;
+          requestBody.push(elem);
+        });
       } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
+        const elem = filter;
+        elem.FieldName = filter.FieldName;
+        requestBody.push(elem);
       }
 
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
-      this.getTableData()
+      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody;
+      this.getTableData();
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
+      let items = [];
+      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems;
 
       filterPayload.map((x) => {
         if (x.FieldName !== fieldName) {
-          items.push(x)
+          items.push(x);
         }
-      })
+      });
 
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
-      this.getTableData()
+      filterPayload = [...items];
+      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload;
+      this.getTableData();
 
       this.tableOptions.isColumnFilterActive =
         this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1 ||
-        this.requestBody.filter.FilterGroups[1].FilterItems.length >= 1
+        this.requestBody.filter.FilterGroups[1].FilterItems.length >= 1;
     },
     handleSyncUser(scope) {
-      this.selectedSyncIndex = scope.$index
+      this.selectedSyncIndex = scope.$index;
       this.tableOptions.rowActions = [
         {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          action: 'edit',
-          isNotShow: true
+          name: "Edit this row",
+          icon: "mdi-pencil",
+          action: "edit",
+          isNotShow: true,
         },
         {
-          name: 'Add to a group',
-          icon: 'mdi-account-multiple-plus',
-          action: 'addToGroup'
+          name: "Add to a group",
+          icon: "mdi-account-multiple-plus",
+          action: "addToGroup",
         },
         {
-          name: 'Create a group with user',
-          icon: 'mdi-account-multiple',
-          action: 'createGroupWithUser'
+          name: "Create a group with user",
+          icon: "mdi-account-multiple",
+          action: "createGroupWithUser",
         },
         {
-          name: 'Download',
-          icon: 'mdi-download',
-          action: 'download',
-          subElements: ['PDF', 'CSV', 'XLS']
+          name: "Download",
+          icon: "mdi-download",
+          action: "download",
+          subElements: ["PDF", "CSV", "XLS"],
         },
         {
-          name: 'Sync User',
-          icon: 'mdi-sync',
-          action: 'syncUser'
+          name: "Sync User",
+          icon: "mdi-sync",
+          action: "syncUser",
         },
         {
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'delete'
-        }
-      ]
-      this.selectedSyncIndex = null
-    }
+          name: "Delete",
+          icon: "mdi-delete",
+          action: "delete",
+        },
+      ];
+      this.selectedSyncIndex = null;
+    },
   },
   created() {
     this.storedTableSettings = JSON.parse(
       localStorage.getItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION)
-    )
+    );
     getExchangeVersions().then((response) => {
-      this.exchangeVersions = response.data.data
-    })
+      this.exchangeVersions = response.data.data;
+    });
     getTargetGroups().then((response) => {
-      this.targetGroupsList = response.data.data
-      this.defaultTargetGroupsList = response.data.data
-    })
+      this.targetGroupsList = response.data.data;
+      this.defaultTargetGroupsList = response.data.data;
+    });
   },
   mounted() {
-    if (!this.checkPermissions('mail-configurations/search', 'POST')) {
-      this.$router.push('/incident-responder')
+    if (!this.checkPermissions("mail-configurations/search", "POST")) {
+      this.$router.push("/incident-responder");
     } else {
-      this.getDefaultFilterAndSearch()
+      this.getDefaultFilterAndSearch();
     }
-  }
-}
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.status) {
+      this.cancelO365();
+      next(false);
+    } else if (this.statusGoogleWorkSpace) {
+      this.cancelGoogleWorkSpace();
+      next(false);
+    } else if (this.ewsStatus) {
+      this.cancelEWS();
+      next(false);
+    } else {
+      next();
+    }
+  },
+};
 </script>
 
 <style lang="scss">
@@ -1617,7 +1823,8 @@ export default {
       margin-top: 24px;
       &--button {
         border-radius: 18px;
-        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3), 0 0 3px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 0 2px 5px 0 rgba(33, 150, 243, 0.3),
+          0 0 3px 0 rgba(0, 0, 0, 0.1);
         border: solid 1px #2196f3;
         background-color: #ffffff;
         align-items: center;
