@@ -1,13 +1,13 @@
 <template>
   <div class="mail-configuration">
     <app-modal
-      :status="status"
       v-if="status"
-      @closeOverlay="status = false"
+      ref="mail-configuration__modal"
       :icon-name="'mdi-book-search'"
       :title="getTitle"
+      :status="status"
+      @closeOverlay="status = false"
       className="mail-configuration__modal"
-      ref="mail-configuration__modal"
       title-id="text--create-o365-mail-configuration-modal-title"
     >
       <template v-slot:overlay-body>
@@ -573,11 +573,14 @@
         :selectEvent="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
         :setClassName="setCellClassName"
+        :is-downloadable="true"
+        :isServerSide="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @syncUser="handleSyncUser"
         @delete="handleDelete"
         @editTargetUsers="handleEditMailConfiguration"
         @onEmptyBtnClicked="status = true"
-        :is-downloadable="true"
         @downloadEvent="exportMailConfigurationList"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
@@ -590,9 +593,6 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template v-slot:addUsers>
           <v-menu :min-width="128" :offset-y="true" left :nudge-right="5">
@@ -619,9 +619,9 @@
             </template>
             <v-list>
               <v-list-item
+                v-for="item in mailConfigurationTypes"
                 :key="item"
                 @click="handleAddMailConfiguration(item)"
-                v-for="item in mailConfigurationTypes"
               >
                 <v-list-item-title
                   class="add-users__title"
@@ -646,7 +646,9 @@
             <p class="mail-configuration__no-data__header">
               {{ labels.EmptyMailConfiguration }}
             </p>
-            <p class="mail-configuration__no-data__body">{{ labels.EmptyMailConfigurationSub }}</p>
+            <p class="mail-configuration__no-data__body">
+              {{ labels.EmptyMailConfigurationSub }}
+            </p>
             <div class="mail-configuration__no-data__buttons">
               <div
                 id="btn-empty--mail-configurations-google-workspace"
@@ -714,6 +716,7 @@ import {
   updateO365
 } from '@/api/mailConfiguration'
 import * as validations from '@/utils/validations'
+import { isDifferent } from '@/utils/functions'
 import TestConnection from './TestConnection'
 import TestConnectionEWS from './TestConnectionEWS'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -1055,8 +1058,19 @@ export default {
     },
     handleGoogleWorkspaceTestConnection() {},
     cancelEWS() {
-      this.ewsStatus = false
-      this.ewsInitialFormValues = null
+      const isChanged = isDifferent(this.ewsInitialFormValues, this.ewsFormValues)
+      if (!isChanged) {
+        this.ewsStatus = false
+        this.ewsInitialFormValues = null
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.ewsStatus = false
+          this.ewsInitialFormValues = null
+        }
+      })
     },
     submitEWS() {
       if (
@@ -1251,9 +1265,7 @@ export default {
         })
       })
     },
-    cancelO365() {
-      this.status = false
-      this.editData = null
+    resetO365Form() {
       this.formValues = {
         name: null,
         applicationId: null,
@@ -1261,13 +1273,44 @@ export default {
         directoryId: null,
         email: null
       }
-      this.domainList = []
-      this.initialFormValues = null
+    },
+    cancelO365() {
+      const isChanged = isDifferent(this.initialFormValues, this.formValues)
+      if (!isChanged) {
+        this.status = false
+        this.editData = null
+        this.resetO365Form()
+        this.domainList = []
+        this.initialFormValues = null
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.status = false
+          this.editData = null
+          this.resetO365Form()
+          this.domainList = []
+          this.initialFormValues = null
+        }
+      })
     },
     cancelGoogleWorkSpace() {
-      this.statusGoogleWorkSpace = false
-      this.resetGoogleWorkSpaceForm()
-      this.isGoogleWorkSpaceEdit = false
+      const isChanged = isDifferent(this.googleWorkSpaceInitialValues, this.googleWorkSpaceForm)
+      if (!isChanged) {
+        this.statusGoogleWorkSpace = false
+        this.resetGoogleWorkSpaceForm()
+        this.isGoogleWorkSpaceEdit = false
+        return
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.statusGoogleWorkSpace = false
+          this.resetGoogleWorkSpaceForm()
+          this.isGoogleWorkSpaceEdit = false
+        }
+      })
     },
     resetGoogleWorkSpaceForm() {
       this.googleWorkSpaceForm = {
@@ -1336,14 +1379,12 @@ export default {
       this.isWantToImportFile = false
     },
     handleAddMailConfiguration(item) {
-      /*
-
-       */
       switch (item) {
         case this.mailConfigurationTypes[0]:
           this.statusGoogleWorkSpace = true
           this.googleWorkSpaceEditData = null
           this.isTestConnectionWorkedBefore = false
+          this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
           break
         case this.mailConfigurationTypes[1]:
           this.formValues = {
@@ -1354,6 +1395,7 @@ export default {
             email: null,
             allowedDomains: []
           }
+          this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
           this.editData = null
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
@@ -1372,6 +1414,7 @@ export default {
             TargetGroupResourceIdList: [],
             IsAllTargetGroupsSelected: true
           }
+          this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
           this.ewsEditData = null
           this.isTestConnectionWorkedBefore = false
           this.saveButtonDisabled = false
@@ -1572,6 +1615,20 @@ export default {
       this.$router.push('/incident-responder')
     } else {
       this.getDefaultFilterAndSearch()
+    }
+  },
+  beforeRouteLeave(to, from, next) {
+    if (this.status) {
+      this.cancelO365()
+      next(false)
+    } else if (this.statusGoogleWorkSpace) {
+      this.cancelGoogleWorkSpace()
+      next(false)
+    } else if (this.ewsStatus) {
+      this.cancelEWS()
+      next(false)
+    } else {
+      next()
     }
   }
 }
