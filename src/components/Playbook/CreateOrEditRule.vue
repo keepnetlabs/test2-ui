@@ -38,7 +38,7 @@
               </v-list-item>
 
               <v-form ref="refStep1Form" lazy-validation>
-                <v-list-item class="mt-6" style="margin-bottom: 17px">
+                <v-list-item class="mt-6" style="margin-bottom: 17px;">
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.RuleName }}</label>
                     <v-text-field
@@ -53,20 +53,14 @@
                       :rules="[
                         (v) => validations.required(v, labels.Required),
                         (v) =>
-                          validations.maxLength(
-                            v,
-                            64,
-                            labels.getMaxLengthMessage(labels.RuleName)
-                          ),
+                          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.RuleName))
                       ]"
                     ></v-text-field>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item class="margin-top">
                   <v-list-item-content class="pt-0">
-                    <label class="bottom-margin">{{
-                      labels.Description
-                    }}</label>
+                    <label class="bottom-margin">{{ labels.Description }}</label>
                     <v-textarea
                       placeholder="Enter description"
                       id="input--playbook-description"
@@ -80,7 +74,7 @@
                             v,
                             300,
                             labels.getMaxLengthMessage(labels.Description, 300)
-                          ),
+                          )
                       ]"
                       autocomplete="disabled"
                     />
@@ -100,30 +94,10 @@
                         hide-details
                         dense
                       >
-                        <v-radio
-                          :ripple="false"
-                          color="#2196f3"
-                          value="VeryLow"
-                          label="Very Low"
-                        />
-                        <v-radio
-                          :ripple="false"
-                          color="#2196f3"
-                          value="Low"
-                          label="Low"
-                        />
-                        <v-radio
-                          :ripple="false"
-                          color="#2196f3"
-                          value="Medium"
-                          label="Medium"
-                        />
-                        <v-radio
-                          :ripple="false"
-                          color="#2196f3"
-                          value="High"
-                          label="High"
-                        />
+                        <v-radio :ripple="false" color="#2196f3" value="VeryLow" label="Very Low" />
+                        <v-radio :ripple="false" color="#2196f3" value="Low" label="Low" />
+                        <v-radio :ripple="false" color="#2196f3" value="Medium" label="Medium" />
+                        <v-radio :ripple="false" color="#2196f3" value="High" label="High" />
                         <v-radio
                           :ripple="false"
                           color="#2196f3"
@@ -182,10 +156,7 @@
                 <v-list-item-title class="v-card-form-title">
                   {{ labels.Conditions }}
                 </v-list-item-title>
-                <v-list-item-title
-                  class="v-card-sub-header"
-                  style="white-space: normal"
-                >
+                <v-list-item-title class="v-card-sub-header" style="white-space: normal;">
                   {{ labels.ConditionsSubHeader }}
                 </v-list-item-title>
               </v-list-item-content>
@@ -227,9 +198,7 @@
                   :has-keyword="hasKeyword"
                   :editedPlaybookActionAnalyzers="playbookActionAnalyzers"
                   :editedNotifications="editedNotifications"
-                  :editedPlaybookActionInvestigations="
-                    editedPlaybookActionInvestigations
-                  "
+                  :editedPlaybookActionInvestigations="editedPlaybookActionInvestigations"
                 />
               </v-container>
             </v-stepper-content>
@@ -268,7 +237,7 @@
           v-if="canNext"
           id="btn-next--playbook-rules-modal"
           class="playbook-rule-form__button"
-          style="color: white"
+          style="color: white;"
           rounded
           color="#2196f3"
           @click="nextStep"
@@ -293,46 +262,46 @@
 </template>
 
 <script>
-import VueQueryBuilder from "vue-query-builder";
-import QueryBuilderGroup from "../Common/QueryBuilder/CustomGroup";
-import ActionItem from "./ActionItem";
-import { maxLength, required } from "@/utils/validations";
-import { createPlaybook, getPlaybook, updatePlaybook } from "@/api/playbook";
-import { scrollToComponent } from "@/utils/functions";
-import KSelect from "@/components/Common/Inputs/KSelect";
-import labels from "@/model/constants/labels";
-import { isDifferent } from "@/utils/functions";
+import VueQueryBuilder from 'vue-query-builder'
+import QueryBuilderGroup from '../Common/QueryBuilder/CustomGroup'
+import ActionItem from './ActionItem'
+import { maxLength, required } from '@/utils/validations'
+import { createPlaybook, getPlaybook, updatePlaybook } from '@/api/playbook'
+import { scrollToComponent } from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+import { isDifferent } from '@/utils/functions'
 
 export default {
-  name: "CreateOrEditRule",
+  name: 'CreateOrEditRule',
   components: { KSelect, ActionItem, VueQueryBuilder, QueryBuilderGroup },
   props: {
     playbookId: {
       type: String,
-      default: null,
-    },
+      default: null
+    }
   },
   data() {
     return {
       initialFormValues: {
-        name: "",
-        description: "",
-        priority: "Medium",
+        name: '',
+        description: '',
+        priority: 'Medium',
         tags: [],
         isActive: true,
         query: {
-          logicalOperator: "AND",
+          logicalOperator: 'AND',
           children: [
             {
-              type: "query-builder-group",
+              type: 'query-builder-group',
               query: {
-                logicalOperator: "AND",
-                children: [],
-              },
-            },
-          ],
+                logicalOperator: 'AND',
+                children: []
+              }
+            }
+          ]
         },
-        actions: [],
+        actions: []
       },
       saveDisable: false,
       labels,
@@ -342,10 +311,10 @@ export default {
       playbookAction: {},
       totalStep: 3,
       activeStep: 1,
-      tagsearch: "",
-      name: "",
-      description: "",
-      priority: "Medium",
+      tagsearch: '',
+      name: '',
+      description: '',
+      priority: 'Medium',
       tags: [],
       isActive: true,
       newQuery: null,
@@ -354,189 +323,182 @@ export default {
       editedPlaybookActionInvestigations: [],
       validations: {
         required,
-        maxLength,
+        maxLength
       },
       condition: {},
       label: {
-        matchType: "Match Type",
+        matchType: 'Match Type',
         matchTypes: [
-          { id: "OR", label: "OR" },
-          { id: "AND", label: "AND" },
+          { id: 'OR', label: 'OR' },
+          { id: 'AND', label: 'AND' }
         ],
-        addRule: "ADD CONDITION",
-        addGroup: "ADD ANOTHER CONDITION SET",
-        textInputPlaceholder: "value",
+        addRule: 'ADD CONDITION',
+        addGroup: 'ADD ANOTHER CONDITION SET',
+        textInputPlaceholder: 'value'
       },
       rules: [
         {
-          type: "conditions",
-          id: "conditions",
-          label: "Conditions",
+          type: 'conditions',
+          id: 'conditions',
+          label: 'Conditions',
           operands: [
-            "From",
-            "To",
-            "CC",
-            { text: "Sender IP", value: "SenderIp" },
-            "Subject",
-            "Keyword",
-            { text: "Attachment name", value: "AttachmentName" },
-            { text: "Attachment hash", value: "AttachmentHash" },
-            { text: "Attachment extension", value: "AttachmentExtension" },
+            'From',
+            'To',
+            'CC',
+            { text: 'Sender IP', value: 'SenderIp' },
+            'Subject',
+            'Keyword',
+            { text: 'Attachment name', value: 'AttachmentName' },
+            { text: 'Attachment hash', value: 'AttachmentHash' },
+            { text: 'Attachment extension', value: 'AttachmentExtension' }
           ],
-          operandsFrom: ["Email", "Domain", "Regex"],
-          operandsTo: ["Email", "Domain", "Regex"],
-          operandsCC: ["Email", "Domain", "Regex"],
-          operandsAnalysisResult: ["Phishing", "Malicious", "Non-malicious"],
+          operandsFrom: ['Email', 'Domain', 'Regex'],
+          operandsTo: ['Email', 'Domain', 'Regex'],
+          operandsCC: ['Email', 'Domain', 'Regex'],
+          operandsAnalysisResult: ['Phishing', 'Malicious', 'Non-malicious'],
           operandsSenderIP: [
-            { text: "is equal to", value: "Equal" },
-            { text: "is not equal to", value: "IsNotEqual" },
-            { text: "exists", value: "Exists" },
-            { text: "does not exist", value: "DoesNotExist" },
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' },
+            { text: 'exists', value: 'Exists' },
+            { text: 'does not exist', value: 'DoesNotExist' }
           ],
           operandsAttachmentHash: [
-            { text: "is equal to", value: "Equal" },
-            { text: "is not equal to", value: "IsNotEqual" },
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' }
           ],
           operators: [
-            { text: "contains", value: "Contains" },
-            { text: "does not contain", value: "DoesNotContain" },
-            { text: "is equal to", value: "Equal" },
-            { text: "is not equal to", value: "IsNotEqual" },
-            { text: "exists", value: "Exists" },
-            { text: "does not exist", value: "DoesNotExist" },
+            { text: 'contains', value: 'Contains' },
+            { text: 'does not contain', value: 'DoesNotContain' },
+            { text: 'is equal to', value: 'Equal' },
+            { text: 'is not equal to', value: 'IsNotEqual' },
+            { text: 'exists', value: 'Exists' },
+            { text: 'does not exist', value: 'DoesNotExist' }
           ],
           keywordOperators: [
-            { text: "contains", value: "Contains" },
-            { text: "does not contain", value: "DoesNotContain" },
-          ],
-        },
+            { text: 'contains', value: 'Contains' },
+            { text: 'does not contain', value: 'DoesNotContain' }
+          ]
+        }
       ],
       query: {
-        logicalOperator: "AND",
+        logicalOperator: 'AND',
         children: [
           {
-            type: "query-builder-group",
+            type: 'query-builder-group',
             query: {
-              logicalOperator: "AND",
-              children: [],
-            },
-          },
-        ],
+              logicalOperator: 'AND',
+              children: []
+            }
+          }
+        ]
       },
-      hasKeyword: false,
-    };
+      hasKeyword: false
+    }
   },
   computed: {
     canNext() {
-      return this.activeStep < this.totalStep;
+      return this.activeStep < this.totalStep
     },
     canPrev() {
-      return this.activeStep > 1;
-    },
+      return this.activeStep > 1
+    }
   },
   watch: {
     activeStep(newVal) {
       if (newVal === 3) {
         this.hasKeyword = this.query.children.some((item) => {
-          return this.findHasKeyword(item.query.children);
-        });
+          return this.findHasKeyword(item.query.children)
+        })
       }
-    },
+    }
   },
   methods: {
     findHasKeyword(arr, retArr = []) {
       if (arr.children) {
-        this.findHasKeyword(arr);
+        this.findHasKeyword(arr)
       }
       arr.forEach((item) => {
-        if (item.query.operand === "Keyword") {
-          retArr.push(true);
+        if (item.query.operand === 'Keyword') {
+          retArr.push(true)
         }
-      });
-      return !!retArr.length;
+      })
+      return !!retArr.length
     },
     handleTagItemChange(value) {
-      const lastValue = value[value.length - 1].trim();
+      const lastValue = value[value.length - 1].trim()
       if (!lastValue) {
-        value.splice(value.length - 1, 1);
+        value.splice(value.length - 1, 1)
       } else {
-        value[value.length - 1] = value[value.length - 1].substring(0, 20);
+        value[value.length - 1] = value[value.length - 1].substring(0, 20)
       }
     },
     addAction() {
-      this.actionList.push({ id: this.idCounter });
-      this.idCounter = this.idCounter + 1;
+      this.actionList.push({ id: this.idCounter })
+      this.idCounter = this.idCounter + 1
     },
     handleSave() {
       if (this.playbookId) {
-        this.callForUpdatePlaybook();
+        this.callForUpdatePlaybook()
       } else {
-        this.callForCreatePlaybook();
+        this.callForCreatePlaybook()
       }
     },
     callForCreatePlaybook() {
-      const ref = this.$refs.refActionItem;
-      const keys = Object.keys(ref.$refs);
-      const playbookActionInvestigations = [];
-      let playbookActionAnalyzers = [];
+      const ref = this.$refs.refActionItem
+      const keys = Object.keys(ref.$refs)
+      const playbookActionInvestigations = []
+      let playbookActionAnalyzers = []
       if (keys.length > 0) {
-        let valueIndex = 0;
+        let valueIndex = 0
         keys.map((key) => {
-          if (ref.$refs[key].length > 0 && key !== "refForm") {
-            playbookActionInvestigations[valueIndex] =
-              ref.$refs[key][0].investigateData;
-            valueIndex++;
+          if (ref.$refs[key].length > 0 && key !== 'refForm') {
+            playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            valueIndex++
           }
-        });
+        })
       }
       if (
         ref.actions.some((item) => {
-          return item.val === "analyze";
+          return item.val === 'analyze'
         })
       ) {
         if (ref.analyzeCheckbox) {
-          playbookActionInvestigations.push(
-            ref.playbookActionInvestigationAnalyzeData
-          );
+          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
-          const { isSendFile, isSendFileHash, isSendUrl, isSendIp } =
-            item.analysisEngineType;
+          const { isSendFile, isSendFileHash, isSendUrl, isSendIp } = item.analysisEngineType
           if (!isSendFile) {
-            item.isCheckFile = false;
+            item.isCheckFile = false
           }
           if (!isSendFileHash) {
-            item.isCheckHash = false;
+            item.isCheckHash = false
           }
           if (!isSendUrl) {
-            item.isCheckUrl = false;
+            item.isCheckUrl = false
           }
           if (!isSendIp) {
-            item.isCheckSenderIP = false;
+            item.isCheckSenderIP = false
           }
-          return item.selected === true;
-        });
+          return item.selected === true
+        })
       }
 
-      const playbookAction = ref.playbookAction;
-      const targetUserType = ref.targetUserType;
-      const targetUsers = ref.tarUsers;
-      const playbookActionNotifications = [];
-      let index = 0;
+      const playbookAction = ref.playbookAction
+      const targetUserType = ref.targetUserType
+      const targetUsers = ref.tarUsers
+      const playbookActionNotifications = []
+      let index = 0
       for (let i = 0; i < targetUserType.length; i++) {
-        if (
-          (targetUsers[i] && targetUsers[i] !== null) ||
-          targetUserType[i] === "Reporter"
-        ) {
+        if ((targetUsers[i] && targetUsers[i] !== null) || targetUserType[i] === 'Reporter') {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
-            targetUsers: targetUserType[i] === "Reporter" ? [] : targetUsers[i],
-            emailTemplateId: this.$refs.refActionItem.notifyTemplate,
-          };
-          index++;
+            targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
+            emailTemplateId: this.$refs.refActionItem.notifyTemplate
+          }
+          index++
         }
       }
-      const playbookActionStatus = ref.playbookActionStatus;
+      const playbookActionStatus = ref.playbookActionStatus
       const payload = {
         name: this.name,
         description: this.description,
@@ -548,92 +510,85 @@ export default {
         playbookActionNotifications,
         playbookActionInvestigations,
         playbookActionStatus,
-        condition: this.condition,
-      };
+        condition: this.condition
+      }
 
       if (!playbookActionStatus.actionStatusType) {
-        delete payload.playbookActionStatus;
+        delete payload.playbookActionStatus
       }
 
       if (ref.$refs.refForm.validate()) {
-        this.saveDisable = true;
+        this.saveDisable = true
         createPlaybook(payload)
           .then(() => {
-            this.$emit("closeFormWithUpdate");
+            this.$emit('closeFormWithUpdate')
           })
-          .finally(() => (this.saveDisable = false));
+          .finally(() => (this.saveDisable = false))
       } else {
         return this.$nextTick(() => {
-          const el = ref.$refs.refForm.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        });
+          const el = ref.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     callForUpdatePlaybook() {
-      const ref = this.$refs.refActionItem;
-      const keys = Object.keys(ref.$refs);
-      const playbookActionInvestigations = [];
-      let playbookActionAnalyzers = [];
+      const ref = this.$refs.refActionItem
+      const keys = Object.keys(ref.$refs)
+      const playbookActionInvestigations = []
+      let playbookActionAnalyzers = []
 
       if (keys.length > 0) {
-        let valueIndex = 0;
+        let valueIndex = 0
         keys.map((key) => {
-          if (ref.$refs[key].length > 0 && key !== "refForm") {
-            playbookActionInvestigations[valueIndex] =
-              ref.$refs[key][0].investigateData;
-            valueIndex++;
+          if (ref.$refs[key].length > 0 && key !== 'refForm') {
+            playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            valueIndex++
           }
-        });
+        })
       }
-      const playbookAction = ref.playbookAction;
+      const playbookAction = ref.playbookAction
       if (
         ref.actions.some((item) => {
-          return item.val === "analyze";
+          return item.val === 'analyze'
         })
       ) {
         if (ref.analyzeCheckbox) {
-          playbookActionInvestigations.push(
-            ref.playbookActionInvestigationAnalyzeData
-          );
+          playbookActionInvestigations.push(ref.playbookActionInvestigationAnalyzeData)
         }
         playbookActionAnalyzers = ref.analysisEngines.filter((item) => {
           if (item && item.analysisEngineType && item.analysisEngineType) {
-            const { isSendFile, isSendFileHash, isSendUrl, isSendIp } =
-              item.analysisEngineType;
+            const { isSendFile, isSendFileHash, isSendUrl, isSendIp } = item.analysisEngineType
             if (!isSendFile) {
-              item.isCheckFile = false;
+              item.isCheckFile = false
             }
             if (!isSendFileHash) {
-              item.isCheckHash = false;
+              item.isCheckHash = false
             }
             if (!isSendUrl) {
-              item.isCheckUrl = false;
+              item.isCheckUrl = false
             }
             if (!isSendIp) {
-              item.isCheckSenderIP = false;
+              item.isCheckSenderIP = false
             }
           }
-          return item.selected === true;
-        });
+          return item.selected === true
+        })
       }
 
-      const targetUserType = ref.targetUserType;
-      const targetUsers = ref.tarUsers;
-      const playbookActionNotifications = [];
-      let index = 0;
-      const playbookActionStatus = ref.playbookActionStatus;
+      const targetUserType = ref.targetUserType
+      const targetUsers = ref.tarUsers
+      const playbookActionNotifications = []
+      let index = 0
+      const playbookActionStatus = ref.playbookActionStatus
 
       for (let i = 0; i < targetUserType.length; i++) {
-        if (
-          (targetUsers[i] && targetUsers[i] !== null) ||
-          targetUserType[i] === "Reporter"
-        ) {
+        if ((targetUsers[i] && targetUsers[i] !== null) || targetUserType[i] === 'Reporter') {
           playbookActionNotifications[index] = {
             targetUserType: targetUserType[i],
-            targetUsers: targetUserType[i] === "Reporter" ? [] : targetUsers[i],
-            emailTemplateId: this.$refs.refActionItem.notifyTemplate,
-          };
-          index++;
+            targetUsers: targetUserType[i] === 'Reporter' ? [] : targetUsers[i],
+            emailTemplateId: this.$refs.refActionItem.notifyTemplate
+          }
+          index++
         }
       }
       const payload = {
@@ -648,164 +603,156 @@ export default {
         playbookActionNotifications,
         playbookActionAnalyzers,
         playbookActionInvestigations,
-        condition: this.condition,
-      };
+        condition: this.condition
+      }
 
       if (!playbookActionStatus.actionStatusType) {
-        delete payload.playbookActionStatus;
+        delete payload.playbookActionStatus
       }
 
       if (ref.$refs.refForm.validate()) {
-        this.saveDisable = true;
+        this.saveDisable = true
         updatePlaybook(payload)
           .then(() => {
-            this.$emit("closeFormWithUpdate");
+            this.$emit('closeFormWithUpdate')
           })
-          .finally(() => (this.saveDisable = false));
+          .finally(() => (this.saveDisable = false))
       } else {
         return this.$nextTick(() => {
-          const el = ref.$refs.refForm.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        });
+          const el = ref.$refs.refForm.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     nextStep() {
       if (this.findHasError(this.query)) {
-        let isFormValid = true;
+        let isFormValid = true
         if (this.activeStep === 2) {
-          isFormValid = this.$refs.refStep2Form.validate();
+          isFormValid = this.$refs.refStep2Form.validate()
         } else if (this.activeStep === 1) {
-          isFormValid = this.$refs.refStep1Form.validate();
+          isFormValid = this.$refs.refStep1Form.validate()
         }
-        const ref = this.$refs.refStep1Form;
-        const ref2 = this.$refs.refStep2Form;
+        const ref = this.$refs.refStep1Form
+        const ref2 = this.$refs.refStep2Form
         if (this.activeStep === 1 && !ref.validate()) {
           return this.$nextTick(() => {
-            const el = ref.$el.querySelector(".error--text");
-            scrollToComponent(el);
-          });
+            const el = ref.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
         } else if (this.activeStep === 2 && !ref2.validate()) {
           return this.$nextTick(() => {
-            const el = ref2.$el.querySelector(".error--text");
-            scrollToComponent(el);
-          });
+            const el = ref2.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
         }
         if (isFormValid) {
-          this.transformQuery();
-          this.activeStep =
-            this.activeStep >= this.totalStep
-              ? this.totalStep
-              : this.activeStep + 1;
+          this.transformQuery()
+          this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
         }
       } else {
-        this.isValid = true;
+        this.isValid = true
       }
     },
     transformQuery() {
       this.condition = {
         operator: this.query.logicalOperator,
-        ...this.getQuery(this.query.children),
-      };
-      const a = this.condition;
+        ...this.getQuery(this.query.children)
+      }
+      const a = this.condition
       this.newQuery = {
         logicalOperator: a.operator,
-        children: [...this.refGetQuery(a.conditionGroups, "conditionGroups")],
-      };
+        children: [...this.refGetQuery(a.conditionGroups, 'conditionGroups')]
+      }
     },
     refGetQuery(children, key) {
       return children.map((item) => {
-        if (key === "conditionGroups") {
-          let children = [];
+        if (key === 'conditionGroups') {
+          let children = []
           if (item.conditionItems) {
-            children.push(
-              this.refGetQuery(item.conditionItems, "conditionItems")
-            );
+            children.push(this.refGetQuery(item.conditionItems, 'conditionItems'))
           }
           if (item.conditionGroups) {
-            children.push(
-              this.refGetQuery(item.conditionGroups, "conditionGroups")
-            );
+            children.push(this.refGetQuery(item.conditionGroups, 'conditionGroups'))
           }
-          let temp = [];
+          let temp = []
           if (children.length > 1) {
             children.map((item) => {
               item.map((i) => {
-                temp.push(i);
-              });
-            });
+                temp.push(i)
+              })
+            })
           }
           return {
-            type: "query-builder-group",
+            type: 'query-builder-group',
             query: {
               logicalOperator: item.operator.toUpperCase(),
-              children: children.length > 1 ? temp : children[0],
-            },
-          };
+              children: children.length > 1 ? temp : children[0]
+            }
+          }
         } else {
           return {
-            type: "query-builder-rule",
+            type: 'query-builder-rule',
             query: {
               ...item,
               operand: item.FieldName || item.fieldName,
-              rule: "conditions",
-            },
-          };
+              rule: 'conditions'
+            }
+          }
         }
-      });
+      })
     },
 
     getQuery(children) {
-      const conditionItems = [];
-      const conditionGroups = [];
+      const conditionItems = []
+      const conditionGroups = []
       children.map((obj) => {
-        if (obj.type === "query-builder-group") {
+        if (obj.type === 'query-builder-group') {
           conditionGroups.push({
             operator: obj.query.logicalOperator,
-            ...this.getQuery(obj.query.children),
-          });
+            ...this.getQuery(obj.query.children)
+          })
         } else {
           conditionItems.push({
             ...obj.query,
             fieldName: obj.query.operand,
-            FieldName: obj.query.operand,
-          });
+            FieldName: obj.query.operand
+          })
         }
-      });
-      const obj = {};
+      })
+      const obj = {}
       if (conditionGroups.length > 0) {
-        obj["conditionGroups"] = conditionGroups;
+        obj['conditionGroups'] = conditionGroups
       }
       if (conditionItems.length > 0) {
-        obj["conditionItems"] = conditionItems;
+        obj['conditionItems'] = conditionItems
       }
-      return obj;
+      return obj
     },
     findHasError(object) {
-      const keys = Object.keys(object);
+      const keys = Object.keys(object)
       keys.map((key) => {
         if (object.hasOwnProperty(key)) {
           if (
-            key === "children" &&
-            object[key].constructor.name === "Array" &&
+            key === 'children' &&
+            object[key].constructor.name === 'Array' &&
             object[key].length === 0
           ) {
-            this.isValid = false;
-            return this.isValid;
+            this.isValid = false
+            return this.isValid
           } else if (
             object[key] !== null &&
             object[key] !== undefined &&
             object[key].constructor &&
-            (object[key].constructor.name === "Object" ||
-              object[key].constructor.name === "Array")
+            (object[key].constructor.name === 'Object' || object[key].constructor.name === 'Array')
           ) {
-            this.isValid = this.findHasError(object[key]);
+            this.isValid = this.findHasError(object[key])
           }
         }
-      });
-      return this.isValid;
+      })
+      return this.isValid
     },
     prevStep() {
-      this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1;
+      this.activeStep = this.activeStep <= 1 ? 1 : this.activeStep - 1
     },
     cancelForm() {
       const currentFormValues = {
@@ -815,92 +762,86 @@ export default {
         tags: this.tags,
         isActive: this.isActive,
         query: this.query,
-        actions: [...this.$refs.refActionItem.getCurrentActions()],
-      };
-      console.log(currentFormValues, this.initialFormValues);
-      const isChanged = isDifferent(currentFormValues, this.initialFormValues);
-      if (!isChanged) {
-        return this.$emit("cancelForm");
+        actions: [...this.$refs.refActionItem.getCurrentActions()]
       }
-      this.$store.dispatch("common/setIsShowLeavingDialog", {
+      console.log(currentFormValues, this.initialFormValues)
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('cancelForm')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
-          this.$emit("cancelForm");
-        },
-      });
+          this.$emit('cancelForm')
+        }
+      })
     },
     updateTags() {
       this.$nextTick(() => {
         if (this.tagsearch) {
-          this.tags.push(...this.tagsearch.split(","));
+          this.tags.push(...this.tagsearch.split(','))
         }
         this.$nextTick(() => {
-          this.tagsearch = "";
-        });
-      });
+          this.tagsearch = ''
+        })
+      })
     },
     callForGetPlaybook() {
       getPlaybook(this.playbookId).then((response) => {
-        const { data } = response.data;
-        this.name = data.name;
-        this.isActive = data.isActive;
-        this.description = data.description;
-        this.priority = data.priority;
-        this.tags = data.tags;
+        const { data } = response.data
+        this.name = data.name
+        this.isActive = data.isActive
+        this.description = data.description
+        this.priority = data.priority
+        this.tags = data.tags
         this.query = {
           logicalOperator: data.condition.operator.toUpperCase(),
-          children: [
-            ...this.refGetQuery(
-              data.condition.conditionGroups,
-              "conditionGroups"
-            ),
-          ],
-        };
+          children: [...this.refGetQuery(data.condition.conditionGroups, 'conditionGroups')]
+        }
 
         data.playbookActionInvestigations.forEach((item) => {
           item.scanTypes = item?.scanConfigurationDetails?.map((scan) => {
-            if (scan.type.toLowerCase() === "outlook") {
-              scan["mailConfigurationName"] = "Outlook";
+            if (scan.type.toLowerCase() === 'outlook') {
+              scan['mailConfigurationName'] = 'Outlook'
             }
-            return scan;
-          });
-        });
-        this.playbookAction = data.playbookAction;
-        this.playbookActionAnalyzers = data.playbookActionAnalyzers;
-        this.editedNotifications = data.playbookActionNotifications;
-        this.editedPlaybookActionInvestigations =
-          data.playbookActionInvestigations.filter((item) => {
-            return item.isCreatedByAnalyzer !== true;
-          });
-
-        const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex(
+            return scan
+          })
+        })
+        this.playbookAction = data.playbookAction
+        this.playbookActionAnalyzers = data.playbookActionAnalyzers
+        this.editedNotifications = data.playbookActionNotifications
+        this.editedPlaybookActionInvestigations = data.playbookActionInvestigations.filter(
           (item) => {
-            return item.isCreatedByAnalyzer;
+            return item.isCreatedByAnalyzer !== true
           }
-        );
+        )
+
+        const indexOfAnalyzeItem = data.playbookActionInvestigations.findIndex((item) => {
+          return item.isCreatedByAnalyzer
+        })
         if (indexOfAnalyzeItem !== -1) {
           this.$refs.refActionItem.playbookActionInvestigationAnalyzeData =
-            data.playbookActionInvestigations[indexOfAnalyzeItem];
+            data.playbookActionInvestigations[indexOfAnalyzeItem]
           const hasAnalyze = this.$refs.refActionItem.actions.some((item) => {
-            return item.val === "analyze";
-          });
+            return item.val === 'analyze'
+          })
           if (!hasAnalyze) {
-            this.$refs.refActionItem.addAction("analyze");
+            this.$refs.refActionItem.addAction('analyze')
           }
-          this.$refs.refActionItem.analyzeCheckbox = true;
+          this.$refs.refActionItem.analyzeCheckbox = true
         } else {
           if (this.playbookActionAnalyzers.length > 0) {
-            this.$refs.refActionItem.addAction("analyze");
+            this.$refs.refActionItem.addAction('analyze')
           }
         }
         if (
           data.playbookActionStatus &&
           data.playbookActionStatus.actionStatusType &&
-          data.playbookActionStatus.actionStatusType !== "Unknown"
+          data.playbookActionStatus.actionStatusType !== 'Unknown'
         ) {
           this.$refs.refActionItem.playbookActionStatus.actionStatusType =
-            data.playbookActionStatus.actionStatusType;
-          this.$refs.refActionItem.addAction("status");
+            data.playbookActionStatus.actionStatusType
+          this.$refs.refActionItem.addAction('status')
         }
         this.initialFormValues = {
           ...this.initialFormValues,
@@ -910,17 +851,17 @@ export default {
           tags: this.tags,
           isActive: this.isActive,
           query: this.query,
-          actions: [...this.$refs.refActionItem.getCurrentActions()],
-        };
-      });
-    },
+          actions: [...this.$refs.refActionItem.getCurrentActions()]
+        }
+      })
+    }
   },
   created() {
     if (this.playbookId) {
-      this.callForGetPlaybook();
+      this.callForGetPlaybook()
     }
-  },
-};
+  }
+}
 </script>
 
 <style lang="scss" src="./CreateOrEditRule.scss" />
