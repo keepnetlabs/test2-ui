@@ -297,7 +297,9 @@
                   @click="addApiKey"
                 >
                   <v-icon color="#2196f3" style="cursor: pointer !important;">mdi-plus</v-icon>
-                  <div class="ml-2 new-integration__api-key__text">ADD API KEY</div>
+                  <div class="ml-2 new-integration__api-key__text">
+                    ADD API KEY
+                  </div>
                 </div>
                 <div
                   :class="{
@@ -797,7 +799,11 @@
                 <div
                   class="new-integration__api-key__subtitle__upload-subtitle position-relative ml-8"
                   style="font-size: 14px; line-height: 1.5;"
-                  :style="!selectedIntegrationType.isSendFile && { opacity: '0.5 !important' }"
+                  :style="
+                    !selectedIntegrationType.isSendFile && {
+                      opacity: '0.5 !important'
+                    }
+                  "
                 >
                   Portable executable files (exe, .dll, .sys, etc.)
                 </div>
@@ -820,7 +826,9 @@
                         class="mr-4 type-text"
                         :style="
                           (!selectedIntegrationType.isSendFile ||
-                            !formValues.isUploadOtherFileType) && { opacity: 0.6 }
+                            !formValues.isUploadOtherFileType) && {
+                            opacity: 0.6
+                          }
                         "
                         >File Types</span
                       >
@@ -871,7 +879,7 @@
           id="btn-cancel--integrations-modal"
           class="new-integration__footer-btn-cancel"
           rounded
-          @click="$emit('closeOverlay', false, false)"
+          @click="closeOverlay"
         >
           {{ labels.Cancel }}
         </v-btn>
@@ -1104,8 +1112,10 @@ export default {
     }
   },
   created() {
+    if (!this.integrationId) {
+      this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
+    }
     this.getFormOptions()
-    this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
   },
   methods: {
     getFormOptions() {
@@ -1127,7 +1137,10 @@ export default {
             case 'Archive':
               return { text: 'Archive files (.zip, .rar)', value: item.name }
             case 'Image':
-              return { text: 'Image files (.jpg, .png, .gif, .bmp)', value: item.name }
+              return {
+                text: 'Image files (.jpg, .png, .gif, .bmp)',
+                value: item.name
+              }
             case 'Microsoft Office':
               return {
                 text: 'Microsoft Office files (.doc, .docx, .xls, .xlsx, .ppt, .pptx, etc.)',
@@ -1141,6 +1154,7 @@ export default {
         })
         this.addProxyItems(proxies.data.results, true)
         if (response[1]) this.updateModels(response[1])
+        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     },
     getProxyTestConnection() {
@@ -1452,7 +1466,11 @@ export default {
     },
     addApiKey() {
       this.isTestConnectionDisabled = true
-      this.formValues.apiKeys.push({ value: '', status: null, resourceId: null })
+      this.formValues.apiKeys.push({
+        value: '',
+        status: null,
+        resourceId: null
+      })
     },
     handleApiKeyChange() {
       if (!this.formValues.apiUrl) return true
