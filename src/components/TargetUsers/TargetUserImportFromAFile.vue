@@ -1197,6 +1197,13 @@ export default {
       this.$emit('closeOverlay')
     },
     onFileChanged(file) {
+      if (Array.isArray(file) && Array.from(file).length === 0) {
+        this.isExcelUploaded = false
+        this.step1Loading = false
+        this.formData.file = null
+        this.excelInfo = null
+        return
+      }
       this.formData.file = file
       this.isExcelUploaded = true
       this.step1Loading = true
