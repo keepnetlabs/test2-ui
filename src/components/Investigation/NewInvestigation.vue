@@ -753,7 +753,7 @@ export default {
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
           (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
-          (v) => Validations.url(v)
+          (v) => Validations.urlOrIpAddress(v)
         )
         return rules
       } else if (option === 'keyword') {
@@ -825,27 +825,27 @@ export default {
       })
     },
     onCancelClicked() {
-      // if (!this.isSubmitted) {
-      const currentFormValues = {
-        investigationName: this.investgationName,
-        targetUsers: this.targetUsers,
-        filterList: this.filterList,
-        date: this.date,
-        scanTypes: this.scanTypes,
-        selectedDuration: this.selectedDuration,
-        selectedAction: this.selectedAction
-      }
-      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
-      if (!isChanged) {
-        return this.$emit('closeAdd')
-      }
-      this.$store.dispatch('common/setIsShowLeavingDialog', {
-        show: true,
-        callback: () => {
-          this.$emit('closeAdd')
+      if (!this.isSubmitted) {
+        const currentFormValues = {
+          investigationName: this.investgationName,
+          targetUsers: this.targetUsers,
+          filterList: this.filterList,
+          date: this.date,
+          scanTypes: this.scanTypes,
+          selectedDuration: this.selectedDuration,
+          selectedAction: this.selectedAction
         }
-      })
-      // }
+        const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+        if (!isChanged) {
+          return this.$emit('closeAdd')
+        }
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
+          show: true,
+          callback: () => {
+            this.$emit('closeAdd')
+          }
+        })
+      }
     },
     filterData(data = []) {
       return data.reduce((acc, item) => {

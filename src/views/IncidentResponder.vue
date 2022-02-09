@@ -3218,6 +3218,9 @@ export default {
       this.openInvestigationOverlay = false
       next(false)
     } else if (refNewInvestigation && this.isWantToAddNewInvestigation) {
+      if (to.name === 'Investigation Details') {
+        return next()
+      }
       refNewInvestigation.onCancelClicked()
       next(false)
     } else {
