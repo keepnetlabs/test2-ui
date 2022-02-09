@@ -825,6 +825,7 @@ export default {
       })
     },
     onCancelClicked() {
+      console.log('onCancelClicked', this.isSubmitted)
       if (!this.isSubmitted) {
         const currentFormValues = {
           investigationName: this.investgationName,
@@ -872,6 +873,7 @@ export default {
             const el = this.$refs.form.$el.querySelector('.date-row')
             scrollToComponent(el)
           })
+          this.isSubmitted = false
           return false
         }
 
@@ -880,6 +882,7 @@ export default {
             const el = this.$refs.form.$el.querySelector('.error--text')
             scrollToComponent(el)
           })
+          this.isSubmitted = false
           return false
         }
         let headersData = [
@@ -1214,6 +1217,7 @@ export default {
             this.$emit('closeAdd', true)
           })
       } else {
+        this.isSubmitted = false
         return this.$nextTick(() => {
           this.saveDisable = false
           const el = this.$refs.form.$el.querySelector('.error--text')
