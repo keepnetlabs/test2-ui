@@ -522,7 +522,10 @@ export default {
         { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
       filterList: [
-        { renderKey: `column-key${Math.random().toString().substring(0, 5)}`, text: '' }
+        {
+          renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
+          text: ''
+        }
       ],
       filterListOption: [
         {
@@ -822,27 +825,27 @@ export default {
       })
     },
     onCancelClicked() {
-      if (!this.isSubmitted) {
-        const currentFormValues = {
-          investigationName: this.investgationName,
-          targetUsers: this.targetUsers,
-          filterList: this.filterList,
-          date: this.date,
-          scanTypes: this.scanTypes,
-          selectedDuration: this.selectedDuration,
-          selectedAction: this.selectedAction
-        }
-        const isChanged = isDifferent(currentFormValues, this.initialFormValues)
-        if (!isChanged) {
-          return this.$emit('closeAdd')
-        }
-        this.$store.dispatch('common/setIsShowLeavingDialog', {
-          show: true,
-          callback: () => {
-            this.$emit('closeAdd')
-          }
-        })
+      // if (!this.isSubmitted) {
+      const currentFormValues = {
+        investigationName: this.investgationName,
+        targetUsers: this.targetUsers,
+        filterList: this.filterList,
+        date: this.date,
+        scanTypes: this.scanTypes,
+        selectedDuration: this.selectedDuration,
+        selectedAction: this.selectedAction
       }
+      const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+      if (!isChanged) {
+        return this.$emit('closeAdd')
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit('closeAdd')
+        }
+      })
+      // }
     },
     filterData(data = []) {
       return data.reduce((acc, item) => {
@@ -1270,7 +1273,10 @@ export default {
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
         this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
-          ({ mailConfigurationResourceId, type }) => ({ mailConfigurationResourceId, type })
+          ({ mailConfigurationResourceId, type }) => ({
+            mailConfigurationResourceId,
+            type
+          })
         )
         //this.date.push(this.investigationDetailsData.endDate)
         this.selectedDuration =
