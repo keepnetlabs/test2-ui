@@ -856,7 +856,7 @@ export default {
           filterableType: 'select',
           filterableItems: [
             { text: 'Google Workspace', value: 'Google Workspace' },
-            { text: 'Microsoft365', value: 'O365' },
+            'Microsoft365',
             'Exchange'
           ]
         },
@@ -942,7 +942,7 @@ export default {
     validations: validations,
     requestBody: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {
@@ -963,7 +963,7 @@ export default {
     },
     defaultRequestBody: {
       pageNumber: 1,
-      pageSize: 75000,
+      pageSize: 10,
       orderBy: 'CreateTime',
       ascending: false,
       filter: {

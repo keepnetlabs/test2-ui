@@ -9,7 +9,7 @@
       <img
         alt="microsoft365"
         src="../../assets/img/Word.png"
-        v-if="scope.row[col.property] === 'O365'"
+        v-if="scope.row[col.property] === 'Microsoft365'"
       />
       <img
         alt="gsuite"
