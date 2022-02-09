@@ -918,6 +918,10 @@
       margin-left: 2px !important;
       margin-top: 9px !important;
 
+      .v-input--selection-controls__input{
+        height: 55px
+      }
+
       i {
         color: white !important;
       }

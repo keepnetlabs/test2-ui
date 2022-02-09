@@ -94,9 +94,6 @@ export default {
     }
   },
   computed: {
-    getFilterButtonDisabled() {
-      return !Boolean(this.filterChecked.length)
-    },
     getContainerStyle() {
       return !this.isValid ? { border: '1px solid #ff5252 !important' } : {}
     }

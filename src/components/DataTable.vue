@@ -58,11 +58,11 @@
           <div class="sub-header" style="margin-top: 10px;">Freeze Columns</div>
           <div class="popup-row">
             First Column
-            <v-switch v-model="firstColFixed" color="#2196f3" />
+            <v-switch v-model="firstColFixed" color="#2196f3" @change="handleTableSettingsChange" />
           </div>
           <div class="popup-row">
             Last Column
-            <v-switch v-model="lastColFixed" color="#2196f3" />
+            <v-switch v-model="lastColFixed" color="#2196f3" @change="handleTableSettingsChange" />
           </div>
         </div>
         <extended-view
@@ -2051,6 +2051,9 @@ export default {
     handleChangeVisibilityOfColumn() {
       this.setRenderedColumns()
       this.$forceUpdate()
+      this.handleTableSettingsChange()
+    },
+    handleTableSettingsChange() {
       this.$emit('on-table-settings-change', {
         renderedColumns: this.renderedColumns,
         firstColFixed: this.firstColFixed,
@@ -2189,8 +2192,14 @@ export default {
     },
     setStoredTableSettings() {
       const { firstColFixed, lastColFixed, renderedColumns } = this.storedTableSettings
-      if (!firstColFixed) this.columns[0].fixed = false
-      if (!lastColFixed) this.actionFixed = false
+      if (!firstColFixed) {
+        this.firstColFixed = firstColFixed
+        this.columns[0].fixed = false
+      }
+      if (!lastColFixed) {
+        this.actionFixed = false
+        this.lastColFixed = lastColFixed
+      }
 
       if (!renderedColumns.length) {
         this.setRenderedColumns()

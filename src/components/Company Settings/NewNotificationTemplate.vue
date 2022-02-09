@@ -62,7 +62,6 @@
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
           <email-template
-            v-if="!reRender"
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
             :edit-items-disabled="editItemsDisabled"
@@ -179,7 +178,6 @@ export default {
   },
   data() {
     return {
-      reRender: false,
       labels,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -275,18 +273,9 @@ export default {
           }
           this.formValues[key] = value
         }
-        this.reRender = true
-        this.timeoutId = setTimeout(() => {
-          this.reRender = false
-        }, 100)
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.formValues.template = this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
-    })
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
@@ -297,10 +286,6 @@ export default {
       const logoKey = '{COMPANYLOGO}'
       const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
       this.formValues.template = htmlTemplate.replaceAll(logoKey, logoUrl)
-      this.reRender = true
-      this.timeoutId = setTimeout(() => {
-        this.reRender = false
-      }, 1)
     },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
