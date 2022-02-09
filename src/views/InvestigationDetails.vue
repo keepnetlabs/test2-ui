@@ -248,7 +248,8 @@
                         >
                           <template v-slot:activator="{ on }">
                             <div v-on="on">
-                              {{ statsAndMenuData && statsAndMenuData.estimatedTime }} remaining
+                              {{ statsAndMenuData && statsAndMenuData.estimatedTime }}
+                              remaining
                             </div>
                           </template>
                           <p class="tooltip-wrapper">
@@ -409,7 +410,9 @@
                           id="btn--investigation-details-target-users"
                           link
                           @click="menuClick('targetUsers')"
-                          :class="{ 'v-list-item--active': activeMenu == 'targetUsers' }"
+                          :class="{
+                            'v-list-item--active': activeMenu == 'targetUsers'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-account-multiple</v-icon>
@@ -433,7 +436,9 @@
                           id="btn--investigation-details-inbox"
                           link
                           @click="menuClick('Inbox')"
-                          :class="{ 'v-list-item--active': activeMenu === 'Inbox' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Inbox'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-inbox</v-icon>
@@ -454,7 +459,9 @@
                           id="btn--investigation-details-junk"
                           link
                           @click="menuClick('JunkEmail')"
-                          :class="{ 'v-list-item--active': activeMenu === 'JunkEmail' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'JunkEmail'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-alert</v-icon>
@@ -475,7 +482,9 @@
                           link
                           id="btn--investigation-details-draft"
                           @click="menuClick('Drafts')"
-                          :class="{ 'v-list-item--active': activeMenu === 'Drafts' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Drafts'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-file</v-icon>
@@ -496,7 +505,9 @@
                           id="btn--investigation-details-sent"
                           link
                           @click="menuClick('SentItems')"
-                          :class="{ 'v-list-item--active': activeMenu === 'SentItems' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'SentItems'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-send</v-icon>
@@ -517,7 +528,9 @@
                           id="btn--investigation-details-deleted-items"
                           link
                           @click="menuClick('DeletedItems')"
-                          :class="{ 'v-list-item--active': activeMenu === 'DeletedItems' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'DeletedItems'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-delete</v-icon>
@@ -538,7 +551,9 @@
                           id="btn--investigation-details-others"
                           link
                           @click="menuClick('Others')"
-                          :class="{ 'v-list-item--active': activeMenu === 'Others' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Others'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-plus-box</v-icon>
@@ -558,15 +573,15 @@
                         <v-list-item>
                           <v-divider></v-divider>
                         </v-list-item>
-                        <p class="v-list-item__archived--title">
-                          Archived
-                        </p>
+                        <p class="v-list-item__archived--title">Archived</p>
                         <v-list-item
                           id="btn--investigation-details-stored"
                           link
                           @click="menuClick('Stored')"
                           class="v-list-item__archived--main"
-                          :class="{ 'v-list-item--active': activeMenu === 'Stored' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Stored'
+                          }"
                         >
                           <div class="v-list-item__archived"></div>
                           <div class="v-list-item__archived--link">
@@ -814,7 +829,11 @@
                 @searchChangedEvent="handleSearchChange"
                 :isServerSide="true"
                 :server-side-props="serverSideProps"
-                :server-side-events="{ pagination: true, search: true, sort: true }"
+                :server-side-events="{
+                  pagination: true,
+                  search: true,
+                  sort: true
+                }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -907,7 +926,11 @@
                 @searchChangedEvent="handleSearchChangeForTargetUsers"
                 :isServerSide="true"
                 :server-side-props="serverSidePropsForTargetUsers"
-                :server-side-events="{ pagination: true, search: true, sort: true }"
+                :server-side-events="{
+                  pagination: true,
+                  search: true,
+                  sort: true
+                }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -963,9 +986,7 @@
                     </div>
                     <div class="empty-inline" v-else>
                       <slot name="empty-table-inline-sort">
-                        <h2>
-                          No email has been found, yet
-                        </h2>
+                        <h2>No email has been found, yet</h2>
                       </slot>
                     </div>
                   </div>
@@ -1243,7 +1264,7 @@ export default {
         filterableType: 'select',
         filterableItems: [
           'Outlook',
-          'O365',
+          { text: 'Microsoft365', value: 'O365' },
           'Exchange',
           { text: 'Google Workspace', value: 'GoogleWorkspace' }
         ]
@@ -1344,7 +1365,12 @@ export default {
         minWidth: 180,
         type: 'service',
         filterableType: 'select',
-        filterableItems: ['Outlook', 'O365', 'Exchange', 'Google Workspace']
+        filterableItems: [
+          'Outlook',
+          { text: 'Microsoft365', value: 'O365' },
+          'Exchange',
+          'Google Workspace'
+        ]
       },
       {
         property: 'analyzedMailCount',
