@@ -825,7 +825,6 @@ export default {
       })
     },
     onCancelClicked() {
-      console.log('onCancelClicked', this.isSubmitted)
       if (!this.isSubmitted) {
         const currentFormValues = {
           investigationName: this.investgationName,
