@@ -30,8 +30,6 @@
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
         :filterable="true"
-        :show-all-records="showAllRecords"
-        :total-number-of-records="totalNumberOfRecords"
         :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
@@ -49,7 +47,6 @@
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @refreshAction="callForSearch"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -84,9 +81,7 @@ export default {
   name: 'CustomApi',
   data() {
     return {
-      showAllRecords: false,
       storedTableSettings: null,
-      totalNumberOfRecords: 0,
       isRestoredOrClearedFilters: false,
       axiosPayload: {
         pageNumber: 1,
@@ -294,15 +289,6 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           const { results = [] } = data
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-          this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.axiosPayload.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.axiosPayload.pageSize === 1000) {
-            this.showAllRecords = false
-          }
-          this.tableData = data.results || []
         })
         .finally(() => {
           this.loading = false
@@ -432,11 +418,6 @@ export default {
       this.$refs.refCustomApiList.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      this.callForSearch()
-    },
-    handleAllRecordsClick() {
-      this.axiosPayload.pageSize = 75000
-      this.showAllRecords = false
       this.callForSearch()
     },
     handleDelete(row = {}) {

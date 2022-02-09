@@ -43,7 +43,6 @@
           :refName="'permissionList'"
           :columns="tableOptions.columns"
           :stored-table-settings="storedTableSettings"
-          :total-number-of-records="totalNumberOfRecords"
           :selectable="true"
           :filterable="true"
           :options="true"
@@ -53,16 +52,12 @@
           :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
-          :show-all-records="showAllRecords"
           :addButton="tableOptions.addButton"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
           :rowActions="tableOptions.rowActions"
           @openPermissionModal="openPermissionModal"
           @refreshAction="getDatatableList"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
-          @on-all-records-button-click="handleAllRecordsClick"
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
@@ -154,8 +149,6 @@ export default {
       storedTableSettings: null,
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
@@ -565,11 +558,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true

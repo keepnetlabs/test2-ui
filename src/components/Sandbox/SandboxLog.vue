@@ -6,10 +6,8 @@
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
       :refName="'sandboxList'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
       :selectable="false"
       :filterable="true"
       :options="true"
@@ -32,7 +30,6 @@
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -86,8 +83,6 @@ export default {
       integrationTypes: [],
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       storedTableSettings: null,
@@ -500,15 +495,6 @@ export default {
             }
           })
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
         .catch(() => {
           this.tableData = []
@@ -595,11 +581,6 @@ export default {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
-    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()
@@ -669,15 +650,6 @@ export default {
             }
           })
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
         .catch(() => {
           this.tableData = []

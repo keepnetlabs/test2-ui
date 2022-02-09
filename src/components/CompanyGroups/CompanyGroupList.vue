@@ -28,11 +28,9 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :stored-table-settings="storedTableSettings"
-      :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :is-downloadable="true"
-      :show-all-records="showAllRecords"
       :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
@@ -49,7 +47,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -179,8 +176,6 @@ export default {
           }
         ]
       },
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       payload: {
         pageSize: 10,
         orderBy: 'createTime',
@@ -411,11 +406,6 @@ export default {
           })
           .catch(() => {})
       })
-    },
-    handleAllRecordsClick() {
-      this.payload.pageSize = 75000
-      this.showAllRecords = false
-      this.getTableData()
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)

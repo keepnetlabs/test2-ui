@@ -27,12 +27,10 @@
         is-server-side-selection
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
-        :total-number-of-records="totalNumberOfRecords"
         :table="tableData"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :show-all-records="showAllRecords"
         :filterable="true"
         :options="true"
         :select-event="tableOptions.selectEvent"
@@ -50,7 +48,6 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -101,10 +98,8 @@ export default {
       deleteButtonDisabled: false,
       loading: true,
       storedTableSettings: null,
-      showAllRecords: false,
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
-      totalNumberOfRecords: 0,
       multipleSystemUserPayload: {},
       tableData: [],
       tableOptions: {
@@ -464,11 +459,6 @@ export default {
         this.selectedRow = null
       }
     },
-    handleAllRecordsClick() {
-      this.requestBody.pageSize = 75000
-      this.showAllRecords = false
-      this.callForListSystemUsers()
-    },
     closeOverlayWithUpdate() {
       this.toggleCreateOrEditSystemUser()
       this.callForListSystemUsers()
@@ -485,13 +475,6 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            this.totalNumberOfRecords = totalNumberOfRecords
-            if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-            if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
-              this.showAllRecords = false
-            }
             this.tableData = data.results || []
           })
           .catch(() => {

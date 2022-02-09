@@ -22,8 +22,6 @@
           :loading="isLoading"
           :count-row="countRow"
           :download-button="{ show: true, disabled: false }"
-          :show-all-records="showAllRecords"
-          :total-number-of-records="totalNumberOfRecords"
           :columns="tableOptions.columns"
           :empty="tableOptions.iEmpty"
           :filterable="true"
@@ -40,7 +38,6 @@
           @downloadEvent="handleTableDownload"
           @handleSelectionChange="handleSelectionChange"
           @refreshAction="getTableData"
-          @on-all-records-button-click="handleAllRecordsClick"
           @server-side-page-number-changed="serverSidePageNumberChanged"
           @server-side-size-changed="serverSideSizeChanged"
           @searchChangedEvent="handleSearchChange"
@@ -100,8 +97,6 @@ export default {
       isLoading: false,
       saveDisable: false,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       selectedArray: [],
       showTable: false,
@@ -267,11 +262,6 @@ export default {
           link.click()
         })
       })
-    },
-    handleAllRecordsClick() {
-      this.payload.pageSize = 75000
-      this.showAllRecords = false
-      this.getTableData()
     },
     confirm() {
       if (this.selectedArray && this.selectedArray.length > 0) {

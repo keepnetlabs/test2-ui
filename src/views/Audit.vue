@@ -11,7 +11,6 @@
           :table="tableData"
           :refName="'auditList'"
           :columns="tableOptions.columns"
-          :total-number-of-records="totalNumberOfRecords"
           :stored-table-settings="storedTableSettings"
           :selectable="true"
           :filterable="true"
@@ -22,16 +21,12 @@
           :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
-          :show-all-records="showAllRecords"
           :addButton="tableOptions.addButton"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
           :download="downloadOptions"
           @refreshAction="getDatatableList"
           @downloadEvent="exportAuditLog"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
-          @on-all-records-button-click="handleAllRecordsClick"
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
@@ -70,8 +65,6 @@ export default {
     return {
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       storedTableSettings: null,
       tableData: [],
       tableOptions: {
@@ -405,11 +398,6 @@ export default {
         .finally(() => {
           this.loading = false
         })
-    },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
