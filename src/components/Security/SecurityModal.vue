@@ -80,7 +80,6 @@
                       @click:append="show1 = !show1"
                       autocomplete="new"
                       id="input--security-popup-current-password"
-                      browser-autocomplete="username"
                       persistent-hint
                     ></v-text-field>
                   </div>
@@ -103,7 +102,6 @@
                       @click:append="show2 = !show2"
                       autocomplete="password"
                       id="input--security-popup-new-password"
-                      browser-autocomplete="password"
                       persistent-hint
                     ></v-text-field>
                   </div>
@@ -129,7 +127,6 @@
                       hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                       autocomplete="new-password"
                       id="input--security-popup-re-new-password"
-                      browser-autocomplete="new-password"
                       persistent-hint
                     ></v-text-field>
                   </div>
