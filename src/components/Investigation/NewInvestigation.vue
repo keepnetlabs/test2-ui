@@ -7,7 +7,7 @@
   >
     <template v-slot:overlay-body>
       <div class="new-investigation-wrapper">
-        <v-card flat light style="max-width: 554px">
+        <v-card flat light style="max-width: 554px;">
           <app-modal-body-header
             title="Start New Investigation"
             sub-title="Select filters and date options to start an investigation"
@@ -15,11 +15,9 @@
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-list-item class="edit-name-area 0 pa-0 investigation-name">
               <v-list-item-content class>
-                <label
-                  id="label--investigation-name"
-                  class="pb-2 edit-labels"
-                  >{{ labels.InvestigationName }}</label
-                >
+                <label id="label--investigation-name" class="pb-2 edit-labels">{{
+                  labels.InvestigationName
+                }}</label>
                 <v-text-field
                   id="input--investigation-name"
                   placeholder="Enter an investigation name"
@@ -29,25 +27,19 @@
                   :rules="[
                     investigationNameRules.required,
                     investigationNameRules.empty,
-                    investigationNameRules.maxLength,
+                    investigationNameRules.maxLength
                   ]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
-            <v-list-item
-              class="edit-industry-area pt-2 pb-4 pa-0 target-users-select"
-            >
+            <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
               <v-list-item-content class>
-                <label
-                  id="label--investigation-target-users"
-                  class="edit-labels"
-                  >{{ labels.TargetUsers }}</label
-                >
-                <label
-                  id="label--investigation-target-users-sub"
-                  class="edit-sub-labels"
-                  >{{ labels.InvestigateSubLabel }}</label
-                >
+                <label id="label--investigation-target-users" class="edit-labels">{{
+                  labels.TargetUsers
+                }}</label>
+                <label id="label--investigation-target-users-sub" class="edit-sub-labels">{{
+                  labels.InvestigateSubLabel
+                }}</label>
                 <div class="target-users-select__radio-group">
                   <v-radio-group
                     v-model="targetUserType"
@@ -89,30 +81,22 @@
                     v-if="targetUserType === 'Groups'"
                     key="groups"
                     v-infinite-scroll="{
-                      target:
-                        '#input--investigation-target-user-groups .k-select__menu',
-                      callback: callForTargetGroups,
+                      target: '#input--investigation-target-user-groups .k-select__menu',
+                      callback: callForTargetGroups
                     }"
                     v-select-search-handler="{
                       callback: callForSearchTargetGroups,
-                      isLoadingKey: 'isUserGroupsLoading',
+                      isLoadingKey: 'isUserGroupsLoading'
                     }"
                     type="autocomplete"
                     id="input--investigation-target-user-groups"
                     custom-menu-class="menu--investigation-target-user-groups"
                     :items="userGroupsItems"
                     :placeholder="
-                      targetUserType === 'AllUsers'
-                        ? 'All Users'
-                        : 'Select user groups'
+                      targetUserType === 'AllUsers' ? 'All Users' : 'Select user groups'
                     "
                     outlined
-                    class="
-                      edit-select
-                      new-investigation__combo
-                      target-users-select-multi
-                      select-specific-users
-                    "
+                    class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     v-model.trim="targetUsersValue"
                     :rules="[targetUsers.required]"
                     item-text="name"
@@ -125,23 +109,18 @@
                     :return-object="true"
                     prepend-inner-icon="mdi-magnify"
                     autocomplete="disabled"
-                    :no-data-text="
-                      isUserGroupsLoading
-                        ? 'Loading...'
-                        : 'No user group available'
-                    "
+                    :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
                   />
                   <k-select
                     v-if="targetUserType === 'SpecificUsers'"
                     key="users"
                     v-infinite-scroll="{
-                      target:
-                        '#input--investigation-target-user-specific-users .k-select__menu',
-                      callback: callForTargetUsers,
+                      target: '#input--investigation-target-user-specific-users .k-select__menu',
+                      callback: callForTargetUsers
                     }"
                     v-select-search-handler="{
                       callback: callForSearchTargetUsers,
-                      isLoadingKey: 'isTargetUsersLoading',
+                      isLoadingKey: 'isTargetUsersLoading'
                     }"
                     v-model.trim="targetUsersValue"
                     type="autocomplete"
@@ -161,17 +140,10 @@
                     :return-object="false"
                     :rules="[targetUsers.required]"
                     :no-data-text="
-                      isTargetUsersLoading
-                        ? 'Loading...'
-                        : 'No specific user available'
+                      isTargetUsersLoading ? 'Loading...' : 'No specific user available'
                     "
                     outlined
-                    class="
-                      edit-select
-                      new-investigation__combo
-                      target-users-select-multi
-                      select-specific-users
-                    "
+                    class="edit-select new-investigation__combo target-users-select-multi select-specific-users"
                     prepend-inner-icon="mdi-magnify"
                   />
                 </div>
@@ -179,16 +151,12 @@
             </v-list-item>
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class="filter-container">
-                <label
-                  id="label--investigation-search-criteria"
-                  class="edit-labels"
-                  >{{ labels.SearchCriteria }}</label
-                >
-                <label
-                  id="label--investigation-search-criteria-sub"
-                  class="edit-sub-labels"
-                  >Define criteria for the investigation. Emails that match any
-                  of the criteria will be found</label
+                <label id="label--investigation-search-criteria" class="edit-labels">{{
+                  labels.SearchCriteria
+                }}</label>
+                <label id="label--investigation-search-criteria-sub" class="edit-sub-labels"
+                  >Define criteria for the investigation. Emails that match any of the criteria will
+                  be found</label
                 >
                 <div
                   class="filter-item"
@@ -205,7 +173,7 @@
                       :class="[
                         'filter-list-select',
                         'k-treeselect',
-                        { 'k-treeselect--error': isSubmitted && !list.option },
+                        { 'k-treeselect--error': isSubmitted && !list.option }
                       ]"
                       :clearable="false"
                       :options="filterListOption"
@@ -214,18 +182,12 @@
                     <div
                       v-if="isSubmitted && !list.option"
                       class="v-text-field__details checkbox-error"
-                      style="left: 2px !important; bottom: -17px !important"
+                      style="left: 2px !important; bottom: -17px !important;"
                     >
                       <transition appear name="bounce">
-                        <div
-                          class="v-messages theme--light error--text"
-                          role="alert"
-                        >
+                        <div class="v-messages theme--light error--text" role="alert">
                           <div class="v-messages__wrapper">
-                            <div
-                              class="v-messages__message"
-                              style="padding-left: 10px"
-                            >
+                            <div class="v-messages__message" style="padding-left: 10px;">
                               Required
                             </div>
                           </div>
@@ -246,7 +208,7 @@
                       outlined
                       :class="[
                         'edit-name-textfield edit-select standard-height',
-                        { 'edit-name-textfield__flagged': list.isFlagged },
+                        { 'edit-name-textfield__flagged': list.isFlagged }
                       ]"
                       :rules="getSearchCriteriaItemRules(list.option)"
                       :label="list.isFlagged ? list.label : ''"
@@ -272,27 +234,19 @@
                   type="button"
                   @click="addNewFilterListOption()"
                 >
-                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon
-                  >ADD CRITERIA
+                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD CRITERIA
                 </button>
               </v-list-item-content>
             </v-list-item>
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class>
-                <label
-                  id="label--investigation-email-date-range"
-                  class="edit-labels"
+                <label id="label--investigation-email-date-range" class="edit-labels"
                   >Email Date Range</label
                 >
-                <label
-                  id="label--investigation-email-date-range-sub"
-                  class="edit-sub-labels"
+                <label id="label--investigation-email-date-range-sub" class="edit-sub-labels"
                   >Select range of emails’ sending date</label
                 >
-                <div
-                  class="date-row"
-                  :class="[!isDateValid && 'date-picker-container']"
-                >
+                <div class="date-row" :class="[!isDateValid && 'date-picker-container']">
                   <InputDate
                     v-model="date"
                     id="input--investigation-email-date-range"
@@ -302,20 +256,11 @@
                     :rules="[]"
                     :defaultTime="['00:00:00', '23:59:00']"
                   />
-                  <div
-                    class="v-text-field__details checkbox-error"
-                    v-if="!isDateValid"
-                  >
+                  <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
                     <transition appear name="bounce">
-                      <div
-                        class="v-messages theme--light error--text"
-                        role="alert"
-                      >
+                      <div class="v-messages theme--light error--text" role="alert">
                         <div class="v-messages__wrapper">
-                          <div
-                            class="v-messages__message"
-                            style="padding-left: 10px"
-                          >
+                          <div class="v-messages__message" style="padding-left: 10px;">
                             Date is required
                           </div>
                         </div>
@@ -327,16 +272,11 @@
             </v-list-item>
             <v-list-item class="mt-2 pb-0 pa-0">
               <v-list-item-content class>
-                <label
-                  id="label--investigation-select-sources"
-                  class="edit-labels"
+                <label id="label--investigation-select-sources" class="edit-labels"
                   >Select Sources</label
                 >
-                <label
-                  id="label--investigation-select-sources-sub"
-                  class="edit-sub-labels"
-                  >Select mail configurations to conduct this investigation
-                  in</label
+                <label id="label--investigation-select-sources-sub" class="edit-sub-labels"
+                  >Select mail configurations to conduct this investigation in</label
                 >
                 <MailConfigurationSelectSources v-model="scanTypes" />
               </v-list-item-content>
@@ -344,12 +284,8 @@
 
             <v-list-item class="edit-industry-area mt-2 pb-4 pa-0">
               <v-list-item-content class>
-                <label id="label--investigation-duration" class="edit-labels"
-                  >Duration</label
-                >
-                <label
-                  id="label--investigation-duration-sub"
-                  class="edit-sub-labels"
+                <label id="label--investigation-duration" class="edit-labels">Duration</label>
+                <label id="label--investigation-duration-sub" class="edit-sub-labels"
                   >Select how many days the investigation will run</label
                 >
                 <k-select
@@ -368,12 +304,8 @@
             </v-list-item>
             <v-list-item class="edit-industry-area mt-2 pa-0">
               <v-list-item-content class>
-                <label id="label--investigation-action" class="edit-labels"
-                  >Action</label
-                >
-                <label
-                  id="label--investigation-action-sub"
-                  class="edit-sub-labels"
+                <label id="label--investigation-action" class="edit-labels">Action</label>
+                <label id="label--investigation-action-sub" class="edit-sub-labels"
                   >Select action to be executed if email is found</label
                 >
                 <k-select
@@ -394,34 +326,18 @@
             </v-list-item>
             <v-list-item
               class="edit-industry-area mt-2 pa-0"
-              v-if="
-                selectedAction === 'DeleteAndNotify' ||
-                selectedAction === 'Warning'
-              "
+              v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
             >
               <v-list-item-content class>
-                <label id="label--investigation-message" class="edit-labels"
-                  >Message</label
-                >
+                <label id="label--investigation-message" class="edit-labels">Message</label>
                 <v-text-field
-                  v-if="
-                    selectedAction === 'DeleteAndNotify' ||
-                    selectedAction === 'Warning'
-                  "
+                  v-if="selectedAction === 'DeleteAndNotify' || selectedAction === 'Warning'"
                   id="input--investigation-message"
                   placeholder="Enter a message"
                   outlined
-                  class="
-                    edit-name-textfield edit-select
-                    standard-height
-                    warning-message
-                  "
+                  class="edit-name-textfield edit-select standard-height warning-message"
                   v-model.trim="warningMessage"
-                  :rules="[
-                    messageRules.required,
-                    messageRules.empty,
-                    messageRules.maxLength,
-                  ]"
+                  :rules="[messageRules.required, messageRules.empty, messageRules.maxLength]"
                 ></v-text-field>
               </v-list-item-content>
             </v-list-item>
@@ -442,7 +358,7 @@
           :disabled="saveDisable"
           id="btn-save--investigation-modal"
           class="k-overlay__btn-save white--text"
-          style="width: auto"
+          style="width: auto;"
           rounded
           color="#2196f3"
           @click="onCreateClicked"
@@ -454,24 +370,24 @@
 </template>
 
 <script>
-import Treeselect from "@riophae/vue-treeselect";
-import AppModal from "../AppModal";
-import { getTargetUsers, searchTargetGroups } from "../../api/targetUsers";
-import AppModalBodyHeader from "@/components/SmallComponents/AppModalBodyHeader";
+import Treeselect from '@riophae/vue-treeselect'
+import AppModal from '../AppModal'
+import { getTargetUsers, searchTargetGroups } from '../../api/targetUsers'
+import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import {
   getDefaultAxiosPayload,
   getSelectSearchPayload,
   getTimeZoneForMoment,
   scrollToComponent,
-  isDifferent,
-} from "@/utils/functions";
-import KSelect from "@/components/Common/Inputs/KSelect";
-import labels from "@/model/constants/labels";
-import InputDate from "@/components/Common/Inputs/InputDate";
-import * as Validations from "@/utils/validations";
-import MailConfigurationSelectSources from "@/components/Common/Others/MailConfigurationSelectSources";
-import InfiniteScroll from "@/directives/infinite-scroll";
-import SelectSearchHandler from "@/directives/select-search-handler";
+  isDifferent
+} from '@/utils/functions'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import labels from '@/model/constants/labels'
+import InputDate from '@/components/Common/Inputs/InputDate'
+import * as Validations from '@/utils/validations'
+import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
+import InfiniteScroll from '@/directives/infinite-scroll'
+import SelectSearchHandler from '@/directives/select-search-handler'
 export default {
   components: {
     MailConfigurationSelectSources,
@@ -479,28 +395,28 @@ export default {
     AppModalBodyHeader,
     AppModal,
     InputDate,
-    Treeselect,
+    Treeselect
   },
   directives: {
-    "infinite-scroll": InfiniteScroll,
-    "select-search-handler": SelectSearchHandler,
+    'infinite-scroll': InfiniteScroll,
+    'select-search-handler': SelectSearchHandler
   },
   watch: {
     date(val) {
       if (val && val.length > 0) {
-        this.isDateValid = true;
+        this.isDateValid = true
       } else {
-        this.isDateValid = false;
+        this.isDateValid = false
       }
     },
     targetUsersValue(newVal, oldVal) {
-      if (newVal[0] === "") {
-        newVal.splice(0, 1);
+      if (newVal[0] === '') {
+        newVal.splice(0, 1)
       }
     },
     filterList() {
-      this.checkAllSingularity();
-    },
+      this.checkAllSingularity()
+    }
   },
 
   data() {
@@ -521,265 +437,241 @@ export default {
       isTargetUsersLoading: false,
       pickerOptions: {
         onPick: (date) => {
-          const { minDate, maxDate } = date;
-          const refPicker = this.$refs.refPicker;
+          const { minDate, maxDate } = date
+          const refPicker = this.$refs.refPicker
           if (maxDate && minDate) {
-            this.date = refPicker.formatToValue([minDate, maxDate]);
+            this.date = refPicker.formatToValue([minDate, maxDate])
           }
         },
         shortcuts: [
           {
-            text: "Last week",
+            text: 'Last week',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-              picker.$emit("pick", [start, end]);
-            },
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+              picker.$emit('pick', [start, end])
+            }
           },
           {
-            text: "Last month",
+            text: 'Last month',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-              picker.$emit("pick", [start, end]);
-            },
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+              picker.$emit('pick', [start, end])
+            }
           },
           {
-            text: "Last 3 months",
+            text: 'Last 3 months',
             onClick(picker) {
-              const end = new Date();
-              const start = new Date();
-              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-              picker.$emit("pick", [start, end]);
-            },
-          },
-        ],
+              const end = new Date()
+              const start = new Date()
+              start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+              picker.$emit('pick', [start, end])
+            }
+          }
+        ]
       },
       placeholders: {
-        ip: "Enter an ip address ",
-        from: "Enter an email address",
-        to: "Enter an email address",
-        cc: "Enter an email address",
-        bcc: "Enter an email address",
-        subject: "Enter a subject",
-        senderName: "Enter a from name",
-        url: "Enter a domain name",
-        keyword: "Enter a keyword",
-        size: "Enter file size(byte)",
-        name: "Enter a file name(case sensitive)",
-        sha512: "Enter a sha512 key",
-        md5: "Enter a md5 key",
-        extension: "Enter an file extension",
-        regex: "Enter a regular expression",
+        ip: 'Enter an ip address ',
+        from: 'Enter an email address',
+        to: 'Enter an email address',
+        cc: 'Enter an email address',
+        bcc: 'Enter an email address',
+        subject: 'Enter a subject',
+        senderName: 'Enter a from name',
+        url: 'Enter a domain name',
+        keyword: 'Enter a keyword',
+        size: 'Enter file size(byte)',
+        name: 'Enter a file name(case sensitive)',
+        sha512: 'Enter a sha512 key',
+        md5: 'Enter a md5 key',
+        extension: 'Enter an file extension',
+        regex: 'Enter a regular expression'
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: `Manual Investigation - ${this.$moment(
-        Date.now()
-      ).format(getTimeZoneForMoment())}`,
+      investgationName: `Manual Investigation - ${this.$moment(Date.now()).format(
+        getTimeZoneForMoment()
+      )}`,
       isDateValid: true,
-      targetUserType: "AllUsers",
-      targetUsersValue: "",
+      targetUserType: 'AllUsers',
+      targetUsersValue: '',
       date: [],
-      startDate: "",
-      endDate: "",
+      startDate: '',
+      endDate: '',
       selectedDuration: 1,
-      selectedAction: "NoAction",
-      name: "",
-      description: "",
+      selectedAction: 'NoAction',
+      name: '',
+      description: '',
       privacy: false,
       categories: [],
-      selectedCategory: "",
+      selectedCategory: '',
       isAllSelected: false,
       userGroupsItems: [],
       durations: [
-        { durationLabel: "1 Day", durationValue: 1 },
-        { durationLabel: "3 Days", durationValue: 3 },
-        { durationLabel: "7 Days", durationValue: 7 },
+        { durationLabel: '1 Day', durationValue: 1 },
+        { durationLabel: '3 Days', durationValue: 3 },
+        { durationLabel: '7 Days', durationValue: 7 }
       ],
       actions: [
-        { actionLabel: "No action", actionValue: "NoAction" },
-        { actionLabel: "Notify user only", actionValue: "Warning" },
-        { actionLabel: "Move to trash", actionValue: "MoveToTrash" },
-        { actionLabel: "Delete email", actionValue: "Delete" },
+        { actionLabel: 'No action', actionValue: 'NoAction' },
+        { actionLabel: 'Notify user only', actionValue: 'Warning' },
+        { actionLabel: 'Move to trash', actionValue: 'MoveToTrash' },
+        { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
       filterList: [
         {
           renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
-          text: "",
-        },
+          text: ''
+        }
       ],
       filterListOption: [
         {
-          label: "Header",
-          id: "header",
+          label: 'Header',
+          id: 'header',
           isDefaultExpanded: true,
           children: [
-            { label: "Subject", id: "subject" },
-            { label: "From", id: "from" },
-            { label: "To", id: "to" },
-            { label: "CC", id: "cc" },
-            { label: "BCC", id: "bcc" },
-            { label: "IP Address", id: "ip" },
-            { label: "Sender Name", id: "senderName" },
-          ],
+            { label: 'Subject', id: 'subject' },
+            { label: 'From', id: 'from' },
+            { label: 'To', id: 'to' },
+            { label: 'CC', id: 'cc' },
+            { label: 'BCC', id: 'bcc' },
+            { label: 'IP Address', id: 'ip' },
+            { label: 'Sender Name', id: 'senderName' }
+          ]
         },
         {
-          label: "Body",
-          id: "body",
+          label: 'Body',
+          id: 'body',
           isDefaultExpanded: true,
           children: [
-            { label: "URL", id: "url" },
-            { label: "Keyword", id: "keyword" },
-            { label: "Regex", id: "regex" },
-          ],
+            { label: 'URL', id: 'url' },
+            { label: 'Keyword', id: 'keyword' },
+            { label: 'Regex', id: 'regex' }
+          ]
         },
         {
-          label: "Attachment",
-          id: "attachment",
+          label: 'Attachment',
+          id: 'attachment',
           isDefaultExpanded: true,
           children: [
-            { label: "File Name", id: "name" },
-            { label: "File Size", id: "size" },
-            { label: "File Extension", id: "extension" },
-            { label: "SHA512", id: "sha512" },
-            { label: "MD5", id: "md5" },
-          ],
-        },
+            { label: 'File Name', id: 'name' },
+            { label: 'File Size', id: 'size' },
+            { label: 'File Extension', id: 'extension' },
+            { label: 'SHA512', id: 'sha512' },
+            { label: 'MD5', id: 'md5' }
+          ]
+        }
       ],
       valid: false,
-      menu1: "",
-      menu2: "",
+      menu1: '',
+      menu2: '',
       investigationNameRules: {
         required: (v) => Validations.required(v),
         empty: (v) => Validations.startsWithSpace(v),
         maxLength: (v) =>
-          Validations.maxLength(
-            v,
-            300,
-            labels.getMaxLengthMessage(labels.InvestigationName, 300)
-          ),
+          Validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.InvestigationName, 300))
       },
       messageRules: {
         required: (v) => Validations.required(v),
         empty: (v) => Validations.startsWithSpace(v),
         maxLength: (v) =>
-          Validations.maxLength(
-            v,
-            64,
-            labels.getMaxLengthMessage(labels.Message, 64)
-          ),
+          Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Message, 64))
       },
       filterSelectRules: {
         required: (v) => Validations.required(v),
-        format: (v) => Validations.startsWithSpace(v),
+        format: (v) => Validations.startsWithSpace(v)
       },
       targetUsers: {
         required: (v) => {
-          return v.length ? Validations.required(v) : labels.Required;
-        },
-      },
-    };
+          return v.length ? Validations.required(v) : labels.Required
+        }
+      }
+    }
   },
   props: [
-    "isEdit",
-    "statsAndMenuData",
-    "investigationDetailsTargetUsersListData",
-    "investigationDetailsData",
-    "status",
-    "selectedMail",
-    "isTs",
-    "isIr",
+    'isEdit',
+    'statsAndMenuData',
+    'investigationDetailsTargetUsersListData',
+    'investigationDetailsData',
+    'status',
+    'selectedMail',
+    'isTs',
+    'isIr'
   ],
   methods: {
     callForTargetGroups(addPage) {
       if (addPage) {
-        this.targetGroupsAxiosPayload.pageNumber += 1;
-        if (
-          this.targetGroupsAxiosPayload.pageNumber >
-          this.totalNumberOfPagesOfTargetGroups
-        )
-          return;
+        this.targetGroupsAxiosPayload.pageNumber += 1
+        if (this.targetGroupsAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetGroups) return
       }
       searchTargetGroups(this.targetGroupsAxiosPayload)
         .then((response) => {
-          this.setTargetGroups(response);
-          this.totalNumberOfPagesOfTargetGroups =
-            response.data.data.totalNumberOfPages;
+          this.setTargetGroups(response)
+          this.totalNumberOfPagesOfTargetGroups = response.data.data.totalNumberOfPages
         })
-        .finally(() => (this.isUserGroupsLoading = false));
+        .finally(() => (this.isUserGroupsLoading = false))
     },
     setTargetGroups(response) {
-      const { data: { data = [] } = [] } = response;
-      this.userGroupsItems = [...this.userGroupsItems, ...data.results];
+      const { data: { data = [] } = [] } = response
+      this.userGroupsItems = [...this.userGroupsItems, ...data.results]
     },
-    callForSearchTargetGroups(search = "") {
+    callForSearchTargetGroups(search = '') {
       if (search) {
-        searchTargetGroups(
-          getSelectSearchPayload(this.targetGroupsAxiosPayload, search)
-        )
+        searchTargetGroups(getSelectSearchPayload(this.targetGroupsAxiosPayload, search))
           .then(this.setTargetGroups)
           .finally(() => {
-            this.isUserGroupsLoading = false;
-          });
+            this.isUserGroupsLoading = false
+          })
       } else {
-        this.callForTargetGroups();
+        this.callForTargetGroups()
       }
     },
     callForTargetUsers(addPage) {
       if (addPage) {
-        this.targetUsersAxiosPayload.pageNumber += 1;
-        if (
-          this.targetUsersAxiosPayload.pageNumber >
-          this.totalNumberOfPagesOfTargetUsers
-        )
-          return;
+        this.targetUsersAxiosPayload.pageNumber += 1
+        if (this.targetUsersAxiosPayload.pageNumber > this.totalNumberOfPagesOfTargetUsers) return
       }
       getTargetUsers(this.targetUsersAxiosPayload)
         .then((response) => {
-          this.setTargetUsers(response);
-          this.totalNumberOfPagesOfTargetUsers =
-            response.data.data.totalNumberOfPages;
+          this.setTargetUsers(response)
+          this.totalNumberOfPagesOfTargetUsers = response.data.data.totalNumberOfPages
         })
         .finally(() => {
-          this.isTargetUsersLoading = false;
-        });
+          this.isTargetUsersLoading = false
+        })
     },
-    callForSearchTargetUsers(search = "") {
+    callForSearchTargetUsers(search = '') {
       if (search) {
-        getTargetUsers(
-          getSelectSearchPayload(this.targetUsersAxiosPayload, search, "Email")
-        )
+        getTargetUsers(getSelectSearchPayload(this.targetUsersAxiosPayload, search, 'Email'))
           .then(this.setTargetUsers)
           .finally(() => {
-            this.isTargetUsersLoading = false;
-          });
+            this.isTargetUsersLoading = false
+          })
       } else {
-        this.callForTargetUsers();
+        this.callForTargetUsers()
       }
     },
     setTargetUsers(response) {
-      const { data: { data = [] } = [] } = response;
-      this.specificUserItems = [...this.specificUserItems, ...data.results];
+      const { data: { data = [] } = [] } = response
+      this.specificUserItems = [...this.specificUserItems, ...data.results]
     },
     checkAllSingularity() {
-      this.filterList.forEach((item, index) =>
-        this.checkSingularity(item, index)
-      );
+      this.filterList.forEach((item, index) => this.checkSingularity(item, index))
     },
     handleInputSingularityChange(list, index) {
-      this.checkSingularity({ ...list }, index);
-      this.checkAllSingularity();
+      this.checkSingularity({ ...list }, index)
+      this.checkAllSingularity()
     },
     handleDeleteListItem(index) {
-      this.filterList.splice(index, 1);
-      this.errorMessages.splice(index, 1);
+      this.filterList.splice(index, 1)
+      this.errorMessages.splice(index, 1)
     },
     checkSingularity(list = {}, index = 0) {
-      if (!list.option && !list.text) return;
-      let message = "";
+      if (!list.option && !list.text) return
+      let message = ''
       if (
         this.filterList.find(
           (item, itemIndex) =>
@@ -790,226 +682,147 @@ export default {
             itemIndex < index
         )
       )
-        message = `There is already ${list.option} with same value`;
-      this.$set(this.errorMessages, index, message);
+        message = `There is already ${list.option} with same value`
+      this.$set(this.errorMessages, index, message)
     },
     actionChanged() {
-      this.warningMessage = "";
-      if (
-        this.selectedAction === "DeleteAndNotify" ||
-        this.selectedAction === "Warning"
-      ) {
+      this.warningMessage = ''
+      if (this.selectedAction === 'DeleteAndNotify' || this.selectedAction === 'Warning') {
         setTimeout(() => {
-          const el = this.$refs.form.$el.querySelector(".warning-message");
-          scrollToComponent(el);
-        }, 250);
+          const el = this.$refs.form.$el.querySelector('.warning-message')
+          scrollToComponent(el)
+        }, 250)
       }
     },
     checkCheckboxValidation() {
-      let isCheckboxEmpty = this.scanTypes.length === 0;
+      let isCheckboxEmpty = this.scanTypes.length === 0
       if (isCheckboxEmpty) {
-        this.checkboxError = true;
+        this.checkboxError = true
       } else {
-        this.checkboxError = false;
+        this.checkboxError = false
       }
     },
     handleTargetUserTypeChange() {
-      this.targetUsersValue = [];
-      this.$refs.form.resetValidation();
+      this.targetUsersValue = []
+      this.$refs.form.resetValidation()
     },
-    getSearchCriteriaItemRules(option = "") {
-      const rules = [];
+    getSearchCriteriaItemRules(option = '') {
+      const rules = []
       if (!option) {
-        return rules;
+        return rules
       }
-      if (["from", "to", "cc", "bcc"].includes(option)) {
+      if (['from', 'to', 'cc', 'bcc'].includes(option)) {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
           (v) => Validations.email(v),
           (v) =>
-            Validations.maxLength(
-              v,
-              320,
-              labels.getMaxLengthMessage(labels.EmailAddress, 320)
-            ),
+            Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.EmailAddress, 320)),
           (v) => {
             if (Validations.email(v)) {
-              return (
-                Validations.controlEmailLength(v) || labels.InvalidEmailAddress
-              );
+              return Validations.controlEmailLength(v) || labels.InvalidEmailAddress
             }
-            return false;
+            return false
           }
-        );
-        return rules;
-      } else if (option === "ip") {
+        )
+        return rules
+      } else if (option === 'ip') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
           (v) => Validations.ip(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              15,
-              labels.getMaxLengthMessage(labels.IpAddress, 15)
-            )
-        );
-        return rules;
-      } else if (option === "subject") {
+          (v) => Validations.maxLength(v, 15, labels.getMaxLengthMessage(labels.IpAddress, 15))
+        )
+        return rules
+      } else if (option === 'subject') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              64,
-              labels.getMaxLengthMessage(labels.Subject)
-            )
-        );
-        return rules;
-      } else if (option === "senderName") {
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
+        )
+        return rules
+      } else if (option === 'senderName') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              64,
-              labels.getMaxLengthMessage(labels.SenderName)
-            )
-        );
-        return rules;
-      } else if (option === "url") {
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName))
+        )
+        return rules
+      } else if (option === 'url') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              2000,
-              labels.getMaxLengthMessage(labels.URL, 2000)
-            ),
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
           (v) => Validations.urlOrIpAddress(v)
-        );
-        return rules;
-      } else if (option === "keyword") {
+        )
+        return rules
+      } else if (option === 'keyword') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              64,
-              labels.getMaxLengthMessage(labels.Keyword)
-            )
-        );
-        return rules;
-      } else if (option === "size") {
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword))
+        )
+        return rules
+      } else if (option === 'size') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
           (v) => Validations.isNumber(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              320,
-              labels.getMaxLengthMessage(labels.Size, 320)
-            )
-        );
-        return rules;
-      } else if (option === "name") {
+          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Size, 320))
+        )
+        return rules
+      } else if (option === 'name') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              64,
-              labels.getMaxLengthMessage(labels.Name)
-            )
-        );
-        return rules;
-      } else if (option === "sha512") {
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name))
+        )
+        return rules
+      } else if (option === 'sha512') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.minLength(
-              v,
-              128,
-              labels.getMinLengthMessage(labels.SHA512, 128)
-            ),
-          (v) =>
-            Validations.maxLength(
-              v,
-              128,
-              labels.getMaxLengthMessage(labels.SHA512, 128)
-            )
-        );
-        return rules;
-      } else if (option === "md5") {
+          (v) => Validations.minLength(v, 128, labels.getMinLengthMessage(labels.SHA512, 128)),
+          (v) => Validations.maxLength(v, 128, labels.getMaxLengthMessage(labels.SHA512, 128))
+        )
+        return rules
+      } else if (option === 'md5') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              32,
-              labels.getMaxLengthMessage(labels.MD5, 32)
-            ),
-          (v) =>
-            Validations.minLength(
-              v,
-              32,
-              labels.getMinLengthMessage(labels.MD5, 32)
-            )
-        );
-        return rules;
-      } else if (option === "extension") {
+          (v) => Validations.maxLength(v, 32, labels.getMaxLengthMessage(labels.MD5, 32)),
+          (v) => Validations.minLength(v, 32, labels.getMinLengthMessage(labels.MD5, 32))
+        )
+        return rules
+      } else if (option === 'extension') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
-          (v) =>
-            Validations.minLength(
-              v,
-              3,
-              labels.getMinLengthMessage(labels.Extension, 3)
-            ),
-          (v) =>
-            Validations.maxLength(
-              v,
-              10,
-              labels.getMaxLengthMessage(labels.Extension, 10)
-            ),
+          (v) => Validations.minLength(v, 3, labels.getMinLengthMessage(labels.Extension, 3)),
+          (v) => Validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Extension, 10)),
           (v) => Validations.extension(v, labels.InvalidExtension)
-        );
-        return rules;
-      } else if (option === "regex") {
+        )
+        return rules
+      } else if (option === 'regex') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
-          (v) =>
-            Validations.maxLength(
-              v,
-              2000,
-              labels.getMaxLengthMessage(labels.Regex, 10)
-            )
-        );
+          (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.Regex, 10))
+        )
       }
-      return rules;
+      return rules
     },
     debounce(fn, delay) {
       if (this.timeout) {
-        clearTimeout(this.timeout);
+        clearTimeout(this.timeout)
       }
       this.timeout = setTimeout(() => {
-        fn();
-      }, delay);
+        fn()
+      }, delay)
     },
     addNewFilterListOption() {
       this.filterList.push({
         renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
-        text: "",
-      });
+        text: ''
+      })
     },
     onCancelClicked() {
       if (!this.isSubmitted) {
@@ -1020,57 +833,54 @@ export default {
           date: this.date,
           scanTypes: this.scanTypes,
           selectedDuration: this.selectedDuration,
-          selectedAction: this.selectedAction,
-        };
-        const isChanged = isDifferent(
-          currentFormValues,
-          this.initialFormValues
-        );
-        if (!isChanged) {
-          return this.$emit("closeAdd");
+          selectedAction: this.selectedAction
         }
-        this.$store.dispatch("common/setIsShowLeavingDialog", {
+        const isChanged = isDifferent(currentFormValues, this.initialFormValues)
+        if (!isChanged) {
+          return this.$emit('closeAdd')
+        }
+        this.$store.dispatch('common/setIsShowLeavingDialog', {
           show: true,
           callback: () => {
-            this.$emit("closeAdd");
-          },
-        });
+            this.$emit('closeAdd')
+          }
+        })
       }
     },
     filterData(data = []) {
       return data.reduce((acc, item) => {
         if (
           Object.keys(item).some((key) => {
-            return item[key];
+            return item[key]
           })
         )
-          acc.push(item);
-        return acc;
-      }, []);
+          acc.push(item)
+        return acc
+      }, [])
     },
     onCreateClicked() {
       // creating new form data if validation is success
       // data structure is a little bit difficult. The filter values has to be check all time when It's selected.
 
-      this.isSubmitted = true;
+      this.isSubmitted = true
       if (this.date.length < 1) {
-        this.isDateValid = false;
+        this.isDateValid = false
       }
       if (this.$refs.form.validate()) {
         if (!this.isDateValid || this.errorMessages.some((item) => item)) {
           this.$nextTick(() => {
-            const el = this.$refs.form.$el.querySelector(".date-row");
-            scrollToComponent(el);
-          });
-          return false;
+            const el = this.$refs.form.$el.querySelector('.date-row')
+            scrollToComponent(el)
+          })
+          return false
         }
 
         if (!this.filterList.every((filter) => filter.text && filter.option)) {
           this.$nextTick(() => {
-            const el = this.$refs.form.$el.querySelector(".error--text");
-            scrollToComponent(el);
-          });
-          return false;
+            const el = this.$refs.form.$el.querySelector('.error--text')
+            scrollToComponent(el)
+          })
+          return false
         }
         let headersData = [
           {
@@ -1080,41 +890,39 @@ export default {
             cc: null,
             bcc: null,
             subject: null,
-            senderName: null,
-          },
-        ];
+            senderName: null
+          }
+        ]
 
         let bodyData = [
           {
             url: null,
             keyword: null,
-            regex: null,
-          },
-        ];
+            regex: null
+          }
+        ]
         let attachmentsData = [
           {
             size: null,
             name: null,
             md5: null,
             sha512: null,
-            extension: null,
-          },
-        ];
+            extension: null
+          }
+        ]
         // checking filter status. If there are only 1 filter, it goes to the first element of array
         // If It's already exist, then new element pushs to the array.
         // for more info look at the ip case ( 4 line below)
         for (let index = 0; index < this.filterList.length; index++) {
           switch (this.filterList[index].option) {
-            case "ip":
+            case 'ip':
               if (
                 !headersData[headersData.length - 1].ip &&
-                headersData[headersData.length - 1].ip !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].ip != this.filterList[index].text
               ) {
                 // in the first array, there is no value at ip value name pair
                 // that's why, we can set the our ip value to the first array element
-                headersData.filter((s) => s.ip == null)[0].ip =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.ip == null)[0].ip = this.filterList[index].text
               } else {
                 // ip value name pair is already exist. Thus, we push new array tp the headersData with all values null except ip.
                 headersData.push({
@@ -1124,18 +932,16 @@ export default {
                   cc: null,
                   bcc: null,
                   subject: null,
-                  senderName: null,
-                });
+                  senderName: null
+                })
               }
-              break;
-            case "from":
+              break
+            case 'from':
               if (
                 !headersData[headersData.length - 1].from &&
-                headersData[headersData.length - 1].from !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].from != this.filterList[index].text
               ) {
-                headersData.filter((s) => s.from == null)[0].from =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.from == null)[0].from = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -1144,18 +950,16 @@ export default {
                   cc: null,
                   bcc: null,
                   subject: null,
-                  senderName: null,
-                });
+                  senderName: null
+                })
               }
-              break;
-            case "to":
+              break
+            case 'to':
               if (
                 !headersData[headersData.length - 1].to &&
-                headersData[headersData.length - 1].to !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].to != this.filterList[index].text
               ) {
-                headersData.filter((s) => s.to == null)[0].to =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.to == null)[0].to = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -1164,18 +968,16 @@ export default {
                   cc: null,
                   bcc: null,
                   subject: null,
-                  senderName: null,
-                });
+                  senderName: null
+                })
               }
-              break;
-            case "cc":
+              break
+            case 'cc':
               if (
                 !headersData[headersData.length - 1].cc &&
-                headersData[headersData.length - 1].cc !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].cc != this.filterList[index].text
               ) {
-                headersData.filter((s) => s.cc == null)[0].cc =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.cc == null)[0].cc = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -1184,18 +986,16 @@ export default {
                   cc: this.filterList[index].text,
                   bcc: null,
                   subject: null,
-                  senderName: null,
-                });
+                  senderName: null
+                })
               }
-              break;
-            case "bcc":
+              break
+            case 'bcc':
               if (
                 !headersData[headersData.length - 1].bcc &&
-                headersData[headersData.length - 1].bcc !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].bcc != this.filterList[index].text
               ) {
-                headersData.filter((s) => s.bcc == null)[0].bcc =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.bcc == null)[0].bcc = this.filterList[index].text
               } else {
                 headersData.push({
                   ip: null,
@@ -1204,18 +1004,18 @@ export default {
                   cc: null,
                   bcc: this.filterList[index].text,
                   subject: null,
-                  senderName: null,
-                });
+                  senderName: null
+                })
               }
-              break;
-            case "subject":
+              break
+            case 'subject':
               if (
                 !headersData[headersData.length - 1].subject &&
-                headersData[headersData.length - 1].subject !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].subject != this.filterList[index].text
               ) {
-                headersData.filter((s) => s.subject == null)[0].subject =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.subject == null)[0].subject = this.filterList[
+                  index
+                ].text
               } else {
                 headersData.push({
                   ip: null,
@@ -1224,18 +1024,18 @@ export default {
                   cc: null,
                   bcc: null,
                   subject: this.filterList[index].text,
-                  senderName: null,
-                });
+                  senderName: null
+                })
               }
-              break;
-            case "senderName":
+              break
+            case 'senderName':
               if (
                 !headersData[headersData.length - 1].senderName &&
-                headersData[headersData.length - 1].senderName !=
-                  this.filterList[index].text
+                headersData[headersData.length - 1].senderName != this.filterList[index].text
               ) {
-                headersData.filter((s) => s.senderName == null)[0].senderName =
-                  this.filterList[index].text;
+                headersData.filter((s) => s.senderName == null)[0].senderName = this.filterList[
+                  index
+                ].text
               } else {
                 headersData.push({
                   ip: null,
@@ -1244,153 +1044,141 @@ export default {
                   cc: null,
                   bcc: null,
                   subject: null,
-                  senderName: this.filterList[index].text,
-                });
+                  senderName: this.filterList[index].text
+                })
               }
-              break;
-            case "url":
+              break
+            case 'url':
               if (
                 !bodyData[bodyData.length - 1].url &&
                 bodyData[bodyData.length - 1].url != this.filterList[index].text
               ) {
-                bodyData.filter((s) => s.url == null)[0].url =
-                  this.filterList[index].text;
+                bodyData.filter((s) => s.url == null)[0].url = this.filterList[index].text
               } else {
                 bodyData.push({
                   url: this.filterList[index].text,
                   keyword: null,
-                  isRegex: false,
-                });
+                  isRegex: false
+                })
               }
-              break;
-            case "keyword":
+              break
+            case 'keyword':
               if (
                 !bodyData[bodyData.length - 1].keyword &&
-                bodyData[bodyData.length - 1].keyword !=
-                  this.filterList[index].text
+                bodyData[bodyData.length - 1].keyword != this.filterList[index].text
               ) {
-                bodyData.filter((s) => s.keyword == null)[0].keyword =
-                  this.filterList[index].text;
+                bodyData.filter((s) => s.keyword == null)[0].keyword = this.filterList[index].text
               } else {
                 bodyData.push({
                   url: null,
                   keyword: this.filterList[index].text,
-                  isRegex: false,
-                });
+                  isRegex: false
+                })
               }
-              break;
-            case "size":
+              break
+            case 'size':
               if (
                 !attachmentsData[attachmentsData.length - 1].size &&
-                attachmentsData[attachmentsData.length - 1].size !=
-                  this.filterList[index].text
+                attachmentsData[attachmentsData.length - 1].size != this.filterList[index].text
               ) {
-                attachmentsData.filter((s) => s.size == null)[0].size =
-                  this.filterList[index].text;
+                attachmentsData.filter((s) => s.size == null)[0].size = this.filterList[index].text
               } else {
                 attachmentsData.push({
                   size: this.filterList[index].text,
                   name: null,
                   md5: null,
                   sha512: null,
-                  extension: null,
-                });
+                  extension: null
+                })
               }
-              break;
-            case "name":
+              break
+            case 'name':
               if (
                 !attachmentsData[attachmentsData.length - 1].name &&
-                attachmentsData[attachmentsData.length - 1].name !=
-                  this.filterList[index].text
+                attachmentsData[attachmentsData.length - 1].name != this.filterList[index].text
               ) {
-                attachmentsData.filter((s) => s.name == null)[0].name =
-                  this.filterList[index].text;
+                attachmentsData.filter((s) => s.name == null)[0].name = this.filterList[index].text
               } else {
                 attachmentsData.push({
                   size: null,
                   name: this.filterList[index].text,
                   md5: null,
                   sha512: null,
-                  extension: null,
-                });
+                  extension: null
+                })
               }
-              break;
-            case "sha512":
+              break
+            case 'sha512':
               if (
                 !attachmentsData[attachmentsData.length - 1].sha512 &&
-                attachmentsData[attachmentsData.length - 1].sha512 !=
-                  this.filterList[index].text
+                attachmentsData[attachmentsData.length - 1].sha512 != this.filterList[index].text
               ) {
-                attachmentsData.filter((s) => s.sha512 == null)[0].sha512 =
-                  this.filterList[index].text;
+                attachmentsData.filter((s) => s.sha512 == null)[0].sha512 = this.filterList[
+                  index
+                ].text
               } else {
                 attachmentsData.push({
                   size: null,
                   name: null,
                   md5: null,
                   sha512: this.filterList[index].text,
-                  extension: null,
-                });
+                  extension: null
+                })
               }
-              break;
-            case "md5":
+              break
+            case 'md5':
               if (
                 !attachmentsData[attachmentsData.length - 1].md5 &&
-                attachmentsData[attachmentsData.length - 1].md5 !=
-                  this.filterList[index].text
+                attachmentsData[attachmentsData.length - 1].md5 != this.filterList[index].text
               ) {
-                attachmentsData.filter((s) => s.md5 == null)[0].md5 =
-                  this.filterList[index].text;
+                attachmentsData.filter((s) => s.md5 == null)[0].md5 = this.filterList[index].text
               } else {
                 attachmentsData.push({
                   size: null,
                   name: null,
                   md5: this.filterList[index].text,
                   sha512: null,
-                  extension: null,
-                });
+                  extension: null
+                })
               }
-              break;
-            case "extension":
+              break
+            case 'extension':
               if (
                 !attachmentsData[attachmentsData.length - 1].extension &&
-                attachmentsData[attachmentsData.length - 1].extension !=
-                  this.filterList[index].text
+                attachmentsData[attachmentsData.length - 1].extension != this.filterList[index].text
               ) {
-                attachmentsData.filter(
-                  (s) => s.extension == null
-                )[0].extension = this.filterList[index].text;
+                attachmentsData.filter((s) => s.extension == null)[0].extension = this.filterList[
+                  index
+                ].text
               } else {
                 attachmentsData.push({
                   size: null,
                   name: null,
                   md5: null,
                   sha512: null,
-                  extension: this.filterList[index].text,
-                });
+                  extension: this.filterList[index].text
+                })
               }
-              break;
-            case "regex":
+              break
+            case 'regex':
               if (
                 !bodyData[bodyData.length - 1].regex &&
-                bodyData[bodyData.length - 1].regex !==
-                  this.filterList[index].text
+                bodyData[bodyData.length - 1].regex !== this.filterList[index].text
               ) {
-                bodyData.filter((s) => s.regex == null)[0].regex =
-                  this.filterList[index].text;
+                bodyData.filter((s) => s.regex == null)[0].regex = this.filterList[index].text
               } else {
                 bodyData.push({
                   url: null,
                   keyword: null,
-                  regex: this.filterList[index].text,
-                });
+                  regex: this.filterList[index].text
+                })
               }
             default:
-              break;
+              break
           }
         }
 
-        const [startDate, endDate] = this.date;
+        const [startDate, endDate] = this.date
         const newInvestigationObj = {
           headers: this.filterData(headersData),
           bodies: this.filterData(bodyData),
@@ -1402,7 +1190,7 @@ export default {
           expireDate: this.newExpireDate(startDate, this.selectedDuration),
           targetUserType: this.targetUserType,
           targetUsers:
-            this.targetUserType == "Groups"
+            this.targetUserType == 'Groups'
               ? this.targetUsersValue.map((item) => item.resourceId)
               : this.targetUsersValue,
           //targetUsersValue: this.targetUsersValue,
@@ -1410,261 +1198,238 @@ export default {
           autoAction: {
             type: this.selectedAction,
             isPermanentDelete: false,
-            warningMessage: this.warningMessage,
-          },
-        };
-        this.saveDisable = true;
+            warningMessage: this.warningMessage
+          }
+        }
+        this.saveDisable = true
         // post request with body data
         this.$store
-          .dispatch("investigations/createInvestigation", newInvestigationObj)
+          .dispatch('investigations/createInvestigation', newInvestigationObj)
           .catch(() => {
-            this.saveDisable = false;
+            this.saveDisable = false
           })
           .then((resp) => {
-            this.saveDisable = false;
-            this.$emit("closeWithRoute", resp);
-            this.$emit("closeAdd", true);
-          });
+            this.saveDisable = false
+            this.$emit('closeWithRoute', resp)
+            this.$emit('closeAdd', true)
+          })
       } else {
         return this.$nextTick(() => {
-          this.saveDisable = false;
-          const el = this.$refs.form.$el.querySelector(".error--text");
-          scrollToComponent(el);
-        });
+          this.saveDisable = false
+          const el = this.$refs.form.$el.querySelector('.error--text')
+          scrollToComponent(el)
+        })
       }
     },
     checkInvestigationName() {
       // investigaiton rule checking
-      if (this.name.length && !this.name.startsWith(" "))
-        this.$store.dispatch("threadSharing/checkName", this.name);
+      if (this.name.length && !this.name.startsWith(' '))
+        this.$store.dispatch('threadSharing/checkName', this.name)
     },
     minDate() {
       // set min date
       var d = new Date(),
-        month = "" + (d.getMonth() + 1),
-        day = "" + d.getDate(),
-        year = d.getFullYear();
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear()
 
-      if (month.length < 2) month = "0" + month;
-      if (day.length < 2) day = "0" + day;
+      if (month.length < 2) month = '0' + month
+      if (day.length < 2) day = '0' + day
 
-      return [year - 1, month, day].join("-");
+      return [year - 1, month, day].join('-')
     },
     maxDate() {
       // set max date
       var d = new Date(),
-        month = "" + (d.getMonth() + 1),
-        day = "" + d.getDate(),
-        year = d.getFullYear();
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear()
 
-      if (month.length < 2) month = "0" + month;
-      if (day.length < 2) day = "0" + day;
+      if (month.length < 2) month = '0' + month
+      if (day.length < 2) day = '0' + day
 
-      return [year + 1, month, day].join("-");
+      return [year + 1, month, day].join('-')
     },
     newExpireDate(endDate, duration) {
       // set expire date with duration value
       // backend allows to iso string
       function addDays(date, days) {
-        var result = new Date(date);
-        result.setDate(result.getDate() + days);
-        return result;
+        var result = new Date(date)
+        result.setDate(result.getDate() + days)
+        return result
       }
-      let now = new Date();
-      let newDate = addDays(now, duration);
-      let date = new Date(newDate).toISOString();
-      return this.$moment(date).format(getTimeZoneForMoment());
+      let now = new Date()
+      let newDate = addDays(now, duration)
+      let date = new Date(newDate).toISOString()
+      return this.$moment(date).format(getTimeZoneForMoment())
     },
     allowedDates(val) {
       // return val < this.endDate;
     },
     checkIsEdit() {
       if (this.isEdit) {
-        this.investgationName = this.investigationDetailsData.name;
+        this.investgationName = this.investigationDetailsData.name
         //this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
-        this.scanTypes =
-          this.investigationDetailsData.scanConfigurationDetails.map(
-            ({ mailConfigurationResourceId, type }) => ({
-              mailConfigurationResourceId,
-              type,
-            })
-          );
+        this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
+          ({ mailConfigurationResourceId, type }) => ({
+            mailConfigurationResourceId,
+            type
+          })
+        )
         //this.date.push(this.investigationDetailsData.endDate)
         this.selectedDuration =
           new Date(this.investigationDetailsData.expireDate).getDate() -
-          new Date(this.investigationDetailsData.createTime).getDate();
-        this.targetUserType = this.investigationDetailsData.targetUserType;
-        if (this.investigationDetailsData.targetUserType == "Groups") {
-          this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
-            (item) => {
-              let obj = {
-                name: item.targetUser,
-                resourceId: item.targetGroupResourceId,
-              };
-              return obj;
+          new Date(this.investigationDetailsData.createTime).getDate()
+        this.targetUserType = this.investigationDetailsData.targetUserType
+        if (this.investigationDetailsData.targetUserType == 'Groups') {
+          this.targetUsersValue = this.investigationDetailsData.targetUsers.map((item) => {
+            let obj = {
+              name: item.targetUser,
+              resourceId: item.targetGroupResourceId
             }
-          );
-        } else if (
-          this.investigationDetailsData.targetUserType == "SpecificUsers"
-        ) {
+            return obj
+          })
+        } else if (this.investigationDetailsData.targetUserType == 'SpecificUsers') {
           this.targetUsersValue = this.investigationDetailsData.targetUsers.map(
             (item) => item.targetUser
-          );
+          )
         }
-        const headers = this.investigationDetailsData.headers.reduce(
-          (acc, item) => {
-            for (let [key, value] of Object.entries(item)) {
-              if (value && key != "resourceId") {
-                acc.push({ option: key, text: value });
-              }
+        const headers = this.investigationDetailsData.headers.reduce((acc, item) => {
+          for (let [key, value] of Object.entries(item)) {
+            if (value && key != 'resourceId') {
+              acc.push({ option: key, text: value })
             }
-            return acc;
-          },
-          []
-        );
-        const body = this.investigationDetailsData.bodies.reduce(
-          (acc, item) => {
-            for (let [key, value] of Object.entries(item)) {
-              if (value && key != "resourceId") {
-                acc.push({ option: key, text: value });
-              }
+          }
+          return acc
+        }, [])
+        const body = this.investigationDetailsData.bodies.reduce((acc, item) => {
+          for (let [key, value] of Object.entries(item)) {
+            if (value && key != 'resourceId') {
+              acc.push({ option: key, text: value })
             }
-            return acc;
-          },
-          []
-        );
-        const attachments = this.investigationDetailsData.attachments.reduce(
-          (acc, item) => {
-            for (let [key, value] of Object.entries(item)) {
-              if (value && key != "resourceId") {
-                acc.push({ option: key, text: value });
-              }
+          }
+          return acc
+        }, [])
+        const attachments = this.investigationDetailsData.attachments.reduce((acc, item) => {
+          for (let [key, value] of Object.entries(item)) {
+            if (value && key != 'resourceId') {
+              acc.push({ option: key, text: value })
             }
-            return acc;
-          },
-          []
-        );
-        this.filterList = [...headers, ...body, ...attachments];
-        this.selectedAction = "noAction";
+          }
+          return acc
+        }, [])
+        this.filterList = [...headers, ...body, ...attachments]
+        this.selectedAction = 'noAction'
       }
-    },
+    }
   },
   created() {
-    this.callForTargetUsers();
-    this.callForTargetGroups();
-    this.checkIsEdit();
+    this.callForTargetUsers()
+    this.callForTargetGroups()
+    this.checkIsEdit()
     if (this.selectedMail) {
-      this.filterList = [];
-      const isTs = this.isTs;
-      const isIR = this.isIr;
+      this.filterList = []
+      const isTs = this.isTs
+      const isIR = this.isIr
       if (isIR) {
-        this.selectedMail.urls =
-          this.selectedMail.notifiedEmailInvestigation.urls;
-        this.selectedMail.attachments =
-          this.selectedMail.notifiedEmailInvestigation.attachments;
+        this.selectedMail.urls = this.selectedMail.notifiedEmailInvestigation.urls
+        this.selectedMail.attachments = this.selectedMail.notifiedEmailInvestigation.attachments
       }
       this.selectedMail.attachments &&
         this.selectedMail.attachments.map((item) => {
-          const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true;
+          const attachmentCase = isTs ? !item.isHidden && item.isFlagged : true
           if (attachmentCase)
             this.filterList.push({
-              option: "md5",
+              option: 'md5',
               text: item.md5,
               isFlagged: item.isFlagged,
-              label: "Malicious",
-            });
+              label: 'Malicious'
+            })
           if (attachmentCase)
             this.filterList.push({
-              option: "sha512",
+              option: 'sha512',
               text: item.sha512,
               isFlagged: item.isFlagged,
-              label: "Malicious",
-            });
-        });
-      const bccCase = isTs
-        ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged
-        : true;
+              label: 'Malicious'
+            })
+        })
+      const bccCase = isTs ? !this.selectedMail.isBccHidden && this.selectedMail.isBccFlagged : true
       this.selectedMail.bcc &&
         bccCase &&
         this.selectedMail.bcc.map((item) => {
           this.filterList.push({
-            option: "bcc",
+            option: 'bcc',
             text: item,
             isFlagged: this.selectedMail.isBccFlagged,
-            label: "Harmful sender",
-          });
-        });
-      const ccCase = isTs
-        ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged
-        : true;
+            label: 'Harmful sender'
+          })
+        })
+      const ccCase = isTs ? !this.selectedMail.isCcHidden && this.selectedMail.isCcFlagged : true
       this.selectedMail.cc &&
         ccCase &&
         this.selectedMail.cc.map((item) => {
           this.filterList.push({
-            option: "cc",
+            option: 'cc',
             text: item,
             isFlagged: this.selectedMail.isCcFlagged,
-            label: "Harmful sender",
-          });
-        });
+            label: 'Harmful sender'
+          })
+        })
       const fromCase = isTs
         ? !this.selectedMail.isFromHidden && this.selectedMail.isFromFlagged
-        : true;
+        : true
       this.selectedMail.from &&
         fromCase &&
         this.filterList.push({
-          option: "from",
+          option: 'from',
           text: this.selectedMail.from,
           isFlagged: this.selectedMail.isFromFlagged,
-          label: "Harmful sender",
-        });
+          label: 'Harmful sender'
+        })
       const subjectCase = isTs
-        ? !this.selectedMail.isSubjectHidden &&
-          this.selectedMail.isSubjectFlagged
-        : true;
+        ? !this.selectedMail.isSubjectHidden && this.selectedMail.isSubjectFlagged
+        : true
       this.selectedMail.subject &&
         subjectCase &&
         this.filterList.push({
-          option: "subject",
+          option: 'subject',
           text: this.selectedMail.subject,
           isFlagged: this.selectedMail.isSubjectFlagged,
-          label: "Harmful sender",
-        });
-      const toCase = isTs
-        ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged
-        : true;
+          label: 'Harmful sender'
+        })
+      const toCase = isTs ? !this.selectedMail.isToHidden && this.selectedMail.isToFlagged : true
       this.selectedMail.to &&
         toCase &&
         !isIR &&
         this.selectedMail.to.map((item) => {
           this.filterList.push({
-            option: "to",
+            option: 'to',
             text: item,
             isFlagged: this.selectedMail.isToFlagged,
-            label: "Harmful sender",
-          });
-        });
+            label: 'Harmful sender'
+          })
+        })
       this.selectedMail.urls &&
         this.selectedMail.urls.map((item) => {
-          const urlCase = isTs ? !item.isHidden && item.isFlagged : true;
+          const urlCase = isTs ? !item.isHidden && item.isFlagged : true
           if (urlCase)
             this.filterList.push({
-              option: "url",
+              option: 'url',
               text: item.url,
               isFlagged: item.isFlagged,
-              label: "Phishing",
-            });
-        });
+              label: 'Phishing'
+            })
+        })
       if (!this.filterList.length) {
-        this.filterList.push({});
+        this.filterList.push({})
       }
-      this.investgationName = `Manual Investigation - ${this.$moment(
-        Date.now()
-      ).format(getTimeZoneForMoment())}`;
+      this.investgationName = `Manual Investigation - ${this.$moment(Date.now()).format(
+        getTimeZoneForMoment()
+      )}`
     }
-    document.querySelector(".page-nav").style.zIndex = 8;
+    document.querySelector('.page-nav').style.zIndex = 8
     this.initialFormValues = {
       investigationName: this.investgationName,
       targetUsers: this.targetUsers,
@@ -1672,14 +1437,14 @@ export default {
       date: this.date,
       scanTypes: this.scanTypes,
       selectedDuration: this.selectedDuration,
-      selectedAction: this.selectedAction,
-    };
+      selectedAction: this.selectedAction
+    }
   },
   mounted() {},
   beforeDestroy() {
-    document.querySelector(".page-nav").style.zIndex = 19;
-  },
-};
+    document.querySelector('.page-nav').style.zIndex = 19
+  }
+}
 </script>
 <style lang="scss">
 .new-investigation-wrapper {
@@ -1726,7 +1491,7 @@ export default {
       }
 
       .v-input--selection-controls.v-input .v-label {
-        font-family: "Open Sans", sans-serif;
+        font-family: 'Open Sans', sans-serif;
         font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
@@ -1806,7 +1571,7 @@ export default {
     }
 
     .v-label {
-      font-family: "Open Sans", sans-serif;
+      font-family: 'Open Sans', sans-serif;
       font-size: 13px;
       font-weight: normal;
       font-stretch: normal;
@@ -1924,7 +1689,7 @@ export default {
   }
 
   .v-card-headline {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -1984,7 +1749,7 @@ export default {
 
     button {
       border-radius: 18px !important;
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px !important;
       font-weight: 400 !important;
       font-stretch: normal !important;
@@ -2013,7 +1778,7 @@ export default {
   }
 
   .edit-privacy-bottom-label {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -2125,7 +1890,7 @@ export default {
       text-align: center;
 
       input {
-        font-family: "Open Sans", sans-serif !important;
+        font-family: 'Open Sans', sans-serif !important;
         font-size: 13px;
         font-weight: normal;
         font-stretch: normal;
@@ -2170,7 +1935,7 @@ export default {
     position: absolute;
     left: 0;
     top: 10px;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
     font-weight: normal;
     font-stretch: normal;
@@ -2199,7 +1964,7 @@ export default {
   }
 
   .select-error {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 9px;
     font-weight: normal;
     font-stretch: normal;
@@ -2231,7 +1996,7 @@ export default {
   }
 
   .email-name {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -2250,7 +2015,7 @@ export default {
     height: 25px;
     border-radius: 4px;
     background-color: #f56c6c;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: 600;
     font-stretch: normal;
@@ -2266,7 +2031,7 @@ export default {
   }
 
   .email-time {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -2277,7 +2042,7 @@ export default {
   }
 
   .v-card-headline {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 20px;
     font-weight: 600;
     font-stretch: normal;
@@ -2318,7 +2083,7 @@ export default {
     margin-top: 32px;
 
     h2 {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -2331,7 +2096,7 @@ export default {
     }
 
     .header-info {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -2346,7 +2111,7 @@ export default {
 
   .preview-body {
     margin-top: 24px;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -2361,7 +2126,7 @@ export default {
     overflow: auto;
 
     h2 {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -2412,7 +2177,7 @@ export default {
   }
 
   .date-picker {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
 
     .v-input__slot {
       box-shadow: unset !important;
@@ -2421,7 +2186,7 @@ export default {
       text-align: center;
 
       input {
-        font-family: "Open Sans", sans-serif !important;
+        font-family: 'Open Sans', sans-serif !important;
         font-size: 13px;
         font-weight: normal;
         font-stretch: normal;
@@ -2460,7 +2225,7 @@ export default {
     position: absolute;
     left: 0;
     top: 10px;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 13px;
     font-weight: normal;
     font-stretch: normal;
@@ -2525,7 +2290,7 @@ export default {
   }
 
   .required {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 9px;
     font-weight: normal;
     font-stretch: normal;
@@ -2575,7 +2340,7 @@ export default {
     transition: all 0.3s ease-in-out;
 
     .select-header {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -2607,7 +2372,7 @@ export default {
     margin-top: 24px;
 
     h2 {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -2625,7 +2390,7 @@ export default {
     }
 
     .header-info {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -2638,7 +2403,7 @@ export default {
 
   .preview-body {
     margin-top: 24px;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -2680,7 +2445,7 @@ export default {
     margin-top: 24px;
 
     h2 {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -2722,7 +2487,7 @@ export default {
         span {
           width: 100%;
           text-align: center;
-          font-family: "Open Sans", sans-serif !important;
+          font-family: 'Open Sans', sans-serif !important;
           font-size: 12px;
           font-weight: normal;
           font-stretch: normal;
@@ -2757,7 +2522,7 @@ export default {
       box-shadow: unset !important;
       background-color: #fff !important;
       margin-right: 16px;
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -2799,7 +2564,7 @@ export default {
     margin-top: 16px;
 
     .detail-black {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: 600;
       font-stretch: normal;
@@ -2819,7 +2584,7 @@ export default {
     margin-top: 24px;
 
     .disc-header {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 20px;
       font-weight: 600;
       font-stretch: normal;
@@ -2831,7 +2596,7 @@ export default {
     }
 
     .discovery-p {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -2846,7 +2611,7 @@ export default {
     display: flex;
     flex-direction: row;
     padding-bottom: 8px;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-stretch: normal;
@@ -2926,7 +2691,7 @@ export default {
         margin-right: 16px;
 
         .v-input__slot {
-          font-family: "Open Sans", sans-serif !important;
+          font-family: 'Open Sans', sans-serif !important;
           font-size: 13px;
           font-weight: 600;
           font-stretch: normal;
@@ -2958,8 +2723,7 @@ export default {
 
       .send-btn {
         border-radius: 18px !important;
-        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1),
-          0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(33, 150, 243, 0.3) !important;
         background-color: #2196f3 !important;
         color: #fff !important;
         height: 36px !important;
@@ -2982,7 +2746,7 @@ export default {
       .user-wrapper {
         .username,
         .company-name {
-          font-family: "Open Sans", sans-serif !important;
+          font-family: 'Open Sans', sans-serif !important;
           font-size: 14px;
           font-weight: 600;
           font-stretch: normal;
@@ -3002,7 +2766,7 @@ export default {
       .the-comment {
         margin-bottom: 0 !important;
         padding-top: 8px !important;
-        font-family: "Open Sans", sans-serif !important;
+        font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: normal;
         font-stretch: normal;
@@ -3019,7 +2783,7 @@ export default {
 
       span {
         text-decoration: none;
-        font-family: "Open Sans", sans-serif !important;
+        font-family: 'Open Sans', sans-serif !important;
         font-size: 14px;
         font-weight: 600;
         font-stretch: normal;
@@ -3088,7 +2852,7 @@ export default {
       color: rgba(255, 255, 255, 0.87) !important;
       font-size: 12px !important;
       line-height: 1.33 !important;
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-weight: 400;
     }
   }
@@ -3117,7 +2881,7 @@ export default {
   }
 
   .ts-title {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 24px;
     font-weight: normal;
     font-style: normal;
@@ -3224,7 +2988,7 @@ export default {
       border-radius: 18px;
       border: solid 1.5px #c0c4cc;
       background-color: #fff;
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px;
       font-weight: normal;
       font-stretch: normal;
@@ -3243,7 +3007,7 @@ export default {
     margin-top: 22px;
     margin-left: 0;
     margin-right: 0;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: bold;
     font-style: normal;
@@ -3308,7 +3072,7 @@ export default {
 
   .ts-body {
     margin-top: 10px;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     font-style: normal;
@@ -3319,7 +3083,7 @@ export default {
   }
 
   .ts-user-comp {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-style: normal;
@@ -3333,7 +3097,7 @@ export default {
     }
 
     .ts-user-date {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 12px;
       font-weight: normal;
       font-stretch: normal;
@@ -3345,7 +3109,7 @@ export default {
   }
 
   .ts-action-counter {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -3356,7 +3120,7 @@ export default {
   }
 
   .ts-actions {
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 12px;
     font-weight: normal;
     font-stretch: normal;
@@ -3369,8 +3133,8 @@ export default {
 
   .v-expansion-panel {
     border-radius: 20px !important;
-    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2),
-      0 2px 2px 0 rgba(80, 80, 80, 0.14), 0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
+    box-shadow: 0 1px 5px 0 rgba(80, 80, 80, 0.2), 0 2px 2px 0 rgba(80, 80, 80, 0.14),
+      0 3px 1px -2px rgba(80, 80, 80, 0.12) !important;
     background-color: #fff;
     border: unset !important;
   }
@@ -3404,7 +3168,7 @@ export default {
     }
 
     .v-tab {
-      font-family: "Open Sans", sans-serif !important;
+      font-family: 'Open Sans', sans-serif !important;
       font-size: 14px !important;
       font-weight: 600 !important;
       text-transform: uppercase;
@@ -3433,7 +3197,7 @@ export default {
 
   .v-expansion-panel-content {
     border-radius: 20px !important;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
   }
 
   .v-expansion-panel-content__wrap {
@@ -3638,8 +3402,7 @@ export default {
     height: 40px;
   }
 
-  .vue-treeselect__indent-level-1
-    .vue-treeselect__option.vue-treeselect__option--selected {
+  .vue-treeselect__indent-level-1 .vue-treeselect__option.vue-treeselect__option--selected {
     border-left: solid 5px !important;
     border-color: #2196f3 !important;
     padding-left: 11px !important;
