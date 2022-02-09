@@ -501,7 +501,7 @@ export default {
       date: [],
       startDate: '',
       endDate: '',
-      selectedDuration: 3,
+      selectedDuration: 1,
       selectedAction: 'NoAction',
       name: '',
       description: '',
