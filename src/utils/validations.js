@@ -49,6 +49,20 @@ export function url(value, message = 'Invalid URL') {
       ) || message
     : true
 }
+
+export function urlOrIpAddress(value, message = 'Invalid URL') {
+  value = getValue(value)
+  return value
+    ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
+        value
+      ) ||
+        /^(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)$/.test(
+          value
+        ) ||
+        message
+    : true
+}
+
 export function urlWithPort(value, message = 'Invalid URL') {
   value = getValue(value)
   return value
