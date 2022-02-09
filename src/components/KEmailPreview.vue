@@ -65,7 +65,7 @@ export default {
           height = this.getFirstValidHeight(height, iframe)
         }
         if (this.isBodyHeightUsed) {
-          height += 16
+          height += 8
         }
         if (height > this.numberHeight && height > 300) {
           if (
@@ -75,7 +75,7 @@ export default {
           ) {
             height += 20
           }
-          height = height + 4
+          height = height + 12
           this.height = height + 'px'
           this.stopCalculateFrame = true
           cancelAnimationFrame(this.animationFrame)

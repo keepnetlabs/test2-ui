@@ -206,11 +206,7 @@ export default {
       this.tab = index
     },
     editHtmlTemplate() {
-      this.$emit(
-        'update:template',
-        this.template ||
-          this.$refs?.refPreview?.$refs?.iframe?.contentWindow?.document?.body?.innerHTML
-      )
+      this.$emit('update:template', this.template || this.$refs?.refPreview?.$el?.outerHTML)
       this.toggleShowGrapesModal()
     },
     getPStyle() {

@@ -250,6 +250,12 @@ export default {
   watch: {
     'formValues.emailTemplateCategoryResourceId'(resourceId) {
       this.handleCategoryChange(resourceId)
+    },
+    'formValues.template'() {
+      this.reRender = true
+      this.timeoutId = setTimeout(() => {
+        this.reRender = false
+      }, 100)
     }
   },
   created() {
@@ -275,10 +281,6 @@ export default {
           }
           this.formValues[key] = value
         }
-        this.reRender = true
-        this.timeoutId = setTimeout(() => {
-          this.reRender = false
-        }, 100)
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
@@ -297,10 +299,6 @@ export default {
       const logoKey = '{COMPANYLOGO}'
       const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
       this.formValues.template = htmlTemplate.replaceAll(logoKey, logoUrl)
-      this.reRender = true
-      this.timeoutId = setTimeout(() => {
-        this.reRender = false
-      }, 1)
     },
     callForDatas() {
       Promise.all([this.callForCategories(), this.callForSmtpSettings()]).then((response) => {
