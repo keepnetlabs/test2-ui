@@ -176,14 +176,12 @@ export default {
   },
   watch: {
     activeBlockManagerComponents() {
-      if (!this.isEdit) {
-        this.setDefaultTemplate()
-      }
       this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
     }
   },
   mounted() {
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
+    this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
@@ -206,7 +204,6 @@ export default {
       this.tab = index
     },
     editHtmlTemplate() {
-      this.$emit('update:template', this.template || this.$refs?.refPreview?.$el?.outerHTML)
       this.toggleShowGrapesModal()
     },
     getPStyle() {

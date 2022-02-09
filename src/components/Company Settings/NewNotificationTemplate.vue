@@ -62,7 +62,6 @@
         />
         <form-group title="Email Template" class-name="email-template mt-2" onsubmit="return false">
           <email-template
-            v-if="!reRender"
             ref="refEmailTemplate"
             :active-block-manager-components="activeBlockManagerComponents"
             :edit-items-disabled="editItemsDisabled"
@@ -179,7 +178,6 @@ export default {
   },
   data() {
     return {
-      reRender: false,
       labels,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -250,12 +248,6 @@ export default {
   watch: {
     'formValues.emailTemplateCategoryResourceId'(resourceId) {
       this.handleCategoryChange(resourceId)
-    },
-    'formValues.template'() {
-      this.reRender = true
-      this.timeoutId = setTimeout(() => {
-        this.reRender = false
-      }, 100)
     }
   },
   created() {
@@ -284,11 +276,6 @@ export default {
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
     }
-  },
-  mounted() {
-    this.$nextTick(() => {
-      this.formValues.template = this.$refs.refEmailTemplate.$refs.refPreview.outerHTML
-    })
   },
   beforeDestroy() {
     clearTimeout(this.timeoutId)
