@@ -356,7 +356,9 @@
           <v-card>
             <div class="header">
               <div class="title">
-                <h2 id="text--incident-responder-playbook-top-rules">{{ labels.TopRules }}</h2>
+                <h2 id="text--incident-responder-playbook-top-rules">
+                  {{ labels.TopRules }}
+                </h2>
                 <p id="text--incident-responder-most-triggered-playbook-top-rules">
                   {{ labels.MostTriggeredPlaybookRules }}
                 </p>
@@ -3211,8 +3213,15 @@ export default {
   },
 
   beforeRouteLeave(to, from, next) {
+    const { refNewInvestigation } = this.$refs
     if (this.openInvestigationOverlay) {
       this.openInvestigationOverlay = false
+      next(false)
+    } else if (refNewInvestigation && this.isWantToAddNewInvestigation) {
+      if (to.name === 'Investigation Details') {
+        return next()
+      }
+      refNewInvestigation.onCancelClicked()
       next(false)
     } else {
       next(true)

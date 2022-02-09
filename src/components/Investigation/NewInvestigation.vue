@@ -522,7 +522,10 @@ export default {
         { actionLabel: 'Delete email', actionValue: 'Delete' }
       ],
       filterList: [
-        { renderKey: `column-key${Math.random().toString().substring(0, 5)}`, text: '' }
+        {
+          renderKey: `column-key${Math.random().toString().substring(0, 5)}`,
+          text: ''
+        }
       ],
       filterListOption: [
         {
@@ -750,7 +753,7 @@ export default {
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
           (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
-          (v) => Validations.url(v)
+          (v) => Validations.urlOrIpAddress(v)
         )
         return rules
       } else if (option === 'keyword') {
@@ -1270,7 +1273,10 @@ export default {
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
         this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
-          ({ mailConfigurationResourceId, type }) => ({ mailConfigurationResourceId, type })
+          ({ mailConfigurationResourceId, type }) => ({
+            mailConfigurationResourceId,
+            type
+          })
         )
         //this.date.push(this.investigationDetailsData.endDate)
         this.selectedDuration =
