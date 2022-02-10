@@ -28,7 +28,6 @@
         filterable
         options
         selectable
-        sizeable
         is-server-side
         :loading="loading"
         :table="tableData"

@@ -19,24 +19,21 @@
     <data-table
       id="domains-data-table"
       ref="refDomainsListList"
+      is-server-side
+      selectable
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :refName="'domainsList'"
       :columns="tableOptions.columns"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
-      :isServerSide="true"
       :server-side-props="serverSideProps"
       :download-button="tableOptions.downloadButton"
       :server-side-events="{ pagination: true, search: true, sort: true }"

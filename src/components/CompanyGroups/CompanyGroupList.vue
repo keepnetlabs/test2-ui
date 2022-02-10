@@ -21,6 +21,9 @@
       id="company-groups-data-table"
       ref="refGroupDataList"
       is-server-side
+      filterable
+      options
+      selectable
       :key="tableKey"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
@@ -29,14 +32,10 @@
       :columns="tableOptions.columns"
       :stored-table-settings="storedTableSettings"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :is-downloadable="true"
-      :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @addButton="addButton"

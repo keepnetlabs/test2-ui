@@ -24,19 +24,18 @@
       <data-table
         id="company-settings-rest-api-data-table"
         ref="refCustomApiList"
+        filterable
+        options
+        selectable
         :refName="'smtpSettingsList'"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :filterable="true"
-        :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :row-actions="tableOptions.rowActions"
         :stored-table-settings="storedTableSettings"
-        :selectable="true"
-        :sizeable="true"
         :table="tableData"
         :select-event="tableOptions.selectEvent"
         @editAction="handleEdit"

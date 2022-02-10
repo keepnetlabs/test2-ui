@@ -18,21 +18,23 @@
     <data-table
       id="dnsServiceList-data-table"
       ref="refDnsServiceListList"
+      is-server-side
+      selectable
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :refName="'dnsServiceListList'"
       :columns="tableOptions.columns"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :download-button="tableOptions.downloadButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="handleActionDelete"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -41,7 +43,6 @@
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
@@ -51,9 +52,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
       @addAction="handleAdd"
     >
     </data-table>
@@ -178,7 +176,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: 'You do not have any DNS Services',
           btn: labels.New,

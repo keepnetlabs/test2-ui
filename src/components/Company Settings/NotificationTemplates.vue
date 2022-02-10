@@ -25,22 +25,23 @@
       <data-table
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
+        filterable
+        options
+        selectable
+        is-server-side
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :table="tableData"
         :empty="tableOptions.empty"
         :loading="loading"
-        :filterable="true"
-        :row-key="'resourceId'"
-        :is-downloadable="false"
-        :options="true"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :stored-table-settings="storedTableSettings"
-        :selectable="true"
         :select-event="tableOptions.selectEvent"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
         @downloadEvent="exportNotificationTemplate"
@@ -55,9 +56,6 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
-        is-server-side
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
