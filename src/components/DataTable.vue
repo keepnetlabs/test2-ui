@@ -378,7 +378,7 @@
           </div>
         </div>
         <div
-          v-show="shouldShowTable"
+          v-if="shouldRenderTable"
           :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
           id="table-container"
           ref="tableContainer"
@@ -790,7 +790,7 @@
             </div>
           </div>
         </div>
-        <div v-if="!shouldShowTable" class="empty-table">
+        <div v-else class="empty-table">
           <div class="empty-inline">
             <slot name="empty-table-inline">
               <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
@@ -1099,27 +1099,9 @@ export default {
       type: Number,
       default: 0
     },
-    isEditableRuntime: {
-      type: Boolean,
-      default: false
-    },
     setClassName: {
       type: Function,
       default: () => {}
-    },
-    editableStatusItems: {
-      type: Array,
-      default: () => {
-        return ['Active', 'Inactive', 'N/A']
-      }
-    },
-    isPopupDateEditable: {
-      type: Boolean,
-      default: true
-    },
-    rowActionsMinWidth: {
-      type: Number,
-      default: 60
     },
     table: {
       type: Array,
@@ -1127,10 +1109,6 @@ export default {
     },
     refName: {
       type: String,
-      required: true
-    },
-    title: {
-      type: Object,
       required: false
     },
     pageSizes: {
@@ -1287,7 +1265,7 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
-    shouldShowTable() {
+    shouldRenderTable() {
       const { tableData, isColumnFilterActive, loading } = this
       return (tableData && tableData.length) || isColumnFilterActive || loading
     },

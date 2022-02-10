@@ -6,16 +6,15 @@
           id="audit-data-list"
           ref="refAuditList"
           is-server-side
+          selectable
+          filterable
+          options
           :loading="loading"
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           :refName="'auditList'"
           :columns="tableOptions.columns"
           :stored-table-settings="storedTableSettings"
-          :selectable="true"
-          :filterable="true"
-          :options="true"
-          :sizeable="true"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
           :pageSizes="tableOptions.pageSizes"

@@ -30,17 +30,17 @@
       @closeOverlay="toggleMatchingModal"
     />
     <datatable
+      id="playbook-data-table"
+      ref="refRulesList"
+      selectable
+      filterable
+      options
       is-server-side
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :row-actions="tableOptions.rowActions"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
@@ -54,7 +54,6 @@
       :download-button="getDownloadButton"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportRules"
-      id="playbook-data-table"
       @deleteAction="deleteRule($event)"
       @editAction="handleEdit"
       @columnFilterChanged="columnFilterChanged"

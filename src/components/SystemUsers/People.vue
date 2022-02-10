@@ -24,23 +24,25 @@
         v-if="checkPermissions('system-users/search', 'POST')"
         id="system-users-people-data-table"
         ref="refSystemUsersList"
+        is-server-side
         is-server-side-selection
+        filterable
+        options
+        selectable
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :table="tableData"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :filterable="true"
-        :options="true"
         :select-event="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :download-button="tableOptions.downloadButton"
         :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @deleteAction="handleDelete"
         @downloadEvent="exportSystemUsers"
         @editAction="handleEdit"
@@ -58,9 +60,6 @@
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       />
     </div>
   </div>

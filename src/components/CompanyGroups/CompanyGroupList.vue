@@ -32,7 +32,6 @@
       :columns="tableOptions.columns"
       :stored-table-settings="storedTableSettings"
       :empty="tableOptions.iEmpty"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
@@ -137,7 +136,6 @@ export default {
             filterableType: 'date'
           }
         ],
-        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: false,

@@ -28,21 +28,22 @@
       v-if="checkPermissions('analysis-engines/search', 'POST')"
       id="integrations-data-table"
       ref="refIntegrationsList"
+      selectable
+      filterable
+      options
+      is-server-side
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :refName="'integrationsList'"
       :columns="tableOptions.columns"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @disable="handleDisable"
@@ -63,9 +64,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -280,7 +278,6 @@ export default {
           delete: true,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_INTEGRATIONS,
           btn: labels.New,

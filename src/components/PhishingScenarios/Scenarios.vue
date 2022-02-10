@@ -43,22 +43,25 @@
     <data-table
       v-if="checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')"
       id="scenarios-data-table"
+      class="scenarios"
       ref="refScenariosList"
+      is-server-side
+      selectable
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :refName="'scenariosList'"
       :columns="tableOptions.columns"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -79,10 +82,6 @@
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
       @on-fast-launch="handleFastLaunch"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
-      class="scenarios"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>

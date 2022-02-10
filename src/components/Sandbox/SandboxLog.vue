@@ -3,32 +3,31 @@
     <data-table
       id="sandbox-data-table-log"
       ref="refsandboxList"
+      is-server-side
+      filterable
+      options
       :loading="loading"
+      :selectable="false"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :refName="'sandboxList'"
       :columns="tableOptions.columns"
-      :selectable="false"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
+      :isShowDownloadModal="isSandboxLogDownloadModal"
       :stored-table-settings="storedTableSettings"
+      :download-button="tableOptions.downloadButton"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportSandboxLog"
       @paginationChangedEvent="paginationChangedEvent($event)"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
       @handleDownloadButtonClick="handleSandboxLogDownloadButtonClick"
-      :isShowDownloadModal="isSandboxLogDownloadModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
@@ -38,9 +37,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     ></data-table>
   </div>
 </template>
@@ -171,7 +167,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: 'No logs available'
         }
