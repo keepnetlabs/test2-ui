@@ -222,9 +222,7 @@
                           <v-icon>mdi-send</v-icon>
                         </v-list-item-icon>
                         <v-list-item-content v-on="on">
-                          <v-list-item-title>
-                            Share
-                          </v-list-item-title>
+                          <v-list-item-title> Share </v-list-item-title>
                         </v-list-item-content>
                       </template>
                       <span class="tooltip-span">
@@ -241,9 +239,7 @@
                       <v-icon>mdi-send</v-icon>
                     </v-list-item-icon>
                     <v-list-item-content>
-                      <v-list-item-title>
-                        Share
-                      </v-list-item-title>
+                      <v-list-item-title> Share </v-list-item-title>
                     </v-list-item-content>
                   </v-list-item>
                   <v-list-item
@@ -559,10 +555,15 @@
                 <v-btn
                   v-if="postDetails && !postDetails.isLikedByUser"
                   @click="userLikePost(post.communityPostResourceId, post.communityResourceId)"
-                  :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
+                  :class="{
+                    'active-act': postDetails && postDetails.isLikedByUser
+                  }"
                   :id="'like-btn' + post.communityPostResourceId"
                 >
-                  <v-icon :class="{ 'active-act': postDetails && postDetails.isLikedByUser }"
+                  <v-icon
+                    :class="{
+                      'active-act': postDetails && postDetails.isLikedByUser
+                    }"
                     >mdi-thumb-up</v-icon
                   >
                   Useful ({{ (postDetails && postDetails.likeCount) || post.likeCount }})
@@ -847,7 +848,9 @@
                     class="impact-row"
                   >
                     <div class="impact-left">Scope:</div>
-                    <div class="impact-right">{{ postDetails && postDetails.scope }}</div>
+                    <div class="impact-right">
+                      {{ postDetails && postDetails.scope }}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1344,15 +1347,14 @@ export default {
           })
           setTimeout(() => {
             let recrusiveFunctionForDom = () =>
-              document.getElementById(`sframe${comId}`) &&
-              document.getElementById(`sframe${comId}`).shadowRoot
+              document.getElementById(`sframe${comId}`)?.shadowRoot
             if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
             for (let url of response.data.data.communityPostEmail.urls) {
               let recrusiveFunctionForDom = () => document.getElementById(`sframe${comId}`)
               if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
               let els = document
                 .getElementById(`sframe${comId}`)
-                .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+                ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
               incidenPostReviewElementBind(url, null, `sframe${comId}`, true)
               const el = document.getElementById(`post-content${postId}`)
               scrollToComponent(el)

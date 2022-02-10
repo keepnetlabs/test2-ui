@@ -62,7 +62,9 @@
                           your system administrator.
                         </p>
                         <ul>
-                          <li v-for="item in mfaLoginErrors" :key="item">{{ item }}</li>
+                          <li v-for="item in mfaLoginErrors" :key="item">
+                            {{ item }}
+                          </li>
                         </ul>
                       </div>
                     </div>
@@ -304,8 +306,12 @@
                     Check Your Email
                   </div>
                   <div id="text--login-check-your-email-subtitle" class="login-desc">
-                    <p class="mb-2">We have sent an email to your email address.</p>
-                    <p class="mb-0">Click the link the email to reset your password</p>
+                    <p class="mb-2">
+                      We have sent an email to your email address.
+                    </p>
+                    <p class="mb-0">
+                      Click the link the email to reset your password
+                    </p>
                     <div v-if="pageNumber === 3">
                       <div
                         id="text--login-check-your-email-i-didnt-receive-email"
@@ -828,8 +834,10 @@ export default {
               }
             })
             .catch((e) => {
-              this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
-              this.$store.commit('common/SET_ERROR_MESSAGE', e.response.data.message, {
+              this.$store.commit('common/SET_ERROR_STATE', true, {
+                root: true
+              })
+              this.$store.commit('common/SET_ERROR_MESSAGE', e?.response?.data?.message || '', {
                 root: true
               })
             })
@@ -890,7 +898,7 @@ export default {
             this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
           })
           .catch((error) => {
-            if (error.response && error.response.data) {
+            if (error && error.response && error.response.data) {
               this.mfaSetupErrorText =
                 error.response.data.message || error.response.data.validationMessages[0]
             }
@@ -978,7 +986,9 @@ export default {
           currentUserData.role &&
           currentUserData.role.name !== 'CompanyAdmin'
         ) {
-          this.$store.dispatch('dashboard/selectCompany', currentUserData, { root: true })
+          this.$store.dispatch('dashboard/selectCompany', currentUserData, {
+            root: true
+          })
         }
         let payload = {
           currentUserData: currentUserData,
@@ -1099,12 +1109,14 @@ export default {
     },
     onErrorLogin(payload, error) {
       if (
+        error &&
         error.response.data &&
         error.response.data.mfa &&
         error.response.data.mfa.StatusId === 1
       ) {
         this.pageNumber = 8
       } else if (
+        error &&
         error.response.data &&
         error.response.data.mfa &&
         error.response.data.mfa.StatusId === 0
@@ -1113,7 +1125,7 @@ export default {
         this.pageNumber = 6
       } else {
         this.$store.commit('WRONG_LOGIN_ATTEMPT', 1)
-        if (error.response && error.response.status === 401) {
+        if (error && error.response && error.response.status === 401) {
           this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
           this.$store.commit('common/SET_ERROR_MESSAGE', error.response.data.errors[0].message, {
             root: true
@@ -1121,12 +1133,14 @@ export default {
         } else {
           this.$store.commit('common/SET_ERROR_STATE', true, { root: true })
           let content =
-            error.response.data && error.response.data.error_description
+            error && error.response && error.response.data && error.response.data.error_description
               ? error.response.data.error_description
               : error.response.data.Message
               ? error.response.data.Message
               : 'Unknown Error Occured !!!'
-          this.$store.commit('common/SET_ERROR_MESSAGE', content, { root: true })
+          this.$store.commit('common/SET_ERROR_MESSAGE', content, {
+            root: true
+          })
         }
       }
     },
@@ -1168,7 +1182,7 @@ export default {
     },
     getToken(name, url) {
       if (!url) url = location.href
-      name = name.replace(/[\[]/, '\\\[').replace(/[\]]/, '\\\]')
+      name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]')
       let regexS = '[\\?&]' + name + '=([^&#]*)'
       let regex = new RegExp(regexS)
       let results = regex.exec(url)
@@ -1195,8 +1209,7 @@ export default {
               .catch((error) => {
                 this.newPasswordError = true
                 this.newPasswordErrorText =
-                  (error.response && error.response.data && error.response.data.message) ||
-                  (error.response && error.response.data && error.response.data.Message)
+                  error?.response?.data?.message || error?.response?.data?.Message || ''
               })
             break
           case 'resetPassword':
@@ -1212,8 +1225,7 @@ export default {
               .catch((error) => {
                 this.newPasswordError = true
                 this.newPasswordErrorText =
-                  (error.response && error.response.data && error.response.data.message) ||
-                  (error.response && error.response.data && error.response.data.Message)
+                  error?.response?.data?.message || error?.response?.data?.Message || ''
               })
             break
           default:
@@ -1267,8 +1279,7 @@ export default {
           .catch((error) => {
             this.resetPasswordError = true
             this.resetPasswordErrorText =
-              (error.response && error.response.data && error.response.data.message) ||
-              (error.response && error.response.data && error.response.data.Message)
+              error?.response?.data?.message || error?.response?.data?.Message || ''
           })
       }
     }

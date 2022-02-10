@@ -461,11 +461,11 @@ export default {
       }
       getEmailTemplatePreviewContent(item.resourceId)
         .then((response) => {
-          this.selectedTemplateHeader = response.data.data.name
-          this.templateHTML = response.data.data.template
-          this.templateFromName = response.data.data.fromName
-          this.templateSubject = response.data.data.subject
-          this.templateFromEmail = response.data.data.fromAddress
+          this.selectedTemplateHeader = response?.data?.data?.name || ''
+          this.templateHTML = response?.data?.data?.template || ''
+          this.templateFromName = response?.data?.data?.fromName || ''
+          this.templateSubject = response?.data?.data?.subject || ''
+          this.templateFromEmail = response?.data?.data?.fromAddress || ''
         })
         .finally(() => {
           this.loadingTemplatePreview = false
