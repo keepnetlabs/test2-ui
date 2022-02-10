@@ -44,23 +44,22 @@
       ref="refPeopleTable"
       id="target-users-people-data-table"
       is-server-side
+      filterable
+      options
+      selectable
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'peopleTable'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :stored-table-settings="storedTableSettings"
-      :selectable="true"
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
-      :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="handleDelete"

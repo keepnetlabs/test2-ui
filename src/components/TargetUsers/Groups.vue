@@ -33,11 +33,9 @@
       :table="tableData"
       titleKey="name"
       :columns="tableOptions.columns"
-      :show-all-records="showAllRecords"
       :empty="tableOptions.iEmpty"
       :filterable="true"
       :options="true"
-      :total-number-of-records="totalNumberOfRecords"
       :pageSizes="tableOptions.pageSizes"
       :stored-table-settings="storedTableSettings"
       :rowActions="tableOptions.rowActions"
@@ -58,7 +56,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForTargetGroups"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -142,8 +139,6 @@ export default {
       showAddUsersModal: false,
       isCreateButtonDisabled: false,
       loading: false,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       storedTableSettings: null,
       tableData: [],
       selectedGroup: {},
@@ -430,11 +425,6 @@ export default {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
-    handleAllRecordsClick() {
-      this.tableCredientials.pageSize = 75000
-      this.showAllRecords = false
-      this.callForTargetGroups()
-    },
     handleSyncWithLDAP(row) {},
     handleAddGroup(row = {}) {
       this.selectedGroup = row
@@ -491,14 +481,6 @@ export default {
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.totalNumberOfRecords = totalNumberOfRecords
-          if (this.tableCredientials.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-          if (totalNumberOfRecords <= 1000 && this.tableCredientials.pageSize === 1000) {
-            this.showAllRecords = false
-          }
-
           this.tableData = data.results.length ? data.results : []
         })
         .catch(() => {

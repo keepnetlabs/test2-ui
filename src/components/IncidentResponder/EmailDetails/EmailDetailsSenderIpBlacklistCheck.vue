@@ -11,7 +11,6 @@
       ref="refEmailDetailsSenderIpBlacklistCheck"
       filterable
       options
-      resizable
       sizeable
       selectable
       :loading="loading"

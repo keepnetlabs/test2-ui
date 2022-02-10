@@ -360,7 +360,7 @@
             rounded
             color="#2196f3"
             @click="nextStep"
-            :disabled="step1Loading || step2Loading"
+            :disabled="step1Loading || step2Loading || !(excelInfo && excelInfo.transactionId)"
           >
             {{ labels.Next }}
           </v-btn>
@@ -470,6 +470,7 @@ import {
   getUploadedFileData,
   importTmpUsers,
   searchTmp,
+  updateTransactionId,
   uploadExcelOrCsvForTargetUsers
 } from '../../api/targetUsers'
 import MapTable from '../TargetUsers/subcomponents/MapTable'
@@ -1197,6 +1198,13 @@ export default {
       this.$emit('closeOverlay')
     },
     onFileChanged(file) {
+      if (Array.isArray(file) && Array.from(file).length === 0) {
+        this.isExcelUploaded = false
+        this.step1Loading = false
+        this.formData.file = null
+        this.excelInfo = null
+        return
+      }
       this.formData.file = file
       this.isExcelUploaded = true
       this.step1Loading = true
@@ -1331,7 +1339,26 @@ export default {
         this.resetDisabledValuesFromColumns()
       }
       if (this.activeStep === 2) {
+        this.updateTransactionId()
         this.resetBodyData()
+      }
+    },
+    updateTransactionId() {
+      if (this.excelInfo.transactionId) {
+        const tempTransactionId = this.excelInfo.transactionId
+        this.excelInfo.transactionId = null
+        updateTransactionId(tempTransactionId)
+          .then((response) => {
+            const transactionId = response.data.data?.transactionId
+            if (transactionId) {
+              this.excelInfo.transactionId = transactionId
+            } else {
+              this.excelInfo.transactionId = tempTransactionId
+            }
+          })
+          .catch((err) => {
+            this.excelInfo.transactionId = tempTransactionId
+          })
       }
     },
     resetBodyData() {

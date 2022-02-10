@@ -3,21 +3,20 @@
     id="target-users-group-users-data-table"
     ref="refTargetGroupUsersTable"
     selectable
+    filterable
+    options
+    is-server-side
     is-server-side-selection
     :refName="'groupsTable'"
     :loading="loading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
     :table="tableData"
     :columns="tableOptions.columns"
-    :pageSizes="tableOptions.pageSizes"
     :empty="tableOptions.iEmpty"
-    :filterable="true"
-    :options="true"
     :add-button="tableOptions.addButton"
     :row-actions="tableOptions.rowActions"
     :select-event="tableOptions.selectEvent"
     :stored-table-settings="storedTableSettings"
-    is-server-side
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
     @addAction="handleAddAction"
@@ -274,7 +273,6 @@ export default {
       ],
       loading: false,
       tableOptions: {
-        pageSizes: [5, 10, 25],
         addButton: {
           show: this.hasAddButton,
           action: 'addAction',

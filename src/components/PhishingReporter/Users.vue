@@ -25,23 +25,20 @@
       id="phishing-reporter-data-table"
       ref="refUsersList"
       is-server-side
+      selectable
+      filterable
+      options
       :loading="isLoading"
       :select-event="tableOptions.selectEvent"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
-      :filterable="true"
-      :options="true"
       :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
-      :selectable="true"
-      :resizable="resizable"
-      :sizeable="true"
       :table="tableOptions.table"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
@@ -121,12 +118,6 @@ export default {
     DataTable,
     AppDialog,
     Badge
-  },
-  props: {
-    resizable: {
-      type: Boolean,
-      default: true
-    }
   },
   data() {
     return {
@@ -286,8 +277,7 @@ export default {
             id: 'btn-delete--phishing-reporter-users-row-actions',
             action: 'deleteAction'
           }
-        ],
-        pageSizes: [5, 10, 25]
+        ]
       },
       isWantToDelete: false,
       selectedRow: null,

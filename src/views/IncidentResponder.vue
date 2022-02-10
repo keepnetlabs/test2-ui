@@ -947,7 +947,6 @@ export default {
       startsWith,
       maxLength
     },
-    showAllRecordsMatchingPopup: false,
     extendedViewValue: [],
     topRules: {
       table: [],

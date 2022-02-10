@@ -209,7 +209,7 @@
         <div class="investigation-details__container__stats">
           <div class="investigation-details__container__stats-left-col">
             <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template v-slot:skeleton-content>
+              <template #skeleton-content>
                 <div class="investigation-details__container__stats__cards">
                   <div class="investigation-details__container__stats__cards__card">
                     <div class="investigation-details__container__stats__cards__card-left">
@@ -235,7 +235,9 @@
                       <h3 class="investigation-details__container__stats__cards__card-right__title">
                         {{ statsAndMenuData && statsAndMenuData.status }}
                       </h3>
-                      <p class="investigation-details__container__stats__cards__card-right__stats">
+                      <div
+                        class="investigation-details__container__stats__cards__card-right__stats"
+                      >
                         <v-tooltip
                           v-if="
                             statsAndMenuData &&
@@ -257,7 +259,7 @@
                           </p>
                         </v-tooltip>
                         <span v-else>{{ getStatusText('statusTime', null) }}</span>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -409,7 +411,7 @@
                           id="btn--investigation-details-target-users"
                           link
                           @click="menuClick('targetUsers')"
-                          :class="{ 'v-list-item--active': activeMenu == 'targetUsers' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'targetUsers' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-account-multiple</v-icon>
@@ -777,22 +779,25 @@
                 v-show="showEmails && !loading"
                 id="investigationDetailsList"
                 ref="refInvestigationListData"
+                is-server-side
+                selectable
+                filterable
+                options
                 rowKey="resourceId"
                 just-compare-row-key
                 is-server-side-selection
+                :show-filter-options="false"
                 :is-column-filter-active="isColumnFilterActive"
                 :refName="'investigationDetailsListTable'"
                 :columns="columns"
                 :table="investigationDetailsList"
-                :pageSizes="pageSizes"
-                :selectable="true"
-                :filterable="true"
-                :options="true"
                 :rowActions="rowActions"
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
+                :server-side-props="serverSideProps"
+                :server-side-events="{ pagination: true, search: true, sort: true }"
                 @deleteInvestigationDetails="deleteInvestigationDetails"
                 @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetailsFunction="
@@ -807,14 +812,10 @@
                 @restore-default-search="handleRestoreDefaultSearch"
                 @clear-filters="handleClearFilters"
                 @on-table-settings-change="handleSetRenderedColumnsDetailsList"
-                :show-filter-options="false"
                 @server-side-page-number-changed="serverSidePageNumberChanged"
                 @server-side-size-changed="serverSideSizeChanged"
                 @sortChangedEvent="sortChanged"
                 @searchChangedEvent="handleSearchChange"
-                :isServerSide="true"
-                :server-side-props="serverSideProps"
-                :server-side-events="{ pagination: true, search: true, sort: true }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -872,25 +873,26 @@
             >
               <datatable
                 v-show="showTargetUsersDetails && !loading"
-                :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
-                :refName="'investigationDetailsTargetUsersListTable'"
                 ref="investigationDetailsTargetUsersList"
+                refName="investigationDetailsTargetUsersListTable"
+                is-server-side
+                filterable
+                options
                 :columns="columnsTargetUsers"
                 :table="
                   investigationDetailsTargetUsersListData &&
                   investigationDetailsTargetUsersListData.results
                 "
-                :pageSizes="pageSizes"
-                :defaultSort="'date'"
+                :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 :selectable="false"
-                :filterable="true"
-                :options="true"
-                :total-number-of-records="totalNumberOfRecordsTargetUser"
+                :show-filter-options="false"
                 :empty="iEmpty"
                 :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
+                :server-side-props="serverSidePropsForTargetUsers"
+                :server-side-events="{ pagination: true, search: true, sort: true }"
                 @downloadEvent="exportTargetUsers"
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
@@ -900,14 +902,10 @@
                 @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
                 @clear-filters="handleClearFiltersForTargetUsers"
                 @on-table-settings-change="handleSetRenderedColumnsTargetUser"
-                :show-filter-options="false"
                 @server-side-page-number-changed="serverSidePageNumberChangedForTargetUsers"
                 @server-side-size-changed="serverSideSizeChangedForTargetUsers"
                 @sortChangedEvent="sortChangedForTargetUsers"
                 @searchChangedEvent="handleSearchChangeForTargetUsers"
-                :isServerSide="true"
-                :server-side-props="serverSidePropsForTargetUsers"
-                :server-side-events="{ pagination: true, search: true, sort: true }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -1022,10 +1020,7 @@ export default {
     investigationWarningExcludedResourceIdList: [],
     investigationDeleteExcludedResourceIdList: [],
     isAutoRefreshActive: false,
-    loopInterval: null,
     isRunning: false,
-    loop: null,
-    totalNumberOfRecordsTargetUser: 0,
     storedTableDetailsList: null,
     storedTableTargetUser: null,
     totalNumberOfRecordsFolder: 0,
@@ -1357,7 +1352,6 @@ export default {
         type: 'slot'
       }
     ],
-    pageSizes: [5, 10, 25],
     rowActions: [
       {
         id: 'btn-delete--investigation-details-row-actions',
@@ -1898,15 +1892,15 @@ export default {
           this.restartStopInvestigationData()
         })
     },
-    stopInvestigationFunc(value) {
+    stopInvestigationFunc() {
       this.isWantToStop = true
     },
     iconType() {
-      this.statsAndMenuData.status == 'Running'
+      this.statsAndMenuData.status === 'Running'
         ? (this.statusIcon = 'mdi-play')
-        : this.statsAndMenuData.status == 'Finished'
+        : this.statsAndMenuData.status === 'Finished'
         ? (this.statusIcon = 'mdi-check')
-        : this.statsAndMenuData.status == 'Expired'
+        : this.statsAndMenuData.status === 'Expired'
         ? (this.statusIcon = 'mdi-clock')
         : this.statsAndMenuData.status === 'Canceled'
         ? (this.statusIcon = 'mdi-close-circle')
@@ -2059,12 +2053,11 @@ export default {
       this.serverSidePropsForTargetUsers.totalNumberOfRecords = totalNumberOfRecords
       this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
       this.serverSidePropsForTargetUsers.pageNumber = pageNumber
-      this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
     },
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
         const {
-          data: { data }
+          data: {}
         } = response
         const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
         this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -2325,7 +2318,7 @@ export default {
       let items = []
       let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
           items.push(x)
       })
@@ -2333,7 +2326,7 @@ export default {
       filterPayload = [...items]
 
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
@@ -2356,7 +2349,7 @@ export default {
       let items = []
       let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
           items.push(x)
         }
@@ -2375,7 +2368,7 @@ export default {
       let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
         .FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
           items.push(x)
       })
@@ -2383,7 +2376,7 @@ export default {
       filterPayload = [...items]
 
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
@@ -2410,7 +2403,7 @@ export default {
       let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
         .FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
           items.push(x)
         }
@@ -2536,7 +2529,7 @@ export default {
     }
   },
   watch: {
-    statsAndMenuData(val) {
+    statsAndMenuData() {
       if (this.statsAndMenuData) this.topMenuLoading = false
     },
     tableData() {},
