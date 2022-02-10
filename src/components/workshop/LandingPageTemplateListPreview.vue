@@ -459,9 +459,9 @@ export default {
       }
       getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
-          this.selectedTemplateHeader = response.data.data.landingPages[0].name
-          this.templateHTML = response.data.data.landingPages[0].content
-          this.templateURL = response.data.data.urlTemplate
+          this.templateURL = response?.data?.data?.urlTemplate || ''
+          this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
+          this.templateHTML = response?.data?.data?.landingPages[0]?.content || ''
         })
         .finally(() => {
           this.loadingTemplatePreview = false

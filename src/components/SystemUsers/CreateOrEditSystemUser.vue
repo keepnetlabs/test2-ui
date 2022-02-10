@@ -194,7 +194,7 @@ export default {
     let tokenData = jwt_decode(token)
     this.role = tokenData.role
   },
-  created() {
+  async created() {
     if (!this.selectedRow) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -240,11 +240,11 @@ export default {
     let _this = this
     let allRoles = []
     let availableRoles = []
-    getSystemUsersRole(payload).then((response) => {
+    const response = await getSystemUsersRole(payload)
+    if (response) {
       allRoles = response.data.data
       availableRoles = []
       availableRoles = allRoles
-
       if (this.selectedRow) {
         const {
           firstName,
@@ -288,7 +288,7 @@ export default {
           availableRoles.find((role) => role.name === 'Company Admin').resourceId
       }
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-    })
+    }
   }
 }
 </script>
