@@ -65,7 +65,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
@@ -191,48 +191,8 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyData: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       templateHTML: null
@@ -241,7 +201,7 @@ export default {
   methods: {
     checkIfCanCloseDnsServiceModal() {
       if (this.$refs.newEditDnsServiceModal) {
-        this.$refs.newEditDnsServiceModal.canceldns()
+        this.$refs.newEditDnsServiceModal.cancelDns()
       }
     },
     changeStatus(value, restart) {

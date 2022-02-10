@@ -110,6 +110,7 @@ import DeleteProxySettings from '@/components/Company Settings/ProxySettings/Del
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'PROXYSettings',
   components: {
@@ -261,48 +262,8 @@ export default {
       },
       newProxyModalStatus: false,
       deleteProxyModalStatus: false,
-      bodyOptions: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyOptions: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
