@@ -40,7 +40,6 @@
       :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
       :selectable="true"
-      :resizable="resizable"
       :sizeable="true"
       :table="tableOptions.table"
       @deleteAction="handleDelete"
@@ -121,12 +120,6 @@ export default {
     DataTable,
     AppDialog,
     Badge
-  },
-  props: {
-    resizable: {
-      type: Boolean,
-      default: true
-    }
   },
   data() {
     return {

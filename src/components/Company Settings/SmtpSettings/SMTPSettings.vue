@@ -40,7 +40,6 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        :resizable="true"
         @addNewSmtpSetting="toggleSmtpModalStatus"
         @onEmptyBtnClicked="toggleSmtpModalStatus"
         @handleMultipleDelete="handleMultipleDelete"

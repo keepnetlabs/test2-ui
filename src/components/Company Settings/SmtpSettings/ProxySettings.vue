@@ -38,7 +38,6 @@
         :row-actions="tableOptions.rowActions"
         :selectable="true"
         :sizeable="true"
-        :resizable="true"
         @addNewProxySetting="toggleProxyModalStatus"
         @onEmptyBtnClicked="toggleProxyModalStatus"
         @handleMultipleDelete="handleMultipleDelete"

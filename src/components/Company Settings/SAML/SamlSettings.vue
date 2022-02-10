@@ -29,7 +29,6 @@
         options
         selectable
         sizeable
-        resizable
         is-server-side
         :loading="loading"
         :table="tableData"
