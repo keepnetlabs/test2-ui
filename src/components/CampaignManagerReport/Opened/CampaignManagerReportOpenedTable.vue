@@ -223,6 +223,7 @@ export default {
       this.callForData()
     },
     handleClearFilters() {
+      this.axiosPayload = getDefaultAxiosPayload({ orderBy: 'FirstName' })
       this.$refs.refTable.reRenderColumns({})
       this.callForData()
     },

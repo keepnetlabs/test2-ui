@@ -72,7 +72,7 @@ export default {
         id: 'campaign-manager-sending-report-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: JSON.parse(JSON.stringify(getDefaultAxiosPayload({ orderBy: 'FirstName' }))),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,
@@ -239,6 +239,7 @@ export default {
       this.callForData()
     },
     handleClearFilters() {
+      this.axiosPayload = getDefaultAxiosPayload({ orderBy: 'FirstName' })
       this.$refs.refTable.reRenderColumns({})
       this.callForData()
     },

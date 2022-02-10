@@ -79,53 +79,14 @@ import {
 } from '@/utils/helperFunctions'
 import DeleteSamlSettings from '@/components/Company Settings/SAML/DeleteSamlSettings'
 import NewSamlSettings from '@/components/Company Settings/SAML/NewSamlSettings'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'SamlSettings',
   components: { NewSamlSettings, DeleteSamlSettings, CompanySettingsHeader, DataTable },
   data() {
     return {
-      axiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultAxiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayload: getDefaultAxiosPayload(),
+      defaultAxiosPayload: getDefaultAxiosPayload(),
       labels,
       isEditOrNewModalOpen: false,
       isEdit: false,
