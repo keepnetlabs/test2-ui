@@ -99,10 +99,7 @@
               :hide-action-options="hideActionOptions"
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
-              @clear-filters="
-                search = ''
-                $emit('clear-filters')
-              "
+              @clear-filters="handleClearFilters"
             />
           </div>
           <div class="table-settings" v-if="options">
@@ -1622,6 +1619,10 @@ export default {
     window.removeEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    handleClearFilters() {
+      this.search = ''
+      this.$emit('clear-filters')
+    },
     handleRowClick(row) {
       this.$emit('row-click', row)
     },

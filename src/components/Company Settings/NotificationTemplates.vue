@@ -119,6 +119,7 @@ import {
 import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -247,48 +248,8 @@ export default {
       showDeleteNotificationTemplateModal: false,
       newNotificationTemplateStatus: false,
       selectedItem: null,
-      axiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultAxiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      axiosPayload: getDefaultAxiosPayload(),
+      defaultAxiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },

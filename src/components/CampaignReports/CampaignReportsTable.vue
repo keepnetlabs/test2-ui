@@ -230,6 +230,7 @@ export default {
       this.callForData()
     },
     handleClearFilters() {
+      this.axiosPayload = getDefaultAxiosPayload({ orderBy: 'StartDate' })
       this.$refs.refTable.reRenderColumns({})
       this.callForData()
     },
