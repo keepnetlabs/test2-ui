@@ -179,8 +179,8 @@
       </template>
     </app-modal>
     <app-modal
-      :status="ewsStatus"
       v-if="ewsStatus"
+      :status="ewsStatus"
       @closeOverlay="ewsStatus = false"
       :icon-name="'mdi-book-search'"
       :title="this.ewsEditData ? 'Edit EWS Configuration' : 'Create EWS Mail Configuration'"
@@ -413,6 +413,7 @@
       </template>
     </app-modal>
     <app-modal
+      v-if="statusGoogleWorkSpace"
       className="mail-configuration__modal"
       title-id="text--create-gsuite-mail-configuration-modal-title"
       icon-name="mdi-book-search-outline"
@@ -716,7 +717,7 @@ import {
   updateO365
 } from '@/api/mailConfiguration'
 import * as validations from '@/utils/validations'
-import { isDifferent } from '@/utils/functions'
+import { getDefaultAxiosPayload, isDifferent } from '@/utils/functions'
 import TestConnection from './TestConnection'
 import TestConnectionEWS from './TestConnectionEWS'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -934,48 +935,8 @@ export default {
     },
     mailConfigurationTypes: ['Google Workspace', 'O365', 'EWS'],
     validations: validations,
-    requestBody: {
-      pageNumber: 1,
-      pageSize: 75000,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultRequestBody: {
-      pageNumber: 1,
-      pageSize: 75000,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    requestBody: getDefaultAxiosPayload(),
+    defaultRequestBody: getDefaultAxiosPayload(),
     serverSideProps: new ServerSideProps()
   }),
   methods: {

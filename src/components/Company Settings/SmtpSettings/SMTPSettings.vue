@@ -114,6 +114,7 @@ import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/Delet
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -253,48 +254,8 @@ export default {
       },
       newSmtpModalStatus: false,
       deleteSmtpModalStatus: false,
-      bodyOptions: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyOptions: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
