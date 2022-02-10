@@ -1,8 +1,7 @@
 <template>
   <app-modal
-    :status="status"
     v-if="status"
-    @closeOverlay="cancelDns"
+    :status="status"
     :icon-name="'mdi-book-search'"
     :title="
       status && resourceId ? 'Edit DNS Provider Integration' : 'Create New DNS Provider Integration'
@@ -10,6 +9,7 @@
     className="mail-configuration__modal"
     ref="mail-configuration__modal"
     title-id="text--create-dns-mail-configuration-modal-title"
+    @closeOverlay="cancelDns"
   >
     <template v-slot:overlay-body>
       <v-form ref="dnsForm">
@@ -98,7 +98,7 @@
           outlined
           rounded
           color="error"
-          @click="canceldns"
+          @click="cancelDns"
           >{{ labels.Cancel }}</v-btn
         >
       </div>
@@ -205,7 +205,7 @@ export default {
         resourceId: null
       }
     },
-    canceldns() {
+    cancelDns() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
         this.resetForm()

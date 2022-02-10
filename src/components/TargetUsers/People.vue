@@ -53,7 +53,6 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'peopleTable'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
@@ -191,7 +190,7 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
 
@@ -214,49 +213,9 @@ export default {
   data: () => ({
     labels,
     selectedUserToViewGroups: null,
-    payload: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    payload: getDefaultAxiosPayload(),
     storedTableSettings: null,
-    defaultRequestBody: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    defaultRequestBody: getDefaultAxiosPayload(),
     isWantToImportFile: false,
     isShowingTargetUserViewTargetGroups: false,
     tableData: [],
@@ -269,12 +228,6 @@ export default {
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
     isWantToShowCustomFieldsModal: false,
-    items: [
-      { title: 'Click Me1' },
-      { title: 'Click Me2' },
-      { title: 'Click Me3' },
-      { title: 'Click Me4' }
-    ],
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [
@@ -374,7 +327,6 @@ export default {
           dbName: 'Department'
         }
       ],
-      pageSizes: [5, 10, 25],
       downloadButton: {
         show: true
       },
