@@ -96,14 +96,13 @@
             <data-table-filter-options
               v-if="showFilterOptions"
               :is-active="isFiltered"
-              :hideActionOptions="hideActionOptions"
+              :hide-action-options="hideActionOptions"
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="
                 search = ''
                 $emit('clear-filters')
               "
-              :hideActionOptions="hideActionOptions"
             />
           </div>
           <div class="table-settings" v-if="options">
