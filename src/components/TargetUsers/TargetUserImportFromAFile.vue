@@ -1268,10 +1268,6 @@ export default {
           (item.selectedValue && item.selectedValue.dbName) ||
           (item.selectedValue && item.selectedValue.name) ||
           item.name
-        if (excelColumnName === 'First Name') excelColumnName = 'First Name'
-        if (excelColumnName === 'Last Name') excelColumnName = 'Last Name'
-        if (excelColumnName === 'FirstName') excelColumnName = 'First Name'
-        if (excelColumnName === 'LastName') excelColumnName = 'Last Name'
         if (fieldName === 'First Name') fieldName = 'FirstName'
         if (fieldName === 'Last Name') fieldName = 'LastName'
         let val = {
