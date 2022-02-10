@@ -21,6 +21,9 @@
       id="company-groups-data-table"
       ref="refGroupDataList"
       is-server-side
+      filterable
+      options
+      selectable
       :key="tableKey"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
@@ -28,17 +31,10 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :stored-table-settings="storedTableSettings"
-      :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :is-downloadable="true"
-      :show-all-records="showAllRecords"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @addButton="addButton"
@@ -49,7 +45,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -141,7 +136,6 @@ export default {
             filterableType: 'date'
           }
         ],
-        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -179,8 +173,6 @@ export default {
           }
         ]
       },
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       payload: {
         pageSize: 10,
         orderBy: 'createTime',
@@ -411,11 +403,6 @@ export default {
           })
           .catch(() => {})
       })
-    },
-    handleAllRecordsClick() {
-      this.payload.pageSize = 75000
-      this.showAllRecords = false
-      this.getTableData()
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)

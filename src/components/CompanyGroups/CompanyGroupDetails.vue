@@ -56,10 +56,8 @@
       :loading="loading"
       :table="tableData"
       :addButton="tableOptions.addButton"
-      :total-number-of-records="totalNumberOfRecords"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :show-all-records="showAllRecords"
       :stored-table-settings="storedTableSettings"
       :filterable="true"
       :options="true"
@@ -79,7 +77,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @downloadEvent="handleTableDownload"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -138,8 +135,6 @@ export default {
   data: () => ({
     showAddCompanyModal: false,
     loading: true,
-    showAllRecords: false,
-    totalNumberOfRecords: 0,
     editCreateGroup: false,
     forCompany: true,
     tableData: [],
@@ -368,11 +363,6 @@ export default {
       this.resetPageNumber()
       this.initMethods()
     },
-    handleAllRecordsClick() {
-      this.payload.pageSize = 75000
-      this.showAllRecords = false
-      this.getTableData()
-    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.COMPANY_GROUP_DETAILS, JSON.stringify(tableSettings))
     },
@@ -459,8 +449,6 @@ export default {
           this.serverSideProps.pageNumber = pageNumber
           const { results = [] } = data
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-          this.totalNumberOfRecords = totalNumberOfRecords
         })
         .catch((error) => {
           if (error.response.status === 403) {

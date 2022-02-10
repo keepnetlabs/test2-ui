@@ -23,24 +23,21 @@
       <data-table
         id="company-settings-smtp-settings-data-table"
         ref="refSmtpSettingsList"
+        filterable
+        options
+        selectable
         :loading="loading"
         :table="tableData"
         :refName="'smtpSettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :filterable="true"
-        :options="true"
         :download-button="tableOptions.downloadButton"
         :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
-        :is-downloadable="true"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
-        :resizable="true"
         @addNewSmtpSetting="toggleSmtpModalStatus"
         @onEmptyBtnClicked="toggleSmtpModalStatus"
         @handleMultipleDelete="handleMultipleDelete"

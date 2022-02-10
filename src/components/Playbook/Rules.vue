@@ -30,19 +30,17 @@
       @closeOverlay="toggleMatchingModal"
     />
     <datatable
+      id="playbook-data-table"
+      ref="refRulesList"
+      selectable
+      filterable
+      options
       is-server-side
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
-      ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :row-actions="tableOptions.rowActions"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
@@ -56,13 +54,11 @@
       :download-button="getDownloadButton"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportRules"
-      id="playbook-data-table"
       @deleteAction="deleteRule($event)"
       @editAction="handleEdit"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -144,10 +140,6 @@ export default {
     return {
       deleteButtonDisabled: false,
       tableData: [],
-      totalNumberOfRecords: 0,
-      showAllRecords: false,
-      showAllRecordsMatchingPopup: false,
-      totalNumberOfRecordsMatchingPopup: 0,
       labels,
       loading: false,
       storedTableSettings: null,
@@ -428,11 +420,6 @@ export default {
           filterValues
         })
       )
-    },
-    handleAllRecordsClick() {
-      this.tableCredientials.pageSize = 75000
-      this.showAllRecords = false
-      this.callForSearchPlaybook()
     },
     getTableEmptyStatus() {
       const emptyObj = {

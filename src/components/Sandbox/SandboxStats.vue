@@ -3,36 +3,33 @@
     <data-table
       id="sandbox-stats-data-table"
       ref="refsandboxStatsList"
+      is-server-side
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
       :refName="'sandboxStatsList'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
       :selectable="false"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :download-button="tableOptions.downloadButton"
+      :is-show-download-modal="isSandboxStatsDownloadModal"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportSandboxStats"
       @handleDownloadButtonClick="handleSandboxStatsDownloadButtonClick"
-      :is-show-download-modal="isSandboxStatsDownloadModal"
       @paginationChangedEvent="paginationChangedEvent($event)"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -41,9 +38,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     ></data-table>
   </div>
 </template>
@@ -86,8 +80,6 @@ export default {
       integrationTypes: [],
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       storedTableSettings: null,
@@ -480,15 +472,6 @@ export default {
             }
           })
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
         .catch(() => {
           this.tableData = []
@@ -579,11 +562,6 @@ export default {
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
-    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()
@@ -652,15 +630,6 @@ export default {
             }
           })
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
         .catch(() => {
           this.tableData = []

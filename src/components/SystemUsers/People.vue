@@ -24,25 +24,25 @@
         v-if="checkPermissions('system-users/search', 'POST')"
         id="system-users-people-data-table"
         ref="refSystemUsersList"
+        is-server-side
         is-server-side-selection
+        filterable
+        options
+        selectable
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
-        :total-number-of-records="totalNumberOfRecords"
         :table="tableData"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :show-all-records="showAllRecords"
-        :filterable="true"
-        :options="true"
         :select-event="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :download-button="tableOptions.downloadButton"
         :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @deleteAction="handleDelete"
         @downloadEvent="exportSystemUsers"
         @editAction="handleEdit"
@@ -50,7 +50,6 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -61,9 +60,6 @@
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       />
     </div>
   </div>
@@ -101,10 +97,8 @@ export default {
       deleteButtonDisabled: false,
       loading: true,
       storedTableSettings: null,
-      showAllRecords: false,
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
-      totalNumberOfRecords: 0,
       multipleSystemUserPayload: {},
       tableData: [],
       tableOptions: {
@@ -464,11 +458,6 @@ export default {
         this.selectedRow = null
       }
     },
-    handleAllRecordsClick() {
-      this.requestBody.pageSize = 75000
-      this.showAllRecords = false
-      this.callForListSystemUsers()
-    },
     closeOverlayWithUpdate() {
       this.toggleCreateOrEditSystemUser()
       this.callForListSystemUsers()
@@ -485,13 +474,6 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            this.totalNumberOfRecords = totalNumberOfRecords
-            if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-            if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
-              this.showAllRecords = false
-            }
             this.tableData = data.results || []
           })
           .catch(() => {

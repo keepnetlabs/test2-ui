@@ -20,15 +20,6 @@
     />
 
     <v-card v-show="!loading" class="card">
-      <v-list-item class="pl-2 pr-0 pb-8" v-if="title && title.icon">
-        <div class="v-btn v-cart-icon-wrapper">
-          <v-icon class="ml-2" color="blue" left medium>{{ title.icon }}</v-icon>
-        </div>
-        <v-list-item-content class="pt-0 pb-0">
-          <v-list-item-title class="v-card-headline">{{ title.title }}</v-list-item-title>
-          <v-list-item-subtitle>{{ title.subtitle }}</v-list-item-subtitle>
-        </v-list-item-content>
-      </v-list-item>
       <div class="table-wrapper">
         <div
           v-click-outside="handleSettingsPopupClickOutside"
@@ -105,47 +96,33 @@
             <data-table-filter-options
               v-if="showFilterOptions"
               :is-active="isFiltered"
+              :hide-action-options="hideActionOptions"
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
               @clear-filters="
                 search = ''
                 $emit('clear-filters')
               "
-              :hideActionOptions="hideActionOptions"
             />
           </div>
           <div class="table-settings" v-if="options">
             <v-btn
+              v-if="groupable"
               class="clust-btn btn-hover mr-1"
-              :color="!selectedCluster ? '#2196f3' : '#757575'"
               icon
               outlined
               style="border-radius: 6px !important; order: 1; width: 42px;"
-              v-if="groupable"
+              :color="!selectedCluster ? '#2196f3' : '#757575'"
               @click="handleListBulletedClick"
             >
-              <img
-                :src="
-                  !selectedCluster
-                    ? require(`../assets/img/selected-bulletin-list.svg`)
-                    : require(`../assets/img/bulletin-list.svg`)
-                "
-                alt="icon"
-              />
+              <img :src="getBulletedIcon" alt="icon" />
             </v-btn>
             <div
               v-if="groupable"
               class="cluster__left"
               :style="!selectedCluster && { borderColor: '#757575' }"
             >
-              <img
-                :src="
-                  !selectedCluster
-                    ? require('../assets/img/unselected-bulletin.svg')
-                    : require('../assets/img/ic-grouped-list.svg')
-                "
-                alt="icon"
-              />
+              <img :src="getGroupedListIcon" alt="icon" />
             </div>
             <div
               v-if="groupable"
@@ -273,15 +250,6 @@
                 <v-list-item-title>{{ item }}</v-list-item-title>
               </v-list-item>
             </v-menu>
-
-            <v-tooltip bottom opacity="1" v-if="false">
-              <template v-slot:activator="{ on }">
-                <v-btn class="btn-hover mr-1" icon v-on="on" style="order: 5;">
-                  <v-icon @click="printMethod()">mdi-printer</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">Print Options</span>
-            </v-tooltip>
             <v-tooltip v-if="isSettingsPopup" v-once bottom opacity="1">
               <template v-slot:activator="{ on }">
                 <v-btn
@@ -299,13 +267,7 @@
             </v-tooltip>
           </div>
         </div>
-        <slot name="table-all-records">
-          <data-table-load-all-records
-            v-if="isShowAllRecords"
-            :total-number-of-records="totalNumberOfRecords"
-            @on-all-records-button-click="$emit('on-all-records-button-click')"
-          />
-        </slot>
+        <slot name="table-all-records"></slot>
         <slot name="table-notification"></slot>
         <div class="selection-row" v-if="getTableHeaderRender">
           <v-checkbox
@@ -377,24 +339,6 @@
               <span class="tooltip-span">Delete</span>
             </v-tooltip>
             <slot name="selection-all-slot" />
-            <v-tooltip
-              bottom
-              opacity="1"
-              v-if="selectEvent && selectEvent.download"
-              z-index="99999999"
-            >
-              <template v-slot:activator="{ on }">
-                <v-btn
-                  @click="handleDownload(multipleSelection)"
-                  class="btn-selected-hover mr-1"
-                  icon
-                  v-on="on"
-                >
-                  <v-icon class="selection-icons" color="white">mdi-download</v-icon>
-                </v-btn>
-              </template>
-              <span class="tooltip-span">Download Selected Rows</span>
-            </v-tooltip>
             <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.warning">
               <template v-slot:activator="{ on }">
                 <v-btn
@@ -437,17 +381,17 @@
           </div>
         </div>
         <div
+          v-if="shouldRenderTable"
           :class="['table-container', { 'hide-parent-row-actions': hideParentRowActions }]"
           id="table-container"
           ref="tableContainer"
-          v-if="(tableData && tableData.length) || isColumnFilterActive"
         >
           <el-table
             v-row-color-handler
             v-if="!allHidden"
             :border="border"
             :cell-class-name="setCellClass"
-            :data="showfilteredData ? filteredData : tableData"
+            :data="getTableData"
             :default-sort="{
               prop: defaultSort || '',
               order: defaultSort || ''
@@ -596,7 +540,7 @@
                 </div>
               </template>
 
-              <template v-slot:header="{ column, $index }">
+              <template #header="{ column, $index }">
                 <v-tooltip bottom v-if="col['showHeaderTooltip']">
                   <template v-slot:activator="{ on }">
                     <span v-on="on">{{ column.label }}</span>
@@ -849,7 +793,7 @@
             </div>
           </div>
         </div>
-        <div class="empty-table" v-else>
+        <div v-else class="empty-table">
           <div class="empty-inline">
             <slot name="empty-table-inline">
               <h2 :id="`text--empty-message-${Math.random().toString().substring(2)}`">
@@ -1013,10 +957,8 @@ import DatatableLoading from './SkeletonLoading/DatatableLoading'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import DataTableFilterOptions from '@/components/DataTableComponents/DataTableFilterOptions'
-import DataTableLoadAllRecords from '@/components/DataTableComponents/DataTableLoadAllRecords'
 export default {
   components: {
-    DataTableLoadAllRecords,
     DataTableFilterOptions,
     DataTableFilter,
     DataTableColorfulText,
@@ -1081,17 +1023,9 @@ export default {
       type: Array,
       required: true
     },
-    showAllRecords: {
-      type: Boolean,
-      default: false
-    },
     lazy: {
       type: Boolean,
       default: false
-    },
-    totalNumberOfRecords: {
-      type: Number,
-      default: 0
     },
     hideParentRowActions: {
       type: Boolean,
@@ -1168,27 +1102,9 @@ export default {
       type: Number,
       default: 0
     },
-    isEditableRuntime: {
-      type: Boolean,
-      default: false
-    },
     setClassName: {
       type: Function,
       default: () => {}
-    },
-    editableStatusItems: {
-      type: Array,
-      default: () => {
-        return ['Active', 'Inactive', 'N/A']
-      }
-    },
-    isPopupDateEditable: {
-      type: Boolean,
-      default: true
-    },
-    rowActionsMinWidth: {
-      type: Number,
-      default: 60
     },
     table: {
       type: Array,
@@ -1196,10 +1112,6 @@ export default {
     },
     refName: {
       type: String,
-      required: true
-    },
-    title: {
-      type: Object,
       required: false
     },
     pageSizes: {
@@ -1274,10 +1186,6 @@ export default {
     border: {
       type: Boolean,
       default: true
-    },
-    requestParams: {
-      type: Object,
-      required: false
     },
     isServerSide: {
       type: Boolean,
@@ -1360,11 +1268,19 @@ export default {
     ...mapGetters({
       isWantToDownload: 'common/getDownloadModalStatus' // for using getters
     }),
+    shouldRenderTable() {
+      const { tableData, isColumnFilterActive, loading } = this
+      return (tableData && tableData.length) || isColumnFilterActive || loading
+    },
+    getTableData() {
+      return this.isServerSide
+        ? this.tableData
+        : this.showfilteredData
+        ? this.filteredData
+        : this.tableData
+    },
     isFiltered() {
       return Object.keys(this.filterValues).length > 0
-    },
-    isShowAllRecords() {
-      return !this.isServerSide && this.showAllRecords
     },
     getTableHeaderRender() {
       const compareVal =
@@ -1386,6 +1302,16 @@ export default {
         return `${text} all ${this.serverSideProps.totalNumberOfRecords} item(s)`
       }
       return `${text} all ${this.groupable ? this.totalLength : this.initialData.length} item(s)`
+    },
+    getBulletedIcon() {
+      return !this.selectedCluster
+        ? require(`../assets/img/selected-bulletin-list.svg`)
+        : require(`../assets/img/bulletin-list.svg`)
+    },
+    getGroupedListIcon() {
+      return !this.selectedCluster
+        ? require('../assets/img/unselected-bulletin.svg')
+        : require('../assets/img/ic-grouped-list.svg')
     },
     getTableHeaderClass() {
       if (this.serverSideEvents.search) {
@@ -1487,7 +1413,7 @@ export default {
   watch: {
     table(table, oldTable) {
       this.columnStandardisation(this.columns)
-      this.initialData = [...table]
+      this.initialData = this.isServerSide ? table : [...table]
       //This is for refresh button when clicked caching refresh
       if ((!this.cacheChecks && !this.isServerSide) || (this.lazy && this.selectedCluster)) {
         this.multipleSelection = []
@@ -1518,7 +1444,9 @@ export default {
           maxPage = this.currentPage
         }
 
-        this.tableData = table.slice((maxPage - 1) * pageSize, maxPage * pageSize)
+        this.tableData = this.isServerSide
+          ? this.table
+          : table.slice((maxPage - 1) * pageSize, maxPage * pageSize)
         if (table.length && !this.tableData.length && this.currentPage !== 1) {
           this.currentPage -= 1
           this.tableData = [...table].slice(
@@ -1562,7 +1490,7 @@ export default {
           this.multipleSelection = []
           this.$refs.elTableRef.clearSelection()
           const allItems = this.getAllItems(this.tableData, [], false, false)
-          selections.forEach((selectedItem, index) => {
+          selections.forEach((selectedItem) => {
             const thisTableItem = allItems.find((item) => {
               return item[this.rowKey] === selectedItem[this.rowKey]
             })
@@ -1655,37 +1583,26 @@ export default {
 
     this.columnStandardisation(this.columns)
 
+    //this is for client side
+
     if (this.table && this.table.length) {
       this.initialData = [...this.table]
       this.tableData = [...this.table]
       this.totalLength = this.getTotalLength(this.table)
+      this.tableData = this.tableData.slice(0, this.rowCount)
     }
     if (!this.showClusterItemsRowAction) {
       this.hideChildRowActions()
     }
-
-    this.tableData = this.tableData.slice(0, this.rowCount)
   },
   mounted() {
     //persistent state sorting
     if (this.persistentState && this.persistentState.sortProps) {
+      //this is for client side or persistent state
       const { prop, order } = this.persistentState.sortProps
       this.$refs.elTableRef.sort(prop, order)
     }
-    if (window.outerWidth < 1023) {
-      this.actionFixed = false
-      const leftFixed = this.columns.filter((col) => col.fixed === 'left')
-      if (leftFixed && leftFixed.length) {
-        leftFixed[0].fixed = false
-        this.firstColFixed = false
-      }
-      const rightFixed = this.columns.filter((col) => col.fixed === 'right')
-      if (rightFixed && rightFixed.length) {
-        rightFixed[0].fixed = false
-      }
-      this.lastColFixed = false
-      this.actionFixed = false
-    }
+    this.adjustMobileFixedItems()
 
     window.addEventListener('resize', this.renderFixedItems)
   },
@@ -1705,7 +1622,7 @@ export default {
     window.removeEventListener('resize', this.renderFixedItems)
   },
   methods: {
-    handleRowClick(row, column, event) {
+    handleRowClick(row) {
       this.$emit('row-click', row)
     },
     getState() {
@@ -1815,6 +1732,22 @@ export default {
         this.renderFixedItems()
       }, 500)
     },
+    adjustMobileFixedItems() {
+      if (window.outerWidth < 1023) {
+        this.actionFixed = false
+        const leftFixed = this.columns.filter((col) => col.fixed === 'left')
+        if (leftFixed && leftFixed.length) {
+          leftFixed[0].fixed = false
+          this.firstColFixed = false
+        }
+        const rightFixed = this.columns.filter((col) => col.fixed === 'right')
+        if (rightFixed && rightFixed.length) {
+          rightFixed[0].fixed = false
+        }
+        this.lastColFixed = false
+        this.actionFixed = false
+      }
+    },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
       this.resetSelectableParams()
@@ -1897,7 +1830,6 @@ export default {
      * @param tree --> object
      * @param treeNode --> object
      * @param resolve --> function
-     * @param callback --> function
      */
     handleLoad(tree, treeNode, resolve) {
       this.$emit('handleClusterLazyLoad', {
@@ -1982,6 +1914,8 @@ export default {
      * This function returns all items on the table.
      * @param arr --> for example tableData
      * @param retArr --> returned value
+     * @param addToClusterItems --> true
+     * @param deleteFromClusteredItems --> false
      */
     getAllItems(arr = [], retArr = [], addToClusterItems = true, deleteFromClusteredItems = false) {
       for (let item of arr) {
@@ -2245,10 +2179,6 @@ export default {
       if (this.handleSetCellClass) {
         return this.handleSetCellClass(obj)
       }
-      /*
-      const classNames = this.setClassName(obj)
-      return classNames
-      */
     },
     closeEditPopup() {
       this.isWantToEditRow = false
@@ -2555,7 +2485,7 @@ export default {
               acc[key] = item[key]
               return acc
             }, {})
-            const data = Object.values(row).find((i) => {
+            Object.values(row).find((i) => {
               if (
                 typeof i === 'string' &&
                 i.toLocaleLowerCase().includes(searchValue.toLocaleLowerCase())
@@ -2579,11 +2509,6 @@ export default {
           this.filteredDataLength = filteredData.length
           if (!this.showfilteredData) this.filteredData = []
         }, debounceTime)
-      }
-    },
-    getColumnLabelClass(key) {
-      if (key === 'priority' || key === 'status' || key === 'detected') {
-        return 'popup__badge'
       }
     },
     toggleIsSettingsOpened() {
@@ -2763,9 +2688,6 @@ export default {
     changeDownloadModalStatus(status) {
       this.$store.dispatch('common/changeDownloadModalStatus', status)
     },
-    deleteRow(index, rows) {
-      rows.splice(index, 1)
-    },
     handleSizeChange(rows) {
       this.rowCount = rows
       if (this.currentPage === 1) {
@@ -2835,7 +2757,7 @@ export default {
     handleSubMenuItemClick(item) {
       this.$emit('submenuItemClick', item)
     },
-    toggleAll(selections) {
+    toggleAll() {
       if (this.selectionCheckbox) {
         if (this.selectionRowCheckboxDeterminate) {
           const dataRef = this.showfilteredData ? this.filteredData : this.tableData
@@ -2928,10 +2850,6 @@ export default {
     },
     clusterSelected(name) {
       this.selectedCluster = name
-      /*
-      this.firstColFixed = false
-      this.lastColFixed = false
-       */
       this.$emit('clusterChanged', name)
       this.multipleSelection = []
       this.$refs.elTableRef.clearSelection()
@@ -2941,11 +2859,6 @@ export default {
         acc.push(item.property)
         return acc
       }, [])
-      let headerText = this.columns.reduce((acc, item) => {
-        acc.push(item.label)
-        return acc
-      }, [])
-
       let columnsLength = []
       let text = ''
       let selectionsCopy = JSON.parse(JSON.stringify(selections))
@@ -2969,14 +2882,6 @@ export default {
         })
         text += '\n'
       })
-
-      const getHeader = headerText.reduce((acc, item, index) => {
-        acc += item
-        for (let i = 0; i < columnsLength[index]; i++) {
-          acc += '\xa0'
-        }
-        return acc
-      }, '')
 
       navigator.clipboard.writeText(text).then(() => {
         this.$store.dispatch('common/createSnackBar', {
@@ -3071,14 +2976,6 @@ export default {
     },
     handleDownload(downloadTypes) {
       // You should handle the Download row action in here
-    },
-    loadWithDataArray(data, responseParams) {
-      this.initialData = data
-      this.dataLength = responseParams && responseParams.totalNumberOfRecords
-      this.tableData =
-        (data &&
-          data.slice((this.currentPage - 1) * this.rowCount, this.currentPage * this.rowCount)) ||
-        []
     },
     handleFilterColumn(filterObj) {
       this.isSelectedAllEver = false

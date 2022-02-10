@@ -21,24 +21,21 @@
       <data-table
         id="company-settings-proxy-settings-data-table"
         ref="refProxySettingsList"
+        selectable
+        filterable
+        options
         :loading="loading"
         :table="tableData"
         :refName="'proxySettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :filterable="true"
-        :options="true"
         :download-button="tableOptions.downloadButton"
         :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
-        :is-downloadable="true"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
-        :resizable="true"
         @addNewProxySetting="toggleProxyModalStatus"
         @onEmptyBtnClicked="toggleProxyModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
