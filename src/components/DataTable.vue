@@ -99,7 +99,11 @@
               :hideActionOptions="hideActionOptions"
               @set-default-search="$emit('set-default-search', search, filterValues)"
               @restore-default-search="$emit('restore-default-search')"
-              @clear-filters="$emit('clear-filters')"
+              @clear-filters="
+                search = ''
+                $emit('clear-filters')
+              "
+              :hideActionOptions="hideActionOptions"
             />
           </div>
           <div class="table-settings" v-if="options">

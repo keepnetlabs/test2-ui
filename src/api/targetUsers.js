@@ -158,6 +158,10 @@ export function getTargetUserViewUserGroups(resourceId = '', payload) {
   return testRequest.post(`target-users/${resourceId}/groups`, payload)
 }
 
+export function updateTransactionId(id = '') {
+  return testRequest.put(`/target-users/${id}/update`)
+}
+
 export function getAllJobs() {
   return testRequest.get(`/jobs`)
 }
