@@ -209,7 +209,7 @@
         <div class="investigation-details__container__stats">
           <div class="investigation-details__container__stats-left-col">
             <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template v-slot:skeleton-content>
+              <template #skeleton-content>
                 <div class="investigation-details__container__stats__cards">
                   <div class="investigation-details__container__stats__cards__card">
                     <div class="investigation-details__container__stats__cards__card-left">
@@ -235,7 +235,9 @@
                       <h3 class="investigation-details__container__stats__cards__card-right__title">
                         {{ statsAndMenuData && statsAndMenuData.status }}
                       </h3>
-                      <p class="investigation-details__container__stats__cards__card-right__stats">
+                      <div
+                        class="investigation-details__container__stats__cards__card-right__stats"
+                      >
                         <v-tooltip
                           v-if="
                             statsAndMenuData &&
@@ -257,7 +259,7 @@
                           </p>
                         </v-tooltip>
                         <span v-else>{{ getStatusText('statusTime', null) }}</span>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -409,7 +411,7 @@
                           id="btn--investigation-details-target-users"
                           link
                           @click="menuClick('targetUsers')"
-                          :class="{ 'v-list-item--active': activeMenu == 'targetUsers' }"
+                          :class="{ 'v-list-item--active': activeMenu === 'targetUsers' }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-account-multiple</v-icon>
@@ -1890,15 +1892,15 @@ export default {
           this.restartStopInvestigationData()
         })
     },
-    stopInvestigationFunc(value) {
+    stopInvestigationFunc() {
       this.isWantToStop = true
     },
     iconType() {
-      this.statsAndMenuData.status == 'Running'
+      this.statsAndMenuData.status === 'Running'
         ? (this.statusIcon = 'mdi-play')
-        : this.statsAndMenuData.status == 'Finished'
+        : this.statsAndMenuData.status === 'Finished'
         ? (this.statusIcon = 'mdi-check')
-        : this.statsAndMenuData.status == 'Expired'
+        : this.statsAndMenuData.status === 'Expired'
         ? (this.statusIcon = 'mdi-clock')
         : this.statsAndMenuData.status === 'Canceled'
         ? (this.statusIcon = 'mdi-close-circle')
@@ -2055,7 +2057,7 @@ export default {
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
         const {
-          data: { data }
+          data: {}
         } = response
         const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
         this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -2316,7 +2318,7 @@ export default {
       let items = []
       let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
           items.push(x)
       })
@@ -2324,7 +2326,7 @@ export default {
       filterPayload = [...items]
 
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
@@ -2347,7 +2349,7 @@ export default {
       let items = []
       let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
           items.push(x)
         }
@@ -2366,7 +2368,7 @@ export default {
       let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
         .FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
           items.push(x)
       })
@@ -2374,7 +2376,7 @@ export default {
       filterPayload = [...items]
 
       if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
+        filter.forEach((x, i) => {
           const elem = filter[i]
           elem.FieldName =
             filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
@@ -2401,7 +2403,7 @@ export default {
       let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
         .FilterItems
 
-      filterPayload.map((x, i, t) => {
+      filterPayload.map((x) => {
         if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
           items.push(x)
         }
@@ -2527,7 +2529,7 @@ export default {
     }
   },
   watch: {
-    statsAndMenuData(val) {
+    statsAndMenuData() {
       if (this.statsAndMenuData) this.topMenuLoading = false
     },
     tableData() {},
