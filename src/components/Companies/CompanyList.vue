@@ -47,31 +47,31 @@
     />
 
     <datatable
+      v-bind="bindPropsIsSafari"
       id="companies-data-table"
       ref="refDataList"
       is-server-side
       toggle-all-row-expansion
+      selectable
+      groupable
+      filterable
+      options
+      row-key="companyName"
       :loading="loading"
-      :selectable="true"
       :table="tableData"
       :server-side-props="serverSideProps"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :groupable="true"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
       :stored-table-settings="storedTableSettings"
       :refName="'companyList'"
       :clusterItems="[{ name: 'Company Name' }]"
-      @clusterChanged="clusterChanged"
-      row-key="companyName"
       :rowActions="tableOptions.rowActions"
       active-cluster=""
+      @clusterChanged="clusterChanged"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
       @cellClick="handleCellClick"
@@ -84,7 +84,6 @@
       @AddGroupToModal="handleAddGroupToModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      v-bind="bindPropsIsSafari"
       @switchCompany="handleSwitchCompany"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
@@ -156,7 +155,12 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
-import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
+import {
+  checkPermission,
+  getDefaultAxiosPayload,
+  handleIsSafari,
+  setSafariClusterFix
+} from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -285,7 +289,6 @@ export default {
           width: 180
         }
       ],
-      pageSizes: [5, 10, 25],
       isColumnFilterActive: false,
       selectEvent: {
         clipboard: true,
@@ -345,48 +348,8 @@ export default {
         }
       ]
     },
-    payload: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultPayload: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    payload: getDefaultAxiosPayload(),
+    defaultPayload: getDefaultAxiosPayload(),
     serverSideProps: new ServerSideProps()
   }),
   watch: {

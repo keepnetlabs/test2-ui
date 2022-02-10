@@ -56,6 +56,7 @@
         :item="selectedParentItem"
         :status-items="getStatusItems"
         @on-back-click="handleOnBackClick"
+        @reset-axios-payload="handleResetAxiosPayloadOfItem"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
       />
     </div>
@@ -189,6 +190,9 @@ export default {
     },
     handleResetAxiosPayloadOfParent() {
       this.axiosPayloadOfParent = JSON.parse(JSON.stringify(axiosPayload))
+    },
+    handleResetAxiosPayloadOfItem() {
+      this.axiosPayloadOfItem = getDefaultAxiosPayload({ orderBy: 'CreatedDate' })
     },
     handleItemOnEdit(row) {
       this.selectedRow = row

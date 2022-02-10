@@ -340,7 +340,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'badge',
-    width: 200,
+    width: 220,
     filterableType: 'select',
     props: {
       style: {
