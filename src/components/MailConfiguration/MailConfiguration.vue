@@ -818,12 +818,6 @@ export default {
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
     isWantToShowCustomFieldsModal: false,
-    items: [
-      { title: 'Click Me1' },
-      { title: 'Click Me2' },
-      { title: 'Click Me3' },
-      { title: 'Click Me4' }
-    ],
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [],

@@ -118,7 +118,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { required, maxLength } from '@/utils/validations'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 export default {
@@ -296,48 +296,8 @@ export default {
       showDeleteGroupModal: false,
       selectedRow: {},
       extendedViewValue: [],
-      tableCredientials: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      tableCredientials: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       tableState: null,
       serverSideProps: new ServerSideProps()
     }
@@ -453,9 +413,6 @@ export default {
         .then(() => {
           this.changeNewUserGroupStatus(false)
           this.callForTargetGroups()
-        })
-        .catch(() => {
-          //this.showNewUserGroupModal = false
         })
         .finally(() => (this.isCreateButtonDisabled = false))
     },

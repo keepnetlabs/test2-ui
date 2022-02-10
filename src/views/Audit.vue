@@ -17,7 +17,6 @@
           :stored-table-settings="storedTableSettings"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
-          :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
           :addButton="tableOptions.addButton"
@@ -208,7 +207,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_AUDIT
         }

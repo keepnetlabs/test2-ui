@@ -117,6 +117,7 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'Rules',
   components: {
@@ -247,48 +248,8 @@ export default {
           delete: this.PERMISSIONS.DELETE.hasPermission
         }
       },
-      tableCredientials: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      tableCredientials: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       matchingInvestigationPlaybookRules: {
         table: [],
         columns: [
