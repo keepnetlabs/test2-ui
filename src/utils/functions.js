@@ -749,16 +749,16 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
   if (url.url === 'Hidden by Owner' || url.isHidden) {
     els = document
       .getElementById(rootId || 'last-preview-body-shadow-root')
-      .shadowRoot.querySelectorAll('[data-post-item-hidden]')
+      ?.shadowRoot?.querySelectorAll('[data-post-item-hidden]')
     if (!els.length) {
       els = document
         .getElementById(rootId || 'last-preview-body-shadow-root')
-        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+        ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
     }
   } else {
     els = document
       .getElementById(rootId || 'last-preview-body-shadow-root')
-      .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+      ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
   }
 
   if (els && els.length) {
@@ -1032,10 +1032,15 @@ export function getSelectSearchPayload(payload = {}, search, key = 'name', extra
 
 export function isDifferent(a, b) {
   return Object.keys(a).some((key) => {
-    if (Array.isArray(a[key])) {
+    if (Array.isArray(a[key]) && Array.isArray(b[key])) {
       return a[key].length !== b[key].length
     }
-    if (typeof a[key] === 'object' && a[key] !== null) {
+    if (
+      typeof a[key] === 'object' &&
+      a[key] !== null &&
+      typeof b[key] === 'object' &&
+      b[key] !== null
+    ) {
       return isDifferent(a[key], b[key])
     }
     return a[key] !== b[key]
