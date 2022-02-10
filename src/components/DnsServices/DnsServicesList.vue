@@ -201,7 +201,7 @@ export default {
   methods: {
     checkIfCanCloseDnsServiceModal() {
       if (this.$refs.newEditDnsServiceModal) {
-        this.$refs.newEditDnsServiceModal.canceldns()
+        this.$refs.newEditDnsServiceModal.cancelDns()
       }
     },
     changeStatus(value, restart) {
