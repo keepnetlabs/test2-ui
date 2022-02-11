@@ -17,6 +17,9 @@
           ref="refGroupDataList"
           refName="refNameTableAddToGroup"
           is-server-side
+          filterable
+          options
+          selectable
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :show-filter-options="false"
           :loading="isLoading"
@@ -24,12 +27,8 @@
           :download-button="{ show: true, disabled: false }"
           :columns="tableOptions.columns"
           :empty="tableOptions.iEmpty"
-          :filterable="true"
-          :options="true"
-          :pageSizes="tableOptions.pageSizes"
           :rowActions="tableOptions.rowActions"
           :selectEvent="tableOptions.selectEvent"
-          :selectable="true"
           :table="tableData"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -76,6 +75,12 @@ import Datatable from '../../components/DataTable'
 import labels from '@/model/constants/labels'
 
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 
 export default {
   name: 'AddGroupToModal',
@@ -137,7 +142,6 @@ export default {
             filterableType: 'date'
           }
         ],
-        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: false,
           edit: false,
@@ -153,26 +157,7 @@ export default {
           show: false
         }
       },
-      payload: {
-        pageSize: 5,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      payload: getDefaultAxiosPayload({ pageSize: 5 }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -200,8 +185,7 @@ export default {
       this.resetPageNumber()
       this.getTableData()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -210,7 +194,7 @@ export default {
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -297,47 +281,18 @@ export default {
       this.selectedArray = value
     },
     columnFilterChanged(filter) {
+      this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (x.FieldName !== filter.FieldName) {
-          items.push(x)
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   }
 }

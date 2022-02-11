@@ -75,6 +75,11 @@ import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'CompanyGroupList',
@@ -269,8 +274,7 @@ export default {
       this.resetPageNumber()
       this.getTableData()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -279,7 +283,7 @@ export default {
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -428,54 +432,16 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   },
   beforeDestroy() {
