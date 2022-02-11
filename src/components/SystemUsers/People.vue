@@ -85,6 +85,11 @@ import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'People',
   components: {
@@ -262,15 +267,13 @@ export default {
   },
   methods: {
     resetPageNumber() {
-      //generic
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE, JSON.stringify(tableSettings))
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.requestBody.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -283,11 +286,10 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.checkIsColumnFilterActive()
       this.callForListSystemUsers()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.requestBody.pageNumber = pageNumber
       this.callForListSystemUsers()
     },
@@ -317,13 +319,11 @@ export default {
         })
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.requestBody.ascending = order === 'ascending'
       this.requestBody.orderBy = prop
       this.callForListSystemUsers()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.requestBody.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -449,50 +449,19 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.requestBody
+      )
       this.callForListSystemUsers()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.requestBody
+      )
+      this.checkIsColumnFilterActive()
       this.callForListSystemUsers()
-      this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleEdit(row) {
       this.selectedRow = row
@@ -528,6 +497,9 @@ export default {
       if (this.$refs.systemUserModal) {
         this.$refs.systemUserModal.closeOverlay()
       }
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {
