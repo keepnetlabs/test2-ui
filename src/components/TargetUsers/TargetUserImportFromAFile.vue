@@ -768,12 +768,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -781,6 +776,11 @@ export default {
                   Value: 'New,Exists,Error'
                 }
               ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -884,7 +884,7 @@ export default {
     },
     filterStatusChange() {
       this.isShowInvalid = !this.isShowInvalid
-      this.bodyData.filter.FilterGroups[1]['FilterItems'].find(
+      this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
       ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
       this.step3Loading = true
