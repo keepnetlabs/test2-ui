@@ -52,6 +52,10 @@
       id="company-groups-details-data-table"
       ref="refDataList"
       row-key="companyName"
+      is-server-side
+      filterable
+      options
+      selectable
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
       :table="tableData"
@@ -59,13 +63,12 @@
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
       :stored-table-settings="storedTableSettings"
-      :filterable="true"
-      :options="true"
       :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @addButton="addButton"
       @onEmptyBtnClicked="addButton"
       @edit="handleTableItemEdit"
@@ -85,9 +88,6 @@
       @server-side-size-changed="serverSideSizeChanged"
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     />
   </div>
 </template>
@@ -115,6 +115,12 @@ import labels from '@/model/constants/labels'
 import AppModal from '@/components/AppModal'
 import AddCompaniesToCompanyGroup from '@/components/CompanyGroups/AddCompaniesToCompanyGroup'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'CompanyGroupDetails',
   components: {
@@ -272,48 +278,10 @@ export default {
         }
       ]
     },
-    payload: {
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultPayload: {
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    industries: null,
-    licenceTypes: null,
+    payload: getDefaultAxiosPayload(),
+    defaultPayload: getDefaultAxiosPayload(),
+    industries: [],
+    licenceTypes: [],
     serverSideProps: new ServerSideProps()
   }),
   watch: {
@@ -332,32 +300,34 @@ export default {
   },
   methods: {
     resetPageNumber() {
-      //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.initMethods()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.payload.pageNumber = pageNumber
       this.initMethods()
     },
+    reRenderTable() {
+      this.$nextTick(() => {
+        if (this.$refs && this.$refs.refDataList) {
+          this.$refs.refDataList.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
+        }
+      })
+    },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.payload.ascending = order === 'ascending'
       this.payload.orderBy = prop
       this.initMethods()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -426,7 +396,10 @@ export default {
     },
     initMethods() {
       this.getIndustries().then(() => {
-        this.getLicenceTypes().then(() => this.getTableData())
+        this.getLicenceTypes().then(() => {
+          this.reRenderTable()
+          this.getTableData()
+        })
       })
     },
     toggleShowAddCompanyModal() {
@@ -551,70 +524,39 @@ export default {
       this.$router.push({ name: 'Company Group Details', params: { groupId: resourceId } })
     },
     columnFilterChanged(filter) {
-      //generic
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     async getIndustries() {
       await LookupLocalStorage.getSingle(2).then((data) => {
-        this.tableOptions.columns[1].filterableItems = data.map((x) => {
-          return { text: x.name, value: x.resourceId }
-        })
+        this.$set(
+          this.tableOptions.columns[1],
+          'filterableItems',
+          data.map((x) => {
+            return { text: x.name, value: x.resourceId }
+          })
+        )
       })
     },
     async getLicenceTypes() {
       await LookupLocalStorage.getSingle(3).then((data) => {
-        this.tableOptions.columns[2].filterableItems = data.map((x) => {
-          return { text: x.name, value: x.resourceId }
-        })
+        this.$set(
+          this.tableOptions.columns[2],
+          'filterableItems',
+          data.map((x) => {
+            return { text: x.name, value: x.resourceId }
+          })
+        )
       })
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   }
 }

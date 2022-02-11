@@ -193,6 +193,11 @@ import TargetUserImportFromAFile from './TargetUserImportFromAFile'
 import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'People',
@@ -446,63 +451,21 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
       this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     checkPermissions(permission, type) {
@@ -744,6 +707,9 @@ export default {
           link.click()
         })
       })
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   },
   created() {
