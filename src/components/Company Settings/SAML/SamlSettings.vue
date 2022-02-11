@@ -75,7 +75,8 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   columnFilterChanged,
   columnFilterCleared,
-  downloadExportedFile
+  downloadExportedFile,
+  isColumnFilterActive
 } from '@/utils/helperFunctions'
 import DeleteSamlSettings from '@/components/Company Settings/SAML/DeleteSamlSettings'
 import NewSamlSettings from '@/components/Company Settings/SAML/NewSamlSettings'
@@ -211,8 +212,7 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.checkIsColumnFilterActive()
       this.callForSamlSettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -230,8 +230,7 @@ export default {
       this.axiosPayload.orderBy = prop.toLowerCase() === 'statusname' ? 'StatusId' : prop
       this.callForSamlSettings()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -245,7 +244,7 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.checkIsColumnFilterActive()
       this.callForSamlSettings()
     },
     resetPageNumber() {
@@ -336,6 +335,9 @@ export default {
     handleOnDelete(selectedRow = {}) {
       this.$refs.refSamlSettings.unSelectRow(selectedRow)
       this.callForSamlSettings()
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }

@@ -86,6 +86,12 @@ import {
 } from '@/api/targetUsers'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
@@ -132,50 +138,8 @@ export default {
   ],
   data() {
     return {
-      axiosPayload: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        },
-        excludeGroupUsers: this.excludeGroupUsers
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        },
-        excludeGroupUsers: this.excludeGroupUsers
-      },
+      axiosPayload: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       defaultColumns: [
         // Should be defined to show the table
         {
@@ -319,13 +283,13 @@ export default {
       )
       this.storedTableSettings = tableSettings
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.checkIsColumnFilterActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -520,55 +484,20 @@ export default {
     columnFilterChanged(filter) {
       //generic
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
       this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      )
       this.callForSearchTargetGroupUsers()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      )
+      this.checkIsColumnFilterActive()
       this.callForSearchTargetGroupUsers()
-
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     getRowActions() {
       return this.hasRowActions
@@ -655,6 +584,9 @@ export default {
     },
     toggleLoading() {
       this.loading = !this.loading
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }

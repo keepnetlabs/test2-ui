@@ -54,6 +54,11 @@ import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxStats, getSandboxStats } from '@/api/sandbox'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'sandboxStats',
   components: {
@@ -306,7 +311,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -320,7 +325,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -458,58 +463,19 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.slice(0, 1).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
-      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName.toLowerCase() !== fieldName.toLowerCase()) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {

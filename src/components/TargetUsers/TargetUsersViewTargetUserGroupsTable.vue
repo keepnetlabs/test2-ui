@@ -49,29 +49,13 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 import { getTargetUserViewUserGroups } from '@/api/targetUsers'
-const axiosPayload = {
-  pageNumber: 1,
-  pageSize: 5,
-  orderBy: 'CreateTime',
-  ascending: false,
-  filter: {
-    Condition: 'AND',
-    FilterGroups: [
-      {
-        Condition: 'AND',
-        FilterItems: [],
-        FilterGroups: []
-      },
-      {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-    ]
-  }
-}
+import { getDefaultAxiosPayload } from '@/utils/functions'
 export default {
   name: 'TargetUsersViewTargetUserGroupsTable',
   components: {
@@ -84,8 +68,8 @@ export default {
   },
   data() {
     return {
-      axiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
-      defaultAxiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
+      axiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
+      defaultAxiosPayload: getDefaultAxiosPayload({ pageSize: 5 }),
       CONSTANTS: {
         id: 'target-users-view-target-users-group-data-table'
       },
@@ -175,6 +159,7 @@ export default {
       )
     },
     columnFilterChanged(filter) {
+      this.resetPageNumber()
       this.tableOptions.isColumnFilterActive = true
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
         filter,
@@ -183,12 +168,12 @@ export default {
       this.callForData()
     },
     columnFilterCleared(fieldName) {
+      this.resetPageNumber()
       this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.axiosPayload
       )
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -209,7 +194,7 @@ export default {
       this.axiosPayload.ascending = order === 'ascending'
       this.callForData()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -218,7 +203,7 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.checkIsColumnFilterActive()
       this.callForData()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
@@ -266,6 +251,9 @@ export default {
         name: 'Target Group Users',
         params: { id: row.resourceId, label: row.name, from: 'people' }
       })
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }

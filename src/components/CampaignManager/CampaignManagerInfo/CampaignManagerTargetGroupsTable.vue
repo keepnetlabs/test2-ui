@@ -29,32 +29,15 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import { searchTargetGroups } from '@/api/targetUsers'
-
-const axiosPayload = {
-  pageNumber: 1,
-  pageSize: 10,
-  orderBy: 'CreateTime',
-  ascending: false,
-  filter: {
-    Condition: 'AND',
-    FilterGroups: [
-      {
-        Condition: 'AND',
-        FilterItems: [],
-        FilterGroups: []
-      },
-      {
-        Condition: 'OR',
-        FilterItems: [],
-        FilterGroups: []
-      }
-    ]
-  }
-}
+import { getDefaultAxiosPayload } from '@/utils/functions'
 
 export default {
   name: 'CampaignManagerTargetGroupsTable',
@@ -65,6 +48,9 @@ export default {
     empty: {
       type: Boolean
     },
+    search: {
+      type: String
+    },
     isLoading: {
       type: Boolean
     },
@@ -74,7 +60,7 @@ export default {
   },
   data() {
     return {
-      axiosPayload: JSON.parse(JSON.stringify(axiosPayload)),
+      axiosPayload: getDefaultAxiosPayload(),
       CONSTANTS: {
         id: 'campaign-manager-target-groups-data-table',
         ascending: 'ascending'
@@ -223,6 +209,7 @@ export default {
     },
     searchChangedFilter(filter = []) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = filter
+      this.checkIsColumnFilterActive()
       this.callForData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -246,7 +233,8 @@ export default {
     },
     checkIsColumnFilterActive() {
       this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length >= 1 ||
+        this.search.length >= 1
     },
     handleRowClick(row) {
       this.highlightedRow = row

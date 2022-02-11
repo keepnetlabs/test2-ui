@@ -24,6 +24,7 @@
         selectable
         filterable
         options
+        is-server-side
         :loading="loading"
         :table="tableData"
         :refName="'proxySettingsList'"
@@ -36,6 +37,8 @@
         :pageSizes="tableOptions.pageSizes"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @addNewProxySetting="toggleProxyModalStatus"
         @onEmptyBtnClicked="toggleProxyModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
@@ -51,9 +54,6 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -111,6 +111,11 @@ import ClientTableExportHelper from '@/helper-classes/client-table-export-helper
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'PROXYSettings',
   components: {
@@ -268,7 +273,7 @@ export default {
     }
   },
   methods: {
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -285,7 +290,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.callForSearchProxySettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -423,54 +428,18 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.bodyOptions
+      )
       this.callForSearchProxySettings()
     },
     columnFilterCleared(fieldName) {
-      if (this.isRestoredOrClearedFilters) {
-        return
-      }
-      let items = []
-      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
-      this.tableOptions.isColumnFilterActive =
-        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyOptions
+      )
+      this.calculateIsFilterColumnActive()
       this.callForSearchProxySettings()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
@@ -514,6 +483,9 @@ export default {
         })
       }
       this.callForSearchProxySettings()
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyOptions)
     }
   },
   created() {

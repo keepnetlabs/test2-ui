@@ -27,6 +27,7 @@
         filterable
         options
         selectable
+        is-server-side
         :refName="'smtpSettingsList'"
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -38,6 +39,8 @@
         :stored-table-settings="storedTableSettings"
         :table="tableData"
         :select-event="tableOptions.selectEvent"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @editAction="handleEdit"
         @downloadEvent="exportRestApi"
         @deleteAction="handleDelete"
@@ -54,9 +57,6 @@
         @server-side-size-changed="serverSideSizeChanged"
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       />
     </div>
   </div>
@@ -77,6 +77,11 @@ import DeleteCustomApi from '@/components/Company Settings/RestApi/DeleteCustomA
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'CustomApi',
   data() {
@@ -196,7 +201,7 @@ export default {
     this.getDefaultFilterAndSearch()
   },
   methods: {
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -210,7 +215,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.checkIsColumnFilterActive()
       this.callForSearch()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -301,58 +306,19 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      )
       this.callForSearch()
     },
     columnFilterCleared(fieldName) {
-      if (this.isRestoredOrClearedFilters) {
-        return
-      }
-
-      let items = []
-      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      )
+      this.checkIsColumnFilterActive()
       this.callForSearch()
-
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
@@ -426,6 +392,9 @@ export default {
         })
       }
       this.callForSearch()
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   }
 }
