@@ -780,7 +780,8 @@ export default {
             },
             {
               Condition: 'OR',
-              FilterItems: [],
+              FilterItems: [
+              ],
               FilterGroups: []
             }
           ]
@@ -1367,18 +1368,19 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
                   Operator: 'Include',
                   Value: 'New,Exists,Error'
                 }
+              ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [
               ],
               FilterGroups: []
             }
