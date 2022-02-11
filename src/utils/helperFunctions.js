@@ -92,6 +92,13 @@ export function columnFilterCleared(fieldName = '', axiosPayload = {}) {
   return filterPayload
 }
 
+export function isColumnFilterActive(axiosPayload = {}) {
+  return !!(
+    axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length ||
+    axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length
+  )
+}
+
 export function downloadExportedFile(data = {}, fileName = '', type = '') {
   const link = document.createElement('a')
   link.href = window.URL.createObjectURL(data)

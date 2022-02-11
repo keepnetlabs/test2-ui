@@ -441,10 +441,12 @@ export default {
         this.bodyData.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refScenariosList.filterValues = savedFilter.filterValues
-          this.$refs.refScenariosList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
+          if (this?.$refs?.refScenariosList) {
+            this.$refs.refScenariosList.filterValues = savedFilter.filterValues
+            this.$refs.refScenariosList.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          }
         })
       }
       this.getDatatableList()

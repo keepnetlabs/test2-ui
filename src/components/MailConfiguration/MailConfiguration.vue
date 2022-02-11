@@ -573,12 +573,10 @@
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
-        :setClassName="setCellClassName"
         :is-downloadable="true"
         :isServerSide="true"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
-        @syncUser="handleSyncUser"
         @delete="handleDelete"
         @editTargetUsers="handleEditMailConfiguration"
         @onEmptyBtnClicked="status = true"
@@ -632,15 +630,6 @@
               </v-list-item>
             </v-list>
           </v-menu>
-        </template>
-        <template v-slot:settings-popup-body>
-          <div
-            id="btn-edit--mail-configurations-custom-field"
-            class="edit-fields"
-            @click="handleEditFieldsClick"
-          >
-            EDIT FIELDS
-          </div>
         </template>
         <template v-slot:empty-table-inline>
           <div class="mail-configuration__no-data">
@@ -729,6 +718,11 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import { getTargetGroups } from '@/api/targetUsers'
 import TestConnectionGoogleWorkspace from '@/components/MailConfiguration/TestConnectionGoogleWorkspace'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -806,18 +800,9 @@ export default {
     googleWorkSpaceInitialValues: null,
     status: false,
     ewsStatus: false,
-    isWantToImportFile: false,
     tableData: [],
     loading: true,
-    isWantToShowDeleteUserModal: false,
-    selectedSyncIndex: null,
-    isWantToShowAddUsersManuallyModal: false,
     selectedRow: null,
-    customFields: [],
-    isWantToShowAddUsersModal: false,
-    showPopupModal: false,
-    isWantToShowImportUsersFromFileModal: false,
-    isWantToShowCustomFieldsModal: false,
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [],
@@ -1011,7 +996,6 @@ export default {
         })
       }
     },
-    handleGoogleWorkspaceTestConnection() {},
     cancelEWS() {
       const isChanged = isDifferent(this.ewsInitialFormValues, this.ewsFormValues)
       if (!isChanged) {
@@ -1066,32 +1050,27 @@ export default {
       localStorage.setItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION, JSON.stringify(tableSettings))
     },
     resetPageNumber() {
-      //generic
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.requestBody.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.requestBody.pageNumber = pageNumber
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.requestBody.ascending = order === 'ascending'
       this.requestBody.orderBy = prop
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.requestBody.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -1330,9 +1309,6 @@ export default {
         scrollToComponent(el)
       }
     },
-    closeImportModal() {
-      this.isWantToImportFile = false
-    },
     handleAddMailConfiguration(item) {
       switch (item) {
         case this.mailConfigurationTypes[0]:
@@ -1378,14 +1354,6 @@ export default {
         default:
           break
       }
-    },
-    closeCustomFieldsModalWithUpdate() {
-      this.isWantToShowCustomFieldsModal = false
-      this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    closeAddUserModalWithUpdate() {
-      this.isWantToShowAddUsersModal = false
-      this.callForTargetUsers()
     },
     handleEditMailConfiguration(selectedRow) {
       if (selectedRow.platform === 'Exchange') {
@@ -1454,103 +1422,24 @@ export default {
         })
       }
     },
-    handleEditFieldsClick() {
-      this.isWantToShowCustomFieldsModal = true
-    },
-    setCellClassName(obj) {
-      if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
-        return 'clock-wise'
-      }
-    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.requestBody
+      )
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.requestBody
+      )
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1 ||
-        this.requestBody.filter.FilterGroups[1].FilterItems.length >= 1
     },
-    handleSyncUser(scope) {
-      this.selectedSyncIndex = scope.$index
-      this.tableOptions.rowActions = [
-        {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          action: 'edit',
-          isNotShow: true
-        },
-        {
-          name: 'Add to a group',
-          icon: 'mdi-account-multiple-plus',
-          action: 'addToGroup'
-        },
-        {
-          name: 'Create a group with user',
-          icon: 'mdi-account-multiple',
-          action: 'createGroupWithUser'
-        },
-        {
-          name: 'Download',
-          icon: 'mdi-download',
-          action: 'download',
-          subElements: ['PDF', 'CSV', 'XLS']
-        },
-        {
-          name: 'Sync User',
-          icon: 'mdi-sync',
-          action: 'syncUser'
-        },
-        {
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'delete'
-        }
-      ]
-      this.selectedSyncIndex = null
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {

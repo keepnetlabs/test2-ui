@@ -153,7 +153,11 @@ import {
 import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'Integrations',
   components: {
@@ -307,7 +311,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -321,7 +325,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -425,7 +429,6 @@ export default {
         this.getDatatableList()
       })
     },
-    handleAdd() {},
     checkIfCanCloseNewIntegrationModal() {
       if (this.$refs.newIntegration) {
         this.$refs.newIntegration.closeOverlay()
@@ -495,9 +498,11 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {
