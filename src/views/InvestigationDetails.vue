@@ -990,7 +990,7 @@ import {
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '@/api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
-import { getTimeZoneForMoment } from '@/utils/functions'
+import { getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
 import { required, trim } from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
@@ -1001,6 +1001,11 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   components: {
     DatatableLoading,
@@ -1058,9 +1063,7 @@ export default {
       required,
       trim
     },
-    investigationListBodyData: {
-      pageNumber: 1,
-      pageSize: 10,
+    investigationListBodyData: getDefaultAxiosPayload({
       orderBy: 'ReceivedTime',
       ascending: true,
       filter: {
@@ -1084,10 +1087,8 @@ export default {
           }
         ]
       }
-    },
-    defaultRequestBody: {
-      pageNumber: 1,
-      pageSize: 10,
+    }),
+    defaultRequestBody: getDefaultAxiosPayload({
       orderBy: 'ReceivedTime',
       ascending: true,
       filter: {
@@ -1103,22 +1104,6 @@ export default {
               }
             ],
             FilterGroups: []
-          }
-        ]
-      }
-    },
-    investigationTargetUsersListBodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'Email',
-      ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
           },
           {
             Condition: 'OR',
@@ -1127,44 +1112,15 @@ export default {
           }
         ]
       }
-    },
-    defaultInvestigationTargetUsersListBodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'Email',
+    }),
+    investigationTargetUsersListBodyData: getDefaultAxiosPayload({
       ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultRequestBodyForTargetUsers: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'Email',
+      orderBy: 'Email'
+    }),
+    defaultRequestBodyForTargetUsers: getDefaultAxiosPayload({
       ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+      orderBy: 'Email'
+    }),
     columns: [
       // Should be defined to show the table
       {
@@ -1386,28 +1342,6 @@ export default {
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4']
     },
-    bodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'ExpireDate',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'Status',
-                Operator: 'Include',
-                Value: 'Canceled,Running,Idle'
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
     serverSideProps: new ServerSideProps(),
     serverSidePropsForTargetUsers: new ServerSideProps()
   }),
@@ -1436,13 +1370,13 @@ export default {
       this.investigationTargetUsersListBodyData.pageNumber = 1
       this.serverSidePropsForTargetUsers.pageNumber = 1
     },
-    handleSearchChangeForTargetUsers(searchFilter = {}, filterActive = false) {
+    handleSearchChangeForTargetUsers(searchFilter = {}) {
       //generic
       this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumberForTargetUsers()
-      this.isColumnFilterActive = filterActive
+      this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
     },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
@@ -1470,26 +1404,22 @@ export default {
       )
     },
     resetPageNumber() {
-      //generic
       this.investigationListBodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.investigationListBodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.isColumnFilterActive = filterActive
+      this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.investigationListBodyData.pageNumber = pageNumber
       this.refreshDatatable()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.investigationListBodyData.ascending = order === 'ascending'
       this.investigationListBodyData.orderBy = prop
       this.refreshDatatable()
@@ -2315,103 +2245,47 @@ export default {
     },
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
-      let items = []
-      let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
-          items.push(x)
-      })
-
-      filterPayload = [...items]
-
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          filterPayload.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'ScanType' && Value === '') {
-        } else {
-          filterPayload.push(elem)
-        }
-      }
-
-      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.resetPageNumber()
+      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.investigationListBodyData
+      )
       this.refreshDatatable()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.resetPageNumber()
+      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.investigationListBodyData
+      )
+      this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
-
-      this.isColumnFilterActive =
-        this.investigationListBodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     columnFilterChangedTargetUsers(filter) {
+      this.resetPageNumberForTargetUsers()
       this.isColumnFilterActiveTargetUsers = true
-      let items = []
-      let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
-        .FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
-          items.push(x)
-      })
-
-      filterPayload = [...items]
-
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          filterPayload.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if ((FieldName === 'ScanType' || FieldName === 'UserStatus') && Value === '') {
-        } else {
-          filterPayload.push(elem)
-        }
-      }
-
-      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.investigationTargetUsersListBodyData
+      )
       this.refreshDatatable()
-
-      this.isColumnFilterActiveTargetUsers =
-        this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     columnFilterClearedTargetUsers(fieldName) {
-      let items = []
-      let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
-        .FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.resetPageNumberForTargetUsers()
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.investigationTargetUsersListBodyData
+      )
+      this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
+    },
+    calculateInvestigateListFilterActive() {
+      this.isColumnFilterActive = isColumnFilterActive(this.investigationListBodyData)
+    },
+    calculateTargetUserListFilterActive() {
+      this.isColumnFilterActiveTargetUsers = isColumnFilterActive(
+        this.investigationTargetUsersListBodyData
+      )
     },
     setStoredTableSettings() {
       this.storedTableDetailsList = JSON.parse(

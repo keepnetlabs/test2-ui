@@ -845,6 +845,7 @@ import {
 import {
   checkPermission,
   getDataTableFieldLabel,
+  getDefaultAxiosPayload,
   handleIsSafari,
   setSafariClusterFix
 } from '@/utils/functions'
@@ -874,6 +875,11 @@ import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeInc
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
 import SelectEmailTemplateModal from '@/components/IncidentResponder/SelectEmailTemplateModal'
 import { getEmailTypesAndEmailTemplates } from '@/components/IncidentResponder/utils'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   components: {
     SelectEmailTemplateModal,
@@ -1056,8 +1062,7 @@ export default {
         icon: 'mdi-plus',
         id: 'btn-empty--incident-responder-investigation'
       },
-      selectEvent: {},
-      chartOptions: {}
+      selectEvent: {}
     },
     matchingInvestigation: {
       table: [],
@@ -1109,8 +1114,7 @@ export default {
         btn: '',
         icon: 'mdi-plus'
       },
-      selectEvent: {},
-      chartOptions: {}
+      selectEvent: {}
     },
     emails: {
       isColumnFilterActive: false,
@@ -1519,26 +1523,6 @@ export default {
         clipboard: true,
         edit: true,
         download: false
-      },
-      chartOptions: {
-        chart: {
-          width: 60,
-          height: 60,
-          type: 'pie',
-          offsetX: -1,
-          offsetY: 1
-        },
-        labels: ['Team A', 'Team B', 'Team C', 'Team D'],
-        colors: ['#67c23a', '#409eff', '#f56c6c', '#ffcc33'],
-        legend: {
-          show: false
-        },
-        tooltip: {
-          enabled: false
-        },
-        dataLabels: {
-          enabled: false
-        }
       }
     },
     serverSideProps: new ServerSideProps(),
@@ -1555,50 +1539,8 @@ export default {
       customMessage: ''
     },
     hasMultipleNoteValue: false,
-    requestBodyReportedEmails: {
-      clusteredBy: '',
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultRequestBodyReportedEmails: {
-      clusteredBy: '',
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    requestBodyReportedEmails: getDefaultAxiosPayload(),
+    defaultRequestBodyReportedEmails: getDefaultAxiosPayload(),
     lazyLoadRequestBody: {
       pageNumber: 1,
       pageSize: 500000,
@@ -1640,7 +1582,7 @@ export default {
           show: true,
           isEditable: false,
           type: 'attachment',
-          width: 120
+          width: 160
         },
         {
           property: PROPERTY_STORE.REPORTEDBY,
@@ -1907,50 +1849,8 @@ export default {
       ]
     },
     clusteredTableData: [],
-    clusteredTableAxios: {
-      clusteredBy: '',
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    clusteredTableDefaultAxios: {
-      clusteredBy: '',
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    }
+    clusteredTableAxios: getDefaultAxiosPayload(),
+    clusteredTableDefaultAxios: getDefaultAxiosPayload()
   }),
   computed: {
     ...mapGetters({
@@ -2484,8 +2384,7 @@ export default {
         this.selectedTemplateResourceId === this.defaultSelectedTemplateResourceId
       )
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.emails.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.emails.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -2494,7 +2393,7 @@ export default {
       })
       this.requestBodyReportedEmails.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.emails.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.callForSearchNotifiedMail()
     },
     handleSetRenderedColumnsReportedEmail(tableSettings = {}) {
@@ -2506,8 +2405,7 @@ export default {
         JSON.stringify(tableSettings)
       )
     },
-    handleClusteredSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.clusteredTable.isColumnFilterActive = columnFilterActive
+    handleClusteredSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.clusteredTable.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -2516,16 +2414,12 @@ export default {
       })
       this.clusteredTableAxios.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetClusteredPageNumber()
-      this.clusteredTable.isColumnFilterActive = columnFilterActive
+      this.calculateClusteredIsFilterColumnActive()
       this.callForClusteredTable()
     },
     resetPageNumber() {
       this.requestBodyReportedEmails.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    closeMatchingModal() {
-      this.showMatchingModal = false
-      this.matchingInvestigationData = []
     },
     initMethods(isLoadState = false) {
       this.callForGetRunningInvestigations()
@@ -3090,124 +2984,47 @@ export default {
     },
     clusteredColumnFilterChanged(filter = {}) {
       this.clusteredTable.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (
-            x.FieldName !==
-            filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-          ) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Result' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.clusteredTableAxios
+      )
       this.resetClusteredPageNumber()
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = requestBody
       this.callForClusteredTable()
     },
     clusteredColumnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.clusteredTableAxios.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = filterPayload
+      this.clusteredTableAxios.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.clusteredTableAxios
+      )
       if (this.clusteredRow) {
         this.callForClusteredTable()
       }
       this.resetClusteredPageNumber()
-      this.clusteredTable.isColumnFilterActive =
-        this.clusteredTableAxios.filter.FilterGroups[0].FilterItems.length >= 1
+      this.calculateClusteredIsFilterColumnActive()
     },
     columnFilterChanged(filter) {
       this.emails.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName.charAt(0).toUpperCase() + i.FieldName.slice(1)) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (
-            x.FieldName !==
-            filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-          ) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Result' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.requestBodyReportedEmails
+      )
       this.resetPageNumber()
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = requestBody
       this.callForSearchNotifiedMail()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
+      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.requestBodyReportedEmails
+      )
       this.resetPageNumber()
-      this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems = filterPayload
+      this.calculateIsFilterColumnActive()
       this.callForSearchNotifiedMail()
-
-      this.emails.isColumnFilterActive =
-        this.requestBodyReportedEmails.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    calculateIsFilterColumnActive() {
+      this.emails.isColumnFilterActive = isColumnFilterActive(this.requestBodyReportedEmails)
+    },
+    calculateClusteredIsFilterColumnActive() {
+      this.clusteredTable.isColumnFilterActive = isColumnFilterActive(this.clusteredTableAxios)
     }
   },
 
