@@ -152,11 +152,10 @@
             <v-list-item class="edit-industry-area pb-4 pa-0">
               <v-list-item-content class="filter-container">
                 <label id="label--investigation-search-criteria" class="edit-labels">{{
-                  labels.SearchCriteria
+                  labels.Filters
                 }}</label>
                 <label id="label--investigation-search-criteria-sub" class="edit-sub-labels"
-                  >Define criteria for the investigation. Emails that match any of the criteria will
-                  be found</label
+                  >Define filters for the investigation</label
                 >
                 <div
                   class="filter-item"
@@ -165,11 +164,11 @@
                 >
                   <div class="filter-item__selectbox">
                     <Treeselect
-                      :key="`${list.renderKey}-${index}`"
-                      v-model="list.option"
-                      :id="`input--investigation-search-criteria-${list.option}-${index}`"
                       disable-branch-nodes
                       open-direction="below"
+                      v-model="list.option"
+                      :key="`${list.renderKey}-${index}`"
+                      :id="`input--investigation-search-criteria-${list.option}-${index}`"
                       :class="[
                         'filter-list-select',
                         'k-treeselect',
@@ -195,7 +194,30 @@
                       </transition>
                     </div>
                   </div>
-                  <div class="filter-item__input">
+                  <div
+                    v-if="list.option === 'size'"
+                    class="filter-item__file-size-option-selectbox"
+                  >
+                    <k-select
+                      v-model.trim="list.subOption"
+                      id="input--file-size-option-selectbox"
+                      custom-menu-class="menu--investigation-duration"
+                      outlined
+                      class="input-select standard-height"
+                      item-text="label"
+                      item-value="value"
+                      placeholder="equal"
+                      minWidthType="big"
+                      :items="fileSizeOptions"
+                      :rules="[(v) => !!v || 'File size option is required']"
+                    ></k-select>
+                  </div>
+                  <div
+                    :class="{
+                      'filter-item__input': list.option !== 'size',
+                      'filter-item__file-size-option-input': list.option === 'size'
+                    }"
+                  >
                     <v-text-field
                       v-model.trim="list.text"
                       :key="`${list.renderKey}-${index}`"
@@ -234,7 +256,7 @@
                   type="button"
                   @click="addNewFilterListOption()"
                 >
-                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD CRITERIA
+                  <v-icon medium left color="blue" class="ml-2">mdi-plus</v-icon>ADD FILTER
                 </button>
               </v-list-item-content>
             </v-list-item>
@@ -255,6 +277,7 @@
                     :picker-options="pickerOptions"
                     :rules="[]"
                     :defaultTime="['00:00:00', '23:59:00']"
+                    :prefix-icon="'el-icon-date'"
                   />
                   <div class="v-text-field__details checkbox-error" v-if="!isDateValid">
                     <transition appear name="bounce">
@@ -281,7 +304,6 @@
                 <MailConfigurationSelectSources v-model="scanTypes" />
               </v-list-item-content>
             </v-list-item>
-
             <v-list-item class="edit-industry-area mt-2 pb-4 pa-0">
               <v-list-item-content class>
                 <label id="label--investigation-duration" class="edit-labels">Duration</label>
@@ -538,8 +560,8 @@ export default {
             { label: 'To', id: 'to' },
             { label: 'CC', id: 'cc' },
             { label: 'BCC', id: 'bcc' },
-            { label: 'IP Address', id: 'ip' },
-            { label: 'Sender Name', id: 'senderName' }
+            { label: 'Recipient Name', id: 'senderName' },
+            { label: 'IP Address', id: 'ip' }
           ]
         },
         {
@@ -547,8 +569,8 @@ export default {
           id: 'body',
           isDefaultExpanded: true,
           children: [
-            { label: 'URL', id: 'url' },
             { label: 'Keyword', id: 'keyword' },
+            { label: 'URL', id: 'url' },
             { label: 'Regex', id: 'regex' }
           ]
         },
@@ -565,6 +587,29 @@ export default {
           ]
         }
       ],
+      fileSizeOptions: [
+        {
+          label: 'Equal',
+          value: 'equal'
+        },
+        {
+          label: 'Greater than',
+          value: 'greaterThan'
+        },
+        {
+          label: 'Greater than or equal',
+          value: 'greaterThanOrEqual'
+        },
+        {
+          label: 'Less than',
+          value: 'lessThan'
+        },
+        {
+          label: 'Less than or equal',
+          value: 'lessThanOrEqual'
+        }
+      ],
+      selectedFileSize: null,
       valid: false,
       menu1: '',
       menu2: '',
@@ -1626,10 +1671,19 @@ export default {
     .filter-item {
       display: flex;
       flex-flow: row;
+      max-width: 554px;
       align-items: center;
       text-align: center;
-      justify-content: center;
+      // justify-content: center;
       position: relative;
+
+      &__delete-button {
+        opacity: 0;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
 
       &:not(:first-of-type) {
         margin-top: 11px;
@@ -1637,18 +1691,19 @@ export default {
 
       &:hover {
         .filter-item__delete-button {
-          display: flex;
+          opacity: 1;
         }
       }
 
       &__selectbox {
-        width: 80%;
-        margin-right: 5%;
+        width: 200px;
+        min-width: 200px;
+        margin-right: 16px;
         max-height: 40px;
       }
 
       &__input {
-        width: 100%;
+        width: 350px;
         max-height: 40px;
       }
 
@@ -1679,6 +1734,16 @@ export default {
         top: 0px;
         justify-content: center;
         display: flex;
+      }
+
+      &__file-size {
+        &-option-selectbox {
+          margin-right: 8px;
+          width: 100px;
+        }
+        &-option-input {
+          width: 240px;
+        }
       }
     }
   }

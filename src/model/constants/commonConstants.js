@@ -82,6 +82,7 @@ export const LABEL_STORE = {
   ANALYSISSOURCE: 'Analysis Source',
   EXPIREDATE: 'Expiry Date',
   USERSTATUS: 'User Status',
+  SCANSTATUS: 'Scan Status',
   FROM: 'From',
   TO: 'To',
   SCANTYPE: 'Service',

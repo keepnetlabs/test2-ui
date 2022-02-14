@@ -31,6 +31,7 @@
         <datatable
           v-bind="tableState"
           is-server-side
+          isServerSideSelection
           :loading="loading"
           :is-column-filter-active="isColumnFilterActive"
           id="investigations-data-table"
@@ -44,7 +45,7 @@
           :options="true"
           :rowActions="rowActions"
           :stored-table-settings="storedTableSettings"
-          :addButton="addUsers"
+          :addButton="newInvestigationButton"
           :empty="iEmpty"
           :selectEvent="selectEvent"
           :chartOptions="chartOptions"
@@ -195,9 +196,10 @@ export default {
         show: true,
         type: 'status',
         isEditable: true,
+        isWithTooltip: true,
         width: 150,
         filterableType: 'select',
-        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished']
+        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished', 'Queued', 'No match']
       },
       {
         property: 'createTime',
@@ -223,14 +225,15 @@ export default {
       },
       {
         property: 'userStatus',
+        informationTextProperty: 'scanStatusText',
         align: 'center',
         editable: false,
-        label: getStoreValue('userStatus'),
+        label: getStoreValue('scanStatus'),
         fixed: false,
         sortable: false,
         show: true,
         type: 'chart',
-        width: 150
+        width: 190
       },
       {
         property: 'progress',
@@ -258,10 +261,13 @@ export default {
         icon: 'mdi-stop',
         id: 'btn-stop--investigations-row-actions',
         action: 'stopInvestigationFunc',
-        disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT')
+        disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT'),
+        getButtonVisibility: (status) => {
+          return status === 'Running'
+        }
       }
     ],
-    addUsers: {
+    newInvestigationButton: {
       show: true,
       tooltip: labels.StartAnInvestigation,
       action: 'startNewInvestigation',
@@ -270,20 +276,22 @@ export default {
     },
     iEmpty: {
       message: labels.NoInvestigationStarted,
-      btn: labels.New,
-      id: 'btn-empty--investigations',
-      icon: 'mdi-plus'
+      btn: labels.StartAnInvestigation,
+      id: 'btn-empty--investigations'
     },
     selectEvent: {
       clipboard: true,
       edit: false,
       delete: false,
-      download: false
+      download: false,
+      pause: true,
+      stop: true
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4'],
       labels: [labels.CompletedUserCount, labels.NotStartedUserCount],
-      showTooltipLine: true
+      showTooltipLine: true,
+      isWithText: true
     },
     isColumnFilterActive: false,
     bodyData: {
@@ -420,7 +428,11 @@ export default {
       return (this.showPlaybookModal = !this.showPlaybookModal)
     },
     sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === 'ascending'
+      }
       this.getInvestigationList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
