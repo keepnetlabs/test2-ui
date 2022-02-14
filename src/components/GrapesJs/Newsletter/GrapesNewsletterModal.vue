@@ -860,7 +860,6 @@ export default {
           span {
             transform: none !important;
           }
-          //background-image: url('../../../assets/img/link@2x.png') !important;
         }
       }
     }

@@ -666,7 +666,7 @@
                 @click="ewsStatus = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
-                <img alt="exchange" src="../../assets/img/office365_logo.png" />
+                <img alt="exchange" src="../../assets/img/office365_logo.svg" />
               </div>
             </div>
           </div>
