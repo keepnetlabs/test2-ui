@@ -138,8 +138,8 @@ export default {
   ],
   data() {
     return {
-      axiosPayload: getDefaultAxiosPayload(),
-      defaultRequestBody: getDefaultAxiosPayload(),
+      axiosPayload: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
+      defaultRequestBody: getDefaultAxiosPayload({ excludeGroupUsers: this.excludeGroupUsers }),
       defaultColumns: [
         // Should be defined to show the table
         {
