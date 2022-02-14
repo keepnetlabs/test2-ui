@@ -1031,6 +1031,18 @@ export default {
         TargetGroupResourceIdList: [],
         IsAllTargetGroupsSelected: true
       }
+      this.ewsInitialFormValues = {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      }
     },
     cancelEWS() {
       const isChanged = isDifferent(this.ewsInitialFormValues, this.ewsFormValues)
@@ -1238,7 +1250,16 @@ export default {
         applicationId: null,
         applicationSecret: null,
         directoryId: null,
-        email: null
+        email: null,
+        allowedDomains: []
+      }
+      this.initialFormValues = {
+        name: null,
+        applicationId: null,
+        applicationSecret: null,
+        directoryId: null,
+        email: null,
+        allowedDomains: []
       }
     },
     cancelO365() {
@@ -1248,7 +1269,6 @@ export default {
         this.editData = null
         this.resetO365Form()
         this.domainList = []
-        this.initialFormValues = null
         return
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
@@ -1258,7 +1278,6 @@ export default {
           this.editData = null
           this.resetO365Form()
           this.domainList = []
-          this.initialFormValues = null
         }
       })
     },
@@ -1281,6 +1300,11 @@ export default {
     },
     resetGoogleWorkSpaceForm() {
       this.googleWorkSpaceForm = {
+        name: '',
+        authJson: '',
+        email: ''
+      }
+      this.googleWorkSpaceInitialValues = {
         name: '',
         authJson: '',
         email: ''
