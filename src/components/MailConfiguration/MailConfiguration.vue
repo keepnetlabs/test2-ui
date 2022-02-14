@@ -795,9 +795,31 @@ export default {
       TargetGroupResourceIdList: [],
       IsAllTargetGroupsSelected: true
     },
-    initialFormValues: null,
-    ewsInitialFormValues: null,
-    googleWorkSpaceInitialValues: null,
+    initialFormValues: {
+      name: null,
+      applicationId: null,
+      applicationSecret: null,
+      directoryId: null,
+      email: null,
+      allowedDomains: []
+    },
+    ewsInitialFormValues: {
+      Name: null,
+      ServiceUrl: null,
+      ExchangeVersionLookupResourceId: null,
+      AccountType: 1,
+      Username: null,
+      Password: null,
+      Email: null,
+      XAnchorMailBoxHeader: false,
+      TargetGroupResourceIdList: [],
+      IsAllTargetGroupsSelected: true
+    },
+    googleWorkSpaceInitialValues: {
+      name: '',
+      authJson: '',
+      email: ''
+    },
     status: false,
     ewsStatus: false,
     tableData: [],
@@ -996,18 +1018,32 @@ export default {
         })
       }
     },
+    resetEWSForm() {
+      this.ewsFormValues = {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      }
+    },
     cancelEWS() {
       const isChanged = isDifferent(this.ewsInitialFormValues, this.ewsFormValues)
       if (!isChanged) {
         this.ewsStatus = false
-        this.ewsInitialFormValues = null
+        this.resetEWSForm()
         return
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
           this.ewsStatus = false
-          this.ewsInitialFormValues = null
+          this.resetEWSForm()
         }
       })
     },
@@ -1024,13 +1060,13 @@ export default {
           let ewsEditData = this.ewsFormValues
           updateEWS(ewsEditData, this.ewsEditData.ResourceId).then(() => {
             this.ewsStatus = false
-            this.ewsEditData = null
+            this.resetEWSForm()
             this.getTableData()
           })
         } else {
           createEWS(this.ewsFormValues).then(() => {
             this.ewsStatus = false
-            this.ewsEditData = null
+            this.resetEWSForm()
             this.getTableData()
           })
         }
@@ -1116,8 +1152,6 @@ export default {
     testConnectionValues(isSuccess, isSave) {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-        this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             if (this.status) this.submit()
@@ -1129,7 +1163,6 @@ export default {
     testConnectionGoogleWorkspaceValues(isSuccess, isSave) {
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
-        this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             this.handleSubmitGoogleWorkspace()
