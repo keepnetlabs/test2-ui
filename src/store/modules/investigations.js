@@ -1,15 +1,15 @@
 import {
-  investigationList,
   cancelInvestigation,
-  getTargetUsers,
-  saveNewInvestigation,
-  getStatsAndMenuDataFunction,
+  deleteInvestigationDetailsItem,
   getInvestigationDetailsDataFunction,
+  getStatsAndMenuDataFunction,
+  getTargetUsers,
   investigationDetailsListFunction,
   investigationDetailsTargetUsersListFunction,
-  sendInvestigationWarningMessage,
-  deleteInvestigationDetailsItem,
-  irSummary
+  investigationList,
+  irSummary,
+  saveNewInvestigation,
+  sendInvestigationWarningMessage
 } from '@/api/investigations'
 
 const investigations = {
@@ -59,11 +59,15 @@ const investigations = {
         const { completedUsersCount = 0, scannedUsersCount = 0 } = item
         return {
           ...item,
-          userStatus: [completedUsersCount, scannedUsersCount - completedUsersCount]
+          userStatus: [completedUsersCount, scannedUsersCount - completedUsersCount],
+          scanStatusText: `${completedUsersCount} / ${scannedUsersCount}`
         }
       })
 
-      state.investigationList = { totalNumberOfRecords: data.totalNumberOfRecords, data: stateData }
+      state.investigationList = {
+        totalNumberOfRecords: data.totalNumberOfRecords,
+        data: stateData
+      }
     },
     SET_IRSUMMARY(state, payload) {
       state.irSummary = payload.data

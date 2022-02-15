@@ -29,10 +29,11 @@
         <template v-slot:activator="{ on }">
           <v-btn style="display: none;"></v-btn>
           <badge
+            size="mini"
             :color="'#2196f3'"
+            :outline="false"
             :full-width="col.fullWidth"
             :listeners="on"
-            size="mini"
             :text="`+${unRenderedBadgeCount}`"
           />
         </template>
@@ -116,6 +117,12 @@ export default {
       })
     },
     getBadges() {
+      if (this.col.maxItemsPerCell) {
+        this.maximumRenderedBadgeCount = this.col.maxItemsPerCell
+        this.unRenderedBadgeCount = this.badges.length - this.maximumRenderedBadgeCount
+        return
+      }
+
       if (this.badges.length > 0) {
         let renderedCount = 0
         let totalWidth = this.unRenderedBadgeCount
@@ -155,7 +162,7 @@ export default {
 <style lang="scss">
 .data-table-text-with-badge {
   .k-badge {
-    margin-left: 10px;
+    margin: 0 12px;
   }
 
   &__tooltip {
