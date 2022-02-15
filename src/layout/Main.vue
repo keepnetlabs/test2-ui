@@ -504,6 +504,11 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            v-if="
+              checkPermissionMultiple([
+                'phishing-simulator/phishing-campaign-job-report/search|POST'
+              ])
+            "
             id="btn--link-navigator-menu-reports-list-group"
             prepend-icon="mdi-equalizer"
             no-action
