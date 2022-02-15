@@ -1232,7 +1232,7 @@ export default {
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
     investigationDeleteExcludedResourceIdList: [],
-    isAutoRefreshActive: false,
+    isAutoRefreshActive: true,
     autoRefreshInterval: null,
     isRunning: false,
     storedTableDetailsList: null,
@@ -2760,11 +2760,14 @@ export default {
     }
   },
   watch: {
-    isAutoRefreshActive(isActive) {
-      if (isActive) {
-        this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
-      } else {
-        clearInterval(this.autoRefreshInterval)
+    isAutoRefreshActive: {
+      immediate: true,
+      handler(isActive) {
+        if (isActive) {
+          this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
+        } else {
+          clearInterval(this.autoRefreshInterval)
+        }
       }
     },
     statsAndMenuData() {
