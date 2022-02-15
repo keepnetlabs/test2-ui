@@ -1230,7 +1230,8 @@ export default {
           this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
             let aItem = {
               name: item,
-              selectedValue: null,
+              selectedValue:
+                this.mappingData.columns.find((column) => column.dbName === item)?.name || null,
               required:
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
