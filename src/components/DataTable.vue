@@ -1329,6 +1329,7 @@ export default {
           this.tableData.length === 0 &&
           !this.search &&
           !this.isColumnFilterActive &&
+          !window.location.href.includes('target-users') &&
           'table-header-disable'
         )
       } else {
