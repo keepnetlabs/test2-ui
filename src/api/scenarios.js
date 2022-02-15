@@ -45,3 +45,7 @@ export function getSummaryOfScenario(templateId, landingPageId) {
     `phishing-simulator/phishing-scenario/preview/${templateId}/${landingPageId}`
   )
 }
+
+export function minifyHTML(htmlContent = '') {
+  return testRequest.post('file/compress-html', { htmlContent })
+}
