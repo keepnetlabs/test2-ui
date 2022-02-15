@@ -132,10 +132,10 @@ export default {
             statusName: !!item.statusName ? item.statusName : 'Running'
           }
         })
-        this.options.unshift(
-          { mailConfigurationName: 'All', mailConfigurationResourceId: 'all' },
-          { divider: true }
-        )
+        // this.options.unshift(
+        //   { mailConfigurationName: 'All', mailConfigurationResourceId: 'all' },
+        //   { divider: true }
+        // )
         if (this.value.length) {
           this.selectedSources = this.options.filter((item) =>
             this.value.find(
