@@ -196,6 +196,7 @@ import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUser
 import {
   columnFilterChanged,
   columnFilterCleared,
+  createCustomFieldColumns,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
 
@@ -603,49 +604,7 @@ export default {
               return -1
             })
 
-            const columnsOfCustomFields = this.customFields.map((field) => {
-              const { name, fieldDataType } = field
-              const filterableProps = {}
-              switch (fieldDataType.toLowerCase()) {
-                case 'string':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'email':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'number':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'boolean':
-                  filterableProps['filterableType'] = 'select'
-                  filterableProps['filterableItems'] = [
-                    { text: 'Yes', value: 1 },
-                    { text: 'No', value: 0 }
-                  ]
-                  break
-                case 'date':
-                  filterableProps['filterableType'] = 'dateOnly'
-                  filterableProps['type'] = 'date'
-                  break
-                case 'datetime':
-                  filterableProps['filterableType'] = 'date'
-                  break
-                default:
-                  break
-              }
-              return {
-                property: name,
-                type: 'text',
-                sortable: false,
-                filterable: true,
-                hideSort: true,
-                label: name,
-                align: 'left',
-                show: true,
-                width: 80 + name.length * 7,
-                ...filterableProps
-              }
-            })
+            const columnsOfCustomFields = createCustomFieldColumns(this.customFields)
 
             const newColumns = [
               ...this.tableOptions.defaultColumns,

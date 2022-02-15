@@ -2412,12 +2412,11 @@ export default {
     },
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
-        if (
-          this.renderedColumns.find((property) => property === filterItem.property) &&
-          !filterItem['isCustomField']
-        ) {
+        if (this.renderedColumns.find((property) => property === filterItem.property)) {
           acc.push({
-            FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
+            FieldName: filterItem['isCustomField']
+              ? filterItem.property
+              : filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
             Operator: 'Contains',
             Value: this.search
           })
@@ -2427,24 +2426,9 @@ export default {
     },
     searchChangedEvent() {
       const debounceTime = 750
-      let _this = this
-      if (_this.isServerSide && this.serverSideEvents.search) {
+      if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
-          const filterItems = _this.columns.reduce((acc, filterItem) => {
-            if (
-              this.renderedColumns.find((property) => property === filterItem.property) &&
-              !filterItem['isCustomField']
-            ) {
-              const obj = {
-                FieldName:
-                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-                Operator: 'Contains',
-                Value: this.search
-              }
-              acc.push(obj)
-            }
-            return acc
-          }, [])
+          const filterItems = this.getSearchFilterItems()
           const bodyDataFilter = {
             filter: {
               Condition: 'AND',
@@ -2456,7 +2440,9 @@ export default {
               ]
             }
           }
+
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+
           if (this.isServerSideSelection) {
             this.resetSelectableParams()
           }
