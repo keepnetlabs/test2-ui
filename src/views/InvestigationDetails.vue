@@ -6,6 +6,7 @@
     >
       <div class="investigation-details__container">
         <new-investigation
+          v-if="isWantToAddNewCommunity"
           :isEdit="true"
           :statsAndMenuData="statsAndMenuData"
           :status="isWantToAddNewCommunity"
@@ -13,21 +14,20 @@
           :investigationDetailsData="investigationDetailsData"
           @closeWithRoute="onAddClose"
           @closeAdd="isWantToAddNewCommunity = false"
-          v-if="isWantToAddNewCommunity"
           @refreshDatatable="refreshDatatable"
         />
         <app-dialog
           v-if="isWantToDelete"
-          :status="isWantToDelete"
           icon="mdi-alert"
           size="small"
           title="Delete Emails?"
-          title-id="text--investigation-details-delete-emails-popup-title"
-          subtitle-id="text--investigation-details-delete-emails-popup-subtitle"
-          :subtitle="deleteMessage()"
-          @changeStatus="isWantToDelete = false"
           body="Do you want to delete emails or move to trash?"
           className="investigation-details__modal-footer"
+          title-id="text--investigation-details-delete-emails-popup-title"
+          subtitle-id="text--investigation-details-delete-emails-popup-subtitle"
+          :status="isWantToDelete"
+          :subtitle="deleteMessage()"
+          @changeStatus="isWantToDelete = false"
         >
           <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
@@ -108,6 +108,77 @@
               @handleClose="isWantToWarn = false"
               @handleConfirm="isWantToWarnConfirm"
             />
+          </template>
+        </app-dialog>
+        <app-dialog
+          v-if="isWantToDeleteAndNotify"
+          size="big"
+          icon="mdi-alert"
+          title-id="text--investigation-details-delete-and-notify-title"
+          subtitle-id="text--investigation-details-delete-and-notify-subtitle"
+          class-name="investigation-details__delete-and-notify-modal"
+          :status="isWantToDeleteAndNotify"
+          :title="deleteAndNotifyMessage"
+          :subtitle="deleteAndNotifyMessageSubtitle"
+          @changeStatus="isWantToDeleteAndNotify = false"
+        >
+          <template v-slot:app-dialog-body>
+            <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
+              <v-form
+                class="w-100"
+                lazy-validation
+                ref="refDeleteAndNotifyForm"
+                onSubmit="return false;"
+                @submit="isWantToDeleteAndNotifyConfirm"
+              >
+                <v-text-field
+                  id="input--investigation-details-warning-message"
+                  placeholder="Dangerous Email"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model.trim="deleteAndNotifyMessage"
+                  height="40"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.trim(v, 'Required')
+                  ]"
+                ></v-text-field>
+              </v-form>
+            </v-list-item>
+          </template>
+          <template v-slot:app-dialog-footer>
+            <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
+              <div>
+                <v-btn
+                  id="btn-cancel--investigation-details-delete-emails-popup"
+                  class="k-dialog__button"
+                  text
+                  color="#f56c6c"
+                  @click="isWantToDeleteAndNotify = false"
+                  >{{ labels.Cancel }}
+                </v-btn>
+              </div>
+              <div class="d-flex flex-row flex-end">
+                <v-btn
+                  id="btn-move-to-trash--investigation-details-delete-emails-popup"
+                  class="k-dialog__button"
+                  text
+                  :disabled="warnAndDeleteButtonDisabled"
+                  color="#00bcd4"
+                  @click="isWantToDeleteConfirm(false, null, false)"
+                  >Move to trash
+                </v-btn>
+                <v-btn
+                  id="btn-delete--investigation-delete-emails-details-popup"
+                  class="k-dialog__button"
+                  text
+                  color="#2196f3"
+                  :disabled="warnAndDeleteButtonDisabled"
+                  @click="isWantToDeleteConfirm(true, null, false)"
+                  >Delete Permanently
+                </v-btn>
+              </div>
+            </div>
           </template>
         </app-dialog>
         <app-dialog
@@ -250,7 +321,8 @@
                         >
                           <template v-slot:activator="{ on }">
                             <div v-on="on">
-                              {{ statsAndMenuData && statsAndMenuData.estimatedTime }} remaining
+                              {{ statsAndMenuData && statsAndMenuData.estimatedTime }}
+                              remaining
                             </div>
                           </template>
                           <p class="tooltip-wrapper">
@@ -411,7 +483,9 @@
                           id="btn--investigation-details-target-users"
                           link
                           @click="menuClick('targetUsers')"
-                          :class="{ 'v-list-item--active': activeMenu === 'targetUsers' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'targetUsers'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-account-multiple</v-icon>
@@ -435,7 +509,9 @@
                           id="btn--investigation-details-inbox"
                           link
                           @click="menuClick('Inbox')"
-                          :class="{ 'v-list-item--active': activeMenu === 'Inbox' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Inbox'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-inbox</v-icon>
@@ -445,7 +521,12 @@
                             <v-list-item-title>
                               Inbox
                               <span
-                                class="v-list-item-title__value"
+                                :class="{
+                                  'v-list-item-title__value': true,
+                                  'v-list-item-title__value--blue': activeMenu === 'Inbox',
+                                  'v-list-item-title__value--gray': activeMenu !== 'Inbox',
+                                  'v-list-item-title__value--orange': false
+                                }"
                                 v-if="!!getMailCountByFolderName('Inbox')"
                                 >{{ getMailCountByFolderName('Inbox') }}</span
                               >
@@ -456,7 +537,9 @@
                           id="btn--investigation-details-junk"
                           link
                           @click="menuClick('JunkEmail')"
-                          :class="{ 'v-list-item--active': activeMenu === 'JunkEmail' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'JunkEmail'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-alert</v-icon>
@@ -466,7 +549,12 @@
                             <v-list-item-title>
                               Junk
                               <span
-                                class="v-list-item-title__value"
+                                :class="{
+                                  'v-list-item-title__value': true,
+                                  'v-list-item-title__value--blue': activeMenu === 'JunkEmail',
+                                  'v-list-item-title__value--gray': activeMenu !== 'JunkEmail',
+                                  'v-list-item-title__value--orange': false
+                                }"
                                 v-if="!!getMailCountByFolderName('JunkEmail')"
                                 >{{ getMailCountByFolderName('JunkEmail') }}</span
                               >
@@ -477,7 +565,9 @@
                           link
                           id="btn--investigation-details-draft"
                           @click="menuClick('Drafts')"
-                          :class="{ 'v-list-item--active': activeMenu === 'Drafts' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Drafts'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-file</v-icon>
@@ -487,7 +577,12 @@
                             <v-list-item-title>
                               Draft
                               <span
-                                class="v-list-item-title__value"
+                                :class="{
+                                  'v-list-item-title__value': true,
+                                  'v-list-item-title__value--blue': activeMenu === 'Drafts',
+                                  'v-list-item-title__value--gray': activeMenu !== 'Drafts',
+                                  'v-list-item-title__value--orange': false
+                                }"
                                 v-if="!!getMailCountByFolderName('Drafts')"
                                 >{{ getMailCountByFolderName('Drafts') }}</span
                               >
@@ -498,7 +593,9 @@
                           id="btn--investigation-details-sent"
                           link
                           @click="menuClick('SentItems')"
-                          :class="{ 'v-list-item--active': activeMenu === 'SentItems' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'SentItems'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-send</v-icon>
@@ -508,7 +605,12 @@
                             <v-list-item-title>
                               Sent
                               <span
-                                class="v-list-item-title__value"
+                                :class="{
+                                  'v-list-item-title__value': true,
+                                  'v-list-item-title__value--blue': activeMenu === 'SentItems',
+                                  'v-list-item-title__value--gray': activeMenu !== 'SentItems',
+                                  'v-list-item-title__value--orange': false
+                                }"
                                 v-if="!!getMailCountByFolderName('SentItems')"
                                 >{{ getMailCountByFolderName('SentItems') }}</span
                               >
@@ -519,7 +621,9 @@
                           id="btn--investigation-details-deleted-items"
                           link
                           @click="menuClick('DeletedItems')"
-                          :class="{ 'v-list-item--active': activeMenu === 'DeletedItems' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'DeletedItems'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-delete</v-icon>
@@ -529,7 +633,12 @@
                             <v-list-item-title>
                               Deleted Items
                               <span
-                                class="v-list-item-title__value"
+                                :class="{
+                                  'v-list-item-title__value': true,
+                                  'v-list-item-title__value--blue': activeMenu === 'DeletedItems',
+                                  'v-list-item-title__value--gray': activeMenu !== 'DeletedItems',
+                                  'v-list-item-title__value--orange': false
+                                }"
                                 v-if="!!getMailCountByFolderName('DeletedItems')"
                                 >{{ getMailCountByFolderName('DeletedItems') }}</span
                               >
@@ -540,7 +649,9 @@
                           id="btn--investigation-details-others"
                           link
                           @click="menuClick('Others')"
-                          :class="{ 'v-list-item--active': activeMenu === 'Others' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Others'
+                          }"
                         >
                           <v-list-item-icon>
                             <v-icon medium left color="#909399">mdi-plus-box</v-icon>
@@ -550,7 +661,12 @@
                             <v-list-item-title>
                               Others
                               <span
-                                class="v-list-item-title__value"
+                                :class="{
+                                  'v-list-item-title__value': true,
+                                  'v-list-item-title__value--blue': activeMenu === 'Others',
+                                  'v-list-item-title__value--gray': activeMenu !== 'Others',
+                                  'v-list-item-title__value--orange': false
+                                }"
                                 v-if="!!getMailCountByFolderName('Others')"
                                 >{{ getMailCountByFolderName('Others') }}</span
                               >
@@ -560,15 +676,15 @@
                         <v-list-item>
                           <v-divider></v-divider>
                         </v-list-item>
-                        <p class="v-list-item__archived--title">
-                          Archived
-                        </p>
+                        <p class="v-list-item__archived--title">Archived</p>
                         <v-list-item
                           id="btn--investigation-details-stored"
                           link
                           @click="menuClick('Stored')"
                           class="v-list-item__archived--main"
-                          :class="{ 'v-list-item--active': activeMenu === 'Stored' }"
+                          :class="{
+                            'v-list-item--active': activeMenu === 'Stored'
+                          }"
                         >
                           <div class="v-list-item__archived"></div>
                           <div class="v-list-item__archived--link">
@@ -580,7 +696,12 @@
                               <v-list-item-title>
                                 Stored
                                 <span
-                                  class="v-list-item-title__value"
+                                  :class="{
+                                    'v-list-item-title__value': true,
+                                    'v-list-item-title__value--blue': activeMenu === 'Stored',
+                                    'v-list-item-title__value--gray': activeMenu !== 'Stored',
+                                    'v-list-item-title__value--orange': false
+                                  }"
                                   v-if="!!getMailCountByFolderName('Stored')"
                                   >{{ getMailCountByFolderName('Stored') }}</span
                                 >
@@ -712,7 +833,7 @@
                     >
                       <v-btn
                         id="btn-stop--investigation-details-card"
-                        class="ma-2"
+                        class="ma-1"
                         outlined
                         color="#2196f3"
                         @click="stopInvestigationFunc"
@@ -725,10 +846,41 @@
                       id="btn-duplicate--investigation-details-card"
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
                     >
-                      <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
+                      <v-btn class="ma-1" outlined color="#2196f3" @click="startInvestigationFunc">
                         <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
                         Duplicate
                       </v-btn>
+                    </div>
+                    <div
+                      v-if="['Idle', 'Running'].includes(investigationDetailsData.status)"
+                      id="btn-duplicate--investigation-details-card"
+                      class="investigation-details__container__content--right-menu__summary__item--action-button--rounded"
+                    >
+                      <v-menu
+                        :min-width="300"
+                        :offset-y="true"
+                        left
+                        :nudge-right="0"
+                        :nudge-bottom="5"
+                      >
+                        <template v-slot:activator="{ on: menu }">
+                          <v-btn v-on="menu" class="ma-1" outlined color="#2196f3">
+                            <v-icon medium color="#2196f3">mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item @click="setAutoRefresh">
+                            <v-list-item-title>
+                              <div class="menu-item__content">
+                                Auto-Refresh every 15 seconds
+                                <v-icon v-if="isAutoRefreshActive" color="#000000"
+                                  >mdi-check</v-icon
+                                >
+                              </div>
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
                     </div>
                   </div>
                 </div>
@@ -797,7 +949,11 @@
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
                 :server-side-props="serverSideProps"
-                :server-side-events="{ pagination: true, search: true, sort: true }"
+                :server-side-events="{
+                  pagination: true,
+                  search: true,
+                  sort: true
+                }"
                 @deleteInvestigationDetails="deleteInvestigationDetails"
                 @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetailsFunction="
@@ -865,6 +1021,62 @@
                   </template>
                   <span v-else> </span>
                 </template>
+                <!-- <template #datatable-row-actions="{ scope }">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        v-on="on"
+                        class="btn-hover"
+                        icon
+                        :id="rowActions[0].id"
+                        :disabled="rowActions[0].disabled"
+                        @click="deleteInvestigationDetails(scope.row)"
+                      >
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                  <v-menu bottom left offset-y transition="scale-transition">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="btn-hover" icon v-on="on">
+                        <v-icon @click.native="selectedMenuIndex = scope.$index"
+                          >mdi-dots-vertical</v-icon
+                        >
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        :id="rowActions[1].id"
+                        class="sub-menu-el"
+                        :disabled="rowActions[1].disabled"
+                        @click="sendInvestigationDetailsWarningMessage(scope.row)"
+                      >
+                        <v-list-item-title @click="() => {}">
+                          <v-icon
+                            class="investigation-details-emails__row-actions__overflow-menu__icon"
+                            >{{ rowActions[1].icon }}</v-icon
+                          >
+                          <span>{{ rowActions[1].name }}</span>
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        :id="rowActions[2].id"
+                        class="sub-menu-el"
+                        :disabled="rowActions[2].disabled"
+                        @click="deleteAndSendNotification(scope.row)"
+                      >
+                        <v-list-item-title @click="() => {}">
+                          <v-icon
+                            class="investigation-details-emails__row-actions__overflow-menu__icon"
+                            >{{ rowActions[2].icon }}</v-icon
+                          >
+                          <span>{{ rowActions[2].name }}</span>
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </template> -->
               </datatable>
             </div>
             <div
@@ -892,7 +1104,11 @@
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
                 :server-side-props="serverSidePropsForTargetUsers"
-                :server-side-events="{ pagination: true, search: true, sort: true }"
+                :server-side-events="{
+                  pagination: true,
+                  search: true,
+                  sort: true
+                }"
                 @downloadEvent="exportTargetUsers"
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
@@ -961,9 +1177,7 @@
                     </div>
                     <div class="empty-inline" v-else>
                       <slot name="empty-table-inline-sort">
-                        <h2>
-                          No email has been found, yet
-                        </h2>
+                        <h2>No email has been found, yet</h2>
                       </slot>
                     </div>
                   </div>
@@ -1019,12 +1233,12 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
-    warningMessageSubtitle: 'Type a message to reporting user',
     isInvestigationWarningSelectAll: false,
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
     investigationDeleteExcludedResourceIdList: [],
     isAutoRefreshActive: false,
+    autoRefreshInterval: null,
     isRunning: false,
     storedTableDetailsList: null,
     storedTableTargetUser: null,
@@ -1042,12 +1256,17 @@ export default {
     isWantToAddNewCommunity: false,
     progressValue: null,
     notifyMessage: null,
+    deleteAndNotifyMessage: null,
     notifyMessageWithDelete: null,
     diffDays: null,
     totalHours: 0,
     totalMinutes: 0,
     activeMenu: 'Inbox',
     warningMessage: 'Send a warning message for this email',
+    warningMessageSubtitle: 'Type a message to reporting user',
+    isWantToDeleteAndNotify: false,
+    deleteAndNotifyMessage: 'Delete Emails and Notify Users?',
+    deleteAndNotifyMessageSubtitle: '1 email will be deleted from inbox',
     statusIcon: 'mdi-check',
     showEmails: false,
     showTargetUsersDetails: false,
@@ -1144,6 +1363,7 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
+        maxItemsPerCell: 1,
         minWidth: 260,
         cellPadding: 8
       },
@@ -1322,6 +1542,12 @@ export default {
         icon: 'mdi-alert',
         action: 'sendInvestigationDetailsWarningMessage'
       }
+      // {
+      //   id: 'btn-delete-and-notify--investigation-details-row-actions',
+      //   name: 'Delete email and notify user',
+      //   icon: 'mdi-delete',
+      //   action: 'deleteAndSendNotification'
+      // }
     ],
     addUsers: {
       show: true,
@@ -1329,7 +1555,7 @@ export default {
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'You do not have any emails'
+      message: 'No email were found that match your criteria'
     },
     selectEvent: {
       clipboard: true,
@@ -1348,9 +1574,6 @@ export default {
   methods: {
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
-      if (this.isAutoRefreshActive) {
-        this.refreshDatatable()
-      }
     },
     getMailCountByFolderName(folderName = '') {
       const { statsAndMenuData } = this
@@ -1448,7 +1671,7 @@ export default {
       this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      this.refreshDatatable()
+      this.refreshDatatable(isAutoTrue)
     },
     handleRestoreDefaultSearch() {
       this.isRestoredOrClearedFilters = true
@@ -1550,10 +1773,14 @@ export default {
       this.investigationListBodyData.pageSize = 75000
       this.refreshDatatable()
     },
-    getActionStatusOptions(
-      actionStatusItem,
-      { actionType, status, isPermanentDelete, isTooltip, tooltipText, text } = actionStatusItem
-    ) {
+    getActionStatusOptions({
+      actionType,
+      status,
+      isPermanentDelete,
+      isTooltip,
+      tooltipText,
+      text
+    }) {
       let returnValue = {
         isTooltip: isTooltip,
         color: null,
@@ -2058,10 +2285,10 @@ export default {
           this.adjustTargetUserShowRecords(response)
         })
     },
-    refreshDatatable() {
-      this.leftMenuLoading = true
-      this.topMenuLoading = true
-      this.loading = true
+    refreshDatatable(isOnBackground = false) {
+      this.leftMenuLoading = isOnBackground ? false : true
+      this.topMenuLoading = isOnBackground ? false : true
+      this.loading = isOnBackground ? false : true
 
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
@@ -2125,6 +2352,10 @@ export default {
       // open new investigation overlay
       this.isWantToAddNewCommunity = true
     },
+    deleteAndSendNotification(value, excludedResourceIdList, isSelectedAllEver) {
+      this.isWantToDeleteAndNotify = true
+    },
+    isWantToDeleteAndNotifyConfirm() {},
     sendInvestigationDetailsWarningMessage(value, excludedResourceIdList, isSelectedAllEver) {
       this.isInvestigationWarningSelectAll = isSelectedAllEver
       this.investigationWarningExcludedResourceIdList = excludedResourceIdList || []
@@ -2403,6 +2634,13 @@ export default {
     }
   },
   watch: {
+    isAutoRefreshActive(isActive) {
+      if (isActive) {
+        this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
+      } else {
+        clearInterval(this.autoRefreshInterval)
+      }
+    },
     statsAndMenuData() {
       if (this.statsAndMenuData) this.topMenuLoading = false
     },
@@ -2449,9 +2687,18 @@ export default {
     investigationDetailsListData(val) {
       this.loading = false
       vm.$forceUpdate()
-      this.investigationDetailsList = val.results || []
+      // TODO: Ask all emailLastAction cases
+      // const data =  val.results.map((item,index) => ({...item,emailLastAction:{
+      //   isTooltip:true,
+      //   text:'Message sent',
+      //   status:'Running',
+      //   actionType:'Warning',
+      // }})) || [];
+
+      const data = val.results || []
+      this.investigationDetailsList = data
       if (this.$refs.refInvestigationListData) {
-        this.investigationDetailsList = val.results || []
+        this.investigationDetailsList = data
       }
     }
   },
@@ -2463,6 +2710,8 @@ export default {
   beforeDestroy() {
     this.isRunning = false
     this.isAutoRefreshActive = false
+    clearInterval(this.autoRefreshInterval)
+    this.autoRefreshInterval = null
   }
 }
 </script>
@@ -2853,7 +3102,6 @@ export default {
                         right: 8px;
                         top: 8px;
                         border-radius: 4px;
-                        background-color: #2196f3;
                         color: #ffffff;
                         min-width: 24px;
                         min-height: 23px;
@@ -2861,6 +3109,19 @@ export default {
                         align-items: center;
                         display: flex;
                         padding: 2px;
+
+                        &--blue {
+                          background-color: #2196f3;
+                        }
+
+                        &--gray {
+                          background-color: #e0e0e0;
+                          color: #383b41;
+                        }
+
+                        &--orange {
+                          background-color: #b6791d;
+                        }
                       }
                     }
 
@@ -2931,6 +3192,19 @@ export default {
                   letter-spacing: normal;
                   color: #2196f3;
                 }
+                &--rounded {
+                  button {
+                    display: flex;
+                    border-radius: 50% !important;
+                    padding: 0 !important;
+                    height: 36px !important;
+                    width: 36px !important;
+                    min-width: 36px !important;
+                    justify-content: center;
+                    align-items: center;
+                  }
+                }
+
                 &-container {
                   display: flex;
                   @media (max-width: 1024px) {
@@ -3061,5 +3335,14 @@ export default {
     .card .table-wrapper .el-table th > .cell {
     }
   }
+}
+
+.menu-item__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.investigation-details-emails__row-actions__overflow-menu__icon {
+  margin-right: 16px;
 }
 </style>

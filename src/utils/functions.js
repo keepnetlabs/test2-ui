@@ -108,6 +108,8 @@ export function getBtnStatusColor(type) {
       return 'rgba(17, 115, 193, 1)'
     case 'hard':
       return 'rgba(184, 58, 58, 1)'
+    case 'no match':
+      return '#757575'
     default:
       return '#00bcd4'
   }
@@ -1045,4 +1047,21 @@ export function isDifferent(a, b) {
     }
     return a[key] !== b[key]
   })
+}
+
+export function getInvestigationStatusTooltipText(type) {
+  switch (type) {
+    case 'Queued':
+      return 'This investigation will start when others before it are finished'
+    case 'Running':
+      return 'Investigation will finish on expiry date'
+    case 'No match':
+      return 'This email does not match properties required by the rule: No attachment'
+    case 'Finished':
+      return 'Investigation of all target users are completed and expired'
+    case 'Canceled':
+      return 'Investigation was cancelled manually'
+    case 'Expired':
+      return 'Investigation expired before completing investigation for all target users'
+  }
 }
