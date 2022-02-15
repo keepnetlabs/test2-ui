@@ -1021,7 +1021,7 @@
                   </template>
                   <span v-else> </span>
                 </template>
-                <template #datatable-row-actions="{ scope }">
+                <!-- <template #datatable-row-actions="{ scope }">
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
@@ -1076,7 +1076,7 @@
                       </v-list-item>
                     </v-list>
                   </v-menu>
-                </template>
+                </template> -->
               </datatable>
             </div>
             <div
@@ -1585,13 +1585,13 @@ export default {
         name: 'Send user a warning message',
         icon: 'mdi-alert',
         action: 'sendInvestigationDetailsWarningMessage'
-      },
-      {
-        id: 'btn-delete-and-notify--investigation-details-row-actions',
-        name: 'Delete email and notify user',
-        icon: 'mdi-delete',
-        action: 'deleteAndSendNotification'
       }
+      // {
+      //   id: 'btn-delete-and-notify--investigation-details-row-actions',
+      //   name: 'Delete email and notify user',
+      //   icon: 'mdi-delete',
+      //   action: 'deleteAndSendNotification'
+      // }
     ],
     addUsers: {
       show: true,
@@ -2356,7 +2356,6 @@ export default {
         })
     },
     refreshDatatable(isOnBackground = false) {
-      console.log(isOnBackground)
       this.leftMenuLoading = isOnBackground ? false : true
       this.topMenuLoading = isOnBackground ? false : true
       this.loading = isOnBackground ? false : true
