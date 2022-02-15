@@ -14,7 +14,7 @@
     autocomplete="disabled"
     item-value="mailConfigurationResourceId"
     item-text="mailConfigurationName"
-    :slots="{ item: true }"
+    :slots="{ item: true, selection: true }"
     :items="options"
     :item-disabled="checkIsItemDisabled"
     :rules="[(v) => !!v.length || labels.Required]"
@@ -22,133 +22,49 @@
     @input="handleInputChange"
   >
     <template #item="{ item, index }">
-      <v-tooltip bottom v-if="shouldRenderTooltip(item)">
-        <template v-slot:activator="{ on }">
-          <div
-            v-on="on"
-            :class="[
-              'mail-configuration-select-sources__item-container',
-              {
-                'mail-configuration-select-sources__item-container--disabled': checkIsItemDisabled(
-                  item
-                ),
-                'mail-configuration-select-sources__item-container--first':
-                  item.mailConfigurationName === 'All'
-              }
-            ]"
-          >
-            <v-checkbox
-              hide-details
-              color="#2196f3"
-              class="mt-n1"
-              :disabled="checkIsItemDisabled(item)"
-              :input-value="
-                !!value.some(
-                  (source) =>
-                    source.mailConfigurationResourceId === item.mailConfigurationResourceId
-                )
-              "
-            />
-            <div class="mail-configuration-select-sources__item">
-              <div class="mail-configuration-select-sources__item-left">
-                {{ item.mailConfigurationName }}
-              </div>
-              <div
-                class="mail-configuration-select-sources__item-right"
-                v-if="item.mailConfigurationName !== 'All'"
-              >
-                <div class="mail-configuration-select-sources__item-right-platform">
-                  {{ item.type }}
-                </div>
-                <div>
-                  <v-btn style="display: none;" />
-                  <Badge
-                    size="small"
-                    className="mail-configuration-select-sources__badge"
-                    :color="getBtnStatusColor(item.statusName)"
-                    :id="`badge--mail-configuration-select-sources-${index}`"
-                    :outline="false"
-                    :text="item.statusName"
-                  />
-                </div>
-              </div>
-              <div v-else class="mail-configuration-select-sources__item-right-platform">
-                All Configurations
-              </div>
-            </div>
-          </div>
-        </template>
-        <span>You can only choose running configurations</span>
-      </v-tooltip>
-      <div
-        v-else
-        :class="[
-          'mail-configuration-select-sources__item-container',
-          {
-            'mail-configuration-select-sources__item-container--disabled': checkIsItemDisabled(
-              item
-            ),
-            'mail-configuration-select-sources__item-container--first':
-              item.mailConfigurationName === 'All'
-          }
-        ]"
+      <MailConfigurationSelectItem
+        :item="item"
+        :index="index"
+        :isWithTooltip="shouldRenderTooltip(item)"
+        :isDisabled="checkIsItemDisabled(item)"
+        :isFirst="item.mailConfigurationName === 'All'"
+        :isSelected="getCheckboxCheckedValue(item)"
+        :badgeColor="getBtnStatusColor(item.statusName)"
+        :badgeText="item.statusName"
+      />
+    </template>
+    <template #selection="data">
+      <v-chip
+        v-if="data.item.mailConfigurationResourceId !== 'all'"
+        v-show="!isAllSelected"
+        v-bind="data.attrs"
+        close
+        small
+        :key="JSON.stringify(data.item)"
+        :input-value="data.selected"
+        :disabled="data.disabled"
+        @click:close="data.parent.selectItem(data.item)"
       >
-        <v-checkbox
-          hide-details
-          color="#2196f3"
-          class="mt-n1"
-          :disabled="checkIsItemDisabled(item)"
-          :input-value="
-            !!value.some(
-              (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
-            )
-          "
-        />
-        <div class="mail-configuration-select-sources__item">
-          <div class="mail-configuration-select-sources__item-left">
-            {{ item.mailConfigurationName }}
-          </div>
-          <div
-            class="mail-configuration-select-sources__item-right"
-            v-if="item.mailConfigurationName !== 'All'"
-          >
-            <div class="mail-configuration-select-sources__item-right-platform">
-              {{ item.type }}
-            </div>
-            <div>
-              <v-btn style="display: none;" />
-              <Badge
-                size="small"
-                className="mail-configuration-select-sources__badge"
-                :color="getBtnStatusColor(item.statusName)"
-                :id="`badge--mail-configuration-select-sources-${index}`"
-                :outline="false"
-                :text="item.statusName"
-              />
-            </div>
-          </div>
-          <div v-else class="mail-configuration-select-sources__item-right-platform">
-            All Configurations
-          </div>
-        </div>
+        {{ data.item.mailConfigurationName }}
+      </v-chip>
+      <div v-else>
+        {{ data.item.mailConfigurationName }}
       </div>
     </template>
   </k-select>
 </template>
 
 <script>
-import Badge from '@/components/Badge'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import { VTooltip } from 'vuetify/lib'
 import { getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import { getInvestigationScanTypes } from '@/api/investigations'
+import MailConfigurationSelectItem from './MailConfigurationSelectItem.vue'
 export default {
   name: 'MailConfigurationSelectSources',
   components: {
-    Badge,
     KSelect,
-    VTooltip
+    MailConfigurationSelectItem
   },
   props: {
     value: {
@@ -166,6 +82,19 @@ export default {
       labels
     }
   },
+  watch: {
+    isAllSelected(newVal) {
+      if (newVal === true) {
+        const validOptions = this.options.filter(
+          (item) =>
+            !item.divider &&
+            (item.mailConfigurationResourceId === 'all' || item.statusName === 'Running')
+        )
+        this.selectedSources = [...validOptions]
+        this.$emit('input', [...validOptions])
+      }
+    }
+  },
   computed: {
     isAllSelected() {
       return this.selectedSources.some((item) => item.mailConfigurationResourceId === 'all')
@@ -175,6 +104,16 @@ export default {
     this.callForOptions()
   },
   methods: {
+    getCheckboxCheckedValue(item) {
+      if (
+        !!this.value.some(
+          (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
+        ) ||
+        (this.isAllSelected && item.statusName === 'Running')
+      )
+        return true
+      return false
+    },
     shouldRenderTooltip(item) {
       if (item.mailConfigurationResourceId === 'all') return false
       if (item.statusName !== 'Running') return true
@@ -190,7 +129,7 @@ export default {
           }
           return {
             ...item,
-            statusName: index % 2 === 0 ? 'Failed' : 'Running'
+            statusName: !!item.statusName ? item.statusName : 'Running'
           }
         })
         this.options.unshift(
@@ -291,5 +230,9 @@ export default {
 }
 .v-list-item--disabled {
   pointer-events: auto;
+
+  .v-ripple__container {
+    display: none;
+  }
 }
 </style>

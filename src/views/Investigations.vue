@@ -284,8 +284,8 @@ export default {
       edit: false,
       delete: false,
       download: false,
-      pause: true,
-      stop: true
+      pause: false,
+      stop: false
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4'],

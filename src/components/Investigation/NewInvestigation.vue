@@ -560,7 +560,7 @@ export default {
             { label: 'To', id: 'to' },
             { label: 'CC', id: 'cc' },
             { label: 'BCC', id: 'bcc' },
-            { label: 'Recipient Name', id: 'senderName' },
+            { label: 'Sender Name', id: 'senderName' },
             { label: 'IP Address', id: 'ip' }
           ]
         },
