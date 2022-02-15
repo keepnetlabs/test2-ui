@@ -947,7 +947,7 @@ export default {
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
-          if (!customFields.includes(item.FieldName)) acc.push(item)
+          if (!customFields.includes(item.FieldName) || item.name != 'NONE_SELECTED') acc.push(item)
           return acc
         },
         []
@@ -1468,6 +1468,14 @@ export default {
               }
             })
             .filter((filteredItem) => !!filteredItem)
+          _this.mappingData.columns.unshift({
+            name: PROPERTY_STORE.NONE_SELECTED,
+            disabled: false,
+            selectedValue: null,
+            dbName: PROPERTY_STORE.NONE_SELECTED,
+            isCustom: true,
+            required: false
+          })
         })
         .finally(() => (this.loading = false))
     },
