@@ -130,6 +130,7 @@ import AppModal from '@/components/AppModal'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import { isDifferent } from '@/utils/functions'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -166,6 +167,7 @@ export default {
   ],
   data() {
     return {
+      initialTemplate: null,
       labels,
       showGrapesModal: false,
       grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
@@ -187,6 +189,11 @@ export default {
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
+    setInitialTemplateData() {
+      setTimeout(() => {
+        this.initialTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent() || ''
+      }, 1000)
+    },
     handleFileDelete(index) {
       this.$emit(
         'handleAttachmentRemove',
@@ -234,9 +241,29 @@ export default {
     },
     toggleShowGrapesModal() {
       if (this.showGrapesModal) {
-        this.$refs.grapesJsPostIncident.destroyEditor()
+        if (this.$refs.grapesJsPostIncident) {
+          const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+          const isChanged = isDifferent(currentTemplate, this.initialTemplate)
+          if (!isChanged) {
+            this.$refs.grapesJsPostIncident.destroyEditor()
+            this.showGrapesModal = !this.showGrapesModal
+          } else {
+            this.$store.dispatch('common/setIsShowLeavingDialog', {
+              show: true,
+              callback: () => {
+                this.$refs.grapesJsPostIncident.destroyEditor()
+                this.showGrapesModal = !this.showGrapesModal
+              }
+            })
+          }
+        } else {
+          this.$refs.grapesJsPostIncident.destroyEditor()
+          this.showGrapesModal = !this.showGrapesModal
+        }
+      } else {
+        this.showGrapesModal = !this.showGrapesModal
+        this.setInitialTemplateData()
       }
-      this.showGrapesModal = !this.showGrapesModal
     },
     saveGrapeJs() {
       this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())
