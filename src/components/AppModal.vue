@@ -66,6 +66,10 @@ import labels from '@/model/constants/labels'
 export default {
   name: 'AppModal',
   props: {
+    shouldRemoveOverflow: {
+      type: Boolean,
+      default: true
+    },
     cancelButtonId: {
       type: String
     },
@@ -130,7 +134,7 @@ export default {
     document.querySelector('html').style.overflowY = 'hidden'
   },
   beforeDestroy() {
-    document.querySelector('html').style.overflowY = ''
+    if (this.shouldRemoveOverflow) document.querySelector('html').style.overflowY = ''
   }
 }
 </script>
