@@ -473,7 +473,11 @@ export default {
       return checkPermission(permission, type)
     },
     sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === 'ascending'
+      }
       this.getDatatableList()
     },
     handleDeleteMultiple(selections) {
@@ -539,6 +543,12 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseGrapesJSModal() {
+      if (this.$refs.newLandingPage) {
+        if (this.$refs.newLandingPage.$refs.refEmailTemplate)
+          this.$refs.newLandingPage.$refs.refEmailTemplate.toggleShowGrapesModal()
+      }
+    },
     checkIfCanCloseNewLandingPage() {
       if (this.$refs.newLandingPage) {
         this.$refs.newLandingPage.changeNewEmailTemplateModalStatus()
