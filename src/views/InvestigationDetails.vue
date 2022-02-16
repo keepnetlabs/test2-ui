@@ -495,9 +495,9 @@
                             <v-list-item-title>
                               Found Users
                               <span
-                                class="v-list-item-title__value"
+                                :class="getLeftMenuItemClasses('targetUsers')"
                                 v-if="statsAndMenuData && statsAndMenuData.scannedUserCount"
-                                >{{ statsAndMenuData && statsAndMenuData.scannedUserCount }}</span
+                                >{{ itemStats.targetUsers.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -521,14 +521,9 @@
                             <v-list-item-title>
                               Inbox
                               <span
-                                :class="{
-                                  'v-list-item-title__value': true,
-                                  'v-list-item-title__value--blue': activeMenu === 'Inbox',
-                                  'v-list-item-title__value--gray': activeMenu !== 'Inbox',
-                                  'v-list-item-title__value--orange': false
-                                }"
-                                v-if="!!getMailCountByFolderName('Inbox')"
-                                >{{ getMailCountByFolderName('Inbox') }}</span
+                                :class="getLeftMenuItemClasses('Inbox')"
+                                v-if="!!itemStats.Inbox.count"
+                                >{{ itemStats.Inbox.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -549,14 +544,9 @@
                             <v-list-item-title>
                               Junk
                               <span
-                                :class="{
-                                  'v-list-item-title__value': true,
-                                  'v-list-item-title__value--blue': activeMenu === 'JunkEmail',
-                                  'v-list-item-title__value--gray': activeMenu !== 'JunkEmail',
-                                  'v-list-item-title__value--orange': false
-                                }"
-                                v-if="!!getMailCountByFolderName('JunkEmail')"
-                                >{{ getMailCountByFolderName('JunkEmail') }}</span
+                                :class="getLeftMenuItemClasses('JunkEmail')"
+                                v-if="!!itemStats.JunkEmail.count"
+                                >{{ itemStats.JunkEmail.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -577,14 +567,9 @@
                             <v-list-item-title>
                               Draft
                               <span
-                                :class="{
-                                  'v-list-item-title__value': true,
-                                  'v-list-item-title__value--blue': activeMenu === 'Drafts',
-                                  'v-list-item-title__value--gray': activeMenu !== 'Drafts',
-                                  'v-list-item-title__value--orange': false
-                                }"
-                                v-if="!!getMailCountByFolderName('Drafts')"
-                                >{{ getMailCountByFolderName('Drafts') }}</span
+                                :class="getLeftMenuItemClasses('Drafts')"
+                                v-if="!!itemStats.Drafts.count"
+                                >{{ itemStats.Drafts.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -605,14 +590,9 @@
                             <v-list-item-title>
                               Sent
                               <span
-                                :class="{
-                                  'v-list-item-title__value': true,
-                                  'v-list-item-title__value--blue': activeMenu === 'SentItems',
-                                  'v-list-item-title__value--gray': activeMenu !== 'SentItems',
-                                  'v-list-item-title__value--orange': false
-                                }"
-                                v-if="!!getMailCountByFolderName('SentItems')"
-                                >{{ getMailCountByFolderName('SentItems') }}</span
+                                :class="getLeftMenuItemClasses('SentItems')"
+                                v-if="!!itemStats.SentItems.count"
+                                >{{ itemStats.SentItems.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -633,14 +613,9 @@
                             <v-list-item-title>
                               Deleted Items
                               <span
-                                :class="{
-                                  'v-list-item-title__value': true,
-                                  'v-list-item-title__value--blue': activeMenu === 'DeletedItems',
-                                  'v-list-item-title__value--gray': activeMenu !== 'DeletedItems',
-                                  'v-list-item-title__value--orange': false
-                                }"
-                                v-if="!!getMailCountByFolderName('DeletedItems')"
-                                >{{ getMailCountByFolderName('DeletedItems') }}</span
+                                :class="getLeftMenuItemClasses('DeletedItems')"
+                                v-if="!!itemStats.DeletedItems.count"
+                                >{{ itemStats.DeletedItems.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -661,14 +636,9 @@
                             <v-list-item-title>
                               Others
                               <span
-                                :class="{
-                                  'v-list-item-title__value': true,
-                                  'v-list-item-title__value--blue': activeMenu === 'Others',
-                                  'v-list-item-title__value--gray': activeMenu !== 'Others',
-                                  'v-list-item-title__value--orange': false
-                                }"
-                                v-if="!!getMailCountByFolderName('Others')"
-                                >{{ getMailCountByFolderName('Others') }}</span
+                                :class="getLeftMenuItemClasses('Others')"
+                                v-if="!!itemStats.Others.count"
+                                >{{ itemStats.Others.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -696,14 +666,9 @@
                               <v-list-item-title>
                                 Stored
                                 <span
-                                  :class="{
-                                    'v-list-item-title__value': true,
-                                    'v-list-item-title__value--blue': activeMenu === 'Stored',
-                                    'v-list-item-title__value--gray': activeMenu !== 'Stored',
-                                    'v-list-item-title__value--orange': false
-                                  }"
-                                  v-if="!!getMailCountByFolderName('Stored')"
-                                  >{{ getMailCountByFolderName('Stored') }}</span
+                                  :class="getLeftMenuItemClasses('Stored')"
+                                  v-if="!!itemStats.Stored.count"
+                                  >{{ itemStats.Stored.count }}</span
                                 >
                               </v-list-item-title>
                             </v-list-item-content>
@@ -1638,6 +1603,14 @@ export default {
     serverSidePropsForTargetUsers: new ServerSideProps()
   }),
   methods: {
+    getLeftMenuItemClasses(item) {
+      return {
+        'v-list-item-title__value': true,
+        'v-list-item-title__value--blue': this.activeMenu === item,
+        'v-list-item-title__value--gray': this.activeMenu !== item,
+        'v-list-item-title__value--orange': this.activeMenu !== item && this.itemStats[item].notify
+      }
+    },
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
     },
@@ -1717,7 +1690,7 @@ export default {
       this.investigationListBodyData.orderBy = prop
       this.refreshDatatable()
     },
-    getDefaultFilterAndSearch() {
+    getDefaultFilterAndSearch(isInitial = false) {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
       )
@@ -1731,7 +1704,7 @@ export default {
             .substring(0, 5)}`
         })
       }
-      this.refreshDatatable()
+      this.refreshDatatable(false, isInitial)
     },
     handleClearFilters(isAutoTrue) {
       if (!isAutoTrue) return false
@@ -2244,6 +2217,7 @@ export default {
       }
     },
     menuClick(menu) {
+      this.itemStats[menu].notify = false
       if (menu !== this.activeMenu && menu !== 'targetUsers') {
         this.$nextTick(() => {
           const refTable = this.$refs.refInvestigationListData
@@ -2355,7 +2329,7 @@ export default {
           this.adjustTargetUserShowRecords(response)
         })
     },
-    refreshDatatable(isOnBackground = false) {
+    refreshDatatable(isOnBackground = false, isInitial = false) {
       this.leftMenuLoading = isOnBackground ? false : true
       this.topMenuLoading = isOnBackground ? false : true
       this.loading = isOnBackground ? false : true
@@ -2364,6 +2338,16 @@ export default {
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
           this.isRunning = this.statsAndMenuData.status === 'Running'
+          if (!isInitial) {
+            this.itemStats.targetUsers.isInitial = false
+            this.itemStats.Inbox.isInitial = false
+            this.itemStats.JunkEmail.isInitial = false
+            this.itemStats.Drafts.isInitial = false
+            this.itemStats.SentItems.isInitial = false
+            this.itemStats.DeletedItems.isInitial = false
+            this.itemStats.Others.isInitial = false
+            this.itemStats.Stored.isInitial = false
+          }
           this.$store
             .dispatch('investigations/getInvestigationDetailsData', this.$route.params.id)
             .finally(() => {
@@ -2663,6 +2647,64 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    itemStats() {
+      return {
+        targetUsers: {
+          count: this.statsAndMenuData?.scannedUserCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Inbox: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Inbox')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        JunkEmail: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'JunkEmail')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Drafts: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Drafts')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        SentItems: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'SentItems')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        DeletedItems: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'DeletedItems')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Others: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Others')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Stored: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Stored')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        }
+      }
+    },
     getTimeLeftText() {
       const { diffDays, totalHours, totalMinutes } = this
       return this.loading
@@ -2765,6 +2807,84 @@ export default {
     }
   },
   watch: {
+    itemStats: {
+      handler(newValue, oldValue) {
+        if (
+          newValue.targetUsers.count !== oldValue.targetUsers.count &&
+          !newValue.targetUsers.notify &&
+          this.activeMenu !== 'targetUsers' &&
+          (!oldValue.targetUsers.isInitial || !newValue.targetUsers.isInitial)
+        ) {
+          this.itemStats.targetUsers.isInitial = false
+          this.itemStats.targetUsers.notify = true
+        }
+        if (
+          newValue.Inbox.count !== oldValue.Inbox.count &&
+          !newValue.Inbox.notify &&
+          this.activeMenu !== 'Inbox' &&
+          (!oldValue.Inbox.isInitial || !newValue.Inbox.isInitial)
+        ) {
+          this.itemStats.Inbox.isInitial = false
+          this.itemStats.Inbox.notify = true
+        }
+        if (
+          newValue.JunkEmail.count !== oldValue.JunkEmail.count &&
+          !newValue.JunkEmail.notify &&
+          this.activeMenu !== 'JunkEmail' &&
+          (!oldValue.JunkEmail.isInitial || !newValue.JunkEmail.isInitial)
+        ) {
+          this.itemStats.JunkEmail.isInitial = false
+          this.itemStats.JunkEmail.notify = true
+        }
+        if (
+          newValue.Drafts.count !== oldValue.Drafts.count &&
+          !newValue.Drafts.notify &&
+          this.activeMenu !== 'Drafts' &&
+          (!oldValue.Drafts.isInitial || !newValue.Drafts.isInitial)
+        ) {
+          this.itemStats.Drafts.isInitial = false
+          this.itemStats.Drafts.notify = true
+        }
+        if (
+          newValue.SentItems.count !== oldValue.SentItems.count &&
+          !newValue.SentItems.notify &&
+          this.activeMenu !== 'SentItems' &&
+          (!oldValue.SentItems.isInitial || !newValue.SentItems.isInitial)
+        ) {
+          this.itemStats.SentItems.isInitial = false
+          this.itemStats.SentItems.notify = true
+        }
+        if (
+          newValue.DeletedItems.count !== oldValue.DeletedItems.count &&
+          !newValue.DeletedItems.notify &&
+          this.activeMenu !== 'DeletedItems' &&
+          (!oldValue.DeletedItems.isInitial || !newValue.DeletedItems.isInitial)
+        ) {
+          this.itemStats.DeletedItems.isInitial = false
+          this.itemStats.DeletedItems.notify = true
+        }
+        if (
+          newValue.Others.count !== oldValue.Others.count &&
+          !newValue.Others.notify &&
+          this.activeMenu !== 'Others' &&
+          (!oldValue.Others.isInitial || !newValue.Others.isInitial)
+        ) {
+          this.itemStats.Others.isInitial = false
+          this.itemStats.Others.notify = true
+        }
+        if (
+          newValue.Stored.count !== oldValue.Stored.count &&
+          !newValue.Stored.notify &&
+          this.activeMenu !== 'Stored' &&
+          (!oldValue.Stored.isInitial || !newValue.Stored.isInitial)
+        ) {
+          this.itemStats.Stored.isInitial = false
+          this.itemStats.Stored.notify = true
+        }
+      },
+      deep: true,
+      immediate: false
+    },
     isAutoRefreshActive(isActive) {
       if (!this.autoRefreshInterval && isActive) {
         this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
@@ -2836,7 +2956,7 @@ export default {
   created() {
     this.setStoredTableSettings()
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
-    this.getDefaultFilterAndSearch()
+    this.getDefaultFilterAndSearch(true)
   },
   beforeDestroy() {
     this.isRunning = false
@@ -3252,6 +3372,7 @@ export default {
 
                         &--orange {
                           background-color: #b6791d;
+                          color: #ffffff;
                         }
                       }
                     }
