@@ -1039,7 +1039,7 @@ export default {
                   filterableType: 'text',
                   FilterableItems: 'Yes',
                   isCustom: true,
-                  isCustomField: true,
+                  isCustomField: true
                 }
                 return itemObj
               })
@@ -1426,6 +1426,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-information'
         })
+        this.$router.push('/job-log')
       })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
