@@ -145,7 +145,7 @@ export default {
     }
   },
   created() {
-    this.tableData = this.mailDetails.ips[0].analysisList
+    this.tableData = this?.mailDetails?.ips[0]?.analysisList || []
   },
   methods: {
     callForEmailDetails() {
