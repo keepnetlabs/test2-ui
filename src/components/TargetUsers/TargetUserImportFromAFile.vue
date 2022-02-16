@@ -1234,9 +1234,7 @@ export default {
             let aItem = {
               name: item,
               selectedValue:
-                this.mappingData.columns.find(
-                  (column) => column?.dbName?.trim()?.toLowerCase() === item?.trim()?.toLowerCase()
-                ) || null,
+                this.mappingData.columns.find((column) => column.dbName === item)?.name || null,
               required:
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
@@ -1254,7 +1252,7 @@ export default {
             return aItem
           })
           //this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          this.setExistItems()
+          this.resetDisabledValuesFromColumns()
         })
         .finally(() => {
           this.step2Loading = false
@@ -1263,11 +1261,6 @@ export default {
     resetDisabledValuesFromColumns() {
       setTimeout(() => {
         return this.$refs.refMapTable.setSelectDisableItemsToFalse()
-      }, 200)
-    },
-    setExistItems() {
-      setTimeout(() => {
-        return this.$refs.refMapTable.setExistItems()
       }, 200)
     },
     submit() {},
