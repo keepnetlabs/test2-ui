@@ -782,7 +782,7 @@
                           v-if="getGoogleData && getGoogleData.length"
                         >
                           <img
-                            src="../assets/img/google@2x.png"
+                            src="../assets/img/google.svg"
                             alt="g-suite-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
@@ -804,7 +804,7 @@
                           class="align-center d-flex mr-2"
                         >
                           <img
-                            src="../assets/img/O365@2x.png"
+                            src="../assets/img/o365.svg"
                             alt="office-logo"
                             style="width: 16px; margin-right: 2px;"
                           />

@@ -92,7 +92,7 @@
                     class="phishing-reporter__stats-card-left-icon"
                     style="background-color: #2196f3;"
                   >
-                    <img src="../assets/img/account-tree.png" alt="" />
+                    <img src="../assets/img/account-tree.svg" alt="" />
                   </div>
                 </div>
                 <div class="phishing-reporter__stats-card-right">
