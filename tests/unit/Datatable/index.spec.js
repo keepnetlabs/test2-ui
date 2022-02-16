@@ -959,7 +959,8 @@ describe('Datatable test cases suite', () => {
     //expecting cell is equal text
     expect(cell.text()).toEqual('warning')
     //expecting is badge component
-    expect(cell.find('button').classes('k-badge')).toBe(true)
+    console.log('cell', cell.html())
+    expect(cell.findAll('button').at(1).classes('k-badge')).toBe(true)
   })
   it('Small badge column type', async () => {
     const datatableWrapper = new DataTableWrapper(localVue, store, {
