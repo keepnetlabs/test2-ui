@@ -2759,15 +2759,17 @@ export default {
       )
     }
   },
+  mounted() {
+    if (this.statsAndMenuData && this.statsAndMenuData.status === 'Running') {
+      this.isAutoRefreshActive = true
+    }
+  },
   watch: {
-    isAutoRefreshActive: {
-      immediate: true,
-      handler(isActive) {
-        if (isActive) {
-          this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
-        } else {
-          clearInterval(this.autoRefreshInterval)
-        }
+    isAutoRefreshActive(isActive) {
+      if (!this.autoRefreshInterval && isActive) {
+        this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
+      } else {
+        clearInterval(this.autoRefreshInterval)
       }
     },
     statsAndMenuData() {
