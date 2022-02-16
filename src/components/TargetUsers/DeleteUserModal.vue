@@ -9,8 +9,8 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain
-      in reports.
+      {{ getSystemUserName }} will be deleted and removed from all groups. User stats will remain in
+      reports.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
@@ -35,6 +35,10 @@ export default {
     selectedRow: {},
     isMultiple: {
       type: Boolean
+    },
+    userCount: {
+      type: Number,
+      default: 0
     }
   },
   components: {
@@ -42,15 +46,10 @@ export default {
     AppDialog
   },
   computed: {
-    getFirstAndLastName() {
-      if (!this.isMultiple && this.selectedRow.constructor.name === 'Object') {
-        const { firstName = '', lastName = '' } = this.selectedRow
-        return `${firstName} ${lastName}`
-      } else if (this.selectedRow.constructor.name === 'Array' && this.selectedRow.length === 1) {
-        const { firstName = '', lastName = '' } = this.selectedRow[0]
-        return `${firstName} ${lastName}`
-      }
-      return `${this.selectedRow.length} users`
+    getSystemUserName() {
+      return this.selectedRow
+        ? `${this.selectedRow['firstName'] || ''} ${this.selectedRow['lastName'] || ''}`
+        : `${this.userCount} users`
     }
   },
   methods: {

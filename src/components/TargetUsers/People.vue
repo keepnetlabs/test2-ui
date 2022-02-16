@@ -5,6 +5,7 @@
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
       :isMultiple="isMultipleDelete"
+      :user-count="multipleDeletedUserCount"
       @deleteAction="handleDeleteUser"
       @deleteMultiple="handleDeleteUsers"
       @changeModalStatus="changeDeleteModalStatus"
@@ -44,6 +45,7 @@
       ref="refPeopleTable"
       id="target-users-people-data-table"
       is-server-side
+      is-server-side-selection
       filterable
       options
       selectable
@@ -227,6 +229,8 @@ export default {
     tableData: [],
     loading: true,
     isMultipleDelete: false,
+    multipleDeletedUserCount: 0,
+    multipleSystemUserPayload: {},
     isWantToShowDeleteUserModal: false,
     selectedRow: null,
     customFields: [],
@@ -514,10 +518,18 @@ export default {
       }
       this.toggleCustomFieldsModal()
     },
-    handleMultipleDelete(selections = []) {
+    handleMultipleDelete(selections, excludedItems, selectAll) {
       this.isMultipleDelete = true
+      this.multipleDeletedUserCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleSystemUserPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.payload.filter
+      }
       this.changeDeleteModalStatus(true)
-      this.selectedRow = selections
     },
     handleDelete(row) {
       this.isMultipleDelete = false
