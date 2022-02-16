@@ -46,11 +46,11 @@
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
       :selectEvent="tableOptions.selectEvent"
+      :download-button="getDownloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteFunction="deleteRule($event)"
       @addAction="toggleRuleModal"
-      :download-button="getDownloadButton"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportRules"
       @deleteAction="deleteRule($event)"
@@ -551,9 +551,9 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber } = {}
+            } = {}
+          } = response || {}
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
