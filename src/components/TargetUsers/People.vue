@@ -560,31 +560,14 @@ export default {
             })
         )
       ]
+      this.payload.newVersion = true
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = response.data.data.results.map((item) => {
-            const { customFieldValues } = item
-            for (let { name, value, dataType, timestampValue } of customFieldValues) {
-              if (dataType === 'Boolean') {
-                if (value === 'True') {
-                  item[name] = 'Yes'
-                } else if (value === 'False') {
-                  item[name] = 'No'
-                } else {
-                  item[name] = 'No'
-                }
-              } else if (['Date', 'DateTime'].includes(dataType)) {
-                item[name] = timestampValue
-              } else {
-                item[name] = value !== null && value !== undefined ? value : ''
-              }
-            }
-            return item
-          })
+          this.tableData = response.data.data.results
         })
         .catch(() => {
           this.tableData = []
