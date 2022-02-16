@@ -653,7 +653,7 @@
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
               :class="[routerName === 'Job Log' && 'active-link']"
-              v-if="checkPermissionMultiple(['audit-logs|POST']) && !isProd()"
+              v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <router-link
