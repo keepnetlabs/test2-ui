@@ -12,9 +12,11 @@ const submitButton = {
   content: {
     tagName: 'input',
     draggable: true,
+    type: 'phishing-submit-button',
     attributes: {
       title: 'Submit',
-      type: 'submit'
+      type: 'submit',
+      value: 'Submit'
     },
     style: { cursor: 'pointer' }
   }

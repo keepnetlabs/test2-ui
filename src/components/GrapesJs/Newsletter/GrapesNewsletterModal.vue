@@ -200,6 +200,24 @@ export default {
             return result
           }
         })
+        editor.DomComponents.addType('phishing-submit-button', {
+          isComponent: (el) => el.tagName === 'INPUT',
+          model: {
+            defaults: {
+              traits: [
+                'value',
+                'id',
+                {
+                  type: 'select',
+                  label: 'Type',
+                  name: 'type',
+                  options: [{ id: 'submit', name: 'Submit' }]
+                }
+              ],
+              attributes: { type: 'submit' }
+            }
+          }
+        })
         editor.DomComponents.addType('text', {
           model: {
             defaults: {
@@ -867,7 +885,6 @@ export default {
           span {
             transform: none !important;
           }
-          //background-image: url('../../../assets/img/link@2x.png') !important;
         }
       }
     }

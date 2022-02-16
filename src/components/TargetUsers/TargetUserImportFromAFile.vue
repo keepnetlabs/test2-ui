@@ -947,7 +947,7 @@ export default {
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
-          if (!customFields.includes(item.FieldName)) acc.push(item)
+          if (!customFields.includes(item.FieldName) && item.FieldName != PROPERTY_STORE.NONE_SELECTED) acc.push(item)
           return acc
         },
         []
@@ -1233,10 +1233,7 @@ export default {
           this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
             let aItem = {
               name: item,
-              selectedValue:
-                this.mappingData.columns.find(
-                  (column) => column?.dbName?.trim()?.toLowerCase() === item?.trim()?.toLowerCase()
-                ) || null,
+              selectedValue: null,
               required:
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
@@ -1254,7 +1251,7 @@ export default {
             return aItem
           })
           //this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          this.setExistItems()
+          this.resetDisabledValuesFromColumns()
         })
         .finally(() => {
           this.step2Loading = false
@@ -1263,11 +1260,6 @@ export default {
     resetDisabledValuesFromColumns() {
       setTimeout(() => {
         return this.$refs.refMapTable.setSelectDisableItemsToFalse()
-      }, 200)
-    },
-    setExistItems() {
-      setTimeout(() => {
-        return this.$refs.refMapTable.setExistItems()
       }, 200)
     },
     submit() {},
@@ -1475,6 +1467,14 @@ export default {
               }
             })
             .filter((filteredItem) => !!filteredItem)
+          _this.mappingData.columns.unshift({
+            name: PROPERTY_STORE.NONE_SELECTED,
+            disabled: false,
+            selectedValue: null,
+            dbName: PROPERTY_STORE.NONE_SELECTED,
+            isCustom: true,
+            required: false
+          })
         })
         .finally(() => (this.loading = false))
     },
