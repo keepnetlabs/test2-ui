@@ -138,7 +138,10 @@ export default {
   components: { EmailDetailsSenderIpBlacklistCheck, ReAnalyzeIncidentDialog },
   props: {
     mailDetails: {
-      type: Object
+      type: Object,
+      default() {
+        return {}
+      }
     },
     loading: {
       type: Boolean
