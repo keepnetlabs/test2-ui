@@ -940,7 +940,7 @@ export default {
             type: 'NoAction',
             warningMessage: ''
           },
-          durationType: 'ThreeDays',
+          durationType: 'OneDay',
           emailDateRangeType: 'ThreeDays'
         }
       }
