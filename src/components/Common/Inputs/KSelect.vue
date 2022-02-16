@@ -117,19 +117,19 @@ export default {
     }
   }
   &--big {
-    @media (max-width: 1400px) {
-      min-width: 300px !important;
-    }
+    // @media (max-width: 1400px) and (min-width: 1) {
+    min-width: 300px !important;
+    // }
   }
   &--medium {
-    @media (max-width: 1400px) {
-      min-width: 250px !important;
-    }
+    // @media (max-width: 1400px) {
+    min-width: 250px !important;
+    // }
   }
   &--small {
-    @media (max-width: 1400px) {
-      min-width: 190px !important;
-    }
+    // @media (max-width: 1400px) {
+    min-width: 190px !important;
+    // }
   }
 }
 </style>

@@ -6,7 +6,11 @@
         src="../../assets/img/Office.svg"
         v-if="scope.row[col.property] === 'Outlook'"
       />
-      <img alt="o365" src="../../assets/img/o365.svg" v-if="scope.row[col.property] === 'O365'" />
+      <img
+        alt="o365"
+        src="../../assets/img/o365.svg"
+        v-if="['Microsoft365', 'O365'].includes(scope.row[col.property])"
+      />
       <img
         alt="gsuite"
         src="../../assets/img/google.svg"
@@ -17,7 +21,7 @@
         src="../../assets/img/exchange@3x.png"
         v-if="scope.row[col.property] === 'Exchange'"
       />
-      <span class="ml-2">{{ scope.row[col.property] }}</span>
+      <!-- <span class="ml-2">{{ scope.row[col.property] }}</span> -->
     </span>
     <span v-else>
       {{ getEmptyText }}

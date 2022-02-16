@@ -276,6 +276,9 @@
                     <div class="target-user-import-file__progression--text">
                       Please wait while we are processing the file
                     </div>
+                    <v-alert dense outlined type="info" v-if="mappingStatus.status === 'Idle'">
+                      Process is Queued
+                    </v-alert>
                     <div class="target-user-import-file__progression--progress">
                       <div>{{ setProgressValue }}%</div>
                       <div>
@@ -1230,7 +1233,10 @@ export default {
           this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
             let aItem = {
               name: item,
-              selectedValue: null,
+              selectedValue:
+                this.mappingData.columns.find(
+                  (column) => column?.dbName?.trim()?.toLowerCase() === item?.trim()?.toLowerCase()
+                ) || null,
               required:
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
@@ -1248,7 +1254,7 @@ export default {
             return aItem
           })
           //this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          this.resetDisabledValuesFromColumns()
+          this.setExistItems()
         })
         .finally(() => {
           this.step2Loading = false
@@ -1257,6 +1263,11 @@ export default {
     resetDisabledValuesFromColumns() {
       setTimeout(() => {
         return this.$refs.refMapTable.setSelectDisableItemsToFalse()
+      }, 200)
+    },
+    setExistItems() {
+      setTimeout(() => {
+        return this.$refs.refMapTable.setExistItems()
       }, 200)
     },
     submit() {},
@@ -1367,12 +1378,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -1380,6 +1386,11 @@ export default {
                   Value: 'New,Exists,Error'
                 }
               ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -1464,14 +1475,6 @@ export default {
               }
             })
             .filter((filteredItem) => !!filteredItem)
-          _this.mappingData.columns.unshift({
-            name: PROPERTY_STORE.NONE_SELECTED,
-            disabled: false,
-            selectedValue: null,
-            dbName: PROPERTY_STORE.NONE_SELECTED,
-            isCustom: true,
-            required: false
-          })
         })
         .finally(() => (this.loading = false))
     },
