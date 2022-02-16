@@ -944,6 +944,7 @@ export default {
       let _this = this
       //this.bodyData.pageSize = this.mappingStatus.totalRowCount
       this.step3Loading = true
+
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
@@ -1007,6 +1008,7 @@ export default {
                 filterable: true,
                 customFieldName: item.name,
                 isCustom: true,
+                isCustomField: true,
                 ...filterableProps
               }
               return itemObj
@@ -1032,7 +1034,8 @@ export default {
                   customFieldName: item.name,
                   filterableType: 'text',
                   FilterableItems: 'Yes',
-                  isCustom: true
+                  isCustom: true,
+                  isCustomField: true,
                 }
                 return itemObj
               })
@@ -1448,6 +1451,7 @@ export default {
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
                 return {
+                  isCustomField: true,
                   name: item.label,
                   disabled: false,
                   selectedValue: null,

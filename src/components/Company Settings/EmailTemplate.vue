@@ -1,17 +1,19 @@
 <template>
-  <v-card class="email-template__container">
+  <v-card class="email-template__container" :style="'overflow-y:hidden'">
     <app-modal
       v-if="showGrapesModal"
       :status="showGrapesModal"
       icon-name="mdi-check"
       :title="labels.NotificationTemplate"
-      z-index="999999"
+      z-index="9999"
       :show-header="false"
+      :should-remove-overflow="false"
       @submit="saveGrapeJs"
       @closeOverlay="toggleShowGrapesModal"
     >
       <template v-slot:overlay-body>
         <GrapesNewsletterModal
+          v-if="showGrapesModal"
           ref="grapesJsPostIncident"
           :htmlData="template"
           :key="grapeJsKey"
