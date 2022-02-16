@@ -1,5 +1,5 @@
 <template>
-  <div class="company-settings" id="company-settings">
+  <div class="company-settings" id="company-settings" :style="'overflow-y:hidden'">
     <v-layout wrap class="company-settings__container">
       <v-card class="company-settings__container-card">
         <el-tabs v-model="tab" ref="refTabContainer">
