@@ -34,6 +34,12 @@
                 <v-list-item-content>
                   <v-alert dense outlined :type="processType(process)">
                     <v-list-item-title class="d-flex">
+                      <v-tooltip :disabled="!process.isFinished || !process.existsError" bottom>
+                        <template v-slot:activator="{ on, attrs }">
+                          <span v-bind="attrs" v-on="on">{{ process.name }}</span>
+                        </template>
+                        <span>Process has finished with some errors!</span>
+                      </v-tooltip>
                       <template v-if="process.targetCount !== 0">
                         <span class="ml-auto" v-if="process.isFinished"
                           >Finished at {{ process.endTime }}</span

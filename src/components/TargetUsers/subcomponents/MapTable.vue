@@ -47,6 +47,7 @@
 
 <script>
 import { scrollToComponent } from '@/utils/functions'
+import { PROPERTY_STORE } from '@/model/constants/commonConstants'
 
 export default {
   name: 'MapTable',
@@ -71,20 +72,6 @@ export default {
     },
     checkItem(item) {
       return item['required']
-    },
-    setExistItems() {
-      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
-        const isExist = this.mapTableData.headers.find(
-          (hItem) =>
-            hItem.selectedValue?.dbName?.trim()?.toLowerCase() === i?.dbName?.trim()?.toLowerCase()
-        )
-        return {
-          ...i,
-          disabled: !!isExist,
-          selected: !!isExist,
-          selectedValue: isExist || null
-        }
-      })
     },
     setSelectDisableItemsToFalse(item) {
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
