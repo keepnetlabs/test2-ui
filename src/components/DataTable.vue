@@ -18,7 +18,6 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-
     <v-card v-show="!loading" class="card">
       <div class="table-wrapper">
         <div
@@ -375,6 +374,32 @@
               </template>
               <span class="tooltip-span">Delete And Notify Users</span>
             </v-tooltip>
+            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.pause">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  @click="handlePause(multipleSelection)"
+                  class="btn-selected-hover mr-1"
+                  icon
+                  v-on="on"
+                >
+                  <v-icon class="selection-icons" color="white">mdi-pause</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Pause</span>
+            </v-tooltip>
+            <v-tooltip bottom opacity="1" v-if="selectEvent && selectEvent.stop">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  @click="handlePause(multipleSelection)"
+                  class="btn-selected-hover mr-1"
+                  icon
+                  v-on="on"
+                >
+                  <v-icon class="selection-icons" color="white">mdi-stop</v-icon>
+                </v-btn>
+              </template>
+              <span class="tooltip-span">Stop</span>
+            </v-tooltip>
           </div>
         </div>
         <div
@@ -491,27 +516,7 @@
                 <div v-if="col.type === 'smallBadge'">
                   <data-table-small-badge :scope="scope" :col="col" />
                 </div>
-                <div v-if="col.type === 'status'">
-                  <badge
-                    :color="getBtnStatusColor(scope.row[col.property])"
-                    :full-width="col.fullWidth"
-                    v-bind="col.props"
-                    v-if="
-                      scope.row &&
-                      (scope.row['status'] ||
-                        scope.row['difficultyName'] ||
-                        scope.row['difficulty'])
-                    "
-                    :text="
-                      getDataTableFieldLabel(
-                        scope.row.status || scope.row['difficultyName'] || scope.row['difficulty']
-                      )
-                    "
-                  />
-                  <span v-else>
-                    {{ col.emptyText || '' }}
-                  </span>
-                </div>
+                <data-table-status :col="col" :scope="scope" v-if="col.type === 'status'" />
                 <div v-if="col.type === 'priority'">
                   <badge
                     :color="getBtnPriorityColor(scope.row[col.property])"
@@ -749,7 +754,13 @@
                     </template>
                     <span>{{ rowActions[0].name }}</span>
                   </v-tooltip>
-                  <v-tooltip bottom>
+                  <v-tooltip
+                    bottom
+                    v-if="
+                      $props.id !== 'investigations-data-table' ||
+                      rowActions[1].getButtonVisibility(scope.row.status)
+                    "
+                  >
                     <template v-slot:activator="{ on }">
                       <v-btn
                         :disabled="rowActions[1]['disabled']"
@@ -939,6 +950,7 @@ import ExtendedView from './ExtendedView'
 import DataTableSmallBadge from './DataTableComponents/DataTableSmallBadge'
 import DatatableTextWithBadge from './DataTableComponents/DatatableTextWithBadge'
 import DataTableFilter from './DataTableComponents/DataTableFilter'
+import DataTableStatus from './DataTableComponents/DataTableStatus'
 import RowColorHandler from '@/directives/datatable-row-color-handler'
 window.Vue = Vue
 import ElementUI from 'element-ui'
@@ -971,6 +983,7 @@ export default {
     DataTableService,
     DataTableLink,
     DataTableTooltip,
+    DataTableStatus,
     DownloadModal,
     ExtendedView,
     DataTableSmallBadge,
@@ -1316,6 +1329,7 @@ export default {
           this.tableData.length === 0 &&
           !this.search &&
           !this.isColumnFilterActive &&
+          !window.location.href.includes('target-users') &&
           'table-header-disable'
         )
       } else {

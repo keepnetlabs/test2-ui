@@ -209,7 +209,7 @@
                   </div>
                 </div>
                 <div class="bg-image" style="bottom: 10px; right: -11px;">
-                  <img src="../assets/img/ic_warning.png" />
+                  <img src="../assets/img/book-glass.svg" />
                 </div>
               </div>
             </template>
@@ -246,7 +246,7 @@
                   </div>
                 </div>
                 <div class="bg-image">
-                  <img src="../assets/img/hook.png" />
+                  <img src="../assets/img/hook.svg" />
                 </div>
               </div>
             </template>
@@ -283,7 +283,7 @@
                   </div>
                 </div>
                 <div class="bg-image">
-                  <img src="../assets/img/bug.png" />
+                  <img src="../assets/img/bug.svg" />
                 </div>
               </div>
             </template>
@@ -317,7 +317,7 @@
                   </div>
                 </div>
                 <div class="bg-image">
-                  <img src="../assets/img/circle.png" />
+                  <img src="../assets/img/circle.svg" />
                 </div>
               </div>
             </template>
