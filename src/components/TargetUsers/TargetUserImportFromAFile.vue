@@ -948,11 +948,7 @@ export default {
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
-          if (
-            !customFields.includes(item.FieldName) &&
-            item.FieldName != PROPERTY_STORE.NONE_SELECTED
-          )
-            acc.push(item)
+          if (!customFields.includes(item.FieldName) && item.FieldName != PROPERTY_STORE.NONE_SELECTED) acc.push(item)
           return acc
         },
         []
@@ -1426,6 +1422,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-information'
         })
+        this.$router.push('/job-log')
       })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
