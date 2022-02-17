@@ -129,7 +129,7 @@ export default {
         const refExcelUpload = refs.refPeople.$refs.targetUserFromAFile
         if (refExcelUpload.isExcelUploaded) {
           refExcelUpload.closeTargetUserImport = true
-          next(false)
+          next()
         } else if (refExcelUpload.isLeaveAccepted) {
           next()
         } else next()
