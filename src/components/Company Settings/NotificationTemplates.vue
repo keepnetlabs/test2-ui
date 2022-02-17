@@ -390,7 +390,14 @@ export default {
       this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
     },
     checkIfCanCloseNotificationTemplateModal() {
-      this.$refs.newNotificationTemplate.closeOverlay()
+      if (this.$refs.newNotificationTemplate) this.$refs.newNotificationTemplate.closeOverlay()
+    },
+    checkIfCanCloseGrapesJSModal() {
+      if (this.$refs.newNotificationTemplate) {
+        if (this.$refs.newNotificationTemplate.$refs.refEmailTemplate) {
+          this.$refs.newNotificationTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
+        }
+      }
     },
     toggleNewNotificationTemplate() {
       if (this.newNotificationTemplateStatus) {

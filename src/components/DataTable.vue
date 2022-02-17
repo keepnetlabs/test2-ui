@@ -4,7 +4,7 @@
     :class="['k-table__wrapper', noPaddingBottom && 'k-table__wrapper--no-padding']"
     :id="id"
   >
-    <DatatableLoading :loading="loading" />
+    <DatatableLoading :loading="loading" v-if="id !== 'target-users-people-data-table'" />
     <download-modal
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
@@ -18,7 +18,8 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <v-card v-show="!loading" class="card">
+
+    <v-card class="card" v-show="id === 'target-users-people-data-table' ? true : !loading">
       <div class="table-wrapper">
         <div
           v-click-outside="handleSettingsPopupClickOutside"
@@ -408,6 +409,11 @@
           id="table-container"
           ref="tableContainer"
         >
+          <DatatableLoading
+            :loading="loading"
+            :loader-type="1"
+            v-if="id === 'target-users-people-data-table'"
+          />
           <el-table
             v-row-color-handler
             v-if="!allHidden"
@@ -781,7 +787,7 @@
               </template>
             </el-table-column>
             <template v-slot:empty>
-              <div class="empty-table">
+              <div class="empty-table" v-if="!loading">
                 <div class="empty-inline">
                   <slot name="empty-table-inline-sort">
                     <h2>
