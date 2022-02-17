@@ -6,6 +6,7 @@
       :selectedRow="selectedRow"
       :isMultiple="isMultipleDelete"
       :user-count="multipleDeletedUserCount"
+      :confirmButtonDisabled="deleteButtonDisabled"
       @deleteAction="handleDeleteUser"
       @deleteMultiple="handleDeleteUsers"
       @changeModalStatus="changeDeleteModalStatus"
@@ -177,6 +178,7 @@ import DeleteUserModal from './DeleteUserModal'
 import AddUserModal from './AddUserModal'
 import labels from '@/model/constants/labels'
 import {
+  bulkDeleteTargetUsers,
   deleteTargetUser,
   exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
@@ -238,6 +240,7 @@ export default {
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
     isWantToShowCustomFieldsModal: false,
+    deleteButtonDisabled: false,
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [
@@ -549,10 +552,24 @@ export default {
     changeDeleteModalStatus(status) {
       this.isWantToShowDeleteUserModal = status
     },
-    handleDeleteUsers(selections) {
-      selections.forEach((item) => this.handleDeleteUser(item, selections))
+    handleDeleteUsers() {
+      console.log(2)
+      this.callForMultipleDelete()
+    },
+    callForMultipleDelete() {
+      this.deleteButtonDisabled = true
+      bulkDeleteTargetUsers(this.multipleSystemUserPayload)
+        .then(() => {
+          this.$refs.refPeopleTable.resetSelectableParams()
+          this.callForTargetUsers()
+          this.changeDeleteModalStatus(false)
+        })
+        .finally(() => {
+          this.deleteButtonDisabled = false
+        })
     },
     handleDeleteUser(selectedUser, selections) {
+      console.log(1)
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
           this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)

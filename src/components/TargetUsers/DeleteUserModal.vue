@@ -14,6 +14,7 @@
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
+        :confirm-button-disabled="confirmButtonDisabled"
         cancel-button-id="btn-cancel--target-users-people-popup"
         confirm-button-id="btn-delete--target-users-people-popup"
         @handleClose="closeModal"
@@ -35,6 +36,10 @@ export default {
     selectedRow: {},
     isMultiple: {
       type: Boolean
+    },
+    confirmButtonDisabled: {
+      type: Boolean,
+      default: false
     },
     userCount: {
       type: Number,
@@ -58,9 +63,9 @@ export default {
     },
     handleDelete() {
       if (this.isMultiple) {
-        this.$emit('handleMultipleDelete')
+        this.$emit('deleteMultiple')
       } else {
-        this.$emit('handleDelete', this.selectedRow)
+        this.$emit('deleteAction', this.selectedRow)
       }
       this.$emit('changeModalStatus', false)
     }
