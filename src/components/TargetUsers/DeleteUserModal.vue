@@ -57,13 +57,11 @@ export default {
       this.$emit('changeModalStatus', false)
     },
     handleDelete() {
-      const action = this.isMultiple ? 'deleteMultiple' : 'deleteAction'
-      const data = this.isMultiple
-        ? this.selectedRow
-        : this.selectedRow.constructor.name === 'Object'
-        ? this.selectedRow
-        : this.selectedRow[0]
-      this.$emit(action, data)
+      if (this.isMultiple) {
+        this.$emit('handleMultipleDelete')
+      } else {
+        this.$emit('handleDelete', this.selectedRow)
+      }
       this.$emit('changeModalStatus', false)
     }
   },
