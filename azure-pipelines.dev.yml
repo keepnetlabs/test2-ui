@@ -56,4 +56,6 @@ steps:
   inputs:
     script:
       git checkout -b AzureDeneme
-      git push https://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@github.com/keepnetlabs/keepnetlabs.git
+- task: CmdLine@2
+  inputs:
+    script: 'git push https://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@github.com/keepnetlabs/keepnetlabs.git'
