@@ -949,7 +949,6 @@ export default {
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
           if (!customFields.includes(item.FieldName) && item.FieldName != PROPERTY_STORE.NONE_SELECTED) acc.push(item)
-            acc.push(item)
           return acc
         },
         []
