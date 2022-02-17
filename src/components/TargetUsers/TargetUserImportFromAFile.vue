@@ -948,10 +948,7 @@ export default {
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
-          if (
-            !customFields.includes(item.FieldName) &&
-            item.FieldName !== PROPERTY_STORE.NONE_SELECTED
-          )
+          if (!customFields.includes(item.FieldName) && item.FieldName != PROPERTY_STORE.NONE_SELECTED) acc.push(item)
             acc.push(item)
           return acc
         },
@@ -1039,7 +1036,7 @@ export default {
                   filterableType: 'text',
                   FilterableItems: 'Yes',
                   isCustom: true,
-                  isCustomField: true
+                  isCustomField: true,
                 }
                 return itemObj
               })
