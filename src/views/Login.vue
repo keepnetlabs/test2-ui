@@ -804,7 +804,6 @@ export default {
       twoStepLogin: 'login/twoStepLogin'
     }),
     handleContinueClick() {
-      debugger
       if (this.showPasswordField) {
         this.onLoginClicked()
       } else {
