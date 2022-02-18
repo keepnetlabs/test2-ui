@@ -241,7 +241,6 @@ export default {
     let allRoles = []
     let availableRoles = []
     const response = await getSystemUsersRole(payload)
-    console.log('response', response)
     if (response) {
       allRoles = response.data.data
       availableRoles = []
