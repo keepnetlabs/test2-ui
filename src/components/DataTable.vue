@@ -1619,8 +1619,6 @@ export default {
       const { prop, order } = this.persistentState.sortProps
       this.$refs.elTableRef.sort(prop, order)
     }
-    this.adjustMobileFixedItems()
-
     window.addEventListener('resize', this.renderFixedItems)
   },
   beforeDestroy() {
@@ -1752,22 +1750,6 @@ export default {
       this.renderFixedItemsTimeout = setTimeout(() => {
         this.renderFixedItems()
       }, 500)
-    },
-    adjustMobileFixedItems() {
-      if (window.outerWidth < 1023) {
-        this.actionFixed = false
-        const leftFixed = this.columns.filter((col) => col.fixed === 'left')
-        if (leftFixed && leftFixed.length) {
-          leftFixed[0].fixed = false
-          this.firstColFixed = false
-        }
-        const rightFixed = this.columns.filter((col) => col.fixed === 'right')
-        if (rightFixed && rightFixed.length) {
-          rightFixed[0].fixed = false
-        }
-        this.lastColFixed = false
-        this.actionFixed = false
-      }
     },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
