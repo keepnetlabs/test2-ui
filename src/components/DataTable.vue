@@ -760,16 +760,14 @@
                     </template>
                     <span>{{ rowActions[0].name }}</span>
                   </v-tooltip>
-                  <v-tooltip
-                    bottom
-                    v-if="
-                      $props.id !== 'investigations-data-table' ||
-                      rowActions[1].getButtonVisibility(scope.row.status)
-                    "
-                  >
+                  <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
-                        :disabled="rowActions[1]['disabled']"
+                        :disabled="
+                          rowActions[1]['disabled'] ||
+                          (rowActions[1].getButtonVisibility &&
+                            !rowActions[1].getButtonVisibility(scope.row.status))
+                        "
                         :id="`${rowActions[1].id}-${
                           scope.$index
                         }-${Math.random().toString().substring(2)}`"
