@@ -138,7 +138,9 @@ export default {
     },
     onCaptchaExpired() {
       this.captchaVerified = false
-      this.$refs.recaptcha.reset()
+      if (this.$refs && this.$refs.recaptcha) {
+        this.$refs.recaptcha.reset()
+      }
     }
   }
 }

@@ -1148,20 +1148,14 @@ export default {
         : ''
     },
     isReturnMainAccountVisible() {
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
-      let recFunction = () => {
-        if (
-          !localStorage.getItem('companyResourceId') ||
-          !localStorage.getItem('selectedCompanyRequestId')
-        ) {
-          recFunction()
-        }
-      }
-      recFunction()
+      if (
+        this.$store.state.auth.userRoleName === 'CompanyAdmin' ||
+        this.$store.state.auth.userRoleName === 'Company Admin'
+      )
+        return false
       return (
-        this.$store.state.auth.userRoleName !== 'Company Admin' &&
         localStorage.getItem('companyResourceId') !==
-          localStorage.getItem('selectedCompanyRequestId')
+        localStorage.getItem('selectedCompanyRequestId')
       )
     },
     companyName() {

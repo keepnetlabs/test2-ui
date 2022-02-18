@@ -572,7 +572,11 @@ export default {
   },
   methods: {
     getImagePreview() {
-      return this.formValues.file && URL.createObjectURL(this.formValues.file)
+      try {
+        return this.formValues.file && URL.createObjectURL(this.formValues.file)
+      } catch (e) {
+        return ''
+      }
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {

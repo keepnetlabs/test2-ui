@@ -109,6 +109,7 @@
             </DatatableLoading>
             <template v-else>
               <PreviewHeaderForSinglePost
+                v-if="mailDetails"
                 style="word-break: break-all;"
                 :uploadRespond="mailDetails"
               />
