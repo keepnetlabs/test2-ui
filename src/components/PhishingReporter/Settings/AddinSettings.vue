@@ -25,28 +25,16 @@
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
-    <v-form
-      class="add-in-settings__form"
-      lazy-validation
-      ref="refForm"
-      v-model="isValid"
-    >
+    <v-form class="add-in-settings__form" lazy-validation ref="refForm" v-model="isValid">
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
-          <label class="add-in-settings__label"
-            >{{ labels.AddIn }} {{ labels.Name }}</label
-          >
+          <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Name }}</label>
           <v-text-field
             :rules="
               showForm
                 ? [
-                    (v) =>
-                      validations.maxLength(
-                        v,
-                        64,
-                        labels.getMaxLengthMessage('Add-in name')
-                      ),
-                    (v) => validations.required(v, labels.Required),
+                    (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Add-in name')),
+                    (v) => validations.required(v, labels.Required)
                   ]
                 : []
             "
@@ -63,20 +51,13 @@
 
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
-          <label class="add-in-settings__label"
-            >{{ labels.Brand }} {{ labels.Name }}</label
-          >
+          <label class="add-in-settings__label">{{ labels.Brand }} {{ labels.Name }}</label>
           <v-text-field
             :rules="
               showForm
                 ? [
-                    (v) =>
-                      validations.maxLength(
-                        v,
-                        64,
-                        labels.getMaxLengthMessage('Brand name')
-                      ),
-                    (v) => validations.required(v, labels.Required),
+                    (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand name')),
+                    (v) => validations.required(v, labels.Required)
                   ]
                 : []
             "
@@ -91,13 +72,9 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item
-        class="px-0 add-in-settings__list-item add-in-settings__file-upload"
-      >
+      <v-list-item class="px-0 add-in-settings__list-item add-in-settings__file-upload">
         <v-list-item-content>
-          <label class="add-in-settings__label"
-            >{{ labels.AddIn }} {{ labels.Logo }}</label
-          >
+          <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Logo }}</label>
           <div class="add-in-settings__subtitle mb-2">
             Recommended size is 60x60px
           </div>
@@ -119,27 +96,15 @@
         <v-list-item-content>
           <div>
             <div class="add-in-settings__image-container">
-              <img
-                class="add-in-settings__image"
-                :src="getImagePreview()"
-                alt="logo-preview"
-              />
+              <img class="add-in-settings__image" :src="getImagePreview()" alt="logo-preview" />
             </div>
           </div>
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item
-        class="
-          px-0
-          add-in-settings__list-item add-in-settings__body-container
-          mt-6
-        "
-      >
+      <v-list-item class="px-0 add-in-settings__list-item add-in-settings__body-container mt-6">
         <v-list-item-content>
-          <label class="add-in-settings__label"
-            >{{ labels.DialogBox }} {{ labels.Settings }}</label
-          >
+          <label class="add-in-settings__label">{{ labels.DialogBox }} {{ labels.Settings }}</label>
           <div class="add-in-settings__body-item mt-4">
             <label class="add-in-settings__list-item-header"
               >{{ labels.DialogBox }} {{ labels.Heading }}</label
@@ -154,7 +119,7 @@
                           64,
                           labels.getMaxLengthMessage('Dialog box heading')
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -169,9 +134,7 @@
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header"
-              >Confirm Button Label</label
-            >
+            <label class="add-in-settings__list-item-header">Confirm Button Label</label>
             <v-text-field
               :rules="
                 showForm
@@ -182,7 +145,7 @@
                           64,
                           labels.getMaxLengthMessage('Confirm button label')
                         ),
-                      (v) => validations.required(v, 'Required'),
+                      (v) => validations.required(v, 'Required')
                     ]
                   : []
               "
@@ -197,20 +160,14 @@
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header"
-              >No Button Label</label
-            >
+            <label class="add-in-settings__list-item-header">No Button Label</label>
             <v-text-field
               :rules="
                 showForm
                   ? [
                       (v) =>
-                        validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('No button label')
-                        ),
-                      (v) => validations.required(v, labels.Required),
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('No button label')),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -225,9 +182,7 @@
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header"
-              >Cancel Button Label</label
-            >
+            <label class="add-in-settings__list-item-header">Cancel Button Label</label>
             <v-text-field
               :rules="
                 showForm
@@ -238,7 +193,7 @@
                           64,
                           labels.getMaxLengthMessage('Cancel button label')
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -253,9 +208,7 @@
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header"
-              >Okay Button Label</label
-            >
+            <label class="add-in-settings__list-item-header">Okay Button Label</label>
             <v-text-field
               :rules="
                 showForm
@@ -266,7 +219,7 @@
                           64,
                           labels.getMaxLengthMessage('Okay button label')
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -281,11 +234,7 @@
             ></v-text-field>
           </div>
           <div class="add-in-settings__body-item">
-            <label
-              class="
-                add-in-settings__list-item-header
-                add-in-settings__list-item-header--1
-              "
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Instant Report Message</label
             >
             <v-textarea
@@ -304,12 +253,9 @@
                         validations.maxLength(
                           v,
                           256,
-                          labels.getMaxLengthMessage(
-                            'Instant report message',
-                            256
-                          )
+                          labels.getMaxLengthMessage('Instant report message', 256)
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -317,11 +263,7 @@
             ></v-textarea>
           </div>
           <div class="add-in-settings__body-item">
-            <label
-              class="
-                add-in-settings__list-item-header
-                add-in-settings__list-item-header--1
-              "
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Connection error message</label
             >
             <v-textarea
@@ -340,12 +282,9 @@
                         validations.maxLength(
                           v,
                           256,
-                          labels.getMaxLengthMessage(
-                            'Connection error message',
-                            256
-                          )
+                          labels.getMaxLengthMessage('Connection error message', 256)
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -353,11 +292,7 @@
             ></v-textarea>
           </div>
           <div class="add-in-settings__body-item">
-            <label
-              class="
-                add-in-settings__list-item-header
-                add-in-settings__list-item-header--1
-              "
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Sending error message</label
             >
             <v-textarea
@@ -376,12 +311,9 @@
                         validations.maxLength(
                           v,
                           256,
-                          labels.getMaxLengthMessage(
-                            'Sending error message',
-                            256
-                          )
+                          labels.getMaxLengthMessage('Sending error message', 256)
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -389,11 +321,7 @@
             ></v-textarea>
           </div>
           <div class="add-in-settings__body-item">
-            <label
-              class="
-                add-in-settings__list-item-header
-                add-in-settings__list-item-header--1
-              "
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >No email selected message</label
             >
             <v-textarea
@@ -412,12 +340,9 @@
                         validations.maxLength(
                           v,
                           256,
-                          labels.getMaxLengthMessage(
-                            'No email selected message',
-                            256
-                          )
+                          labels.getMaxLengthMessage('No email selected message', 256)
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -425,11 +350,7 @@
             ></v-textarea>
           </div>
           <div class="add-in-settings__body-item">
-            <label
-              class="
-                add-in-settings__list-item-header
-                add-in-settings__list-item-header--1
-              "
+            <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Bad format email message</label
             >
             <v-textarea
@@ -448,12 +369,9 @@
                         validations.maxLength(
                           v,
                           256,
-                          labels.getMaxLengthMessage(
-                            'Bad format email message',
-                            256
-                          )
+                          labels.getMaxLengthMessage('Bad format email message', 256)
                         ),
-                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : []
               "
@@ -520,12 +438,8 @@
               showForm
                 ? [
                     (v) =>
-                      validations.maxLength(
-                        v,
-                        64,
-                        labels.getMaxLengthMessage('Warning label')
-                      ),
-                    (v) => validations.required(v, labels.Required),
+                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Warning label')),
+                    (v) => validations.required(v, labels.Required)
                   ]
                 : []
             "
@@ -552,58 +466,58 @@
 </template>
 
 <script>
-import { maxLength, required } from "@/utils/validations";
-import { getPhishingReporterImg } from "@/api/phishingReporter";
-import VersionHistoryModal from "./VersionHistoryModal";
-import PhishingReporterLogo from "../../../assets/img/phishing-reporter-default-logo.png";
-import imageToBlob from "image-to-blob";
-import ReporterVersionModal from "./ReporterVersionModal";
-import KFileUpload from "@/components/Common/FileUpload/FileUpload";
-import PhishingSettingsFooter from "@/components/PhishingReporter/PhishingSettingsFooter";
-import labels from "@/model/constants/labels";
-import { scrollToComponent } from "@/utils/functions";
-import { mapGetters } from "vuex";
+import { maxLength, required } from '@/utils/validations'
+import { getPhishingReporterImg } from '@/api/phishingReporter'
+import VersionHistoryModal from './VersionHistoryModal'
+import PhishingReporterLogo from '../../../assets/img/phishing-reporter-default-logo.png'
+import imageToBlob from 'image-to-blob'
+import ReporterVersionModal from './ReporterVersionModal'
+import KFileUpload from '@/components/Common/FileUpload/FileUpload'
+import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettingsFooter'
+import labels from '@/model/constants/labels'
+import { scrollToComponent } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
-  name: "AddinSettings",
+  name: 'AddinSettings',
   components: {
     KFileUpload,
     ReporterVersionModal,
     VersionHistoryModal,
-    PhishingSettingsFooter,
+    PhishingSettingsFooter
   },
   props: {
     showFooter: {
       type: Boolean,
-      default: true,
+      default: true
     },
     showHeaderLink: {
       type: Boolean,
-      default: false,
+      default: false
     },
     formData: {
       type: Object,
-      default: null,
+      default: null
     },
     showForm: {
       type: Boolean,
-      default: true,
+      default: true
     },
     inModal: {
       type: Boolean,
-      default: false,
+      default: false
     },
     showHeader: {
       type: Boolean,
-      default: true,
+      default: true
     },
     spinnerStatus: {
       type: Boolean,
-      default: false,
+      default: false
     },
     saveDisable: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
@@ -611,23 +525,23 @@ export default {
       files: [],
       labels,
       formValues: {
-        addInName: "",
-        brandName: "",
-        file: "",
-        msgBoxTitle: "",
+        addInName: '',
+        brandName: '',
+        file: '',
+        msgBoxTitle: '',
         isConfirmationBeforeAnalysis: false,
-        analysisConfirmationMessage: "",
-        analysisThankYouMessage: "",
-        analysisEmailDeleteMessage: "",
-        warningLabel: "",
-        hiddenFileUploadValue: "",
+        analysisConfirmationMessage: '',
+        analysisThankYouMessage: '',
+        analysisEmailDeleteMessage: '',
+        warningLabel: '',
+        hiddenFileUploadValue: '',
         isDeleteEmailBeforeAnalysis: null,
-        msgBoxBtnYesText: "",
-        noInternetConnectionMessage: "",
-        msgBoxBtnNoText: "",
-        msgBoxBtnOkText: "",
-        emailSelectionErrorMessage: "",
-        badFormatEmailMessage: "",
+        msgBoxBtnYesText: '',
+        noInternetConnectionMessage: '',
+        msgBoxBtnNoText: '',
+        msgBoxBtnOkText: '',
+        emailSelectionErrorMessage: '',
+        badFormatEmailMessage: ''
       },
       reporterVersionModalStatus: false,
       versionHistoryModalStatus: false,
@@ -635,79 +549,77 @@ export default {
       marginStatus: true,
       validations: {
         maxLength,
-        required,
-      },
-    };
+        required
+      }
+    }
   },
   computed: {
-    ...mapGetters({ whiteLabelBrandName: "whitelabel/getBrandName" }),
+    ...mapGetters({ whiteLabelBrandName: 'whitelabel/getBrandName' }),
     getAnalysisConfirmationMessageRules() {
-      const validations = [];
+      const validations = []
       if (this.formValues.isConfirmationBeforeAnalysis) {
-        validations.push((v) =>
-          this.validations.required(v, this.labels.Required)
-        );
+        validations.push((v) => this.validations.required(v, this.labels.Required))
         validations.push((v) =>
           this.validations.maxLength(
             v,
             256,
-            this.labels.getMaxLengthMessage("Confirmation message", 256)
+            this.labels.getMaxLengthMessage('Confirmation message', 256)
           )
-        );
+        )
       }
-      return validations;
-    },
+      return validations
+    }
   },
   methods: {
     getImagePreview() {
-      return this.formValues.file && URL.createObjectURL(this.formValues.file);
+      return this.formValues.file && URL.createObjectURL(this.formValues.file)
     },
     onFileChanged(file) {
       if (Array.isArray(file) && file.length === 0) {
-        this.formValues.file = "";
+        this.formValues.file = ''
       } else {
-        this.formValues.file = file;
+        this.formValues.file = file
       }
     },
     handleHistoryRow(row) {
-      this.selectedVersionRow = row;
-      this.reporterVersionModalStatus = true;
+      this.selectedVersionRow = row
+      this.reporterVersionModalStatus = true
     },
     submit(event, isAddIn = false) {
       if (this.$refs.refForm.validate()) {
-        this.$emit("updateForm", { ...this.formValues, isAddIn });
-        return this.formValues;
+        this.$emit('updateForm', { ...this.formValues, isAddIn })
+        return this.formValues
       } else {
-        const el = this.$refs.refForm.$el.querySelector(".error--text");
-        scrollToComponent(el);
-        return false;
+        const el = this.$refs.refForm.$el.querySelector('.error--text')
+        scrollToComponent(el)
+        return false
       }
     },
     getCurrentValues() {
-      return this.formValues;
+      return this.formValues
     },
     getFormValues() {
       if (this.$refs.refForm.validate()) {
-        return this.formValues;
+        return this.formValues
       } else {
-        return false;
+        return false
       }
     },
     inputFilter(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         if (!/\.(gif|jpg|jpeg|png)$/i.test(newFile.name)) {
           //alert('Invalid file type. Allowed file types are gif, jpg, jpeg, png')
-          return prevent();
+          return prevent()
         }
       }
       if (newFile && (!oldFile || newFile.file !== oldFile.file)) {
-        newFile.url = "";
-        let URL = window.URL || window.webkitURL;
+        newFile.url = ''
+        let URL = window.URL || window.webkitURL
         if (URL && URL.createObjectURL) {
-          newFile.url = URL.createObjectURL(newFile.file);
+          newFile.url = URL.createObjectURL(newFile.file)
         }
       }
-    },
+    }
   },
   created() {
     //If has a report
@@ -729,62 +641,59 @@ export default {
         noInternetConnectionMessage,
         emailSendingErrorMessage,
         emailSelectionErrorMessage,
-        badFormatEmailMessage,
-      } = this.formData;
-      this.formValues.addInName = addInName;
-      this.formValues.brandName = brandName;
-      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText;
-      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText;
-      this.formValues.warningLabel = warningLabel;
-      this.formValues.msgBoxTitle = msgBoxTitle;
-      this.formValues.isConfirmationBeforeAnalysis =
-        isConfirmationBeforeAnalysis;
-      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage;
-      this.formValues.analysisThankYouMessage = analysisThankYouMessage;
-      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage;
-      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis;
-      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText;
-      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText;
-      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage;
-      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage;
-      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage;
-      this.formValues.badFormatEmailMessage = badFormatEmailMessage;
+        badFormatEmailMessage
+      } = this.formData
+      this.formValues.addInName = addInName
+      this.formValues.brandName = brandName
+      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText
+      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText
+      this.formValues.warningLabel = warningLabel
+      this.formValues.msgBoxTitle = msgBoxTitle
+      this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
+      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
+      this.formValues.analysisThankYouMessage = analysisThankYouMessage
+      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
+      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
+      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText
+      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText
+      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
+      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
+      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
+      this.formValues.badFormatEmailMessage = badFormatEmailMessage
       getPhishingReporterImg().then((response) => {
         //this.$refs.refFileUpload.$refs.upload.add(response.data)
-        this.formValues.file = response.data;
-      });
+        this.formValues.file = response.data
+      })
     } else {
       this.formValues.brandName = this.whiteLabelBrandName
         ? this.whiteLabelBrandName
-        : localStorage.getItem("selectedCompanyName") ||
-          localStorage.getItem("companyName");
-      this.formValues.addInName = "Suspicious E-Mail Reporter";
-      this.formValues.msgBoxTitle = "Phishing Reporter";
-      this.formValues.msgBoxBtnCancelText = "Cancel";
+        : localStorage.getItem('selectedCompanyName') || localStorage.getItem('companyName')
+      this.formValues.addInName = 'Suspicious E-Mail Reporter'
+      this.formValues.msgBoxTitle = 'Phishing Reporter'
+      this.formValues.msgBoxBtnCancelText = 'Cancel'
       this.formValues.analysisConfirmationMessage =
-        "Do you want to report this email to the system administrator for analysis?";
-      this.formValues.isConfirmationBeforeAnalysis = true;
+        'Do you want to report this email to the system administrator for analysis?'
+      this.formValues.isConfirmationBeforeAnalysis = true
       this.formValues.analysisEmailDeleteMessage =
-        "Do you wish to delete the original email from your inbox?";
+        'Do you wish to delete the original email from your inbox?'
       this.formValues.analysisThankYouMessage =
-        "Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails.";
-      this.formValues.warningLabel = "Suspicious E-Mail";
-      this.formValues.isDeleteEmailBeforeAnalysis = true;
-      this.formValues.msgBoxBtnYesText = "Yes";
-      this.formValues.msgBoxBtnNoText = "No";
-      this.formValues.msgBoxBtnOkText = "Okay";
+        'Thank you for reporting this email. Our organisation is more secure thanks to your actions. Please keep reporting suspicious emails.'
+      this.formValues.warningLabel = 'Suspicious E-Mail'
+      this.formValues.isDeleteEmailBeforeAnalysis = true
+      this.formValues.msgBoxBtnYesText = 'Yes'
+      this.formValues.msgBoxBtnNoText = 'No'
+      this.formValues.msgBoxBtnOkText = 'Okay'
       this.formValues.emailSendingErrorMessage =
-        "Report email cannot be sent to related department. Please try again later.";
+        'Report email cannot be sent to related department. Please try again later.'
       this.formValues.noInternetConnectionMessage =
-        "Phishing Reporter add-in cannot connect to server. Please inform related department.";
+        'Phishing Reporter add-in cannot connect to server. Please inform related department.'
       this.formValues.emailSelectionErrorMessage =
-        "To report an email you must first select the email and then click the report button.";
-      this.formValues.badFormatEmailMessage =
-        "Your selection is not a valid email message";
+        'To report an email you must first select the email and then click the report button.'
+      this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
-        this.formValues.file = blob;
-      });
-      this.$emit("getInitialFormValues", this.formValues);
+        this.formValues.file = blob
+      })
+      this.$emit('getInitialFormValues', this.formValues)
     }
   },
   watch: {
@@ -806,32 +715,31 @@ export default {
         noInternetConnectionMessage,
         emailSendingErrorMessage,
         emailSelectionErrorMessage,
-        badFormatEmailMessage,
-      } = val;
-      this.formValues.addInName = addInName;
-      this.formValues.brandName = brandName;
-      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText;
-      this.formValues.warningLabel = warningLabel;
-      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText;
-      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText;
-      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText;
-      this.formValues.msgBoxTitle = msgBoxTitle;
-      this.formValues.isConfirmationBeforeAnalysis =
-        isConfirmationBeforeAnalysis;
-      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage;
-      this.formValues.analysisThankYouMessage = analysisThankYouMessage;
-      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage;
-      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis;
-      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage;
-      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage;
-      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage;
-      this.formValues.badFormatEmailMessage = badFormatEmailMessage;
+        badFormatEmailMessage
+      } = val
+      this.formValues.addInName = addInName
+      this.formValues.brandName = brandName
+      this.formValues.msgBoxBtnNoText = msgBoxBtnNoText
+      this.formValues.warningLabel = warningLabel
+      this.formValues.msgBoxBtnYesText = msgBoxBtnYesText
+      this.formValues.msgBoxBtnCancelText = msgBoxBtnCancelText
+      this.formValues.msgBoxBtnOkText = msgBoxBtnOkText
+      this.formValues.msgBoxTitle = msgBoxTitle
+      this.formValues.isConfirmationBeforeAnalysis = isConfirmationBeforeAnalysis
+      this.formValues.analysisConfirmationMessage = analysisConfirmationMessage
+      this.formValues.analysisThankYouMessage = analysisThankYouMessage
+      this.formValues.analysisEmailDeleteMessage = analysisEmailDeleteMessage
+      this.formValues.isDeleteEmailBeforeAnalysis = isDeleteEmailBeforeAnalysis
+      this.formValues.noInternetConnectionMessage = noInternetConnectionMessage
+      this.formValues.emailSendingErrorMessage = emailSendingErrorMessage
+      this.formValues.emailSelectionErrorMessage = emailSelectionErrorMessage
+      this.formValues.badFormatEmailMessage = badFormatEmailMessage
       getPhishingReporterImg().then((response) => {
-        this.formValues.file = response.data;
-      });
-    },
-  },
-};
+        this.formValues.file = response.data
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss">
@@ -1042,7 +950,7 @@ export default {
 
   &__message {
     opacity: 0.7;
-    font-family: "Open Sans", sans-serif !important;
+    font-family: 'Open Sans', sans-serif !important;
     font-size: 14px;
     font-weight: normal;
     line-height: 1.5;

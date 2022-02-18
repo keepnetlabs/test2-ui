@@ -3,9 +3,7 @@
     <div
       class="campaign-manager-last-step__header"
       :style="{
-        gridTemplateColumns: Object.keys(getOtherSettingsItems).length
-          ? '1fr 1fr 1fr'
-          : '1fr 1fr',
+        gridTemplateColumns: Object.keys(getOtherSettingsItems).length ? '1fr 1fr 1fr' : '1fr 1fr'
       }"
     >
       <CampaignManagerSummaryCard
@@ -65,28 +63,14 @@
             class="campaign-manager-last-step__email-template-body pb-4"
           >
             <div class="campaign-manager-last-step__email-template-body-header">
-              <div
-                class="
-                  campaign-manager-last-step__email-template-body-header-left
-                "
-              >
+              <div class="campaign-manager-last-step__email-template-body-header-left">
                 {{ currentFormData.emailTemplateParams.name }}
               </div>
-              <div
-                class="
-                  campaign-manager-last-step__email-template-body-header-right
-                "
-              >
-                <v-btn style="display: none"></v-btn>
+              <div class="campaign-manager-last-step__email-template-body-header-right">
+                <v-btn style="display: none;"></v-btn>
                 <Badge
-                  :color="
-                    getBadgeColor(
-                      currentFormData.emailTemplateParams.difficulty
-                    )
-                  "
-                  :text="
-                    getBadgeText(currentFormData.emailTemplateParams.difficulty)
-                  "
+                  :color="getBadgeColor(currentFormData.emailTemplateParams.difficulty)"
+                  :text="getBadgeText(currentFormData.emailTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
@@ -96,9 +80,7 @@
                 />
               </div>
             </div>
-            <div
-              class="campaign-manager-last-step__email-template-body-header-sub"
-            >
+            <div class="campaign-manager-last-step__email-template-body-header-sub">
               From: {{ currentFormData.emailTemplateParams.fromName }}
               <span>&#60;</span>
               {{ currentFormData.emailTemplateParams.fromAddress }}
@@ -108,13 +90,9 @@
           </div>
           <div
             v-if="isShowEmailTemplate"
-            class="
-              campaign-manager-last-step__email-template-body-preview-container
-            "
+            class="campaign-manager-last-step__email-template-body-preview-container"
           >
-            <div
-              class="campaign-manager-last-step__email-template-body-preview"
-            >
+            <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
                 v-if="!!currentFormData.emailTemplate"
                 ref="refPreview"
@@ -138,37 +116,18 @@
             v-if="isFormData"
             class="campaign-manager-last-step__landing-page-template-body pb-4"
           >
-            <div
-              class="
-                campaign-manager-last-step__landing-page-template-body-header
-              "
-            >
-              <div
-                class="
-                  campaign-manager-last-step__landing-page-template-body-header-left
-                "
-              >
-                <span
-                  class="
-                    campaign-manager-last-step__landing-page-template-body-header-left-url
-                  "
+            <div class="campaign-manager-last-step__landing-page-template-body-header">
+              <div class="campaign-manager-last-step__landing-page-template-body-header-left">
+                <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
                   >URL:</span
                 >
                 {{ currentFormData.landingPageParams.urlTemplate }}
               </div>
-              <div
-                class="
-                  campaign-manager-last-step__landing-page-template-body-header-right
-                "
-              >
-                <v-btn style="display: none"></v-btn>
+              <div class="campaign-manager-last-step__landing-page-template-body-header-right">
+                <v-btn style="display: none;"></v-btn>
                 <Badge
-                  :color="
-                    getBadgeColor(currentFormData.landingPageParams.difficulty)
-                  "
-                  :text="
-                    getBadgeText(currentFormData.landingPageParams.difficulty)
-                  "
+                  :color="getBadgeColor(currentFormData.landingPageParams.difficulty)"
+                  :text="getBadgeText(currentFormData.landingPageParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
@@ -181,13 +140,9 @@
           </div>
           <div
             v-if="isShowLandingPageTemplate"
-            class="
-              campaign-manager-last-step__email-template-body-preview-container
-            "
+            class="campaign-manager-last-step__email-template-body-preview-container"
           >
-            <div
-              class="campaign-manager-last-step__email-template-body-preview"
-            >
+            <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
                 v-if="!!currentFormData.landingPageTemplate"
                 :html="currentFormData.landingPageTemplate"
@@ -202,23 +157,23 @@
 </template>
 
 <script>
-import CampaignManagerSummaryCard from "@/components/CampaignManager/Summary/CampaignManagerSummaryCard";
-import labels from "@/model/constants/labels";
-import CampaignManagerTargetGroupsAndUserSummaryInfo from "@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo";
-import Badge from "@/components/Badge";
-import KEmailPreview from "@/components/KEmailPreview";
+import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
+import labels from '@/model/constants/labels'
+import CampaignManagerTargetGroupsAndUserSummaryInfo from '@/components/CampaignManager/Summary/CampaignManagerTargetGroupsAndUserSummaryInfo'
+import Badge from '@/components/Badge'
+import KEmailPreview from '@/components/KEmailPreview'
 export default {
-  name: "CampaignManagerSummary",
+  name: 'CampaignManagerSummary',
   components: {
     KEmailPreview,
     Badge,
     CampaignManagerTargetGroupsAndUserSummaryInfo,
-    CampaignManagerSummaryCard,
+    CampaignManagerSummaryCard
   },
   props: {
     formData: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   data() {
     return {
@@ -226,135 +181,113 @@ export default {
       labels,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
-      isShowLandingPageTemplate: false,
-    };
+      isShowLandingPageTemplate: false
+    }
   },
   watch: {
     formData(val) {
       this.currentFormData = {
         ...val,
         emailTemplateParams: {
-          fromName: val?.emailTemplateParams?.fromName || "",
-          fromAddress: val?.emailTemplateParams?.fromAddress || "",
-          name: val?.emailTemplateParams?.name || "",
-          difficulty: val?.emailTemplateParams?.difficulty || "",
+          fromName: val?.emailTemplateParams?.fromName || '',
+          fromAddress: val?.emailTemplateParams?.fromAddress || '',
+          name: val?.emailTemplateParams?.name || '',
+          difficulty: val?.emailTemplateParams?.difficulty || ''
         },
         landingPageParams: {
-          name: val?.landingPageParams?.name || "",
-          description: val?.landingPageParams?.description || "",
-          urlTemplate: val?.landingPageParams?.urlTemplate || "",
-          difficulty: val?.landingPageParams?.difficulty || "",
-          method: val?.landingPageParams?.method || "",
+          name: val?.landingPageParams?.name || '',
+          description: val?.landingPageParams?.description || '',
+          urlTemplate: val?.landingPageParams?.urlTemplate || '',
+          difficulty: val?.landingPageParams?.difficulty || '',
+          method: val?.landingPageParams?.method || ''
         },
-        landingPageTemplate: val?.landingPageTemplate || "",
-      };
-    },
+        landingPageTemplate: val?.landingPageTemplate || ''
+      }
+    }
   },
   computed: {
     isFormData() {
-      return Object.keys(this.formData).length;
+      return Object.keys(this.formData).length
     },
     getScenarioInfoItems() {
-      const { selectedPhishingScenario = {} } = this.formData;
-      const {
-        name = "",
-        method = "",
-        difficulty = "",
-      } = selectedPhishingScenario;
-      return { name, method, difficulty };
+      const { selectedPhishingScenario = {} } = this.formData
+      const { name = '', method = '', difficulty = '' } = selectedPhishingScenario
+      return { name, method, difficulty }
     },
     getTotalRandomlySelectedUserCount() {
-      let text = "";
-      if (
-        Object.keys(this.formData).length &&
-        this.formData.targetGroupResourceIds
-      ) {
+      let text = ''
+      if (Object.keys(this.formData).length && this.formData.targetGroupResourceIds) {
         const {
           targetGroupResourceIds,
           sendRandomlyUsersCalculateTypeId,
-          sendRandomlyUsersCount,
-        } = this.formData;
-        let totalUsers = this.getTotalUsers;
-        const totalGroupLength = targetGroupResourceIds.length;
+          sendRandomlyUsersCount
+        } = this.formData
+        let totalUsers = this.getTotalUsers
+        const totalGroupLength = targetGroupResourceIds.length
         if (totalGroupLength && totalUsers === 0) {
-          totalUsers = 1;
+          totalUsers = 1
         }
 
-        if (sendRandomlyUsersCalculateTypeId === "1") {
-          const total = Math.floor(totalUsers / Number(sendRandomlyUsersCount));
-          text = `Randomly selected %${sendRandomlyUsersCount} (${
-            total || 1
-          } users) from`;
+        if (sendRandomlyUsersCalculateTypeId === '1') {
+          const total = Math.floor(totalUsers / Number(sendRandomlyUsersCount))
+          text = `Randomly selected %${sendRandomlyUsersCount} (${total || 1} users) from`
         } else {
-          text = `Randomly selected ${Number(
-            sendRandomlyUsersCount
-          )} users from`;
+          text = `Randomly selected ${Number(sendRandomlyUsersCount)} users from`
         }
       }
-      return text;
+      return text
     },
     getTotalTargetGroupsAndUsersCount() {
-      let text = "";
-      if (
-        Object.keys(this.formData).length &&
-        this.formData.targetGroupResourceIds
-      ) {
-        const { targetGroupResourceIds } = this.formData;
-        text = `${this.getTotalUsers} user(s) from ${targetGroupResourceIds.length} group(s)`;
+      let text = ''
+      if (Object.keys(this.formData).length && this.formData.targetGroupResourceIds) {
+        const { targetGroupResourceIds } = this.formData
+        text = `${this.getTotalUsers} user(s) from ${targetGroupResourceIds.length} group(s)`
       }
-      return text;
+      return text
     },
     getTotalUsers() {
-      const { selectedTargetGroups } = this.formData;
+      const { selectedTargetGroups } = this.formData
       return selectedTargetGroups.reduce((acc, item) => {
-        acc += item.userCount;
-        return acc;
-      }, 0);
+        acc += item.userCount
+        return acc
+      }, 0)
     },
     getSettingsItems() {
-      const {
-        selectedSmtpSetting = {},
-        sendingLimit,
-        selectedSchedule,
-      } = this.formData;
+      const { selectedSmtpSetting = {}, sendingLimit, selectedSchedule } = this.formData
       return {
         Starting: selectedSchedule,
-        "Sending Limit": sendingLimit,
-        SMTP: selectedSmtpSetting.name,
-      };
-    },
-    getOtherSettingsItems() {
-      const { excludeFromReports, sendOnlyActiveUsers, sendRandomlyUsers } =
-        this.formData;
-      let data = {};
-      if (excludeFromReports)
-        data.isExcludeFromReports = "Excluded from reports";
-      if (sendOnlyActiveUsers)
-        data.isOnlyActiveUsers =
-          "Send only to active users on phishing reporter add-in";
-      if (sendRandomlyUsers)
-        data.isRandomSelected = "Send this campaign to randomly selected";
-      return data;
-    },
-  },
-  methods: {
-    getBadgeColor(text = "") {
-      switch (text.toLowerCase()) {
-        case "easy":
-          return "#217124";
-        case "medium":
-          return "#2196f3";
-        case "hard":
-          return "#f56c6c";
-        default:
-          return "#2196f3";
+        'Sending Limit': sendingLimit,
+        SMTP: selectedSmtpSetting.name
       }
     },
-    getBadgeText(text = "") {
-      return text;
-    },
+    getOtherSettingsItems() {
+      const { excludeFromReports, sendOnlyActiveUsers, sendRandomlyUsers } = this.formData
+      let data = {}
+      if (excludeFromReports) data.isExcludeFromReports = 'Excluded from reports'
+      if (sendOnlyActiveUsers)
+        data.isOnlyActiveUsers = 'Send only to active users on phishing reporter add-in'
+      if (sendRandomlyUsers) data.isRandomSelected = 'Send this campaign to randomly selected'
+      return data
+    }
   },
-};
+  methods: {
+    getBadgeColor(text = '') {
+      switch (text.toLowerCase()) {
+        case 'easy':
+          return '#217124'
+        case 'medium':
+          return '#2196f3'
+        case 'hard':
+          return '#f56c6c'
+        default:
+          return '#2196f3'
+      }
+    },
+    getBadgeText(text = '') {
+      return text
+    }
+  }
+}
 </script>
 
 <style lang="scss">

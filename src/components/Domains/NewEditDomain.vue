@@ -239,7 +239,7 @@ export default {
         zoneId: null,
         active: true,
         resourceId: null
-        },
+      },
       formValues: {
         domain: null,
         recordTypeId: '2',
