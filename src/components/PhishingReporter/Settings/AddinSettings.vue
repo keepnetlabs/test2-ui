@@ -567,7 +567,11 @@ export default {
   },
   methods: {
     getImagePreview() {
-      return this.formValues.file && URL.createObjectURL(this.formValues.file)
+      try {
+        return this.formValues.file && URL.createObjectURL(this.formValues.file)
+      } catch (e) {
+        return ''
+      }
     },
     onFileChanged(file) {
       this.formValues.file = file
