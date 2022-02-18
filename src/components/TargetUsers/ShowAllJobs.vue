@@ -96,7 +96,8 @@ export default {
       jobTimeout: null,
       processTimeout: null,
       jobLoading: false,
-      processLoading: false
+      processLoading: false,
+      isDestroyed: false
     }
   },
   watch: {
@@ -122,9 +123,11 @@ export default {
         } = response
         this.jobs = [...data]
         this.jobLoading = false
-        this.jobTimeout = setTimeout(() => {
-          this.handleJobs()
-        }, 2500)
+        if (!this.isDestroyed) {
+          this.jobTimeout = setTimeout(() => {
+            this.handleJobs()
+          }, 2500)
+        }
       })
     },
     handleProcess(resourceId) {
@@ -140,9 +143,11 @@ export default {
         job.isFinished = isFinished
         this.jobs = [...this.jobs]
         this.processLoading = false
-        this.processTimeout = setTimeout(() => {
-          this.handleProcess(resourceId)
-        }, 2500)
+        if (!this.isDestroyed) {
+          this.processTimeout = setTimeout(() => {
+            this.handleProcess(resourceId)
+          }, 2500)
+        }
       })
     },
     processType(process) {
@@ -161,6 +166,7 @@ export default {
     this.handleJobs()
   },
   destroyed() {
+    this.isDestroyed = true
     clearTimeout(this.jobTimeout)
     clearTimeout(this.processTimeout)
   }
