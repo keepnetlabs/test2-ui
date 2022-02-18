@@ -136,7 +136,6 @@
                             v-if="!showPasswordField"
                             data-recording-ignore="mask"
                             id="input--login-email"
-                            :type="'email'"
                             name="email"
                             ref="email"
                             v-model.trim="email"
@@ -805,6 +804,7 @@ export default {
       twoStepLogin: 'login/twoStepLogin'
     }),
     handleContinueClick() {
+      debugger
       if (this.showPasswordField) {
         this.onLoginClicked()
       } else {
