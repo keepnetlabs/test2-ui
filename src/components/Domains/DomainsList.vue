@@ -154,6 +154,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            fixed: 'left',
             filterableType: 'text',
             width: 180
           },

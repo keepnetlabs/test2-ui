@@ -141,10 +141,10 @@
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content class="test-connection-wrapper">
               <TestConnection
+                ref="testConnection"
                 :values="formValues"
                 :isValidate="isValidate"
                 :isEdit="editData"
-                ref="testConnection"
                 @testConnectionValues="testConnectionValues"
                 @loading="saveButtonDisabled = false"
               />
@@ -170,8 +170,8 @@
             class="playbook-rule-form__button white--text"
             rounded
             color="#2196f3"
-            @click="submit"
             :disabled="saveButtonDisabled"
+            @click="submit"
           >
             {{ labels.Save }}
           </v-btn>
@@ -795,6 +795,14 @@ export default {
       TargetGroupResourceIdList: [],
       IsAllTargetGroupsSelected: true
     },
+    formValuesAfterO365Test: {
+      name: null,
+      applicationId: null,
+      applicationSecret: null,
+      directoryId: null,
+      email: null,
+      allowedDomains: []
+    },
     initialFormValues: {
       name: null,
       applicationId: null,
@@ -802,6 +810,18 @@ export default {
       directoryId: null,
       email: null,
       allowedDomains: []
+    },
+    formValuesAfterEWSTest: {
+      Name: null,
+      ServiceUrl: null,
+      ExchangeVersionLookupResourceId: null,
+      AccountType: 1,
+      Username: null,
+      Password: null,
+      Email: null,
+      XAnchorMailBoxHeader: false,
+      TargetGroupResourceIdList: [],
+      IsAllTargetGroupsSelected: true
     },
     ewsInitialFormValues: {
       Name: null,
@@ -814,6 +834,11 @@ export default {
       XAnchorMailBoxHeader: false,
       TargetGroupResourceIdList: [],
       IsAllTargetGroupsSelected: true
+    },
+    formValuesAfterGWSTest: {
+      name: '',
+      authJson: '',
+      email: ''
     },
     googleWorkSpaceInitialValues: {
       name: '',
@@ -975,7 +1000,10 @@ export default {
           JSON.stringify(this.googleWorkSpaceInitialValues) &&
         this.googleWorkSpaceEditData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        if (
+          JSON.stringify(this.googleWorkSpaceForm) !== JSON.stringify(this.formValuesAfterGWSTest)
+        )
+          this.isTestConnectionWorkedBefore = false
       }
       if (
         this.$refs.googleWorkSpaceConfigurationForm.validate() &&
@@ -1064,7 +1092,8 @@ export default {
         JSON.stringify(this.ewsFormValues) !== JSON.stringify(this.ewsInitialFormValues) &&
         this.ewsEditData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        if (JSON.stringify(this.ewsFormValues) !== JSON.stringify(this.formValuesAfterEWSTest))
+          this.isTestConnectionWorkedBefore = false
       }
       if (this.$refs.ewsMailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
@@ -1162,6 +1191,8 @@ export default {
       return checkPermission(permission, type)
     },
     testConnectionValues(isSuccess, isSave) {
+      this.formValuesAfterO365Test = JSON.parse(JSON.stringify(this.formValues))
+      this.formValuesAfterEWSTest = JSON.parse(JSON.stringify(this.ewsFormValues))
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         if (isSave && !this.delaySaveFunction) {
@@ -1173,6 +1204,7 @@ export default {
       }
     },
     testConnectionGoogleWorkspaceValues(isSuccess, isSave) {
+      this.formValuesAfterGWSTest = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
         if (isSave && !this.delaySaveFunction) {
@@ -1336,7 +1368,8 @@ export default {
         JSON.stringify(this.formValues) !== JSON.stringify(this.initialFormValues) &&
         this.editData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        if (JSON.stringify(this.formValues) !== JSON.stringify(this.formValuesAfterO365Test))
+          this.isTestConnectionWorkedBefore = false
       }
       if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
