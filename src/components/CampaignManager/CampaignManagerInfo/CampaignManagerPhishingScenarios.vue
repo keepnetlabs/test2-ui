@@ -377,7 +377,7 @@ export default {
       this.callForPhishingScenarios()
     },
     items(val) {
-      this.phishingScenarioItems = [...val]
+      this.phishingScenarioItems = val?.map(item => ({...item,tags:item?.tags || []}))
     }
   },
   methods: {
