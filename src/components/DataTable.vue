@@ -2252,11 +2252,12 @@ export default {
         }
       }
       if (spanWidth > widthOfParent) {
-        const typeOfProp = typeof row[column.property]
+        const cellValue = row[column.property]
         let text
-        switch (typeOfProp) {
+        switch (typeof cellValue) {
           case 'object':
-            text = row[column.property] && row[column.property].join(',')
+            text =
+              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
             break
           case 'string':
             text = row[column.property]

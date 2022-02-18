@@ -5,6 +5,8 @@
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
       :isMultiple="isMultipleDelete"
+      :user-count="multipleDeletedUserCount"
+      :confirmButtonDisabled="deleteButtonDisabled"
       @deleteAction="handleDeleteUser"
       @deleteMultiple="handleDeleteUsers"
       @changeModalStatus="changeDeleteModalStatus"
@@ -44,6 +46,7 @@
       ref="refPeopleTable"
       id="target-users-people-data-table"
       is-server-side
+      is-server-side-selection
       filterable
       options
       selectable
@@ -175,6 +178,7 @@ import DeleteUserModal from './DeleteUserModal'
 import AddUserModal from './AddUserModal'
 import labels from '@/model/constants/labels'
 import {
+  bulkDeleteTargetUsers,
   deleteTargetUser,
   exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
@@ -227,6 +231,8 @@ export default {
     tableData: [],
     loading: true,
     isMultipleDelete: false,
+    multipleDeletedUserCount: 0,
+    multipleTargetUserPayload: {},
     isWantToShowDeleteUserModal: false,
     selectedRow: null,
     customFields: [],
@@ -234,6 +240,7 @@ export default {
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
     isWantToShowCustomFieldsModal: false,
+    deleteButtonDisabled: false,
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [
@@ -516,10 +523,18 @@ export default {
       }
       this.toggleCustomFieldsModal()
     },
-    handleMultipleDelete(selections = []) {
+    handleMultipleDelete(selections, excludedItems, selectAll) {
       this.isMultipleDelete = true
+      this.multipleDeletedUserCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTargetUserPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.payload.filter
+      }
       this.changeDeleteModalStatus(true)
-      this.selectedRow = selections
     },
     handleDelete(row) {
       this.isMultipleDelete = false
@@ -536,11 +551,32 @@ export default {
     },
     changeDeleteModalStatus(status) {
       this.isWantToShowDeleteUserModal = status
+      if (!status) {
+        this.selectedRow = null
+        this.multipleTargetUserPayload = {}
+        this.isMultipleDelete = false
+        this.multipleDeletedUserCount = 0
+      }
     },
-    handleDeleteUsers(selections) {
-      selections.forEach((item) => this.handleDeleteUser(item, selections))
+    handleDeleteUsers() {
+      this.callForMultipleDelete()
+    },
+    callForMultipleDelete() {
+      this.deleteButtonDisabled = true
+      this.loading = true
+      bulkDeleteTargetUsers(this.multipleTargetUserPayload)
+        .then(() => {
+          this.$refs.refPeopleTable.resetSelectableParams()
+          this.callForTargetUsers()
+          this.changeDeleteModalStatus(false)
+        })
+        .finally(() => {
+          this.loading = false
+          this.deleteButtonDisabled = false
+        })
     },
     handleDeleteUser(selectedUser, selections) {
+      this.loading = true
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
           this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)

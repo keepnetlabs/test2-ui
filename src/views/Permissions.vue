@@ -314,12 +314,12 @@ export default {
     },
     handleDelete(item) {
       this.deletePermissionName = item.roleName
-      this.deletePermissionId = item.resourceId
+      this.deletePermissionId = item?.resourceId
       this.selectedItem = item
       this.deleteDialog = true
     },
     editPermissions(item) {
-      this.resourceId = item.resourceId
+      this.resourceId = item?.resourceId
       this.isEdit = true
       getPermissionData(this.resourceId).then((response) => {
         this.permissionEditData = response.data.data
