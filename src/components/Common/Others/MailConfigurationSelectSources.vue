@@ -92,6 +92,9 @@ export default {
         )
         this.selectedSources = [...validOptions]
         this.$emit('input', [...validOptions])
+      } else {
+        this.selectedSources = []
+        this.$emit('input', [])
       }
     }
   },

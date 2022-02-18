@@ -70,8 +70,24 @@ export default {
       if (refScenarios?.$refs?.fastLaunch?.isSubmitted) return next()
       refScenarios.checkIfCanCloseFastLaunchModal()
       next(false)
+    } else if (
+      refEmailTemplates &&
+      refEmailTemplates.$refs.newEmailTemplate &&
+      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate &&
+      refEmailTemplates.$refs.newEmailTemplate.$refs.refEmailTemplate.showGrapesModal
+    ) {
+      refEmailTemplates.checkIfCanCloseGrapesJSModal()
+      next(false)
     } else if (refEmailTemplates && refEmailTemplates.modalStatus) {
       refEmailTemplates.checkIfCanCloseNewEmailTemplate()
+      next(false)
+    } else if (
+      refLandingPageList &&
+      refLandingPageList.$refs.newLandingPage &&
+      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate &&
+      refLandingPageList.$refs.newLandingPage.$refs.refEmailTemplate.showGrapesModal
+    ) {
+      refLandingPageList.checkIfCanCloseGrapesJSModal()
       next(false)
     } else if (refLandingPageList && refLandingPageList.modalStatus) {
       refLandingPageList.checkIfCanCloseNewLandingPage()

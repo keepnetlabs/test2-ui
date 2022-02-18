@@ -490,7 +490,11 @@ export default {
       return checkPermission(permission, type)
     },
     sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === 'ascending'
+      }
       this.getDatatableList()
     },
     handleDeleteMultiple(selections) {
@@ -562,6 +566,12 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseGrapesJSModal() {
+      if (this.$refs.newEmailTemplate) {
+        if (this.$refs.newEmailTemplate.$refs.refEmailTemplate)
+          this.$refs.newEmailTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
+      }
+    },
     checkIfCanCloseNewEmailTemplate() {
       if (this.$refs.newEmailTemplate) {
         this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()

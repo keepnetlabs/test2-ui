@@ -5,7 +5,7 @@
       <v-expansion-panel
         v-for="(job, index) in jobs"
         :key="index"
-        :disabled="!!panelIndex && panelIndex !== index"
+        :disabled="panelDisabled(index)"
         :job="job"
         :panelIndex="panelIndex"
       >
@@ -112,6 +112,9 @@ export default {
     }
   },
   methods: {
+    panelDisabled(index) {
+      return !!this.panelIndex?.toString() && this.panelIndex !== index
+    },
     handleJobs() {
       getAllJobs().then((response) => {
         const {

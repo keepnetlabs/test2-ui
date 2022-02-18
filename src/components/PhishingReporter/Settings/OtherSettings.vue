@@ -310,7 +310,7 @@ export default {
       this.formValues.apiKey =
         APP_CONFIG.VUE_APP_API_KEY || '9DtfGZnBazfjbZ47VJJZ2NNV6BXry6gxkmpRWAhX'
       this.formValues.apiUrl =
-        APP_CONFIG.VUE_APP_WEB_API_TEST || 'https://apitest.keepnetlabs.com/api'
+        APP_CONFIG.VUE_APP_PHISHING_REPORTER_URL || 'https://test-addin-api.devkeepnet.com/api'
     }
     this.$emit('getInitialFormValues', this.formValues)
   }
