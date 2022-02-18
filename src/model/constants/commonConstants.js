@@ -327,7 +327,7 @@ export const TABLE_SETTINGS_KEYS = {
   SANDBOX: 'Sandbox',
   SANDBOXSTATS: 'SandboxStats',
   DNSSERVICELIST: 'DNSServiceListTableSettingsKey',
-  DOMAINS: 'Domains',
+  DOMAINS: 'DomainsListTableSettingsKey',
   LANDINGPAGES: 'LandingPagesTableSettingsKey',
   SCENARIOS: 'Scenarios',
   LASTLAUNCH: 'lastLaunch'
@@ -471,7 +471,7 @@ export const DEFAULT_SEARCH_CONTAINER_KEYS = {
   SANDBOXSTATS: 'SandboxStats',
   DNSSERVICELIST: 'DNSServiceListSearchContainerKeys',
   TARGETUSERSVIEWUSERGROUPS: 'TargetUsersViewUsersGroups',
-  DOMAINS: 'Domains',
+  DOMAINS: 'DomainsSearchContainerKeys',
   LANDINGPAGES: 'LandingPagesSearchContainerKeys',
   SCENARIOS: 'ScenariosSearchKeys'
 }
