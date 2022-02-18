@@ -92,6 +92,10 @@ export function getBtnStatusColor(type) {
       return '#1173C1'
     case 'listed':
       return '#b83a3a'
+    case 'low':
+      return '#0198AC'
+    case 'verylow':
+      return '#757575'
     case 'custom':
       return '#f56c6c'
     case 'system':
