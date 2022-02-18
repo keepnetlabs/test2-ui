@@ -1035,7 +1035,7 @@ export default {
                   filterableType: 'text',
                   FilterableItems: 'Yes',
                   isCustom: true,
-                  isCustomField: true
+                  isCustomField: true,
                 }
                 return itemObj
               })
