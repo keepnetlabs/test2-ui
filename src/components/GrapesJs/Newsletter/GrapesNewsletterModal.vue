@@ -201,7 +201,6 @@ export default {
           }
         })
         editor.DomComponents.addType('phishing-submit-button', {
-          isComponent: (el) => el.tagName === 'INPUT',
           model: {
             defaults: {
               traits: [
