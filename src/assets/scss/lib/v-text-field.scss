@@ -78,5 +78,13 @@
         padding-bottom: 0;
       }
     }
+    .v-input__prepend-inner {
+      .v-input__icon--prepend-inner {
+        i.mdi-magnify {
+          font-size: 22px;
+          margin-top: 1px;
+        }
+      }
+    }
   }
 }

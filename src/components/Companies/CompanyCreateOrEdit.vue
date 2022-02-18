@@ -109,6 +109,7 @@
                       hint="*Required"
                       no-data-text="No industry available"
                       :menu-props="{ offsetY: true }"
+                      prepend-inner-icon="mdi-magnify"
                       persistent-hint
                     ></k-select>
                   </v-list-item-content>
@@ -128,6 +129,7 @@
                       :rules="[(v) => validations.required(v)]"
                       hint="*Required"
                       no-data-text="No country available"
+                      prepend-inner-icon="mdi-magnify"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></k-select>
