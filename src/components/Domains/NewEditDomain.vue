@@ -49,9 +49,8 @@
             :rules="[(v) => Validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
-        <div v-if="true">
+        <div v-if="isShowCustomizeDnsRecords">
           <v-checkbox
-            v-if="false"
             v-model="isShowCustomizeDnsRecordsDetail"
             :class="['k-checkbox', isShowCustomizeDnsRecordsDetail ? 'mb-4' : 'mb-7']"
             label="Customize DNS Record"
@@ -356,6 +355,11 @@ export default {
         availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
       }
       if (this.$refs.domainForm.validate() && isValid) {
+        //this line added for if the customize checkbox unselected
+        if (!this.isShowCustomizeDnsRecordsDetail) {
+          this.formValues.recordTypeId = null
+          this.formValues.dnsRecord = null
+        }
         if (this.isEdit && !this.isDuplicate) {
           updateDomain(payload, this.resourceId)
             .then(() => {
