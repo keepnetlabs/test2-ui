@@ -479,7 +479,12 @@ import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
 export default {
   name: 'AddinSettings',
-  components: { KFileUpload, ReporterVersionModal, VersionHistoryModal, PhishingSettingsFooter },
+  components: {
+    KFileUpload,
+    ReporterVersionModal,
+    VersionHistoryModal,
+    PhishingSettingsFooter
+  },
   props: {
     showFooter: {
       type: Boolean,
@@ -567,10 +572,18 @@ export default {
   },
   methods: {
     getImagePreview() {
-      return this.formValues.file && URL.createObjectURL(this.formValues.file)
+      try {
+        return this.formValues.file && URL.createObjectURL(this.formValues.file)
+      } catch (e) {
+        return ''
+      }
     },
     onFileChanged(file) {
-      this.formValues.file = file
+      if (Array.isArray(file) && file.length === 0) {
+        this.formValues.file = ''
+      } else {
+        this.formValues.file = file
+      }
     },
     handleHistoryRow(row) {
       this.selectedVersionRow = row

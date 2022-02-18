@@ -122,9 +122,8 @@ export default {
       }
     },
     handleChangeStatus(val) {
-      this.formValues.statusName = this.statusItems.find((item) => item.val === val).name
+      this.formValues.statusName = this.statusItems.find((item) => item.val === val)?.name || ''
     },
-
     submit() {
       const isNumberValid = this.$refs.refForm.validatePhoneNumber()
       const isFormValid = this.$refs.refForm.validate()

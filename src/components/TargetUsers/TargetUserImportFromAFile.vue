@@ -276,6 +276,9 @@
                     <div class="target-user-import-file__progression--text">
                       Please wait while we are processing the file
                     </div>
+                    <v-alert dense outlined type="info" v-if="mappingStatus.status === 'Idle'">
+                      Process is Queued
+                    </v-alert>
                     <div class="target-user-import-file__progression--progress">
                       <div>{{ setProgressValue }}%</div>
                       <div>
@@ -768,12 +771,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -781,6 +779,11 @@ export default {
                   Value: 'New,Exists,Error'
                 }
               ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -884,7 +887,7 @@ export default {
     },
     filterStatusChange() {
       this.isShowInvalid = !this.isShowInvalid
-      this.bodyData.filter.FilterGroups[1]['FilterItems'].find(
+      this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
       ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
       this.step3Loading = true
@@ -941,10 +944,11 @@ export default {
       let _this = this
       //this.bodyData.pageSize = this.mappingStatus.totalRowCount
       this.step3Loading = true
+
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
-          if (!customFields.includes(item.FieldName)) acc.push(item)
+          if (!customFields.includes(item.FieldName) && item.FieldName != PROPERTY_STORE.NONE_SELECTED) acc.push(item)
           return acc
         },
         []
@@ -1004,6 +1008,7 @@ export default {
                 filterable: true,
                 customFieldName: item.name,
                 isCustom: true,
+                isCustomField: true,
                 ...filterableProps
               }
               return itemObj
@@ -1029,7 +1034,8 @@ export default {
                   customFieldName: item.name,
                   filterableType: 'text',
                   FilterableItems: 'Yes',
-                  isCustom: true
+                  isCustom: true,
+                  isCustomField: true,
                 }
                 return itemObj
               })
@@ -1367,12 +1373,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -1380,6 +1381,11 @@ export default {
                   Value: 'New,Exists,Error'
                 }
               ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -1416,6 +1422,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-information'
         })
+        this.$router.push('/job-log')
       })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
@@ -1445,6 +1452,7 @@ export default {
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
                 return {
+                  isCustomField: true,
                   name: item.label,
                   disabled: false,
                   selectedValue: null,

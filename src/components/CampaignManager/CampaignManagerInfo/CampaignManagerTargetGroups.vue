@@ -33,6 +33,7 @@
               :empty.sync="isTargetGroupEmpty"
               :is-loading.sync="isTargetGroupLoading"
               :response-of-target-groups-items="responseOfTargetGroupsItems"
+              :search="search"
               @on-highlighted-row-change="handleHiglightedRowChange"
               @handle-selection-change="$emit('handle-selection-change', $event)"
             />
@@ -51,7 +52,7 @@
               :is-target-group-empty="isTargetGroupEmpty"
               :is-target-group-loading="isTargetGroupLoading"
               :resourceId="highlightedRow.resourceId"
-              :groupName="highlightedRow.name"
+              :group-name="highlightedRow.name"
             />
           </div>
         </Multipane>
@@ -102,12 +103,15 @@ export default {
     search(val) {
       this.debounce(() => {
         this.$refs.refGroupTable.tableOptions.isColumnFilterActive = !!val.length
-        this.$refs.refGroupTable.searchChangedFilter([
-          { FieldName: 'Name', Operator: 'Contains', Value: val },
-          { FieldName: 'Priority', Operator: 'Contains', Value: val },
-          { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
-          { FieldName: 'CompanyName', Operator: 'Contains', Value: val }
-        ])
+        this.$refs.refGroupTable.searchChangedFilter(
+          [
+            { FieldName: 'Name', Operator: 'Contains', Value: val },
+            { FieldName: 'Priority', Operator: 'Contains', Value: val },
+            { FieldName: 'CreateTime', Operator: 'Contains', Value: val },
+            { FieldName: 'CompanyName', Operator: 'Contains', Value: val }
+          ],
+          val
+        )
       }, 500)
     }
   },

@@ -141,10 +141,10 @@
           <v-list-item class="add-user-overlay__list-item">
             <v-list-item-content class="test-connection-wrapper">
               <TestConnection
+                ref="testConnection"
                 :values="formValues"
                 :isValidate="isValidate"
                 :isEdit="editData"
-                ref="testConnection"
                 @testConnectionValues="testConnectionValues"
                 @loading="saveButtonDisabled = false"
               />
@@ -170,8 +170,8 @@
             class="playbook-rule-form__button white--text"
             rounded
             color="#2196f3"
-            @click="submit"
             :disabled="saveButtonDisabled"
+            @click="submit"
           >
             {{ labels.Save }}
           </v-btn>
@@ -573,12 +573,10 @@
         :rowActions="tableOptions.rowActions"
         :selectEvent="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
-        :setClassName="setCellClassName"
         :is-downloadable="true"
         :isServerSide="true"
         :server-side-props="serverSideProps"
         :server-side-events="{ pagination: true, search: true, sort: true }"
-        @syncUser="handleSyncUser"
         @delete="handleDelete"
         @editTargetUsers="handleEditMailConfiguration"
         @onEmptyBtnClicked="status = true"
@@ -633,15 +631,6 @@
             </v-list>
           </v-menu>
         </template>
-        <template v-slot:settings-popup-body>
-          <div
-            id="btn-edit--mail-configurations-custom-field"
-            class="edit-fields"
-            @click="handleEditFieldsClick"
-          >
-            EDIT FIELDS
-          </div>
-        </template>
         <template v-slot:empty-table-inline>
           <div class="mail-configuration__no-data">
             <p class="mail-configuration__no-data__header">
@@ -677,7 +666,7 @@
                 @click="ewsStatus = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
-                <img alt="exchange" src="../../assets/img/office365_logo.png" />
+                <img alt="exchange" src="../../assets/img/office365_logo.svg" />
               </div>
             </div>
           </div>
@@ -729,6 +718,11 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import { getTargetGroups } from '@/api/targetUsers'
 import TestConnectionGoogleWorkspace from '@/components/MailConfiguration/TestConnectionGoogleWorkspace'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'MailConfiguration',
   components: {
@@ -801,23 +795,61 @@ export default {
       TargetGroupResourceIdList: [],
       IsAllTargetGroupsSelected: true
     },
-    initialFormValues: null,
-    ewsInitialFormValues: null,
-    googleWorkSpaceInitialValues: null,
+    formValuesAfterO365Test: {
+      name: null,
+      applicationId: null,
+      applicationSecret: null,
+      directoryId: null,
+      email: null,
+      allowedDomains: []
+    },
+    initialFormValues: {
+      name: null,
+      applicationId: null,
+      applicationSecret: null,
+      directoryId: null,
+      email: null,
+      allowedDomains: []
+    },
+    formValuesAfterEWSTest: {
+      Name: null,
+      ServiceUrl: null,
+      ExchangeVersionLookupResourceId: null,
+      AccountType: 1,
+      Username: null,
+      Password: null,
+      Email: null,
+      XAnchorMailBoxHeader: false,
+      TargetGroupResourceIdList: [],
+      IsAllTargetGroupsSelected: true
+    },
+    ewsInitialFormValues: {
+      Name: null,
+      ServiceUrl: null,
+      ExchangeVersionLookupResourceId: null,
+      AccountType: 1,
+      Username: null,
+      Password: null,
+      Email: null,
+      XAnchorMailBoxHeader: false,
+      TargetGroupResourceIdList: [],
+      IsAllTargetGroupsSelected: true
+    },
+    formValuesAfterGWSTest: {
+      name: '',
+      authJson: '',
+      email: ''
+    },
+    googleWorkSpaceInitialValues: {
+      name: '',
+      authJson: '',
+      email: ''
+    },
     status: false,
     ewsStatus: false,
-    isWantToImportFile: false,
     tableData: [],
     loading: true,
-    isWantToShowDeleteUserModal: false,
-    selectedSyncIndex: null,
-    isWantToShowAddUsersManuallyModal: false,
     selectedRow: null,
-    customFields: [],
-    isWantToShowAddUsersModal: false,
-    showPopupModal: false,
-    isWantToShowImportUsersFromFileModal: false,
-    isWantToShowCustomFieldsModal: false,
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [],
@@ -968,7 +1000,10 @@ export default {
           JSON.stringify(this.googleWorkSpaceInitialValues) &&
         this.googleWorkSpaceEditData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        if (
+          JSON.stringify(this.googleWorkSpaceForm) !== JSON.stringify(this.formValuesAfterGWSTest)
+        )
+          this.isTestConnectionWorkedBefore = false
       }
       if (
         this.$refs.googleWorkSpaceConfigurationForm.validate() &&
@@ -1011,19 +1046,44 @@ export default {
         })
       }
     },
-    handleGoogleWorkspaceTestConnection() {},
+    resetEWSForm() {
+      this.ewsFormValues = {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      }
+      this.ewsInitialFormValues = {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      }
+    },
     cancelEWS() {
       const isChanged = isDifferent(this.ewsInitialFormValues, this.ewsFormValues)
       if (!isChanged) {
         this.ewsStatus = false
-        this.ewsInitialFormValues = null
+        this.resetEWSForm()
         return
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
         show: true,
         callback: () => {
           this.ewsStatus = false
-          this.ewsInitialFormValues = null
+          this.resetEWSForm()
         }
       })
     },
@@ -1032,7 +1092,8 @@ export default {
         JSON.stringify(this.ewsFormValues) !== JSON.stringify(this.ewsInitialFormValues) &&
         this.ewsEditData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        if (JSON.stringify(this.ewsFormValues) !== JSON.stringify(this.formValuesAfterEWSTest))
+          this.isTestConnectionWorkedBefore = false
       }
       if (this.$refs.ewsMailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
@@ -1040,13 +1101,13 @@ export default {
           let ewsEditData = this.ewsFormValues
           updateEWS(ewsEditData, this.ewsEditData.ResourceId).then(() => {
             this.ewsStatus = false
-            this.ewsEditData = null
+            this.resetEWSForm()
             this.getTableData()
           })
         } else {
           createEWS(this.ewsFormValues).then(() => {
             this.ewsStatus = false
-            this.ewsEditData = null
+            this.resetEWSForm()
             this.getTableData()
           })
         }
@@ -1066,32 +1127,27 @@ export default {
       localStorage.setItem(TABLE_SETTINGS_KEYS.MAILCONFIGURATION, JSON.stringify(tableSettings))
     },
     resetPageNumber() {
-      //generic
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.requestBody.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.requestBody.pageNumber = pageNumber
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.requestBody.ascending = order === 'ascending'
       this.requestBody.orderBy = prop
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.requestBody.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -1135,10 +1191,10 @@ export default {
       return checkPermission(permission, type)
     },
     testConnectionValues(isSuccess, isSave) {
+      this.formValuesAfterO365Test = JSON.parse(JSON.stringify(this.formValues))
+      this.formValuesAfterEWSTest = JSON.parse(JSON.stringify(this.ewsFormValues))
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
-        this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
-        this.ewsInitialFormValues = JSON.parse(JSON.stringify(this.ewsFormValues))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             if (this.status) this.submit()
@@ -1148,9 +1204,9 @@ export default {
       }
     },
     testConnectionGoogleWorkspaceValues(isSuccess, isSave) {
+      this.formValuesAfterGWSTest = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
       if (isSuccess) {
         this.isTestConnectionWorkedBefore = true
-        this.googleWorkSpaceInitialValues = JSON.parse(JSON.stringify(this.googleWorkSpaceForm))
         if (isSave && !this.delaySaveFunction) {
           this.$nextTick(() => {
             this.handleSubmitGoogleWorkspace()
@@ -1226,7 +1282,16 @@ export default {
         applicationId: null,
         applicationSecret: null,
         directoryId: null,
-        email: null
+        email: null,
+        allowedDomains: []
+      }
+      this.initialFormValues = {
+        name: null,
+        applicationId: null,
+        applicationSecret: null,
+        directoryId: null,
+        email: null,
+        allowedDomains: []
       }
     },
     cancelO365() {
@@ -1236,7 +1301,6 @@ export default {
         this.editData = null
         this.resetO365Form()
         this.domainList = []
-        this.initialFormValues = null
         return
       }
       this.$store.dispatch('common/setIsShowLeavingDialog', {
@@ -1246,7 +1310,6 @@ export default {
           this.editData = null
           this.resetO365Form()
           this.domainList = []
-          this.initialFormValues = null
         }
       })
     },
@@ -1269,6 +1332,11 @@ export default {
     },
     resetGoogleWorkSpaceForm() {
       this.googleWorkSpaceForm = {
+        name: '',
+        authJson: '',
+        email: ''
+      }
+      this.googleWorkSpaceInitialValues = {
         name: '',
         authJson: '',
         email: ''
@@ -1300,7 +1368,8 @@ export default {
         JSON.stringify(this.formValues) !== JSON.stringify(this.initialFormValues) &&
         this.editData
       ) {
-        this.isTestConnectionWorkedBefore = false
+        if (JSON.stringify(this.formValues) !== JSON.stringify(this.formValuesAfterO365Test))
+          this.isTestConnectionWorkedBefore = false
       }
       if (this.$refs.mailConfiguration.validate() && this.isTestConnectionWorkedBefore) {
         this.saveButtonDisabled = true
@@ -1329,9 +1398,6 @@ export default {
         const el = this.$refs.mailConfiguration.$el
         scrollToComponent(el)
       }
-    },
-    closeImportModal() {
-      this.isWantToImportFile = false
     },
     handleAddMailConfiguration(item) {
       switch (item) {
@@ -1378,14 +1444,6 @@ export default {
         default:
           break
       }
-    },
-    closeCustomFieldsModalWithUpdate() {
-      this.isWantToShowCustomFieldsModal = false
-      this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    closeAddUserModalWithUpdate() {
-      this.isWantToShowAddUsersModal = false
-      this.callForTargetUsers()
     },
     handleEditMailConfiguration(selectedRow) {
       if (selectedRow.platform === 'Exchange') {
@@ -1454,103 +1512,24 @@ export default {
         })
       }
     },
-    handleEditFieldsClick() {
-      this.isWantToShowCustomFieldsModal = true
-    },
-    setCellClassName(obj) {
-      if (obj.rowIndex === this.selectedSyncIndex && obj.columnIndex === 8) {
-        return 'clock-wise'
-      }
-    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.requestBody
+      )
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.requestBody
+      )
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1 ||
-        this.requestBody.filter.FilterGroups[1].FilterItems.length >= 1
     },
-    handleSyncUser(scope) {
-      this.selectedSyncIndex = scope.$index
-      this.tableOptions.rowActions = [
-        {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          action: 'edit',
-          isNotShow: true
-        },
-        {
-          name: 'Add to a group',
-          icon: 'mdi-account-multiple-plus',
-          action: 'addToGroup'
-        },
-        {
-          name: 'Create a group with user',
-          icon: 'mdi-account-multiple',
-          action: 'createGroupWithUser'
-        },
-        {
-          name: 'Download',
-          icon: 'mdi-download',
-          action: 'download',
-          subElements: ['PDF', 'CSV', 'XLS']
-        },
-        {
-          name: 'Sync User',
-          icon: 'mdi-sync',
-          action: 'syncUser'
-        },
-        {
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'delete'
-        }
-      ]
-      this.selectedSyncIndex = null
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {

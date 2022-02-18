@@ -136,7 +136,6 @@
                             v-if="!showPasswordField"
                             data-recording-ignore="mask"
                             id="input--login-email"
-                            :type="'email'"
                             name="email"
                             ref="email"
                             v-model.trim="email"
@@ -1262,7 +1261,9 @@ export default {
     },
     onCaptchaExpired() {
       this.captchaVerified = false
-      this.$refs.recaptcha.reset()
+      if (this.$refs && this.$refs.recaptcha) {
+        this.$refs.recaptcha.reset()
+      }
     },
     captchaVerifiedForReset() {
       this.resetPasswordError = false

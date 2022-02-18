@@ -35,7 +35,6 @@
         :empty="tableOptions.empty"
         :loading="loading"
         :addButton="tableOptions.addButton"
-        :pageSizes="tableOptions.pageSizes"
         :refName="'notificationList'"
         :row-actions="tableOptions.rowActions"
         :stored-table-settings="storedTableSettings"
@@ -120,6 +119,11 @@ import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -213,7 +217,6 @@ export default {
           tooltip: 'Add a Notification Template',
           id: 'btn-add--notification-template'
         },
-        pageSizes: [5, 10, 25],
         isColumnFilterActive: false,
         empty: {
           message: labels.EmptyNotificationTemplate,
@@ -255,35 +258,30 @@ export default {
   },
   methods: {
     resetPageNumber() {
-      //generic
       this.axiosPayload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.NOTIFICATION_TEMPLATE, JSON.stringify(tableSettings))
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.checkIsColumnFilterActive()
       this.callForDatas()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.axiosPayload.pageNumber = pageNumber
       this.callForDatas()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop
       this.callForDatas()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.axiosPayload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -295,57 +293,19 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.axiosPayload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = requestBody
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.axiosPayload
+      )
       this.callForDatas()
     },
     columnFilterCleared(fieldName) {
-      if (this.isRestoredOrClearedFilters) {
-        return
-      }
-      let items = []
-      let filterPayload = this.axiosPayload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.axiosPayload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.axiosPayload.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.axiosPayload
+      )
+      this.checkIsColumnFilterActive()
       this.callForDatas()
-
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
@@ -430,7 +390,14 @@ export default {
       this.showDeleteNotificationTemplateModal = !this.showDeleteNotificationTemplateModal
     },
     checkIfCanCloseNotificationTemplateModal() {
-      this.$refs.newNotificationTemplate.closeOverlay()
+      if (this.$refs.newNotificationTemplate) this.$refs.newNotificationTemplate.closeOverlay()
+    },
+    checkIfCanCloseGrapesJSModal() {
+      if (this.$refs.newNotificationTemplate) {
+        if (this.$refs.newNotificationTemplate.$refs.refEmailTemplate) {
+          this.$refs.newNotificationTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
+        }
+      }
     },
     toggleNewNotificationTemplate() {
       if (this.newNotificationTemplateStatus) {
@@ -515,6 +482,9 @@ export default {
         })
       }
       this.callForDatas()
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     }
   },
   created() {

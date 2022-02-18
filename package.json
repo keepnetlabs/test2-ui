@@ -4,14 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "vue-cli-service build --modern",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "format": "vue-cli-service lint --fix"
   },
   "dependencies": {
     "@babel/polyfill": "^7.10.1",
-    "@mdi/font": "^5.5.55",
     "@riophae/vue-treeselect": "^0.4.0",
     "@sentry/browser": "6.17.2",
     "@sentry/integrations": "6.17.2",
@@ -22,6 +21,7 @@
     "chart.js": "^2.9.3",
     "chartjs-plugin-datalabels": "^0.7.0",
     "core-js": "^3.6.5",
+    "epic-spinners": "^1.1.0",
     "grapesjs": "^0.18.1",
     "grapesjs-blocks-avance": "0.0.32",
     "grapesjs-blocks-basic": "^0.1.8",

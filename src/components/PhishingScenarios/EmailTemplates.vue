@@ -207,7 +207,11 @@ import {
 import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 import KEmailPreview from '@/components/KEmailPreview'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
@@ -412,7 +416,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -426,22 +430,19 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyData.pageNumber = pageNumber
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyData.ascending = order === 'ascending'
       this.bodyData.orderBy = prop
       this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyData.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -489,7 +490,11 @@ export default {
       return checkPermission(permission, type)
     },
     sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === 'ascending'
+      }
       this.getDatatableList()
     },
     handleDeleteMultiple(selections) {
@@ -561,6 +566,12 @@ export default {
       })
     },
     handleAdd() {},
+    checkIfCanCloseGrapesJSModal() {
+      if (this.$refs.newEmailTemplate) {
+        if (this.$refs.newEmailTemplate.$refs.refEmailTemplate)
+          this.$refs.newEmailTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
+      }
+    },
     checkIfCanCloseNewEmailTemplate() {
       if (this.$refs.newEmailTemplate) {
         this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()
@@ -629,6 +640,9 @@ export default {
       this.selectedEmailTemplate = row
       this.showDeleteModal = true
     },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
@@ -639,6 +653,7 @@ export default {
         fieldName,
         this.bodyData
       )
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     }
   },

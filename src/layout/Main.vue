@@ -504,6 +504,11 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            v-if="
+              checkPermissionMultiple([
+                'phishing-simulator/phishing-campaign-job-report/search|POST'
+              ])
+            "
             id="btn--link-navigator-menu-reports-list-group"
             prepend-icon="mdi-equalizer"
             no-action
@@ -648,7 +653,7 @@
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
               :class="[routerName === 'Job Log' && 'active-link']"
-              v-if="checkPermissionMultiple(['audit-logs|POST']) && !isProd()"
+              v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <router-link
@@ -1143,20 +1148,14 @@ export default {
         : ''
     },
     isReturnMainAccountVisible() {
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
-      let recFunction = () => {
-        if (
-          !localStorage.getItem('companyResourceId') ||
-          !localStorage.getItem('selectedCompanyRequestId')
-        ) {
-          recFunction()
-        }
-      }
-      recFunction()
+      if (
+        this.$store.state.auth.userRoleName === 'CompanyAdmin' ||
+        this.$store.state.auth.userRoleName === 'Company Admin'
+      )
+        return false
       return (
-        this.$store.state.auth.userRoleName !== 'Company Admin' &&
         localStorage.getItem('companyResourceId') !==
-          localStorage.getItem('selectedCompanyRequestId')
+        localStorage.getItem('selectedCompanyRequestId')
       )
     },
     companyName() {

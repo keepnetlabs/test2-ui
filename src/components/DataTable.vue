@@ -4,7 +4,7 @@
     :class="['k-table__wrapper', noPaddingBottom && 'k-table__wrapper--no-padding']"
     :id="id"
   >
-    <DatatableLoading :loading="loading" />
+    <DatatableLoading :loading="loading" v-if="id !== 'target-users-people-data-table'" />
     <download-modal
       :isShow="isWantToDownload"
       @downloadEvent="downloadEvent"
@@ -18,7 +18,8 @@
       :tooltipStyle="overFlowTooltipStyle"
       :content="overFlowTooltipContent"
     />
-    <v-card v-show="!loading" class="card">
+
+    <v-card class="card" v-show="id === 'target-users-people-data-table' ? true : !loading">
       <div class="table-wrapper">
         <div
           v-click-outside="handleSettingsPopupClickOutside"
@@ -408,6 +409,11 @@
           id="table-container"
           ref="tableContainer"
         >
+          <DatatableLoading
+            :loading="loading"
+            :loader-type="1"
+            v-if="id === 'target-users-people-data-table'"
+          />
           <el-table
             v-row-color-handler
             v-if="!allHidden"
@@ -781,7 +787,7 @@
               </template>
             </el-table-column>
             <template v-slot:empty>
-              <div class="empty-table">
+              <div class="empty-table" v-if="!loading">
                 <div class="empty-inline">
                   <slot name="empty-table-inline-sort">
                     <h2>
@@ -1329,6 +1335,7 @@ export default {
           this.tableData.length === 0 &&
           !this.search &&
           !this.isColumnFilterActive &&
+          !window.location.href.includes('target-users') &&
           'table-header-disable'
         )
       } else {
@@ -1612,8 +1619,6 @@ export default {
       const { prop, order } = this.persistentState.sortProps
       this.$refs.elTableRef.sort(prop, order)
     }
-    this.adjustMobileFixedItems()
-
     window.addEventListener('resize', this.renderFixedItems)
   },
   beforeDestroy() {
@@ -1745,22 +1750,6 @@ export default {
       this.renderFixedItemsTimeout = setTimeout(() => {
         this.renderFixedItems()
       }, 500)
-    },
-    adjustMobileFixedItems() {
-      if (window.outerWidth < 1023) {
-        this.actionFixed = false
-        const leftFixed = this.columns.filter((col) => col.fixed === 'left')
-        if (leftFixed && leftFixed.length) {
-          leftFixed[0].fixed = false
-          this.firstColFixed = false
-        }
-        const rightFixed = this.columns.filter((col) => col.fixed === 'right')
-        if (rightFixed && rightFixed.length) {
-          rightFixed[0].fixed = false
-        }
-        this.lastColFixed = false
-        this.actionFixed = false
-      }
     },
     handleExtendedViewEdit(val) {
       this.$emit('handleEdit', val, this.excludedResourceIdList, this.isSelectedAllEver)
@@ -2263,11 +2252,12 @@ export default {
         }
       }
       if (spanWidth > widthOfParent) {
-        const typeOfProp = typeof row[column.property]
+        const cellValue = row[column.property]
         let text
-        switch (typeOfProp) {
+        switch (typeof cellValue) {
           case 'object':
-            text = row[column.property] && row[column.property].join(',')
+            text =
+              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
             break
           case 'string':
             text = row[column.property]
@@ -2425,12 +2415,11 @@ export default {
     },
     getSearchFilterItems() {
       return this.columns.reduce((acc, filterItem) => {
-        if (
-          this.renderedColumns.find((property) => property === filterItem.property) &&
-          !filterItem['isCustomField']
-        ) {
+        if (this.renderedColumns.find((property) => property === filterItem.property)) {
           acc.push({
-            FieldName: filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
+            FieldName: filterItem['isCustomField']
+              ? filterItem.property
+              : filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
             Operator: 'Contains',
             Value: this.search
           })
@@ -2440,24 +2429,9 @@ export default {
     },
     searchChangedEvent() {
       const debounceTime = 750
-      let _this = this
-      if (_this.isServerSide && this.serverSideEvents.search) {
+      if (this.isServerSide && this.serverSideEvents.search) {
         this.debounce(() => {
-          const filterItems = _this.columns.reduce((acc, filterItem) => {
-            if (
-              this.renderedColumns.find((property) => property === filterItem.property) &&
-              !filterItem['isCustomField']
-            ) {
-              const obj = {
-                FieldName:
-                  filterItem.property.charAt(0).toUpperCase() + filterItem.property.slice(1),
-                Operator: 'Contains',
-                Value: this.search
-              }
-              acc.push(obj)
-            }
-            return acc
-          }, [])
+          const filterItems = this.getSearchFilterItems()
           const bodyDataFilter = {
             filter: {
               Condition: 'AND',
@@ -2469,7 +2443,9 @@ export default {
               ]
             }
           }
+
           this.$emit('searchChangedEvent', bodyDataFilter, !!this.search)
+
           if (this.isServerSideSelection) {
             this.resetSelectableParams()
           }

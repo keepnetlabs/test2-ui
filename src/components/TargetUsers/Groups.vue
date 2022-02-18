@@ -28,23 +28,24 @@
       ref="refGroupsTable"
       :refName="'groupsTable'"
       id="target-users-group-data-table"
+      is-server-side
+      filterable
+      options
+      selectable
+      disable-extended-view-transition
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      titleKey="name"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
       :stored-table-settings="storedTableSettings"
       :rowActions="tableOptions.rowActions"
       :extended-view-options="tableOptions.extendedViewOptions"
-      :disableExtendedViewTransition="true"
       :extendedViewValue="extendedViewValue"
       :extendedViewLoading="extendedViewLoading"
       :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @downloadEvent="exportTargetGroupsList"
       @handleMultipleDelete="handleMultipleDelete"
       @syncWithLDAP="handleSyncWithLDAP"
@@ -64,9 +65,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     >
       <template v-slot:addUsers>
         <v-tooltip bottom opacity="1">
@@ -121,6 +119,11 @@ import { required, maxLength } from '@/utils/validations'
 import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'Groups',
   components: {
@@ -203,7 +206,6 @@ export default {
             width: 180
           }
         ],
-        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: true,
@@ -325,7 +327,7 @@ export default {
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.callForTargetGroups()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -493,54 +495,22 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.tableCredientials
+      )
       this.callForTargetGroups()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.tableCredientials
+      )
+      this.calculateIsFilterColumnActive()
       this.callForTargetGroups()
-
-      this.tableOptions.isColumnFilterActive =
-        this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.tableCredientials)
     }
   },
 

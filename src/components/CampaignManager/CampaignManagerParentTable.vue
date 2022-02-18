@@ -73,7 +73,11 @@
 <script>
 import DataTable from '@/components/DataTable'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 import { COLUMNS } from '@/components/CampaignManager/utils'
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -327,7 +331,8 @@ export default {
       copyOfAxiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.emitCopyOfAxiosPayload(copyOfAxiosPayload)
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.tableOptions.isColumnFilterActive =
+        this.axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length >= 1 || columnFilterActive
 
       this.callForData()
     },
@@ -347,8 +352,7 @@ export default {
       )
     },
     checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     },
     handleRestoreDefaultSearch() {
       this.setDefaultFilter()

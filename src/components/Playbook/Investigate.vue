@@ -364,7 +364,7 @@ export default {
           actionNotifyTargetUserType: 'Reporter',
           actionNotifyTargetUsers: [],
           emailTemplateId: 1,
-          durationType: 'ThreeDays',
+          durationType: 'OneDay',
           emailDateRangeType: 'ThreeDays'
         }
       }
