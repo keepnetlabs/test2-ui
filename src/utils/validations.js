@@ -135,7 +135,7 @@ export function isNumber(value, message = 'Invalid File Size') {
   return /^\d+$/gi.test(value) || message
 }
 
-export function isDepartmentSpecialCharacter(
+export function isDescriptionSpecialCharacter(
   value,
   message = "Only use letters, numbers, dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
