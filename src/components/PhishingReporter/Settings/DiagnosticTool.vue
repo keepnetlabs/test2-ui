@@ -15,14 +15,33 @@
     </v-list-item>
     <div class="diagnostic-tool" id="diagnostic-tool" v-if="!isInModal">
       <v-list-item class="px-0 diagnostic-tool__list-item">
-        <v-list-item-content>
+        <v-list-item-content style="display: block;">
           <div class="diagnostic-tool__list-item-header">Optional Features</div>
           <v-checkbox
-            class="diagnostic-tool__checkbox k-checkbox"
+            v-model="formValues.isEnableAddIn"
+            class="diagnostic-tool__checkbox k-checkbox mb-4"
             id="input--phishing-reporter-is-enable-add-in"
+            hide-details
             color="#2196f3"
             label="Check and enable all disabled add-ins automatically"
-            v-model="formValues.isEnableAddIn"
+            :readonly="!showForm"
+          ></v-checkbox>
+          <v-checkbox
+            v-model="formValues.writeAddinStatusToHKLM"
+            class="diagnostic-tool__checkbox k-checkbox mb-4"
+            id="input--phishing-reporter-is-enable-add-in"
+            hide-details
+            color="#2196f3"
+            label="Send registry flag to local machine (HKLM)"
+            :readonly="!showForm"
+          ></v-checkbox>
+          <v-checkbox
+            v-model="formValues.writeAddinStatusToHKCU"
+            class="diagnostic-tool__checkbox k-checkbox mb-4"
+            id="input--phishing-reporter-is-enable-add-in"
+            hide-details
+            color="#2196f3"
+            label="Send registry flag to current user (HKCU)"
             :readonly="!showForm"
           ></v-checkbox>
         </v-list-item-content>
@@ -80,7 +99,9 @@ export default {
   data() {
     return {
       formValues: {
-        isEnableAddIn: false
+        isEnableAddIn: false,
+        writeAddinStatusToHKLM: false,
+        writeAddinStatusToHKCU: false
       },
       spinnerStatus: false,
       menu2: false,
@@ -196,6 +217,7 @@ export default {
   }
 
   &__checkbox {
+    display: block;
     z-index: 5;
     @media (min-width: 768px) {
       margin-top: 8px !important;
