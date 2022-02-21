@@ -148,3 +148,11 @@ export function isNameSpecialCharacter(
 ) {
   return /^([A-Z]|[-'\söğüıçş]){0,40}$/gi.test(value) || message
 }
+
+export function isEntityNameSpecialCharacter(
+  value,
+  message = `Only use letters, numbers, dash '-' slash '/' comma ',' and ampersand '&'`
+) {
+  value = getValue(value)
+  return /^([A-Z]|[0-9]|[-/,&\söğüıçş]){0,64}$/gi.test(value) || message
+}

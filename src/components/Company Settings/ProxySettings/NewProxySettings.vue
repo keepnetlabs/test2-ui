@@ -20,20 +20,11 @@
       />
       <v-form ref="refForm">
         <form-group :title="'Proxy Setting Name'" has-hint>
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.name"
             id="input--proxy-settings-name"
-            placeholder="Enter Proxy setting name"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v),
-              (v) => validations.startsWithSpace(v),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Proxy Name'))
-            ]"
-          ></v-text-field>
+            entity-name="Proxy setting"
+          />
         </form-group>
         <form-group :title="'Proxy Address or IP'" has-hint>
           <v-text-field
@@ -169,9 +160,11 @@ import {
 } from '@/api/proxySettings'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'NewProxySettings',
   components: {
+    InputEntityName,
     AppModal,
     AppModalBodyHeader,
     FormGroup,
