@@ -1,10 +1,10 @@
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { createLocalVue } from '@vue/test-utils'
-import CONSTANTS from './constants'
-import { getDefaultVuex } from './utils'
+import MOCKS from '../Mocks'
 import DataTableWrapper from '../Objects/Datatable'
 import { wait } from '../utils'
-import MOCKS from '../Mocks'
-import ServerSideProps from '@/helper-classes/server-side-table-props'
+import CONSTANTS from './constants'
+import { getDefaultVuex } from './utils'
 
 describe('Datatable test cases suite', () => {
   const localVue = createLocalVue()
@@ -872,7 +872,7 @@ describe('Datatable test cases suite', () => {
           service: 'Outlook'
         },
         {
-          service: 'O365'
+          service: 'Microsoft365'
         },
         {
           service: 'GSuite'
