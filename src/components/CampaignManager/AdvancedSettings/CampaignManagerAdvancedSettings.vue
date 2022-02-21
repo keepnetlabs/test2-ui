@@ -27,15 +27,25 @@
         dense
         outlined
         placeholder="Select Option"
+        no-data-text="No SMTP setting available"
         :items="smtpItems"
         :error="isShowSmtpInputError"
         :error-messages="getSmtpInputErrorMessage"
         :disabled="isTestingConnection"
-        no-data-text="No SMTP setting available"
+        :slot="{ item: true }"
         @change="handleChangeSmtp"
         @focus="handleFocusOfSmtpSettingsInput"
         @focusout="handleFocusOutOfSmtpSettingsInput"
-      />
+      >
+        <template #item="{ item }">
+          <div v-if="item.isHeader" class="campaign-manager-advanced-settings__smtp-select-header">
+            {{ item.header }}
+          </div>
+          <div v-else class="campaign-manager-advanced-settings__smtp-select-item">
+            {{ item.text }}
+          </div>
+        </template>
+      </KSelect>
       <v-btn
         :key="buttonKey"
         class="ml-4"
@@ -54,7 +64,8 @@
             text-transform: capitalize;
           "
         >
-          <v-icon>mdi-check</v-icon> <span class="ml-2"> {{ labels.Connected }}</span>
+          <v-icon>mdi-check</v-icon>
+          <span class="ml-2"> {{ labels.Connected }}</span>
         </span>
         <span v-else> {{ labels.TestConnection }}</span>
         <template #loader>
@@ -405,7 +416,10 @@ export default {
   },
   methods: {
     getTestConnectionButtonStyle() {
-      return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
+      return {
+        fontWeight: 600,
+        pointerEvents: this.isTestMailSend ? 'none' : 'cursor'
+      }
     },
     validateForm() {
       this.$refs.refForm.validate()
@@ -443,9 +457,30 @@ export default {
             data: { data }
           } = response
           this.responseOfSmtpItems = data.results
-          this.smtpItems = this.responseOfSmtpItems.map((smtpItem) => {
-            return { text: smtpItem.name, value: smtpItem.resourceId }
-          })
+          // this.responseOfSmtpItems = data.results.map((item, index) => ({
+          //   ...item,
+          //   isDefault: index % 3 === 0 ? true : false,
+          // }));
+          const defaultSmtpItems = this.responseOfSmtpItems.filter((item) => item.isDefault)
+          this.smtpItems = this.responseOfSmtpItems
+            .map((smtpItem) => {
+              if (smtpItem.isDefault) return null
+              return { text: smtpItem.name, value: smtpItem.resourceId }
+            })
+            .filter(Boolean)
+          if (defaultSmtpItems.length > 0) {
+            this.smtpItems.unshift(
+              ...defaultSmtpItems.map((smtpItem) => ({
+                text: smtpItem.name,
+                value: smtpItem.resourceId
+              })),
+              { divider: true },
+              {
+                header: 'Others',
+                class: 'campaign-manager-advanced-settings__smtp-select-header'
+              }
+            )
+          }
           this.defaultSmtpItems = JSON.parse(JSON.stringify(this.smtpItems))
         })
         .finally(() => {
@@ -660,5 +695,16 @@ export default {
       width: 280px;
     }
   }
+}
+.campaign-manager-advanced-settings__smtp-select-item {
+  font-size: 14px;
+  line-height: 21px;
+  color: #383b41;
+}
+.v-subheader {
+  padding-left: 16px !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: #2196f3 !important;
 }
 </style>

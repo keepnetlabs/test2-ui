@@ -106,6 +106,14 @@
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
     >
+      <!-- <template v-slot:datatable-custom-column="{ scope }">
+        <div>
+          <span>{{ scope.row.name }}</span>
+          <v-icon v-if="scope.row.isDefault" color="#1173C1" class="pl-2"
+            >mdi-star-circle</v-icon
+          >
+        </div>
+      </template> -->
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -156,6 +164,20 @@
                 <span>Duplicate</span>
               </v-list-item-title>
             </v-list-item>
+            <!-- <v-list-item
+              :id="`btn-make-default--landingPage-row-action-${
+                scope.$index
+              }-1-${Math.random().toString().substring(3)}`"
+              class="sub-menu-el"
+              :disabled="tableOptions.rowActions[4].disabled"
+            >
+              <v-list-item-title>
+                <v-icon class="pr-3">{{
+                  tableOptions.rowActions[4].icon
+                }}</v-icon>
+                <span>{{ labels.MakeDefault }}</span>
+              </v-list-item-title>
+            </v-list-item> -->
             <v-list-item
               :id="`btn-delete--landingPage-row-action-${
                 scope.$index
@@ -240,6 +262,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            // type: "slot",
             fixed: 'left',
             width: 240,
             filterableType: 'text'
@@ -342,6 +365,15 @@ export default {
               'DELETE'
             )
           }
+          // {
+          //   name: labels.MakeDefault,
+          //   icon: "mdi-star-circle",
+          //   action: "makeDefaultAction",
+          //   disabled: !this.checkPermissions(
+          //     "phishing-simulator/landing-page-template/{resourceId}",
+          //     "PUT"
+          //   ),
+          // },
         ],
         downloadButton: {
           show: true,
