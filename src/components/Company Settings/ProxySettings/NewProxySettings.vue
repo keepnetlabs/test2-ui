@@ -43,7 +43,8 @@
                   v,
                   2000,
                   labels.getMaxLengthMessage('Proxy Address or IP', 2000)
-                )
+                ),
+              (v) => validations.isDescriptionSpecialCharacter(v)
             ]"
           ></v-text-field>
         </form-group>
