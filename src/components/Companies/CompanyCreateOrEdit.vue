@@ -719,9 +719,9 @@ export default {
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
       this.LicenseDates =
-        this.formData.LicenseStartDate || this.formData.LicenseEndDate
+        !this.formData.LicenseStartDate || !this.formData.LicenseEndDate
           ? []
-          : [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
+          : [new Date(this.formData.LicenseStartDate), new Date(this.formData.LicenseEndDate)]
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
