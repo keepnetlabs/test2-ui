@@ -619,6 +619,7 @@ export default {
       } else {
         getTargetUserCustomFieldsByCompanyId()
           .then((response) => {
+            this.payload = getDefaultAxiosPayload()
             const { data } = response
             this.customFields = data.data.filter((item) => {
               return item.isActive
