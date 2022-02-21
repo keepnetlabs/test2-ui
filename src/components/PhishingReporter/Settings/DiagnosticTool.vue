@@ -157,6 +157,8 @@ export default {
   created() {
     if (this.formData) {
       this.formValues.isEnableAddIn = this.formData.isEnableAddIn
+      this.formValues.writeAddinStatusToHKCU = this.formData.writeAddinStatusToHKCU
+      this.formValues.writeAddinStatusToHKLM = this.formData.writeAddinStatusToHKLM
     }
     this.$emit('getInitialFormValues', this.formValues)
   }
