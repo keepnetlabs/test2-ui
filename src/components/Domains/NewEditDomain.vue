@@ -21,14 +21,14 @@
             id="input--domain"
             outlined
             dense
+            hint="*Required"
+            persistent-hint
+            height="40"
             v-model.trim="formValues.domain"
             :rules="[
               (v) => Validations.required(v, labels.Required),
               (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
             ]"
-            hint="*Required"
-            persistent-hint
-            height="40"
           ></v-text-field>
         </form-group>
         <form-group title="DNS Service" has-hint>
@@ -49,9 +49,8 @@
             :rules="[(v) => Validations.required(v, labels.Required)]"
           ></k-select>
         </form-group>
-        <div v-if="true">
+        <div v-if="isShowCustomizeDnsRecords">
           <v-checkbox
-            v-if="false"
             v-model="isShowCustomizeDnsRecordsDetail"
             :class="['k-checkbox', isShowCustomizeDnsRecordsDetail ? 'mb-4' : 'mb-7']"
             label="Customize DNS Record"
@@ -230,7 +229,17 @@ export default {
       isShowCustomizeDnsRecordsDetail: true,
       isValidate: null,
       availableForRequests: [],
-      initialFormValues: {},
+      initialFormValues: {
+        domain: null,
+        recordTypeId: '2',
+        dnsServiceProviderId: null,
+        dnsRecord: null,
+        proxyStatusId: '1',
+        urlSchemaTypeId: '1',
+        zoneId: null,
+        active: true,
+        resourceId: null
+      },
       formValues: {
         domain: null,
         recordTypeId: '2',
@@ -289,6 +298,7 @@ export default {
       this.formValues.resourceId = this.resourceId
       getDomainEditData(this.resourceId).then((res) => {
         this.formValues = JSON.parse(JSON.stringify(res.data.data))
+        this.formValues.domain = res?.data?.data?.domain || ''
         this.formValues.recordTypeId = this.formValues.recordTypeId?.toString()
         this.formValues.proxyStatusId = this.formValues.proxyStatusId?.toString()
         this.formValues.zoneId = this.formValues.zoneId?.toString()
@@ -356,6 +366,11 @@ export default {
         availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
       }
       if (this.$refs.domainForm.validate() && isValid) {
+        //this line added for if the customize checkbox unselected
+        if (!this.isShowCustomizeDnsRecordsDetail) {
+          this.formValues.recordTypeId = null
+          this.formValues.dnsRecord = null
+        }
         if (this.isEdit && !this.isDuplicate) {
           updateDomain(payload, this.resourceId)
             .then(() => {

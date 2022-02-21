@@ -31,6 +31,7 @@
         .table-container {
           width: auto;
           max-width: 100%;
+          position: relative;
 
           #data-table-container {
             margin-left: 0;
@@ -917,6 +918,10 @@
     .selection-all-check {
       margin-left: 2px !important;
       margin-top: 9px !important;
+
+      .v-input--selection-controls__input{
+        height: 55px
+      }
 
       i {
         color: white !important;

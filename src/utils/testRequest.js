@@ -50,6 +50,11 @@ testService.interceptors.response.use(
   (error) => {
     //if there is global loader param
     error.config.loading && store.dispatch('common/activateLoader', COMMON_CONSTANTS.DISABLELOADER)
+
+    if (error?.response?.status === 503) {
+      return Promise.resolve({})
+    }
+
     if (error.code === 'ECONNABORTED') {
       return Promise.reject(error)
     } else if (!error.response) {

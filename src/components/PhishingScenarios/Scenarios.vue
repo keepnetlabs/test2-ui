@@ -43,24 +43,25 @@
     <data-table
       v-if="checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')"
       id="scenarios-data-table"
+      class="scenarios"
       ref="refScenariosList"
+      is-server-side
+      selectable
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
       :refName="'scenariosList'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -68,13 +69,10 @@
       @downloadEvent="exportScenario"
       @handleMultipleDelete="handleActionDelete"
       @paginationChangedEvent="paginationChangedEvent($event)"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -84,10 +82,6 @@
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
       @on-fast-launch="handleFastLaunch"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
-      class="scenarios"
     >
       <template v-slot:datatable-row-actions="{ scope }">
         <v-tooltip bottom>
@@ -182,7 +176,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -191,7 +185,12 @@ import {
   getScenarioDataDetails,
   getScenariosList
 } from '@/api/scenarios'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnActive,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 export default {
@@ -217,9 +216,7 @@ export default {
       isDuplicate: false,
       scenarioId: null,
       labels,
-      showAllRecords: false,
       selectedScenarioURL: '',
-      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       storedTableSettings: null,
@@ -382,48 +379,8 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyData: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       selectedScenarioHeader: null,
       templateHTML: null,
@@ -443,7 +400,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -457,7 +414,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -484,10 +441,12 @@ export default {
         this.bodyData.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refScenariosList.filterValues = savedFilter.filterValues
-          this.$refs.refScenariosList.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
+          if (this?.$refs?.refScenariosList) {
+            this.$refs.refScenariosList.filterValues = savedFilter.filterValues
+            this.$refs.refScenariosList.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          }
         })
       }
       this.getDatatableList()
@@ -516,11 +475,6 @@ export default {
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
-    },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -633,15 +587,6 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             this.tableData = results
-            this.totalNumberOfRecords = totalNumberOfRecords
-
-            if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-
-            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-              this.showAllRecords = false
-            }
           })
           .catch(() => {
             this.tableData = []
@@ -655,6 +600,9 @@ export default {
       this.selectedScenario = row
       this.showDeleteModal = true
     },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
@@ -665,8 +613,7 @@ export default {
         fieldName,
         this.bodyData
       )
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     }
   },

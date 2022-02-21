@@ -599,12 +599,12 @@ export default {
         case 'text':
           return this.checkTextFilterButtonIsDisabled
         case 'select':
-          return !this.filterChecked.length
+          return !this?.filterChecked?.length
         case 'numeric':
           return !this.filterValue
         case 'date':
           if (this.filteredSelectValueDate === 'between') {
-            return !this.filteredDateRangeValue.length
+            return !this?.filteredDateRangeValue?.length
           }
           return !this.filteredDateValue
         default:

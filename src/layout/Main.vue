@@ -504,6 +504,11 @@
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
           <v-list-group
+            v-if="
+              checkPermissionMultiple([
+                'phishing-simulator/phishing-campaign-job-report/search|POST'
+              ])
+            "
             id="btn--link-navigator-menu-reports-list-group"
             prepend-icon="mdi-equalizer"
             no-action
@@ -648,7 +653,7 @@
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
               :class="[routerName === 'Job Log' && 'active-link']"
-              v-if="checkPermissionMultiple(['audit-logs|POST']) && !isProd()"
+              v-if="checkPermissionMultiple(['audit-logs|POST'])"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
                 <router-link
@@ -769,29 +774,31 @@
             </v-btn>
           </template>
           <v-list>
-            <v-list-item
-              v-for="(item, index) in rightDropdownData"
-              :key="index"
-              :id="item.id"
-              :disabled="item.disabled"
-              @click="handleClickRightDropdown(item)"
-            >
-              <v-list-item-icon>
-                <v-icon v-text="item.icon"></v-icon>
-              </v-list-item-icon>
-              <v-list-item-content>
-                <v-list-item-title
-                  :data-content="
-                    item.text === 'Get Help'
-                      ? `mailto:${supportEmailAddress || 'support@keepnetlabs.com'}`
-                      : item.text === 'Documentation'
-                      ? 'https://doc.keepnetlabs.com'
-                      : ''
-                  "
-                  v-text="item.text"
-                ></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+            <template v-for="(item, index) in rightDropdownData">
+              <v-list-item
+                v-if="getRightDropdownDataItemRender(item)"
+                :key="index"
+                :id="item.id"
+                :disabled="item.disabled"
+                @click="handleClickRightDropdown(item)"
+              >
+                <v-list-item-icon>
+                  <v-icon v-text="item.icon"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title
+                    :data-content="
+                      item.text === 'Get Help'
+                        ? `mailto:${supportEmailAddress || 'support@keepnetlabs.com'}`
+                        : item.text === 'Documentation'
+                        ? 'https://doc.keepnetlabs.com'
+                        : ''
+                    "
+                    v-text="item.text"
+                  ></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
           </v-list>
         </v-menu>
       </div>
@@ -843,7 +850,6 @@ import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import Breadcrumb from '@/components/Breadcrumb'
 import { checkPermissionMultiple } from '../utils/functions'
 import labels from '@/model/constants/labels'
-import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
 import AppRouterItem from '@/layout/AppRouterItem'
@@ -874,13 +880,10 @@ export default {
   data() {
     return {
       showSettingsModalStatus: false,
-      isScroll: null,
       labels,
       switchDialogStatus: false,
       showNewPassword: false,
       currentPassword: null,
-      show1: false,
-      show2: false,
       newPasswordError: null,
       newPasswordErrorText: null,
       newPassword: null,
@@ -977,145 +980,6 @@ export default {
           icon: 'mdi-login-variant',
           url: '',
           value: 'logout'
-        }
-      ],
-      selectedOpt1: 'Programming',
-      selectedItems: ['Programming', 'Design', 'Vue', 'Vuetify'],
-      components: [
-        'Autocompletes',
-        'Comboboxes',
-        'Forms',
-        'Inputs',
-        'Overflow Buttons',
-        'Selects',
-        'Selection Controls',
-        'Sliders',
-        'Textareas',
-        'Text Fields'
-      ],
-      items2: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' }
-      ],
-      messages: 3,
-      items: [
-        {
-          id: 1,
-          title: 'Dashboard',
-          name: 'dashboard',
-          icon: 'mdi-home',
-          active: true,
-          show: false
-        },
-        {
-          title: 'Profile',
-          icon: 'mdi-account',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Campaign Manager',
-          icon: 'mdi-shape',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Trainings',
-          icon: 'mdi-whistle',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Transcript',
-          icon: 'mdi-school',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Vishing',
-          icon: 'mdi-bag-personal',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          id: 1,
-          title: 'Phishing Simulator', // mnPhishing
-          icon: 'mdi-email',
-          items: [
-            {
-              id: 5,
-              title: 'List Item',
-              show: false
-            }
-          ]
-        },
-        {
-          title: 'Avaranes Educator', // mnTraining
-          icon: 'mdi-book',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Email Threat Simulator',
-          icon: 'mdi-earth',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Threat Intelligence',
-          icon: 'mdi-security',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Incident Responder',
-          icon: 'mdi-flash',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Threat Sharing',
-          icon: 'mdi-flag'
-        },
-        {
-          title: 'Report Manager',
-          icon: 'mdi-poll-box',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Company',
-          icon: 'mdi-briefcase',
-          items: [{ title: 'List Item' }]
-        },
-        {
-          title: 'Advanced Settings',
-          icon: 'mdi-cog',
-          items: [{ title: 'List Item' }]
-        }
-      ],
-      breadcrumbs: [
-        {
-          text: 'Dashboard',
-          disabled: true,
-          exact: false,
-          href: '/'
-        },
-        {
-          text: 'Incident Responder',
-          disabled: true,
-          exact: false,
-          href: '/'
-        },
-        {
-          text: 'Threat Sharing',
-          disabled: true,
-          exact: false,
-          href: '/threat-sharing'
-        },
-        {
-          text: 'Incident Responder',
-          disabled: true,
-          exact: false,
-          href: '/incident-responder'
-        },
-        {
-          text: 'Analysis Details',
-          disabled: true,
-          exact: false,
-          href: '/analysis-details'
         }
       ],
       tourSteps: [
@@ -1284,20 +1148,14 @@ export default {
         : ''
     },
     isReturnMainAccountVisible() {
-      if (this.$store.state.auth.userRoleName === 'CompanyAdmin') return false
-      let recFunction = () => {
-        if (
-          !localStorage.getItem('companyResourceId') ||
-          !localStorage.getItem('selectedCompanyRequestId')
-        ) {
-          recFunction()
-        }
-      }
-      recFunction()
+      if (
+        this.$store.state.auth.userRoleName === 'CompanyAdmin' ||
+        this.$store.state.auth.userRoleName === 'Company Admin'
+      )
+        return false
       return (
-        this.$store.state.auth.userRoleName !== 'Company Admin' &&
         localStorage.getItem('companyResourceId') !==
-          localStorage.getItem('selectedCompanyRequestId')
+        localStorage.getItem('selectedCompanyRequestId')
       )
     },
     companyName() {
@@ -1307,9 +1165,6 @@ export default {
     },
     routerName() {
       return this.$route.name
-    },
-    isGrapesDebug() {
-      return this.$route.query.grapesDemo === 'true'
     },
     getDrawer: {
       get() {
@@ -1456,8 +1311,6 @@ export default {
     },
     openPasswordChange(newVal, oldVal) {
       if (!newVal) {
-        this.show1 = false
-        this.show2 = false
         this.showNewPassword = false
       }
     },
@@ -1516,6 +1369,12 @@ export default {
         location.includes('test') ||
         location.includes('localhost')
       )
+    },
+    getRightDropdownDataItemRender({ text }) {
+      if (text === 'Tour') {
+        return this.$route.name === 'Dashboard'
+      }
+      return true
     },
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
@@ -1720,19 +1579,6 @@ export default {
     onNavigationClick() {
       this.getDrawer = true
       this.getMini = !this.getMini
-    },
-    isMobile() {
-      if (
-        window.outerWidth < 1025 ||
-        navigator.userAgent.match(/iPhone/i) ||
-        navigator.userAgent.match(/iPad/i) ||
-        navigator.userAgent.match(/iPad Pro/i) ||
-        navigator.userAgent.match(/iPod/i) ||
-        navigator.userAgent.match(/BlackBerry/i)
-      ) {
-        return false
-      }
-      return true
     }
   }
 }

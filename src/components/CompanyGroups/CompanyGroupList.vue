@@ -21,6 +21,9 @@
       id="company-groups-data-table"
       ref="refGroupDataList"
       is-server-side
+      filterable
+      options
+      selectable
       :key="tableKey"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :loading="loading"
@@ -28,17 +31,10 @@
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :stored-table-settings="storedTableSettings"
-      :total-number-of-records="totalNumberOfRecords"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :is-downloadable="true"
-      :show-all-records="showAllRecords"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'companyList'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
-      :selectable="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @addButton="addButton"
@@ -49,7 +45,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getTableData"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -78,8 +73,13 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'CompanyGroupList',
@@ -141,7 +141,6 @@ export default {
             filterableType: 'date'
           }
         ],
-        pageSizes: [5, 10, 25],
         selectEvent: {
           clipboard: true,
           edit: false,
@@ -179,48 +178,8 @@ export default {
           }
         ]
       },
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
-      payload: {
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultPayload: {
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      payload: getDefaultAxiosPayload(),
+      defaultPayload: getDefaultAxiosPayload(),
       tableState: null,
       serverSideProps: new ServerSideProps()
     }
@@ -315,8 +274,7 @@ export default {
       this.resetPageNumber()
       this.getTableData()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -325,7 +283,7 @@ export default {
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
@@ -412,11 +370,6 @@ export default {
           .catch(() => {})
       })
     },
-    handleAllRecordsClick() {
-      this.payload.pageSize = 75000
-      this.showAllRecords = false
-      this.getTableData()
-    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
     },
@@ -479,54 +432,16 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   },
   beforeDestroy() {

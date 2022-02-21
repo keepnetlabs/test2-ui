@@ -3,17 +3,17 @@
     <span class="datatable-service-icon-content" v-if="scope.row && scope.row[col.property]">
       <img
         alt="outlook"
-        src="../../assets/img/Office.png"
+        src="../../assets/img/Office.svg"
         v-if="scope.row[col.property] === 'Outlook'"
       />
       <img
-        alt="microsoft365"
-        src="../../assets/img/Word.png"
-        v-if="scope.row[col.property] === 'Microsoft365'"
+        alt="o365"
+        src="../../assets/img/o365.svg"
+        v-if="['Microsoft365', 'O365'].includes(scope.row[col.property])"
       />
       <img
         alt="gsuite"
-        src="../../assets/img/Google.png"
+        src="../../assets/img/google.svg"
         v-if="['GSuite', 'GoogleWorkspace', 'Google Workspace'].includes(scope.row[col.property])"
       />
       <img
@@ -21,7 +21,7 @@
         src="../../assets/img/exchange@3x.png"
         v-if="scope.row[col.property] === 'Exchange'"
       />
-      <span class="ml-2">{{ scope.row[col.property] }}</span>
+      <!-- <span class="ml-2">{{ scope.row[col.property] }}</span> -->
     </span>
     <span v-else>
       {{ getEmptyText }}

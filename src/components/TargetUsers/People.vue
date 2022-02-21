@@ -5,6 +5,8 @@
       :is-show="isWantToShowDeleteUserModal"
       :selectedRow="selectedRow"
       :isMultiple="isMultipleDelete"
+      :user-count="multipleDeletedUserCount"
+      :confirmButtonDisabled="deleteButtonDisabled"
       @deleteAction="handleDeleteUser"
       @deleteMultiple="handleDeleteUsers"
       @changeModalStatus="changeDeleteModalStatus"
@@ -44,23 +46,22 @@
       ref="refPeopleTable"
       id="target-users-people-data-table"
       is-server-side
+      is-server-side-selection
+      filterable
+      options
+      selectable
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'peopleTable'"
       :rowActions="tableOptions.rowActions"
       :selectEvent="tableOptions.selectEvent"
       :stored-table-settings="storedTableSettings"
-      :selectable="true"
       :settingsPopupStyle="{ top: '-15px' }"
       :download-button="{ show: true, disabled: false }"
-      :isServerSide="true"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="handleDelete"
@@ -177,6 +178,7 @@ import DeleteUserModal from './DeleteUserModal'
 import AddUserModal from './AddUserModal'
 import labels from '@/model/constants/labels'
 import {
+  bulkDeleteTargetUsers,
   deleteTargetUser,
   exportTargetUsers,
   getTargetUserCustomFieldsByCompanyId,
@@ -192,9 +194,15 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  createCustomFieldColumns,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'People',
@@ -215,54 +223,16 @@ export default {
   data: () => ({
     labels,
     selectedUserToViewGroups: null,
-    payload: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    payload: getDefaultAxiosPayload(),
     storedTableSettings: null,
-    defaultRequestBody: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    defaultRequestBody: getDefaultAxiosPayload(),
     isWantToImportFile: false,
     isShowingTargetUserViewTargetGroups: false,
     tableData: [],
     loading: true,
     isMultipleDelete: false,
+    multipleDeletedUserCount: 0,
+    multipleTargetUserPayload: {},
     isWantToShowDeleteUserModal: false,
     selectedRow: null,
     customFields: [],
@@ -270,12 +240,7 @@ export default {
     showPopupModal: false,
     isWantToShowImportUsersFromFileModal: false,
     isWantToShowCustomFieldsModal: false,
-    items: [
-      { title: 'Click Me1' },
-      { title: 'Click Me2' },
-      { title: 'Click Me3' },
-      { title: 'Click Me4' }
-    ],
+    deleteButtonDisabled: false,
     tableOptions: {
       isColumnFilterActive: false,
       lastColumns: [
@@ -375,7 +340,6 @@ export default {
           dbName: 'Department'
         }
       ],
-      pageSizes: [5, 10, 25],
       downloadButton: {
         show: true
       },
@@ -435,6 +399,8 @@ export default {
         this.payload.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
+          this.$refs.refPeopleTable.search =
+            savedFilter?.filter?.FilterGroups[1]?.FilterItems[0]?.Value
           this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
           this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
             .toString()
@@ -495,63 +461,21 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
       this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
     },
     checkPermissions(permission, type) {
@@ -599,10 +523,18 @@ export default {
       }
       this.toggleCustomFieldsModal()
     },
-    handleMultipleDelete(selections = []) {
+    handleMultipleDelete(selections, excludedItems, selectAll) {
       this.isMultipleDelete = true
+      this.multipleDeletedUserCount = selectAll
+        ? this.serverSideProps.totalNumberOfRecords
+        : selections.length
+      this.multipleTargetUserPayload = {
+        items: selectAll ? [] : selections.map((item) => item.resourceId),
+        excludedItems,
+        selectAll,
+        filter: this.payload.filter
+      }
       this.changeDeleteModalStatus(true)
-      this.selectedRow = selections
     },
     handleDelete(row) {
       this.isMultipleDelete = false
@@ -619,11 +551,32 @@ export default {
     },
     changeDeleteModalStatus(status) {
       this.isWantToShowDeleteUserModal = status
+      if (!status) {
+        this.selectedRow = null
+        this.multipleTargetUserPayload = {}
+        this.isMultipleDelete = false
+        this.multipleDeletedUserCount = 0
+      }
     },
-    handleDeleteUsers(selections) {
-      selections.forEach((item) => this.handleDeleteUser(item, selections))
+    handleDeleteUsers() {
+      this.callForMultipleDelete()
+    },
+    callForMultipleDelete() {
+      this.deleteButtonDisabled = true
+      this.loading = true
+      bulkDeleteTargetUsers(this.multipleTargetUserPayload)
+        .then(() => {
+          this.$refs.refPeopleTable.resetSelectableParams()
+          this.callForTargetUsers()
+          this.changeDeleteModalStatus(false)
+        })
+        .finally(() => {
+          this.loading = false
+          this.deleteButtonDisabled = false
+        })
     },
     handleDeleteUser(selectedUser, selections) {
+      this.loading = true
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
           this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
@@ -637,31 +590,22 @@ export default {
     },
     callForTargetUsers() {
       this.loading = true
+      this.payload.filter.FilterGroups[1].FilterItems = [
+        ...this.payload.filter.FilterGroups[1].FilterItems.filter(
+          (item) =>
+            !this.customFields.some((cf) => {
+              return cf.name === item.FieldName
+            })
+        )
+      ]
+      this.payload.newVersion = true
       getTargetUsers(this.payload)
         .then((response) => {
           const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
-          this.tableData = response.data.data.results.map((item) => {
-            const { customFieldValues } = item
-            for (let { name, value, dataType, timestampValue } of customFieldValues) {
-              if (dataType === 'Boolean') {
-                if (value === 'True') {
-                  item[name] = 'Yes'
-                } else if (value === 'False') {
-                  item[name] = 'No'
-                } else {
-                  item[name] = 'No'
-                }
-              } else if (['Date', 'DateTime'].includes(dataType)) {
-                item[name] = timestampValue
-              } else {
-                item[name] = value !== null && value !== undefined ? value : ''
-              }
-            }
-            return item
-          })
+          this.tableData = response.data.data.results
         })
         .catch(() => {
           this.tableData = []
@@ -675,6 +619,7 @@ export default {
       } else {
         getTargetUserCustomFieldsByCompanyId()
           .then((response) => {
+            this.payload = getDefaultAxiosPayload()
             const { data } = response
             this.customFields = data.data.filter((item) => {
               return item.isActive
@@ -689,49 +634,7 @@ export default {
               return -1
             })
 
-            const columnsOfCustomFields = this.customFields.map((field) => {
-              const { name, fieldDataType } = field
-              const filterableProps = {}
-              switch (fieldDataType.toLowerCase()) {
-                case 'string':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'email':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'number':
-                  filterableProps['filterableType'] = 'text'
-                  break
-                case 'boolean':
-                  filterableProps['filterableType'] = 'select'
-                  filterableProps['filterableItems'] = [
-                    { text: 'Yes', value: 1 },
-                    { text: 'No', value: 0 }
-                  ]
-                  break
-                case 'date':
-                  filterableProps['filterableType'] = 'dateOnly'
-                  filterableProps['type'] = 'date'
-                  break
-                case 'datetime':
-                  filterableProps['filterableType'] = 'date'
-                  break
-                default:
-                  break
-              }
-              return {
-                property: name,
-                type: 'text',
-                sortable: false,
-                filterable: true,
-                hideSort: true,
-                label: name,
-                align: 'left',
-                show: true,
-                width: 80 + name.length * 7,
-                ...filterableProps
-              }
-            })
+            const columnsOfCustomFields = createCustomFieldColumns(this.customFields)
 
             const newColumns = [
               ...this.tableOptions.defaultColumns,
@@ -793,6 +696,9 @@ export default {
           link.click()
         })
       })
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   },
   created() {

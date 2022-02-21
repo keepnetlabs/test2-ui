@@ -44,7 +44,11 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 import {
   exportCampaignJobUserNoResponse,
   searchCampaignJobUserNoResponse
@@ -183,10 +187,9 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -195,7 +198,7 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.checkIsColumnFilterActive()
       this.callForData()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
@@ -217,6 +220,7 @@ export default {
       this.callForData()
     },
     handleClearFilters() {
+      this.axiosPayload = getDefaultAxiosPayload({ orderBy: 'FirstName' })
       this.$refs.refTable.reRenderColumns({})
       this.callForData()
     },

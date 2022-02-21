@@ -37,32 +37,26 @@
           id="permission-data-list"
           ref="refPermissionList"
           is-server-side
+          selectable
+          filterable
+          options
           :loading="loading"
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           :refName="'permissionList'"
           :columns="tableOptions.columns"
           :stored-table-settings="storedTableSettings"
-          :total-number-of-records="totalNumberOfRecords"
-          :selectable="true"
-          :filterable="true"
-          :options="true"
-          :sizeable="true"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
-          :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
-          :show-all-records="showAllRecords"
           :addButton="tableOptions.addButton"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
           :rowActions="tableOptions.rowActions"
+          :download-button="{ show: false }"
           @openPermissionModal="openPermissionModal"
           @refreshAction="getDatatableList"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
-          @on-all-records-button-click="handleAllRecordsClick"
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
@@ -73,7 +67,6 @@
           @delete="handleDelete"
           @editPermissions="editPermissions"
           @on-table-settings-change="handleSetRenderedColumns"
-          :download-button="{ show: false }"
         >
           <template #datatable-row-actions="{ scope }">
             <v-tooltip bottom>
@@ -125,7 +118,7 @@ import {
 import labels from '@/model/constants/labels'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
 import {
   deletePermission,
@@ -136,6 +129,11 @@ import {
 import AppDialog from '../components/AppDialog'
 
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'Permission',
@@ -154,8 +152,6 @@ export default {
       storedTableSettings: null,
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       tableOptions: {
         isColumnFilterActive: false,
@@ -239,7 +235,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.PERMISSIONS
         },
@@ -261,48 +256,8 @@ export default {
           }
         ]
       },
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'RoleName',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyData: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       newPermissionsModalStatus: false,
       selectedPermissionId: null,
@@ -359,12 +314,12 @@ export default {
     },
     handleDelete(item) {
       this.deletePermissionName = item.roleName
-      this.deletePermissionId = item.resourceId
+      this.deletePermissionId = item?.resourceId
       this.selectedItem = item
       this.deleteDialog = true
     },
     editPermissions(item) {
-      this.resourceId = item.resourceId
+      this.resourceId = item?.resourceId
       this.isEdit = true
       getPermissionData(this.resourceId).then((response) => {
         this.permissionEditData = response.data.data
@@ -459,24 +414,22 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
         )
         return column.filterableType
       })
-      filterItems.forEach(myFunction)
-
       function myFunction(item) {
         if (item.FieldName === 'TypeName') {
           item.FieldName = 'Type'
         }
       }
+      filterItems.forEach(myFunction)
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.checkIsColumnFilterActive()
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
@@ -492,41 +445,6 @@ export default {
         .toString()
         .substring(0, 5)}`
       this.getDatatableList()
-    },
-    exportPermissionLog({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const clientTableExportHelper = new ClientTableExportHelper(
-        JSON.parse(JSON.stringify(this.bodyData.filter)),
-        this.$refs.refPermissionList,
-        'LogDate'
-      )
-      if (this.$refs.refPermissionList.search) {
-        clientTableExportHelper.addSearchItems(this.tableOptions.columns)
-      }
-      if (this.$refs.refPermissionList.sortProps && this.$refs.refPermissionList.sortProps.order) {
-        clientTableExportHelper.addSortItems()
-      }
-
-      const { filter, sortFilter } = clientTableExportHelper
-
-      exportTypes.map((exportType) => {
-        const payload = {
-          ...sortFilter,
-          pageNumber: pageNumber,
-          pageSize: pageSize,
-          reportAllPages,
-          exportType: exportType === 'XLS' ? 'Excel' : exportType,
-          filter
-        }
-        exportPermissionLog(payload).then((response) => {
-          const { data } = response
-          const link = document.createElement('a')
-          link.href = window.URL.createObjectURL(data)
-          link.download = `Permission Log.${
-            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
-          }`
-          link.click()
-        })
-      })
     },
     handleRestoreDefaultSearch() {
       this.isRestoredOrClearedFilters = true
@@ -566,71 +484,26 @@ export default {
           this.loading = false
         })
     },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
-    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
-
-      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
+      this.checkIsColumnFilterActive()
       this.getDatatableList()
-
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     checkIfCanClosePermissionsModal() {
       if (this.$refs.permissionsModal) {
         this.$refs.permissionsModal.closeOverlay()
       }
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {

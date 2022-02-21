@@ -40,6 +40,7 @@ import componentEditor from '../../GrapesJs/ComponentEditor/index'
 import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
+import { minifyHTML } from '@/api/scenarios'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -112,6 +113,11 @@ export default {
         })
         am.add(assets)
         am.render()
+      })
+    },
+    callForMinify(htmlContent) {
+      return minifyHTML(htmlContent).then((response) => {
+        return response?.data?.data?.htmlContent || ''
       })
     },
     destroyEditor() {
@@ -194,6 +200,23 @@ export default {
             return result
           }
         })
+        editor.DomComponents.addType('phishing-submit-button', {
+          model: {
+            defaults: {
+              traits: [
+                'value',
+                'id',
+                {
+                  type: 'select',
+                  label: 'Type',
+                  name: 'type',
+                  options: [{ id: 'submit', name: 'Submit' }]
+                }
+              ],
+              attributes: { type: 'submit' }
+            }
+          }
+        })
         editor.DomComponents.addType('text', {
           model: {
             defaults: {
@@ -273,14 +296,14 @@ export default {
               .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
               )
-              .addEventListener('change', () => {
+              ?.addEventListener('change', () => {
                 this.setMergeTextNames()
               })
             document
               .querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               )
-              .addEventListener('change', () => {
+              ?.addEventListener('change', () => {
                 this.setMergeTextNames()
               })
             if (selected.getTrait('href').props().value === '') {
@@ -299,7 +322,7 @@ export default {
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
               ).selectedIndex = 0
             }
-          }, 50)
+          }, 250)
         } else if (selected) {
           const name = selected.getName()
           if (['Input', 'Textarea', 'Button', 'Checkbox'].includes(name)) {
@@ -691,10 +714,11 @@ export default {
           btnImp.className = 'gjs-btn-prim gjs-btn-import'
           btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
           btnImp.onclick = () => {
-            let code = codeViewer.editor.getValue()
-            editor.DomComponents.getWrapper().set('content', '')
-            editor.setComponents(code)
-            editor.Modal.close()
+            this.callForMinify(codeViewer.editor.getValue()).then((code) => {
+              editor.DomComponents.getWrapper().set('content', '')
+              editor.setComponents(code)
+              editor.Modal.close()
+            })
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
@@ -860,7 +884,6 @@ export default {
           span {
             transform: none !important;
           }
-          //background-image: url('../../../assets/img/link@2x.png') !important;
         }
       }
     }

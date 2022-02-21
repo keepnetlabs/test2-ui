@@ -30,7 +30,11 @@
       <v-card class="investigations__container-card" light>
         <datatable
           v-bind="tableState"
+          selectable
+          filterable
+          options
           is-server-side
+          isServerSideSelection
           :loading="loading"
           :is-column-filter-active="isColumnFilterActive"
           id="investigations-data-table"
@@ -38,13 +42,9 @@
           :refName="'investigationTable'"
           :columns="columns"
           :table="tableData.data"
-          :defaultSort="'date'"
-          :selectable="true"
-          :filterable="true"
-          :options="true"
           :rowActions="rowActions"
           :stored-table-settings="storedTableSettings"
-          :addButton="addUsers"
+          :addButton="newInvestigationButton"
           :empty="iEmpty"
           :selectEvent="selectEvent"
           :chartOptions="chartOptions"
@@ -123,8 +123,13 @@ import CreateOrEditRule from '../components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'Investigations',
@@ -195,9 +200,10 @@ export default {
         show: true,
         type: 'status',
         isEditable: true,
+        isWithTooltip: true,
         width: 150,
         filterableType: 'select',
-        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished']
+        filterableItems: ['Running', 'Cancelled', 'Expired', 'Finished', 'Queued', 'No match']
       },
       {
         property: 'createTime',
@@ -223,14 +229,15 @@ export default {
       },
       {
         property: 'userStatus',
+        informationTextProperty: 'scanStatusText',
         align: 'center',
         editable: false,
-        label: getStoreValue('userStatus'),
+        label: getStoreValue('scanStatus'),
         fixed: false,
         sortable: false,
         show: true,
         type: 'chart',
-        width: 150
+        width: 190
       },
       {
         property: 'progress',
@@ -258,10 +265,13 @@ export default {
         icon: 'mdi-stop',
         id: 'btn-stop--investigations-row-actions',
         action: 'stopInvestigationFunc',
-        disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT')
+        disabled: !checkPermission('investigations/{resourceId}/cancel', 'PUT'),
+        getButtonVisibility: (status) => {
+          return status === 'Running'
+        }
       }
     ],
-    addUsers: {
+    newInvestigationButton: {
       show: true,
       tooltip: labels.StartAnInvestigation,
       action: 'startNewInvestigation',
@@ -270,69 +280,30 @@ export default {
     },
     iEmpty: {
       message: labels.NoInvestigationStarted,
-      btn: labels.New,
-      id: 'btn-empty--investigations',
-      icon: 'mdi-plus'
+      btn: labels.StartAnInvestigation,
+      id: 'btn-empty--investigations'
     },
     selectEvent: {
       clipboard: true,
       edit: false,
       delete: false,
-      download: false
+      download: false,
+      pause: false,
+      stop: false
     },
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4'],
       labels: [labels.CompletedUserCount, labels.NotStartedUserCount],
-      showTooltipLine: true
+      showTooltipLine: true,
+      isWithText: true
     },
     isColumnFilterActive: false,
-    bodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultRequestBody: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'createTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    bodyData: getDefaultAxiosPayload(),
+    defaultRequestBody: getDefaultAxiosPayload(),
     serverSideProps: new ServerSideProps()
   }),
   methods: {
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -341,7 +312,7 @@ export default {
       })
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.getInvestigationList()
     },
     sortChanged({ order, prop } = {}) {
@@ -362,6 +333,9 @@ export default {
     resetPageNumber() {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+    },
+    calculateIsFilterColumnActive() {
+      this.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -420,7 +394,11 @@ export default {
       return (this.showPlaybookModal = !this.showPlaybookModal)
     },
     sortChangedEvent({ prop, order }) {
-      this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
+      this.bodyData = {
+        ...this.bodyData,
+        orderBy: prop,
+        ascending: order === 'ascending'
+      }
       this.getInvestigationList()
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
@@ -435,58 +413,20 @@ export default {
     },
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
-      let items = []
-      this.bodyData.filter.FilterGroups[0].FilterItems.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      this.bodyData.filter.FilterGroups[0].FilterItems = []
-      this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          this.bodyData.filter.FilterGroups[0].FilterItems.push(filter[i])
-        })
-      } else {
-        const { FieldName, Value } = filter
-        if (FieldName === 'status' && Value === '') {
-        } else {
-          this.bodyData.filter.FilterGroups[0].FilterItems.push(filter)
-        }
-      }
-
-      this.loading = true
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
 
       this.getInvestigationList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      this.bodyData.filter.FilterGroups[0].FilterItems.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
+      this.calculateIsFilterColumnActive()
 
-      this.bodyData.filter.FilterGroups[0].FilterItems = [...items]
-      this.loading = true
       if (this.$route.name === 'Investigations') {
         this.getInvestigationList()
       }
-
-      this.isColumnFilterActive = this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
-    },
-    searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter }
-      this.getInvestigationList()
     },
     refreshDatatable() {
       this.loading = true

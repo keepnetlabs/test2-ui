@@ -150,7 +150,9 @@
           <div id="post-step-one" v-if="step === 1">
             <!-- Step 1 Starts -->
             <div class="incident-header pb-6">
-              <p id="text--threat-sharing-incident-step-one-select-incident">Select Incident</p>
+              <p id="text--threat-sharing-incident-step-one-select-incident">
+                Select Incident
+              </p>
               <span id="text--threat-sharing-incident-step-one-select-for-the-reported-incident"
                 >Search for the reported incident or upload an email to post as an incident</span
               >
@@ -227,7 +229,9 @@
                           <span>{{ item.result }}</span>
                         </div>
                       </div>
-                      <div id="email-time" class="email-time">{{ item.createTime }}</div>
+                      <div id="email-time" class="email-time">
+                        {{ item.createTime }}
+                      </div>
                     </div>
                   </div>
                 </template>
@@ -343,7 +347,9 @@
           </div>
           <div id="post-step-two" class="step-container" v-if="step === 2">
             <div class="incident-header">
-              <p id="text--threat-sharing-incident-step-two-general-info">General Info</p>
+              <p id="text--threat-sharing-incident-step-two-general-info">
+                General Info
+              </p>
               <span id="text--threat-sharing-incident-step-two-general-info-sub">
                 Include title, description of incident and neccessary files(pics, documents, or
                 code)
@@ -511,7 +517,9 @@
           </div>
           <div id="post-step-three" class="step-container" v-if="step === 3">
             <div class="incident-header">
-              <p id="text--threat-sharing-incident-step-three-incident-details">Incident Details</p>
+              <p id="text--threat-sharing-incident-step-three-incident-details">
+                Incident Details
+              </p>
               <span id="text--threat-sharing-incident-step-three-incident-details-sub">
                 Enter information on discovery of threat, how it affects and how to fight against
               </span>
@@ -779,7 +787,9 @@
                             id="threat-sharing-post-incident-subject-hidden"
                             class="chevron-btn-menu"
                             icon
-                            :class="{ 'disabled-chevron': uploadRespond.isSubjectHidden }"
+                            :class="{
+                              'disabled-chevron': uploadRespond.isSubjectHidden
+                            }"
                           >
                             <v-icon :class="{ 'chevron-down': subSettings }" v-on="on"
                               >mdi-chevron-down
@@ -845,7 +855,9 @@
                             id="threat-sharing-post-incident-from-hidden"
                             class="chevron-btn-menu"
                             icon
-                            :class="{ 'disabled-chevron': uploadRespond.isFromHidden }"
+                            :class="{
+                              'disabled-chevron': uploadRespond.isFromHidden
+                            }"
                           >
                             <v-icon :class="{ 'chevron-down': fromSettings }" v-on="on"
                               >mdi-chevron-down
@@ -913,7 +925,9 @@
                             id="threat-sharing-post-incident-to-hidden"
                             class="chevron-btn-menu"
                             icon
-                            :class="{ 'disabled-chevron': uploadRespond.isToHidden }"
+                            :class="{
+                              'disabled-chevron': uploadRespond.isToHidden
+                            }"
                           >
                             <v-icon :class="{ 'chevron-down': toSettings }" v-on="on"
                               >mdi-chevron-down
@@ -981,7 +995,9 @@
                             id="threat-sharing-post-incident-cc-hidden"
                             class="chevron-btn-menu"
                             icon
-                            :class="{ 'disabled-chevron': uploadRespond.isCcHidden }"
+                            :class="{
+                              'disabled-chevron': uploadRespond.isCcHidden
+                            }"
                           >
                             <v-icon :class="{ 'chevron-down': ccSettings }" v-on="on"
                               >mdi-chevron-down
@@ -1049,7 +1065,9 @@
                             id="threat-sharing-post-incident-bcc-hidden"
                             class="chevron-btn-menu"
                             icon
-                            :class="{ 'disabled-chevron': uploadRespond.isBccHidden }"
+                            :class="{
+                              'disabled-chevron': uploadRespond.isBccHidden
+                            }"
                           >
                             <v-icon :class="{ 'chevron-down': bccSettings }" v-on="on"
                               >mdi-chevron-down
@@ -1316,7 +1334,9 @@
           <div id="post-step-five" v-if="step === 5">
             <!-- Step 5 Stars here -->
             <div class="incident-header pb-8">
-              <p id="text--threat-sharing-incident-step-five-preview">Preview</p>
+              <p id="text--threat-sharing-incident-step-five-preview">
+                Preview
+              </p>
               <span id="text--threat-sharing-incident-step-five-preview-sub"
                 >See how your post will look like</span
               >
@@ -1984,7 +2004,9 @@
               v-if="step === 1"
               id="threat-sharing-post-incident-next-button"
               :disabled="!selectedEmail && !uploadRespond.IsActive"
-              :class="{ 'disabled-cursor': !selectedEmail && !uploadRespond.IsActive }"
+              :class="{
+                'disabled-cursor': !selectedEmail && !uploadRespond.IsActive
+              }"
               class="create-btn"
               text
               color="#2196f3"
@@ -2494,7 +2516,7 @@ export default {
       for (let url of urls) {
         let els = document
           .getElementById('last-preview-body-shadow-root-for-preview')
-          .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+          ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
         if (els && els.length) {
           for (let i = 0, l = els.length; i < l; i++) {
             let el = els[i]
@@ -2514,7 +2536,7 @@ export default {
       }
       this.uploadRespond.visibleBodyForPreview = document.getElementById(
         'last-preview-body-shadow-root-for-preview'
-      ).shadowRoot.innerHTML
+      )?.shadowRoot?.innerHTML
     },
     handleTagItemChange(value) {
       this.querySelections(this.searchIncident || '')
@@ -2604,7 +2626,7 @@ export default {
       this.checkUrlChangeForAllLinksSwitch()
       let els = document
         .getElementById(rootId || 'last-preview-body-shadow-root')
-        .shadowRoot.querySelectorAll('[href="' + url.url + '"]')
+        ?.shadowRoot?.querySelectorAll('[href="' + url.url + '"]')
       if (els && els.length) {
         for (let i = 0, l = els.length; i < l; i++) {
           let el = els[i]
@@ -2679,12 +2701,12 @@ export default {
       let _this = this
       setTimeout(() => {
         let recrusiveFunctionForDom = () =>
-          document.getElementById(id) && document.getElementById(id).shadowRoot
+          document.getElementById(id) && document.getElementById(id)?.shadowRoot
         if (!recrusiveFunctionForDom) recrusiveFunctionForDom()
         _this.uploadRespond.urls = _this.uploadRespond.urls.map((item, index) => {
           let urlItem = document
             .getElementById(id)
-            .shadowRoot.querySelectorAll('[href="' + item.url + '"]')
+            ?.shadowRoot?.querySelectorAll('[href="' + item.url + '"]')
           return {
             ...item,
             url: item.url.replace(/amp;/g, ''),

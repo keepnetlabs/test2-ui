@@ -276,6 +276,9 @@
                     <div class="target-user-import-file__progression--text">
                       Please wait while we are processing the file
                     </div>
+                    <v-alert dense outlined type="info" v-if="mappingStatus.status === 'Idle'">
+                      Process is Queued
+                    </v-alert>
                     <div class="target-user-import-file__progression--progress">
                       <div>{{ setProgressValue }}%</div>
                       <div>
@@ -360,7 +363,7 @@
             rounded
             color="#2196f3"
             @click="nextStep"
-            :disabled="step1Loading || step2Loading"
+            :disabled="step1Loading || step2Loading || !(excelInfo && excelInfo.transactionId)"
           >
             {{ labels.Next }}
           </v-btn>
@@ -470,6 +473,7 @@ import {
   getUploadedFileData,
   importTmpUsers,
   searchTmp,
+  updateTransactionId,
   uploadExcelOrCsvForTargetUsers
 } from '../../api/targetUsers'
 import MapTable from '../TargetUsers/subcomponents/MapTable'
@@ -767,12 +771,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -780,6 +779,11 @@ export default {
                   Value: 'New,Exists,Error'
                 }
               ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -883,7 +887,7 @@ export default {
     },
     filterStatusChange() {
       this.isShowInvalid = !this.isShowInvalid
-      this.bodyData.filter.FilterGroups[1]['FilterItems'].find(
+      this.bodyData.filter.FilterGroups[0]['FilterItems'].find(
         (item) => item.FieldName === 'Status'
       ).Value = this.isShowInvalid ? 'Error' : 'New,Exists,Error'
       this.step3Loading = true
@@ -940,10 +944,11 @@ export default {
       let _this = this
       //this.bodyData.pageSize = this.mappingStatus.totalRowCount
       this.step3Loading = true
+
       let customFields = this.columns.filter((item) => item.isCustomField).map((item) => item.label)
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.reduce(
         (acc, item) => {
-          if (!customFields.includes(item.FieldName)) acc.push(item)
+          if (!customFields.includes(item.FieldName) && item.FieldName != PROPERTY_STORE.NONE_SELECTED) acc.push(item)
           return acc
         },
         []
@@ -1003,6 +1008,7 @@ export default {
                 filterable: true,
                 customFieldName: item.name,
                 isCustom: true,
+                isCustomField: true,
                 ...filterableProps
               }
               return itemObj
@@ -1028,7 +1034,8 @@ export default {
                   customFieldName: item.name,
                   filterableType: 'text',
                   FilterableItems: 'Yes',
-                  isCustom: true
+                  isCustom: true,
+                  isCustomField: true,
                 }
                 return itemObj
               })
@@ -1197,6 +1204,13 @@ export default {
       this.$emit('closeOverlay')
     },
     onFileChanged(file) {
+      if (Array.isArray(file) && Array.from(file).length === 0) {
+        this.isExcelUploaded = false
+        this.step1Loading = false
+        this.formData.file = null
+        this.excelInfo = null
+        return
+      }
       this.formData.file = file
       this.isExcelUploaded = true
       this.step1Loading = true
@@ -1222,7 +1236,10 @@ export default {
           this.mappingData.headers = response.data.data['fileFieldNames'].map((item) => {
             let aItem = {
               name: item,
-              selectedValue: null,
+              selectedValue:
+                this.mappingData.columns.find(
+                  (column) => column?.dbName?.trim()?.toLowerCase() === item?.trim()?.toLowerCase()
+                ) || null,
               required:
                 this.mappingData.columns.find((mapItem) => {
                   let name = mapItem.dbName || mapItem.name
@@ -1240,7 +1257,7 @@ export default {
             return aItem
           })
           //this.activeStep = this.activeStep >= this.totalStep ? this.totalStep : this.activeStep + 1
-          this.resetDisabledValuesFromColumns()
+          this.setExistItems()
         })
         .finally(() => {
           this.step2Loading = false
@@ -1249,6 +1266,11 @@ export default {
     resetDisabledValuesFromColumns() {
       setTimeout(() => {
         return this.$refs.refMapTable.setSelectDisableItemsToFalse()
+      }, 200)
+    },
+    setExistItems() {
+      setTimeout(() => {
+        return this.$refs.refMapTable.setExistItems()
       }, 200)
     },
     submit() {},
@@ -1260,10 +1282,6 @@ export default {
           (item.selectedValue && item.selectedValue.dbName) ||
           (item.selectedValue && item.selectedValue.name) ||
           item.name
-        if (excelColumnName === 'First Name') excelColumnName = 'First Name'
-        if (excelColumnName === 'Last Name') excelColumnName = 'Last Name'
-        if (excelColumnName === 'FirstName') excelColumnName = 'First Name'
-        if (excelColumnName === 'LastName') excelColumnName = 'Last Name'
         if (fieldName === 'First Name') fieldName = 'FirstName'
         if (fieldName === 'Last Name') fieldName = 'LastName'
         let val = {
@@ -1331,7 +1349,26 @@ export default {
         this.resetDisabledValuesFromColumns()
       }
       if (this.activeStep === 2) {
+        this.updateTransactionId()
         this.resetBodyData()
+      }
+    },
+    updateTransactionId() {
+      if (this.excelInfo.transactionId) {
+        const tempTransactionId = this.excelInfo.transactionId
+        this.excelInfo.transactionId = null
+        updateTransactionId(tempTransactionId)
+          .then((response) => {
+            const transactionId = response.data.data?.transactionId
+            if (transactionId) {
+              this.excelInfo.transactionId = transactionId
+            } else {
+              this.excelInfo.transactionId = tempTransactionId
+            }
+          })
+          .catch((err) => {
+            this.excelInfo.transactionId = tempTransactionId
+          })
       }
     },
     resetBodyData() {
@@ -1344,12 +1381,7 @@ export default {
           Condition: 'AND',
           FilterGroups: [
             {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
+              Condition: 'AND',
               FilterItems: [
                 {
                   FieldName: 'Status',
@@ -1357,6 +1389,11 @@ export default {
                   Value: 'New,Exists,Error'
                 }
               ],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
               FilterGroups: []
             }
           ]
@@ -1393,6 +1430,7 @@ export default {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           icon: 'mdi-information'
         })
+        this.$router.push('/job-log')
       })
     },
     callForGetTargetUserCustomFieldsByCompanyId() {
@@ -1422,6 +1460,7 @@ export default {
             .map((item) => {
               if (item.label !== 'Status' && item.label !== 'Date Created') {
                 return {
+                  isCustomField: true,
                   name: item.label,
                   disabled: false,
                   selectedValue: null,

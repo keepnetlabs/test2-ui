@@ -28,34 +28,7 @@
     </app-dialog>
     <div class="landingPagePreview__container" ref="topOfTheTemplate">
       <div class="landingPagePreview__container-main">
-        <div class="d-flex justify-space-between align-center mb-4">
-          <k-select
-            v-infinite-scroll="{
-              target: '#input--landing-page-template-list .k-select__menu',
-              callback: getDataAfterValidScroll
-            }"
-            :items="listData"
-            id="input--landing-page-template-list"
-            placeholder="Type"
-            item-text="name"
-            v-model="selectChangeValue"
-            item-value="resourceId"
-            outlined
-            persistent-hint
-            @change="selectChange"
-            return-object
-            :menu-props="{ offsetY: true }"
-            no-data-text="No landing page template available"
-            class="selectChange"
-          ></k-select>
-          <span
-            @click="showAdvancedSearch = !showAdvancedSearch"
-            class="toggle-advanced-search ml-4 mr-4"
-            style="cursor: pointer; min-width: 190px;"
-            >{{ showAdvancedSearch ? 'Close Advanced Search' : 'Open Advanced Search' }}</span
-          >
-        </div>
-        <div class="landingPagePreview-content" v-if="showAdvancedSearch">
+        <div class="landingPagePreview-content">
           <div class="landingPagePreview-content--search">
             <div class="d-flex justify-space-between">
               <div class="d-flex">
@@ -224,7 +197,6 @@
 
 <script>
 import { Multipane, MultipaneResizer } from 'vue-multipane'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import AppDialog from '../AppDialog'
 import { getLandingPageList, getLandingPageTemplatePreviewContent } from '@/api/landingPage'
@@ -236,16 +208,14 @@ export default {
     scenarioDetailsLookup: { required: true },
     landingPageTemplateResourceId: { required: false }
   },
-  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog, KSelect },
+  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   directives: {
     'infinite-scroll': InfiniteScroll
   },
   data() {
     return {
-      showAdvancedSearch: true,
       search: null,
       listData: [],
-      backupListData: [],
       totalNumberOfPages: 1,
       defaultListData: [],
       templateFromName: null,
@@ -299,8 +269,7 @@ export default {
       loadingTemplates: false,
       selectedLandingPageId: null,
       templateURL: null,
-      selectedPreviousIndex: 0,
-      selectChangeValue: ''
+      selectedPreviousIndex: 0
     }
   },
   mounted() {
@@ -342,16 +311,6 @@ export default {
             this.$emit('loading', false)
           })
       }, 500)
-    },
-    selectChange() {
-      this.setSelectedTemplate(
-        this.listData[
-          this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
-        ],
-        this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
-      )
-      this.$emit('selectedLandingPageChange', this.selectChangeValue.id)
-      this.$emit('selectedLandingPageTemplateResourceId', this.selectChangeValue.resourceId)
     },
     getTemplatesForSearch() {
       this.bodyData.pageSize = 100
@@ -410,7 +369,6 @@ export default {
                 if (index > -1) {
                   this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
-                  this.selectChangeValue = this.landingPageTemplateResourceId
                 }
               } else {
                 if (!landingPageTemplateResourceId)
@@ -446,9 +404,6 @@ export default {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
-      this.backupListData = this.backupListData.map((item) => {
-        return { ...item, selected: false }
-      })
       this.listData[index].selected = true
       this.selectedPreviousIndex = index
       this.loadingTemplatePreview = true
@@ -459,9 +414,9 @@ export default {
       }
       getLandingPageTemplatePreviewContent(item.resourceId)
         .then((response) => {
-          this.selectedTemplateHeader = response.data.data.landingPages[0].name
-          this.templateHTML = response.data.data.landingPages[0].content
-          this.templateURL = response.data.data.urlTemplate
+          this.templateURL = response?.data?.data?.urlTemplate || ''
+          this.selectedTemplateHeader = response?.data?.data?.landingPages[0]?.name || ''
+          this.templateHTML = response?.data?.data?.landingPages[0]?.content || ''
         })
         .finally(() => {
           this.loadingTemplatePreview = false
@@ -485,17 +440,17 @@ export default {
         ) {
           this.getTemplates(true)
         } else {
-          this.listData = [...this.defaultListData]
-          this.templateHTML = this.activeTemplateHTML
+          this.listData = [...this.defaultListData].map((item) => ({
+            ...item,
+            selected: item.resourceId === this.landingPageTemplateResourceId
+          }))
+          this.templateHTML = this.activeTemplateHTML || this.templateHTML
         }
       } else {
         if (newVal !== oldVal) {
           this.callForSearch()
         }
       }
-    },
-    landingPageTemplateResourceId(newVal) {
-      this.selectChangeValue = newVal
     }
   }
 }

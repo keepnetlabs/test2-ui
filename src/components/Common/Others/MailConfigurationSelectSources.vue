@@ -14,81 +14,65 @@
     autocomplete="disabled"
     item-value="mailConfigurationResourceId"
     item-text="mailConfigurationName"
-    :slots="{ item: true }"
+    :slots="{ item: true, selection: true }"
     :items="options"
     :item-disabled="checkIsItemDisabled"
     :rules="[(v) => !!v.length || labels.Required]"
+    :position="position"
     @input="handleInputChange"
   >
-    <template #item="{item,index}">
-      <div
-        :class="[
-          'mail-configuration-select-sources__item-container',
-          {
-            'mail-configuration-select-sources__item-container--disabled':
-              item.statusName === 'Not Running',
-            'mail-configuration-select-sources__item-container--first':
-              item.mailConfigurationName === 'All'
-          }
-        ]"
+    <template #item="{ item, index }">
+      <MailConfigurationSelectItem
+        :item="item"
+        :index="index"
+        :isWithTooltip="shouldRenderTooltip(item)"
+        :isDisabled="checkIsItemDisabled(item)"
+        :isFirst="item.mailConfigurationName === 'All'"
+        :isSelected="getCheckboxCheckedValue(item)"
+        :badgeColor="getBtnStatusColor(item.statusName)"
+        :badgeText="item.statusName"
+      />
+    </template>
+    <template #selection="data">
+      <v-chip
+        v-if="data.item.mailConfigurationResourceId !== 'all'"
+        v-show="!isAllSelected"
+        v-bind="data.attrs"
+        close
+        small
+        :key="JSON.stringify(data.item)"
+        :input-value="data.selected"
+        :disabled="data.disabled"
+        @click:close="data.parent.selectItem(data.item)"
       >
-        <v-checkbox
-          hide-details
-          color="#2196f3"
-          class="mt-n1"
-          :input-value="
-            !!value.some(
-              (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
-            )
-          "
-        />
-        <div class="mail-configuration-select-sources__item">
-          <div class="mail-configuration-select-sources__item-left">
-            {{ item.mailConfigurationName }}
-          </div>
-          <div
-            class="mail-configuration-select-sources__item-right"
-            v-if="item.mailConfigurationName !== 'All'"
-          >
-            <div class="mail-configuration-select-sources__item-right-platform">
-              {{ item.type }}
-            </div>
-            <div>
-              <v-btn style="display: none;" />
-              <Badge
-                size="small"
-                color="#217124"
-                text="Running"
-                className="mail-configuration-select-sources__badge"
-                :id="`badge--mail-configuration-select-sources-${index}`"
-                :outline="false"
-              />
-            </div>
-          </div>
-          <div v-else class="mail-configuration-select-sources__item-right-platform">
-            All Configurations
-          </div>
-        </div>
+        {{ data.item.mailConfigurationName }}
+      </v-chip>
+      <div v-else>
+        {{ data.item.mailConfigurationName }}
       </div>
     </template>
   </k-select>
 </template>
 
 <script>
-import Badge from '@/components/Badge'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import { getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import { getInvestigationScanTypes } from '@/api/investigations'
+import MailConfigurationSelectItem from './MailConfigurationSelectItem.vue'
 export default {
   name: 'MailConfigurationSelectSources',
   components: {
-    Badge,
-    KSelect
+    KSelect,
+    MailConfigurationSelectItem
   },
   props: {
     value: {
       type: Array
+    },
+    position: {
+      type: String,
+      default: 'bottom'
     }
   },
   data() {
@@ -98,21 +82,63 @@ export default {
       labels
     }
   },
+  watch: {
+    isAllSelected(newVal) {
+      if (newVal === true) {
+        const validOptions = this.options.filter(
+          (item) =>
+            !item.divider &&
+            (item.mailConfigurationResourceId === 'all' || item.statusName === 'Running')
+        )
+        this.selectedSources = [...validOptions]
+        this.$emit('input', [...validOptions])
+      } else {
+        this.selectedSources = []
+        this.$emit('input', [])
+      }
+    }
+  },
+  computed: {
+    isAllSelected() {
+      return this.selectedSources.some((item) => item.mailConfigurationResourceId === 'all')
+    }
+  },
   created() {
     this.callForOptions()
   },
   methods: {
+    getCheckboxCheckedValue(item) {
+      if (
+        !!this.value.some(
+          (source) => source.mailConfigurationResourceId === item.mailConfigurationResourceId
+        ) ||
+        (this.isAllSelected && item.statusName === 'Running')
+      )
+        return true
+      return false
+    },
+    shouldRenderTooltip(item) {
+      if (item.mailConfigurationResourceId === 'all') return false
+      if (item.statusName !== 'Running') return true
+    },
     callForOptions() {
       getInvestigationScanTypes().then((response) => {
         const {
           data: { data }
         } = response
-        this.options = data.map((item) => {
+        this.options = data.map((item, index) => {
           if (item.type.toLowerCase() === 'outlook') {
             item['mailConfigurationName'] = 'Outlook'
           }
-          return item
+          return {
+            ...item,
+            statusName: !!item.statusName ? item.statusName : 'Running'
+          }
         })
+        // this.options.unshift(
+        //   { mailConfigurationName: 'All', mailConfigurationResourceId: 'all' },
+        //   { divider: true }
+        // )
         if (this.value.length) {
           this.selectedSources = this.options.filter((item) =>
             this.value.find(
@@ -123,15 +149,19 @@ export default {
       })
     },
     checkIsItemDisabled(item) {
-      return item.statusName === 'Not Running'
+      if (item.mailConfigurationResourceId === 'all') return false
+      if (item.statusName !== 'Running') return true
+      if (this.isAllSelected) return true
+      return false
     },
     getBtnStatusColor(type) {
+      if (type === 'Running') return '#217124'
       return getBtnStatusColor(type)
     },
     getDataTableFieldLabel(field) {
       return getDataTableFieldLabel(field)
     },
-    handleInputChange(val = {}) {
+    handleInputChange(val = []) {
       this.$emit(
         'input',
         val.map(({ mailConfigurationResourceId, type }) => ({
@@ -199,6 +229,13 @@ export default {
       border-radius: 4px !important;
       box-shadow: none !important;
     }
+  }
+}
+.v-list-item--disabled {
+  pointer-events: auto;
+
+  .v-ripple__container {
+    display: none;
   }
 }
 </style>

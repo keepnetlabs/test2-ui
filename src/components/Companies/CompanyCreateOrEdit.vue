@@ -109,6 +109,7 @@
                       hint="*Required"
                       no-data-text="No industry available"
                       :menu-props="{ offsetY: true }"
+                      prepend-inner-icon="mdi-magnify"
                       persistent-hint
                     ></k-select>
                   </v-list-item-content>
@@ -128,6 +129,7 @@
                       :rules="[(v) => validations.required(v)]"
                       hint="*Required"
                       no-data-text="No country available"
+                      prepend-inner-icon="mdi-magnify"
                       :menu-props="{ offsetY: true }"
                       persistent-hint
                     ></k-select>
@@ -299,7 +301,8 @@
                                 formData.LicenseStartDate &&
                                 formData.LicenseEndDate)
                             "
-                            >({{ formData.LicenseStartDate | moment('YYYY.MM.DD') }} -
+                            >({{ formData.LicenseStartDate | moment('YYYY.MM.DD') }}
+                            -
                             {{ formData.LicenseEndDate | moment('YYYY.MM.DD') }})</template
                           >
                         </span>
@@ -318,12 +321,12 @@
                           v-model="LicenseDates"
                           id="input--company-license-dates"
                           type="daterange"
-                          :picker-options="datePickerOptions"
-                          :rules="[(v) => !!v || 'Required']"
                           value-format="yyyy-MM-dd"
                           format="yyyy-MM-dd"
-                          @change="dataPickerChange"
                           :disabled="stepLock"
+                          :picker-options="datePickerOptions"
+                          :rules="[(v) => !!v || 'Required']"
+                          @change="dataPickerChange"
                         />
                       </el-form-item>
                     </el-form>
@@ -737,7 +740,10 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
-      this.LicenseDates = [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
+      this.LicenseDates =
+        this.formData.LicenseStartDate || this.formData.LicenseEndDate
+          ? []
+          : [this.formData.LicenseStartDate, this.formData.LicenseEndDate]
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)

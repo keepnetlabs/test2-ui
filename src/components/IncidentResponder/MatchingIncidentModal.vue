@@ -69,6 +69,12 @@ import DataTable from '@/components/DataTable'
 import { getStoreValue } from '@/model/constants/commonConstants'
 import { getMatchingIncidents } from '@/api/incidentResponder'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'MatchingIncidentModal',
   components: {
@@ -127,27 +133,7 @@ export default {
           minWidth: '34'
         }
       ],
-      payload: {
-        pageNumber: 1,
-        pageSize: 5,
-        orderBy: 'createDate',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      payload: getDefaultAxiosPayload({ pageSize: 5, orderBy: 'createDate' }),
       isColumnFilterActive: false,
       serverSideProps: new ServerSideProps(),
       empty: { message: "There isn't any matching Incidents, yet", btn: '', icon: 'mdi-plus' },
@@ -165,53 +151,13 @@ export default {
   methods: {
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.callForMatchingIncident()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.callForMatchingIncident()
-
-      this.isColumnFilterActive = this.payload.filter.FilterGroups[0].FilterItems.length >= 1
     },
     serverSidePageNumberChanged(pageNumber = 1) {
       this.payload.pageNumber = pageNumber
@@ -223,8 +169,7 @@ export default {
       this.resetPageNumber()
       this.callForMatchingIncident()
     },
-    handleSearchChange(searchFilter = {}, isColumnFilterActive = false) {
-      this.isColumnFilterActive = isColumnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -232,6 +177,7 @@ export default {
         return column.filterableType
       })
       this.payload.filter.FilterGroups[1].FilterItems = [...filterItems]
+      this.calculateIsFilterColumnActive()
       this.resetPageNumber()
       this.callForMatchingIncident()
     },
@@ -243,6 +189,9 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+    },
+    calculateIsFilterColumnActive() {
+      this.isColumnFilterActive = isColumnFilterActive(this.payload)
     },
     closeOverlay() {
       this.$emit('closeOverlay')

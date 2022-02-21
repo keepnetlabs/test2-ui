@@ -248,6 +248,27 @@ export default {
           ]
         }
       },
+      defaultPayload: {
+        pageNumber: 1,
+        pageSize: 5,
+        orderBy: 'CreateTime',
+        ascending: false,
+        filter: {
+          Condition: 'AND',
+          FilterGroups: [
+            {
+              Condition: 'AND',
+              FilterItems: [],
+              FilterGroups: []
+            },
+            {
+              Condition: 'OR',
+              FilterItems: [],
+              FilterGroups: []
+            }
+          ]
+        }
+      },
       serverSideProps: new ServerSideProps()
     }
   },

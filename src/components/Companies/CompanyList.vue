@@ -47,31 +47,31 @@
     />
 
     <datatable
+      v-bind="bindPropsIsSafari"
       id="companies-data-table"
       ref="refDataList"
       is-server-side
       toggle-all-row-expansion
+      selectable
+      groupable
+      filterable
+      options
+      row-key="companyName"
       :loading="loading"
-      :selectable="true"
       :table="tableData"
       :server-side-props="serverSideProps"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
-      :groupable="true"
       :empty="tableOptions.iEmpty"
-      :filterable="true"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :options="true"
-      :pageSizes="tableOptions.pageSizes"
       :selectEvent="tableOptions.selectEvent"
       :stored-table-settings="storedTableSettings"
       :refName="'companyList'"
       :clusterItems="[{ name: 'Company Name' }]"
-      @clusterChanged="clusterChanged"
-      row-key="companyName"
       :rowActions="tableOptions.rowActions"
       active-cluster=""
+      @clusterChanged="clusterChanged"
       @edit="handleTableItemEdit"
       @delete="handleTableItemDelete"
       @cellClick="handleCellClick"
@@ -84,7 +84,6 @@
       @AddGroupToModal="handleAddGroupToModal"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      v-bind="bindPropsIsSafari"
       @switchCompany="handleSwitchCompany"
       @createNewGroupWithCompany="handleCreateNewGroupWithCompany"
       @refreshAction="getTableData"
@@ -156,10 +155,20 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
-import { checkPermission, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
+import {
+  checkPermission,
+  getDefaultAxiosPayload,
+  handleIsSafari,
+  setSafariClusterFix
+} from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'CompanyList',
   components: {
@@ -285,7 +294,6 @@ export default {
           width: 180
         }
       ],
-      pageSizes: [5, 10, 25],
       isColumnFilterActive: false,
       selectEvent: {
         clipboard: true,
@@ -345,48 +353,8 @@ export default {
         }
       ]
     },
-    payload: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultPayload: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'CreateTime',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+    payload: getDefaultAxiosPayload(),
+    defaultPayload: getDefaultAxiosPayload(),
     serverSideProps: new ServerSideProps()
   }),
   watch: {
@@ -467,25 +435,21 @@ export default {
       localStorage.setItem('selectedCompanyName', account.companyName)
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.payload.pageNumber = pageNumber
       this.getTableData()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.payload.ascending = order === 'ascending'
       this.payload.orderBy = prop
       this.getTableData()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.payload.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
       this.getTableData()
     },
     resetPageNumber() {
-      //generic
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
@@ -500,13 +464,12 @@ export default {
         this.isShowExtended = false
       }
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.payload.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getTableData()
     },
     handleCellClick({ column, event }) {
@@ -591,7 +554,6 @@ export default {
       this.$refs.refDataList.filterValues = {}
       this.$refs.refDataList.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
-    handleClusterLoad({ tree, treeNode, resolve, callback }) {},
     handleTableItemEdit(row) {},
     handleTableItemDelete(selectedItem) {
       this.selectedRow = selectedItem
@@ -709,57 +671,17 @@ export default {
       this.showCreateNewGroupWithCompany = status
     },
     columnFilterChanged(filter) {
-      //generic
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.payload.filter.FilterGroups[0].FilterItems
-      this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.payload.filter.FilterGroups[0].FilterItems = requestBody
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.payload)
       this.getTableData()
     },
     columnFilterCleared(fieldName) {
-      //generic
-      let items = []
-      let filterPayload = this.payload.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.payload.filter.FilterGroups[0].FilterItems = filterPayload
+      this.payload.filter.FilterGroups[0].FilterItems = columnFilterCleared(fieldName, this.payload)
+      this.calculateIsFilterColumnActive()
       this.getTableData()
-
-      this.tableOptions.isColumnFilterActive =
-        this.payload.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.payload)
     }
   }
 }

@@ -18,6 +18,13 @@ export function deleteTargetUser(resourceId) {
   return testRequest.delete(`/target-users/${resourceId}`, { snackbar: COMMON_SNACKBAR })
 }
 
+export function bulkDeleteTargetUsers(payload) {
+  return testRequest.delete('/target-users/bulk-delete', {
+    snackbar: COMMON_SNACKBAR,
+    data: payload
+  })
+}
+
 export function updateTargetUser(payload) {
   return testRequest.put(`/target-users/${payload.resourceId}`, payload, {
     snackbar: COMMON_SNACKBAR
@@ -156,6 +163,10 @@ export function importTmpUsers(payload, id) {
 
 export function getTargetUserViewUserGroups(resourceId = '', payload) {
   return testRequest.post(`target-users/${resourceId}/groups`, payload)
+}
+
+export function updateTransactionId(id = '') {
+  return testRequest.put(`/target-users/${id}/update`)
 }
 
 export function getAllJobs() {

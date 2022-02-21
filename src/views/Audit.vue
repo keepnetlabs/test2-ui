@@ -6,32 +6,25 @@
           id="audit-data-list"
           ref="refAuditList"
           is-server-side
+          selectable
+          filterable
+          options
           :loading="loading"
           :is-column-filter-active="tableOptions.isColumnFilterActive"
           :table="tableData"
           :refName="'auditList'"
           :columns="tableOptions.columns"
-          :total-number-of-records="totalNumberOfRecords"
           :stored-table-settings="storedTableSettings"
-          :selectable="true"
-          :filterable="true"
-          :options="true"
-          :sizeable="true"
           :server-side-props="serverSideProps"
           :server-side-events="{ pagination: true, search: true, sort: true }"
-          :pageSizes="tableOptions.pageSizes"
           :empty="tableOptions.empty"
           :select-event="tableOptions.selectEvent"
-          :show-all-records="showAllRecords"
           :addButton="tableOptions.addButton"
-          :dataLength="tableData && tableData.totalNumberOfRecords"
-          :requestParams="bodyData"
           :download="downloadOptions"
           @refreshAction="getDatatableList"
           @downloadEvent="exportAuditLog"
           @columnFilterChanged="columnFilterChanged"
           @columnFilterCleared="columnFilterCleared"
-          @on-all-records-button-click="handleAllRecordsClick"
           @set-default-search="handleSetDefaultSearch"
           @restore-default-search="handleRestoreDefaultSearch"
           @clear-filters="handleClearFilters"
@@ -59,7 +52,12 @@ import labels from '@/model/constants/labels'
 import { exportAuditLog, getAuditLogs } from '@/api/dashboard'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { getTimeZoneForMoment } from '@/utils/functions'
+import { getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'Audit',
@@ -70,8 +68,6 @@ export default {
     return {
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       storedTableSettings: null,
       tableData: [],
       tableOptions: {
@@ -216,7 +212,6 @@ export default {
           delete: false,
           download: false
         },
-        pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_AUDIT
         }
@@ -226,11 +221,8 @@ export default {
         csv: true,
         pdf: false
       },
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
+      bodyData: getDefaultAxiosPayload({
         orderBy: 'LogDate',
-        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
@@ -249,12 +241,9 @@ export default {
             }
           ]
         }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
+      }),
+      defaultRequestBody: getDefaultAxiosPayload({
         orderBy: 'LogDate',
-        ascending: false,
         filter: {
           Condition: 'AND',
           FilterGroups: [
@@ -273,7 +262,7 @@ export default {
             }
           ]
         }
-      },
+      }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -309,8 +298,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -319,7 +307,7 @@ export default {
       })
       this.bodyData.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.checkIsColumnFilterActive()
       this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
@@ -406,71 +394,21 @@ export default {
           this.loading = false
         })
     },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
-    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
-
-      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        } else if (x.FieldName === 'logDate') {
-          if (x.Operator === '>=')
-            x.value = this.$moment(Date.now()).subtract(2, 'weeks').format(getTimeZoneForMoment())
-          if (x.Operator === '<=') x.value = this.$moment(Date.now()).format(getTimeZoneForMoment())
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
+      this.checkIsColumnFilterActive()
       this.getDatatableList()
-
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {

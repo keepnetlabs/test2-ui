@@ -3,36 +3,33 @@
     <data-table
       id="sandbox-stats-data-table"
       ref="refsandboxStatsList"
+      is-server-side
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
       :refName="'sandboxStatsList'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
       :selectable="false"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
+      :download-button="tableOptions.downloadButton"
+      :is-show-download-modal="isSandboxStatsDownloadModal"
+      :server-side-props="serverSideProps"
+      :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteAction="showDeleteModal = true"
       @onEmptyBtnClicked="modalStatus = true"
       @downloadEvent="exportSandboxStats"
       @handleDownloadButtonClick="handleSandboxStatsDownloadButtonClick"
-      :is-show-download-modal="isSandboxStatsDownloadModal"
       @paginationChangedEvent="paginationChangedEvent($event)"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -41,9 +38,6 @@
       @sortChangedEvent="sortChanged"
       @searchChangedEvent="handleSearchChange"
       @on-table-settings-change="handleSetRenderedColumns"
-      :isServerSide="true"
-      :server-side-props="serverSideProps"
-      :server-side-events="{ pagination: true, search: true, sort: true }"
     ></data-table>
   </div>
 </template>
@@ -56,10 +50,15 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxStats, getSandboxStats } from '@/api/sandbox'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'sandboxStats',
   components: {
@@ -86,8 +85,6 @@ export default {
       integrationTypes: [],
       loading: true,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       storedTableSettings: null,
@@ -181,188 +178,8 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'TotalRequest',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains'
-                },
-                {
-                  FieldName: 'ScanType',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  Value: '',
-                  FieldName: 'TotalRequest',
-                  Operator: '>'
-                },
-                {
-                  Value: '',
-                  FieldName: 'HarmfulRequest',
-                  Operator: '='
-                },
-                {
-                  Value: '',
-                  FieldName: 'UndetectedRequest',
-                  Operator: '='
-                }
-              ],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains'
-                },
-                {
-                  FieldName: 'ScanType',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  Value: '',
-                  FieldName: 'TotalRequest',
-                  Operator: '>'
-                },
-                {
-                  Value: '',
-                  FieldName: 'HarmfulRequest',
-                  Operator: '='
-                },
-                {
-                  Value: '',
-                  FieldName: 'UndetectedRequest',
-                  Operator: '='
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        },
-        FilterSummary: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'ClientResourceId',
-                  Operator: 'Contains'
-                },
-                {
-                  FieldName: 'CreateTime',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'TotalRequest',
-        ascending: true,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'CompanyName',
-                  Operator: 'Contains'
-                },
-                {
-                  FieldName: 'ScanType',
-                  Operator: 'Contains',
-                  Value: ''
-                },
-                {
-                  Value: '',
-                  FieldName: 'TotalRequest',
-                  Operator: '>'
-                },
-                {
-                  Value: '',
-                  FieldName: 'HarmfulRequest',
-                  Operator: '='
-                },
-                {
-                  Value: '',
-                  FieldName: 'UndetectedRequest',
-                  Operator: '='
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        },
-        FilterSummary: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [
-                {
-                  Value: '',
-                  FieldName: 'AnalysisEngineTypeId',
-                  Operator: 'Contains'
-                },
-                {
-                  Value: '',
-                  FieldName: 'ClientResourceId',
-                  Operator: 'Contains'
-                },
-                {
-                  FieldName: 'CreateTime',
-                  Operator: 'Contains',
-                  Value: ''
-                }
-              ],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyData: getDefaultAxiosPayload({ orderBy: 'TotalRequest' }),
+      defaultRequestBody: getDefaultAxiosPayload({ orderBy: 'TotalRequest' }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -480,15 +297,6 @@ export default {
             }
           })
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
         .catch(() => {
           this.tableData = []
@@ -503,7 +311,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -517,7 +325,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -578,11 +386,6 @@ export default {
     },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
-    },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -652,15 +455,6 @@ export default {
             }
           })
           this.tableData = results
-          this.totalNumberOfRecords = totalNumberOfRecords
-
-          if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-            this.showAllRecords = true
-          }
-
-          if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-            this.showAllRecords = false
-          }
         })
         .catch(() => {
           this.tableData = []
@@ -669,58 +463,19 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.slice(0, 1).toUpperCase() + filter[i].FieldName.slice(1)
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.slice(0, 1).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'Status' && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
-      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName.toLowerCase() !== fieldName.toLowerCase()) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     }
   },
   created() {

@@ -28,34 +28,7 @@
     </app-dialog>
     <div class="emailTemplatePreview__container" ref="topOfTheTemplate">
       <div class="emailTemplatePreview__container-main">
-        <div class="d-flex justify-space-between align-center mb-4">
-          <k-select
-            v-infinite-scroll="{
-              target: '#input--email-template-list .k-select__menu',
-              callback: getDataAfterValidScroll
-            }"
-            :items="listData"
-            placeholder="Type"
-            item-text="name"
-            v-model="selectChangeValue"
-            item-value="resourceId"
-            id="input--email-template-list"
-            outlined
-            persistent-hint
-            @change="selectChange"
-            return-object
-            :menu-props="{ offsetY: true }"
-            no-data-text="No email template available"
-            class="selectChange"
-          ></k-select>
-          <span
-            @click="showAdvancedSearch = !showAdvancedSearch"
-            class="toggle-advanced-search ml-4 mr-4"
-            style="cursor: pointer; min-width: 190px;"
-            >{{ showAdvancedSearch ? 'Close Advanced Search' : 'Open Advanced Search' }}</span
-          >
-        </div>
-        <div class="emailTemplatePreview-content" v-if="showAdvancedSearch">
+        <div class="emailTemplatePreview-content">
           <div class="emailTemplatePreview-content--search">
             <div class="d-flex justify-space-between">
               <div class="d-flex">
@@ -123,8 +96,8 @@
                 class="template-list"
                 v-for="(item, index) in listData"
                 :key="item.name + index"
-                @click="setSelectedTemplate(item, index)"
                 :class="{ 'template-list--selected': item['selected'] }"
+                @click="setSelectedTemplate(item, index)"
               >
                 <div class="d-flex justify-space-between mb-2">
                   <div class="d-flex flex-column wrapWord">
@@ -238,7 +211,6 @@
 import { Multipane, MultipaneResizer } from 'vue-multipane'
 import AppDialog from '../AppDialog'
 import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phishingsimulator'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
@@ -251,13 +223,11 @@ export default {
   directives: {
     'infinite-scroll': InfiniteScroll
   },
-  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog, KSelect },
+  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
   data() {
     return {
-      showAdvancedSearch: true,
       search: null,
       listData: [],
-      backupListData: [],
       defaultListData: [],
       templateFromName: null,
       templateSubject: null,
@@ -311,8 +281,7 @@ export default {
       selectedTemplateHeader: null,
       loadingTemplates: false,
       selectedTemplateId: null,
-      selectedPreviousIndex: 0,
-      selectChangeValue: ''
+      selectedPreviousIndex: 0
     }
   },
   mounted() {
@@ -339,10 +308,9 @@ export default {
               this.activeTemplateHTML = this.templateHTML
               this.templateHTML = null
             } else {
-              data.data.results = data.data.results.map((item) => {
+              this.listData = data.data.results.map((item) => {
                 return { ...item, selected: item.resourceId === this.emailTemplateResourceId }
               })
-              this.listData = data.data.results
             }
           })
           .finally(() => {
@@ -351,16 +319,6 @@ export default {
             this.$emit('loading', false)
           })
       }, 500)
-    },
-    selectChange() {
-      this.setSelectedTemplate(
-        this.listData[
-          this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
-        ],
-        this.listData.findIndex((lItem) => lItem.resourceId === this.selectChangeValue.resourceId)
-      )
-      this.$emit('selectedEmailTemplateChange', this.selectChangeValue.id)
-      this.$emit('selectedEmailTemplateResourceId', this.selectChangeValue.resourceId)
     },
     getTemplatesForSearch() {
       this.bodyData.pageSize = 100
@@ -411,7 +369,6 @@ export default {
                 if (index > -1) {
                   this.setSelectedTemplate(this.listData[index], index, true)
                   this.listData[index].selected = true
-                  this.selectChangeValue = this.emailTemplateResourceId
                 }
               } else {
                 if (!emailTemplateResourceId) this.setSelectedTemplate(this.listData[0], 0, true)
@@ -446,9 +403,6 @@ export default {
       this.listData = this.listData.map((item) => {
         return { ...item, selected: false }
       })
-      this.backupListData = this.backupListData.map((item) => {
-        return { ...item, selected: false }
-      })
       if (this.listData[index]) {
         this.listData[index].selected = true
       }
@@ -461,11 +415,11 @@ export default {
       }
       getEmailTemplatePreviewContent(item.resourceId)
         .then((response) => {
-          this.selectedTemplateHeader = response.data.data.name
-          this.templateHTML = response.data.data.template
-          this.templateFromName = response.data.data.fromName
-          this.templateSubject = response.data.data.subject
-          this.templateFromEmail = response.data.data.fromAddress
+          this.selectedTemplateHeader = response?.data?.data?.name || ''
+          this.templateHTML = response?.data?.data?.template || ''
+          this.templateFromName = response?.data?.data?.fromName || ''
+          this.templateSubject = response?.data?.data?.subject || ''
+          this.templateFromEmail = response?.data?.data?.fromAddress || ''
         })
         .finally(() => {
           this.loadingTemplatePreview = false
@@ -489,17 +443,17 @@ export default {
         ) {
           this.getTemplates(true)
         } else {
-          this.listData = [...this.defaultListData]
-          this.templateHTML = this.activeTemplateHTML
+          this.listData = [...this.defaultListData].map((item) => ({
+            ...item,
+            selected: item.resourceId === this.emailTemplateResourceId
+          }))
+          this.templateHTML = this.activeTemplateHTML || this.templateHTML
         }
       } else {
         if (newVal !== oldVal) {
           this.callForSearch()
         }
       }
-    },
-    emailTemplateResourceId(newVal) {
-      this.selectChangeValue = newVal
     }
   }
 }

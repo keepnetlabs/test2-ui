@@ -1,4 +1,5 @@
 # Node.js with Vue
+
 # Build a Node.js project that uses Vue.
 # Add steps that analyze code, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
@@ -29,7 +30,7 @@ steps:
 - script: yarn test:unit
   displayName: 'yarn test'
   failOnStderr: true,
-  continueOnError: false
+  continueOnError: true
   
 - script: yarn run build
   displayName: 'yarn build'

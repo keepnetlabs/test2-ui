@@ -764,7 +764,6 @@ export default {
         query: this.query,
         actions: [...this.$refs.refActionItem.getCurrentActions()]
       }
-      console.log(currentFormValues, this.initialFormValues)
       const isChanged = isDifferent(currentFormValues, this.initialFormValues)
       if (!isChanged) {
         return this.$emit('cancelForm')

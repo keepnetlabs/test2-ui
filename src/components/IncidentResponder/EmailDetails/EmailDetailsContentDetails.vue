@@ -14,7 +14,7 @@
           Analysis Date
         </div>
         <div id="text--email-details-analysis-date-value" class="details-content--item--value">
-          {{ mailDetails.analysisDate }}
+          {{ mailDetails && mailDetails.analysisDate }}
         </div>
       </div>
       <div class="details-content-header__container">
@@ -46,13 +46,13 @@
     <div class="details-content--item">
       <div id="text--email-details-from-key" class="details-content--item--key">From</div>
       <div id="text--email-details-from-value" class="details-content--item--value">
-        {{ mailDetails.from }}
+        {{ mailDetails && mailDetails.from }}
       </div>
     </div>
     <div class="details-content--item">
       <div id="text--email-details-from-name-key" class="details-content--item--key">From Name</div>
       <div id="text--email-details-from-name-value" class="details-content--item--value">
-        {{ mailDetails.senderName }}
+        {{ mailDetails && mailDetails.senderName }}
       </div>
     </div>
     <div class="details-content--item">
@@ -79,14 +79,14 @@
         Date Received
       </div>
       <div id="text--email-details-date-received-value" class="details-content--item--value">
-        {{ mailDetails['receivedDate'] }}
+        {{ mailDetails && mailDetails['receivedDate'] }}
       </div>
     </div>
 
     <div class="details-content--item">
       <div id="text--email-details-sender-ip-key" class="details-content--item--key">Sender IP</div>
       <div id="text--email-details-sender-ip-value" class="details-content--item--value">
-        {{ mailDetails['senderIp'] }}
+        {{ mailDetails && mailDetails['senderIp'] }}
       </div>
     </div>
 
@@ -95,7 +95,7 @@
         Folder Name
       </div>
       <div id="text--email-details-folder-name-value" class="details-content--item--value">
-        {{ mailDetails['folderName'] }}
+        {{ mailDetails && mailDetails['folderName'] }}
       </div>
     </div>
 
@@ -138,7 +138,10 @@ export default {
   components: { EmailDetailsSenderIpBlacklistCheck, ReAnalyzeIncidentDialog },
   props: {
     mailDetails: {
-      type: Object
+      type: Object,
+      default() {
+        return {}
+      }
     },
     loading: {
       type: Boolean
@@ -166,7 +169,7 @@ export default {
       return mailDetails && mailDetails.to && mailDetails.bcc.toString()
     },
     isReAnalyzeDisabled() {
-      const mailDetails = this.mailDetails
+      const mailDetails = this.mailDetails || {}
       return (
         mailDetails.status === 'BeingAnalyzed' ||
         mailDetails.status === 'InProgress' ||

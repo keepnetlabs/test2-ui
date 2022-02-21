@@ -1,17 +1,19 @@
 <template>
-  <v-card class="email-template__container">
+  <v-card class="email-template__container" :style="'overflow-y:hidden'">
     <app-modal
       v-if="showGrapesModal"
       :status="showGrapesModal"
       icon-name="mdi-check"
       :title="labels.NotificationTemplate"
-      z-index="999999"
+      z-index="9999"
       :show-header="false"
+      :should-remove-overflow="false"
       @submit="saveGrapeJs"
       @closeOverlay="toggleShowGrapesModal"
     >
       <template v-slot:overlay-body>
         <GrapesNewsletterModal
+          v-if="showGrapesModal"
           ref="grapesJsPostIncident"
           :htmlData="template"
           :key="grapeJsKey"
@@ -128,6 +130,7 @@ import AppModal from '@/components/AppModal'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
+import { isDifferent } from '@/utils/functions'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { mapGetters } from 'vuex'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
@@ -164,6 +167,7 @@ export default {
   ],
   data() {
     return {
+      initialTemplate: null,
       labels,
       showGrapesModal: false,
       grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
@@ -176,17 +180,20 @@ export default {
   },
   watch: {
     activeBlockManagerComponents() {
-      if (!this.isEdit) {
-        this.setDefaultTemplate()
-      }
       this.grapeJsKey = `${Math.random().toString().substring(0, 7)}-key`
     }
   },
   mounted() {
     this.defaultTemplate = this.template || this.$refs.refPreview.$el.outerHTML
+    this.setDefaultTemplate()
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
+    setInitialTemplateData() {
+      setTimeout(() => {
+        this.initialTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent() || ''
+      }, 1000)
+    },
     handleFileDelete(index) {
       this.$emit(
         'handleAttachmentRemove',
@@ -206,11 +213,6 @@ export default {
       this.tab = index
     },
     editHtmlTemplate() {
-      this.$emit(
-        'update:template',
-        this.template ||
-          this.$refs?.refPreview?.$refs?.iframe?.contentWindow?.document?.body?.innerHTML
-      )
       this.toggleShowGrapesModal()
     },
     getPStyle() {
@@ -239,9 +241,29 @@ export default {
     },
     toggleShowGrapesModal() {
       if (this.showGrapesModal) {
-        this.$refs.grapesJsPostIncident.destroyEditor()
+        if (this.$refs.grapesJsPostIncident) {
+          const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
+          const isChanged = isDifferent(currentTemplate, this.initialTemplate)
+          if (!isChanged) {
+            this.$refs.grapesJsPostIncident.destroyEditor()
+            this.showGrapesModal = !this.showGrapesModal
+          } else {
+            this.$store.dispatch('common/setIsShowLeavingDialog', {
+              show: true,
+              callback: () => {
+                this.$refs.grapesJsPostIncident.destroyEditor()
+                this.showGrapesModal = !this.showGrapesModal
+              }
+            })
+          }
+        } else {
+          this.$refs.grapesJsPostIncident.destroyEditor()
+          this.showGrapesModal = !this.showGrapesModal
+        }
+      } else {
+        this.showGrapesModal = !this.showGrapesModal
+        this.setInitialTemplateData()
       }
-      this.showGrapesModal = !this.showGrapesModal
     },
     saveGrapeJs() {
       this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())

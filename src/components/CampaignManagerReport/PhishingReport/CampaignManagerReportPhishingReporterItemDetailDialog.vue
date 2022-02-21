@@ -59,7 +59,11 @@ import { getDefaultAxiosPayload } from '@/utils/functions'
 import { COLUMNS } from '@/components/CampaignManagerReport/Opened/utils'
 import labels from '@/model/constants/labels'
 import { searchCampaignJobUserEmailReportedDetails } from '@/api/phishingsimulator'
-import { columnFilterChanged, columnFilterCleared } from '@/utils/helperFunctions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'CampaignManagerReportPhishingReporterItemDetailDialog',
   components: { DataTable, AppDialog },
@@ -168,10 +172,9 @@ export default {
       this.serverSideProps.pageNumber = 1
     },
     checkIsColumnFilterActive() {
-      this.tableOptions.isColumnFilterActive =
-        this.axiosPayload.filter.FilterGroups[0].FilterItems.length >= 1
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.axiosPayload)
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -180,7 +183,7 @@ export default {
       })
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.checkIsColumnFilterActive()
       this.callForData()
     },
     handleClose() {

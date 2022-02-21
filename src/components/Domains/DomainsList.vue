@@ -19,26 +19,21 @@
     <data-table
       id="domains-data-table"
       ref="refDomainsListList"
+      is-server-side
+      selectable
+      filterable
+      options
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
       :refName="'domainsList'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
       :row-actions="tableOptions.rowActions"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
-      :dataLength="tableData && tableData.totalNumberOfRecords"
-      :requestParams="bodyData"
-      :isServerSide="true"
       :server-side-props="serverSideProps"
       :download-button="tableOptions.downloadButton"
       :server-side-events="{ pagination: true, search: true, sort: true }"
@@ -51,7 +46,6 @@
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="getDatatableList"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -109,12 +103,17 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
 import DeleteServiceModal from '@/components/Domains/DeleteServiceModal'
 import NewEditDomain from '@/components/Domains/NewEditDomain'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 
 export default {
   name: 'DomainList',
@@ -140,8 +139,6 @@ export default {
       isDuplicate: false,
       emailTemplateId: null,
       labels,
-      showAllRecords: false,
-      totalNumberOfRecords: 0,
       tableData: [],
       showDeleteModal: false,
       storedTableSettings: null,
@@ -157,6 +154,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            fixed: 'left',
             filterableType: 'text',
             width: 180
           },
@@ -249,48 +247,8 @@ export default {
         }
       },
       modalStatus: false,
-      bodyData: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'createTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyData: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       templateHTML: null
@@ -320,7 +278,7 @@ export default {
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -334,7 +292,7 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
@@ -391,13 +349,11 @@ export default {
         })
       )
     },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
+    },
     checkPermissions(permission, type) {
       return checkPermission(permission, type)
-    },
-    handleAllRecordsClick() {
-      this.bodyData.pageSize = 75000
-      this.showAllRecords = false
-      this.getDatatableList()
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
@@ -472,15 +428,6 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             this.tableData = results
-            this.totalNumberOfRecords = totalNumberOfRecords
-
-            if (this.bodyData.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-
-            if (totalNumberOfRecords <= 1000 && this.bodyData.pageSize === 1000) {
-              this.showAllRecords = false
-            }
           })
           .catch(() => {
             this.tableData = []
@@ -496,52 +443,15 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyData.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.bodyData.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
       this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.bodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName.toLowerCase() !== fieldName.toLowerCase()) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyData.filter.FilterGroups[0].FilterItems = filterPayload
-
-      this.tableOptions.isColumnFilterActive =
-        this.bodyData.filter.FilterGroups[0].FilterItems.length >= 1
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyData
+      )
+      this.calculateIsFilterColumnActive()
       this.getDatatableList()
     }
   },

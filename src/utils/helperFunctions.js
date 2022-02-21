@@ -92,6 +92,13 @@ export function columnFilterCleared(fieldName = '', axiosPayload = {}) {
   return filterPayload
 }
 
+export function isColumnFilterActive(axiosPayload = {}) {
+  return !!(
+    axiosPayload?.filter?.FilterGroups[0]?.FilterItems?.length ||
+    axiosPayload?.filter?.FilterGroups[1]?.FilterItems?.length
+  )
+}
+
 export function downloadExportedFile(data = {}, fileName = '', type = '') {
   const link = document.createElement('a')
   link.href = window.URL.createObjectURL(data)
@@ -99,4 +106,51 @@ export function downloadExportedFile(data = {}, fileName = '', type = '') {
     type.toLocaleLowerCase() === 'xls' ? 'xlsx' : type.toLocaleLowerCase()
   }`
   link.click()
+}
+
+export function createCustomFieldColumns(customFields = []) {
+  return customFields.map((field) => {
+    const { name, fieldDataType } = field
+    const filterableProps = {}
+    switch (fieldDataType.toLowerCase()) {
+      case 'string':
+        filterableProps['filterableType'] = 'text'
+        break
+      case 'email':
+        filterableProps['filterableType'] = 'text'
+        break
+      case 'number':
+        filterableProps['filterableType'] = 'text'
+        break
+      case 'boolean':
+        filterableProps['filterableType'] = 'select'
+        filterableProps['filterableItems'] = [
+          { text: 'Yes', value: 1 },
+          { text: 'No', value: 0 }
+        ]
+        break
+      case 'date':
+        filterableProps['filterableType'] = 'dateOnly'
+        filterableProps['type'] = 'date'
+        break
+      case 'datetime':
+        filterableProps['filterableType'] = 'date'
+        break
+      default:
+        break
+    }
+    return {
+      property: name,
+      type: 'text',
+      sortable: false,
+      filterable: true,
+      hideSort: true,
+      label: name,
+      align: 'left',
+      show: true,
+      width: 80 + name.length * 7,
+      isCustomField: true,
+      ...filterableProps
+    }
+  })
 }

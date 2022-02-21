@@ -25,23 +25,20 @@
       id="phishing-reporter-data-table"
       ref="refUsersList"
       is-server-side
+      selectable
+      filterable
+      options
       :loading="isLoading"
       :select-event="tableOptions.selectEvent"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :addButton="tableOptions.addButton"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
-      :filterable="true"
-      :options="true"
       :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
-      :pageSizes="tableOptions.pageSizes"
       :refName="'usersListTable'"
       :row-actions="tableOptions.rowActions"
-      :selectable="true"
-      :resizable="resizable"
-      :sizeable="true"
       :table="tableOptions.table"
       @deleteAction="handleDelete"
       @downloadEvent="exportPhishingReporterUserList"
@@ -111,9 +108,18 @@ import {
 import labels from '@/model/constants/labels'
 import AppDialog from '../AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import { getDataTableFieldLabel, getBtnStatusColor } from '@/utils/functions'
+import {
+  getDataTableFieldLabel,
+  getBtnStatusColor,
+  getDefaultAxiosPayload
+} from '@/utils/functions'
 import Badge from '@/components/Badge'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'Users',
   components: {
@@ -121,12 +127,6 @@ export default {
     DataTable,
     AppDialog,
     Badge
-  },
-  props: {
-    resizable: {
-      type: Boolean,
-      default: true
-    }
   },
   data() {
     return {
@@ -286,8 +286,7 @@ export default {
             id: 'btn-delete--phishing-reporter-users-row-actions',
             action: 'deleteAction'
           }
-        ],
-        pageSizes: [5, 10, 25]
+        ]
       },
       isWantToDelete: false,
       selectedRow: null,
@@ -298,48 +297,8 @@ export default {
         delete: false,
         download: false
       },
-      requestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'LastSeen',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'LastSeen',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      requestBody: getDefaultAxiosPayload({ orderBy: 'LastSeen' }),
+      defaultRequestBody: getDefaultAxiosPayload({ orderBy: 'LastSeen' }),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -541,56 +500,20 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.requestBody
+      )
       this.resetPageNumber()
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
       this.callForPhishingReporterUser()
     },
     columnFilterCleared(fieldName) {
-      if (this.isRestoredOrClearedFilters) {
-        return
-      }
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.requestBody
+      )
+      this.calculateIsFilterColumnActive()
       this.callForPhishingReporterUser()
-
-      this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     },
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -618,8 +541,7 @@ export default {
       this.resetPageNumber()
       this.callForPhishingReporterUser()
     },
-    handleSearchChange(searchFilter = {}, columnFilterActive = false) {
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+    handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.tableOptions.columns.find(
           (col) => col.property.toLowerCase() === filterItem.FieldName.toLowerCase()
@@ -628,7 +550,7 @@ export default {
       })
       this.requestBody.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.callForPhishingReporterUser()
     },
     sortChanged({ order, prop } = {}) {
@@ -639,6 +561,9 @@ export default {
     resetPageNumber() {
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {

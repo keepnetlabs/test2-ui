@@ -24,25 +24,25 @@
         v-if="checkPermissions('system-users/search', 'POST')"
         id="system-users-people-data-table"
         ref="refSystemUsersList"
+        is-server-side
         is-server-side-selection
+        filterable
+        options
+        selectable
         :loading="loading"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
-        :total-number-of-records="totalNumberOfRecords"
         :table="tableData"
         :refName="'systemUsersList'"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :show-all-records="showAllRecords"
-        :filterable="true"
-        :options="true"
         :select-event="tableOptions.selectEvent"
         :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
         :download-button="tableOptions.downloadButton"
         :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @deleteAction="handleDelete"
         @downloadEvent="exportSystemUsers"
         @editAction="handleEdit"
@@ -50,7 +50,6 @@
         @onEmptyBtnClicked="toggleCreateOrEditSystemUser"
         @columnFilterChanged="columnFilterChanged"
         @columnFilterCleared="columnFilterCleared"
-        @on-all-records-button-click="handleAllRecordsClick"
         @set-default-search="handleSetDefaultSearch"
         @restore-default-search="handleRestoreDefaultSearch"
         @clear-filters="handleClearFilters"
@@ -61,9 +60,6 @@
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
         @handleMultipleDelete="handleMultipleDeleteOfSystemUsers"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       />
     </div>
   </div>
@@ -85,10 +81,15 @@ import {
   bulkDeleteSystemUsers
 } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
-import { checkPermission } from '@/utils/functions'
+import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'People',
   components: {
@@ -101,10 +102,8 @@ export default {
       deleteButtonDisabled: false,
       loading: true,
       storedTableSettings: null,
-      showAllRecords: false,
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
-      totalNumberOfRecords: 0,
       multipleSystemUserPayload: {},
       tableData: [],
       tableOptions: {
@@ -257,48 +256,8 @@ export default {
           disabled: !this.checkPermissions('system-users', 'POST')
         }
       },
-      requestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      requestBody: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       showCreateOrEditSystemUserModal: false,
       selectedRow: null,
       showDeleteSystemUserModal: false,
@@ -308,15 +267,13 @@ export default {
   },
   methods: {
     resetPageNumber() {
-      //generic
       this.requestBody.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.SYSTEM_USERS_PEOPLE, JSON.stringify(tableSettings))
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.requestBody.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
@@ -329,11 +286,10 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.checkIsColumnFilterActive()
       this.callForListSystemUsers()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.requestBody.pageNumber = pageNumber
       this.callForListSystemUsers()
     },
@@ -363,13 +319,11 @@ export default {
         })
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.requestBody.ascending = order === 'ascending'
       this.requestBody.orderBy = prop
       this.callForListSystemUsers()
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.requestBody.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -464,11 +418,6 @@ export default {
         this.selectedRow = null
       }
     },
-    handleAllRecordsClick() {
-      this.requestBody.pageSize = 75000
-      this.showAllRecords = false
-      this.callForListSystemUsers()
-    },
     closeOverlayWithUpdate() {
       this.toggleCreateOrEditSystemUser()
       this.callForListSystemUsers()
@@ -485,13 +434,6 @@ export default {
             this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
             this.serverSideProps.totalNumberOfPages = totalNumberOfPages
             this.serverSideProps.pageNumber = pageNumber
-            this.totalNumberOfRecords = totalNumberOfRecords
-            if (this.requestBody.pageSize === 1000 && totalNumberOfRecords > 1000) {
-              this.showAllRecords = true
-            }
-            if (totalNumberOfRecords <= 1000 && this.requestBody.pageSize === 1000) {
-              this.showAllRecords = false
-            }
             this.tableData = data.results || []
           })
           .catch(() => {
@@ -507,50 +449,19 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.requestBody.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.requestBody.filter.FilterGroups[0].FilterItems = requestBody
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.requestBody
+      )
       this.callForListSystemUsers()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.requestBody.filter.FilterGroups[0].FilterItems
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-      filterPayload = [...items]
-      this.requestBody.filter.FilterGroups[0].FilterItems = filterPayload
+      this.requestBody.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.requestBody
+      )
+      this.checkIsColumnFilterActive()
       this.callForListSystemUsers()
-      this.tableOptions.isColumnFilterActive =
-        this.requestBody.filter.FilterGroups[0].FilterItems.length >= 1
     },
     handleEdit(row) {
       this.selectedRow = row
@@ -586,6 +497,9 @@ export default {
       if (this.$refs.systemUserModal) {
         this.$refs.systemUserModal.closeOverlay()
       }
+    },
+    checkIsColumnFilterActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.requestBody)
     }
   },
   created() {

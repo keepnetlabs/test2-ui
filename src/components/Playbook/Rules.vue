@@ -30,39 +30,34 @@
       @closeOverlay="toggleMatchingModal"
     />
     <datatable
+      id="playbook-data-table"
+      ref="refRulesList"
+      selectable
+      filterable
+      options
       is-server-side
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :show-all-records="showAllRecords"
-      ref="refRulesList"
       :refName="'rulesListTable'"
       :columns="tableOptions.columns"
-      :total-number-of-records="totalNumberOfRecords"
-      :selectable="true"
-      :filterable="true"
-      :options="true"
-      :sizeable="true"
       :row-actions="tableOptions.rowActions"
-      :pageSizes="tableOptions.pageSizes"
       :empty="tableOptions.empty"
       :addButton="tableOptions.addButton"
       :stored-table-settings="storedTableSettings"
       :selectEvent="tableOptions.selectEvent"
+      :download-button="getDownloadButton"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
       @deleteFunction="deleteRule($event)"
       @addAction="toggleRuleModal"
-      :download-button="getDownloadButton"
       @onEmptyBtnClicked="toggleRuleModal"
       @downloadEvent="exportRules"
-      id="playbook-data-table"
       @deleteAction="deleteRule($event)"
       @editAction="handleEdit"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
       @refreshAction="callForSearchPlaybook"
-      @on-all-records-button-click="handleAllRecordsClick"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
       @clear-filters="handleClearFilters"
@@ -121,6 +116,12 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import MatchingIncidentModal from '@/components/IncidentResponder/MatchingIncidentModal'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'Rules',
   components: {
@@ -144,10 +145,6 @@ export default {
     return {
       deleteButtonDisabled: false,
       tableData: [],
-      totalNumberOfRecords: 0,
-      showAllRecords: false,
-      showAllRecordsMatchingPopup: false,
-      totalNumberOfRecordsMatchingPopup: 0,
       labels,
       loading: false,
       storedTableSettings: null,
@@ -248,55 +245,14 @@ export default {
         ],
         empty: this.getTableEmptyStatus(),
         rowActions: this.getRowActions(),
-        pageSizes: [5, 10, 25],
         addButton: this.getAddButton(),
         selectEvent: {
           clipboard: true,
           delete: this.PERMISSIONS.DELETE.hasPermission
         }
       },
-      tableCredientials: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 10,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      tableCredientials: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       matchingInvestigationPlaybookRules: {
         table: [],
         columns: [
@@ -346,11 +302,9 @@ export default {
           message: labels.EmptyMatchingIncidents,
           btn: '',
           icon: 'mdi-plus'
-        },
-        chartOptions: {}
+        }
       },
-      serverSideProps: new ServerSideProps(),
-      serverSidePropsMatchingIncident: new ServerSideProps()
+      serverSideProps: new ServerSideProps()
     }
   },
   methods: {
@@ -362,7 +316,6 @@ export default {
       this.callForSearchPlaybook()
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.tableCredientials.pageSize = pageSize
       this.tableCredientials.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -378,7 +331,7 @@ export default {
       })
       this.tableCredientials.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = columnFilterActive
+      this.calculateIsFilterColumnActive()
       this.callForSearchPlaybook()
     },
     sortChanged({ order, prop } = {}) {
@@ -428,11 +381,6 @@ export default {
           filterValues
         })
       )
-    },
-    handleAllRecordsClick() {
-      this.tableCredientials.pageSize = 75000
-      this.showAllRecords = false
-      this.callForSearchPlaybook()
     },
     getTableEmptyStatus() {
       const emptyObj = {
@@ -578,60 +526,24 @@ export default {
           : item && item.name
       return `${nameValues} will be deleted!`
     },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.tableCredientials)
+    },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.tableCredientials.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        const { FieldName, Value } = filter
-        if ((FieldName === 'Status' || FieldName === 'Priority') && Value === '') {
-        } else {
-          requestBody.push(elem)
-        }
-      }
-
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = requestBody
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.tableCredientials
+      )
       this.callForSearchPlaybook()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.tableCredientials.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.tableCredientials.filter.FilterGroups[0].FilterItems = filterPayload
+      this.tableCredientials.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.tableCredientials
+      )
+      this.calculateIsFilterColumnActive()
       this.callForSearchPlaybook()
-
-      this.tableOptions.isColumnFilterActive =
-        this.tableCredientials.filter.FilterGroups[0].FilterItems.length >= 1
     },
     callForSearchPlaybook() {
       this.loading = true
@@ -639,9 +551,9 @@ export default {
         .then((response) => {
           const {
             data: {
-              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
-            }
-          } = response
+              data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber } = {}
+            } = {}
+          } = response || {}
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber

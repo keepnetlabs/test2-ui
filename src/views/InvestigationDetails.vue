@@ -6,6 +6,7 @@
     >
       <div class="investigation-details__container">
         <new-investigation
+          v-if="isWantToAddNewCommunity"
           :isEdit="true"
           :statsAndMenuData="statsAndMenuData"
           :status="isWantToAddNewCommunity"
@@ -13,21 +14,20 @@
           :investigationDetailsData="investigationDetailsData"
           @closeWithRoute="onAddClose"
           @closeAdd="isWantToAddNewCommunity = false"
-          v-if="isWantToAddNewCommunity"
           @refreshDatatable="refreshDatatable"
         />
         <app-dialog
           v-if="isWantToDelete"
-          :status="isWantToDelete"
           icon="mdi-alert"
           size="small"
           title="Delete Emails?"
-          title-id="text--investigation-details-delete-emails-popup-title"
-          subtitle-id="text--investigation-details-delete-emails-popup-subtitle"
-          :subtitle="deleteMessage()"
-          @changeStatus="isWantToDelete = false"
           body="Do you want to delete emails or move to trash?"
           className="investigation-details__modal-footer"
+          title-id="text--investigation-details-delete-emails-popup-title"
+          subtitle-id="text--investigation-details-delete-emails-popup-subtitle"
+          :status="isWantToDelete"
+          :subtitle="deleteMessage()"
+          @changeStatus="isWantToDelete = false"
         >
           <template v-slot:app-dialog-footer>
             <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
@@ -108,6 +108,77 @@
               @handleClose="isWantToWarn = false"
               @handleConfirm="isWantToWarnConfirm"
             />
+          </template>
+        </app-dialog>
+        <app-dialog
+          v-if="isWantToDeleteAndNotify"
+          size="big"
+          icon="mdi-alert"
+          title-id="text--investigation-details-delete-and-notify-title"
+          subtitle-id="text--investigation-details-delete-and-notify-subtitle"
+          class-name="investigation-details__delete-and-notify-modal"
+          :status="isWantToDeleteAndNotify"
+          :title="deleteAndNotifyMessage"
+          :subtitle="deleteAndNotifyMessageSubtitle"
+          @changeStatus="isWantToDeleteAndNotify = false"
+        >
+          <template v-slot:app-dialog-body>
+            <v-list-item class="check-wrapper investigation-details__alerts-content pl-0 pr-0">
+              <v-form
+                class="w-100"
+                lazy-validation
+                ref="refDeleteAndNotifyForm"
+                onSubmit="return false;"
+                @submit="isWantToDeleteAndNotifyConfirm"
+              >
+                <v-text-field
+                  id="input--investigation-details-warning-message"
+                  placeholder="Dangerous Email"
+                  outlined
+                  class="edit-name-textfield edit-select standard-height"
+                  v-model.trim="deleteAndNotifyMessage"
+                  height="40"
+                  :rules="[
+                    (v) => validations.required(v, 'Required'),
+                    (v) => validations.trim(v, 'Required')
+                  ]"
+                ></v-text-field>
+              </v-form>
+            </v-list-item>
+          </template>
+          <template v-slot:app-dialog-footer>
+            <div class="d-flex download-buttons flex-row flex-wrap justify-space-between flex-row">
+              <div>
+                <v-btn
+                  id="btn-cancel--investigation-details-delete-emails-popup"
+                  class="k-dialog__button"
+                  text
+                  color="#f56c6c"
+                  @click="isWantToDeleteAndNotify = false"
+                  >{{ labels.Cancel }}
+                </v-btn>
+              </div>
+              <div class="d-flex flex-row flex-end">
+                <v-btn
+                  id="btn-move-to-trash--investigation-details-delete-emails-popup"
+                  class="k-dialog__button"
+                  text
+                  :disabled="warnAndDeleteButtonDisabled"
+                  color="#00bcd4"
+                  @click="isWantToDeleteConfirm(false, null, false)"
+                  >Move to trash
+                </v-btn>
+                <v-btn
+                  id="btn-delete--investigation-delete-emails-details-popup"
+                  class="k-dialog__button"
+                  text
+                  color="#2196f3"
+                  :disabled="warnAndDeleteButtonDisabled"
+                  @click="isWantToDeleteConfirm(true, null, false)"
+                  >Delete Permanently
+                </v-btn>
+              </div>
+            </div>
           </template>
         </app-dialog>
         <app-dialog
@@ -209,7 +280,7 @@
         <div class="investigation-details__container__stats">
           <div class="investigation-details__container__stats-left-col">
             <InvestigationDetailsTopBarLoading :loading="topMenuLoading" class="w-100">
-              <template v-slot:skeleton-content>
+              <template #skeleton-content>
                 <div class="investigation-details__container__stats__cards">
                   <div class="investigation-details__container__stats__cards__card">
                     <div class="investigation-details__container__stats__cards__card-left">
@@ -235,7 +306,9 @@
                       <h3 class="investigation-details__container__stats__cards__card-right__title">
                         {{ statsAndMenuData && statsAndMenuData.status }}
                       </h3>
-                      <p class="investigation-details__container__stats__cards__card-right__stats">
+                      <div
+                        class="investigation-details__container__stats__cards__card-right__stats"
+                      >
                         <v-tooltip
                           v-if="
                             statsAndMenuData &&
@@ -258,7 +331,7 @@
                           </p>
                         </v-tooltip>
                         <span v-else>{{ getStatusText('statusTime', null) }}</span>
-                      </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -411,7 +484,7 @@
                           link
                           @click="menuClick('targetUsers')"
                           :class="{
-                            'v-list-item--active': activeMenu == 'targetUsers'
+                            'v-list-item--active': activeMenu === 'targetUsers'
                           }"
                         >
                           <v-list-item-icon>
@@ -422,9 +495,9 @@
                             <v-list-item-title>
                               Found Users
                               <span
-                                class="v-list-item-title__value"
+                                :class="getLeftMenuItemClasses('targetUsers')"
                                 v-if="statsAndMenuData && statsAndMenuData.scannedUserCount"
-                                >{{ statsAndMenuData && statsAndMenuData.scannedUserCount }}</span
+                                >{{ itemStats.targetUsers.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -448,9 +521,9 @@
                             <v-list-item-title>
                               Inbox
                               <span
-                                class="v-list-item-title__value"
-                                v-if="!!getMailCountByFolderName('Inbox')"
-                                >{{ getMailCountByFolderName('Inbox') }}</span
+                                :class="getLeftMenuItemClasses('Inbox')"
+                                v-if="!!itemStats.Inbox.count"
+                                >{{ itemStats.Inbox.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -471,9 +544,9 @@
                             <v-list-item-title>
                               Junk
                               <span
-                                class="v-list-item-title__value"
-                                v-if="!!getMailCountByFolderName('JunkEmail')"
-                                >{{ getMailCountByFolderName('JunkEmail') }}</span
+                                :class="getLeftMenuItemClasses('JunkEmail')"
+                                v-if="!!itemStats.JunkEmail.count"
+                                >{{ itemStats.JunkEmail.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -494,9 +567,9 @@
                             <v-list-item-title>
                               Draft
                               <span
-                                class="v-list-item-title__value"
-                                v-if="!!getMailCountByFolderName('Drafts')"
-                                >{{ getMailCountByFolderName('Drafts') }}</span
+                                :class="getLeftMenuItemClasses('Drafts')"
+                                v-if="!!itemStats.Drafts.count"
+                                >{{ itemStats.Drafts.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -517,9 +590,9 @@
                             <v-list-item-title>
                               Sent
                               <span
-                                class="v-list-item-title__value"
-                                v-if="!!getMailCountByFolderName('SentItems')"
-                                >{{ getMailCountByFolderName('SentItems') }}</span
+                                :class="getLeftMenuItemClasses('SentItems')"
+                                v-if="!!itemStats.SentItems.count"
+                                >{{ itemStats.SentItems.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -540,9 +613,9 @@
                             <v-list-item-title>
                               Deleted Items
                               <span
-                                class="v-list-item-title__value"
-                                v-if="!!getMailCountByFolderName('DeletedItems')"
-                                >{{ getMailCountByFolderName('DeletedItems') }}</span
+                                :class="getLeftMenuItemClasses('DeletedItems')"
+                                v-if="!!itemStats.DeletedItems.count"
+                                >{{ itemStats.DeletedItems.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -563,9 +636,9 @@
                             <v-list-item-title>
                               Others
                               <span
-                                class="v-list-item-title__value"
-                                v-if="!!getMailCountByFolderName('Others')"
-                                >{{ getMailCountByFolderName('Others') }}</span
+                                :class="getLeftMenuItemClasses('Others')"
+                                v-if="!!itemStats.Others.count"
+                                >{{ itemStats.Others.count }}</span
                               >
                             </v-list-item-title>
                           </v-list-item-content>
@@ -593,9 +666,9 @@
                               <v-list-item-title>
                                 Stored
                                 <span
-                                  class="v-list-item-title__value"
-                                  v-if="!!getMailCountByFolderName('Stored')"
-                                  >{{ getMailCountByFolderName('Stored') }}</span
+                                  :class="getLeftMenuItemClasses('Stored')"
+                                  v-if="!!itemStats.Stored.count"
+                                  >{{ itemStats.Stored.count }}</span
                                 >
                               </v-list-item-title>
                             </v-list-item-content>
@@ -674,7 +747,7 @@
                           v-if="getGoogleData && getGoogleData.length"
                         >
                           <img
-                            src="../assets/img/google@2x.png"
+                            src="../assets/img/google.svg"
                             alt="g-suite-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
@@ -696,7 +769,7 @@
                           class="align-center d-flex mr-2"
                         >
                           <img
-                            src="../assets/img/O365@2x.png"
+                            src="../assets/img/o365.svg"
                             alt="office-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
@@ -725,7 +798,7 @@
                     >
                       <v-btn
                         id="btn-stop--investigation-details-card"
-                        class="ma-2"
+                        class="ma-1"
                         outlined
                         color="#2196f3"
                         @click="stopInvestigationFunc"
@@ -738,10 +811,41 @@
                       id="btn-duplicate--investigation-details-card"
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
                     >
-                      <v-btn class="ma-2" outlined color="#2196f3" @click="startInvestigationFunc">
+                      <v-btn class="ma-1" outlined color="#2196f3" @click="startInvestigationFunc">
                         <v-icon medium left color="#2196f3">mdi-content-copy</v-icon>
                         Duplicate
                       </v-btn>
+                    </div>
+                    <div
+                      v-if="['Idle', 'Running'].includes(investigationDetailsData.status)"
+                      id="btn-duplicate--investigation-details-card"
+                      class="investigation-details__container__content--right-menu__summary__item--action-button--rounded"
+                    >
+                      <v-menu
+                        :min-width="300"
+                        :offset-y="true"
+                        left
+                        :nudge-right="0"
+                        :nudge-bottom="5"
+                      >
+                        <template v-slot:activator="{ on: menu }">
+                          <v-btn v-on="menu" class="ma-1" outlined color="#2196f3">
+                            <v-icon medium color="#2196f3">mdi-dots-vertical</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item @click="setAutoRefresh">
+                            <v-list-item-title>
+                              <div class="menu-item__content">
+                                Auto-Refresh every 15 seconds
+                                <v-icon v-if="isAutoRefreshActive" color="#000000"
+                                  >mdi-check</v-icon
+                                >
+                              </div>
+                            </v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
                     </div>
                   </div>
                 </div>
@@ -792,22 +896,29 @@
                 v-show="showEmails && !loading"
                 id="investigationDetailsList"
                 ref="refInvestigationListData"
+                is-server-side
+                selectable
+                filterable
+                options
                 rowKey="resourceId"
                 just-compare-row-key
                 is-server-side-selection
+                :show-filter-options="false"
                 :is-column-filter-active="isColumnFilterActive"
                 :refName="'investigationDetailsListTable'"
                 :columns="columns"
                 :table="investigationDetailsList"
-                :pageSizes="pageSizes"
-                :selectable="true"
-                :filterable="true"
-                :options="true"
                 :rowActions="rowActions"
                 :empty="iEmpty"
                 :selectEvent="selectEvent"
                 :stored-table-settings="storedTableDetailsList"
                 :chartOptions="chartOptions"
+                :server-side-props="serverSideProps"
+                :server-side-events="{
+                  pagination: true,
+                  search: true,
+                  sort: true
+                }"
                 @deleteInvestigationDetails="deleteInvestigationDetails"
                 @sendInvestigationDetailsWarningMessage="sendInvestigationDetailsWarningMessage"
                 @deleteAndNotifyInvestigationDetailsFunction="
@@ -822,18 +933,10 @@
                 @restore-default-search="handleRestoreDefaultSearch"
                 @clear-filters="handleClearFilters"
                 @on-table-settings-change="handleSetRenderedColumnsDetailsList"
-                :show-filter-options="false"
                 @server-side-page-number-changed="serverSidePageNumberChanged"
                 @server-side-size-changed="serverSideSizeChanged"
                 @sortChangedEvent="sortChanged"
                 @searchChangedEvent="handleSearchChange"
-                :isServerSide="true"
-                :server-side-props="serverSideProps"
-                :server-side-events="{
-                  pagination: true,
-                  search: true,
-                  sort: true
-                }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <template v-if="scope.row.emailLastAction">
@@ -883,6 +986,62 @@
                   </template>
                   <span v-else> </span>
                 </template>
+                <!-- <template #datatable-row-actions="{ scope }">
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        v-on="on"
+                        class="btn-hover"
+                        icon
+                        :id="rowActions[0].id"
+                        :disabled="rowActions[0].disabled"
+                        @click="deleteInvestigationDetails(scope.row)"
+                      >
+                        <v-icon>{{ rowActions[0].icon }}</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>{{ rowActions[0].name }}</span>
+                  </v-tooltip>
+                  <v-menu bottom left offset-y transition="scale-transition">
+                    <template v-slot:activator="{ on }">
+                      <v-btn class="btn-hover" icon v-on="on">
+                        <v-icon @click.native="selectedMenuIndex = scope.$index"
+                          >mdi-dots-vertical</v-icon
+                        >
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item
+                        :id="rowActions[1].id"
+                        class="sub-menu-el"
+                        :disabled="rowActions[1].disabled"
+                        @click="sendInvestigationDetailsWarningMessage(scope.row)"
+                      >
+                        <v-list-item-title @click="() => {}">
+                          <v-icon
+                            class="investigation-details-emails__row-actions__overflow-menu__icon"
+                            >{{ rowActions[1].icon }}</v-icon
+                          >
+                          <span>{{ rowActions[1].name }}</span>
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item
+                        :id="rowActions[2].id"
+                        class="sub-menu-el"
+                        :disabled="rowActions[2].disabled"
+                        @click="deleteAndSendNotification(scope.row)"
+                      >
+                        <v-list-item-title @click="() => {}">
+                          <v-icon
+                            class="investigation-details-emails__row-actions__overflow-menu__icon"
+                            >{{ rowActions[2].icon }}</v-icon
+                          >
+                          <span>{{ rowActions[2].name }}</span>
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </template> -->
               </datatable>
             </div>
             <div
@@ -891,25 +1050,30 @@
             >
               <datatable
                 v-show="showTargetUsersDetails && !loading"
-                :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 id="investigationDetailsTargetUsersList"
-                :refName="'investigationDetailsTargetUsersListTable'"
                 ref="investigationDetailsTargetUsersList"
+                refName="investigationDetailsTargetUsersListTable"
+                is-server-side
+                filterable
+                options
                 :columns="columnsTargetUsers"
                 :table="
                   investigationDetailsTargetUsersListData &&
                   investigationDetailsTargetUsersListData.results
                 "
-                :pageSizes="pageSizes"
-                :defaultSort="'date'"
+                :is-column-filter-active="isColumnFilterActiveTargetUsers"
                 :selectable="false"
-                :filterable="true"
-                :options="true"
-                :total-number-of-records="totalNumberOfRecordsTargetUser"
+                :show-filter-options="false"
                 :empty="iEmpty"
                 :stored-table-settings="storedTableTargetUser"
                 :selectEvent="selectEvent"
                 :chartOptions="chartOptions"
+                :server-side-props="serverSidePropsForTargetUsers"
+                :server-side-events="{
+                  pagination: true,
+                  search: true,
+                  sort: true
+                }"
                 @downloadEvent="exportTargetUsers"
                 @columnFilterChanged="columnFilterChangedTargetUsers"
                 @columnFilterCleared="columnFilterClearedTargetUsers"
@@ -919,18 +1083,10 @@
                 @restore-default-search="handleRestoreDefaultSearchForTargetUsers"
                 @clear-filters="handleClearFiltersForTargetUsers"
                 @on-table-settings-change="handleSetRenderedColumnsTargetUser"
-                :show-filter-options="false"
                 @server-side-page-number-changed="serverSidePageNumberChangedForTargetUsers"
                 @server-side-size-changed="serverSideSizeChangedForTargetUsers"
                 @sortChangedEvent="sortChangedForTargetUsers"
                 @searchChangedEvent="handleSearchChangeForTargetUsers"
-                :isServerSide="true"
-                :server-side-props="serverSidePropsForTargetUsers"
-                :server-side-events="{
-                  pagination: true,
-                  search: true,
-                  sort: true
-                }"
               >
                 <template v-slot:datatable-custom-column="{ scope }">
                   <div class="datatable-progress">
@@ -1013,7 +1169,7 @@ import {
 import AppDialog from '../components/AppDialog'
 import { exportInvestigationEmailList, exportInvestigationUserList } from '@/api/incidentResponder'
 import ShowMore from '../components/Common/ShowMore/ShowMore'
-import { getTimeZoneForMoment } from '@/utils/functions'
+import { getDefaultAxiosPayload, getTimeZoneForMoment } from '@/utils/functions'
 import { required, trim } from '@/utils/validations'
 import InvestigationDetailsLeftBarLoading from '../components/SkeletonLoading/InvestigationDetailsLeftBarLoading'
 import InvestigationDetailsTopBarLoading from '../components/SkeletonLoading/InvestigationDetailsTopBarLoading'
@@ -1024,6 +1180,11 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { deleteAndMessageInvestigationDetailsItem } from '@/api/investigations'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   components: {
     DatatableLoading,
@@ -1037,16 +1198,13 @@ export default {
     ThreeRowLoading
   },
   data: () => ({
-    warningMessageSubtitle: 'Type a message to reporting user',
     isInvestigationWarningSelectAll: false,
     isInvestigationDeleteSelectAll: false,
     investigationWarningExcludedResourceIdList: [],
     investigationDeleteExcludedResourceIdList: [],
-    isAutoRefreshActive: false,
-    loopInterval: null,
+    isAutoRefreshActive: true,
+    autoRefreshInterval: null,
     isRunning: false,
-    loop: null,
-    totalNumberOfRecordsTargetUser: 0,
     storedTableDetailsList: null,
     storedTableTargetUser: null,
     totalNumberOfRecordsFolder: 0,
@@ -1063,12 +1221,17 @@ export default {
     isWantToAddNewCommunity: false,
     progressValue: null,
     notifyMessage: null,
+    deleteAndNotifyMessage: null,
     notifyMessageWithDelete: null,
     diffDays: null,
     totalHours: 0,
     totalMinutes: 0,
     activeMenu: 'Inbox',
     warningMessage: 'Send a warning message for this email',
+    warningMessageSubtitle: 'Type a message to reporting user',
+    isWantToDeleteAndNotify: false,
+    deleteAndNotifyMessage: 'Delete Emails and Notify Users?',
+    deleteAndNotifyMessageSubtitle: '1 email will be deleted from inbox',
     statusIcon: 'mdi-check',
     showEmails: false,
     showTargetUsersDetails: false,
@@ -1084,9 +1247,7 @@ export default {
       required,
       trim
     },
-    investigationListBodyData: {
-      pageNumber: 1,
-      pageSize: 10,
+    investigationListBodyData: getDefaultAxiosPayload({
       orderBy: 'ReceivedTime',
       ascending: true,
       filter: {
@@ -1110,10 +1271,8 @@ export default {
           }
         ]
       }
-    },
-    defaultRequestBody: {
-      pageNumber: 1,
-      pageSize: 10,
+    }),
+    defaultRequestBody: getDefaultAxiosPayload({
       orderBy: 'ReceivedTime',
       ascending: true,
       filter: {
@@ -1129,22 +1288,6 @@ export default {
               }
             ],
             FilterGroups: []
-          }
-        ]
-      }
-    },
-    investigationTargetUsersListBodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'Email',
-      ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
           },
           {
             Condition: 'OR',
@@ -1153,44 +1296,15 @@ export default {
           }
         ]
       }
-    },
-    defaultInvestigationTargetUsersListBodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'Email',
+    }),
+    investigationTargetUsersListBodyData: getDefaultAxiosPayload({
       ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          },
-          {
-            Condition: 'OR',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
-    defaultRequestBodyForTargetUsers: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'Email',
+      orderBy: 'Email'
+    }),
+    defaultRequestBodyForTargetUsers: getDefaultAxiosPayload({
       ascending: true,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
+      orderBy: 'Email'
+    }),
     columns: [
       // Should be defined to show the table
       {
@@ -1214,6 +1328,7 @@ export default {
         sortable: true,
         show: true,
         type: 'textWithBadge',
+        maxItemsPerCell: 1,
         minWidth: 260,
         cellPadding: 8
       },
@@ -1378,7 +1493,6 @@ export default {
         type: 'slot'
       }
     ],
-    pageSizes: [5, 10, 25],
     rowActions: [
       {
         id: 'btn-delete--investigation-details-row-actions',
@@ -1393,6 +1507,12 @@ export default {
         icon: 'mdi-alert',
         action: 'sendInvestigationDetailsWarningMessage'
       }
+      // {
+      //   id: 'btn-delete-and-notify--investigation-details-row-actions',
+      //   name: 'Delete email and notify user',
+      //   icon: 'mdi-delete',
+      //   action: 'deleteAndSendNotification'
+      // }
     ],
     addUsers: {
       show: true,
@@ -1400,7 +1520,7 @@ export default {
       action: 'createCommunityFromMobileInfo'
     },
     iEmpty: {
-      message: 'You do not have any emails'
+      message: 'No email were found that match your criteria'
     },
     selectEvent: {
       clipboard: true,
@@ -1413,37 +1533,20 @@ export default {
     chartOptions: {
       backgroundColor: ['#3f51b5', '#00bcd4']
     },
-    bodyData: {
-      pageNumber: 1,
-      pageSize: 10,
-      orderBy: 'ExpireDate',
-      ascending: false,
-      filter: {
-        Condition: 'AND',
-        FilterGroups: [
-          {
-            Condition: 'AND',
-            FilterItems: [
-              {
-                FieldName: 'Status',
-                Operator: 'Include',
-                Value: 'Canceled,Running,Idle'
-              }
-            ],
-            FilterGroups: []
-          }
-        ]
-      }
-    },
     serverSideProps: new ServerSideProps(),
     serverSidePropsForTargetUsers: new ServerSideProps()
   }),
   methods: {
+    getLeftMenuItemClasses(item) {
+      return {
+        'v-list-item-title__value': true,
+        'v-list-item-title__value--blue': this.activeMenu === item,
+        'v-list-item-title__value--gray': this.activeMenu !== item,
+        'v-list-item-title__value--orange': this.activeMenu !== item && this.itemStats[item].notify
+      }
+    },
     setAutoRefresh() {
       this.isAutoRefreshActive = !this.isAutoRefreshActive
-      if (this.isAutoRefreshActive) {
-        this.refreshDatatable()
-      }
     },
     getMailCountByFolderName(folderName = '') {
       const { statsAndMenuData } = this
@@ -1463,13 +1566,13 @@ export default {
       this.investigationTargetUsersListBodyData.pageNumber = 1
       this.serverSidePropsForTargetUsers.pageNumber = 1
     },
-    handleSearchChangeForTargetUsers(searchFilter = {}, filterActive = false) {
+    handleSearchChangeForTargetUsers(searchFilter = {}) {
       //generic
       this.investigationTargetUsersListBodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumberForTargetUsers()
-      this.isColumnFilterActive = filterActive
+      this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
     },
     serverSidePageNumberChangedForTargetUsers(pageNumber = 1) {
@@ -1497,31 +1600,27 @@ export default {
       )
     },
     resetPageNumber() {
-      //generic
       this.investigationListBodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
-      //generic
+    handleSearchChange(searchFilter = {}) {
       this.investigationListBodyData.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
       ]
       this.resetPageNumber()
-      this.isColumnFilterActive = filterActive
+      this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.investigationListBodyData.pageNumber = pageNumber
       this.refreshDatatable()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.investigationListBodyData.ascending = order === 'ascending'
       this.investigationListBodyData.orderBy = prop
       this.refreshDatatable()
     },
-    getDefaultFilterAndSearch() {
+    getDefaultFilterAndSearch(isInitial = false) {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.INVESTIGATIONSFOLDER)
       )
@@ -1535,7 +1634,7 @@ export default {
             .substring(0, 5)}`
         })
       }
-      this.refreshDatatable()
+      this.refreshDatatable(false, isInitial)
     },
     handleClearFilters(isAutoTrue) {
       if (!isAutoTrue) return false
@@ -1545,7 +1644,7 @@ export default {
       this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
-      this.refreshDatatable()
+      this.refreshDatatable(isAutoTrue)
     },
     handleRestoreDefaultSearch() {
       this.isRestoredOrClearedFilters = true
@@ -1647,10 +1746,14 @@ export default {
       this.investigationListBodyData.pageSize = 75000
       this.refreshDatatable()
     },
-    getActionStatusOptions(
-      actionStatusItem,
-      { actionType, status, isPermanentDelete, isTooltip, tooltipText, text } = actionStatusItem
-    ) {
+    getActionStatusOptions({
+      actionType,
+      status,
+      isPermanentDelete,
+      isTooltip,
+      tooltipText,
+      text
+    }) {
       let returnValue = {
         isTooltip: isTooltip,
         color: null,
@@ -1919,15 +2022,15 @@ export default {
           this.restartStopInvestigationData()
         })
     },
-    stopInvestigationFunc(value) {
+    stopInvestigationFunc() {
       this.isWantToStop = true
     },
     iconType() {
-      this.statsAndMenuData.status == 'Running'
+      this.statsAndMenuData.status === 'Running'
         ? (this.statusIcon = 'mdi-play')
-        : this.statsAndMenuData.status == 'Finished'
+        : this.statsAndMenuData.status === 'Finished'
         ? (this.statusIcon = 'mdi-check')
-        : this.statsAndMenuData.status == 'Expired'
+        : this.statsAndMenuData.status === 'Expired'
         ? (this.statusIcon = 'mdi-clock')
         : this.statsAndMenuData.status === 'Canceled'
         ? (this.statusIcon = 'mdi-close-circle')
@@ -2044,6 +2147,7 @@ export default {
       }
     },
     menuClick(menu) {
+      this.itemStats[menu].notify = false
       if (menu !== this.activeMenu && menu !== 'targetUsers') {
         this.$nextTick(() => {
           const refTable = this.$refs.refInvestigationListData
@@ -2080,12 +2184,11 @@ export default {
       this.serverSidePropsForTargetUsers.totalNumberOfRecords = totalNumberOfRecords
       this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
       this.serverSidePropsForTargetUsers.pageNumber = pageNumber
-      this.totalNumberOfRecordsTargetUser = totalNumberOfRecords
     },
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
         const {
-          data: { data }
+          data: {}
         } = response
         const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
         this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
@@ -2156,15 +2259,25 @@ export default {
           this.adjustTargetUserShowRecords(response)
         })
     },
-    refreshDatatable() {
-      this.leftMenuLoading = true
-      this.topMenuLoading = true
-      this.loading = true
+    refreshDatatable(isOnBackground = false, isInitial = false) {
+      this.leftMenuLoading = isOnBackground ? false : true
+      this.topMenuLoading = isOnBackground ? false : true
+      this.loading = isOnBackground ? false : true
 
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
           this.isRunning = this.statsAndMenuData.status === 'Running'
+          if (!isInitial) {
+            this.itemStats.targetUsers.isInitial = false
+            this.itemStats.Inbox.isInitial = false
+            this.itemStats.JunkEmail.isInitial = false
+            this.itemStats.Drafts.isInitial = false
+            this.itemStats.SentItems.isInitial = false
+            this.itemStats.DeletedItems.isInitial = false
+            this.itemStats.Others.isInitial = false
+            this.itemStats.Stored.isInitial = false
+          }
           this.$store
             .dispatch('investigations/getInvestigationDetailsData', this.$route.params.id)
             .finally(() => {
@@ -2223,6 +2336,10 @@ export default {
       // open new investigation overlay
       this.isWantToAddNewCommunity = true
     },
+    deleteAndSendNotification(value, excludedResourceIdList, isSelectedAllEver) {
+      this.isWantToDeleteAndNotify = true
+    },
+    isWantToDeleteAndNotifyConfirm() {},
     sendInvestigationDetailsWarningMessage(value, excludedResourceIdList, isSelectedAllEver) {
       this.isInvestigationWarningSelectAll = isSelectedAllEver
       this.investigationWarningExcludedResourceIdList = excludedResourceIdList || []
@@ -2343,103 +2460,47 @@ export default {
     },
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
-      let items = []
-      let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
-          items.push(x)
-      })
-
-      filterPayload = [...items]
-
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          filterPayload.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if (FieldName === 'ScanType' && Value === '') {
-        } else {
-          filterPayload.push(elem)
-        }
-      }
-
-      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.resetPageNumber()
+      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.investigationListBodyData
+      )
       this.refreshDatatable()
     },
     columnFilterCleared(fieldName) {
-      let items = []
-      let filterPayload = this.investigationListBodyData.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.resetPageNumber()
+      this.investigationListBodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.investigationListBodyData
+      )
+      this.calculateInvestigateListFilterActive()
       this.refreshDatatable()
-
-      this.isColumnFilterActive =
-        this.investigationListBodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     columnFilterChangedTargetUsers(filter) {
+      this.resetPageNumberForTargetUsers()
       this.isColumnFilterActiveTargetUsers = true
-      let items = []
-      let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
-        .FilterItems
-
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1))
-          items.push(x)
-      })
-
-      filterPayload = [...items]
-
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i, t) => {
-          const elem = filter[i]
-          elem.FieldName =
-            filter[i].FieldName.charAt(0).toUpperCase() + filter[i].FieldName.slice(1)
-          filterPayload.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName.charAt(0).toUpperCase() + filter.FieldName.slice(1)
-        const { FieldName, Value } = filter
-        if ((FieldName === 'ScanType' || FieldName === 'UserStatus') && Value === '') {
-        } else {
-          filterPayload.push(elem)
-        }
-      }
-
-      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.investigationTargetUsersListBodyData
+      )
       this.refreshDatatable()
-
-      this.isColumnFilterActiveTargetUsers =
-        this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems.length >= 1
     },
     columnFilterClearedTargetUsers(fieldName) {
-      let items = []
-      let filterPayload = this.investigationTargetUsersListBodyData.filter.FilterGroups[0]
-        .FilterItems
-
-      filterPayload.map((x, i, t) => {
-        if (x.FieldName !== fieldName.charAt(0).toUpperCase() + fieldName.slice(1)) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = filterPayload
+      this.resetPageNumberForTargetUsers()
+      this.investigationTargetUsersListBodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.investigationTargetUsersListBodyData
+      )
+      this.calculateTargetUserListFilterActive()
       this.refreshDatatable()
+    },
+    calculateInvestigateListFilterActive() {
+      this.isColumnFilterActive = isColumnFilterActive(this.investigationListBodyData)
+    },
+    calculateTargetUserListFilterActive() {
+      this.isColumnFilterActiveTargetUsers = isColumnFilterActive(
+        this.investigationTargetUsersListBodyData
+      )
     },
     setStoredTableSettings() {
       this.storedTableDetailsList = JSON.parse(
@@ -2460,6 +2521,64 @@ export default {
       investigationDetailsTargetUsersListData:
         'investigations/getInvestigationDetailsTargetUsersListGetter'
     }),
+    itemStats() {
+      return {
+        targetUsers: {
+          count: this.statsAndMenuData?.scannedUserCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Inbox: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Inbox')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        JunkEmail: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'JunkEmail')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Drafts: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Drafts')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        SentItems: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'SentItems')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        DeletedItems: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'DeletedItems')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Others: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Others')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        },
+        Stored: {
+          count:
+            this.statsAndMenuData?.folders?.find((item) => item['folderName'] === 'Stored')
+              ?.mailCount || 0,
+          notify: false,
+          isInitial: true
+        }
+      }
+    },
     getTimeLeftText() {
       const { diffDays, totalHours, totalMinutes } = this
       return this.loading
@@ -2556,8 +2675,98 @@ export default {
       )
     }
   },
+  mounted() {
+    if (this.statsAndMenuData && this.statsAndMenuData.status === 'Running') {
+      this.isAutoRefreshActive = true
+    }
+  },
   watch: {
-    statsAndMenuData(val) {
+    itemStats: {
+      handler(newValue, oldValue) {
+        if (
+          newValue.targetUsers.count !== oldValue.targetUsers.count &&
+          !newValue.targetUsers.notify &&
+          this.activeMenu !== 'targetUsers' &&
+          (!oldValue.targetUsers.isInitial || !newValue.targetUsers.isInitial)
+        ) {
+          this.itemStats.targetUsers.isInitial = false
+          this.itemStats.targetUsers.notify = true
+        }
+        if (
+          newValue.Inbox.count !== oldValue.Inbox.count &&
+          !newValue.Inbox.notify &&
+          this.activeMenu !== 'Inbox' &&
+          (!oldValue.Inbox.isInitial || !newValue.Inbox.isInitial)
+        ) {
+          this.itemStats.Inbox.isInitial = false
+          this.itemStats.Inbox.notify = true
+        }
+        if (
+          newValue.JunkEmail.count !== oldValue.JunkEmail.count &&
+          !newValue.JunkEmail.notify &&
+          this.activeMenu !== 'JunkEmail' &&
+          (!oldValue.JunkEmail.isInitial || !newValue.JunkEmail.isInitial)
+        ) {
+          this.itemStats.JunkEmail.isInitial = false
+          this.itemStats.JunkEmail.notify = true
+        }
+        if (
+          newValue.Drafts.count !== oldValue.Drafts.count &&
+          !newValue.Drafts.notify &&
+          this.activeMenu !== 'Drafts' &&
+          (!oldValue.Drafts.isInitial || !newValue.Drafts.isInitial)
+        ) {
+          this.itemStats.Drafts.isInitial = false
+          this.itemStats.Drafts.notify = true
+        }
+        if (
+          newValue.SentItems.count !== oldValue.SentItems.count &&
+          !newValue.SentItems.notify &&
+          this.activeMenu !== 'SentItems' &&
+          (!oldValue.SentItems.isInitial || !newValue.SentItems.isInitial)
+        ) {
+          this.itemStats.SentItems.isInitial = false
+          this.itemStats.SentItems.notify = true
+        }
+        if (
+          newValue.DeletedItems.count !== oldValue.DeletedItems.count &&
+          !newValue.DeletedItems.notify &&
+          this.activeMenu !== 'DeletedItems' &&
+          (!oldValue.DeletedItems.isInitial || !newValue.DeletedItems.isInitial)
+        ) {
+          this.itemStats.DeletedItems.isInitial = false
+          this.itemStats.DeletedItems.notify = true
+        }
+        if (
+          newValue.Others.count !== oldValue.Others.count &&
+          !newValue.Others.notify &&
+          this.activeMenu !== 'Others' &&
+          (!oldValue.Others.isInitial || !newValue.Others.isInitial)
+        ) {
+          this.itemStats.Others.isInitial = false
+          this.itemStats.Others.notify = true
+        }
+        if (
+          newValue.Stored.count !== oldValue.Stored.count &&
+          !newValue.Stored.notify &&
+          this.activeMenu !== 'Stored' &&
+          (!oldValue.Stored.isInitial || !newValue.Stored.isInitial)
+        ) {
+          this.itemStats.Stored.isInitial = false
+          this.itemStats.Stored.notify = true
+        }
+      },
+      deep: true,
+      immediate: false
+    },
+    isAutoRefreshActive(isActive) {
+      if (!this.autoRefreshInterval && isActive) {
+        this.autoRefreshInterval = setInterval(() => this.refreshDatatable(true), 15000)
+      } else {
+        clearInterval(this.autoRefreshInterval)
+      }
+    },
+    statsAndMenuData() {
       if (this.statsAndMenuData) this.topMenuLoading = false
     },
     tableData() {},
@@ -2603,20 +2812,31 @@ export default {
     investigationDetailsListData(val) {
       this.loading = false
       vm.$forceUpdate()
-      this.investigationDetailsList = val.results || []
+      // TODO: Ask all emailLastAction cases
+      // const data =  val.results.map((item,index) => ({...item,emailLastAction:{
+      //   isTooltip:true,
+      //   text:'Message sent',
+      //   status:'Running',
+      //   actionType:'Warning',
+      // }})) || [];
+
+      const data = val.results || []
+      this.investigationDetailsList = data
       if (this.$refs.refInvestigationListData) {
-        this.investigationDetailsList = val.results || []
+        this.investigationDetailsList = data
       }
     }
   },
   created() {
     this.setStoredTableSettings()
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INTEGRATION))
-    this.getDefaultFilterAndSearch()
+    this.getDefaultFilterAndSearch(true)
   },
   beforeDestroy() {
     this.isRunning = false
     this.isAutoRefreshActive = false
+    clearInterval(this.autoRefreshInterval)
+    this.autoRefreshInterval = null
   }
 }
 </script>
@@ -3007,7 +3227,6 @@ export default {
                         right: 8px;
                         top: 8px;
                         border-radius: 4px;
-                        background-color: #2196f3;
                         color: #ffffff;
                         min-width: 24px;
                         min-height: 23px;
@@ -3015,6 +3234,20 @@ export default {
                         align-items: center;
                         display: flex;
                         padding: 2px;
+
+                        &--blue {
+                          background-color: #2196f3;
+                        }
+
+                        &--gray {
+                          background-color: #e0e0e0;
+                          color: #383b41;
+                        }
+
+                        &--orange {
+                          background-color: #b6791d;
+                          color: #ffffff;
+                        }
                       }
                     }
 
@@ -3085,6 +3318,19 @@ export default {
                   letter-spacing: normal;
                   color: #2196f3;
                 }
+                &--rounded {
+                  button {
+                    display: flex;
+                    border-radius: 50% !important;
+                    padding: 0 !important;
+                    height: 36px !important;
+                    width: 36px !important;
+                    min-width: 36px !important;
+                    justify-content: center;
+                    align-items: center;
+                  }
+                }
+
                 &-container {
                   display: flex;
                   @media (max-width: 1024px) {
@@ -3215,5 +3461,14 @@ export default {
     .card .table-wrapper .el-table th > .cell {
     }
   }
+}
+
+.menu-item__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.investigation-details-emails__row-actions__overflow-menu__icon {
+  margin-right: 16px;
 }
 </style>

@@ -23,24 +23,24 @@
       <data-table
         id="company-settings-smtp-settings-data-table"
         ref="refSmtpSettingsList"
+        is-server-side
+        filterable
+        options
+        selectable
         :loading="loading"
         :table="tableData"
         :refName="'smtpSettingsList'"
         :is-column-filter-active="tableOptions.isColumnFilterActive"
         :columns="tableOptions.columns"
         :empty="tableOptions.empty"
-        :filterable="true"
-        :options="true"
         :download-button="tableOptions.downloadButton"
         :stored-table-settings="storedTableSettings"
         :addButton="tableOptions.addButton"
         :pageSizes="tableOptions.pageSizes"
-        :is-downloadable="true"
         :select-event="tableOptions.selectEvent"
         :row-actions="tableOptions.rowActions"
-        :selectable="true"
-        :sizeable="true"
-        :resizable="true"
+        :server-side-props="serverSideProps"
+        :server-side-events="{ pagination: true, search: true, sort: true }"
         @addNewSmtpSetting="toggleSmtpModalStatus"
         @onEmptyBtnClicked="toggleSmtpModalStatus"
         @handleMultipleDelete="handleMultipleDelete"
@@ -57,9 +57,6 @@
         @sortChangedEvent="sortChanged"
         @searchChangedEvent="handleSearchChange"
         @handleSelectionChange="handleTableSelectionChange"
-        :isServerSide="true"
-        :server-side-props="serverSideProps"
-        :server-side-events="{ pagination: true, search: true, sort: true }"
       >
         <template #datatable-row-actions="{scope}">
           <v-tooltip bottom>
@@ -117,6 +114,12 @@ import DeleteSmtpSettings from '@/components/Company Settings/SmtpSettings/Delet
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import {
+  columnFilterChanged,
+  columnFilterCleared,
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -256,48 +259,8 @@ export default {
       },
       newSmtpModalStatus: false,
       deleteSmtpModalStatus: false,
-      bodyOptions: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
-      defaultRequestBody: {
-        pageNumber: 1,
-        pageSize: 1000,
-        orderBy: 'CreateTime',
-        ascending: false,
-        filter: {
-          Condition: 'AND',
-          FilterGroups: [
-            {
-              Condition: 'AND',
-              FilterItems: [],
-              FilterGroups: []
-            },
-            {
-              Condition: 'OR',
-              FilterItems: [],
-              FilterGroups: []
-            }
-          ]
-        }
-      },
+      bodyOptions: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
   },
@@ -306,7 +269,7 @@ export default {
       this.selectedTableItems = items
       this.changeMultipleDeleteDisability()
     },
-    handleSearchChange(searchFilter = {}, filterActive = false) {
+    handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyOptions.filter.FilterGroups[1].FilterItems = [
         ...searchFilter.filter.FilterGroups[0].FilterItems
@@ -320,27 +283,23 @@ export default {
         }
       )
       this.resetPageNumber()
-      this.tableOptions.isColumnFilterActive = filterActive
+      this.calculateIsFilterColumnActive()
       this.callForSearchSmtpSettings()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      //generic
       this.bodyOptions.pageNumber = pageNumber
       this.callForSearchSmtpSettings()
     },
     sortChanged({ order, prop } = {}) {
-      //generic
       this.bodyOptions.ascending = order === 'ascending'
       this.bodyOptions.orderBy = prop === 'statusName' ? 'Status' : prop
       this.callForSearchSmtpSettings()
     },
     resetPageNumber() {
-      //generic
       this.bodyOptions.pageNumber = 1
       this.serverSideProps.pageNumber = 1
     },
     serverSideSizeChanged(pageSize = 10) {
-      //generic
       this.bodyOptions.pageSize = pageSize
       this.serverSideProps.pageSize = pageSize
       this.resetPageNumber()
@@ -483,54 +442,18 @@ export default {
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
-      let items = []
-      let requestBody = this.bodyOptions.filter.FilterGroups[0].FilterItems
-      requestBody.map((x) => {
-        if (Array.isArray(filter)) {
-          filter.forEach((i) => {
-            if (x.FieldName !== i.FieldName) {
-              items.push(x)
-            }
-          })
-        } else {
-          if (x.FieldName !== filter.FieldName) {
-            items.push(x)
-          }
-        }
-      })
-
-      requestBody = [...items]
-      if (Array.isArray(filter)) {
-        filter.forEach((x, i) => {
-          const elem = filter[i]
-          elem.FieldName = filter[i].FieldName
-          requestBody.push(elem)
-        })
-      } else {
-        const elem = filter
-        elem.FieldName = filter.FieldName
-        requestBody.push(elem)
-      }
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = requestBody
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
+        filter,
+        this.bodyOptions
+      )
       this.callForSearchSmtpSettings()
     },
     columnFilterCleared(fieldName) {
-      if (this.isRestoredOrClearedFilters) {
-        return
-      }
-      let items = []
-      let filterPayload = this.bodyOptions.filter.FilterGroups[0].FilterItems
-
-      filterPayload.map((x) => {
-        if (x.FieldName !== fieldName) {
-          items.push(x)
-        }
-      })
-
-      filterPayload = [...items]
-      this.bodyOptions.filter.FilterGroups[0].FilterItems = filterPayload
-      this.tableOptions.isColumnFilterActive =
-        this.bodyOptions.filter.FilterGroups[0].FilterItems.length >= 1
+      this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterCleared(
+        fieldName,
+        this.bodyOptions
+      )
+      this.calculateIsFilterColumnActive()
       this.callForSearchSmtpSettings()
     },
     handleSetDefaultSearch(search = '', filterValues = {}) {
@@ -585,6 +508,9 @@ export default {
         })
       }
       this.callForSearchSmtpSettings()
+    },
+    calculateIsFilterColumnActive() {
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyOptions)
     }
   },
   created() {
