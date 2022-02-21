@@ -126,7 +126,7 @@ export function getBtnPriorityColor(type) {
     case 'inactive':
       return '#b83a3a'
     case 'low':
-      return '#00bcd4'
+      return '#0198AC'
     case 'very low':
       return '#757575'
     case 'verylow':
