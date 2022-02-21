@@ -135,11 +135,11 @@ export function isNumber(value, message = 'Invalid File Size') {
   return /^\d+$/gi.test(value) || message
 }
 
-export function isDepartmentSpecialCharacter(
+export function isDescriptionSpecialCharacter(
   value,
   message = "Only use letters, numbers, dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
-  return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçş]){0,64}$/gi.test(value) || message
+  return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçş]){0,2001}$/gi.test(value) || message
 }
 
 export function isNameSpecialCharacter(
@@ -147,4 +147,19 @@ export function isNameSpecialCharacter(
   message = `Only use letters, dash '-' and apostrophe '`
 ) {
   return /^([A-Z]|[-'\söğüıçş]){0,40}$/gi.test(value) || message
+}
+
+export function isEntityNameSpecialCharacter(
+  value,
+  message = `Only use letters, numbers, dash '-' slash '/' comma ',' and ampersand '&'`
+) {
+  value = getValue(value)
+  return /^([A-Z]|[0-9]|[-/,&\söğüıçş]){0,64}$/gi.test(value) || message
+}
+
+export function port(value, message = 'Only use numbers') {
+  value = getValue(value)
+  if (!/^[0-9]*$/gi.test(value)) return message
+  value = parseInt(value, 10)
+  return (value > 0 && value <= 65536) || 'Invalid port number'
 }
