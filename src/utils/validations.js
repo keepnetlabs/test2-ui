@@ -139,7 +139,7 @@ export function isDescriptionSpecialCharacter(
   value,
   message = "Only use letters, numbers, dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
-  return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçş]){0,64}$/gi.test(value) || message
+  return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçş]){0,2001}$/gi.test(value) || message
 }
 
 export function isNameSpecialCharacter(

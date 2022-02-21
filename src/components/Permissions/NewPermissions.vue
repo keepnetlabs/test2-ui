@@ -19,40 +19,20 @@
         sub-title="Create a user role by defining permissons. Expand module rows to set detailed authorizations. "
       />
       <v-form ref="refForm">
-        <form-group :title="'Role Title'" has-hint>
-          <v-text-field
-            id="input--permission-role-title"
-            placeholder="Enter Title"
-            outlined
-            dense
+        <form-group title="Role Title" has-hint>
+          <InputEntityName
             v-model.trim="formValues.name"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v),
-              (v) => validations.startsWithSpace(v),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Title))
-            ]"
-          ></v-text-field>
+            id="input--permission-role-title"
+            entity-name="Title"
+          />
         </form-group>
         <form-group title="Description" has-hint>
-          <v-textarea
-            id="input--permission-description"
-            outlined
-            dense
-            rows="2"
-            no-resize
-            placeholder="Describe the role"
-            height="100"
+          <InputDescription
             v-model.trim="formValues.description"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.required(v),
-              (v) => validations.startsWithSpace(v),
-              (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description))
-            ]"
-          ></v-textarea>
+            id="input--permission-description"
+            required
+            initial-placeholder="Describe the role"
+          />
         </form-group>
         <make-available-for
           ref="refMakeAvailableForNewPermissions"
@@ -120,9 +100,13 @@ import { scrollToComponent, isDifferent } from '@/utils/functions'
 import { createPermissionRoles, updatePermissionRoles } from '@/api/permissions'
 import labels from '@/model/constants/labels'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 export default {
   name: 'NewPermissions',
   components: {
+    InputDescription,
+    InputEntityName,
     MakeAvailableFor,
     AppModal,
     AppModalBodyHeader,

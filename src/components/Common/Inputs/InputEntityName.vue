@@ -52,7 +52,7 @@ export default {
       this.rules.unshift((v) => Validations.required(v))
     }
 
-    this.rules.push((v) =>
+    this.rules.unshift((v) =>
       Validations.maxLength(v, 64, labels.getMaxLengthMessage(this.entityName, 64))
     )
 
