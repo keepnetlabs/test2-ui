@@ -57,7 +57,7 @@
             hint="*Required"
             persistent-hint
             @input="saveDisable = true"
-            :rules="[(v) => validations.required(v)]"
+            :rules="[(v) => validations.required(v), (v) => validations.port(v)]"
           ></v-text-field>
         </form-group>
         <form-group :title="'Authentication Method'" has-hint class-name="mb-4">

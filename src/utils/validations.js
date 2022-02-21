@@ -156,3 +156,11 @@ export function isEntityNameSpecialCharacter(
   value = getValue(value)
   return /^([A-Z]|[0-9]|[-/,&\söğüıçş]){0,64}$/gi.test(value) || message
 }
+
+export function port(value, message = 'Only use numbers') {
+  value = getValue(value)
+  if (!/^[0-9]*$/gi.test(value)) return message
+  value = parseInt(value, 10)
+  console.log('val', value)
+  return (value > 0 && value <= 65536) || 'Invalid port number'
+}
