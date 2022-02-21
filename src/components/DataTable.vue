@@ -760,16 +760,14 @@
                     </template>
                     <span>{{ rowActions[0].name }}</span>
                   </v-tooltip>
-                  <v-tooltip
-                    bottom
-                    v-if="
-                      $props.id !== 'investigations-data-table' ||
-                      rowActions[1].getButtonVisibility(scope.row.status)
-                    "
-                  >
+                  <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
-                        :disabled="rowActions[1]['disabled']"
+                        :disabled="
+                          rowActions[1]['disabled'] ||
+                          (rowActions[1].getButtonVisibility &&
+                            !rowActions[1].getButtonVisibility(scope.row.status))
+                        "
                         :id="`${rowActions[1].id}-${
                           scope.$index
                         }-${Math.random().toString().substring(2)}`"
@@ -2252,11 +2250,12 @@ export default {
         }
       }
       if (spanWidth > widthOfParent) {
-        const typeOfProp = typeof row[column.property]
+        const cellValue = row[column.property]
         let text
-        switch (typeOfProp) {
+        switch (typeof cellValue) {
           case 'object':
-            text = row[column.property] && row[column.property].join(',')
+            text =
+              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
             break
           case 'string':
             text = row[column.property]

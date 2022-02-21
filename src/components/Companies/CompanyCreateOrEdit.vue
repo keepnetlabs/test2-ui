@@ -71,25 +71,11 @@
                     <v-list-item-title class="v-card-sub-header bottom-margin">
                       Describe the company briefly
                     </v-list-item-title>
-                    <v-textarea
-                      placeholder="Describe the rule"
+                    <InputDescription
+                      v-model.trim="formData.Description"
                       id="input--company-description"
-                      outlined
-                      dense
-                      no-resize
-                      v-model="formData.Description"
-                      hint="*Required"
-                      persistent-hint
-                      :rules="[
-                        (v) => validations.required(v),
-                        (v) =>
-                          validations.maxLength(
-                            v,
-                            300,
-                            labels.getMaxLengthMessage(labels.Description, 300)
-                          )
-                      ]"
-                      autocomplete="disabled"
+                      required
+                      :max-length="300"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -138,22 +124,10 @@
                 <v-list-item>
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">{{ labels.Address }}</label>
-                    <v-textarea
-                      placeholder="Enter company address"
-                      outlined
-                      dense
-                      no-resize
-                      id="input--company-address"
+                    <InputAddress
                       v-model="formData.Address"
-                      :rules="[
-                        (v) =>
-                          validations.maxLength(
-                            v,
-                            200,
-                            labels.getMaxLengthMessage(labels.Address, 200)
-                          )
-                      ]"
-                      autocomplete="disabled"
+                      id="input--company-address"
+                      initial-placeholder="Enter company address"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -602,6 +576,8 @@ import ConfigureNewCompanyDialog from '@/components/Companies/ConfigureNewCompan
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
+import InputAddress from '@/components/Common/Inputs/InputAddress'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -610,6 +586,8 @@ export default {
     selectedExtend: { type: Object }
   },
   components: {
+    InputAddress,
+    InputDescription,
     ConfigureNewCompanyDialog,
     KSelect,
     InputCompany,

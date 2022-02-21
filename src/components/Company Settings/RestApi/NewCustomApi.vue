@@ -17,26 +17,11 @@
       <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm">
         <form-group :title="labels.ClientName" :sub-title="labels.CustomApiSubtitle" has-hint>
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.name"
             id="input--rest-api-name"
-            placeholder="Enter client name"
-            outlined
-            dense
-            class="auth-key__textfield"
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => Validations.required(v, labels.Required),
-              (v) => Validations.startsWithSpace(v),
-              (v) =>
-                Validations.maxLength(
-                  v,
-                  64,
-                  labels.getMaxLengthMessage(labels.ClientNameSecondLower)
-                )
-            ]"
-          ></v-text-field>
+            entity-name="client"
+          />
           <v-btn
             v-if="isShowGenerateCredentialsBtn"
             id="btn-generate--rest-api"
@@ -219,10 +204,12 @@ import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import InputIpAddress from '@/components/Common/Inputs/InputIpAddress'
 import * as validations from '../../../utils/validations'
 import { getSystemUsersRole } from '@/api/systemUsers'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 export default {
   name: 'NewCustomApi',
   components: {
+    InputEntityName,
     AppModal,
     AppModalBodyHeader,
     FormGroup,

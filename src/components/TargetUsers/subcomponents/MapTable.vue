@@ -98,6 +98,20 @@ export default {
       })
       this.mapTableData.columns[0].disabled = false
     },
+    setExistItems() {
+      this.mapTableData.columns = this.mapTableData.columns.map((i) => {
+        const isExist = this.mapTableData.headers.find(
+          (hItem) =>
+            hItem.selectedValue?.dbName?.trim()?.toLowerCase() === i?.dbName?.trim()?.toLowerCase()
+        )
+        return {
+          ...i,
+          disabled: !!isExist,
+          selected: !!isExist,
+          selectedValue: isExist || null
+        }
+      })
+    },
     exportMapTableData() {
       let data = this.mapTableData.headers.map((item) => {
         let dataObject = {

@@ -9,11 +9,12 @@
     @changeStatus="closeModal"
   >
     <template v-slot:app-dialog-body>
-      {{ getFirstAndLastName }} will be deleted and removed from all groups. User stats will remain
-      in reports.
+      {{ getSystemUserName }} will be deleted and removed from all groups. User stats will remain in
+      reports.
     </template>
     <template v-slot:app-dialog-footer>
       <app-dialog-footer
+        :confirm-button-disabled="confirmButtonDisabled"
         cancel-button-id="btn-cancel--target-users-people-popup"
         confirm-button-id="btn-delete--target-users-people-popup"
         @handleClose="closeModal"
@@ -35,6 +36,14 @@ export default {
     selectedRow: {},
     isMultiple: {
       type: Boolean
+    },
+    confirmButtonDisabled: {
+      type: Boolean,
+      default: false
+    },
+    userCount: {
+      type: Number,
+      default: 0
     }
   },
   components: {
@@ -42,15 +51,10 @@ export default {
     AppDialog
   },
   computed: {
-    getFirstAndLastName() {
-      if (!this.isMultiple && this.selectedRow.constructor.name === 'Object') {
-        const { firstName = '', lastName = '' } = this.selectedRow
-        return `${firstName} ${lastName}`
-      } else if (this.selectedRow.constructor.name === 'Array' && this.selectedRow.length === 1) {
-        const { firstName = '', lastName = '' } = this.selectedRow[0]
-        return `${firstName} ${lastName}`
-      }
-      return `${this.selectedRow.length} users`
+    getSystemUserName() {
+      return this.selectedRow
+        ? `${this.selectedRow['firstName'] || ''} ${this.selectedRow['lastName'] || ''}`
+        : `${this.userCount} users`
     }
   },
   methods: {
@@ -58,13 +62,11 @@ export default {
       this.$emit('changeModalStatus', false)
     },
     handleDelete() {
-      const action = this.isMultiple ? 'deleteMultiple' : 'deleteAction'
-      const data = this.isMultiple
-        ? this.selectedRow
-        : this.selectedRow.constructor.name === 'Object'
-        ? this.selectedRow
-        : this.selectedRow[0]
-      this.$emit(action, data)
+      if (this.isMultiple) {
+        this.$emit('deleteMultiple')
+      } else {
+        this.$emit('deleteAction', this.selectedRow)
+      }
       this.$emit('changeModalStatus', false)
     }
   },

@@ -39,7 +39,9 @@
             <span> {{ getTotalTargetGroupsAndUsersCount }}</span>
           </div>
           <div v-if="isShowTargetUserDetail">
-            <CampaignManagerTargetGroupsAndUserSummaryInfo :items="formData.selectedTargetGroups" />
+            <CampaignManagerTargetGroupsAndUserSummaryInfo
+              :items="currentFormData.selectedTargetGroups"
+            />
           </div>
         </template>
       </CampaignManagerSummaryCard>
@@ -53,31 +55,36 @@
       >
         <template #body>
           <div
-            v-if="isFormData && formData.emailTemplateParams && formData.selectedPhishingScenario"
+            v-if="
+              isFormData &&
+              currentFormData.emailTemplateParams &&
+              currentFormData.selectedPhishingScenario
+            "
             class="campaign-manager-last-step__email-template-body pb-4"
           >
             <div class="campaign-manager-last-step__email-template-body-header">
               <div class="campaign-manager-last-step__email-template-body-header-left">
-                {{ formData.emailTemplateParams.name }}
+                {{ currentFormData.emailTemplateParams.name }}
               </div>
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
-                  :color="getBadgeColor(formData.emailTemplateParams.difficulty)"
-                  :text="getBadgeText(formData.emailTemplateParams.difficulty)"
+                  :color="getBadgeColor(currentFormData.emailTemplateParams.difficulty)"
+                  :text="getBadgeText(currentFormData.emailTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
                   color="#E0E0E0"
-                  :text="getBadgeText(formData.landingPageParams.method)"
+                  :text="getBadgeText(currentFormData.landingPageParams.method)"
                   :outline="false"
                 />
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
-              From: {{ formData.emailTemplateParams.fromName }}
+              From: {{ currentFormData.emailTemplateParams.fromName }}
               <span>&#60;</span>
-              {{ formData.emailTemplateParams.fromAddress }} <span>&#62;</span>
+              {{ currentFormData.emailTemplateParams.fromAddress }}
+              <span>&#62;</span>
             </div>
             <div></div>
           </div>
@@ -87,9 +94,9 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.emailTemplate"
+                v-if="!!currentFormData.emailTemplate"
                 ref="refPreview"
-                :html="formData.emailTemplate"
+                :html="currentFormData.emailTemplate"
                 is-extra-height
               />
             </div>
@@ -114,18 +121,18 @@
                 <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
                   >URL:</span
                 >
-                {{ formData.landingPageParams.urlTemplate }}
+                {{ currentFormData.landingPageParams.urlTemplate }}
               </div>
               <div class="campaign-manager-last-step__landing-page-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
-                  :color="getBadgeColor(formData.landingPageParams.difficulty)"
-                  :text="getBadgeText(formData.landingPageParams.difficulty)"
+                  :color="getBadgeColor(currentFormData.landingPageParams.difficulty)"
+                  :text="getBadgeText(currentFormData.landingPageParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
                   color="#E0E0E0"
-                  :text="getBadgeText(formData.landingPageParams.method)"
+                  :text="getBadgeText(currentFormData.landingPageParams.method)"
                   :outline="false"
                 />
               </div>
@@ -137,8 +144,8 @@
           >
             <div class="campaign-manager-last-step__email-template-body-preview">
               <KEmailPreview
-                v-if="!!formData.landingPageTemplate"
-                :html="formData.landingPageTemplate"
+                v-if="!!currentFormData.landingPageTemplate"
+                :html="currentFormData.landingPageTemplate"
                 is-extra-height
               />
             </div>
@@ -170,10 +177,32 @@ export default {
   },
   data() {
     return {
+      currentFormData: {},
       labels,
       isShowTargetUserDetail: false,
       isShowEmailTemplate: false,
       isShowLandingPageTemplate: false
+    }
+  },
+  watch: {
+    formData(val) {
+      this.currentFormData = {
+        ...val,
+        emailTemplateParams: {
+          fromName: val?.emailTemplateParams?.fromName || '',
+          fromAddress: val?.emailTemplateParams?.fromAddress || '',
+          name: val?.emailTemplateParams?.name || '',
+          difficulty: val?.emailTemplateParams?.difficulty || ''
+        },
+        landingPageParams: {
+          name: val?.landingPageParams?.name || '',
+          description: val?.landingPageParams?.description || '',
+          urlTemplate: val?.landingPageParams?.urlTemplate || '',
+          difficulty: val?.landingPageParams?.difficulty || '',
+          method: val?.landingPageParams?.method || ''
+        },
+        landingPageTemplate: val?.landingPageTemplate || ''
+      }
     }
   },
   computed: {

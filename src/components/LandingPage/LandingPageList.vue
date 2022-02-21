@@ -433,7 +433,7 @@ export default {
         this.bodyData.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          if (!callLookup) {
+          if (!callLookup && this.$refs.refLandingPageList) {
             this.$refs.refLandingPageList.reRenderColumns(savedFilter.filterValues)
           }
         })
@@ -644,7 +644,7 @@ export default {
           'filterableItems',
           response.data.data.difficultyTypes.map((item) => item.text)
         )
-        this.$refs.refLandingPageList.reRenderColumns(filterValues || {})
+        this.$refs.refLandingPageList?.reRenderColumns(filterValues || {})
         this.landingPageData = response.data.data
       })
     }

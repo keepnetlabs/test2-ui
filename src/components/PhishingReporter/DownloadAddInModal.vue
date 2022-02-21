@@ -106,7 +106,9 @@
         <div class="link__header">Diagnostic Tool</div>
       </v-list-item>
       <v-list-item class="px-0 d-flex align-start add-in-configuration__list-item">
-        <div class="link__sub-header">Only for Outlook Desktop (Windows OS only)</div>
+        <div class="link__sub-header">
+          Only for Outlook Desktop (Windows OS only)
+        </div>
       </v-list-item>
       <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
         <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
@@ -213,7 +215,7 @@ export default {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `O365PhishingReporterAddin.xml`
+          link.download = `Microsoft365PhishingReporterAddin.xml`
           link.click()
         })
         .finally(() => {
