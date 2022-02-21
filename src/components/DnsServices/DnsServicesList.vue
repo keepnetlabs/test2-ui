@@ -54,6 +54,42 @@
       @on-table-settings-change="handleSetRenderedColumns"
       @addAction="handleAdd"
     >
+      <template #datatable-row-actions="{scope}">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              :id="`${tableOptions.rowActions[0].id}-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
+              class="btn-hover mr-1"
+              icon
+              :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
+              @click.native="handleEdit(scope.row)"
+            >
+              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ tableOptions.rowActions[0].name }}</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              :id="`${tableOptions.rowActions[1].id}-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
+              class="btn-hover"
+              icon
+              :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+              @click.native="handleActionDelete(scope.row)"
+            >
+              <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ tableOptions.rowActions[1].name }}</span>
+        </v-tooltip>
+      </template>
     </data-table>
   </div>
 </template>
@@ -209,6 +245,9 @@ export default {
       if (this.$refs.newEditDnsServiceModal) {
         this.$refs.newEditDnsServiceModal.cancelDns()
       }
+    },
+    getDisabledStatusOfAction(row, actionStatus) {
+      return !(this.PERMISSIONS[actionStatus]?.hasPermission && row.isOwner)
     },
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
