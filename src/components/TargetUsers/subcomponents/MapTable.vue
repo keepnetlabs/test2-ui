@@ -100,14 +100,18 @@ export default {
     },
     setExistItems() {
       this.mapTableData.columns = this.mapTableData.columns.map((i) => {
-        const isExist = this.mapTableData.headers.find(
-          (hItem) =>
+        const isExist = this.mapTableData.headers.find((hItem) => {
+          if (!hItem.selectedValue?.dbName || !i?.dbName) {
+            return false
+          }
+          return (
             hItem.selectedValue?.dbName?.trim()?.toLowerCase() === i?.dbName?.trim()?.toLowerCase()
-        )
+          )
+        })
         return {
           ...i,
-          disabled: !!isExist,
-          selected: !!isExist,
+          disabled: !!isExist || false,
+          selected: !!isExist || false,
           selectedValue: isExist || null
         }
       })

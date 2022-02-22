@@ -1276,20 +1276,22 @@ export default {
     submit() {},
     createMapFields() {
       this.step3InitialLoading = true
-      let fieldMappingData = this.getMapTableData().headers.map((item) => {
-        let excelColumnName = item.name
-        let fieldName =
-          (item.selectedValue && item.selectedValue.dbName) ||
-          (item.selectedValue && item.selectedValue.name) ||
-          item.name
-        if (fieldName === 'First Name') fieldName = 'FirstName'
-        if (fieldName === 'Last Name') fieldName = 'LastName'
-        let val = {
-          excelColumnName: excelColumnName,
-          fieldName: fieldName
-        }
-        return val
-      })
+      let fieldMappingData = this.getMapTableData()
+        .headers.map((item) => {
+          let excelColumnName = item.name
+          let fieldName =
+            (item.selectedValue && item.selectedValue.dbName) ||
+            (item.selectedValue && item.selectedValue.name) ||
+            null
+          if (fieldName === 'First Name') fieldName = 'FirstName'
+          if (fieldName === 'Last Name') fieldName = 'LastName'
+          let val = {
+            excelColumnName: excelColumnName,
+            fieldName: fieldName
+          }
+          return val
+        })
+        .filter((item) => item.fieldName)
       let payload = {
         transactionId: this.excelInfo.transactionId,
         fieldMappings: fieldMappingData,
