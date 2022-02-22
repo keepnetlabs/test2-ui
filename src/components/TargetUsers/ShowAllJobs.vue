@@ -5,7 +5,7 @@
       <v-expansion-panel
         v-for="(job, index) in jobs"
         :key="index"
-        :disabled="panelDisabled(index)"
+        :disabled="panelDisabled(job, index)"
         :job="job"
         :panelIndex="panelIndex"
       >
@@ -13,7 +13,7 @@
           <span class="w-5" style="width: 100px;">{{ job.jobId }}</span>
           <span class="w-25">{{ job.name }}</span>
           <span class="w-25 text-center">{{ job.createTime }}</span>
-          <span class="w-25 text-right">{{ job.progress }} %</span>
+          <span class="w-25 text-right">{{ job.status === 0 ? 'Waiting' : job.progress + '%' }} </span>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <datatable-loading v-if="processLoading" :loading="processLoading"></datatable-loading>
@@ -113,8 +113,8 @@ export default {
     }
   },
   methods: {
-    panelDisabled(index) {
-      return !!this.panelIndex?.toString() && this.panelIndex !== index
+    panelDisabled(job, index) {
+      return job.status === 0 || (!!this.panelIndex?.toString() && this.panelIndex !== index)
     },
     handleJobs() {
       getAllJobs().then((response) => {
