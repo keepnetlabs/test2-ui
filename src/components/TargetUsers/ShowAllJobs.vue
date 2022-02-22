@@ -148,7 +148,13 @@ export default {
             this.handleProcess(resourceId)
           }, 2500)
         }
-      })
+      }).catch(error => {
+        if (!this.isDestroyed) {
+          this.processTimeout = setTimeout(() => {
+            this.handleProcess(resourceId)
+          }, 2500)
+        }
+        })
     },
     processType(process) {
       if (process.existsError && process?.isFinished) {
