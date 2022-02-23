@@ -9,7 +9,7 @@
       <img
         alt="o365"
         src="../../assets/img/o365.svg"
-        v-if="['Microsoft365', 'O365'].includes(scope.row[col.property])"
+        v-if="['Microsoft365','Microsoft 365', 'O365'].includes(scope.row[col.property])"
       />
       <img
         alt="gsuite"
