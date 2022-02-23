@@ -15,8 +15,8 @@
           <app-modal-body-header
             :title="
               editData
-                ? 'Edit Microsoft365 Mail Configuration'
-                : 'New Microsoft365 Mail Configuration'
+                ? 'Edit Microsoft 365 Mail Configuration'
+                : 'New Microsoft 365 Mail Configuration'
             "
             sub-title="Select filters and date options to start an investigation"
           />
@@ -446,7 +446,7 @@
           </app-modal-body-header>
           <form-group title="Name" has-hint>
             <v-text-field
-              placeholder="Microsoft365 Mail Configuration"
+              placeholder="Microsoft 365 Mail Configuration"
               outlined
               dense
               v-model.trim="googleWorkSpaceForm.name"
@@ -745,8 +745,8 @@ export default {
   computed: {
     getTitle() {
       return this.editData
-        ? 'Edit Microsoft365 Mail Configuration'
-        : 'Create Microsoft365 Mail Configuration'
+        ? 'Edit Microsoft 365 Mail Configuration'
+        : 'Create Microsoft 365 Mail Configuration'
     },
     getGoogleWorkSpaceTitle() {
       return this.isGoogleWorkSpaceEdit
@@ -883,7 +883,7 @@ export default {
           filterableType: 'select',
           filterableItems: [
             { text: 'Google Workspace', value: 'Google Workspace' },
-            'Microsoft365',
+            'Microsoft 365',
             'Exchange'
           ]
         },
@@ -965,7 +965,7 @@ export default {
         }
       ]
     },
-    mailConfigurationTypes: ['Google Workspace', 'Microsoft365', 'EWS'],
+    mailConfigurationTypes: ['Google Workspace', 'Microsoft 365', 'EWS'],
     validations: validations,
     requestBody: getDefaultAxiosPayload(),
     defaultRequestBody: getDefaultAxiosPayload(),

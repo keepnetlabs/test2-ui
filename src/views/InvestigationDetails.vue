@@ -1379,7 +1379,7 @@ export default {
         filterableType: 'select',
         filterableItems: [
           'Outlook',
-          'Microsoft365',
+          'Microsoft 365',
           'Exchange',
           { text: 'Google Workspace', value: 'GoogleWorkspace' }
         ]
@@ -1480,7 +1480,7 @@ export default {
         minWidth: 180,
         type: 'service',
         filterableType: 'select',
-        filterableItems: ['Outlook', 'Microsoft365', 'Exchange', 'Google Workspace']
+        filterableItems: ['Outlook', 'Microsoft 365', 'Exchange', 'Google Workspace']
       },
       {
         property: 'analyzedMailCount',
@@ -2659,7 +2659,7 @@ export default {
         this.investigationDetailsData &&
         this.investigationDetailsData.scanConfigurationDetails &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
-          if (item.type === 'Microsoft365') acc.push(item.mailConfigurationName)
+          if (item.type === 'Microsoft 365') acc.push(item.mailConfigurationName)
           return acc
         }, [])
       )
