@@ -768,6 +768,7 @@ export default {
       try {
         return this.editor.Commands.run('get-html-juiced')
       } catch (e) {
+        console.log('e', e)
         return ''
       }
     }
