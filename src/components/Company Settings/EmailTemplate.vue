@@ -239,12 +239,12 @@ export default {
     setDefaultTemplate() {
       this.$emit('update:template', this.defaultTemplate)
     },
-    toggleShowGrapesModal() {
+    toggleShowGrapesModal(isSubmitted = false) {
       if (this.showGrapesModal) {
         if (this.$refs.grapesJsPostIncident) {
           const currentTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent()
           const isChanged = isDifferent(currentTemplate, this.initialTemplate)
-          if (!isChanged) {
+          if (!isChanged || isSubmitted) {
             this.$refs.grapesJsPostIncident.destroyEditor()
             this.showGrapesModal = !this.showGrapesModal
           } else {
@@ -267,7 +267,7 @@ export default {
     },
     saveGrapeJs() {
       this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())
-      this.toggleShowGrapesModal()
+      this.toggleShowGrapesModal(true)
     }
   }
 }
