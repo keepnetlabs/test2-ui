@@ -6,7 +6,7 @@
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
-        width: 600px !important;
+        width: 700px !important;
       "
     >
       <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
@@ -28,7 +28,7 @@
       </v-list-item>
       <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
         <div class="logos-buttons__container">
-          <logos wrapperClasses="mt-10 logos" />
+          <logos wrapperClasses="mt-10 logos" hasMidMargin />
           <div class="buttons__container">
             <v-btn
               id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
