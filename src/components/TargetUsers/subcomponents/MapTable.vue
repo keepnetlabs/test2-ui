@@ -105,7 +105,8 @@ export default {
             return false
           }
           return (
-            hItem.selectedValue?.dbName?.trim()?.toLowerCase() === i?.dbName?.trim()?.toLowerCase()
+            hItem.selectedValue?.name?.replace(/\s+/g, '')?.toLowerCase() ===
+            i?.name?.replace(/\s+/g, '')?.toLowerCase()
           )
         })
         return {
