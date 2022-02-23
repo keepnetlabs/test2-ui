@@ -872,7 +872,7 @@ describe('Datatable test cases suite', () => {
           service: 'Outlook'
         },
         {
-          service: 'Microsoft365'
+          service: 'Microsoft 365'
         },
         {
           service: 'GSuite'
