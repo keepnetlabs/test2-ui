@@ -6,7 +6,7 @@
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
-        width: 700px !important;
+        width: 600px !important;
       "
     >
       <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
