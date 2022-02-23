@@ -133,12 +133,18 @@
                           @submit="(event) => event.preventDefault()"
                         >
                           <v-text-field
-                            v-if="!showPasswordField"
-                            data-recording-ignore="mask"
+                            v-show="!showPasswordField"
+                            v-model.trim="email"
+                            :class="{ 'input-error': isErrorActive }"
                             id="input--login-email"
+                            data-recording-ignore="mask"
                             name="email"
                             ref="email"
-                            v-model.trim="email"
+                            class="username-field"
+                            label="Username or email"
+                            outlined
+                            validate-on-blur
+                            autocomplete="disabled"
                             :rules="[
                               rules.required,
                               rules.min,
@@ -146,33 +152,25 @@
                               rules.max,
                               rules.controlEmail
                             ]"
-                            class="username-field"
-                            required
-                            label="Username or email"
-                            outlined
-                            @keyup.enter="toNext"
-                            :class="{ 'input-error': isErrorActive }"
-                            validate-on-blur
-                            autocomplete="disabled"
                           ></v-text-field>
                           <v-text-field
-                            v-else
+                            v-if="showPasswordField"
+                            v-model.trim="password"
                             id="input--login-password"
+                            class="username-field input-group--focused"
+                            :class="{ 'input-error': isErrorActive }"
                             data-recording-ignore="mask"
-                            :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
-                            :rules="[rules.required, rules.min]"
-                            :type="show1 ? '' : 'password'"
                             name="password"
                             ref="password"
-                            v-model.trim="password"
-                            class="username-field input-group--focused"
-                            @click:append="show1 = !show1"
-                            v-on:keyup.enter="onLoginClicked()"
                             label="Password"
                             outlined
-                            :class="{ 'input-error': isErrorActive }"
                             validate-on-blur
                             autocomplete="disabled"
+                            :append-icon="show1 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+                            :rules="[rules.required, rules.min]"
+                            :type="show1 ? 'text' : 'password'"
+                            @click:append="show1 = !show1"
+                            @keyup.enter="onLoginClicked()"
                           ></v-text-field>
                         </v-form>
                       </v-col>
