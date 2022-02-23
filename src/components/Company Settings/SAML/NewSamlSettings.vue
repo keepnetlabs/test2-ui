@@ -30,21 +30,11 @@
           :sub-title="labels.SAMLSettingNameSubtitle"
           has-hint
         >
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.name"
             id="input--saml-settings-name"
-            placeholder="Enter a name"
-            outlined
-            dense
-            persistent-hint
-            :hint="labels.DefaultHint"
-            :rules="[
-              (v) => validations.required(v),
-              (v) => validations.startsWithSpace(v),
-              (v) =>
-                validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SAMLSettingName))
-            ]"
-          ></v-text-field>
+            entity-name="saml"
+          />
         </form-group>
         <form-group
           class-name="input-copy-to-clipboard"
@@ -351,9 +341,11 @@ import FormGroupHorizontalContent from '@/components/SmallComponents/FormGroupHo
 import { mapGetters } from 'vuex'
 import { getSystemUsersRole } from '@/api/systemUsers'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'NewSamlSettings',
   components: {
+    InputEntityName,
     KSelect,
     FormGroupHorizontalContent,
     KFileUpload,
