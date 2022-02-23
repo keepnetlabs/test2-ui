@@ -152,6 +152,7 @@
                               rules.max,
                               rules.controlEmail
                             ]"
+                            @keyup.enter="toNext"
                           ></v-text-field>
                           <v-text-field
                             v-if="showPasswordField"
