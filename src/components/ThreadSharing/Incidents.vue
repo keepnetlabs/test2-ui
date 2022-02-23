@@ -136,7 +136,7 @@
                   <span class="no-community pt-4">
                     {{
                       checkDatatableIsEmpty()
-                        ? 'Search criteria has no results'
+                        ? 'Sorry, that search and filter criteria has no results.'
                         : 'No incident has been shared'
                     }}
                   </span>

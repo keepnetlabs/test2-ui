@@ -648,7 +648,7 @@
             >
               <div class="empty-communities-inline">
                 <span class="no-community">
-                  Sorry, we couldn't find any results matching your criteria
+                  Sorry, that search and filter criteria has no results.
                 </span>
               </div>
             </div>

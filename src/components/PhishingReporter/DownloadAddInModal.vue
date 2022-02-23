@@ -6,7 +6,8 @@
       style="
         border-radius: 12px !important;
         padding: 24px 24px 16px 24px !important;
-        width: 600px !important;
+        width: 700px !important;
+        max-width: 700px !important;
       "
     >
       <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
@@ -27,74 +28,88 @@
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="pl-0 pr-0 add-in-configuration__list-item">
-        <div class="logos-buttons__container">
-          <logos wrapperClasses="mt-10 logos" />
-          <div class="buttons__container">
-            <v-btn
-              id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
-              class="white--text btn-util btn-download-add-in"
-              style="margin-left: 5px !important;"
-              color="#2196f3"
-              rounded
-              :loading="googleWorkSpaceSpinnerStatus"
-              @click="callForGenerateGoogleWorkSpaceAddIn"
-            >
-              <v-icon left>mdi-download</v-icon>
-              Download
-              <template v-slot:loader>
-                <img
-                  src="../../assets/img/spinner.svg"
-                  class="add-in-settings__spinner"
-                  alt="spinner"
-                />
-                <span style="font-size: 14px; text-transform: capitalize;">
-                  Generating...
-                </span>
-              </template>
-            </v-btn>
-            <v-btn
-              id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
-              class="white--text btn-util btn-download-add-in ml-5"
-              style="margin-left: -6px;"
-              color="#2196f3"
-              rounded
-              :loading="outlookSpinnerStatus"
-              @click="callForGenerateOutlookAddIn"
-            >
-              <v-icon left>mdi-download</v-icon>
-              Download
-              <template v-slot:loader>
-                <img
-                  src="../../assets/img/spinner.svg"
-                  class="add-in-settings__spinner"
-                  alt="spinner"
-                />
-                <span style="font-size: 14px; text-transform: capitalize;">
-                  Generating...
-                </span>
-              </template>
-            </v-btn>
-            <v-btn
-              id="btn-download-office--phishing-reporter-settings-add-in-modal"
-              class="white--text btn-util btn-download-add-in mr-n1"
-              color="#2196f3"
-              rounded
-              :loading="gmailSpinnerStatus"
-              @click="callForGenerateO365AddIn"
-            >
-              <v-icon left>mdi-download</v-icon>
-              Download
-              <template v-slot:loader>
-                <img
-                  src="../../assets/img/spinner.svg"
-                  class="add-in-settings__spinner"
-                  alt="spinner"
-                />
-                <span style="font-size: 14px; text-transform: capitalize;">
-                  Generating...
-                </span>
-              </template>
-            </v-btn>
+        <div class="logos-buttons__container mt-10">
+          <div class="logos-buttons__first-row">
+            <div class="logo-and-button">
+              <div style="display: flex; align-items: center; height: 33px;" class="mb-2">
+                <img src="../../assets/img/google-workspace.png" alt="g-suite-logo" />
+              </div>
+              <v-btn
+                id="btn-download-g-suite--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in"
+                style="margin-left: 5px !important;"
+                color="#2196f3"
+                rounded
+                :loading="googleWorkSpaceSpinnerStatus"
+                @click="callForGenerateGoogleWorkSpaceAddIn"
+              >
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template v-slot:loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </v-btn>
+            </div>
+            <div class="logo-and-button">
+              <div>
+                <img src="../../assets/img/outlook.svg" alt="outlook-logo" />
+              </div>
+              <v-btn
+                id="btn-download-outlook--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in ml-5"
+                style="margin-left: -6px;"
+                color="#2196f3"
+                rounded
+                :loading="outlookSpinnerStatus"
+                @click="callForGenerateOutlookAddIn"
+              >
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template v-slot:loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </v-btn>
+            </div>
+            <div class="logo-and-button">
+              <div>
+                <img src="../../assets/img/microsoft-365-logo.png" alt="microsoft-365-logo" />
+              </div>
+              <v-btn
+                id="btn-download-office--phishing-reporter-settings-add-in-modal"
+                class="white--text btn-util btn-download-add-in mr-n1"
+                color="#2196f3"
+                rounded
+                :loading="gmailSpinnerStatus"
+                @click="callForGenerateO365AddIn"
+              >
+                <v-icon left>mdi-download</v-icon>
+                Download
+                <template v-slot:loader>
+                  <img
+                    src="../../assets/img/spinner.svg"
+                    class="add-in-settings__spinner"
+                    alt="spinner"
+                  />
+                  <span style="font-size: 14px; text-transform: capitalize;">
+                    Generating...
+                  </span>
+                </template>
+              </v-btn>
+            </div>
           </div>
         </div>
       </v-list-item>
@@ -113,7 +128,7 @@
       <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
         <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
       </v-list-item>
-      <v-list-item class="px-0 add-in-configuration__list-item mt-5">
+      <v-list-item class="px-0 add-in-configuration__list-item mt-5" style="margin-left: 29px;">
         <v-btn
           @click="callForGenerateDiagnosticTool"
           id="btn-download-diagnostic-tool--phishing-reporter-settings-add-in-modal"
@@ -170,7 +185,7 @@ export default {
     }
   },
   components: {
-    Logos,
+    // Logos,
     DiagnosticTool
   },
   data() {
@@ -304,5 +319,16 @@ export default {
   .v-btn__loader {
     padding-right: 8px;
   }
+}
+.logos-buttons__first-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo-and-button {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 </style>
