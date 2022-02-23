@@ -191,7 +191,7 @@ export default {
   methods: {
     setInitialTemplateData() {
       setTimeout(() => {
-        this.initialTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent() || ''
+        //this.initialTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent() || ''
       }, 1000)
     },
     handleFileDelete(index) {
@@ -266,6 +266,7 @@ export default {
       }
     },
     saveGrapeJs() {
+      debugger
       this.$emit('update:template', this.$refs.grapesJsPostIncident.getGrapesEditorContent())
       this.toggleShowGrapesModal(true)
     }
