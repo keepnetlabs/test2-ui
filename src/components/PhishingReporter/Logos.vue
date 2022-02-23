@@ -6,7 +6,7 @@
     <div>
       <img
         src="../../assets/img/outlook.svg"
-        :class="{ 'mx-2': hasMidMargin }"
+        :class="{ 'mx-6': hasMidMargin }"
         alt="outlook-logo"
       />
     </div>
