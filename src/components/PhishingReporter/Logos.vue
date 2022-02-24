@@ -6,12 +6,12 @@
     <div>
       <img
         src="../../assets/img/outlook.svg"
-        :class="{ 'mx-12': hasMidMargin }"
+        :class="{ 'mx-6': hasMidMargin }"
         alt="outlook-logo"
       />
     </div>
     <div>
-      <img src="../../assets/img/office-365-logo.png" alt="office-logo" />
+      <img src="../../assets/img/microsoft-365-logo.png" alt="microsoft-365-logo" />
     </div>
   </div>
 </template>
