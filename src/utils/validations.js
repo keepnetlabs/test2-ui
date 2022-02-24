@@ -19,8 +19,7 @@ export function minLength(value, length, message) {
 }
 
 export function mail(value, message) {
-  value = getValue(value)
-  return !value || /\S+@\S+\.\S+/gi.test(value) || message
+  return email(value, message)
 }
 
 export function ip(value, message = 'Invalid IP address') {
@@ -86,9 +85,11 @@ export function phone(value, message) {
 export function email(value, message = 'Invalid email address') {
   value = getValue(value)
   return value
-    ? /^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
+    ? (/^[a-zA-Z0-9.!#$%&'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,255}[a-zA-Z0-9])?)*$/.test(
         value
-      ) || message
+      ) &&
+        isEmailSpacialCharacter(value)) ||
+        message
     : true
 }
 
@@ -157,9 +158,17 @@ export function isEntityNameSpecialCharacter(
   return /^([A-Z]|[0-9]|[-/,&\söğüıçş]){0,64}$/gi.test(value) || message
 }
 
+export function isEmailSpacialCharacter(value) {
+  return /^([A-Z]|[0-9]|[-/,&!#$%'*+-/=?@^_`~]){0,320}$/gi.test(value)
+}
+
 export function port(value, message = 'Only use numbers') {
   value = getValue(value)
   if (!/^[0-9]*$/gi.test(value)) return message
   value = parseInt(value, 10)
   return (value > 0 && value <= 65536) || 'Invalid port number'
+}
+
+export function isFileExtensionSpecialCharacter(value, message) {
+  return /^([A-Z]|[0-9]|[!#@$?()^[]_~]){0,10}$/gi.test(value) || message
 }

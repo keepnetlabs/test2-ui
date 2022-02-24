@@ -131,20 +131,14 @@
                 ? formValues.isSendInformationEmail
                   ? [
                       (v) =>
-                        this.validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('Email subject')
-                        ),
-                      (v) => this.validations.required(v, labels.Required)
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
+                      (v) => validations.required(v, labels.Required),
+                      (v) => validations.isEmailSpacialCharacter(v) || 'Invalid characters'
                     ]
                   : [
                       (v) =>
-                        this.validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('Email subject')
-                        )
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
+                      (v) => validations.isEmailSpacialCharacter(v) || 'Invalid characters'
                     ]
                 : []
             "

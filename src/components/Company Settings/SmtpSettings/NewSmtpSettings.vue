@@ -34,25 +34,11 @@
       />
       <v-form ref="refForm">
         <form-group :title="labels.SMTPSettingName" has-hint>
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.name"
-            :rules="[
-              (v) => validations.required(v),
-              (v) => validations.startsWithSpace(v),
-              (v) =>
-                validations.maxLength(
-                  v,
-                  64,
-                  labels.getMaxLengthMessage(labels.SMTPSettingNameSecondLower)
-                )
-            ]"
             id="input--smtp-settings-name"
-            placeholder="Enter SMTP setting name"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
-          ></v-text-field>
+            entity-name="SMTP setting"
+          />
         </form-group>
         <form-group :title="labels.ServiceProvider" has-hint>
           <k-select
@@ -97,10 +83,7 @@
               ref="refTextField"
               dense
               @input="onPortChange"
-              :rules="[
-                (v) => validations.required(v),
-                (v) => validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Port, 10))
-              ]"
+              :rules="[(v) => validations.required(v), (v) => validations.port(v)]"
               :value="formValues.serverPort"
             ></v-text-field>
           </div>
@@ -254,9 +237,11 @@ import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import TestEmailDialog from '@/components/Company Settings/SmtpSettings/TestEmailDialog'
 import TestEmailErrorDialog from '@/components/Company Settings/SmtpSettings/TestEmailErrorDialog'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'NewSmtpSettings',
   components: {
+    InputEntityName,
     TestEmailErrorDialog,
     TestEmailDialog,
     MakeAvailableFor,
