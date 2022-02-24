@@ -31,7 +31,7 @@
         <div class="logos-buttons__container mt-10">
           <div class="logos-buttons__first-row">
             <div class="logo-and-button">
-              <div style="display: flex; align-items: center; height: 33px;" class="mb-2">
+              <div style="display: flex; align-items: center; height: 40px;">
                 <img src="../../assets/img/google-workspace.png" alt="g-suite-logo" />
               </div>
               <v-btn
@@ -58,7 +58,7 @@
               </v-btn>
             </div>
             <div class="logo-and-button">
-              <div>
+              <div style="height:40px;">
                 <img src="../../assets/img/outlook.svg" alt="outlook-logo" />
               </div>
               <v-btn
@@ -85,8 +85,8 @@
               </v-btn>
             </div>
             <div class="logo-and-button">
-              <div>
-                <img src="../../assets/img/microsoft-365-logo.png" alt="microsoft-365-logo" />
+              <div style="height:35px;">
+                <img src="../../assets/img/microsoft-365-logo.svg" alt="microsoft-365-logo" />
               </div>
               <v-btn
                 id="btn-download-office--phishing-reporter-settings-add-in-modal"
@@ -128,7 +128,7 @@
       <v-list-item class="px-0 mt-n3 modal__container add-in-configuration__list-item">
         <diagnostic-tool :isInModal="true" :showFooter="false" :showHeader="false" />
       </v-list-item>
-      <v-list-item class="px-0 add-in-configuration__list-item mt-5" style="margin-left: 29px;">
+      <v-list-item class="px-0 add-in-configuration__list-item mt-5" style="margin-left: 30px;">
         <v-btn
           @click="callForGenerateDiagnosticTool"
           id="btn-download-diagnostic-tool--phishing-reporter-settings-add-in-modal"
