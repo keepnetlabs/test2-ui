@@ -983,4 +983,11 @@ export default {
 .grapes-custom-button {
   font-size: 22px;
 }
+.cm-s-hopscotch span.cm-error {
+  color: #fdcc59;
+  background: inherit;
+}
+.cm-s-hopscotch span.cm-error {
+  color: #fdcc59;
+}
 </style>
