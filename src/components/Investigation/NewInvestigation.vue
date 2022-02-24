@@ -14,23 +14,13 @@
           />
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-list-item class="edit-name-area 0 pa-0 investigation-name">
-              <v-list-item-content class>
-                <label id="label--investigation-name" class="pb-2 edit-labels">{{
-                  labels.InvestigationName
-                }}</label>
-                <v-text-field
+              <FormGroup id="label--investigation-name" :title="labels.InvestigationName" has-hint>
+                <InputEntityName
+                  v-model.trim="investigationName"
                   id="input--investigation-name"
-                  placeholder="Enter an investigation name"
-                  outlined
-                  class="edit-name-textfield edit-select standard-height"
-                  v-model.trim="investgationName"
-                  :rules="[
-                    investigationNameRules.required,
-                    investigationNameRules.empty,
-                    investigationNameRules.maxLength
-                  ]"
-                ></v-text-field>
-              </v-list-item-content>
+                  initial-placeholder="Enter an investigation name"
+                />
+              </FormGroup>
             </v-list-item>
             <v-list-item class="edit-industry-area pt-2 pb-4 pa-0 target-users-select">
               <v-list-item-content class>
@@ -410,8 +400,12 @@ import * as Validations from '@/utils/validations'
 import MailConfigurationSelectSources from '@/components/Common/Others/MailConfigurationSelectSources'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import FormGroup from '@/components/SmallComponents/FormGroup'
 export default {
   components: {
+    FormGroup,
+    InputEntityName,
     MailConfigurationSelectSources,
     KSelect,
     AppModalBodyHeader,
@@ -514,7 +508,7 @@ export default {
       },
       scanTypes: [],
       checkboxError: false,
-      investgationName: `Manual Investigation - ${this.$moment(Date.now()).format(
+      investigationName: `Manual Investigation - ${this.$moment(Date.now()).format(
         getTimeZoneForMoment()
       )}`,
       isDateValid: true,
@@ -844,7 +838,8 @@ export default {
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.minLength(v, 3, labels.getMinLengthMessage(labels.Extension, 3)),
           (v) => Validations.maxLength(v, 10, labels.getMaxLengthMessage(labels.Extension, 10)),
-          (v) => Validations.extension(v, labels.InvalidExtension)
+          (v) => Validations.extension(v, labels.InvalidExtension),
+          (v) => Validations.isFileExtensionSpecialCharacter(v, labels.InvalidExtension)
         )
         return rules
       } else if (option === 'regex') {
@@ -872,7 +867,7 @@ export default {
     onCancelClicked() {
       if (!this.isSubmitted) {
         const currentFormValues = {
-          investigationName: this.investgationName,
+          investigationName: this.investigationName,
           targetUsers: this.targetUsers,
           filterList: this.filterList,
           date: this.date,
@@ -1231,7 +1226,7 @@ export default {
           bodies: this.filterData(bodyData),
           attachments: this.filterData(attachmentsData),
           isScanEnterpriseVault: false,
-          name: this.investgationName,
+          name: this.investigationName,
           startDate,
           endDate,
           expireDate: this.newExpireDate(startDate, this.selectedDuration),
@@ -1316,7 +1311,7 @@ export default {
     },
     checkIsEdit() {
       if (this.isEdit) {
-        this.investgationName = this.investigationDetailsData.name
+        this.investigationName = this.investigationDetailsData.name
         //this.date.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.startDate)
         //this.data.push(this.investigationDetailsData.endDate)
@@ -1473,13 +1468,13 @@ export default {
       if (!this.filterList.length) {
         this.filterList.push({})
       }
-      this.investgationName = `Manual Investigation - ${this.$moment(Date.now()).format(
+      this.investigationName = `Manual Investigation - ${this.$moment(Date.now()).format(
         getTimeZoneForMoment()
       )}`
     }
     document.querySelector('.page-nav').style.zIndex = 8
     this.initialFormValues = {
-      investigationName: this.investgationName,
+      investigationName: this.investigationName,
       targetUsers: this.targetUsers,
       filterList: this.filterList,
       date: this.date,

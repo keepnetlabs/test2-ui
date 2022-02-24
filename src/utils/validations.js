@@ -168,3 +168,7 @@ export function port(value, message = 'Only use numbers') {
   value = parseInt(value, 10)
   return (value > 0 && value <= 65536) || 'Invalid port number'
 }
+
+export function isFileExtensionSpecialCharacter(value, message) {
+  return /^([A-Z]|[0-9]|[!#@$?()^[]_~]){0,10}$/gi.test(value) || message
+}
