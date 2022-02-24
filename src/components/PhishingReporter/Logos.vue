@@ -11,7 +11,7 @@
       />
     </div>
     <div>
-      <img src="../../assets/img/microsoft-365-logo.png" alt="microsoft-365-logo" />
+      <img src="../../assets/img/microsoft-365-logo.svg" alt="microsoft-365-logo" />
     </div>
   </div>
 </template>
