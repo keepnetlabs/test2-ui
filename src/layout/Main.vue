@@ -340,7 +340,7 @@
             >
               <v-list-item-content class="menu-item-content">
                 <router-link
-                  to="/services"
+                  to="/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   class="menu-link-default"
                   :class="[routerName === 'DNS and Domains' && 'active-link']"

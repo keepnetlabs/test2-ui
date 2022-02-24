@@ -54,7 +54,8 @@
             text-transform: capitalize;
           "
         >
-          <v-icon>mdi-check</v-icon> <span class="ml-2"> {{ labels.Connected }}</span>
+          <v-icon>mdi-check</v-icon>
+          <span class="ml-2"> {{ labels.Connected }}</span>
         </span>
         <span v-else> {{ labels.TestConnection }}</span>
         <template #loader>
@@ -70,7 +71,38 @@
       </v-btn>
     </FormGroup>
     <FormGroup :title="labels.Distribution" :sub-title="labels.DistributionSub">
-      <v-radio-group
+      <div class="campaign-manager-advanced-settings__distribution-item">
+        <label for="input--campaign-manager-advanced-settings-time"
+          >Send emails with SMTP Delay every
+        </label>
+        <v-text-field
+          v-model="formData.distributionSmtpDelayEvery"
+          v-mask="'###'"
+          id="input--campaign-manager-advanced-settings-time"
+          placeholder="Enter number"
+          outlined
+          class="edit-name-textfield edit-select standard-height ml-2"
+          hide-details
+          style="max-width: 48px;"
+          :disabled="!distributionEmailOverTimeDisableStatus"
+          :rules="rules.number"
+          @input="callForCalculateSendingInfo"
+        ></v-text-field>
+        <KSelect
+          v-model.trim="formData.distributionSmtpDelayTimeTypeId"
+          id="input--campaign-manager-advanced-settings-time-type"
+          class="ml-2"
+          outlined
+          dense
+          hide-details
+          placeholder="Select a item"
+          style="max-width: 118px;"
+          :items="formDetails['distributionSmtpDelayTimeTypes']"
+          :disabled="!distributionEmailOverTimeDisableStatus"
+          @change="callForCalculateSendingInfo"
+        />
+      </div>
+      <!-- <v-radio-group
         v-model="formData.distributionTypeId"
         class="campaign-manager-advanced-settings__distribution"
         @change="callForCalculateSendingInfo"
@@ -91,7 +123,7 @@
             outlined
             class="edit-name-textfield edit-select standard-height ml-2"
             hide-details
-            style="max-width: 48px;"
+            style="max-width: 48px"
             :disabled="!distributionEmailOverTimeDisableStatus"
             :rules="rules.number"
             @input="callForCalculateSendingInfo"
@@ -104,7 +136,7 @@
             dense
             hide-details
             placeholder="Select a item"
-            style="max-width: 118px;"
+            style="max-width: 118px"
             :items="formDetails['distributionSmtpDelayTimeTypes']"
             :disabled="!distributionEmailOverTimeDisableStatus"
             @change="callForCalculateSendingInfo"
@@ -126,7 +158,7 @@
             outlined
             class="edit-name-textfield edit-select standard-height ml-2"
             hide-details
-            style="max-width: 48px;"
+            style="max-width: 48px"
             :disabled="distributionEmailOverTimeDisableStatus"
             :rules="rules.number"
             @change="callForCalculateSendingInfo"
@@ -139,13 +171,13 @@
             dense
             hide-details
             placeholder="Select a item"
-            style="max-width: 118px;"
+            style="max-width: 118px"
             :disabled="distributionEmailOverTimeDisableStatus"
             :items="formDetails['distributionEmailOverTimeTypes']"
             @change="callForCalculateSendingInfo"
           />
         </div>
-      </v-radio-group>
+      </v-radio-group> -->
     </FormGroup>
     <FormGroup :title="labels.SendingLimit" :sub-title="labels.SendingLimitSub">
       <v-text-field
@@ -394,6 +426,8 @@ export default {
         if (key === 'smtpSetting') {
           this.selectedSmtpSetting = val[key]
           this.formData.smtpSettingResourceId = this.selectedSmtpSetting.value
+        } else if (key === 'distributionTypeId') {
+          this.formData.distributionTypeId = '1'
         } else {
           this.formData[key] = val[key]
         }
@@ -405,7 +439,10 @@ export default {
   },
   methods: {
     getTestConnectionButtonStyle() {
-      return { fontWeight: 600, pointerEvents: this.isTestMailSend ? 'none' : 'cursor' }
+      return {
+        fontWeight: 600,
+        pointerEvents: this.isTestMailSend ? 'none' : 'cursor'
+      }
     },
     validateForm() {
       this.$refs.refForm.validate()

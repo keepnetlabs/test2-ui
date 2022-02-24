@@ -172,8 +172,8 @@ const router = new Router({
           params: true
         },
         {
-          path: '/services',
-          name: 'DNS and Domains',
+          path: '/settings',
+          name: 'Settings',
           component: DnsServices,
           meta: {
             isAuthenticated: true,
