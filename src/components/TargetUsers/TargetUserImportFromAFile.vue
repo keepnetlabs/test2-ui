@@ -1238,7 +1238,9 @@ export default {
               name: item,
               selectedValue:
                 this.mappingData.columns.find(
-                  (column) => column?.dbName?.trim()?.toLowerCase() === item?.trim()?.toLowerCase()
+                  (column) =>
+                    column?.name?.replace(/\s+/g, '')?.toLowerCase() ===
+                    item?.replace(/\s+/g, '')?.toLowerCase()
                 ) || null,
               required:
                 this.mappingData.columns.find((mapItem) => {
