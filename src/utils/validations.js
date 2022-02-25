@@ -138,9 +138,18 @@ export function isNumber(value, message = 'Invalid File Size') {
 
 export function isDescriptionSpecialCharacter(
   value,
-  message = "Only use letters, numbers, dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
+  message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
+  value = getValue(value)
   return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçş]){0,2001}$/gi.test(value) || message
+}
+
+export function isProxyAddressOrIp(
+  value,
+  message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
+) {
+  value = getValue(value)
+  return /^([0-9]|[A-Z]|[-\/,&()ö.ğüıçş]){0,2001}$/gi.test(value) || message
 }
 
 export function isNameSpecialCharacter(
