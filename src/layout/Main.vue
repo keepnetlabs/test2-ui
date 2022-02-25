@@ -343,7 +343,7 @@
                   to="/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
                   class="menu-link-default"
-                  :class="[routerName === 'DNS and Domains' && 'active-link']"
+                  :class="[routerName === 'Settings' && 'active-link']"
                 >
                   <v-list-item-title class="menu-item-wrapper">
                     <span class="menu-item-span">Settings</span>
@@ -1130,7 +1130,7 @@ export default {
           routerName === 'Phishing Scenarios' ||
           routerName === 'Campaign Manager' ||
           routerName === 'Campaign Report' ||
-          routerName === 'DNS and Domains',
+          routerName === 'Settings',
         'un-selected-list-item':
           routerName !== 'Phishing Simulator' || routerName !== 'Email Templates'
       }
