@@ -31,6 +31,7 @@ import CampaignManager from '@/views/CampaignManager'
 import CampaignManagerReport from '@/views/CampaignManagerReport'
 import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
+import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 
 Vue.use(Router)
 
@@ -76,6 +77,15 @@ const router = new Router({
             parentName: 'Dashboard'
           },
           component: Company
+        },
+        {
+          path: '/phishing-simulator',
+          name: 'Phishing Simulator',
+          meta: {
+            isAuthenticated: true,
+            parentName: 'Dashboard'
+          },
+          component: PhishingSimulatorRoute
         },
         {
           path: '/threat-sharing',
@@ -166,7 +176,7 @@ const router = new Router({
           component: PhishingSimulator,
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Phishing Simulator'
           },
           props: true,
           params: true
@@ -177,7 +187,7 @@ const router = new Router({
           component: DnsServices,
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Phishing Simulator'
           },
           props: true,
           params: true
@@ -188,7 +198,7 @@ const router = new Router({
           component: CampaignManager,
           meta: {
             isAuthenticated: true,
-            parentName: 'Dashboard'
+            parentName: 'Phishing Simulator'
           },
           props: true,
           params: true
