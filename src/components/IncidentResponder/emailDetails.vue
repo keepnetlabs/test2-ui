@@ -312,11 +312,11 @@
 
 <script>
 import Badge from '@/components/Badge'
-import Datatable from '../../components/DataTable'
-import DownloadModal from './DownloadModal'
+import Datatable from '@/components/DataTable'
+import DownloadModal from '@/components/IncidentResponder/DownloadModal'
 import { getNotifiedEmail, downloadAttachment } from '@/api/notifiedEmail'
 import { getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
-import PreviewHeaderForSinglePost from '../ThreadSharing/PreviewHeaderForSinglePost'
+import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
 import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'

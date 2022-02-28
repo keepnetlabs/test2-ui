@@ -16,14 +16,14 @@
         <v-card id="ts-card" class="pl-1 pt-2 pr-1">
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
             <v-tab
-              :disabled="isStepDisabled"
               v-if="checkPermissions('community-posts/search', 'POST')"
               id="ts-tab-incident"
+              :disabled="isStepDisabled"
               >Incidents</v-tab
             >
             <v-tab
-              :disabled="isStepDisabled"
               v-if="checkPermissions('communities/search/all', 'POST')"
+              :disabled="isStepDisabled"
               id="ts-tab-community"
               >Communities</v-tab
             >
@@ -62,12 +62,12 @@
       <v-col id="ts-right-column" class="right-column pl-2" cols="12" md="4">
         <right-column
           class="right-col-desktop"
-          @createCommunityAction="openCreateCommunityModal()"
-          @joinRequestSuccess="joinRequestSuccess()"
           :incidentsRef="this.$refs.tsIncidents"
           :communitiesRef="this.$refs.tsCommunities"
           :selectedTab="tab"
           :subTabSelected="this.$refs.tsCommunities && this.$refs.tsCommunities.subSelectedTab"
+          @createCommunityAction="openCreateCommunityModal()"
+          @joinRequestSuccess="joinRequestSuccess()"
         />
       </v-col>
     </v-layout>
@@ -75,10 +75,10 @@
 </template>
 
 <script>
-import Incidents from '../components/ThreadSharing/Incidents'
-import Communities from '../components/ThreadSharing/Communities'
-import RightColumn from '../components/ThreadSharing/RightColumn'
-import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import Incidents from '@/components/ThreatSharing/Incidents/Incidents'
+import Communities from '@/components/ThreatSharing/Communities/Communities'
+import RightColumn from '@/components/ThreatSharing/RightColumn/RightColumn'
+import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
 import { checkPermission } from '@/utils/functions'
 
 export default {

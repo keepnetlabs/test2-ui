@@ -90,11 +90,11 @@
 </template>
 
 <script>
-import Incidents from '../components/ThreadSharing/Incidents'
-import Members from '../components/ThreadSharing/Members'
-import PostIncident from '../components/ThreadSharing/PostIncident'
-import RightColumn from '../components/ThreadSharing/RightColumn'
-import NewCommunity from '../components/ThreadSharing/NewCommunity'
+import Incidents from '@/components/ThreatSharing/Incidents/Incidents'
+import Members from '@/components/ThreatSharing/Members/Members'
+import PostIncident from '@/components/ThreatSharing/PostIncident/PostIncident'
+import RightColumn from '@/components/ThreatSharing/RightColumn/RightColumn'
+import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
 import { checkPermission } from '@/utils/functions'
 export default {
   name: 'ThreatSharing',
@@ -252,7 +252,7 @@ export default {
       this.isWantToLeaveFromCommunity = false
     },
     mobileInfoClicked() {
-      this.$store.commit('threadSharing/SET_MOBILE_INFO', true)
+      this.$store.commit('threatSharing/SET_MOBILE_INFO', true)
     }
   },
   beforeRouteLeave(to, from, next) {
