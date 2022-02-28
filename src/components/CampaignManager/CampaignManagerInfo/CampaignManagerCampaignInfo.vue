@@ -65,8 +65,9 @@
       @handle-selection-change="handleTableSelectionChange"
     />
     <CustomError
-      :is-valid="isTargetGroupsValid"
       class="mb-6 ml-2"
+      style="margin-top: 2px;"
+      :is-valid="isTargetGroupsValid"
       :error-message="getTargetGroupErrorMessage"
     />
     <FormGroup

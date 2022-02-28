@@ -118,6 +118,7 @@
           }"
           placeholder="Select an option"
           :key="getDateKey"
+          @click="handleDateSelectClick"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
@@ -140,7 +141,9 @@
       </template>
       <template v-if="filterableType === 'dateOnly'">
         <v-select
+          v-if="filterableOptions.showSelect"
           :items="dateFilterItems"
+          ref="refPickerDateOnly"
           dense
           height="40"
           outlined
@@ -149,7 +152,7 @@
           :menu-props="{ offsetY: true }"
           placeholder="Select an option"
           :key="getDateKey"
-          v-if="filterableOptions.showSelect"
+          @click="handleDateSelectClick"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
@@ -177,6 +180,7 @@
       <template v-if="filterableType === 'select'">
         <div>
           <v-text-field
+            v-if="isShowSearchTextField"
             placeholder="Search"
             class="filter__text"
             outlined
@@ -184,7 +188,6 @@
             v-model="filterValue"
             height="40"
             style="margin-top: 1px;"
-            v-if="filterValue || searchInItems.length > 4"
           ></v-text-field>
         </div>
         <v-checkbox
@@ -268,6 +271,10 @@ export default {
     filterableCustomFieldName: {
       type: String,
       default: null
+    },
+    showSelectSearch: {
+      type: Boolean,
+      default: true
     },
     sortable: {
       type: Boolean,
@@ -416,7 +423,6 @@ export default {
     closeDialog() {
       this.status = false
     },
-    changeDateSelect() {},
     handleChangeBetweenDatepicker(val) {
       if (!val) {
         this.filteredDateRangeValue = [
@@ -437,6 +443,17 @@ export default {
             this.$moment(Date.now()).format(getTimeZoneForMoment())
           ]
         }
+      }
+    },
+    handleDateSelectClick() {
+      const { refPicker, refPicker2, refPickerDateOnly } = this.$refs
+      this.hidePicker(refPicker)
+      this.hidePicker(refPicker2)
+      this.hidePicker(refPickerDateOnly)
+    },
+    hidePicker(refPicker) {
+      if (refPicker && refPicker.pickerVisible) {
+        refPicker.hidePicker()
       }
     },
     clearFilter(isEmit = true) {
@@ -554,6 +571,9 @@ export default {
     }
   },
   computed: {
+    isShowSearchTextField() {
+      return this.showSelectSearch && (this.filterValue || this.searchInItems.length > 4)
+    },
     inBetweenDatesPickerOptions() {
       return {
         disabledDate: (time) => {

@@ -107,6 +107,7 @@ export default {
             isEditable: true,
             filterableType: 'select',
             filterableItems: COMMON_CONSTANTS.PRIORITY_ITEMS,
+            showSelectSearch: false,
             editOptions: {
               component: 'select',
               props: {
