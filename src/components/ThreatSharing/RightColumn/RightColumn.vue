@@ -433,51 +433,13 @@
         <div v-show="checkPermissions('community-posts/my-last-posts', 'GET') && !yourPostsLoading">
           <div class="pb-4" v-if="yourPosts && yourPosts.length > 0">
             <div v-for="(post, ind) of yourPosts" :key="ind + Math.floor(Math.random() * 10000)">
-              <div class="pt-2">
-                <div
-                  :id="`text--threat-sharing-right-column-post-title-${ind}`"
-                  class="right-side-sub-title pb-1"
-                >
-                  <a
-                    id="threat-sharing-right-column-go-to-post-details-your-posts-button"
-                    @click="goToPostDetails(post)"
-                    >{{ post.title }}</a
-                  >
-                </div>
-                <div
-                  :id="`text--threat-sharing-right-column-post-community-name-${ind}`"
-                  class="right-side-desc pb-1"
-                >
-                  in
-                  <a
-                    id="threat-sharing-right-column-go-to-community-details-your-posts-button"
-                    @click="goToCommunityDetails(post)"
-                    >{{ post.communityName }}</a
-                  >
-                </div>
-                <div class="right-side-like-comment-wrapper">
-                  <div class="right-side-like">
-                    <v-btn disabled text x-small icon color="grey">
-                      <v-icon>mdi-thumb-up</v-icon>
-                    </v-btn>
-                    <span
-                      :id="`text--threat-sharing-right-column-post-like-count-${ind}`"
-                      class="like-count"
-                      >{{ post.likeCount }}</span
-                    >
-                  </div>
-                  <div class="right-side-message pl-2">
-                    <v-btn disabled text x-small icon color="grey">
-                      <v-icon>mdi-message-reply-text</v-icon>
-                    </v-btn>
-                    <span
-                      :id="`text--threat-sharing-right-column-post-comment-count-${ind}`"
-                      class="comment-count"
-                      >{{ post.commentCount }}</span
-                    >
-                  </div>
-                </div>
-              </div>
+              <post
+                class="pt-2"
+                :index="ind"
+                :post="post"
+                @goToPostDetails="goToPostDetails(post)"
+                @goToCommunityDetails="goToCommunityDetails(post)"
+               />
             </div>
           </div>
           <div
@@ -507,51 +469,13 @@
               "
             >
               <div v-for="(post, ind) of topPosts" :key="ind + Math.floor(Math.random() * 10000)">
-                <div class="right-side-post-container pt-2">
-                  <div
-                    :id="`text--threat-sharing-right-column-top-posts-post-title-${ind}`"
-                    class="right-side-sub-title pb-1"
-                  >
-                    <a
-                      id="threat-sharing-right-column-go-to-post-details-top-posts-button"
-                      @click="goToPostDetails(post)"
-                      >{{ post.postTitle }}</a
-                    >
-                  </div>
-                  <div
-                    :id="`text--threat-sharing-right-column-top-posts-post-community-name-${ind}`"
-                    class="right-side-desc pb-1"
-                  >
-                    in
-                    <a
-                      id="threat-sharing-right-column-go-to-community-details-top-posts-button"
-                      @click="goToCommunityDetails(post)"
-                      >{{ post.communityName }}</a
-                    >
-                  </div>
-                  <div class="right-side-like-comment-wrapper">
-                    <div class="right-side-like">
-                      <v-btn disabled text x-small icon color="grey">
-                        <v-icon>mdi-thumb-up</v-icon>
-                      </v-btn>
-                      <span
-                        :id="`text--threat-sharing-right-column-top-posts-post-like-count-${ind}`"
-                        class="like-count"
-                        >{{ post.likeCount }}</span
-                      >
-                    </div>
-                    <div class="right-side-message pl-2">
-                      <v-btn disabled text x-small icon color="grey">
-                        <v-icon>mdi-message-reply-text</v-icon>
-                      </v-btn>
-                      <span
-                        :id="`text--threat-sharing-right-column-top-posts-post-comment-count-${ind}`"
-                        class="comment-count"
-                        >{{ post.commentCount }}</span
-                      >
-                    </div>
-                  </div>
-                </div>
+                <post
+                  class="right-side-post-container pt-2"
+                  :post="post"
+                  :index="ind"
+                  @goToPostDetails="goToPostDetails(post)"
+                  @goToCommunityDetails="goToCommunityDetails(post)"
+                 />
               </div>
             </div>
             <div
@@ -582,67 +506,11 @@
               :key="ind + commun.communityName"
               class="suggested-card"
             >
-              <div class="suggested-row">
-                <div class="suggested-com-name" cols="12">
-                  <div
-                    :id="`text--threat-sharing-right-column-suggest-communities-item-community-name-${ind}`"
-                    class="suggested-title`"
-                  >
-                    {{ commun.communityName }}
-                  </div>
-                  <div class="suggested-com-detail">
-                    <v-icon class="suggested-people-icon pr-1">mdi-account-multiple</v-icon>
-                    <b
-                      :id="`text--threat-sharing-right-column-suggest-communities-item-member-count-${ind}`"
-                      >{{ commun.memberCount }}</b
-                    ><span class="suggested-row__seperator">•</span>
-                    <span
-                      :id="`text--threat-sharing-right-column-suggest-communities-item-industry-name-${ind}`"
-                      class="suggested-company"
-                      >{{ commun.industryName }}
-                    </span>
-                    <span class="suggested-row__seperator">•</span>
-                    <span
-                      :id="`text--threat-sharing-right-column-suggest-communities-item-privacy-status-name-${ind}`"
-                      class="suggested-company"
-                      >{{ commun.privacyStatusName }}
-                    </span>
-                  </div>
-                </div>
-                <div class="suggested-right-action">
-                  <v-btn
-                    id="threat-sharing-right-column-is-joined"
-                    class="suggested-btn"
-                    rounded
-                    v-if="commun.isJoined"
-                  >
-                    <v-icon class="pl-2 pr-1">mdi-account-circle</v-icon>
-                    <span class="pr-2">Member</span>
-                  </v-btn>
-                  <v-btn
-                    @click="joinCommunity(commun)"
-                    class="suggested-btn"
-                    :id="`btn--threat-sharing-right-column-suggest-communities-item-${ind}`"
-                    block
-                    rounded
-                    v-else
-                    :disabled="commun.isJoined || isJoinCommunityButtonDisabled"
-                    style="background-color: #2196f3 !important;"
-                  >
-                    <v-icon v-if="!commun.isJoined" class="mr-2">mdi-account-circle </v-icon>
-                    <v-icon v-if="commun.isJoined" class="mr-2" style="color: #fff !important;"
-                      >mdi-account-clock
-                    </v-icon>
-                    <div v-if="commun.privacyStatusName != 'Private'" :key="commun.resourceId">
-                      JOIN
-                    </div>
-                    <div v-else-if="commun.isJoined" :key="commun.resourceId">
-                      Request Sent
-                    </div>
-                    <div v-else :key="commun.resourceId">Request to join</div>
-                  </v-btn>
-                </div>
-              </div>
+            <suggested-community
+              :index="ind"
+              :community="commun"
+              @joinCommunity="joinCommunity(commun)"
+             />
             </v-card>
           </div>
           <div
@@ -680,8 +548,20 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import { getNotifications } from '@/api/dashboard'
+import Post from "@/components/ThreatSharing/RightColumn/Post"
+import SuggestedCommunity from "@/components/ThreatSharing/RightColumn/SuggestedCommunity"
 
 export default {
+  components: {
+    KSelect,
+    AppDialogFooter,
+    AppDialog,
+    NewCommunity,
+    CommunitiesCardLoading,
+    PostCardLoading,
+    Post,
+    SuggestedCommunity,
+  },
   data() {
     return {
       isEmailNotificationsDisabled: false,
@@ -760,14 +640,6 @@ export default {
     subTabSelected: {
       required: false
     }
-  },
-  components: {
-    KSelect,
-    AppDialogFooter,
-    AppDialog,
-    NewCommunity,
-    CommunitiesCardLoading,
-    PostCardLoading
   },
   created() {
     this.getAllRightColumnData()
