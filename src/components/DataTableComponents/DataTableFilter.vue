@@ -177,6 +177,7 @@
       <template v-if="filterableType === 'select'">
         <div>
           <v-text-field
+            v-if="isShowSearchTextField"
             placeholder="Search"
             class="filter__text"
             outlined
@@ -184,7 +185,6 @@
             v-model="filterValue"
             height="40"
             style="margin-top: 1px;"
-            v-if="filterValue || searchInItems.length > 4"
           ></v-text-field>
         </div>
         <v-checkbox
@@ -268,6 +268,10 @@ export default {
     filterableCustomFieldName: {
       type: String,
       default: null
+    },
+    showSelectSearch: {
+      type: Boolean,
+      default: true
     },
     sortable: {
       type: Boolean,
@@ -416,7 +420,6 @@ export default {
     closeDialog() {
       this.status = false
     },
-    changeDateSelect() {},
     handleChangeBetweenDatepicker(val) {
       if (!val) {
         this.filteredDateRangeValue = [
@@ -554,6 +557,9 @@ export default {
     }
   },
   computed: {
+    isShowSearchTextField() {
+      return this.showSelectSearch && (this.filterValue || this.searchInItems.length > 4)
+    },
     inBetweenDatesPickerOptions() {
       return {
         disabledDate: (time) => {
