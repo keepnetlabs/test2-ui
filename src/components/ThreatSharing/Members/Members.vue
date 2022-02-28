@@ -128,17 +128,17 @@
                     multiple
                     class="mb-4 mt-4 pl-1 pr-1"
                   >
-                  <member-card
-                    :member="member"
-                    :index="index"
-                    :memberImage="memberImage(member)"
-                    :canAppointNewOwner="!isOwnCompany(member) && isCommunityOwner()"
-                    :canRemoveFromCommunity="!isOwnCompany(member) && isCommunityOwner()"
-                    :series="series"
-                    @seePostedIncidents="seePostedIncidentsClick(member)"
-                    @appointNewOwner="appointANewOwner(member)"
-                    @removeFromCommunity="removeFromCommunity(member)"
-                   />
+                    <member-card
+                      :member="member"
+                      :index="index"
+                      :memberImage="memberImage(member)"
+                      :canAppointNewOwner="!isOwnCompany(member) && isCommunityOwner()"
+                      :canRemoveFromCommunity="!isOwnCompany(member) && isCommunityOwner()"
+                      :series="series"
+                      @seePostedIncidents="seePostedIncidentsClick(member)"
+                      @appointNewOwner="appointANewOwner(member)"
+                      @removeFromCommunity="removeFromCommunity(member)"
+                    />
                   </v-expansion-panels>
                 </v-skeleton-loader>
               </div>
@@ -301,14 +301,14 @@ import {
 } from '@/api/threatSharing'
 import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
-import MemberCard from "@/components/ThreatSharing/Members/MemberCard"
-import RequestCard from "@/components/ThreatSharing/Members/RequestCard"
+import MemberCard from '@/components/ThreatSharing/Members/MemberCard'
+import RequestCard from '@/components/ThreatSharing/Members/RequestCard'
 
 export default {
   components: {
     AppDialog,
     MemberCard,
-    RequestCard,
+    RequestCard
   },
   data: () => ({
     page: 1,

@@ -297,8 +297,8 @@ export default {
       }
     },
     '$route.query.postId'(val) {
-        this.$forceUpdate()
-      }
+      this.$forceUpdate()
+    }
   },
   methods: {
     callForIncidentList(v) {

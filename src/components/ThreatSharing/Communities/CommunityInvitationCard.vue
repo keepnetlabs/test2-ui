@@ -41,19 +41,14 @@
         <span class="pr-2">{{ community.memberCount }}</span>
         &#8226;
         <span class="ts-community-industry pl-2 pr-2">
-          {{ community.industryName || "Industry" }}
+          {{ community.industryName || 'Industry' }}
         </span>
         &#8226;
-        <span
-          class="ts-community-industry pl-2"
-          v-if="!!community.privacyStatusName"
-          >{{ community.privacyStatusName }}</span
-        >
+        <span class="ts-community-industry pl-2" v-if="!!community.privacyStatusName">{{
+          community.privacyStatusName
+        }}</span>
       </div>
-      <div
-        v-if="community && community.lastPostTime"
-        class="ts-community-date pt-1"
-      >
+      <div v-if="community && community.lastPostTime" class="ts-community-date pt-1">
         Last update:
         {{ community.lastPostTime }}
       </div>
@@ -67,29 +62,29 @@
 </template>
 
 <script>
-import VClamp from "vue-clamp";
+import VClamp from 'vue-clamp'
 export default {
-  name: "CommunityInvitationCard",
+  name: 'CommunityInvitationCard',
   components: {
-    VClamp,
+    VClamp
   },
   props: {
     community: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-  emits: ["communityNameClick", "refuseRequest", "acceptRequest"],
+  emits: ['communityNameClick', 'refuseRequest', 'acceptRequest'],
   methods: {
     onClickCommunityName() {
-      this.$emit("communityNameClick");
+      this.$emit('communityNameClick')
     },
     onRefuseRequest() {
-      this.$emit("refuseRequest");
+      this.$emit('refuseRequest')
     },
     onAcceptRequest() {
-      this.$emit("acceptRequest");
-    },
-  },
-};
+      this.$emit('acceptRequest')
+    }
+  }
+}
 </script>

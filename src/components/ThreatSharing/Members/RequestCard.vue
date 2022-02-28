@@ -12,14 +12,12 @@
           <div class="pl-4 pa-0">
             <v-icon class="company-mini-icon">mdi-domain</v-icon>
             <span class="company-mini-info"
-              >{{ request.industryName || "No Category defined" }}
+              >{{ request.industryName || 'No Category defined' }}
             </span>
           </div>
           <div class="pl-4 pa-0">
             <v-icon class="company-mini-icon">mdi-clipboard-text</v-icon>
-            <span class="company-mini-info"
-              >{{ request.postCount }} threat posts</span
-            >
+            <span class="company-mini-info">{{ request.postCount }} threat posts</span>
           </div>
         </div>
       </div>
@@ -46,11 +44,7 @@
         Accept
       </v-btn>
     </div>
-    <v-expansion-panel-header
-      style="display: none"
-      @click="toggle = !toggle"
-      disable-icon-rotate
-    >
+    <v-expansion-panel-header style="display: none;" @click="toggle = !toggle" disable-icon-rotate>
       <template v-slot:actions> &nbsp; </template>
     </v-expansion-panel-header>
   </div>
@@ -58,24 +52,24 @@
 
 <script>
 export default {
-  name: "RequestCard",
+  name: 'RequestCard',
   props: {
     request: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-  emits: ["refuseRequest", "acceptRequest", "togglePanel"],
+  emits: ['refuseRequest', 'acceptRequest', 'togglePanel'],
   methods: {
     onRefuseRequest() {
-      this.$emit("refuseRequest");
+      this.$emit('refuseRequest')
     },
     onAcceptRequesst() {
-      this.$emit("acceptRequest");
+      this.$emit('acceptRequest')
     },
     onTogglePanel() {
-      this.$emit("togglePanel");
-    },
-  },
-};
+      this.$emit('togglePanel')
+    }
+  }
+}
 </script>

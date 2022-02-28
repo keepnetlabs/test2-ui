@@ -21,13 +21,7 @@
         >
           OWNER
         </v-btn>
-        <v-btn
-          v-else-if="community.membershipStatusId == 3"
-          outlined
-          rounded
-          medium
-          color="blue"
-        >
+        <v-btn v-else-if="community.membershipStatusId == 3" outlined rounded medium color="blue">
           REQUEST SENT
         </v-btn>
         <v-btn
@@ -50,9 +44,7 @@
           id="threat-sharing-communities-request-to-join-button"
           @click="onRequestJoin"
         >
-          <v-icon style="font-size: 20px; margin-right: 8px"
-            >mdi-account-plus</v-icon
-          >
+          <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
           REQUEST TO JOIN
         </v-btn>
         <v-btn
@@ -65,18 +57,10 @@
           id="threat-sharing-communities-join-button"
           @click="onJoin"
         >
-          <v-icon style="font-size: 20px; margin-right: 8px"
-            >mdi-account-plus</v-icon
-          >
+          <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
           JOIN
         </v-btn>
-        <v-btn
-          v-else-if="isRequestDeclined"
-          outlined
-          rounded
-          medium
-          color="blue"
-        >
+        <v-btn v-else-if="isRequestDeclined" outlined rounded medium color="blue">
           Request Declined
         </v-btn>
         <v-btn
@@ -101,8 +85,7 @@
             v-on="on"
             icon
             :color="
-              community.membershipStatusId == 1 ||
-              community.membershipStatusId == 2
+              community.membershipStatusId == 1 || community.membershipStatusId == 2
                 ? '#757575'
                 : 'blue'
             "
@@ -184,23 +167,16 @@
         <span class="pr-2">{{ community.memberCount }}</span>
         &#8226;
         <span class="ts-community-industry pl-2 pr-2">
-          {{ community.industryName || "Industry" }}
+          {{ community.industryName || 'Industry' }}
         </span>
         &#8226;
-        <span
-          class="ts-community-industry pl-2"
-          v-if="!!community.privacyStatusName"
-          >{{ community.privacyStatusName }}</span
-        >
+        <span class="ts-community-industry pl-2" v-if="!!community.privacyStatusName">{{
+          community.privacyStatusName
+        }}</span>
       </div>
-      <div
-        v-if="community && community.createTime"
-        class="ts-community-date pt-1"
-      >
+      <div v-if="community && community.createTime" class="ts-community-date pt-1">
         Last update:
-        {{
-          community.lastPostTime ? community.lastPostTime : community.createTime
-        }}
+        {{ community.lastPostTime ? community.lastPostTime : community.createTime }}
       </div>
     </div>
     <div class="ts-body">
@@ -212,107 +188,107 @@
 </template>
 
 <script>
-import VClamp from "vue-clamp";
+import VClamp from 'vue-clamp'
 export default {
-  name: "CommunityCard",
+  name: 'CommunityCard',
   components: {
-    VClamp,
+    VClamp
   },
   props: {
     isOwnerOrMember: {
       type: Boolean,
-      required: true,
+      required: true
     },
     community: {
       type: Object,
-      required: true,
+      required: true
     },
     isRequestToJoinDisabled: {
       type: Boolean,
       required: true,
-      default: false,
+      default: false
     },
     canEditCommunity: {
       type: Boolean,
       required: true,
-      default: false,
+      default: false
     },
     canLeaveCommunity: {
       type: Boolean,
       required: true,
-      default: true,
+      default: true
     },
     canDeleteCommunity: {
       type: Boolean,
       required: true,
-      default: false,
-    },
+      default: false
+    }
   },
   emits: [
-    "detailsClick",
-    "requestJoin",
-    "join",
-    "invitedClick",
-    "editCommunity",
-    "notificationSettingsClick",
-    "leaveCommunity",
-    "deleteCommunity",
-    "cancelRequest",
+    'detailsClick',
+    'requestJoin',
+    'join',
+    'invitedClick',
+    'editCommunity',
+    'notificationSettingsClick',
+    'leaveCommunity',
+    'deleteCommunity',
+    'cancelRequest'
   ],
   computed: {
     isPrivateCommunity() {
       return (
         !this.community?.membershipStatusId &&
-        (this.community?.privacyStatusName == "Private" ||
+        (this.community?.privacyStatusName == 'Private' ||
           (this.community?.membershipStatusId == 5 &&
-            this.community?.privacyStatusName == "Private"))
-      );
+            this.community?.privacyStatusName == 'Private'))
+      )
     },
     isPublicCommunity() {
       return (
         !this.community?.membershipStatusId &&
-        (this.community?.privacyStatusName == "Public" ||
+        (this.community?.privacyStatusName == 'Public' ||
           (this.community?.membershipStatusId == 5 &&
-            this.community?.privacyStatusName == "Public"))
-      );
+            this.community?.privacyStatusName == 'Public'))
+      )
     },
     isRequestDeclined() {
       return (
         this.community?.membershipStatusId &&
         this.community?.membershipStatusId == 5 &&
-        (this.community?.privacyStatusName == "Private" ||
-          this.community?.privacyStatusName == "Public")
-      );
-    },
+        (this.community?.privacyStatusName == 'Private' ||
+          this.community?.privacyStatusName == 'Public')
+      )
+    }
   },
   methods: {
     onClickDetails() {
-      this.$emit("detailsClick");
+      this.$emit('detailsClick')
     },
     onRequestJoin() {
-      this.$emit("requestJoin");
+      this.$emit('requestJoin')
     },
     onJoin() {
-      this.$emit("join");
+      this.$emit('join')
     },
     onClickInvited() {
-      this.$emit("invitedClick");
+      this.$emit('invitedClick')
     },
     onEditCommunity() {
-      this.$emit("editCommunity");
+      this.$emit('editCommunity')
     },
     onClickNotificationSettings() {
-      this.$emit("notificationSettingsClick");
+      this.$emit('notificationSettingsClick')
     },
     onLeaveCommunity() {
-      this.$emit("leaveCommunity");
+      this.$emit('leaveCommunity')
     },
     onDeleteCommunity() {
-      this.$emit("deleteCommunity");
+      this.$emit('deleteCommunity')
     },
     onCancelRequest() {
-      this.$emit("cancelRequest");
-    },
-  },
-};
+      this.$emit('cancelRequest')
+    }
+  }
+}
 </script>

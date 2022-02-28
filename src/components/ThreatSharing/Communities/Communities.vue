@@ -273,15 +273,24 @@
           <template v-slot:default="props">
             <div v-if="selectedTab === 'tab-0' || selectedTab === 'tab-1'" id="tab-0">
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
-                <community-card 
+                <community-card
                   :community="item"
-                  :isOwnerOrMember="isOwnerOrMember(item)" 
+                  :isOwnerOrMember="isOwnerOrMember(item)"
                   :isRequestToJoinDisabled="isRequestToJoinDisabled"
-                  :canEditCommunity="checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)"
-                  :canLeaveCommunity="checkPermissions('communities/{resourceId}/leave', 'POST') && isOwnerOrMember(item)"
-                  :canDeleteCommunity="checkPermissions('communities/{resourceId}', 'DELETE') && isOwner(item)"
+                  :canEditCommunity="
+                    checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
+                  "
+                  :canLeaveCommunity="
+                    checkPermissions('communities/{resourceId}/leave', 'POST') &&
+                    isOwnerOrMember(item)
+                  "
+                  :canDeleteCommunity="
+                    checkPermissions('communities/{resourceId}', 'DELETE') && isOwner(item)
+                  "
                   @detailsClick="communityDetails(item)"
-                  @requestJoin="requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')"
+                  @requestJoin="
+                    requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
+                  "
                   @join="requestJoin(item.communityResourceId, item.communityName, 'join')"
                   @invitedClick="subTabSelected"
                   @editCommunity="editCommunity(item)"
@@ -289,7 +298,7 @@
                   @leaveCommunity="leaveFromCommunity(item)"
                   @deleteCommunity="deleteCommunity(item)"
                   @cancelRequest="cancelRequest(item)"
-                  />
+                />
               </div>
             </div>
             <div
@@ -303,7 +312,7 @@
                   @communityNameClick="community(item)"
                   @refuseRequest="refuseRequest(item)"
                   @acceptRequest="acceptRequest(item)"
-                 />
+                />
               </div>
             </div>
           </template>
@@ -463,8 +472,8 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import { getNotifications } from '@/api/dashboard'
-import CommunityCard from "@/components/ThreatSharing/Communities/CommunityCard"
-import CommunityInvitationCard from "@/components/ThreatSharing/Communities/CommunityInvitationCard"
+import CommunityCard from '@/components/ThreatSharing/Communities/CommunityCard'
+import CommunityInvitationCard from '@/components/ThreatSharing/Communities/CommunityInvitationCard'
 
 export default {
   components: {
@@ -473,7 +482,7 @@ export default {
     NewCommunity,
     AppDialog,
     CommunityCard,
-    CommunityInvitationCard,
+    CommunityInvitationCard
   },
   computed: {
     numberOfPages() {

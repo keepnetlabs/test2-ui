@@ -26,7 +26,7 @@
               <span
                 :id="`item--threat-sharing-member-industry-name-${index}`"
                 class="company-mini-info"
-                >{{ member.industryName || "Unknown" }}</span
+                >{{ member.industryName || 'Unknown' }}</span
               >
             </div>
             <div class="pl-4 pa-0">
@@ -43,7 +43,7 @@
       <div class="flex-grow-1"></div>
       <v-menu offset-y transition="scale-transition">
         <template v-slot:activator="{ on }">
-          <v-btn icon color="blue" v-on="on" style="order: 2">
+          <v-btn icon color="blue" v-on="on" style="order: 2;">
             <v-icon>mdi-dots-vertical</v-icon>
           </v-btn>
         </template>
@@ -73,8 +73,7 @@
                   <v-icon>mdi-account-multiple-plus</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title
-                    :id="`item--threat-sharing-member-assign-as-owner-${index}`"
+                  <v-list-item-title :id="`item--threat-sharing-member-assign-as-owner-${index}`"
                     >Assign as owner</v-list-item-title
                   >
                 </v-list-item-content>
@@ -124,47 +123,47 @@
 </template>
 
 <script>
-import Pie from "@/components/Common/Charts/Pie";
+import Pie from '@/components/Common/Charts/Pie'
 export default {
-  name: "MemberCard",
+  name: 'MemberCard',
   components: { Pie },
   props: {
     member: {
       type: Object,
-      required: true,
+      required: true
     },
     index: {
       type: Number,
-      required: true,
+      required: true
     },
     memberImage: {
       type: String,
-      required: true,
+      required: true
     },
     canAppointNewOwner: {
       type: Boolean,
-      required: true,
+      required: true
     },
     canRemoveFromCommunity: {
       type: Boolean,
-      required: true,
+      required: true
     },
     series: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
-  emits: ["seePostedIncidents", "appointNewOwner", "removeFromCommunity"],
+  emits: ['seePostedIncidents', 'appointNewOwner', 'removeFromCommunity'],
   methods: {
     onSeePostedIncidents() {
-      this.$emit("seePostedIncidents");
+      this.$emit('seePostedIncidents')
     },
     onAppointNewOwner() {
-      this.$emit("appointNewOwner");
+      this.$emit('appointNewOwner')
     },
     onRemoveFromCommunity() {
-      this.$emit("removeFromCommunity");
-    },
-  },
-};
+      this.$emit('removeFromCommunity')
+    }
+  }
+}
 </script>

@@ -63,6 +63,4 @@ export default {
 }
 </script>
 
-<style lang="scss" src="./AttachmentsPreview.scss">
-
-</style>
+<style lang="scss" src="./AttachmentsPreview.scss"></style>
