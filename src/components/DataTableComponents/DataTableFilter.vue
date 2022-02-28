@@ -118,6 +118,7 @@
           }"
           placeholder="Select an option"
           :key="getDateKey"
+          @click="handleDateSelectClick"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
@@ -140,7 +141,9 @@
       </template>
       <template v-if="filterableType === 'dateOnly'">
         <v-select
+          v-if="filterableOptions.showSelect"
           :items="dateFilterItems"
+          ref="refPickerDateOnly"
           dense
           height="40"
           outlined
@@ -149,7 +152,7 @@
           :menu-props="{ offsetY: true }"
           placeholder="Select an option"
           :key="getDateKey"
-          v-if="filterableOptions.showSelect"
+          @click="handleDateSelectClick"
         ></v-select>
         <p class="datatable-filter-header" v-if="!filterableOptions.showSelect">Between</p>
         <InputDate
@@ -440,6 +443,17 @@ export default {
             this.$moment(Date.now()).format(getTimeZoneForMoment())
           ]
         }
+      }
+    },
+    handleDateSelectClick() {
+      const { refPicker, refPicker2, refPickerDateOnly } = this.$refs
+      this.hidePicker(refPicker)
+      this.hidePicker(refPicker2)
+      this.hidePicker(refPickerDateOnly)
+    },
+    hidePicker(refPicker) {
+      if (refPicker && refPicker.pickerVisible) {
+        refPicker.hidePicker()
       }
     },
     clearFilter(isEmit = true) {
