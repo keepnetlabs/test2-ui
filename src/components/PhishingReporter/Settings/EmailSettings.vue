@@ -132,13 +132,11 @@
                   ? [
                       (v) =>
                         validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
-                      (v) => validations.required(v, labels.Required),
-                      (v) => validations.isEmailSpacialCharacter(v) || 'Invalid characters'
+                      (v) => validations.required(v, labels.Required)
                     ]
                   : [
                       (v) =>
-                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
-                      (v) => validations.isEmailSpacialCharacter(v) || 'Invalid characters'
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject'))
                     ]
                 : []
             "

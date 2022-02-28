@@ -28,6 +28,7 @@
                     <k-select
                       type="autocomplete"
                       v-model.trim="formValues.timeZoneId"
+                      :search-input.sync="timeZoneSearchVal"
                       id="input--settings-modal"
                       :items="timeZoneList"
                       persistent-hint
@@ -36,7 +37,7 @@
                       item-value="id"
                       outlined
                       placeholder="Select your timezone"
-                      :search-input.sync="timeZoneSearchVal"
+                      prepend-inner-icon="mdi-magnify"
                     ></k-select>
                   </div>
                   <div class="mb-8">
