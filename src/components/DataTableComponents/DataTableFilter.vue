@@ -1,15 +1,15 @@
 <template>
   <v-menu
-    :offset-y="true"
+    v-if="filterableType"
+    v-model="menu"
+    class="filter__container"
     bottom
+    offset-y
+    max-height="260px"
+    :z-index="zIndex"
     :min-width="getWidth"
     :max-width="getWidth"
     :close-on-content-click="false"
-    class="filter__container"
-    v-if="filterableType"
-    max-height="260px"
-    v-model="menu"
-    z-index="201"
   >
     <app-dialog
       v-if="status"
@@ -310,6 +310,7 @@ export default {
   data() {
     return {
       status: false,
+      zIndex: '201',
       menu: null,
       btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`,
       isFilterActive:
@@ -385,6 +386,7 @@ export default {
   watch: {
     menu(newVal) {
       if (newVal) {
+        this.zIndex = ['date', 'dateOnly'].includes(this.filterableType) ? '201 !important' : '201'
         this.$emit('update:isSettingsOpened', false)
       }
     },
