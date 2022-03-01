@@ -9,8 +9,7 @@
           class="phishing-reporter__header-left-column"
           :style="[isHeaderLoading && { flexBasis: '50%' }]"
         >
-          <template v-if="isHeaderLoading"
-            >phishing-reporter__stats-card-left-icon
+          <template v-if="isHeaderLoading">
             <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
             <PhishingReporterTopBar :loading="isHeaderLoading" class="w-100" />
           </template>
