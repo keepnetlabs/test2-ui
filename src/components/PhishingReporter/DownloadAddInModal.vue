@@ -58,7 +58,7 @@
               </v-btn>
             </div>
             <div class="logo-and-button">
-              <div style="height:40px;">
+              <div style="height: 40px;">
                 <img src="../../assets/img/outlook.svg" alt="outlook-logo" />
               </div>
               <v-btn
@@ -85,7 +85,7 @@
               </v-btn>
             </div>
             <div class="logo-and-button">
-              <div style="height:35px;">
+              <div style="height: 35px;">
                 <img src="../../assets/img/microsoft-365-logo.svg" alt="microsoft-365-logo" />
               </div>
               <v-btn

@@ -65,7 +65,7 @@ import WidgetContainer from '@/components/Common/Widget/WidgetContainer'
 import WidgetList from '@/components/Common/Widget/WidgetList'
 import WidgetBody from '@/components/Common/Widget/WidgetBody'
 import WidgetHeader from '@/components/Common/Widget/WidgetHeader'
-import { getIncidentList } from '@/api/threadSharing'
+import { getIncidentList } from '@/api/threatSharing'
 import labels from '@/model/constants/labels'
 import { LABEL_STORE, PROPERTY_STORE } from '@/model/constants/commonConstants'
 export default {

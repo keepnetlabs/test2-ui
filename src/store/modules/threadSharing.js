@@ -1,6 +1,6 @@
 import axios from 'axios'
-import AuthenticationService from '../../services/authentication'
-import router from '../../router/index'
+import AuthenticationService from '@/services/authentication'
+import router from '@/router/index'
 import {
   listCommunities,
   listNotifications,
@@ -39,9 +39,9 @@ import {
   refuseInvitation,
   checkShareMail,
   shareIncidentsWithMails
-} from '../../api/threadSharing'
+} from '@/api/threatSharing'
 
-const threadSharing = {
+const threatSharing = {
   namespaced: true,
   state: {
     communityList: [],
@@ -998,4 +998,4 @@ const threadSharing = {
   }
 }
 
-export default threadSharing
+export default threatSharing
