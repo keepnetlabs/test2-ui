@@ -44,21 +44,13 @@
         rounded
         v-else
         :disabled="community.isJoined || isJoinCommunityButtonDisabled"
-        style="background-color: #2196f3 !important"
+        style="background-color: #2196f3 !important;"
       >
-        <v-icon v-if="!community.isJoined" class="mr-2"
-          >mdi-account-circle
-        </v-icon>
-        <v-icon
-          v-if="community.isJoined"
-          class="mr-2"
-          style="color: #fff !important"
+        <v-icon v-if="!community.isJoined" class="mr-2">mdi-account-circle </v-icon>
+        <v-icon v-if="community.isJoined" class="mr-2" style="color: #fff !important;"
           >mdi-account-clock
         </v-icon>
-        <div
-          v-if="community.privacyStatusName != 'Private'"
-          :key="community.resourceId"
-        >
+        <div v-if="community.privacyStatusName != 'Private'" :key="community.resourceId">
           JOIN
         </div>
         <div v-else-if="community.isJoined" :key="community.resourceId">
@@ -72,22 +64,22 @@
 
 <script>
 export default {
-  name: "SuggestedCommunity",
+  name: 'SuggestedCommunity',
   props: {
     community: {
       type: Object,
-      required: true,
+      required: true
     },
     index: {
       type: Number,
-      required: true,
-    },
+      required: true
+    }
   },
-  emits: ["joinCommunity"],
+  emits: ['joinCommunity'],
   methods: {
     onJoinCommunity() {
-      this.$emit("joinCommunity");
-    },
-  },
-};
+      this.$emit('joinCommunity')
+    }
+  }
+}
 </script>
