@@ -58,6 +58,7 @@
               (v) => validations.required(v, labels.Required),
               (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
               (v) => mainDomainCustomValidation(v),
+              (v) => validations.isDomainUrl(v),
               (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
             ]"
           ></v-text-field>
