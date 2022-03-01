@@ -243,7 +243,7 @@ export default {
             return 250
           }
           const lengthMap = columnItems.map(
-            (item) => item[0].toString().length + item[0].toString().length
+            (item) => item[0].toString().length + item[1].toString().length
           )
           const maxLength = Math.max(...lengthMap)
           if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
