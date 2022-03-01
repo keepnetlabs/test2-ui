@@ -238,17 +238,19 @@ export default {
         show: true,
         type: 'chart',
         minWidth: 175,
-        getDynamicWidth(columnItems){
-          if(!columnItems){
+        getDynamicWidth(columnItems) {
+          if (!columnItems) {
             return 250
           }
-          const lengthMap = columnItems.map(item => item[0].toString().length + item[0].toString().length);
-          const maxLength = Math.max(...lengthMap);
-          if(isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity){
+          const lengthMap = columnItems.map(
+            (item) => item[0].toString().length + item[0].toString().length
+          )
+          const maxLength = Math.max(...lengthMap)
+          if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
             return 250
           }
-          return 175 + (maxLength * 5)
-        },
+          return 175 + maxLength * 5
+        }
       },
       {
         property: 'progress',
