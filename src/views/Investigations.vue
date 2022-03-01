@@ -237,7 +237,18 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 190
+        minWidth: 175,
+        getDynamicWidth(columnItems){
+          if(!columnItems){
+            return 250
+          }
+          const lengthMap = columnItems.map(item => item[0].toString().length + item[0].toString().length);
+          const maxLength = Math.max(...lengthMap);
+          if(isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity){
+            return 250
+          }
+          return 175 + (maxLength * 5)
+        },
       },
       {
         property: 'progress',
