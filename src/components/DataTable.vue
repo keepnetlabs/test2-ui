@@ -465,11 +465,7 @@
               :prop="col.property"
               :resizable="resizable"
               :sortable="col.hideSort ? false : 'custom'"
-              :width="
-                col.getDynamicWidth
-                  ? col.getDynamicWidth(getTableData.map((item) => item[col.property]))
-                  : col.width || ''
-              "
+              :width="col.width || ''"
               reserve-selection
             >
               <template slot-scope="scope">
