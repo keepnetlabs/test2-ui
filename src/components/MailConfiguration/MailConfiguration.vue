@@ -654,7 +654,7 @@
                   style="margin-bottom: -4px;"
                   alt="google-workspace"
                   src="../../assets/img/google-workspace.png"
-                  width="175" 
+                  width="175"
                 />
               </div>
               <div
@@ -672,7 +672,6 @@
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
                 <img alt="exchange" src="../../assets/img/office365_logo.svg" width="150" />
-                
               </div>
             </div>
           </div>

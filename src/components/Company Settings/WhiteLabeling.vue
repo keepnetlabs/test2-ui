@@ -54,10 +54,7 @@
             class="ml-2"
             hint="*Required"
             :placeholder="labels.MainDomainPlaceHolder"
-            :rules="[
-              ...urlRules,
-              (v) => mainDomainCustomValidation(v),
-            ]"
+            :rules="[...urlRules, (v) => mainDomainCustomValidation(v)]"
           ></v-text-field>
         </div>
       </form-group>
@@ -265,7 +262,7 @@
                 id="input--whitelabeling-release-notes-url"
                 style="max-width: 324px;"
                 placeholder="https://doc.sitename.com/releasenotes"
-            :rules="urlRules"
+                :rules="urlRules"
               />
             </div>
           </div>
@@ -372,11 +369,11 @@ export default {
       configureCompanyWhitelabelingResourceId: '',
       labels,
       validations,
-      urlRules:[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-              (v) => validations.isDomainUrl(v),
-              (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+      urlRules: [
+        (v) => validations.required(v, labels.Required),
+        (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
+        (v) => validations.isDomainUrl(v),
+        (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
       ]
     }
   },
