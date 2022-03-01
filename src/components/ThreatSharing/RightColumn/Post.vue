@@ -48,25 +48,25 @@
 
 <script>
 export default {
-  name: "Post",
+  name: 'Post',
   props: {
     index: {
       type: Number,
-      required: true,
+      required: true
     },
     post: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
-  emits: ["goToPostDetails", "goToCommunityDetails"],
+  emits: ['goToPostDetails', 'goToCommunityDetails'],
   methods: {
     onClickPostDetails() {
-      this.$emit("goToPostDetails");
+      this.$emit('goToPostDetails')
     },
     onClickCommunityDetails() {
-      this.$emit("goToCommunityDetails");
-    },
-  },
-};
+      this.$emit('goToCommunityDetails')
+    }
+  }
+}
 </script>

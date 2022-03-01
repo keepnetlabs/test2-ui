@@ -439,7 +439,7 @@
                 :post="post"
                 @goToPostDetails="goToPostDetails(post)"
                 @goToCommunityDetails="goToCommunityDetails(post)"
-               />
+              />
             </div>
           </div>
           <div
@@ -475,7 +475,7 @@
                   :index="ind"
                   @goToPostDetails="goToPostDetails(post)"
                   @goToCommunityDetails="goToCommunityDetails(post)"
-                 />
+                />
               </div>
             </div>
             <div
@@ -506,11 +506,11 @@
               :key="ind + commun.communityName"
               class="suggested-card"
             >
-            <suggested-community
-              :index="ind"
-              :community="commun"
-              @joinCommunity="joinCommunity(commun)"
-             />
+              <suggested-community
+                :index="ind"
+                :community="commun"
+                @joinCommunity="joinCommunity(commun)"
+              />
             </v-card>
           </div>
           <div
@@ -548,8 +548,8 @@ import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import { getNotifications } from '@/api/dashboard'
-import Post from "@/components/ThreatSharing/RightColumn/Post"
-import SuggestedCommunity from "@/components/ThreatSharing/RightColumn/SuggestedCommunity"
+import Post from '@/components/ThreatSharing/RightColumn/Post'
+import SuggestedCommunity from '@/components/ThreatSharing/RightColumn/SuggestedCommunity'
 
 export default {
   components: {
@@ -560,7 +560,7 @@ export default {
     CommunitiesCardLoading,
     PostCardLoading,
     Post,
-    SuggestedCommunity,
+    SuggestedCommunity
   },
   data() {
     return {
