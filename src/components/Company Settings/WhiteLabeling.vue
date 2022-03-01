@@ -54,12 +54,7 @@
             class="ml-2"
             hint="*Required"
             :placeholder="labels.MainDomainPlaceHolder"
-            :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-              (v) => mainDomainCustomValidation(v),
-              (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
-            ]"
+            :rules="[...urlRules, (v) => mainDomainCustomValidation(v)]"
           ></v-text-field>
         </div>
       </form-group>
@@ -198,6 +193,7 @@
             id="input--whitelabeling-footer-privacy-policy"
             placeholder="Enter URL"
             v-model.trim="formValues.footerPrivacyPolicyUrl"
+            :rules="urlRules"
           />
         </div>
         <div class="white-labeling__footer-links-item">
@@ -206,6 +202,7 @@
             id="input--whitelabeling-footer-terms-and-conditions"
             placeholder="Enter URL"
             v-model.trim="formValues.footerTermsAndConditionsUrl"
+            :rules="urlRules"
           />
         </div>
         <div class="white-labeling__footer-links-item">
@@ -214,6 +211,7 @@
             id="input--whitelabeling-footer-eula"
             placeholder="Enter URL"
             v-model.trim="formValues.footerEulaUrl"
+            :rules="urlRules"
           />
         </div>
         <div class="white-labeling__footer-links-item">
@@ -222,6 +220,7 @@
             id="input--whitelabeling-footer-cookie-policy-url"
             placeholder="Enter URL"
             v-model.trim="formValues.footerCookiePolicyUrl"
+            :rules="urlRules"
           />
         </div>
       </form-group>
@@ -263,6 +262,7 @@
                 id="input--whitelabeling-release-notes-url"
                 style="max-width: 324px;"
                 placeholder="https://doc.sitename.com/releasenotes"
+                :rules="urlRules"
               />
             </div>
           </div>
@@ -368,7 +368,13 @@ export default {
       mainDomainItems: ['https://', 'http://'],
       configureCompanyWhitelabelingResourceId: '',
       labels,
-      validations
+      validations,
+      urlRules: [
+        (v) => validations.required(v, labels.Required),
+        (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
+        (v) => validations.isDomainUrl(v),
+        (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+      ]
     }
   },
   computed: {
