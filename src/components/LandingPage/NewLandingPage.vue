@@ -1,8 +1,8 @@
 <template>
   <app-modal
     v-if="status"
-    :status="status"
     icon-name="mdi-file"
+    :status="status"
     :title="
       !isEdit
         ? 'New Landing Page Template'
@@ -88,8 +88,9 @@
                     hint="*Required"
                     required
                     persistent-hint
+                    :menu-props="{ offsetY: true }"
                   >
-                    <template #item="{item}">
+                    <template #item="{ item }">
                       <div :class="['mail-configuration-select-sources__item-container']">
                         <div class="mail-configuration-select-sources__item">
                           <div class="mail-configuration-select-sources__item-left">
@@ -108,6 +109,21 @@
                       </div>
                     </template>
                   </v-select>
+                </form-group>
+                <form-group
+                  has-hint
+                  title="Language"
+                  sub-title="Select the language you are writing this webpage template in"
+                >
+                  <input-select-language
+                    v-model="formValues.languageTypeResourceId"
+                    v-bind="commonRules"
+                    item-text="text"
+                    item-value="value"
+                    required
+                    :items="languageOptions"
+                    :menu-props="{ offsetY: true }"
+                  />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <k-select
@@ -182,35 +198,35 @@
                     >
                       <div class="d-flex" style="max-width: 980px;">
                         <v-select
-                          :items="landingPageData.urlSchemaTypes"
+                          v-model="formValues.urlSchemaTypeId"
                           item-disabled="disabled"
                           item-text="text"
                           item-value="value"
-                          v-model="formValues.urlSchemaTypeId"
                           outlined
                           persistent-hint
                           class="same-width"
                           style="max-width: 102px;"
                           placeholder="Select URL schema"
+                          :menu-props="{ offsetY: true }"
+                          :items="landingPageData.urlSchemaTypes"
                           @change="changeDisabledLabel"
                         ></v-select>
                         <v-text-field
                           v-model.trim="formValues.subDomain"
                           required
-                          :rules="[(v) => validations.required(v, labels.Required)]"
                           placeholder="Enter subdomain"
                           hint="*Required"
                           outlined
                           dense
                           persistent-hint
                           class="same-width"
+                          :rules="[(v) => validations.required(v, labels.Required)]"
                           @input="changeDisabledLabel"
                         />
                         <v-select
-                          :items="landingPageData.domainRecords"
+                          v-model="formValues.domainRecordId"
                           item-disabled="disabled"
                           item-text="text"
-                          v-model="formValues.domainRecordId"
                           item-value="value"
                           outlined
                           persistent-hint
@@ -218,44 +234,49 @@
                           class="same-width"
                           placeholder="Select domain record"
                           required
+                          :menu-props="{ offsetY: true }"
+                          :items="landingPageData.domainRecords"
                           :rules="[(v) => validations.required(v, labels.Required)]"
                           @change="handleChangeDomainRecord"
                         ></v-select>
                         <v-select
-                          :items="landingPageData.pathTypes"
+                          v-model="formValues.pathTypeId"
                           item-disabled="disabled"
                           item-text="text"
-                          v-model="formValues.pathTypeId"
                           item-value="value"
                           outlined
                           persistent-hint
                           class="same-width"
                           placeholder="Select path type"
+                          :items="landingPageData.pathTypes"
+                          :menu-props="{ offsetY: true }"
                           @input="changeDisabledLabel"
                         ></v-select>
                         <v-select
-                          :items="landingPageData.extensionTypes"
+                          v-model="formValues.extensionTypeId"
                           item-disabled="disabled"
                           item-text="text"
-                          v-model="formValues.extensionTypeId"
                           item-value="value"
                           outlined
                           persistent-hint
                           class="same-width"
                           placeholder="Select extension type"
+                          :items="landingPageData.extensionTypes"
+                          :menu-props="{ offsetY: true }"
                           @input="changeDisabledLabel"
                         ></v-select>
                         <v-select
-                          :items="landingPageData.parameterTypes"
+                          v-model="formValues.parameterTypeId"
                           item-disabled="disabled"
                           item-text="text"
-                          v-model="formValues.parameterTypeId"
                           item-value="value"
                           outlined
                           persistent-hint
                           label="Parameter"
                           class="same-width"
                           placeholder="Select Parameter"
+                          :items="landingPageData.parameterTypes"
+                          :menu-props="{ offsetY: true }"
                           @change="changeDisabledLabel"
                         ></v-select>
                       </div>
@@ -284,6 +305,68 @@
                           />
                         </el-tab-pane>
                       </el-tabs>
+                      <!-- For future improvements -->
+                      <!-- <el-tabs v-model="tab" class="landing-page-tab-content">
+                        <el-tab-pane
+                          v-for="(page, index) in formValues.landingPages"
+                          :key="`page-${index + 1}`"
+                          :label="page.name"
+                          :name="`page${index + 1}`"
+                          :id="`landingPage-content-${index + 1}`"
+                        >
+                          <email-template
+                            ref="refEmailTemplate"
+                            template-type="landing"
+                            :active-block-manager-components="
+                              activeBlockManagerComponents
+                            "
+                            :edit-items-disabled="editItemsDisabled"
+                            :template.sync="page.content"
+                            :is-edit="!!isEdit"
+                            :is-phishing-template="true"
+                            :onlyGrapes="true"
+                            @setAttachmentFile="setAttachmentFile"
+                          />
+                        </el-tab-pane>
+                        <el-tab-pane name="addPage">
+                          <template #label>
+                            <v-menu
+                              :min-width="128"
+                              :offset-y="true"
+                              nudge-right="5"
+                              left
+                            >
+                              <template v-slot:activator="{ on: menu }">
+                                <v-btn v-on="menu" text color="#2196f3">
+                                  <v-icon class="mr-2" size="18" color="#2196f3"
+                                    >mdi-plus-circle-outline</v-icon
+                                  >
+                                  <span class="landing-page-tab__label">
+                                    Add page
+                                  </span>
+                                </v-btn>
+                              </template>
+                              <v-list>
+                                <v-list-item @click="handleAddBlankPage">
+                                  <v-list-item-title
+                                    >Blank page</v-list-item-title
+                                  >
+                                </v-list-item>
+                                <v-list-item @click="handleUploadHTML">
+                                  <v-list-item-title
+                                    >Upload HTML</v-list-item-title
+                                  >
+                                </v-list-item>
+                                <v-list-item @click="handleCloneWebsite">
+                                  <v-list-item-title
+                                    >Clone a websıte</v-list-item-title
+                                  >
+                                </v-list-item>
+                              </v-list>
+                            </v-menu>
+                          </template>
+                        </el-tab-pane>
+                      </el-tabs> -->
                     </form-group>
                   </v-form>
                 </v-list-item-content>
@@ -335,8 +418,10 @@
 </template>
 
 <script>
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import AppModal from '../AppModal'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -414,10 +499,12 @@ export default {
     AppModal,
     FormGroup,
     MakeAvailableFor,
-    EmailTemplate
+    EmailTemplate,
+    InputSelectLanguage
   },
   data() {
     return {
+      languageOptions: [],
       disabledLabel: null,
       tab: 'page1',
       isSubmitDisabled: false,
@@ -442,7 +529,8 @@ export default {
         extensionTypeId: null,
         parameterTypeId: null,
         tags: [],
-        landingPages: [{ name: 'landing-page', content: null }]
+        landingPages: [{ name: 'landing-page', content: null }],
+        languageTypeResourceId: '862249c19aad'
       },
       commonRules: {
         hint: '*Required',
@@ -536,6 +624,14 @@ export default {
     }
   },
   methods: {
+    // For future improvements
+    // handleAddBlankPage() {
+    //   this.formValues.landingPages.push({
+    //     name: `Page ${this.formValues.landingPages.length + 1}`,
+    //   });
+    // },
+    // handleUploadHTML() {},
+    // handleCloneWebsite() {},
     handleChangeDomainRecord(value) {
       const domainRecord = this.landingPageData.domainRecords.find((item) => item.value === value)
       this.landingPageData.urlSchemaTypes = this.landingPageData.urlSchemaTypes.map((schema) => {
@@ -649,7 +745,12 @@ export default {
         this.isSubmitDisabled = false
       }
     },
-
+    callForLanguages() {
+      LookupLocalStorage.getSingle(23).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+      })
+    },
     callForMergedTags() {
       getMergedTextForPhishing().then((response) => {
         this.blockManagerComponents = response.data.data['mergeTags']
@@ -789,7 +890,6 @@ export default {
       }, {})
     }
   },
-
   computed: {
     isRenderMakeAvailableFor() {
       if (this.editItemsDisabled) {
@@ -850,6 +950,7 @@ export default {
       this.formValues.methodTypeId = this.landingPageData.methodTypes[0]?.value || ''
     this.formValues.difficultyTypeId = '1'
     this.callForMergedTags()
+    this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
@@ -950,5 +1051,14 @@ export default {
   .email-template__container {
     box-shadow: none !important;
   }
+}
+.landing-page-tab__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #2196f3;
+  text-transform: none;
 }
 </style>

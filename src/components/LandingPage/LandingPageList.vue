@@ -76,7 +76,6 @@
       :loading="loading"
       :is-column-filter-active="tableOptions.isColumnFilterActive"
       :table="tableData"
-      :refName="'landingPageList'"
       :columns="tableOptions.columns"
       :empty="tableOptions.empty"
       :select-event="tableOptions.selectEvent"
@@ -198,6 +197,7 @@
 </template>
 
 <script>
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import DataTable from '../DataTable'
 import DeleteEmailTemplates from './DeleteLandingPage'
 import NewLandingPage from './NewLandingPage'
@@ -278,6 +278,20 @@ export default {
             fixed: false,
             width: 240,
             filterableType: 'select'
+          },
+          {
+            property: PROPERTY_STORE.LANGUAGE,
+            align: 'left',
+            editable: false,
+            label: labels.LANGUAGE,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 175,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'languageTypeResourceId'
           },
           {
             property: 'difficulty',
@@ -414,6 +428,24 @@ export default {
     }
   },
   methods: {
+    callForLanguages() {
+      const languageColumnIndex = this.tableOptions.columns.findIndex(
+        (column) => column.property === PROPERTY_STORE.LANGUAGE
+      )
+      if (languageColumnIndex !== -1) {
+        LookupLocalStorage.getSingle(23).then((response) => {
+          this.languageFilterOptions =
+            response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+          this.$set(this.tableOptions.columns, languageColumnIndex, {
+            ...this.tableOptions.columns[languageColumnIndex],
+            filterableItems: this.languageFilterOptions
+          })
+          this.$nextTick(() => {
+            this.$refs.refLandingPageList.reRenderColumns()
+          })
+        })
+      }
+    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.LANDINGPAGES, JSON.stringify(tableSettings))
     },
@@ -471,6 +503,7 @@ export default {
         })
       }
       if (callLookup) {
+        this.callForLanguages()
         this.callForLookups(savedFilter?.filterValues)
       }
       this.getDatatableList()
@@ -672,10 +705,15 @@ export default {
           response.data.data.methodTypes.map((item) => item.text)
         )
         this.$set(
-          this.tableOptions.columns[2],
+          this.tableOptions.columns[3],
           'filterableItems',
           response.data.data.difficultyTypes.map((item) => item.text)
         )
+        // this.$set(
+        //   this.tableOptions.columns[6],
+        //   'filterableItems',
+        //   response.data.data.languages.map((item) => item.text)
+        // )
         this.$refs.refLandingPageList?.reRenderColumns(filterValues || {})
         this.landingPageData = response.data.data
       })

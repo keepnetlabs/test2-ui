@@ -160,6 +160,7 @@ export const LABEL_STORE = {
 }
 
 export const PROPERTY_STORE = {
+  LANGUAGE: 'languageTypeName',
   TAGS: 'tags',
   TARGET_USERS: 'targetUsers',
   ADDINSTATUSNAME: 'addInStatusName',

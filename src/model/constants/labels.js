@@ -477,7 +477,8 @@ export const labels = {
   DIFFICULTY: 'Difficulty',
   Preview: 'Preview',
   CreatedBy: 'Created By',
-  dnsServiceProviderName: 'Service Provider'
+  dnsServiceProviderName: 'Service Provider',
+  LANGUAGE: 'Language'
 }
 
 export default labels
