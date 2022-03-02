@@ -219,9 +219,9 @@
   </div>
 </template>
 <script>
-import { createCommunity, listBusinessCategories, updateCommunity } from '../../api/threadSharing'
-import AppDialog from '../AppDialog'
-import { scrollToComponent, isDifferent } from '../../utils/functions'
+import { createCommunity, listBusinessCategories, updateCommunity } from '@/api/threatSharing'
+import AppDialog from '@/components/AppDialog'
+import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'

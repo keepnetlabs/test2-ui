@@ -132,11 +132,11 @@
 <script>
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
-import { createComments, deleteComments, getComments, updateComments } from '@/api/threadSharing'
+import { createComments, deleteComments, getComments, updateComments } from '@/api/threatSharing'
 import { checkPermission } from '@/utils/functions'
-import AppDialog from '../AppDialog'
+import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import PostCardLoading from '../SkeletonLoading/PostCardLoading'
+import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
 
 export default {
   name: 'SinglePostComments',

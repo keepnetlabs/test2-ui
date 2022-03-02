@@ -506,7 +506,7 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      incidentGetter: 'threadSharing/incidentGetter'
+      incidentGetter: 'threatSharing/incidentGetter'
     })
   },
   watch: {
@@ -579,7 +579,7 @@ export default {
     onStart() {
       if (this.$refs.form.validate()) {
         this.$emit('closeInvestigate')
-        this.$store.dispatch('threadSharing/investigationStarted', {
+        this.$store.dispatch('threatSharing/investigationStarted', {
           title: this.selectedPostTitle
         })
       }

@@ -2,12 +2,12 @@
   <div>
     <v-overlay
       v-if="showPostIncident"
+      color="white"
+      id="new-community-overlay"
       :value="showPostIncident"
       :class="{ newCommunityOverlay: showPostIncident }"
       :opacity="1"
       :z-index="9"
-      color="white"
-      id="new-community-overlay"
     >
       <post-incident
         v-if="showPostIncident"
@@ -20,10 +20,10 @@
     <v-card id="component-incidents" flat color="basil">
       <v-card-text id="incidents-component-card" class="pt-0">
         <v-data-iterator
+          hide-default-footer
           :items="incidentList"
           :items-per-page.sync="itemsPerPage"
           :page="page"
-          hide-default-footer
           @change="$forceUpdate()"
         >
           <template v-slot:header>
@@ -44,29 +44,24 @@
               <div>
                 <v-select
                   v-model="companyValue"
-                  :items="companyItem"
-                  :placeholder="'Company'"
-                  :disabled="incidentLoading"
-                  @change="callForIncidentList"
+                  item-value="resourceId"
+                  id="threat-sharing-incidents-search-company"
                   outlined
                   class="edit-select"
                   max-width="100"
                   hide-details
                   clearable
                   item-text="name"
+                  :items="companyItem"
+                  :placeholder="'Company'"
+                  :disabled="incidentLoading"
+                  @change="callForIncidentList"
                   :menu-props="{ offsetY: true }"
-                  item-value="resourceId"
-                  id="threat-sharing-incidents-search-company"
                 />
               </div>
               <div class="d-flex">
                 <k-select
                   v-model="threats"
-                  :items="threatsList"
-                  :menu-props="{ offsetY: true }"
-                  :slots="{ selection: true }"
-                  :disabled="incidentLoading"
-                  @change="callForIncidentList"
                   placeholder="Threat"
                   outlined
                   class="edit-select"
@@ -75,6 +70,11 @@
                   item-text="name"
                   item-value="resourceId"
                   id="threat-sharing-incidents-search-threat"
+                  :items="threatsList"
+                  :menu-props="{ offsetY: true }"
+                  :slots="{ selection: true }"
+                  :disabled="incidentLoading"
+                  @change="callForIncidentList"
                 >
                   <template v-slot:selection="{ item, index }">
                     <span
@@ -144,9 +144,9 @@
                     v-if="!search && !companyValue && !threats && routerName === 'Community'"
                     block
                     rounded
-                    @click="showPostIncident = true"
                     class="create-post-incident"
                     id="threat-sharing-post-incident-button"
+                    @click="showPostIncident = true"
                   >
                     Post The First Incident
                   </div>
@@ -162,11 +162,11 @@
               style="margin: 5px !important;"
             >
               <el-pagination
+                layout="sizes, prev, pager, next,slot"
                 :current-page.sync="page"
                 :page-sizes="itemsPerPageArray"
                 :page-size="itemsPerPage"
                 :total="incidentList && totalNumberOfRecords"
-                layout="sizes, prev, pager, next,slot"
                 @size-change="handleSizeChange"
                 @current-change="onChangePagination"
               >
@@ -188,16 +188,16 @@
 </template>
 
 <script>
-import SinglePost from '../ThreadSharing/SinglePost'
+import SinglePost from '@/components/ThreatSharing/SinglePost/SinglePost'
 import {
   getCOmmunityIncidentList,
   getCommunityPost,
   getIncidentList,
   listThreatCategories
-} from '../../api/threadSharing'
-import PostIncident from '../ThreadSharing/PostIncident'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import { getCompanyListForThreatSharing } from '../../api/company'
+} from '@/api/threatSharing'
+import PostIncident from '@/components/ThreatSharing/PostIncident/PostIncident'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { getCompanyListForThreatSharing } from '@/api/company'
 import KSelect from '@/components/Common/Inputs/KSelect'
 
 export default {
@@ -296,10 +296,8 @@ export default {
         }
       }
     },
-    watch: {
-      '$route.query.postId'(val) {
-        this.$forceUpdate()
-      }
+    '$route.query.postId'(val) {
+      this.$forceUpdate()
     }
   },
   methods: {

@@ -875,12 +875,11 @@
 
 <script>
 import VClamp from 'vue-clamp'
-import NewInvestigation from '../Investigation/NewInvestigation'
-import KShadowFrame from '../KShadowFrame'
-import { mapGetters } from 'vuex'
-import vueCustomElement from 'vue-custom-element'
-import AppDialog from '../AppDialog'
+import NewInvestigation from '@/components/Investigation/NewInvestigation'
+import KShadowFrame from '@/components/KShadowFrame'
+import AppDialog from '@/components/AppDialog'
 import labels from '@/model/constants/labels'
+import vueCustomElement from 'vue-custom-element'
 import {
   deleteCommunityPost,
   getComments,
@@ -888,21 +887,22 @@ import {
   getCommunityPostPreview,
   likePost,
   shareAPost
-} from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
+} from '@/api/threatSharing'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import {
   checkPermission,
   incidenPostReviewElementBind,
   isOwner,
   isPostedByMe,
   scrollToComponent
-} from '../../utils/functions'
-import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
+} from '@/utils/functions'
+import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
-import AttachmentsPreview from './AttachmentsPreview'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
-import SinglePostComments from '@/components/ThreadSharing/SinglePostComments'
+import SinglePostComments from '@/components/ThreatSharing/SinglePost/SinglePostComments'
+
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `

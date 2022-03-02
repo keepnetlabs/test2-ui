@@ -90,41 +90,6 @@
           ></v-skeleton-loader>
         </div>
         <div v-else>
-          <!--
-            <v-list-item class="pa-0" style="border-bottom: 1px solid rgba(80, 80, 80, 0.14);">
-            <div class="communities-wrapper__community-notification-row">
-              <div class="community-notification__text">
-                Notifications
-              </div>
-              <div>
-                <v-switch
-                  id="general-notif-switch"
-                  v-model="notifications.isNotifications"
-                  color="#2196f3"
-                  hide-details
-                  class="community-notification-switch mt-0"
-                  @change="setAllNotification"
-                />
-              </div>
-            </div>
-          </v-list-item>-->
-          <!--<v-list-item class="pa-0">
-            <div class="communities-wrapper__community-notification-row">
-              <div class="community-notification__text">
-                Dashboard notifications
-              </div>
-              <div>
-                <v-switch
-                  id="dashboard-notif-switch"
-                  v-model="notifications.isDashboardEnabled"
-                  color="#2196f3"
-                  hide-details
-                  class="community-notification-switch mt-0"
-                  @change="checkAllNotificationsAreSelected"
-                />
-              </div>
-            </div>
-          </v-list-item> -->
           <v-list-item class="pa-0">
             <div class="communities-wrapper__community-notification-row">
               <div class="community-notification__text">
@@ -142,24 +107,6 @@
               </div>
             </div>
           </v-list-item>
-          <!--
-          <v-list-item class="pa-0">
-            <div class="communities-wrapper__community-notification-row">
-              <div class="community-notification__text">
-                SMS notifications
-              </div>
-              <div>
-                <v-switch
-                  id="whatsapp-notif-switch"
-                  v-model="notifications.isSMSEnabled"
-                  color="#2196f3"
-                  hide-details
-                  class="community-notification-switch mt-0"
-                  @change="checkAllNotificationsAreSelected"
-                />
-              </div>
-            </div>
-          </v-list-item> -->
         </div>
       </template>
       <template v-slot:app-dialog-footer>
@@ -243,7 +190,6 @@
             <div class="search-wrapper">
               <div>
                 <v-text-field
-                  @mouseover.native="hover = true"
                   placeholder="Search"
                   outlined
                   class="filter-field search-wrapper__search-filter"
@@ -327,238 +273,32 @@
           <template v-slot:default="props">
             <div v-if="selectedTab === 'tab-0' || selectedTab === 'tab-1'" id="tab-0">
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
-                <div class="ts-header">
-                  <div
-                    class="ts-title"
-                    id="threat-sharing-communities-ts-title-button"
-                    @click="communityDetails(item)"
-                    :style="{ cursor: isOwnerOrMember(item) ? 'pointer' : 'text' }"
-                  >
-                    {{ item.communityName }}
-                  </div>
-                  <div class="flex-grow-1"></div>
-                  <div class="ts-header-btn-1">
-                    <v-btn
-                      class="ts-header-btn-1__status"
-                      v-if="item.membershipStatusId == 1"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                    >
-                      OWNER
-                    </v-btn>
-                    <v-btn
-                      v-else-if="item.membershipStatusId == 3"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                    >
-                      REQUEST SENT
-                    </v-btn>
-                    <v-btn
-                      v-else-if="item.membershipStatusId == 2"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      class="ts-header-btn-1__status"
-                    >
-                      MEMBER
-                    </v-btn>
-                    <v-btn
-                      v-else-if="
-                        !item.membershipStatusId &&
-                        (item.privacyStatusName == 'Private' ||
-                          (item.membershipStatusId == 5 && item.privacyStatusName == 'Private'))
-                      "
-                      outlined
-                      rounded
-                      medium
-                      :disabled="isRequestToJoinDisabled"
-                      class="join-button"
-                      id="threat-sharing-communities-request-to-join-button"
-                      @click="
-                        requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
-                      "
-                    >
-                      <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
-                      REQUEST TO JOIN
-                    </v-btn>
-                    <v-btn
-                      v-else-if="
-                        !item.membershipStatusId &&
-                        (item.privacyStatusName == 'Public' ||
-                          (item.membershipStatusId == 5 && item.privacyStatusName == 'Public'))
-                      "
-                      outlined
-                      rounded
-                      :disabled="isRequestToJoinDisabled"
-                      medium
-                      class="join-button"
-                      id="threat-sharing-communities-join-button"
-                      @click="requestJoin(item.communityResourceId, item.communityName, 'join')"
-                    >
-                      <v-icon style="font-size: 20px; margin-right: 8px;">mdi-account-plus</v-icon>
-                      JOIN
-                    </v-btn>
-                    <v-btn
-                      v-else-if="
-                        item.membershipStatusId && (item.membershipStatusId == 5 && item.privacyStatusName == 'Private')
-                      "
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                    >
-                      Request Declined
-                    </v-btn>
-                    <v-btn
-                      v-else-if="
-                        item.membershipStatusId && (item.membershipStatusId == 5 && item.privacyStatusName == 'Public')
-                      "
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                    >
-                      Request Declined
-                    </v-btn>
-                    <v-btn
-                      v-else-if="item.membershipStatusId == 4"
-                      outlined
-                      rounded
-                      medium
-                      color="blue"
-                      id="threat-sharing-communities-invited-button"
-                      @click="subTabSelected"
-                    >
-                      INVITED
-                    </v-btn>
-                  </div>
-                  <v-menu
-                    offset-y
-                    transition="scale-transition"
-                    v-if="isOwnerOrMember(item) || item.membershipStatusId == 3"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        icon
-                        :color="
-                          item.membershipStatusId == 1 || item.membershipStatusId == 2
-                            ? '#757575'
-                            : 'blue'
-                        "
-                        v-on="on"
-                      >
-                        <v-icon>mdi-dots-vertical</v-icon>
-                      </v-btn>
-                    </template>
-                    <div class="communities__notification-wrapper">
-                      <v-list dense flat class="notification-wrapper__v-list">
-                        <v-list-item-group color="primary">
-                          <v-list-item
-                            id="threat-sharing-communities-edit-community-button"
-                            @click="editCommunity(item)"
-                            v-if="
-                              checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
-                            "
-                          >
-                            <v-list-item-icon>
-                              <v-icon>mdi-pencil</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                              <v-list-item-title>Edit Community</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                          <v-list-item
-                            id="threat-sharing-communities-notification-setting-button"
-                            @click="setNotificationModal(item.communityResourceId)"
-                            v-if="isOwnerOrMember(item)"
-                          >
-                            <v-list-item-icon>
-                              <v-icon>mdi-bell</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                              <v-list-item-title>Notification Settings</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                          <v-list-item
-                            @click="leaveFromCommunity(item)"
-                            id="threat-sharing-communities-leave-from-community-button"
-                            v-if="
-                              checkPermissions('communities/{resourceId}/leave', 'POST') &&
-                              isOwnerOrMember(item)
-                            "
-                          >
-                            <v-list-item-icon>
-                              <v-icon>mdi-exit-to-app</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                              <v-list-item-title>Leave</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                          <v-list-item
-                            id="threat-sharing-communities-delete-community-button"
-                            @click="deleteCommunity(item)"
-                            v-if="
-                              checkPermissions('communities/{resourceId}', 'DELETE') &&
-                              isOwner(item)
-                            "
-                          >
-                            <v-list-item-icon>
-                              <v-icon>mdi-delete</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                              <v-list-item-title>Delete</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                          <v-list-item
-                            id="threat-sharing-communities-cancel-request-button"
-                            @click="cancelRequest(item)"
-                            v-if="item.membershipStatusId == 3"
-                          >
-                            <v-list-item-icon>
-                              <v-icon>mdi-close-circle</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                              <v-list-item-title>Cancel Request</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list-item-group>
-                      </v-list>
-                    </div>
-                  </v-menu>
-                </div>
-                <div class="ts-user-comp">
-                  <div class="ts-user-comp-detail">
-                    <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
-                    <span class="pr-2">{{ item.memberCount }}</span>
-                    &#8226;
-                    <span class="ts-community-industry pl-2 pr-2">
-                      {{ item.industryName || 'Industry' }}
-                    </span>
-                    &#8226;
-                    <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
-                      item.privacyStatusName
-                    }}</span>
-                  </div>
-                  <div v-if="item && item.createTime" class="ts-community-date pt-1">
-                    Last update:
-                    {{ item.lastPostTime ? item.lastPostTime : item.createTime }}
-                    <!--{{
-                  item.lastPostTime
-                  ? item.lastPostTime.substring(0, 10).replace(/-/g, '.')
-                  : item.createTime.substring(0, 10).replace(/-/g, '.')
-                  }}-->
-                  </div>
-                </div>
-                <div class="ts-body">
-                  <v-clamp autoresize :max-lines="3">
-                    {{ item.communityDescription }}
-                  </v-clamp>
-                </div>
+                <community-card
+                  :community="item"
+                  :isOwnerOrMember="isOwnerOrMember(item)"
+                  :isRequestToJoinDisabled="isRequestToJoinDisabled"
+                  :canEditCommunity="
+                    checkPermissions('communities/{resourceId}', 'PUT') && isOwner(item)
+                  "
+                  :canLeaveCommunity="
+                    checkPermissions('communities/{resourceId}/leave', 'POST') &&
+                    isOwnerOrMember(item)
+                  "
+                  :canDeleteCommunity="
+                    checkPermissions('communities/{resourceId}', 'DELETE') && isOwner(item)
+                  "
+                  @detailsClick="communityDetails(item)"
+                  @requestJoin="
+                    requestJoin(item.communityResourceId, item.communityName, 'requestToJoin')
+                  "
+                  @join="requestJoin(item.communityResourceId, item.communityName, 'join')"
+                  @invitedClick="subTabSelected"
+                  @editCommunity="editCommunity(item)"
+                  @notificationSettingsClick="setNotificationModal(item.communityResourceId)"
+                  @leaveCommunity="leaveFromCommunity(item)"
+                  @deleteCommunity="deleteCommunity(item)"
+                  @cancelRequest="cancelRequest(item)"
+                />
               </div>
             </div>
             <div
@@ -567,64 +307,12 @@
               "
             >
               <div v-for="(item, ind) of props.items" :key="ind" class="threat-sharing-content">
-                <div class="ts-header">
-                  <div
-                    id="threat-sharing-communities-ts-title-community-button"
-                    class="ts-title"
-                    @click="community(item)"
-                  >
-                    {{ item.name }}
-                  </div>
-                  <div class="flex-grow-1"></div>
-                  <div class="ts-header-btn-1">
-                    <div class="request-btns flex-grow-1">
-                      <v-btn
-                        id="threat-sharing-communities-refuse-button"
-                        class="refuse-btn"
-                        block
-                        rounded
-                        medium
-                        @click="refuseRequest(item)"
-                      >
-                        {{ labels.Cancel }}
-                      </v-btn>
-                      <v-btn
-                        class="accept-btn"
-                        :disabled="item['disabled']"
-                        block
-                        rounded
-                        medium
-                        id="threat-sharing-communities-accept-join-request"
-                        @click="acceptRequest(item)"
-                      >
-                        JOIN
-                      </v-btn>
-                    </div>
-                  </div>
-                </div>
-                <div class="ts-user-comp">
-                  <div class="ts-user-comp-detail">
-                    <v-icon class="ts-people-icon pr-1">mdi-account-multiple</v-icon>
-                    <span class="pr-2">{{ item.memberCount }}</span>
-                    &#8226;
-                    <span class="ts-community-industry pl-2 pr-2">
-                      {{ item.industryName || 'Industry' }}
-                    </span>
-                    &#8226;
-                    <span class="ts-community-industry pl-2" v-if="!!item.privacyStatusName">{{
-                      item.privacyStatusName
-                    }}</span>
-                  </div>
-                  <div v-if="item && item.lastPostTime" class="ts-community-date pt-1">
-                    Last update:
-                    {{ item.lastPostTime }}
-                  </div>
-                </div>
-                <div class="ts-body">
-                  <v-clamp autoresize :max-lines="3">
-                    {{ item.description }}
-                  </v-clamp>
-                </div>
+                <community-invitation-card
+                  :community="item"
+                  @communityNameClick="community(item)"
+                  @refuseRequest="refuseRequest(item)"
+                  @acceptRequest="acceptRequest(item)"
+                />
               </div>
             </div>
           </template>
@@ -760,6 +448,7 @@
     </v-card>
   </div>
 </template>
+
 <script>
 import {
   acceptInvitation,
@@ -775,24 +464,25 @@ import {
   refuseInvitation,
   removeFromCommunities,
   updateNotifications
-} from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import VClamp from 'vue-clamp'
-import { checkPermission, isOwner, isOwnerOrMember } from '../../utils/functions'
-import NewCommunity from '../ThreadSharing/NewCommunity'
-import AppDialog from '../AppDialog'
+} from '@/api/threatSharing'
+import { checkPermission, isOwner, isOwnerOrMember } from '@/utils/functions'
+import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
+import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
-import { getNotifications } from '../../api/dashboard'
+import { getNotifications } from '@/api/dashboard'
+import CommunityCard from '@/components/ThreatSharing/Communities/CommunityCard'
+import CommunityInvitationCard from '@/components/ThreatSharing/Communities/CommunityInvitationCard'
 
 export default {
   components: {
     KSelect,
     AppDialogFooter,
-    VClamp,
     NewCommunity,
-    AppDialog
+    AppDialog,
+    CommunityCard,
+    CommunityInvitationCard
   },
   computed: {
     numberOfPages() {
@@ -876,19 +566,19 @@ export default {
     }
   },
   watch: {
-    communityLoading: function (newVal, oldVal) {
+    communityLoading(newVal, oldVal) {
       if (oldVal != newVal) {
         this.$emit('setThreatSharingStepLoading', newVal)
       }
     },
-    refresh: function (newVal, oldVal) {
+    refresh(newVal, oldVal) {
       if (oldVal != newVal && !this.isLoadState) {
         this.selectedTab = 'tab-1'
         this.getAllCommunitiesListData()
         this.getMyCommunitiesListData()
       }
     },
-    filter: function (newVal, oldVal) {
+    filter(newVal, oldVal) {
       if (newVal !== oldVal && !this.isLoadState) {
         if (!newVal) {
           this.updateCommunities()
@@ -1018,14 +708,6 @@ export default {
       this.temporaryResourceId = communityResourceId
       this.getNotifications()
       this.openNotificationModal = true
-    },
-    setAllNotification(val) {
-      this.notifications = {
-        isNotifications: val,
-        isSMSEnabled: val,
-        isEmailEnabled: val,
-        isDashboardEnabled: val
-      }
     },
     checkAllNotificationsAreSelected() {
       this.notifications.isNotifications =

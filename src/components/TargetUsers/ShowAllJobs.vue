@@ -13,7 +13,9 @@
           <span class="w-5" style="width: 100px;">{{ job.jobId }}</span>
           <span class="w-25">{{ job.name }}</span>
           <span class="w-25 text-center">{{ job.createTime }}</span>
-          <span class="w-25 text-right">{{ job.status === 0 ? 'Waiting' : job.progress + '%' }} </span>
+          <span class="w-25 text-right"
+            >{{ job.status === 0 ? 'Waiting' : job.progress + '%' }}
+          </span>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <datatable-loading v-if="processLoading" :loading="processLoading"></datatable-loading>
@@ -131,29 +133,31 @@ export default {
       })
     },
     handleProcess(resourceId) {
-      getJobDetail(resourceId).then((response) => {
-        const {
-          data: {
-            data: { progress, processResults, isFinished }
+      getJobDetail(resourceId)
+        .then((response) => {
+          const {
+            data: {
+              data: { progress, processResults, isFinished }
+            }
+          } = response
+          const job = this.jobs.find((job) => job.resourceId === resourceId)
+          job.processResults = processResults
+          job.progress = progress
+          job.isFinished = isFinished
+          this.jobs = [...this.jobs]
+          this.processLoading = false
+          if (!this.isDestroyed) {
+            this.processTimeout = setTimeout(() => {
+              this.handleProcess(resourceId)
+            }, 2500)
           }
-        } = response
-        const job = this.jobs.find((job) => job.resourceId === resourceId)
-        job.processResults = processResults
-        job.progress = progress
-        job.isFinished = isFinished
-        this.jobs = [...this.jobs]
-        this.processLoading = false
-        if (!this.isDestroyed) {
-          this.processTimeout = setTimeout(() => {
-            this.handleProcess(resourceId)
-          }, 2500)
-        }
-      }).catch(error => {
-        if (!this.isDestroyed) {
-          this.processTimeout = setTimeout(() => {
-            this.handleProcess(resourceId)
-          }, 2500)
-        }
+        })
+        .catch((error) => {
+          if (!this.isDestroyed) {
+            this.processTimeout = setTimeout(() => {
+              this.handleProcess(resourceId)
+            }, 2500)
+          }
         })
     },
     processType(process) {

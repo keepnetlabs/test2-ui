@@ -652,8 +652,9 @@
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon
                 ><img
                   style="margin-bottom: -4px;"
-                  alt="outlook"
+                  alt="google-workspace"
                   src="../../assets/img/google-workspace.png"
+                  width="175"
                 />
               </div>
               <div
@@ -662,7 +663,7 @@
                 @click="status = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
-                <img alt="outlook" src="../../assets/img/office-365-logo.png" />
+                <img alt="microsoft365" src="../../assets/img/microsoft-365-logo.svg" width="175" />
               </div>
               <div
                 id="btn-empty--mail-configurations-office-EWS"
@@ -670,7 +671,7 @@
                 @click="ewsStatus = true"
               >
                 <v-icon color="#2196f3">mdi-plus-circle</v-icon>
-                <img alt="exchange" src="../../assets/img/office365_logo.svg" />
+                <img alt="exchange" src="../../assets/img/office365_logo.svg" width="150" />
               </div>
             </div>
           </div>

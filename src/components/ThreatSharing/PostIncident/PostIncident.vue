@@ -172,8 +172,6 @@
                 type="autocomplete"
                 id="threat-sharing-select-incident-autocomplete"
                 v-model.trim="selectedEmail"
-                :search-input.sync="searchIncident"
-                :items="listData"
                 chips
                 clearable
                 hide-selected
@@ -181,17 +179,19 @@
                 label="Search for incident name or status"
                 class="first-select input-select mb-6 no-action-on-click"
                 solo
-                :rules="autocomplete"
                 required
+                autocomplete="off"
+                :search-input.sync="searchIncident"
+                :items="listData"
+                :rules="autocomplete"
                 :loading="isFindIncidentLoading"
                 :hide-no-data="isFindIncidentLoading"
+                :slots="{ selection: true, item: true, progress: true }"
                 @change="getSelectedEmailPreview"
                 @focus="handleLoadingState"
                 @input="handleTagItemChange"
                 @click:append="handleTagItemChange"
                 @click:append-outer="handleTagItemChange"
-                :slots="{ selection: true, item: true, progress: true }"
-                autocomplete="off"
               >
                 <template v-slot:selection="{ attrs, item }">
                   <v-chip
@@ -2058,9 +2058,10 @@
     </div>
   </div>
 </template>
+
 <script>
-import PreviewHeader from './PreviewHeader'
-import PreviewHeaderForSinglePost from './PreviewHeaderForSinglePost'
+import PreviewHeader from '@/components/ThreatSharing/PreviewHeader'
+import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import VClamp from 'vue-clamp'
 import {
   createCommunityPost,
@@ -2071,18 +2072,20 @@ import {
   searchNotifiedMail,
   updateCommunityPost,
   uploadEmlOrMsg
-} from '../../api/threadSharing'
-import { COMMON_CONSTANTS } from '../../model/constants/commonConstants'
-import KShadowFrame from '../KShadowFrame'
+} from '@/api/threatSharing'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import KShadowFrame from '@/components/KShadowFrame'
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
-import AppModal from '../AppModal'
+import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
-import GrapesNewsletterModal from '../GrapesJs/Newsletter/GrapesNewsletterModal'
+import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
 import { incidenPostReviewElementBind, scrollToComponent, isDifferent } from '@/utils/functions'
-import AttachmentsPreview from './AttachmentsPreview'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
 import KSelectLoading from '@/components/KSelectLoading'
+import vueCustomElement from 'vue-custom-element'
+
 Vue.customElement('k-shadow-frame', KShadowFrame, {
   shadow: true,
   shadowCss: `

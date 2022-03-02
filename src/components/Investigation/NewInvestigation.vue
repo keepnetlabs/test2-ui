@@ -1267,7 +1267,7 @@ export default {
     checkInvestigationName() {
       // investigaiton rule checking
       if (this.name.length && !this.name.startsWith(' '))
-        this.$store.dispatch('threadSharing/checkName', this.name)
+        this.$store.dispatch('threatSharing/checkName', this.name)
     },
     minDate() {
       // set min date

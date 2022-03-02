@@ -237,7 +237,7 @@ export default {
         sortable: false,
         show: true,
         type: 'chart',
-        width: 190
+        wıdth: 175
       },
       {
         property: 'progress',
@@ -303,6 +303,28 @@ export default {
     serverSideProps: new ServerSideProps()
   }),
   methods: {
+    getDynamicScanStatusWidth(columnItems) {
+      if (!columnItems) {
+        return 250
+      }
+      const lengthMap = columnItems.map(
+        (item) => item[0].toString().length + item[1].toString().length
+      )
+      const maxLength = Math.max(...lengthMap)
+      if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
+        return 250
+      }
+      return 175 + maxLength * 5
+    },
+    setDynamicScanStatusWidth() {
+      const scanStatusItems = this.tableData.data.map((item) => item.userStatus)
+      const scanStatusColumnIndex = this.columns.findIndex(
+        (column) => column.property === 'userStatus'
+      )
+      if (scanStatusColumnIndex !== -1) {
+        this.columns[scanStatusColumnIndex].width = this.getDynamicScanStatusWidth(scanStatusItems)
+      }
+    },
     handleSearchChange(searchFilter = {}) {
       const filterItems = searchFilter.filter.FilterGroups[0].FilterItems.filter((filterItem) => {
         const column = this.columns.find(
@@ -498,6 +520,7 @@ export default {
         .finally(() => {
           this.loading = false
           this.tableData.data = this.tableData.data || []
+          this.setDynamicScanStatusWidth()
           if (this.$refs && this.$refs.investigationTable) {
             this.$refs.investigationTable.$forceUpdate()
           }
