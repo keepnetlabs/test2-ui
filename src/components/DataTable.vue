@@ -57,7 +57,7 @@
           </div>
         </div>
         <extended-view
-          v-if="isWantToEditRow || isExtendedViewCreateMode"
+          v-if="isExtendedViewRender"
           :is-multiple="isSelectedAllEver"
           :total-item-count="serverSideSelectionCount"
           :value="extendedViewValue"
@@ -1008,6 +1008,10 @@ export default {
       type: Boolean,
       default: false
     },
+    isShowExtendedViewWithExternalValue: {
+      type: Boolean,
+      default: false
+    },
     addRowClassName: {
       type: Function
     },
@@ -1296,6 +1300,13 @@ export default {
     },
     isFiltered() {
       return Object.keys(this.filterValues).length > 0
+    },
+    isExtendedViewRender() {
+      return (
+        this.isWantToEditRow ||
+        this.isExtendedViewCreateMode ||
+        this.isShowExtendedViewWithExternalValue
+      )
     },
     getTableHeaderRender() {
       const compareVal =
@@ -2184,6 +2195,7 @@ export default {
     },
     closeEditPopup() {
       this.isWantToEditRow = false
+      this.$emit('update:is-show-extended-view-with-external-value', false)
     },
 
     getBtnStatusColor(type) {

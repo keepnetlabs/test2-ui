@@ -19,6 +19,10 @@
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :select-event="tableOptions.selectEvent"
+    :extended-view-options="extendedViewOptions"
+    :extended-view-loading="extendedViewLoading"
+    :is-show-extended-view-with-external-value.sync="isShowExtendedView"
+    :extended-view-value="extendedViewValue"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -33,7 +37,26 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+  >
+    <template #extended-view-slot>
+      <div
+        style="
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 21px;
+          color: #383b41;
+          margin-bottom: 8px;
+        "
+      >
+        Event history
+      </div>
+      <div>
+        <CampaignManagerReportSendingReportEvent
+          :item="{ title: 'Gürkan', date: '06.05.2021 12:50 UTC+03:00', status: 'processed' }"
+        />
+      </div>
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -44,6 +67,8 @@ import labels from '@/model/constants/labels'
 
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
+  getStoreValue,
+  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import {
@@ -57,10 +82,12 @@ import {
   searchCampaignJobUserSendingReport
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
+import * as Validations from '@/utils/validations'
+import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 
 export default {
   name: 'CampaignManagerReportSendingReportTable',
-  components: { DataTable },
+  components: { CampaignManagerReportSendingReportEvent, DataTable },
   mixins: [useLoading],
   props: {
     id: {
@@ -107,9 +134,32 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-opened',
             icon: '$custom-resend',
             action: 'on-resend'
+          },
+          {
+            name: labels.Details,
+            id: 'btn-details--row-actions-campaign-manager-report-opened',
+            icon: '$custom-details',
+            action: 'on-detail'
           }
         ]
-      }
+      },
+      isShowExtendedView: false,
+      extendedViewOptions: {
+        title: labels.EmailInformation,
+        col: [
+          {
+            property: PROPERTY_STORE.SUBJECT,
+            label: getStoreValue(PROPERTY_STORE.SUBJECT),
+            isEditable: false,
+            type: 'text',
+            show: true
+          }
+        ],
+        isEditable: false,
+        showFooter: false
+      },
+      extendedViewValue: [{ subject: 'Gürkan' }],
+      extendedViewLoading: false
     }
   },
   watch: {
@@ -133,6 +183,7 @@ export default {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
+          console.log('results', results)
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -285,6 +336,7 @@ export default {
       this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
+      this.isShowExtendedView = true
       this.$emit('on-detail', row)
     }
   }

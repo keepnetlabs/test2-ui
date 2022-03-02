@@ -22,6 +22,7 @@ export const labels = {
   CreateNewInstance: 'Create new instance',
   LastReported: 'Last Reported',
   Data: 'Data',
+  EmailInformation: 'Email Information',
   UserWhoSubmitted: 'Users who submitted the form',
   CampaignSettings: 'Campaign Settings',
   EmailSendingReport: 'Email Sending Report',

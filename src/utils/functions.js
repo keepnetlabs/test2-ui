@@ -17,6 +17,10 @@ export function getBtnStatusColor(type) {
       return '#b83a3a'
     case 'warning':
       return '#b6791d'
+    case 'processed':
+      return '#217124'
+    case 'delivered':
+      return '#217124'
     case 'malicious':
       return '#b83a3a'
     case 'nonmalicious':
