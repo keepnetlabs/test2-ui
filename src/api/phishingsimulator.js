@@ -51,7 +51,7 @@ export function createPhishingEmailTemplate(payload) {
   formData.append('fromName', payload.fromName)
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
-  formData.append('attachmentFiles', payload.attachmentFiles)
+  formData.append('attachmentFiles', payload.attachmentFiles[0])
   return testRequest.post(`phishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR

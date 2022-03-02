@@ -108,25 +108,12 @@
         </div>
 
         <form-group-horizontal-content label="Issuer URL of the IdP" class="mt-4">
-          <v-text-field
+          <input-url
             v-model.trim="formValues.idPEntityID"
             id="input--saml-settings-id-entity-id"
             placeholder="Enter issuer URL from your provider"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
-            :rules="[
-              (v) => validations.startsWithSpace(v),
-              (v) =>
-                validations.maxLength(
-                  v,
-                  256,
-                  labels.getMaxLengthMessage(labels.SAMLSettingName, 256)
-                )
-            ]"
             :disabled="isTextFieldsDisabled"
-          ></v-text-field>
+          />
         </form-group-horizontal-content>
         <form-group-horizontal-content label="IdP SSO URL">
           <input-url
