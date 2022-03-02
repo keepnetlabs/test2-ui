@@ -24,6 +24,7 @@ export function updatePhishingEmailTemplate(payload, id) {
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
   formData.append('attachmentFiles', payload.attachmentFiles[0])
+  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR
@@ -52,6 +53,7 @@ export function createPhishingEmailTemplate(payload) {
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
   formData.append('attachmentFiles', payload.attachmentFiles[0])
+  formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   return testRequest.post(`phishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
     snackbar: COMMON_SNACKBAR

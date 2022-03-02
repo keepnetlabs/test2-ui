@@ -89,7 +89,7 @@
                     persistent-hint
                     :slots="{ item: true }"
                   >
-                    <template #item="{item}">
+                    <template #item="{ item }">
                       <div :class="['mail-configuration-select-sources__item-container']">
                         <div class="mail-configuration-select-sources__item">
                           <div class="mail-configuration-select-sources__item-left">
@@ -108,6 +108,21 @@
                       </div>
                     </template>
                   </k-select>
+                </form-group>
+                <form-group
+                  has-hint
+                  title="Language"
+                  sub-title="Select the language you are writing this webpage template in"
+                >
+                  <input-select-language
+                    v-model="formValues.languageTypeResourceId"
+                    v-bind="commonRules"
+                    item-text="text"
+                    item-value="value"
+                    required
+                    :items="languageOptions"
+                    :menu-props="{ offsetY: true }"
+                  />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
                   <k-select
@@ -250,6 +265,7 @@
 <script>
 import AppModal from '../AppModal'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -260,6 +276,7 @@ import {
   getMergedTextForPhishing,
   updatePhishingEmailTemplate
 } from '@/api/phishingsimulator'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import fullName from '@/components/GrapesJs/Newsletter/mergedTexts/fullName'
 import userName from '@/components/GrapesJs/Newsletter/mergedTexts/userName'
@@ -331,10 +348,12 @@ export default {
     AppModal,
     FormGroup,
     MakeAvailableFor,
-    EmailTemplate
+    EmailTemplate,
+    InputSelectLanguage
   },
   data() {
     return {
+      languageOptions: [],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
       blockManagerComponents: {},
@@ -356,7 +375,8 @@ export default {
         subject: null,
         template: null,
         attachmentFiles: [],
-        attachmentFilesFromApi: []
+        attachmentFilesFromApi: [],
+        languageTypeResourceId: '862249c19aad'
       },
       commonRules: {
         hint: '*Required',
@@ -567,6 +587,12 @@ export default {
         this.setActiveBlockManagerComponents(this.blockManagerComponents)
       })
     },
+    callForLanguages() {
+      LookupLocalStorage.getSingle(23).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+      })
+    },
     getTagsComponent(item) {
       switch (item) {
         case '{FULLNAME}':
@@ -708,6 +734,7 @@ export default {
   },
   created() {
     this.callForMergedTags()
+    this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
