@@ -194,7 +194,7 @@
                       </transition>
                     </div>
                   </div>
-                  <div
+                  <!-- <div
                     v-if="list.option === 'size'"
                     class="filter-item__file-size-option-selectbox"
                   >
@@ -211,7 +211,7 @@
                       :items="fileSizeOptions"
                       :rules="[(v) => !!v || 'File size option is required']"
                     ></k-select>
-                  </div>
+                  </div> -->
                   <div
                     :class="{
                       'filter-item__input': list.option !== 'size',
@@ -587,28 +587,28 @@ export default {
           ]
         }
       ],
-      fileSizeOptions: [
-        {
-          label: 'Equal',
-          value: 'equal'
-        },
-        {
-          label: 'Greater than',
-          value: 'greaterThan'
-        },
-        {
-          label: 'Greater than or equal',
-          value: 'greaterThanOrEqual'
-        },
-        {
-          label: 'Less than',
-          value: 'lessThan'
-        },
-        {
-          label: 'Less than or equal',
-          value: 'lessThanOrEqual'
-        }
-      ],
+      // fileSizeOptions: [
+      //   {
+      //     label: 'Equal',
+      //     value: 'equal'
+      //   },
+      //   {
+      //     label: 'Greater than',
+      //     value: 'greaterThan'
+      //   },
+      //   {
+      //     label: 'Greater than or equal',
+      //     value: 'greaterThanOrEqual'
+      //   },
+      //   {
+      //     label: 'Less than',
+      //     value: 'lessThan'
+      //   },
+      //   {
+      //     label: 'Less than or equal',
+      //     value: 'lessThanOrEqual'
+      //   }
+      // ],
       selectedFileSize: null,
       valid: false,
       menu1: '',
@@ -1742,7 +1742,7 @@ export default {
           width: 100px;
         }
         &-option-input {
-          width: 240px;
+          width: 340px;
         }
       }
     }
