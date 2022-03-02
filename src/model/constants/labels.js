@@ -213,6 +213,7 @@ export const labels = {
   CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',
   Delete: 'Delete',
+  MakeDefault: 'Make Default',
   Next: 'NEXT',
   RestApi: 'Rest Api',
   IntegrationType: 'Integration Type',
