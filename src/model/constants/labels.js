@@ -214,6 +214,7 @@ export const labels = {
   CannotStartWithSpace: 'Cannot start with space',
   Save: 'SAVE',
   Delete: 'Delete',
+  MakeDefault: 'Make Default',
   Next: 'NEXT',
   RestApi: 'Rest Api',
   IntegrationType: 'Integration Type',
@@ -477,7 +478,8 @@ export const labels = {
   DIFFICULTY: 'Difficulty',
   Preview: 'Preview',
   CreatedBy: 'Created By',
-  dnsServiceProviderName: 'Service Provider'
+  dnsServiceProviderName: 'Service Provider',
+  LANGUAGE: 'Language'
 }
 
 export default labels

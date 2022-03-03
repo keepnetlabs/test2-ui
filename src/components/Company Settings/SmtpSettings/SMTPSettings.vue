@@ -58,7 +58,18 @@
         @searchChangedEvent="handleSearchChange"
         @handleSelectionChange="handleTableSelectionChange"
       >
-        <template #datatable-row-actions="{scope}">
+        <!-- <template v-slot:datatable-custom-column="{ scope }">
+          <div>
+            <span
+              >{{ scope.row.name }}
+              <v-icon v-if="scope.row.isDefault" color="#1173C1"
+              class="pl-2"
+                >mdi-star-circle</v-icon
+              >
+            </span>
+          </div>
+        </template> -->
+        <template #datatable-row-actions="{ scope }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
@@ -93,6 +104,49 @@
             </template>
             <span>{{ tableOptions.rowActions[1].name }}</span>
           </v-tooltip>
+          <!-- <v-menu bottom left offset-y transition="scale-transition">
+            <template v-slot:activator="{ on }">
+              <v-btn class="btn-hover" icon v-on="on">
+                <v-icon @click.native="selectedMenuIndex = scope.$index"
+                  >mdi-dots-vertical</v-icon
+                >
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                class="sub-menu-el"
+                :disabled="getDisabledStatusOfDelete(scope.row)"
+                :id="`${tableOptions.rowActions[1].id}-${
+                  scope.$index
+                }-${Math.random().toString().substring(2)}`"
+                @click="handleDeleteAction(scope.row)"
+              >
+                <v-list-item-title class="sub-menu-el__title">
+                  <v-icon
+                    class="smtp-settings__row-actions__overflow-menu__icon"
+                    >{{ tableOptions.rowActions[1].icon }}</v-icon
+                  >
+                  <span>{{ tableOptions.rowActions[1].name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                class="sub-menu-el"
+                :disabled="getDisabledStatusOfDelete(scope.row)"
+                :id="`${tableOptions.rowActions[2].id}-${
+                  scope.$index
+                }-${Math.random().toString().substring(2)}`"
+                @click="handleMakeDefault(scope.row)"
+              >
+                <v-list-item-title @click="() => {}" class="sub-menu-el__title">
+                  <v-icon
+                    class="smtp-settings__row-actions__overflow-menu__icon"
+                    >{{ tableOptions.rowActions[2].icon }}</v-icon
+                  >
+                  <span>{{ tableOptions.rowActions[2].name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu> -->
         </template>
       </data-table>
     </div>
@@ -155,6 +209,7 @@ export default {
             show: true,
             fixed: 'left',
             type: 'text',
+            // type: "slot",
             filterableType: 'text',
             width: 150
           },
@@ -241,6 +296,13 @@ export default {
             id: 'btn-delete--smtp-settings-row-actions',
             disabled: !this.PERMISSIONS.DELETE.hasPermission
           }
+          // {
+          //   name: "Make Default",
+          //   icon: "mdi-star-circle",
+          //   action: "makeDefaultAction",
+          //   id: "btn-make-default--smtp-settings-row-actions",
+          //   disabled: !this.PERMISSIONS.UPDATE.hasPermission,
+          // },
         ],
         empty: {
           message: labels.EmptySmtpSettings,
@@ -386,6 +448,10 @@ export default {
             const { results = [] } = data
             this.tableData = results
             this.tableData = data.results
+            // this.tableData = data.results.map((item) => ({
+            //   ...item,
+            //   isDefault: true,
+            // }));
             this.changeMultipleDeleteDisability()
           })
           .finally(() => {
@@ -440,6 +506,7 @@ export default {
         this.toggleDeleteSmtpModalStatus()
       }
     },
+    handleMakeDefault(selectedRow) {},
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
       this.bodyOptions.filter.FilterGroups[0].FilterItems = columnFilterChanged(
@@ -519,3 +586,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.smtp-settings__row-actions__overflow-menu__icon {
+  margin-right: 16px;
+}
+
+.sub-menu-el__title {
+  display: flex;
+  align-items: center;
+}
+</style>
