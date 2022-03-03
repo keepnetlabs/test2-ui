@@ -2253,16 +2253,18 @@ export default {
       if (spanWidth > widthOfParent) {
         const cellValue = row[column.property]
         let text
-        switch (typeof cellValue) {
-          case 'object':
-            text =
-              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
-            break
-          case 'string':
-            text = row[column.property]
-            break
-          default:
-            break
+        if (cellValue) {
+          switch (typeof cellValue) {
+            case 'object':
+              text =
+                cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
+              break
+            case 'string':
+              text = row[column.property]
+              break
+            default:
+              break
+          }
         }
         if (!text) return
         this.showOverFlowTooltip = true

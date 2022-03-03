@@ -183,8 +183,8 @@ export default {
       if (this.step === 2) {
         const { refCampaignManagerCampaignInfo } = this.$refs
         const { refCampaignManagerPhishingScenarios } = refCampaignManagerCampaignInfo.$refs
-        selectedScenario = refCampaignManagerPhishingScenarios.emailTemplateParams || {}
-        selectedScenario.template = refCampaignManagerPhishingScenarios.emailTemplate || ''
+        selectedScenario = refCampaignManagerPhishingScenarios?.emailTemplateParams || {}
+        selectedScenario.template = refCampaignManagerPhishingScenarios?.emailTemplate || ''
       }
       return selectedScenario
     },
@@ -197,7 +197,8 @@ export default {
           ...refCampaignManagerCampaignInfo.formData,
           ...refCampaignManagerAdvancedSettings.formData,
           emailTemplate:
-            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios.emailTemplate,
+            refCampaignManagerCampaignInfo?.$refs.refCampaignManagerPhishingScenarios
+              ?.emailTemplate || '',
           emailTemplateParams:
             refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
               .emailTemplateParams,
