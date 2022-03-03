@@ -372,11 +372,12 @@ export default {
         this.formValues.allowedIpAddresses = [{ name: '', value: '' }]
     },
     handleCopyToClipboard(data = '') {
-      navigator.clipboard.writeText(data)
-      this.$store.dispatch('common/createSnackBar', {
-        message: 'COPIED TO CLIPBOARD',
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: 'mdi-check-circle'
+      navigator.clipboard.writeText(data).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'COPIED TO CLIPBOARD',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
       })
     },
     handleGenerateClientBtnClick() {
