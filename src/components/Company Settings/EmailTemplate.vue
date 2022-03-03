@@ -80,7 +80,11 @@
         :value="AttachmentFiles"
         @inputFile="onFileChanged"
       />
-      <div class="email-template__attachment-list" :key="attachmentListKey">
+      <div
+        class="email-template__attachment-list"
+        style="display: flex; align-items: center; flex-wrap: wrap;"
+        :key="attachmentListKey"
+      >
         <div
           v-for="(item, index) in attachmentFilesFromApi"
           :key="item.fileName"
