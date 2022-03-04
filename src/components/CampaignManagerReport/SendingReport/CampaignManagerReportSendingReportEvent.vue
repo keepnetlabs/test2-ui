@@ -68,6 +68,9 @@ export default {
     &-left {
       display: flex;
       align-items: center;
+      .k-badge {
+        max-width: fit-content;
+      }
     }
     &-right {
     }
