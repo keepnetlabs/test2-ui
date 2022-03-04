@@ -434,7 +434,7 @@
             @select="handleSelect"
             @expand-change="handleExpandedRowChange"
             @sort-change="sortChangedEvent"
-            :empty-text="empty.message"
+            :empty-text="loading ? ' ' : empty.message"
             @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
@@ -2265,16 +2265,18 @@ export default {
       if (spanWidth > widthOfParent) {
         const cellValue = row[column.property]
         let text
-        switch (typeof cellValue) {
-          case 'object':
-            text =
-              cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
-            break
-          case 'string':
-            text = row[column.property]
-            break
-          default:
-            break
+        if (cellValue) {
+          switch (typeof cellValue) {
+            case 'object':
+              text =
+                cellValue && Array.isArray(cellValue) ? cellValue.join(',') : cellValue.toString()
+              break
+            case 'string':
+              text = row[column.property]
+              break
+            default:
+              break
+          }
         }
         if (!text) return
         this.showOverFlowTooltip = true

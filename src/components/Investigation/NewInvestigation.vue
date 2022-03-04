@@ -1469,7 +1469,10 @@ export default {
         getTimeZoneForMoment()
       )}`
     }
-    document.querySelector('.page-nav').style.zIndex = 8
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 8
+    }
     this.initialFormValues = {
       investigationName: this.investigationName,
       targetUsers: this.targetUsers,
@@ -1482,7 +1485,10 @@ export default {
   },
   mounted() {},
   beforeDestroy() {
-    document.querySelector('.page-nav').style.zIndex = 19
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 19
+    }
   }
 }
 </script>

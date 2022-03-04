@@ -35,7 +35,6 @@ import { uploadEmlOrMsg } from '../../../api/threatSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
-import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
 import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
@@ -256,7 +255,6 @@ export default {
           'gjs-preset-newsletter',
           'gjs-preset-webpage',
           myNewComponentTypes,
-          parserPostCSS,
           componentEditor
         ],
         pluginsOpts: {
@@ -716,19 +714,18 @@ export default {
           btnImp.className = 'gjs-btn-prim gjs-btn-import'
           btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
           btnImp.onclick = () => {
-            this.callForMinify(codeViewer.editor.getValue()).then((code) => {
-              editor.DomComponents.getWrapper().set('content', '')
-              editor.setComponents(code)
-              editor.Modal.close()
-            })
+            editor.DomComponents.getWrapper().set('content', '')
+            editor.setComponents(codeViewer.editor.getValue())
+            editor.Modal.close()
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
-            navigator.clipboard.writeText(codeViewer.editor.getValue())
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'COPIED TO CLIPBOARD',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
+            navigator.clipboard.writeText(codeViewer.editor.getValue()).then(() => {
+              this.$store.dispatch('common/createSnackBar', {
+                message: 'COPIED TO CLIPBOARD',
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: 'mdi-check-circle'
+              })
             })
           }
           codeViewer.set({

@@ -2506,7 +2506,10 @@ export default {
   },
   created() {
     document.querySelector('html').style.overflowY = 'hidden'
-    document.querySelector('.page-nav').style.zIndex = 8
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 8
+    }
   },
   methods: {
     handleLoadingState() {
@@ -2604,11 +2607,12 @@ export default {
       return this.uploadRespond.PostedUserCompanyName || localStorage.getItem('companyName')
     },
     contentCopy(contentBody) {
-      navigator.clipboard.writeText(contentBody)
-      this.$store.dispatch('common/createSnackBar', {
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        message: 'Content has been copied'
-      })
+      navigator.clipboard.writeText(contentBody).then(() => [
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Content has been copied'
+        })
+      ])
     },
     findCategory(id) {
       switch (id) {
@@ -3242,7 +3246,10 @@ export default {
   },
   beforeDestroy() {
     document.querySelector('html').style.overflowY = 'initial'
-    document.querySelector('.page-nav').style.zIndex = 19
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 19
+    }
   }
 }
 </script>
