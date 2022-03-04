@@ -1311,10 +1311,7 @@ export default {
     },
     checkIsEdit() {
       if (this.isEdit) {
-        this.investigationName = this.investigationDetailsData.name
-        //this.date.push(this.investigationDetailsData.startDate)
-        //this.data.push(this.investigationDetailsData.startDate)
-        //this.data.push(this.investigationDetailsData.endDate)
+        this.investigationName = this?.investigationDetailsData?.name || ''
         this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
           ({ mailConfigurationResourceId, type }) => ({
             mailConfigurationResourceId,
