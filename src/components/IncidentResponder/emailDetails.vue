@@ -93,10 +93,7 @@
                     class="email-details__received-header"
                   >
                     <div :key="JSON.stringify(item)" v-for="item in headersTable.data">
-                      {{
-                        item.key.substring(0, 1).toUpperCase() +
-                        item.key.substring(1, item.key.length)
-                      }}:
+                      {{ getKeyValue(item) }}:
                       {{ item.value }}
                     </div>
                   </div>
@@ -561,6 +558,10 @@ export default {
     this.getPostDetails()
   },
   methods: {
+    getKeyValue(item) {
+      const { key = '' } = item || { key: '' }
+      return key.substring(0, 1).toUpperCase() + key.substring(1, key.length)
+    },
     getBtnStatusColor(type) {
       return getBtnStatusColor(type)
     },

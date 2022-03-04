@@ -56,7 +56,23 @@
         @searchChangedEvent="handleSearchChange"
         @on-table-settings-change="handleSetRenderedColumns"
       >
-        <template #datatable-row-actions="{scope}">
+        <!-- <template v-slot:datatable-custom-column="{ scope }">
+          <div>
+            <span>{{ scope.row.name }}</span>
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on }">
+                <v-icon v-on="on" v-if="scope.row.isDefault" color="#1173C1"
+                class="pl-2"
+                  >mdi-star-circle</v-icon
+                >
+              </template>
+              <span>{{
+                `Default option for  “${scope.row.typeName}"  template type`
+              }}</span>
+            </v-tooltip>
+          </div>
+        </template> -->
+        <template #datatable-row-actions="{ scope }">
           <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
@@ -91,6 +107,53 @@
             </template>
             <span>{{ tableOptions.rowActions[1].name }}</span>
           </v-tooltip>
+          <!-- <v-menu bottom left offset-y transition="scale-transition">
+            <template v-slot:activator="{ on }">
+              <v-btn class="btn-hover" icon v-on="on">
+                <v-icon @click.native="selectedMenuIndex = scope.$index"
+                  >mdi-dots-vertical</v-icon
+                >
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                class="sub-menu-el"
+                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+                :id="`${tableOptions.rowActions[1].id}-${
+                  scope.$index
+                }-${Math.random().toString().substring(2)}`"
+                @click="handleDelete(scope.row)"
+              >
+                <v-list-item-title class="sub-menu-el__title">
+                  <v-icon
+                    class="
+                      notification-templates__row-actions__overflow-menu__icon
+                    "
+                    >{{ tableOptions.rowActions[1].icon }}</v-icon
+                  >
+                  <span>{{ tableOptions.rowActions[1].name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                class="sub-menu-el"
+                :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
+                :id="`${tableOptions.rowActions[2].id}-${
+                  scope.$index
+                }-${Math.random().toString().substring(2)}`"
+                @click="handleMakeDefault(scope.row)"
+              >
+                <v-list-item-title @click="() => {}" class="sub-menu-el__title">
+                  <v-icon
+                    class="
+                      notification-templates__row-actions__overflow-menu__icon
+                    "
+                    >{{ tableOptions.rowActions[2].icon }}</v-icon
+                  >
+                  <span>{{ tableOptions.rowActions[2].name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu> -->
         </template>
       </data-table>
     </div>
@@ -149,6 +212,7 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
+            // type: "slot",
             width: 280,
             filterableType: 'text'
           },
@@ -238,6 +302,12 @@ export default {
             id: 'btn-delete--notification-template-row-actions',
             action: 'handleDelete'
           }
+          // {
+          //   name: "Make Default",
+          //   icon: "mdi-star-circle",
+          //   id: "btn-make-default--notification-template-row-actions",
+          //   action: "makeDefaultAction",
+          // },
         ],
         selectEvent: {
           clipboard: true,
@@ -373,6 +443,7 @@ export default {
       this.selectedItem = row
       this.toggleDeleteNotificationTemplate()
     },
+    handleMakeDefault(selectedRow) {},
     handleDeleteNotificationTemplate(resourceId) {
       this.isDeleteButtonDisabled = true
       deleteEmailTemplate(resourceId)
@@ -440,6 +511,10 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = templateData.results
+          // this.tableData = templateData.results.map((item) => ({
+          //   ...item,
+          //   isDefault: true,
+          // }));
           this.categories = categoriesData.map((category) => {
             return { text: category.name, value: category.resourceId }
           })
@@ -495,3 +570,14 @@ export default {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.notification-templates__row-actions__overflow-menu__icon {
+  margin-right: 16px;
+}
+
+.sub-menu-el__title {
+  display: flex;
+  align-items: center;
+}
+</style>

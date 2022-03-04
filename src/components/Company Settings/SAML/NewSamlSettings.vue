@@ -543,11 +543,12 @@ export default {
       }
     },
     handleCopyToClipboard(key = '') {
-      navigator.clipboard.writeText(this.formValues[key] || this[key])
-      this.$store.dispatch('common/createSnackBar', {
-        message: 'COPIED TO CLIPBOARD',
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        icon: 'mdi-check-circle'
+      navigator.clipboard.writeText(this.formValues[key] || this[key]).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          message: 'COPIED TO CLIPBOARD',
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          icon: 'mdi-check-circle'
+        })
       })
     },
     handleDomainToAddButtonClick() {

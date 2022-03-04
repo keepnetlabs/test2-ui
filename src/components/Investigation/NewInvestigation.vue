@@ -184,7 +184,7 @@
                       </transition>
                     </div>
                   </div>
-                  <div
+                  <!-- <div
                     v-if="list.option === 'size'"
                     class="filter-item__file-size-option-selectbox"
                   >
@@ -201,7 +201,7 @@
                       :items="fileSizeOptions"
                       :rules="[(v) => !!v || 'File size option is required']"
                     ></k-select>
-                  </div>
+                  </div> -->
                   <div
                     :class="{
                       'filter-item__input': list.option !== 'size',
@@ -581,28 +581,28 @@ export default {
           ]
         }
       ],
-      fileSizeOptions: [
-        {
-          label: 'Equal',
-          value: 'equal'
-        },
-        {
-          label: 'Greater than',
-          value: 'greaterThan'
-        },
-        {
-          label: 'Greater than or equal',
-          value: 'greaterThanOrEqual'
-        },
-        {
-          label: 'Less than',
-          value: 'lessThan'
-        },
-        {
-          label: 'Less than or equal',
-          value: 'lessThanOrEqual'
-        }
-      ],
+      // fileSizeOptions: [
+      //   {
+      //     label: 'Equal',
+      //     value: 'equal'
+      //   },
+      //   {
+      //     label: 'Greater than',
+      //     value: 'greaterThan'
+      //   },
+      //   {
+      //     label: 'Greater than or equal',
+      //     value: 'greaterThanOrEqual'
+      //   },
+      //   {
+      //     label: 'Less than',
+      //     value: 'lessThan'
+      //   },
+      //   {
+      //     label: 'Less than or equal',
+      //     value: 'lessThanOrEqual'
+      //   }
+      // ],
       selectedFileSize: null,
       valid: false,
       menu1: '',
@@ -1311,10 +1311,7 @@ export default {
     },
     checkIsEdit() {
       if (this.isEdit) {
-        this.investigationName = this.investigationDetailsData.name
-        //this.date.push(this.investigationDetailsData.startDate)
-        //this.data.push(this.investigationDetailsData.startDate)
-        //this.data.push(this.investigationDetailsData.endDate)
+        this.investigationName = this?.investigationDetailsData?.name || ''
         this.scanTypes = this.investigationDetailsData.scanConfigurationDetails.map(
           ({ mailConfigurationResourceId, type }) => ({
             mailConfigurationResourceId,
@@ -1472,7 +1469,10 @@ export default {
         getTimeZoneForMoment()
       )}`
     }
-    document.querySelector('.page-nav').style.zIndex = 8
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 8
+    }
     this.initialFormValues = {
       investigationName: this.investigationName,
       targetUsers: this.targetUsers,
@@ -1485,7 +1485,10 @@ export default {
   },
   mounted() {},
   beforeDestroy() {
-    document.querySelector('.page-nav').style.zIndex = 19
+    const pageNav = document.querySelector('.page-nav')
+    if (pageNav) {
+      pageNav.style.zIndex = 19
+    }
   }
 }
 </script>
@@ -1737,7 +1740,7 @@ export default {
           width: 100px;
         }
         &-option-input {
-          width: 240px;
+          width: 340px;
         }
       }
     }

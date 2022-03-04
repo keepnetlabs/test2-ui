@@ -35,7 +35,6 @@ import { uploadEmlOrMsg } from '../../../api/threatSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
-import parserPostCSS from 'grapesjs-parser-postcss'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
 import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
@@ -256,7 +255,6 @@ export default {
           'gjs-preset-newsletter',
           'gjs-preset-webpage',
           myNewComponentTypes,
-          parserPostCSS,
           componentEditor
         ],
         pluginsOpts: {
@@ -626,11 +624,13 @@ export default {
         const sel = this.editor.getSelected()
         sel.trigger('disable')
         const toSel = sel.find('[data-selectme]')[0]
-        const attr = toSel.getAttributes()
-        delete attr['data-selectme']
-        toSel.setAttributes(attr)
-        toSel.set('selectable', true)
-        this.editor.select(toSel)
+        if (toSel) {
+          const attr = toSel.getAttributes()
+          delete attr['data-selectme']
+          toSel.setAttributes(attr)
+          toSel.set('selectable', true)
+          this.editor.select(toSel)
+        }
       }
       rte.get('link').btn.innerHTML =
         "<img height='19' width='20' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAdNJREFUWAntlj1LA0EQhu+M2AgWVhaCf0AIqI2FNha2aVL7GxQt09hG9J/Y29qkEdKIhWAhpLCwEkQQND4v3B6TdTe5iOIpOzDszOx8vDe3X1mWKHUgdSB1IHUgdeBfdyCv8nXD4XAev1V4CZ6LxPTyPB9oDv9lhs2I3yv2B/ga/+eITzUzhZrwOfwCT6K2y4pje5Iz88qp3E0XN9VIYAd+g6vStABdXtXoxMDNhiYI6GI/DMzdY4v9lifjL/nG6FbUclkxhhnkY2ou8MuPjD0s4tiCLT2i7MGL4YjprcpV5FRuS62x2fBswLcm4g5ZG+NHSLlh1XCk2o1oMSa3nSfju/So8zdNFDVVy9FITX8N7pi6fdbEpdFLkUz7KLFjpPTzBB1DZ54tUw3y9bGvFXPCUNb1Aer8cnTlhMAocOWuDczHTJ8AFo6q5QBaDJl2UB0oemH4HRwYtBtG9sWeb6igj4tZN/EWgzEjshbqsEm2RlEZDYD1PmaEFZC1OqiDixOQX7nqDjgyLoqP3GU8lRwg/6pzLifET77qnDcgO7Au8qpUHjsEVHnNuLyqEX0sODzBkcBff24Ff7GPFqD6LfV7sPpAk546kDqQOpA6kDrw9zrwAQ55zcgJtHvUAAAAAElFTkSuQmCC'>"
@@ -714,19 +714,18 @@ export default {
           btnImp.className = 'gjs-btn-prim gjs-btn-import'
           btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
           btnImp.onclick = () => {
-            this.callForMinify(codeViewer.editor.getValue()).then((code) => {
-              editor.DomComponents.getWrapper().set('content', '')
-              editor.setComponents(code)
-              editor.Modal.close()
-            })
+            editor.DomComponents.getWrapper().set('content', '')
+            editor.setComponents(codeViewer.editor.getValue())
+            editor.Modal.close()
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
-            navigator.clipboard.writeText(codeViewer.editor.getValue())
-            this.$store.dispatch('common/createSnackBar', {
-              message: 'COPIED TO CLIPBOARD',
-              color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-              icon: 'mdi-check-circle'
+            navigator.clipboard.writeText(codeViewer.editor.getValue()).then(() => {
+              this.$store.dispatch('common/createSnackBar', {
+                message: 'COPIED TO CLIPBOARD',
+                color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+                icon: 'mdi-check-circle'
+              })
             })
           }
           codeViewer.set({

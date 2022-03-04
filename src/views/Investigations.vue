@@ -314,7 +314,7 @@ export default {
       if (isNaN(maxLength) || maxLength === Infinity || maxLength === -Infinity) {
         return 250
       }
-      return 175 + maxLength * 5
+      return 175 + maxLength * 10
     },
     setDynamicScanStatusWidth() {
       const scanStatusItems = this.tableData.data.map((item) => item.userStatus)

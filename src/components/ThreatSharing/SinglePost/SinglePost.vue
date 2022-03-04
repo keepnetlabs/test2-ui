@@ -1238,10 +1238,11 @@ export default {
       }
     },
     contentCopy(contentBody) {
-      navigator.clipboard.writeText(contentBody)
-      this.$store.dispatch('common/createSnackBar', {
-        color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
-        message: 'Copied Successfully!'
+      navigator.clipboard.writeText(contentBody).then(() => {
+        this.$store.dispatch('common/createSnackBar', {
+          color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
+          message: 'Copied Successfully!'
+        })
       })
     },
     openShareModalFunc(post) {
