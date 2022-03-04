@@ -434,7 +434,7 @@
             @select="handleSelect"
             @expand-change="handleExpandedRowChange"
             @sort-change="sortChangedEvent"
-            :empty-text="empty.message"
+            :empty-text="loading ? ' ' : empty.message"
             @select-all="handleSelectAll"
             @cell-click="cellClick"
             id="data-table-container"
