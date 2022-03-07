@@ -43,7 +43,7 @@
         block
         rounded
         v-else
-        :disabled="community.isJoined || isJoinCommunityButtonDisabled"
+        :disabled="community.isJoined"
         style="background-color: #2196f3 !important;"
       >
         <v-icon v-if="!community.isJoined" class="mr-2">mdi-account-circle </v-icon>

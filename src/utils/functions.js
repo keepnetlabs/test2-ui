@@ -13,12 +13,40 @@ export function getBtnStatusColor(type) {
       return '#00bcd4'
     case 'active':
       return '#1173C1'
+    case 'deferred':
+      return '#B6791D'
+    case 'dropped':
+      return '#F56C6C'
+    case 'blocked':
+      return '#F56C6C'
     case 'inactive':
       return '#b83a3a'
     case 'warning':
       return '#b6791d'
+    case 'processed':
+      return '#217124'
+    case 'delivered':
+      return '#217124'
+    case 'clicked':
+      return '#217124'
+    case 'opened':
+      return '#217124'
+    case 'bounced':
+      return '#F56C6C'
+    case 'blocks':
+      return '#F56C6C'
+    case 'spam_report':
+      return '#F56C6C'
+    case 'dropped':
+      return '#F56C6C'
     case 'malicious':
       return '#b83a3a'
+    case 'unsubscribes':
+      return '#B6791D'
+    case 'group_unsubscribe':
+      return '#B6791D'
+    case 'group_resubscribe':
+      return '#B6791D'
     case 'nonmalicious':
       return '#00bcd4'
     case 'offline':
