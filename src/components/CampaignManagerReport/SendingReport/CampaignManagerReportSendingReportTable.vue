@@ -19,6 +19,10 @@
     :row-actions="tableOptions.rowActions"
     :add-button="tableOptions.addButton"
     :select-event="tableOptions.selectEvent"
+    :extended-view-options="extendedViewOptions"
+    :extended-view-loading="extendedViewLoading"
+    :is-show-extended-view-with-external-value.sync="isShowExtendedView"
+    :extended-view-value="extendedViewValue"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @server-side-page-number-changed="serverSidePageNumberChanged"
@@ -33,7 +37,31 @@
     @refreshAction="callForData"
     @on-resend="handleOnResend"
     @on-detail="handleOnDetail"
-  />
+  >
+    <template #extended-view-slot>
+      <div
+        style="
+          font-weight: 600;
+          font-size: 14px;
+          line-height: 21px;
+          color: #383b41;
+          margin-bottom: 8px;
+        "
+      >
+        Event history
+      </div>
+      <div v-for="(event, index) in getEvents" :key="index">
+        <CampaignManagerReportSendingReportEvent
+          :item="{
+            title: `Received By ${
+              event.mxServer ? event.mxServer : extendedViewValue[0].serviceProvider
+            }`,
+            ...event
+          }"
+        />
+      </div>
+    </template>
+  </DataTable>
 </template>
 
 <script>
@@ -44,6 +72,7 @@ import labels from '@/model/constants/labels'
 
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
+  PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import {
@@ -54,13 +83,15 @@ import {
 import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import {
   exportCampaignJobUserSendingReport,
+  getCampaignJobEmailActivity,
   searchCampaignJobUserSendingReport
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
+import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 
 export default {
   name: 'CampaignManagerReportSendingReportTable',
-  components: { DataTable },
+  components: { CampaignManagerReportSendingReportEvent, DataTable },
   mixins: [useLoading],
   props: {
     id: {
@@ -107,9 +138,85 @@ export default {
             id: 'btn-resend--row-actions-campaign-manager-report-opened',
             icon: '$custom-resend',
             action: 'on-resend'
+          },
+          {
+            name: labels.Details,
+            id: 'btn-details--row-actions-campaign-manager-report-opened',
+            icon: '$custom-details',
+            action: 'on-detail'
           }
         ]
-      }
+      },
+      isShowExtendedView: false,
+      extendedViewOptions: {
+        title: labels.EmailInformation,
+        col: [
+          {
+            property: PROPERTY_STORE.SUBJECT,
+            label: labels.Subject,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.TOEMAIL,
+            label: labels.To,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.FROMEMAIL,
+            label: labels.From,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'apiKey',
+            label: labels.APIKEY,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'messageId',
+            label: labels.MessageID,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'originatingIP',
+            label: labels.SenderIP,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'serviceProvider',
+            label: labels.ServiceProvider,
+            isEditable: false,
+            type: 'text',
+            show: true
+          }
+        ],
+        isEditable: false,
+        showFooter: false
+      },
+      extendedViewValue: [],
+      extendedViewLoading: false
+    }
+  },
+  computed: {
+    getEvents() {
+      const { events = [] } = this.extendedViewValue[0] || { events: [] }
+      return events.map((event) => ({
+        status: event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
+        date: event.processedDate,
+        reason: this.getEventReason(event),
+        mxServer: event.mxServer
+      }))
     }
   },
   watch: {
@@ -149,6 +256,20 @@ export default {
       this.$nextTick(() => {
         this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
       })
+    },
+    getEventReason(event = {}) {
+      const { reason, eventName } = event
+      if (reason) return reason
+      switch (eventName) {
+        case 'processed':
+          return `We sent the email using the shared IP address ${
+            this.extendedViewValue[0]?.originatingIP || ''
+          }.`
+        case 'delivered':
+          return 'This email was delivered'
+        default:
+          return ''
+      }
     },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
@@ -285,7 +406,19 @@ export default {
       this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
-      this.$emit('on-detail', row)
+      this.extendedViewLoading = true
+      this.isShowExtendedView = true
+      getCampaignJobEmailActivity(row.resourceId)
+        .then((response) => {
+          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          this.extendedViewValue = [data]
+        })
+        .catch(() => {
+          this.isShowExtendedView = false
+        })
+        .finally(() => {
+          this.extendedViewLoading = false
+        })
     }
   }
 }

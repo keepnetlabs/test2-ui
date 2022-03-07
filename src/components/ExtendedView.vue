@@ -33,7 +33,7 @@
           >{{ getItemLength }} Items Selected</span
         >
         <div class="edit-popup__edit-actions">
-          <v-btn id="btn-edit--extended-view" @click="toggleEditStatus" icon v-if="!editMode">
+          <v-btn id="btn-edit--extended-view" @click="toggleEditStatus" icon v-if="isEditRendered">
             <v-icon class="close-icon">mdi-pencil</v-icon>
           </v-btn>
           <v-btn id="btn-close--extended-view" @click="closeEditPopup()" icon v-if="!editMode">
@@ -565,8 +565,8 @@
                 </v-select>
               </div>
             </div>
-            <slot name="body" v-if="editMode"> </slot>
-            <div class="edit-popup__footer" v-if="true">
+            <slot name="body" v-if="editMode || options.isEditable === false"> </slot>
+            <div class="edit-popup__footer" v-if="isFooterRendered">
               <slot name="footer">
                 <div class="edit-footer-date">
                   <div
@@ -642,9 +642,8 @@ import {
   getBtnStatusColor,
   getDataTableFieldLabel,
   getTextColor
-} from '../utils/functions'
+} from '@/utils/functions'
 import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 
 export default {
@@ -757,6 +756,13 @@ export default {
     },
     getItemLength() {
       return this.isMultiple ? this.totalItemCount : this.value.length
+    },
+    isEditRendered() {
+      if (this?.options?.isEditable === false) return false
+      return !this.editMode
+    },
+    isFooterRendered() {
+      return this?.options?.showFooter !== false
     }
   },
   methods: {

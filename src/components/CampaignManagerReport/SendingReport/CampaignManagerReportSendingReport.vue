@@ -17,7 +17,6 @@
       :id="id"
       :last-sending-status-items="getLastSendingStatusItems"
       @on-resend="handleOnResend"
-      @on-detail="handleOnDetail"
     />
   </div>
 </template>
@@ -50,23 +49,18 @@ export default {
   data() {
     return {
       labels,
-      isShowDetailDialog: false,
       selectedRow: null
     }
   },
   computed: {
     getLastSendingStatusItems() {
-      return this.formDetails['userStatuses']
+      return this?.formDetails?.userStatuses || []
     }
   },
   methods: {
     handleOnDetail(row = {}) {
       this.selectedRow = row
       this.toggleShowDetailDialog()
-    },
-    toggleShowDetailDialog() {
-      if (this.isShowDetailDialog) this.selectedRow = null
-      this.isShowDetailDialog = !this.isShowDetailDialog
     }
   }
 }
