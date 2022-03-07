@@ -50,9 +50,14 @@
       >
         Event history
       </div>
-      <div>
+      <div v-for="(event, index) in getEvents" :key="index">
         <CampaignManagerReportSendingReportEvent
-          :item="{ title: 'Gürkan', date: '06.05.2021 12:50 UTC+03:00', status: 'processed' }"
+          :item="{
+            title: `Received By ${
+              event.mxServer ? event.mxServer : extendedViewValue[0].serviceProvider
+            }`,
+            ...event
+          }"
         />
       </div>
     </template>
@@ -67,7 +72,6 @@ import labels from '@/model/constants/labels'
 
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  getStoreValue,
   PROPERTY_STORE,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
@@ -79,10 +83,10 @@ import {
 import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import {
   exportCampaignJobUserSendingReport,
+  getCampaignJobEmailActivity,
   searchCampaignJobUserSendingReport
 } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
-import * as Validations from '@/utils/validations'
 import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 
 export default {
@@ -149,7 +153,49 @@ export default {
         col: [
           {
             property: PROPERTY_STORE.SUBJECT,
-            label: getStoreValue(PROPERTY_STORE.SUBJECT),
+            label: labels.Subject,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.TOEMAIL,
+            label: labels.To,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: PROPERTY_STORE.FROMEMAIL,
+            label: labels.From,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'apiKey',
+            label: labels.APIKEY,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'messageId',
+            label: labels.MessageID,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'originatingIP',
+            label: labels.SenderIP,
+            isEditable: false,
+            type: 'text',
+            show: true
+          },
+          {
+            property: 'serviceProvider',
+            label: labels.ServiceProvider,
             isEditable: false,
             type: 'text',
             show: true
@@ -158,8 +204,19 @@ export default {
         isEditable: false,
         showFooter: false
       },
-      extendedViewValue: [{ subject: 'Gürkan' }],
+      extendedViewValue: [],
       extendedViewLoading: false
+    }
+  },
+  computed: {
+    getEvents() {
+      const { events = [] } = this.extendedViewValue[0] || { events: [] }
+      return events.map((event) => ({
+        status: event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
+        date: event.processedDate,
+        reason: this.getEventReason(event),
+        mxServer: event.mxServer
+      }))
     }
   },
   watch: {
@@ -183,7 +240,6 @@ export default {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
             }
           } = response
-          console.log('results', results)
           this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
@@ -200,6 +256,20 @@ export default {
       this.$nextTick(() => {
         this.$refs.refTable.columnKey = `column-key${Math.random().toString().substring(0, 5)}`
       })
+    },
+    getEventReason(event = {}) {
+      const { reason, eventName } = event
+      if (reason) return reason
+      switch (eventName) {
+        case 'processed':
+          return `We sent the email using the shared IP address ${
+            this.extendedViewValue[0]?.originatingIP || ''
+          }.`
+        case 'delivered':
+          return 'This email was delivered'
+        default:
+          return ''
+      }
     },
     setDefaultFilter() {
       const savedFilter = JSON.parse(
@@ -336,8 +406,19 @@ export default {
       this.$emit('on-resend', payload)
     },
     handleOnDetail(row) {
+      this.extendedViewLoading = true
       this.isShowExtendedView = true
-      this.$emit('on-detail', row)
+      getCampaignJobEmailActivity(row.resourceId)
+        .then((response) => {
+          const { data: { data = [] } = {} } = response || { data: { data: [] } }
+          this.extendedViewValue = [data]
+        })
+        .catch(() => {
+          this.isShowExtendedView = false
+        })
+        .finally(() => {
+          this.extendedViewLoading = false
+        })
     }
   }
 }

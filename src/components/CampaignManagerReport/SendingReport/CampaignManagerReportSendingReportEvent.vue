@@ -1,17 +1,19 @@
 <template>
-  <div class="campaign-manager-sending-report-event">
+  <div class="campaign-manager-sending-report-event mt-2">
     <h4 class="campaign-manager-sending-report-event__title mb-2">{{ item.title }}</h4>
     <div class="campaign-manager-sending-report-event__content">
       <div class="campaign-manager-sending-report-event__content-left">
         <v-btn style="display: none;"></v-btn>
         <badge :outline="false" :text="getBadgeText" :color="getBadgeColor" />
-        <div class="campaign-manager-sending-report-event__date ml-4">{{ item.date }}</div>
+        <div class="campaign-manager-sending-report-event__date ml-4">{{ getDate }}</div>
       </div>
       <div class="campaign-manager-sending-report-event__content-right">
-        <v-icon @click="toggleDetail">{{ getIconName }}</v-icon>
+        <v-icon @click="toggleDetail" v-if="item.reason">{{ getIconName }}</v-icon>
       </div>
     </div>
-    <div v-if="showDetail"></div>
+    <div class="campaign-manager-sending-report-event__content-detail" v-if="showDetail">
+      {{ item.reason }}
+    </div>
   </div>
 </template>
 
@@ -43,6 +45,11 @@ export default {
     },
     getIconName() {
       return this.showDetail ? 'mdi-chevron-up' : 'mdi-chevron-down'
+    },
+    getDate() {
+      const { status, date, attemptNum } = this.item
+      if (status === 'deferred') return `${date} - Attempt #${attemptNum}`
+      return date
     }
   },
   methods: {
@@ -73,6 +80,17 @@ export default {
       }
     }
     &-right {
+    }
+    &-detail {
+      margin: 8px -8px -8px -8px;
+      border-bottom-left-radius: 8px;
+      border-bottom-right-radius: 8px;
+      padding: 8px;
+      background-color: #fff;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 18px;
+      color: #383b41;
     }
   }
   &__title {

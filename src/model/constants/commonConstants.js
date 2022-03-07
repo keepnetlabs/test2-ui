@@ -162,6 +162,8 @@ export const LABEL_STORE = {
 export const PROPERTY_STORE = {
   LANGUAGE: 'languageTypeName',
   TAGS: 'tags',
+  TOEMAIL: 'toEmail',
+  FROMEMAIL: 'fromEmail',
   TARGET_USERS: 'targetUsers',
   ADDINSTATUSNAME: 'addInStatusName',
   LASTOPENED: 'lastOpened',
