@@ -433,7 +433,7 @@ export default {
         (column) => column.property === PROPERTY_STORE.LANGUAGE
       )
       if (languageColumnIndex !== -1) {
-        LookupLocalStorage.getSingle(23).then((response) => {
+        LookupLocalStorage.getSingle(21).then((response) => {
           this.languageFilterOptions =
             response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
           this.$set(this.tableOptions.columns, languageColumnIndex, {
