@@ -60,6 +60,20 @@
           }"
         />
       </div>
+      <div
+        v-if="!getEvents.length"
+        style="
+          background-color: #f5f7fa;
+          padding: 8px;
+          border-radius: 8px;
+          font-weight: normal;
+          font-size: 12px;
+          line-height: 18px;
+          color: #383b41;
+        "
+      >
+        {{ getNoEventMessage }}
+      </div>
     </template>
   </DataTable>
 </template>
@@ -89,6 +103,9 @@ import {
 import { useLoading } from '@/hooks/useLoading'
 import CampaignManagerReportSendingReportEvent from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReportEvent'
 
+const ENUMS = {
+  SEND_GRID: 'Sendgrid'
+}
 export default {
   name: 'CampaignManagerReportSendingReportTable',
   components: { CampaignManagerReportSendingReportEvent, DataTable },
@@ -173,13 +190,6 @@ export default {
             show: true
           },
           {
-            property: 'apiKey',
-            label: labels.APIKEY,
-            isEditable: false,
-            type: 'text',
-            show: true
-          },
-          {
             property: 'messageId',
             label: labels.MessageID,
             isEditable: false,
@@ -211,12 +221,22 @@ export default {
   computed: {
     getEvents() {
       const { events = [] } = this.extendedViewValue[0] || { events: [] }
-      return events.map((event) => ({
-        status: event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
-        date: event.processedDate,
-        reason: this.getEventReason(event),
-        mxServer: event.mxServer
-      }))
+      return events
+        ? events.map((event) => ({
+            status:
+              event?.eventName?.substring(0, 1)?.toUpperCase() + event?.eventName?.substring(1),
+            date: event.processedDate,
+            reason: this.getEventReason(event),
+            mxServer: event.mxServer
+          }))
+        : []
+    },
+    getNoEventMessage() {
+      const provider = this.extendedViewValue[0]?.serviceProvider || ''
+      if (provider === ENUMS.SEND_GRID) {
+        return 'Activity details will be available in a few minutes...'
+      }
+      return 'Event history is only available for Sendgrid'
     }
   },
   watch: {
