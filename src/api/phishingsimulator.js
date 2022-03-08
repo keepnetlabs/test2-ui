@@ -382,7 +382,7 @@ export function exportCampaignJobUserSendingReport(payload, id) {
 }
 
 export function getCampaignJobEmailActivity(resourceId = '') {
-  return testRequest.get(`/phishing-simulator/phishing-campaign-job/email-activity/0xNb1Te1sYrk`)
+  return testRequest.get(`/phishing-simulator/phishing-campaign-job/email-activity/${resourceId}`)
 }
 export function searchCampaignJobUserSendingReportDetails(payload, id) {
   return testRequest.post(
