@@ -746,7 +746,7 @@ export default {
       }
     },
     callForLanguages() {
-      LookupLocalStorage.getSingle(23).then((response) => {
+      LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
           response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
       })
