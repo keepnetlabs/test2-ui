@@ -113,6 +113,13 @@
             id="input--saml-settings-id-entity-id"
             placeholder="Enter issuer URL from your provider"
             :disabled="isTextFieldsDisabled"
+            :rules="[
+              (v) => validations.required(v, labels.Required),
+              (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+              (v) => validations.isDomainUrl(v, labels.InvalidURL),
+              (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+              (v) => validations.noWhitespace(v, labels.InvalidURL)
+            ]"
           />
         </form-group-horizontal-content>
         <form-group-horizontal-content label="IdP SSO URL">
@@ -120,6 +127,13 @@
             v-model="formValues.idPSSOTargetUrl"
             id="input--saml-settings-target-url"
             :disabled="isTextFieldsDisabled"
+            :rules="[
+              (v) => validations.required(v, labels.Required),
+              (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
+              (v) => validations.isDomainUrl(v, labels.InvalidURL),
+              (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000)),
+              (v) => validations.noWhitespace(v, labels.InvalidURL)
+            ]"
           />
         </form-group-horizontal-content>
         <form-group-horizontal-content label="Upload Certificate">
