@@ -768,7 +768,7 @@
                           class="align-center d-flex mr-2"
                         >
                           <img
-                            src="../assets/img/o365.svg"
+                            src="../assets/img/microsoft365Mini.svg"
                             alt="office-logo"
                             style="width: 16px; margin-right: 2px;"
                           />
@@ -2669,7 +2669,8 @@ export default {
         this.investigationDetailsData &&
         this.investigationDetailsData.scanConfigurationDetails &&
         this.investigationDetailsData.scanConfigurationDetails.reduce((acc, item) => {
-          if (item.type === 'Microsoft 365') acc.push(item.mailConfigurationName)
+          if (item.type === 'Microsoft 365' || item.type === 'O365')
+            acc.push(item.mailConfigurationName)
           return acc
         }, [])
       )
