@@ -597,6 +597,7 @@ export default {
         emailTemplateId: null,
         landingPageTemplateId: null,
         availableForRequests: [],
+        languageTypeResourceId: '862249c19aad',
         tags: []
       },
       commonRules: {
