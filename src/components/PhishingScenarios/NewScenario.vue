@@ -118,6 +118,21 @@
                     </template>
                   </v-select>
                 </form-group>
+                <form-group
+                  has-hint
+                  title="Language"
+                  sub-title="Select the language you are writing this webpage template in"
+                >
+                  <input-select-language
+                    v-model="formValues.languageTypeResourceId"
+                    v-bind="commonRules"
+                    item-text="text"
+                    item-value="value"
+                    required
+                    :items="languageOptions"
+                    :menu-props="{ offsetY: true }"
+                  />
+                </form-group>
                 <form-group title="Tags" sub-title="Define tags for the scenario">
                   <k-select
                     :value="formValues.tags"
@@ -533,6 +548,8 @@ import EmailTemplateListPreview from '@/components/workshop/EmailTemplateListPre
 import LandingPageListPreview from '@/components/workshop/LandingPageTemplateListPreview'
 import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 export default {
   name: 'NewScenarios',
   components: {
@@ -542,13 +559,15 @@ export default {
     FormGroup,
     MakeAvailableFor,
     EmailTemplateListPreview,
-    LandingPageListPreview
+    LandingPageListPreview,
+    InputSelectLanguage
   },
   data() {
     return {
       summaryData: {},
       showTemplate1: false,
       showTemplate2: false,
+      languageOptions: [],
       methods: [
         { text: 'Click Only', value: 'WNZt0sCVCWB3' },
         { text: 'Data Submission', value: 'DYC0gugxJMjT' },
@@ -635,6 +654,12 @@ export default {
     },
     selectedLandingPageChange(id) {
       this.formValues.landingPageTemplateId = id
+    },
+    callForLanguages() {
+      LookupLocalStorage.getSingle(21).then((response) => {
+        this.languageOptions =
+          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+      })
     },
     setAttachmentFile(file) {
       this.formValues.attachmentFiles = file
@@ -762,6 +787,7 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     if (!this.isEdit) {
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }
