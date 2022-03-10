@@ -14,7 +14,6 @@
           :investigationDetailsData="investigationDetailsData"
           @closeWithRoute="onAddClose"
           @closeAdd="isWantToAddNewCommunity = false"
-          @refreshDatatable="refreshDatatable"
         />
         <app-dialog
           v-if="isWantToDelete"
@@ -1204,6 +1203,7 @@ export default {
     investigationDeleteExcludedResourceIdList: [],
     isAutoRefreshActive: true,
     autoRefreshInterval: null,
+    timeoutId: null,
     isRunning: false,
     storedTableDetailsList: null,
     storedTableTargetUser: null,
@@ -1221,7 +1221,6 @@ export default {
     isWantToAddNewCommunity: false,
     progressValue: null,
     notifyMessage: null,
-    deleteAndNotifyMessage: null,
     notifyMessageWithDelete: null,
     diffDays: null,
     totalHours: 0,
@@ -1640,7 +1639,6 @@ export default {
       if (!isAutoTrue) return false
       this.isRestoredOrClearedFilters = true
       this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refInvestigationListData.filterValues = {}
       this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
         .toString()
         .substring(0, 5)}`
@@ -2218,6 +2216,9 @@ export default {
         })
     },
     getDatatableByMenuClick() {
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId)
+      }
       this.leftMenuLoading = true
       this.topMenuLoading = true
       this.loading = true
@@ -2239,7 +2240,6 @@ export default {
                 })
                 .finally(() => {
                   this.calculateProgressData()
-                  this.showEmails = false
                   this.showTargetUsersDetails = false
                   this.showTargetUsersDetails = this.activeMenu === 'targetUsers'
                   this.showEmails = this.activeMenu !== 'targetUsers'
@@ -2247,6 +2247,12 @@ export default {
                   this.leftMenuLoading = false
                   this.topMenuLoading = false
                   this.loading = false
+                  if (this.autoRefreshInterval) {
+                    clearInterval(this.autoRefreshInterval)
+                  }
+                  this.timeoutId = setTimeout(() => {
+                    this.handleClearFilters(this.isAutoRefreshActive)
+                  }, 15000)
                 })
             })
         })
@@ -2260,9 +2266,14 @@ export default {
         })
     },
     refreshDatatable(isOnBackground = false, isInitial = false) {
-      this.leftMenuLoading = isOnBackground ? false : true
-      this.topMenuLoading = isOnBackground ? false : true
-      this.loading = isOnBackground ? false : true
+      this.leftMenuLoading = !isOnBackground
+      this.topMenuLoading = !isOnBackground
+      this.loading = !isOnBackground
+
+      if (this.activeMenu !== 'targetUsers') {
+        this.investigationListBodyData.pageNumber = 1
+        this.investigationListBodyData.filter.FilterGroups[0].FilterItems[0].Value = this.activeMenu
+      }
 
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
@@ -2291,8 +2302,6 @@ export default {
                 })
                 .finally(() => {
                   this.calculateProgressData()
-                  this.showEmails = false
-                  this.showTargetUsersDetails = false
                   this.showTargetUsersDetails = this.activeMenu === 'targetUsers'
                   this.showEmails = this.activeMenu !== 'targetUsers'
                   this.$forceUpdate()
@@ -2304,7 +2313,10 @@ export default {
                     this.$route.name === 'Investigation Details' &&
                     this.isAutoRefreshActive
                   ) {
-                    setTimeout(() => {
+                    if (this.autoRefreshInterval) {
+                      clearInterval(this.autoRefreshInterval)
+                    }
+                    this.timeoutId = setTimeout(() => {
                       this.handleClearFilters(this.isAutoRefreshActive)
                     }, 15000)
                   }
@@ -2321,14 +2333,12 @@ export default {
         })
     },
     onAddClose(resp) {
-      // set mobile vision
-      if (this.isMobileVisible && this.windowWidth < 769) {
-        this.isMobileInfo = true
-      }
       if (resp?.data?.data?.resourceId) {
         this.$router.push(`/investigation-details/${resp.data.data.resourceId}`)
       }
-
+      if (this.timeoutId) {
+        clearTimeout(this.timeoutId)
+      }
       this.refreshDatatable()
       this.isWantToAddNewCommunity = false
     },
@@ -2769,7 +2779,6 @@ export default {
     statsAndMenuData() {
       if (this.statsAndMenuData) this.topMenuLoading = false
     },
-    tableData() {},
     investigationDetailsData(val) {
       const tempArr = []
       if (val.targetUserType === 'Groups') {
@@ -2836,6 +2845,7 @@ export default {
     this.isRunning = false
     this.isAutoRefreshActive = false
     clearInterval(this.autoRefreshInterval)
+    clearTimeout(this.timeoutId)
     this.autoRefreshInterval = null
   }
 }
