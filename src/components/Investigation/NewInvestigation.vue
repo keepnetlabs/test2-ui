@@ -1483,7 +1483,6 @@ export default {
       selectedAction: this.selectedAction
     }
   },
-  mounted() {},
   beforeDestroy() {
     const pageNav = document.querySelector('.page-nav')
     if (pageNav) {

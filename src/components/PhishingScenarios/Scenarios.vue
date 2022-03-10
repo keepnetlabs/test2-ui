@@ -193,6 +193,7 @@ import {
 } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'EmailTemplates',
   components: {
@@ -204,6 +205,7 @@ export default {
   },
   data() {
     return {
+      languageFilterOptions: [],
       scenarioDetailsLookup: null,
       isShowFastLaunch: false,
       isShowPreviewDialog: false,
@@ -252,6 +254,20 @@ export default {
               { text: 'Data Submission', value: 'DYC0gugxJMjT' },
               { text: 'Attachment', value: '7dLrW2kdBTDs' }
             ]
+          },
+          {
+            property: PROPERTY_STORE.LANGUAGE,
+            align: 'left',
+            editable: false,
+            label: labels.LANGUAGE,
+            sortable: true,
+            show: true,
+            type: 'text',
+            fixed: false,
+            width: 175,
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'languageTypeResourceId'
           },
           {
             property: PROPERTY_STORE.TAGS,
@@ -396,9 +412,26 @@ export default {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
     },
     resetPageNumber() {
-      //generic
       this.bodyData.pageNumber = 1
       this.serverSideProps.pageNumber = 1
+    },
+    callForLanguages() {
+      const languageColumnIndex = this.tableOptions.columns.findIndex(
+        (column) => column.property === PROPERTY_STORE.LANGUAGE
+      )
+      if (languageColumnIndex !== -1) {
+        LookupLocalStorage.getSingle(21).then((response) => {
+          this.languageFilterOptions =
+            response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+          this.$set(this.tableOptions.columns, languageColumnIndex, {
+            ...this.tableOptions.columns[languageColumnIndex],
+            filterableItems: this.languageFilterOptions
+          })
+          this.$nextTick(() => {
+            this.$refs.refScenariosList.reRenderColumns()
+          })
+        })
+      }
     },
     handleSearchChange(searchFilter = {}) {
       //generic
@@ -618,6 +651,7 @@ export default {
     }
   },
   created() {
+    this.callForLanguages()
     getScenarioDataDetails()
       .then((response) => {
         this.scenarioDetailsLookup = response?.data?.data || {

@@ -219,16 +219,6 @@ export default {
     editHtmlTemplate() {
       this.toggleShowGrapesModal()
     },
-    getPStyle() {
-      return {
-        maxWidth: '550px',
-        margin: '0 auto 6px auto',
-        fontSize: '14px',
-        lineHeight: 1.5,
-        color: 'rgba(0, 0, 0, 0.87)',
-        letterSpacing: 'normal'
-      }
-    },
     getHeaderStyle() {
       return {
         maxWidth: '550px',

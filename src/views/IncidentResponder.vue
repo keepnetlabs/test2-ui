@@ -2539,7 +2539,7 @@ export default {
             .then((response) => {
               const selectedItem = response.data.data
               this.selectedTemplateResourceId =
-                selectedItem.notificationTemplateResourceId || this.emailTemplates[0].resourceId
+                selectedItem.notificationTemplateResourceId || this?.emailTemplates[0]?.resourceId
               this.defaultSelectedTemplateResourceId = this.selectedTemplateResourceId
               this.extendedView.isNotify = selectedItem.isNotifyUser
               this.extendedView.customMessage = selectedItem.customMessage
