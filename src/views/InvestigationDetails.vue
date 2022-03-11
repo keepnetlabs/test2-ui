@@ -6,14 +6,14 @@
     >
       <div class="investigation-details__container">
         <new-investigation
-          v-if="isWantToAddNewCommunity"
+          v-if="isWantToAddNewInvestigation"
           :isEdit="true"
           :statsAndMenuData="statsAndMenuData"
-          :status="isWantToAddNewCommunity"
+          :status="isWantToAddNewInvestigation"
           :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
           :investigationDetailsData="investigationDetailsData"
           @closeWithRoute="onAddClose"
-          @closeAdd="isWantToAddNewCommunity = false"
+          @closeAdd="isWantToAddNewInvestigation = false"
         />
         <app-dialog
           v-if="isWantToDelete"
@@ -807,7 +807,7 @@
                       </v-btn>
                     </div>
                     <div
-                      id="btn-duplicate--investigation-details-card"
+                      id="btn-duplicate--investigation-details-card-container"
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
                     >
                       <v-btn class="ma-1" outlined color="#2196f3" @click="startInvestigationFunc">
@@ -1218,7 +1218,7 @@ export default {
     topMenuLoading: true,
     leftMenuLoading: true,
     contentMenuLoading: true,
-    isWantToAddNewCommunity: false,
+    isWantToAddNewInvestigation: false,
     progressValue: null,
     notifyMessage: null,
     notifyMessageWithDelete: null,
@@ -2340,13 +2340,12 @@ export default {
         clearTimeout(this.timeoutId)
       }
       this.refreshDatatable()
-      this.isWantToAddNewCommunity = false
+      this.isWantToAddNewInvestigation = false
     },
     createCommunityFromMobileInfo() {
-      // open new investigation overlay
-      this.isWantToAddNewCommunity = true
+      this.isWantToAddNewInvestigation = true
     },
-    deleteAndSendNotification(value, excludedResourceIdList, isSelectedAllEver) {
+    deleteAndSendNotification() {
       this.isWantToDeleteAndNotify = true
     },
     isWantToDeleteAndNotifyConfirm() {},
@@ -2466,7 +2465,7 @@ export default {
     },
 
     startInvestigationFunc() {
-      this.isWantToAddNewCommunity = true
+      this.isWantToAddNewInvestigation = true
     },
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true

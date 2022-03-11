@@ -806,9 +806,17 @@ export default {
     },
     handleMultipleComboEdit(item, key, value) {
       item.map((i) => {
-        i[key] = value ? value.join(',') : value
+        i[key] = value
       })
-      this.multipleEditModels[key] = value.substring(0, 20)
+      if (Array.isArray(value)) {
+        value = value.reduce((acc, item) => {
+          const defaultVal = item || ''
+          const trimmedVal = defaultVal.trim()
+          if (trimmedVal?.length) acc.push(trimmedVal)
+          return acc
+        }, [])
+      }
+      this.multipleEditModels[key] = typeof value === 'string' ? value.substring(0, 20) : value
     },
     getCheckboxStatus(prop) {
       return this.hasOneMoreCheckboxValue(prop)

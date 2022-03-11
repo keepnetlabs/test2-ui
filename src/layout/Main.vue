@@ -537,6 +537,19 @@
                 </router-link>
               </v-list-item-content>
             </v-list-item>
+            <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
+              <v-list-item-content class="menu-item-content">
+                <router-link
+                  to="/simple-reports"
+                  id="btn--link-navigator-menu-reports"
+                  :class="['menu-link-default', routerName === 'Simple Reports' && 'active-link']"
+                >
+                  <v-list-item-title class="menu-item-wrapper">
+                    <span class="menu-item-span">Simple Reports</span>
+                  </v-list-item-title>
+                </router-link>
+              </v-list-item-content>
+            </v-list-item>
           </v-list-group>
           <v-list-group
             v-if="checkCompanyPermissions()"
