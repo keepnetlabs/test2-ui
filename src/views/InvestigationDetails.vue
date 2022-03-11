@@ -807,7 +807,7 @@
                       </v-btn>
                     </div>
                     <div
-                      id="btn-duplicate--investigation-details-card"
+                      id="btn-duplicate--investigation-details-card-container"
                       class="investigation-details__container__content--right-menu__summary__item--action-button"
                     >
                       <v-btn class="ma-1" outlined color="#2196f3" @click="startInvestigationFunc">
