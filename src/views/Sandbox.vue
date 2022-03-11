@@ -970,8 +970,7 @@ export default {
     padding: 15px;
     z-index: 9;
     border-radius: 8px;
-    box-shadow: 0px 1px 10px 0px rgb(0 0 0 / 20%), 0px 0px 0px 0px rgb(0 0 0 / 14%),
-      0px 0px 0px 0px rgb(0 0 0 / 12%) !important;
+    box-shadow: 0 1px 10px 0 rgb(0 0 0 / 20%), 0 0 0 0 rgb(0 0 0 / 14%), 0 0 0 0 rgb(0 0 0 / 12%) !important;
   }
   .roi-summary {
     background: #1173c1;
@@ -986,8 +985,7 @@ export default {
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    padding: 4px 8px;
-    margin-right: 0px;
+    margin-right: 0;
     padding: 8px 12px;
     .edit-select {
       .v-text-field__details {
@@ -1288,7 +1286,7 @@ export default {
       .k-table__wrapper .card {
         justify-content: unset;
         box-shadow: none !important;
-        padding: 0px !important;
+        padding: 0 !important;
         border: none !important;
         border-radius: 0 !important;
 
@@ -1491,7 +1489,6 @@ export default {
       }
 
       .wrapper {
-        padding-top: 20px !important;
         padding-top: 40px !important;
 
         ::v-deep .v-card {

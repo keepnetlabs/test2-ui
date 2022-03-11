@@ -6,14 +6,14 @@
     >
       <div class="investigation-details__container">
         <new-investigation
-          v-if="isWantToAddNewCommunity"
+          v-if="isWantToAddNewInvestigation"
           :isEdit="true"
           :statsAndMenuData="statsAndMenuData"
-          :status="isWantToAddNewCommunity"
+          :status="isWantToAddNewInvestigation"
           :investigationDetailsTargetUsersListData="investigationDetailsTargetUsersListData"
           :investigationDetailsData="investigationDetailsData"
           @closeWithRoute="onAddClose"
-          @closeAdd="isWantToAddNewCommunity = false"
+          @closeAdd="isWantToAddNewInvestigation = false"
         />
         <app-dialog
           v-if="isWantToDelete"
@@ -1218,7 +1218,7 @@ export default {
     topMenuLoading: true,
     leftMenuLoading: true,
     contentMenuLoading: true,
-    isWantToAddNewCommunity: false,
+    isWantToAddNewInvestigation: false,
     progressValue: null,
     notifyMessage: null,
     notifyMessageWithDelete: null,
@@ -2340,13 +2340,12 @@ export default {
         clearTimeout(this.timeoutId)
       }
       this.refreshDatatable()
-      this.isWantToAddNewCommunity = false
+      this.isWantToAddNewInvestigation = false
     },
     createCommunityFromMobileInfo() {
-      // open new investigation overlay
-      this.isWantToAddNewCommunity = true
+      this.isWantToAddNewInvestigation = true
     },
-    deleteAndSendNotification(value, excludedResourceIdList, isSelectedAllEver) {
+    deleteAndSendNotification() {
       this.isWantToDeleteAndNotify = true
     },
     isWantToDeleteAndNotifyConfirm() {},
@@ -2466,7 +2465,7 @@ export default {
     },
 
     startInvestigationFunc() {
-      this.isWantToAddNewCommunity = true
+      this.isWantToAddNewInvestigation = true
     },
     columnFilterChanged(filter) {
       this.isColumnFilterActive = true
