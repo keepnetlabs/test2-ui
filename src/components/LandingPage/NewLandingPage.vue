@@ -635,16 +635,16 @@ export default {
     handleChangeDomainRecord(value) {
       const domainRecord = this.landingPageData.domainRecords.find((item) => item.value === value)
       this.landingPageData.urlSchemaTypes = this.landingPageData.urlSchemaTypes.map((schema) => {
-        const activeVal = domainRecord.extraDatas[0].value
+        const activeVal = domainRecord?.extraDatas[0]?.value
         if (activeVal === '3') {
           schema.disabled = false
         } else {
-          schema.disabled = !(domainRecord.extraDatas[0].value === schema.value)
+          schema.disabled = !(domainRecord?.extraDatas[0]?.value === schema.value)
         }
         return schema
       })
       this.formValues.urlSchemaTypeId =
-        domainRecord.extraDatas[0].text === 'Both' ? '2' : domainRecord.extraDatas[0].value
+        domainRecord?.extraDatas[0]?.text === 'Both' ? '2' : domainRecord?.extraDatas[0]?.value
       this.changeDisabledLabel()
     },
     changeDisabledLabel() {
