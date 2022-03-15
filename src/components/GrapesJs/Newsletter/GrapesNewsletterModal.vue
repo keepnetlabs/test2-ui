@@ -33,6 +33,8 @@ import phishingUrl from './mergedTexts/phishingUrl'
 import macroUrl from './mergedTexts/macroUrl'
 import { uploadEmlOrMsg } from '../../../api/threatSharing'
 import { COMMON_CONSTANTS } from '../../../model/constants/commonConstants'
+import plugin from 'grapesjs-style-bg'
+import 'grapick/dist/grapick.min.css'
 import 'grapesjs-component-code-editor/dist/grapesjs-component-code-editor.min.css'
 import 'grapesjs/dist/css/grapes.min.css'
 import componentEditor from '../../GrapesJs/ComponentEditor/index'
@@ -43,7 +45,6 @@ import { minifyHTML } from '@/api/scenarios'
 
 export default {
   name: 'GrapesNewsletterModal',
-  //components: { KFileUpload },
   props: {
     htmlData: {
       required: false
@@ -94,6 +95,30 @@ export default {
     this.setGrapesEditor()
   },
   methods: {
+    addCustomProperties() {
+      this.editor.StyleManager.removeProperty('decorations', 'background')
+      this.editor.StyleManager.addProperty('dimension', {
+        property: 'display',
+        type: 'select',
+        list: [
+          { name: 'inline-block', value: 'inline-block' },
+          { name: 'flex', value: 'flex' },
+          { name: 'grid', value: 'grid' },
+          { name: 'inline', value: 'inline' },
+          { name: 'block', value: 'block' },
+          { name: 'none', value: 'none' }
+        ]
+      })
+      this.editor.StyleManager.addProperty(
+        'decorations',
+        {
+          name: 'Background Image',
+          property: 'background-image',
+          type: 'color-linear'
+        },
+        { at: 1 }
+      )
+    },
     callForImages() {
       getUploadedFiles().then((res) => {
         const am = this.editor.AssetManager
@@ -255,7 +280,8 @@ export default {
           'gjs-preset-newsletter',
           'gjs-preset-webpage',
           myNewComponentTypes,
-          componentEditor
+          componentEditor,
+          plugin
         ],
         pluginsOpts: {
           'gjs-preset-newsletter': {
@@ -685,18 +711,7 @@ export default {
             .querySelector('.gjs-pn-options .gjs-pn-buttons .fa-trash')
             .setAttribute('title', 'Clear canvas')
         } catch (e) {}
-        this.editor.StyleManager.addProperty('dimension', {
-          property: 'display',
-          type: 'select',
-          list: [
-            { name: 'inline-block', value: 'inline-block' },
-            { name: 'flex', value: 'flex' },
-            { name: 'grid', value: 'grid' },
-            { name: 'inline', value: 'inline' },
-            { name: 'block', value: 'block' },
-            { name: 'none', value: 'none' }
-          ]
-        })
+        this.addCustomProperties()
         document.querySelector('.fa-code').addEventListener('click', () => {
           const editor = this.editor
           const html = editor.runCommand('get-html-juiced')
@@ -988,5 +1003,8 @@ export default {
 }
 .cm-s-hopscotch span.cm-error {
   color: #fdcc59;
+}
+.gjs-sm-property__background-image {
+  width: 100%;
 }
 </style>
