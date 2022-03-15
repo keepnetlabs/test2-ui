@@ -139,11 +139,6 @@ export default {
         am.render()
       })
     },
-    callForMinify(htmlContent) {
-      return minifyHTML(htmlContent).then((response) => {
-        return response?.data?.data?.htmlContent || ''
-      })
-    },
     destroyEditor() {
       this.editor.destroy()
     },
@@ -730,8 +725,18 @@ export default {
           btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
           btnImp.onclick = () => {
             editor.DomComponents.getWrapper().set('content', '')
-            editor.setComponents(codeViewer.editor.getValue())
-            editor.Modal.close()
+            const code = codeViewer.editor.getValue()
+
+            const callback = (importedCode = code) => {
+              editor.setComponents(importedCode)
+              editor.Modal.close()
+            }
+
+            minifyHTML(code)
+              .then((response) => {
+                callback(response?.data?.data?.htmlContent || '')
+              })
+              .catch(() => callback(code))
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {

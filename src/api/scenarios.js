@@ -47,5 +47,13 @@ export function getSummaryOfScenario(templateId, landingPageId) {
 }
 
 export function minifyHTML(htmlContent = '') {
-  return testRequest.post('file/compress-html', { htmlContent })
+  return testRequest.post(
+    'file/compress-html',
+    { htmlContent },
+    {
+      snackbar: {
+        hideError: true
+      }
+    }
+  )
 }
