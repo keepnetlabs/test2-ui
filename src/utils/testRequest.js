@@ -55,6 +55,10 @@ testService.interceptors.response.use(
       return Promise.resolve({})
     }
 
+    if (error?.config?.snackbar?.hideError) {
+      return Promise.reject(error)
+    }
+
     if (error.code === 'ECONNABORTED') {
       return Promise.reject(error)
     } else if (!error.response) {

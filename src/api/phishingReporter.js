@@ -73,7 +73,7 @@ export function downloadDiagnosticTool(id) {
 }
 
 export function generateO365AddIn() {
-  return testRequest.get(`/phishing-reporter/generate/office365-addin`, {
+  return testRequest.get(`phishing-reporter/generate/microsoft365-addin`, {
     responseType: 'blob'
   })
 }

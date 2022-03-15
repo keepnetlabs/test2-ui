@@ -529,6 +529,11 @@ export default {
             ...this.tableOptions.columns[2],
             filterableItems: this.templateTypeItems
           })
+          this.$nextTick(() => {
+            this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          })
         })
         .finally(() => {
           this.loading = false
