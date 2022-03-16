@@ -255,21 +255,12 @@
             <app-router-item icon="mdi-home" title="Dashboard" />
           </router-link>
           <router-link
+            v-if="!checkThreatSharingPermissions()"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
             class="menu-link-default"
             :class="[routerName === 'Community' && 'active-link']"
             @click.native="deleteTSVuexData"
-            v-if="
-              !checkPermissionMultiple(
-                [
-                  'communities/search/all|POST',
-                  'communities/search/my|POST',
-                  'community-posts/search|POST'
-                ],
-                false
-              )
-            "
           >
             <app-router-item icon="mdi-flag" title="Threat Sharing" />
           </router-link>
@@ -287,26 +278,16 @@
               </v-list-item-content>
             </template>
             <v-list-item
+              v-if="checkPhishingScenariosPermissions()"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                checkPermissionMultiple([
-                  'phishing-simulator/email-templates|POST',
-                  'phishing-simulator/phishing-scenario/search|POST',
-                  'phishing-simulator/landing-page-template|POST'
-                ])
-              "
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/phishing-scenarios"
                   id="btn--link-navigator-menu-phishing-scenario"
-                  class="menu-link-default"
-                  :class="[routerName === 'Phishing Scenarios' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Phishing Scenarios</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Phishing Scenarios"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
@@ -314,19 +295,14 @@
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/campaign-manager"
-                  id="btn--link-navigator-menu-phishing-dns-service"
-                  class="menu-link-default"
-                  :class="[
-                    (routerName === 'Campaign Manager' || routerName === 'Campaign Report') &&
-                      'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Campaign Manager</span>
-                  </v-list-item-title>
-                </router-link>
+                  id="btn--link-navigator-menu-phishing-campaign-manager"
+                  route-name="Campaign Manager"
+                  :active-class-comparator="
+                    () => routerName === 'Campaign Manager' || routerName === 'Campaign Report'
+                  "
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
@@ -339,26 +315,22 @@
               "
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/settings"
                   id="btn--link-navigator-menu-phishing-dns-service"
-                  class="menu-link-default"
-                  :class="[routerName === 'Settings' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Settings</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Settings"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
 
           <v-list-group
+            v-if="checkIncidentResponderListGroupPermissions()"
             prepend-icon="mdi-flash"
             id="btn--link-navigator-menu-incident-responder-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
-            v-if="checkIncidentResponderPermissions()"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -367,30 +339,17 @@
             </template>
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                checkPermissionMultiple([
-                  'notified-emails/search|POST',
-                  'is/dashboard/summary|POST',
-                  'is/dashboard/search-log|POST',
-                  'is/dashboard/search-stats|POST',
-                  'notify/result|POST'
-                ])
-              "
+              v-if="checkIncidentResponderPermissions()"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/incident-responder"
                   id="btn--link-navigator-menu-incident-responder"
-                  class="menu-link-default"
-                  :class="[
-                    (routerName === 'Analysis Details' || routerName === 'Incident Responder') &&
-                      'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Incident Responder</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Incident Responder"
+                  :active-class-comparator="
+                    () => routerName === 'Analysis Details' || routerName === 'Incident Responder'
+                  "
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
@@ -398,51 +357,40 @@
               v-if="checkPermissionMultiple(['investigations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/investigations"
-                  class="menu-link-default"
                   id="btn--link-navigator-menu-investigations"
-                  :class="[
-                    (routerName === 'Investigation Details' || routerName === 'Investigations') &&
-                      'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Investigations</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Investigations"
+                  :active-class-comparator="
+                    () => routerName === 'Investigation Details' || routerName === 'Investigations'
+                  "
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
               v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/integrations"
                   id="btn--link-navigator-menu-integrations"
-                  :class="['menu-link-default', routerName === 'Integrations' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Integrations</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Integrations"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
               v-if="checkPermissionMultiple(['playbooks/search|POST'])"
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/playbook"
                   id="btn--link-navigator-menu-playbook"
-                  :class="['menu-link-default', routerName === 'Playbook' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Playbook</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Playbook"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
@@ -450,56 +398,37 @@
               v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/mailConfiguration"
                   id="btn--link-navigator-menu-mail-configuration"
-                  :class="[
-                    'menu-link-default',
-                    routerName === 'Mail Configurations' && 'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Mail Configurations</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Mail Configurations"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="checkCrossCompanyPermissions()"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                checkPermissionMultiple([
-                  'is/dashboard/summary|POST',
-                  'is/dashboard/search-log|POST',
-                  'is/dashboard/search-stats|POST',
-                  'notify/result|POST'
-                ])
-              "
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/sandbox"
                   id="btn--link-navigator-menu-sandbox"
-                  :class="[
-                    'menu-link-default',
-                    routerName === 'Cross Company Integration' && 'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Cross Company Integration</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Cross Company Integration"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
 
           <router-link
+            v-if="
+              checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])
+            "
             to="/phishing-reporter"
             id="btn--link-navigator-phishing-reporter"
             class="menu-link-default"
             :class="[routerName === 'Phishing Reporter' && 'active-link']"
-            v-if="
-              checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])
-            "
           >
             <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
           </router-link>
@@ -514,9 +443,9 @@
             no-action
             :class="[
               'menu-with-item menu-link-default',
-              routerName !== 'Campaign Reports'
-                ? 'un-selected-list-item'
-                : 'primary--text active-menu-parent'
+              routerName === 'Campaign Reports' || routerName === 'Simple Reports'
+                ? 'primary--text active-menu-parent'
+                : 'un-selected-list-item'
             ]"
           >
             <template v-slot:activator>
@@ -526,28 +455,22 @@
             </template>
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/campaign-reports"
                   id="btn--link-navigator-menu-reports"
-                  :class="['menu-link-default', routerName === 'Campaign Reports' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Campaign Reports</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Campaign Reports"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/simple-reports"
-                  id="btn--link-navigator-menu-reports"
-                  :class="['menu-link-default', routerName === 'Simple Reports' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Simple Reports</span>
-                  </v-list-item-title>
-                </router-link>
+                  id="btn--link-navigator-menu-simple-reports"
+                  route-name="Simple Reports"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
@@ -564,25 +487,20 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
               v-if="
                 checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST'])
               "
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/target-users"
                   id="btn--link-navigator-menu-target-users"
-                  class="menu-link-default"
-                  :class="[
-                    (routerName === 'Target Group Users' || routerName === 'Target Users') &&
-                      'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Target Users</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Target Users"
+                  :active-class-comparator="
+                    () => routerName === 'Target Group Users' || routerName === 'Target Users'
+                  "
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
@@ -593,41 +511,33 @@
               "
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/companies"
                   id="btn--link-navigator-menu-companies"
-                  class="menu-link-default"
-                  :class="[
-                    (routerName === 'Company Group Details' || routerName === 'Companies') &&
-                      'active-link'
-                  ]"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Companies</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Companies"
+                  :active-class-comparator="
+                    () => routerName === 'Company Group Details' || routerName === 'Companies'
+                  "
+                />
               </v-list-item-content>
             </v-list-item>
 
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
               v-if="
                 checkPermissionMultiple([
                   'companies/smtp-settings/search|POST',
                   'roles/search|POST'
                 ])
               "
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/company-settings"
                   id="btn--link-navigator-menu-company-settings"
-                  :class="['menu-link-default', routerName === 'Company Settings' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Company Settings</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Company Settings"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
@@ -635,49 +545,38 @@
               v-if="checkPermissionMultiple(['system-users/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
-                <router-link
+                <app-router-link
                   to="/system-users"
                   id="btn--link-navigator-menu-system-users"
-                  :class="['menu-link-default', routerName === 'System Users' && 'active-link']"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">System Users</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="System Users"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
-              :class="[routerName === 'Audit' && 'active-link']"
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
-                <router-link
+                <app-router-link
                   to="/audit"
                   id="btn--link-navigator-menu-audit-log"
-                  class="menu-link-default"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Audit Log</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Audit Log"
+                  :active-class-comparator="() => routerName === 'Audit'"
+                />
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
-              :class="[routerName === 'Job Log' && 'active-link']"
               v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
-                <router-link
+                <app-router-link
                   to="/job-log"
                   id="btn--link-navigator-menu-job-log"
-                  class="menu-link-default"
-                >
-                  <v-list-item-title class="menu-item-wrapper">
-                    <span class="menu-item-span">Job Log</span>
-                  </v-list-item-title>
-                </router-link>
+                  route-name="Job Log"
+                  :router-name="routerName"
+                />
               </v-list-item-content>
             </v-list-item>
           </v-list-group>
@@ -870,10 +769,12 @@ import SecurityModal from '@/components/Security/SecurityModal'
 import SettingsModal from '@/components/Settings/SettingsModal'
 import NavigationDrawerFooter from '@/layout/NavigationDrawerFooter'
 import LeavingDialog from '@/components/LeavingDialog'
+import AppRouterLink from '@/layout/AppRouterLink'
 
 export default {
   name: 'Main',
   components: {
+    AppRouterLink,
     LeavingDialog,
     NavigationDrawerFooter,
     SecurityModal,
@@ -1101,6 +1002,7 @@ export default {
           routerName === 'Company Group Details' ||
           routerName === 'Target Group Users' ||
           routerName === 'System Users' ||
+          routerName === 'Job Log' ||
           routerName === 'Audit',
         'un-selected-list-item':
           routerName !== 'Company' ||
@@ -1110,7 +1012,8 @@ export default {
           routerName === 'System Users' ||
           routerName === 'Target Group Users' ||
           routerName === 'Company Group Details' ||
-          routerName === 'Audit'
+          routerName === 'Audit' ||
+          routerName === 'Job Log'
       }
     },
     getIncidentResponderClasses() {
@@ -1375,6 +1278,25 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
+    checkThreatSharingPermissions() {
+      return checkPermissionMultiple(
+        [
+          'communities/search/all|POST',
+          'communities/search/my|POST',
+          'community-posts/search|POST'
+        ],
+        false
+      )
+    },
+    checkIncidentResponderListGroupPermissions() {
+      return checkPermissionMultiple([
+        'notified-emails/search|POST',
+        'is/dashboard/summary|POST',
+        'is/dashboard/search-log|POST',
+        'is/dashboard/search-stats|POST',
+        'notify/result|POST'
+      ])
+    },
     isProd() {
       const location = window.location.href
       return !(
@@ -1445,12 +1367,27 @@ export default {
         'mail-configurations/search|POST'
       ])
     },
+    checkCrossCompanyPermissions() {
+      return checkPermissionMultiple([
+        'is/dashboard/summary|POST',
+        'is/dashboard/search-log|POST',
+        'is/dashboard/search-stats|POST',
+        'notify/result|POST'
+      ])
+    },
     checkPhishingSimulatorPermissions() {
       return checkPermissionMultiple([
         'phishing-simulator/email-templates|POST',
         'phishing-simulator/phishing-scenario/search|POST',
         'phishing-simulator/dns-services/search|POST',
         'phishing-simulator/domain-records/search|POST'
+      ])
+    },
+    checkPhishingScenariosPermissions() {
+      return checkPermissionMultiple([
+        'phishing-simulator/email-templates|POST',
+        'phishing-simulator/phishing-scenario/search|POST',
+        'phishing-simulator/landing-page-template|POST'
       ])
     },
     deleteTSVuexData() {
