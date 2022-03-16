@@ -25,7 +25,7 @@ export function mail(value, message) {
 export function ip(value, message = 'Invalid IP address') {
   value = getValue(value)
   return (
-    /^(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)$/.test(
+    /^(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)\.(25[0-5\x2A]|2[0-4\x2A][0-9\x2A]|[01\x2A]?[0-9\x2A][0-9\x2A]?)(\/[0-9][0-9]?)?$/.test(
       value
     ) || message
   )
