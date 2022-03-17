@@ -353,14 +353,7 @@ export default {
       this.$emit(EMITS.ON_BACK_CLICK)
     },
     handleOnAddButtonClick() {
-      this.tableOptions.addButton.disabled = true
-      launchPhishingCampaign(this.item.resourceId)
-        .then(() => {
-          this.callForData()
-        })
-        .finally(() => {
-          this.tableOptions.addButton.disabled = false
-        })
+      this.$emit('on-launch', { resourceId: this.item.resourceId })
     },
     toggleShowDeleteDialog() {
       if (this.isShowDeleteDialog) {
