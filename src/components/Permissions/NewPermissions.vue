@@ -70,19 +70,10 @@
             :items="getPrivilegesItems"
           >
             <template v-slot:prepend="{ item }">
-              <p
-                class="new-permissions__permission-name"
-                v-if="item.permissionDescription && item.permissionName"
-              >
-                {{ item.permissionDescription && item.permissionName }}
+              <p v-if="getItemPermissionName(item)" class="new-permissions__permission-name">
+                {{ getItemPermissionName(item) }}
               </p>
-              {{
-                item.permissionDescription ||
-                item.parentGroupName ||
-                item.groupName ||
-                item.moduleName ||
-                'No Name'
-              }}
+              {{ getItemSubName(item) }}
             </template>
           </v-treeview>
         </form-group>
@@ -202,6 +193,19 @@ export default {
     }
   },
   methods: {
+    getItemPermissionName(item) {
+      return item && item?.permissionDescription && item?.permissionName
+    },
+    getItemSubName(item) {
+      item = item || {}
+      return (
+        item?.permissionDescription ||
+        item?.parentGroupName ||
+        item?.groupName ||
+        item?.moduleName ||
+        'No Name'
+      )
+    },
     getSearchedItems(items) {
       return items.reduce((acc, item) => {
         const { children } = item
