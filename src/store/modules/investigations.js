@@ -50,7 +50,7 @@ const investigations = {
       state.getInvestigationDetailsData = payload?.data
     },
     SET_STATSANDMENUDATA(state, payload) {
-      state.getStatsAndMenuData = payload.data
+      state.getStatsAndMenuData = payload?.data
     },
     SET_INVESTIGATIONLIST(state, payload) {
       let data = payload.data
@@ -127,15 +127,13 @@ const investigations = {
     async getInvestigationDetailsData({ commit, dispatch }, id) {
       if (id) {
         await getInvestigationDetailsDataFunction(id).then((response) => {
-          const result = response.data
-          commit('SET_INVESTIGATIONDETAILSDATA', result)
+          commit('SET_INVESTIGATIONDETAILSDATA', response?.data)
         })
       }
     },
     async getStatsAndMenuData({ commit, dispatch }, id) {
       await getStatsAndMenuDataFunction(id).then((response) => {
-        const result = response.data
-        commit('SET_STATSANDMENUDATA', result)
+        commit('SET_STATSANDMENUDATA', response?.data)
       })
     },
     async getInvestigationList({ commit, dispatch }, obj) {
