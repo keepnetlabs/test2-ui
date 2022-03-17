@@ -38,7 +38,7 @@ const investigations = {
   },
   mutations: {
     SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA(state, payload) {
-      state.getInvestigationDetailsTargetUsersListData = payload.data
+      state.getInvestigationDetailsTargetUsersListData = payload?.data || { results: [] }
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
       state.getInvestigationDetailsListData = payload.data
@@ -98,8 +98,7 @@ const investigations = {
     async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
       return await investigationDetailsTargetUsersListFunction(obj.data, obj.id).then(
         (response) => {
-          const result = response.data
-          commit('SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA', result)
+          commit('SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA', response.data)
           return response
         }
       )
