@@ -47,7 +47,7 @@ const investigations = {
       state.investigationList = []
     },
     SET_INVESTIGATIONDETAILSDATA(state, payload) {
-      state.getInvestigationDetailsData = payload.data
+      state.getInvestigationDetailsData = payload?.data
     },
     SET_STATSANDMENUDATA(state, payload) {
       state.getStatsAndMenuData = payload.data
