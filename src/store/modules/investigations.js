@@ -38,7 +38,7 @@ const investigations = {
   },
   mutations: {
     SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA(state, payload) {
-      state.getInvestigationDetailsTargetUsersListData = payload.data
+      state.getInvestigationDetailsTargetUsersListData = payload?.data || { results: [] }
     },
     SET_INVESTIGATIONDETAILSLISTDATA(state, payload) {
       state.getInvestigationDetailsListData = payload.data
@@ -47,10 +47,10 @@ const investigations = {
       state.investigationList = []
     },
     SET_INVESTIGATIONDETAILSDATA(state, payload) {
-      state.getInvestigationDetailsData = payload.data
+      state.getInvestigationDetailsData = payload?.data
     },
     SET_STATSANDMENUDATA(state, payload) {
-      state.getStatsAndMenuData = payload.data
+      state.getStatsAndMenuData = payload?.data
     },
     SET_INVESTIGATIONLIST(state, payload) {
       let data = payload.data
@@ -98,8 +98,7 @@ const investigations = {
     async getInvestigationDetailsTargetUsersListData({ commit, dispatch }, obj) {
       return await investigationDetailsTargetUsersListFunction(obj.data, obj.id).then(
         (response) => {
-          const result = response.data
-          commit('SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA', result)
+          commit('SET_INVESTIGATION_DETAILS_TARGET_USERS_LIST_DATA', response.data)
           return response
         }
       )
@@ -128,15 +127,13 @@ const investigations = {
     async getInvestigationDetailsData({ commit, dispatch }, id) {
       if (id) {
         await getInvestigationDetailsDataFunction(id).then((response) => {
-          const result = response.data
-          commit('SET_INVESTIGATIONDETAILSDATA', result)
+          commit('SET_INVESTIGATIONDETAILSDATA', response?.data)
         })
       }
     },
     async getStatsAndMenuData({ commit, dispatch }, id) {
       await getStatsAndMenuDataFunction(id).then((response) => {
-        const result = response.data
-        commit('SET_STATSANDMENUDATA', result)
+        commit('SET_STATSANDMENUDATA', response?.data)
       })
     },
     async getInvestigationList({ commit, dispatch }, obj) {

@@ -1,6 +1,13 @@
 <template>
   <div class="campaign-manager" id="campaign-manager">
     <div class="campaign-manager__content">
+      <CampaignManagerCreateNewInstanceDialog
+        v-if="isShowLaunchDialog"
+        :status="isShowLaunchDialog"
+        :resource-id="launchResourceId"
+        @on-close="toggleShowLaunchDialog"
+        @on-confirm="handleConfirmLaunchDialog"
+      />
       <CampaignManagerDeleteDialog
         v-if="isShowDeleteDialog"
         :status="isShowDeleteDialog"
@@ -51,10 +58,12 @@
       />
       <CampaignManagerItemTable
         v-if="isItemTableShowing"
+        ref="campaignManagerItemTable"
         :axios-payload.sync="axiosPayloadOfItem"
         :is-loading="isItemTableLoading"
         :item="selectedParentItem"
         :status-items="getStatusItems"
+        @on-launch="handleLaunch"
         @on-back-click="handleOnBackClick"
         @reset-axios-payload="handleResetAxiosPayloadOfItem"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
@@ -75,15 +84,16 @@ import {
   bulkDeleteCampaignReports,
   deleteCampaignManager,
   getCampaignManagerFormDetails,
-  launchPhishingCampaign,
   pausePhishingCampaignJob,
   resumePhishingCampaignJob,
   stopPhishingCampaignJob
 } from '@/api/phishingsimulator'
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
+import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager/CampaignManagerCreateNewInstanceDialog'
 export default {
   name: 'CampaignManager',
   components: {
+    CampaignManagerCreateNewInstanceDialog,
     CampaignManagerPreview,
     CampaignManagerDeleteDialog,
     CampaignManagerItemTable,
@@ -92,6 +102,7 @@ export default {
   },
   data() {
     return {
+      launchResourceId: '',
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       axiosPayloadOfParent: JSON.parse(JSON.stringify(axiosPayload)),
@@ -107,6 +118,7 @@ export default {
       isShowAddOrEditCampaignManagerModal: false,
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
+      isShowLaunchDialog: false,
       PERMISSIONS: {
         CAMPAIGN_MANAGER_PARENT: {}
       },
@@ -129,6 +141,17 @@ export default {
     this.callForFormDetails()
   },
   methods: {
+    toggleShowLaunchDialog() {
+      if (this.isShowLaunchDialog) this.launchResourceId = ''
+      this.isShowLaunchDialog = !this.isShowLaunchDialog
+    },
+    handleConfirmLaunchDialog() {
+      const objRef = this.isItemTableShowing
+        ? 'campaignManagerItemTable'
+        : 'campaignManagerParentTable'
+      this.$refs[objRef].callForData()
+      this.toggleShowLaunchDialog()
+    },
     callForFormDetails() {
       getCampaignManagerFormDetails().then((response) => {
         const {
@@ -228,9 +251,8 @@ export default {
       })
     },
     handleLaunch(row = {}) {
-      launchPhishingCampaign(row.resourceId).then(() => {
-        this.$refs.campaignManagerParentTable.callForData()
-      })
+      this.launchResourceId = row.resourceId
+      this.toggleShowLaunchDialog()
     },
     toggleShowPreviewDialog() {
       this.isShowPreviewDialog = !this.isShowPreviewDialog
