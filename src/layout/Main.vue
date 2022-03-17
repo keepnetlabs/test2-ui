@@ -5,14 +5,13 @@
       <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
     </v-dialog>
     <SecurityModal
+      v-if="openPasswordChange"
       :openPasswordChange="openPasswordChange"
       @changePasswordChange="changePasswordChange"
-      v-if="openPasswordChange"
-      :rules="rules"
     />
     <SettingsModal
-      :showSettingsModalStatus="showSettingsModalStatus"
       v-if="showSettingsModalStatus"
+      :showSettingsModalStatus="showSettingsModalStatus"
       @changeSettings="changeSettings"
     />
     <LeavingDialog />
@@ -40,9 +39,6 @@
         ></switch-account>
       </v-dialog>
     </v-row>
-    <v-overlay :absolute="false" :opacity="0.46" :value="sessionCheck" :z-index="999">
-      <session-expired></session-expired>
-    </v-overlay>
     <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
       <div class="connection-lost-wrapper">
         <connection-lost v-on:onIUnderstand="onIUndestandClick($event)"></connection-lost>
@@ -227,7 +223,6 @@
         permanent
         touchless
         class="page-nav"
-        :class="{ 'bg-blur': sessionCheck }"
       >
         <v-overlay
           :z-index="12"
@@ -586,14 +581,7 @@
     </div>
 
     <!-- Header Begin -->
-    <v-app-bar
-      class="page-header elevation-0 transparent"
-      extension-height="100"
-      app
-      absolute
-      flat
-      :class="{ 'bg-blur': sessionCheck }"
-    >
+    <v-app-bar class="page-header elevation-0 transparent" extension-height="100" app absolute flat>
       <div class="page-header__details">
         <div class="page-header__content">
           <div class="page-header__title" id="text--router-name">
@@ -716,10 +704,7 @@
       </div>
     </v-app-bar>
     <!-- Header End -->
-    <v-content
-      :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'"
-      :class="{ 'bg-blur': sessionCheck }"
-    >
+    <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'">
       <v-container
         fluid
         style="height: 100%; padding-bottom: 47px !important;"
@@ -750,7 +735,6 @@
 import { mapActions, mapGetters } from 'vuex'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
-import SessionExpired from '../components/SessionExpired'
 import SwitchAccount from '../components/SwitchAccount'
 import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
@@ -760,7 +744,7 @@ import 'grapesjs/dist/css/grapes.min.css'
 import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import Breadcrumb from '@/components/Breadcrumb'
-import { checkPermissionMultiple } from '../utils/functions'
+import { checkPermissionMultiple } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
@@ -783,7 +767,6 @@ export default {
     FeedbackPopup,
     AppFooter,
     ConnectionLost,
-    SessionExpired,
     SwitchAccount,
     offline,
     AppSnackbar,
@@ -808,23 +791,6 @@ export default {
       communityName: null,
       companyGroupName: null,
       companyGroupResourceId: null,
-      rules: {
-        email: (value) => {
-          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          return pattern.test(value) || 'Invalid e-mail.'
-        },
-        min: (v) => v.length >= 8 || 'Minimum 8 characters',
-        max: (v) => v.length < 254 || 'Email address cannot exceed 254 characters',
-        required: (value) => !!value || 'Required.',
-        minPassword: (value) => {
-          const pattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9]).{8,}$/
-          return (
-            pattern.test(value) ||
-            'At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character'
-          )
-        },
-        equal: (v) => v === this.newPassword || "'New password' and 'Confirm password' do not match"
-      },
       drawer: null,
       mini: null,
       dialog: true,
@@ -968,7 +934,6 @@ export default {
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading',
-      sessionCheck: 'common/getSessionCheck',
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
       brandName: 'whitelabel/getBrandName',
       supportEmailAddress: 'whitelabel/getSupportEmailAddress',
@@ -1252,7 +1217,6 @@ export default {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
           }
-          //this.sessionCheck = AuthenticationService.isExpired()
         }, 20000)
       }
     })
