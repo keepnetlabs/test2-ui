@@ -50,6 +50,21 @@
           >
             <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
           /></el-tab-pane>
+          <el-tab-pane
+            v-if="
+              PERMISSIONS.SCIM_SETTINGS_PERMISSIONS.SEARCH &&
+              PERMISSIONS.SCIM_SETTINGS_PERMISSIONS.SEARCH.hasPermission
+            "
+            label="SCIM Settings"
+            name="scim-settings"
+            id="scim-settings-content"
+          >
+            <s-c-i-m-settings
+              v-if="tab === 'scim-settings'"
+              ref="refScimSettings"
+              :PERMISSIONS="PERMISSIONS['SCIM_SETTINGS_PERMISSIONS']"
+            />
+          </el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -66,9 +81,11 @@ import { getPermissionsOfAllItems } from '@/utils/functions'
 import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
 import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
 import { checkPermission } from '@/utils/functions'
+import SCIMSettings from '@/components/Company Settings/SCIM/SCIMSettings'
 export default {
   name: 'CompanySettings',
   components: {
+    SCIMSettings,
     SamlSettings,
     SMTPSettings,
     NotificationTemplates,
@@ -88,7 +105,8 @@ export default {
         REST_API_PERMISSIONS: {},
         WHITE_LABEL_PERMISSIONS: {},
         PROXY_SETTINGS_PERMISSIONS: {},
-        SAML_SETTINGS_PERMISSIONS: {}
+        SAML_SETTINGS_PERMISSIONS: {},
+        SCIM_SETTINGS_PERMISSIONS: {}
       }
     }
   },
@@ -103,7 +121,8 @@ export default {
       const {
         SMTP_SETTINGS_PERMISSIONS,
         WHITE_LABEL_PERMISSIONS,
-        PROXY_SETTINGS_PERMISSIONS
+        PROXY_SETTINGS_PERMISSIONS,
+        SCIM_SETTINGS_PERMISSIONS
       } = PERMISSIONS
       this.$set(
         this.PERMISSIONS,
@@ -119,6 +138,11 @@ export default {
         this.PERMISSIONS,
         'PROXY_SETTINGS_PERMISSIONS',
         getPermissionsOfAllItems(PROXY_SETTINGS_PERMISSIONS)
+      )
+      this.$set(
+        this.PERMISSIONS,
+        'SCIM_SETTINGS_PERMISSIONS',
+        getPermissionsOfAllItems(SCIM_SETTINGS_PERMISSIONS)
       )
     },
     changeTabByRoute() {

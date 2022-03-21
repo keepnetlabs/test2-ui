@@ -17,6 +17,8 @@ export const labels = {
   UserWhoHaventOpened: 'Users who haven’t opened the email',
   Connected: 'Connected',
   Submitted: 'Submitted',
+  EmptySCIMSettings: 'You do not have any SCIM Integration',
+  EmptySCIMSettingsSub: 'Create a SCIM Integration',
   APIKEY: 'API Key',
   MessageID: 'Message ID',
   EnterAddress: 'Enter address',

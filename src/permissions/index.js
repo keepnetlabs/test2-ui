@@ -5,6 +5,9 @@ const ENUMS = {
   DOMAIN: {
     ROOT_URL: 'phishing-simulator/domain-records'
   },
+  SCIM: {
+    ROOT_URL: 'scim'
+  },
   METHODS: {
     POST: 'POST',
     GET: 'GET',
@@ -238,6 +241,48 @@ export default {
     },
     FORM_DETAILS: {
       url: `${ENUMS.DOMAIN.ROOT_URL}/form-details`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  SCIM_SETTINGS_PERMISSIONS: {
+    CREATE: {
+      url: `${ENUMS.SCIM.ROOT_URL}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: `${ENUMS.SCIM.ROOT_URL}/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `${ENUMS.SCIM.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `${ENUMS.SCIM.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `${ENUMS.SCIM.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `${ENUMS.SCIM.ROOT_URL}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    REVOKE: {
+      url: `${ENUMS.SCIM.ROOT_URL}/search/revoke`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    FIELDS: {
+      url: `${ENUMS.SCIM.ROOT_URL}/fields`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     }
