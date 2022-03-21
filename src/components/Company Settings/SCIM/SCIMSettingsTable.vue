@@ -18,8 +18,10 @@
     :row-actions="tableOptions.rowActions"
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
-    @addNewSCIMSetting="toggleSCIMSettingsModal"
-    @onEmptyBtnClicked="toggleSCIMSettingsModal"
+    @editAction="handleEdit"
+    @revokeAction="handleRevoke"
+    @addNewSCIMSetting="handleAddNewSCIM"
+    @onEmptyBtnClicked="handleAddNewSCIM"
     @columnFilterChanged="columnFilterChanged"
     @columnFilterCleared="columnFilterCleared"
     @refreshAction="callForData"
@@ -125,6 +127,13 @@ export default {
             disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
           {
+            name: labels.Revoke,
+            icon: 'mdi-minus-circle-outline',
+            id: 'btn-revoke--scim-settings-row-actions',
+            action: 'revokeAction',
+            disabled: !this.PERMISSIONS.REVOKE.hasPermission
+          },
+          {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
@@ -148,7 +157,6 @@ export default {
           disabled: !this.PERMISSIONS.CREATE.hasPermission
         }
       },
-      newSCIMSettingsStatus: false,
       axiosPayload: getDefaultAxiosPayload(),
       defaultAxiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
@@ -163,11 +171,9 @@ export default {
     callForData() {
       const { SEARCH } = this.PERMISSIONS
       if (!SEARCH.hasPermission) return
-      debugger
       this.setLoading(true)
       searchSCIMSettings(this.axiosPayload)
         .then((response) => {
-          debugger
           const {
             data: {
               data: { results, totalNumberOfRecords, totalNumberOfPages, pageNumber }
@@ -180,13 +186,19 @@ export default {
         })
         .finally(this.setLoading)
     },
+    handleEdit(row = {}) {
+      this.$emit('on-edit', row)
+    },
+    handleRevoke(row = {}) {
+      this.$emit('on-revoke', row)
+    },
     getStoredTableSettings() {
       this.storedTableSettings = JSON.parse(
         localStorage.getItem(TABLE_SETTINGS_KEYS.SCIM_SETTINGS_TABLE)
       )
     },
-    toggleSCIMSettingsModal() {
-      this.newSCIMSettingsStatus = !this.newSCIMSettingsStatus
+    handleAddNewSCIM() {
+      this.$emit('on-add')
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true
