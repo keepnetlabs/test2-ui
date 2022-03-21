@@ -19,6 +19,7 @@
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
     @editAction="handleEdit"
+    @deleteAction="handleDelete"
     @revokeAction="handleRevoke"
     @addNewSCIMSetting="handleAddNewSCIM"
     @onEmptyBtnClicked="handleAddNewSCIM"
@@ -188,6 +189,9 @@ export default {
     },
     handleEdit(row = {}) {
       this.$emit('on-edit', row)
+    },
+    handleDelete(row = {}) {
+      this.$emit('on-delete', row)
     },
     handleRevoke(row = {}) {
       this.$emit('on-revoke', row)

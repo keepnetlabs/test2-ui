@@ -18,3 +18,9 @@ export function deleteSCIMSetting(resourceId = '') {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function revokeSCIMSetting(resourceId = '') {
+  return testRequest.post(`${URL}/${resourceId}/revoke`, {
+    snackbar: COMMON_SNACKBAR
+  })
+}

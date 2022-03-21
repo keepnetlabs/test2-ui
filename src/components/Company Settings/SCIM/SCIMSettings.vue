@@ -4,7 +4,14 @@
     <DeleteSCIMDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
+      :selected-row="selectedRow"
       @on-close="toggleDeleteDialog"
+    />
+    <RevokeSCIMDialog
+      v-if="isShowRevokeDialog"
+      :status="isShowRevokeDialog"
+      :selected-row="selectedRow"
+      @on-close="toggleRevokeDialog"
     />
     <AddOrEditSCIMModal
       v-if="isShowAddOrEditModal"
@@ -18,6 +25,7 @@
       @on-add="toggleAddOrEditModal"
       @on-edit="toggleAddOrEditModal"
       @on-revoke="toggleRevokeDialog"
+      @on-delete="toggleDeleteDialog"
     />
   </div>
 </template>
@@ -27,9 +35,16 @@ import CompanySettingsHeader from '@/components/Company Settings/CompanySettings
 import SCIMSettingsTable from '@/components/Company Settings/SCIM/SCIMSettingsTable'
 import AddOrEditSCIMModal from '@/components/Company Settings/SCIM/AddOrEditSCIMModal'
 import DeleteSCIMDialog from '@/components/Company Settings/SCIM/DeleteSCIMDialog'
+import RevokeSCIMDialog from '@/components/Company Settings/SCIM/RevokeSCIMDialog'
 export default {
   name: 'SCIMSettings',
-  components: { DeleteSCIMDialog, AddOrEditSCIMModal, SCIMSettingsTable, CompanySettingsHeader },
+  components: {
+    RevokeSCIMDialog,
+    DeleteSCIMDialog,
+    AddOrEditSCIMModal,
+    SCIMSettingsTable,
+    CompanySettingsHeader
+  },
   props: {
     PERMISSIONS: {
       type: Object
@@ -60,14 +75,16 @@ export default {
       }
       this.isShowAddOrEditModal = !this.isShowAddOrEditModal
     },
-    toggleDeleteDialog() {
+    toggleDeleteDialog(row) {
+      if (row) this.selectedRow = row
       if (this.isShowDeleteDialog) this.setSelectedRowToNull()
       this.isShowDeleteDialog = !this.isShowDeleteDialog
     },
     setSelectedRowToNull() {
       this.selectedRow = null
     },
-    toggleRevokeDialog() {
+    toggleRevokeDialog(row) {
+      if (row) this.selectedRow = row
       if (this.isShowRevokeDialog) this.setSelectedRowToNull()
       this.isShowRevokeDialog = !this.isShowRevokeDialog
     }
