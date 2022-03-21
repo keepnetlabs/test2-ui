@@ -13,11 +13,6 @@ export default {
   name: 'SimpleReports',
   mixins: [useLoading],
   data() {
-    const companyResourceId =
-      localStorage.getItem('isSelectCompany') === 'true'
-        ? localStorage.getItem('companyRequestId')
-        : localStorage.getItem('companyResourceId')
-    // `https://51.89.212.138/single/?appid=39e2ee85-4add-4156-8baa-980f7086a9b9&sheet=5fe1fcbb-0701-49ed-8a24-79ef90f59831&opt=ctxmenu,currsel&select=$::Company.ResourceId,${companyResourceId}`
     return {
       src: ``
     }
@@ -29,8 +24,21 @@ export default {
     callForData() {
       this.setLoading(true)
       getTicket()
-        .then(() => {
+        .then((response) => {
+          const {
+            data: {
+              data: { ticket }
+            }
+          } = response || { data: { data: { ticket: '' } } }
           debugger
+          /*
+          const companyResourceId =
+            localStorage.getItem('isSelectCompany') === 'true'
+              ? localStorage.getItem('companyRequestId')
+              : localStorage.getItem('companyResourceId')
+              
+           */
+          this.src = `https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel&qlikTicket=${ticket}&select=$::COMPANYID,%7B08E4D039-FEF0-47F1-8F73-003DA41D15DB%7D`
         })
         .finally(this.setLoading)
     }
