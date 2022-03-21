@@ -274,7 +274,6 @@ export default {
         )
         return column.filterableType
       })
-
       this.axiosPayload.filter.FilterGroups[1].FilterItems = [...filterItems]
       this.resetPageNumber()
       this.checkIsColumnFilterActive()
