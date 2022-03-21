@@ -1,7 +1,7 @@
 <template>
   <div class="campaign-reports" id="campaign-reports">
     <div class="campaign-reports__content">
-      <iframe style="border: none; width: 100%; height: 100%;" :src="src"></iframe>
+      <iframe style="border: none; width: 100%; height: 80vh;" :src="src"></iframe>
     </div>
   </div>
 </template>
@@ -36,9 +36,11 @@ export default {
             localStorage.getItem('isSelectCompany') === 'true'
               ? localStorage.getItem('companyRequestId')
               : localStorage.getItem('companyResourceId')
-              
+
            */
-          this.src = `https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel&qlikTicket=${ticket}&select=$::COMPANYID,%7B08E4D039-FEF0-47F1-8F73-003DA41D15DB%7D`
+          //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&obj=CRxuQjL&opt=ctxmenu,currsel
+          //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel
+          this.src = `https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&obj=CRxuQjL&opt=ctxmenu,currsel&qlikTicket=${ticket}&select=$::COMPANYID,%7B08E4D039-FEF0-47F1-8F73-003DA41D15DB%7D`
         })
         .finally(this.setLoading)
     }
