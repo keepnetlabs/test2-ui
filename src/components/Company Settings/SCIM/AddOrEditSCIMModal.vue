@@ -48,14 +48,25 @@
           <v-stepper-content class="k-stepper__content" :step="2">
             <AppModalBodyHeader class="mt-0" :title="getTitle" :sub-title="getBodySubtitle" />
             <v-form ref="refStep2Form">
-              <FormGroup :title="labels.GroupName" :sub-title="labels.GroupNameSub">
+              <FormGroup :title="labels.GroupName" :sub-title="labels.GroupNameSub" has-hint>
+                <InputTargetGroup
+                  v-model.trim="formData.groupResourceId"
+                  persistent-hint
+                  hint="*Required"
+                  :manipulate-items="handleManipulateItems"
+                  :rules="[(v) => Validations.required(v)]"
+                />
+              </FormGroup>
+              <FormGroup :title="labels.GroupBy" :sub-title="labels.GroupBySub" has-hint>
                 <KSelect
-                  v-model.trim="formData.group"
+                  v-model.trim="formData.groupBySCIMFieldResourceId"
                   id="input--add-or-edit-scim-group"
                   outlined
                   dense
+                  persistent-hint
+                  hint="*Required"
                   placeholder="Select a item"
-                  :items="groupItems"
+                  :items="groupByItems"
                 />
               </FormGroup>
             </v-form>
@@ -104,19 +115,22 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import labels from '@/model/constants/labels'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import { getSCIMFields, getSCIMSetting } from '@/api/scimSettings'
 import MapCustomAndSCIMFields from '@/components/Company Settings/SCIM/MapCustomAndSCIMFields'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
+import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
+import * as Validations from '@/utils/validations'
+import KSelect from '@/components/Common/Inputs/KSelect'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
 export default {
   name: 'AddOrEditSCIMModal',
   components: {
-    MapCustomAndSCIMFields,
     KSelect,
+    InputTargetGroup,
+    MapCustomAndSCIMFields,
     InputEntityName,
     FormGroup,
     AppModalBodyHeader,
@@ -141,12 +155,14 @@ export default {
       isActionButtonDisabled: false,
       formData: {
         name: '',
-        group: [],
+        groupResourceId: '',
         secretToken: '',
-        scimFields: []
+        scimFields: [],
+        groupBySCIMFieldResourceId: ''
       },
+      Validations,
       labels,
-      groupItems: [],
+      groupByItems: [],
       scimFields: [],
       customFields: [],
       defaultScimFields: [],
@@ -227,6 +243,9 @@ export default {
           icon: 'mdi-check-circle'
         })
       })
+    },
+    handleManipulateItems(items = []) {
+      return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))
     }
   }
 }

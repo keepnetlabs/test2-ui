@@ -10,6 +10,14 @@
         @on-delete="handleItemDelete"
       />
     </div>
+    <div class="custom-fields-overlay__add" style="margin-top: -8px;" @click="addCustomField">
+      <v-icon color="blue" left medium>
+        mdi-plus
+      </v-icon>
+      <div>
+        ADD CUSTOM FIELD
+      </div>
+    </div>
   </div>
 </template>
 
@@ -40,11 +48,15 @@ export default {
     }
   },
   created() {
-    if (!this.isEdit)
-      this.fieldMappings.push({ scimFieldResourceId: '', customFieldResourceId: '' })
+    if (!this.isEdit) this.addCustomField()
   },
   methods: {
-    handleItemDelete(vModel, index) {}
+    addCustomField() {
+      this.fieldMappings.push({ scimFieldResourceId: '', customFieldResourceId: '' })
+    },
+    handleItemDelete(index) {
+      this.fieldMappings.splice(index, 1)
+    }
   }
 }
 </script>

@@ -3,21 +3,23 @@
     <KSelect
       v-model.trim="value.customFieldResourceId"
       id="input--add-or-edit-scim-group"
+      style="flex-basis: 50%;"
       outlined
       dense
-      placeholder="Select a item"
+      placeholder="Select a custom field"
       :items="customFields"
     />
     <KSelect
       v-model.trim="value.scimFieldResourceId"
       id="input--add-or-edit-scim-group"
+      style="flex-basis: 50%;"
       class="ml-2"
       outlined
       dense
-      placeholder="Select a item"
+      placeholder="Select a scim field"
       :items="scimFields"
     />
-    <v-icon v-if="isShowDelete" class="ml-2" left medium @click="handleDeleteClick"
+    <v-icon v-if="isShowDelete" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
       >mdi-delete
     </v-icon>
   </div>
