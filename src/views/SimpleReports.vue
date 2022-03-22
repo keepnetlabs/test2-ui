@@ -1,21 +1,49 @@
 <template>
   <div class="campaign-reports" id="campaign-reports">
     <div class="campaign-reports__content">
-      <iframe style="border: none; width: 100%; height: 100%;" :src="src"></iframe>
+      <iframe style="border: none; width: 100%; height: 100vh;" :src="src"></iframe>
     </div>
   </div>
 </template>
 
 <script>
+import { useLoading } from '@/hooks/useLoading'
+import { getTicket } from '@/api/common'
 export default {
   name: 'SimpleReports',
+  mixins: [useLoading],
   data() {
-    const companyResourceId =
-      localStorage.getItem('isSelectCompany') === 'true'
-        ? localStorage.getItem('companyRequestId')
-        : localStorage.getItem('companyResourceId')
     return {
-      src: `https://51.89.212.138/single/?appid=39e2ee85-4add-4156-8baa-980f7086a9b9&sheet=5fe1fcbb-0701-49ed-8a24-79ef90f59831&opt=ctxmenu,currsel&select=$::Company.ResourceId,${companyResourceId}`
+      src: ``
+    }
+  },
+  created() {
+    this.callForData()
+  },
+  methods: {
+    callForData() {
+      this.setLoading(true)
+      getTicket()
+        .then((response) => {
+          const {
+            data: {
+              data: { ticket }
+            }
+          } = response || { data: { data: { ticket: '' } } }
+          console.log('qlikTicket', ticket)
+          /*
+          const companyResourceId =
+            localStorage.getItem('isSelectCompany') === 'true'
+              ? localStorage.getItem('companyRequestId')
+              : localStorage.getItem('companyResourceId')
+
+           */
+          //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&obj=CRxuQjL&opt=ctxmenu,currsel
+          //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel
+          //https://qlik.devkeepnet.com/custom/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel?qlikTicket=
+          this.src = `https://qlik.devkeepnet.com/custom/single?qlikTicket=${ticket}&appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel`
+        })
+        .finally(this.setLoading)
     }
   }
 }
