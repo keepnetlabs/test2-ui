@@ -19,8 +19,10 @@
       :is-edit="isEdit"
       :selected-row="selectedRow"
       @on-close="toggleAddOrEditModal"
+      @on-close-with-update="handleCloseWithUpdate"
     />
     <SCIMSettingsTable
+    ref="refTable"
       :PERMISSIONS="PERMISSIONS"
       @on-add="toggleAddOrEditModal"
       @on-edit="toggleAddOrEditModal"
@@ -87,6 +89,10 @@ export default {
       if (row) this.selectedRow = row
       if (this.isShowRevokeDialog) this.setSelectedRowToNull()
       this.isShowRevokeDialog = !this.isShowRevokeDialog
+    },
+    handleCloseWithUpdate(){
+      this.$refs.refTable.callForData()
+      this.toggleAddOrEditModal()
     }
   }
 }

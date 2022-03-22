@@ -41,7 +41,7 @@
                 />
               </FormGroup>
               <FormGroup title="Map Fields">
-                <MapCustomAndSCIMFields :custom-fields="customFields" :scim-fields="scimFields" />
+                <MapCustomAndSCIMFields ref="refMapCustomAndSCIMFields" :custom-fields="customFields" :scim-fields="scimFields" :is-edit="isEdit"  />
               </FormGroup>
             </v-form>
           </v-stepper-content>
@@ -102,7 +102,7 @@
           :disabled="isActionButtonDisabled"
           @click="handleSubmit"
         >
-          {{ [1, 2].includes(step) ? labels.Next : labels.Save }}
+          {{ [1].includes(step) ? labels.Next : labels.Save }}
         </v-btn>
       </div>
     </template>
@@ -116,7 +116,7 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { getSCIMFields, getSCIMSetting } from '@/api/scimSettings'
+import { getSCIMFields, getSCIMSetting,createSCIMSetting,updateSCIMSetting } from '@/api/scimSettings'
 import MapCustomAndSCIMFields from '@/components/Company Settings/SCIM/MapCustomAndSCIMFields'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
@@ -156,8 +156,6 @@ export default {
       formData: {
         name: '',
         groupResourceId: '',
-        secretToken: '',
-        scimFields: [],
         groupBySCIMFieldResourceId: ''
       },
       Validations,
@@ -178,10 +176,11 @@ export default {
     }
   },
   created() {
-    this.callForGetSCIMFields()
-    this.callForCustomFields()
     if (this.isEdit && this.selectedRow && typeof this.selectedRow === 'object') {
       this.callForData()
+    }else {
+          this.callForGetSCIMFields()
+    this.callForCustomFields()
     }
   },
   methods: {
@@ -190,13 +189,19 @@ export default {
         console.log("response",response)
         const { data: { data = {} } = {} } = response
         for (const key of Object.keys(data)) {
+          if(key==="mappingDetails"){
+            const {refMapCustomAndSCIMFields}=this.$refs
+            refMapCustomAndSCIMFields.fieldMappings=data.mappingDetails
+          }
+          else {
           this.formData[key] = data[key]
+          }
         }
       })
     },
     callForGetSCIMFields() {
       getSCIMFields().then((response) => {
-        const scimFields = response?.data?.data || []
+        const scimFields = response?.data?.data.fields || []
         this.scimFields = scimFields.map(({ name, resourceId }) => ({
           text: name,
           value: resourceId,
@@ -221,6 +226,9 @@ export default {
         const { refStep1Form } = this.$refs
         if (refStep1Form.validate()) {
           this.step += 1
+          this.groupByItems=this.$refs.refMapCustomAndSCIMFields.fieldMappings.map(({customFieldResourceId,scimFieldResourceId})=>({text:this.defaultCustomFields.find(customField=>customField.value===customFieldResourceId)?.text,value:scimFieldResourceId}))
+          console.log(this.groupByItems)
+          
         }
       } else {
         this.step += flag
@@ -231,6 +239,25 @@ export default {
     },
     handleSubmit() {
       if (this.step === 2) {
+        this.isActionButtonDisabled=true
+        if(this.isEdit){
+            updateSCIMSetting({name:this.formData.name},this.selectedRow.resourceId).then(()=>{
+              this.$emit('on-close-with-update')
+            }).finally(()=>{  this.isActionButtonDisabled=false})
+        }
+        else {
+          const {refMapCustomAndSCIMFields}=this.$refs
+          debugger
+          const payload={
+            name:this.formData.name,
+            groupResourceId:this.formData.groupResourceId,
+            groupBySCIMFieldResourceId:this.formData.groupBySCIMFieldResourceId,
+            fieldMappings:refMapCustomAndSCIMFields.fieldMappings
+          }
+            createSCIMSetting(payload).then(()=>{
+              this.$emit('on-close-with-update')
+            }).finally(()=>{  this.isActionButtonDisabled=false})
+        }
       } else {
         this.changeStep()
       }

@@ -28,3 +28,11 @@ export function revokeSCIMSetting(resourceId = '') {
 export function getSCIMFields() {
   return testRequest.get(`${URL}/fields`)
 }
+
+export function createSCIMSetting(payload){
+  return testRequest.post(`${URL}`, payload)
+}
+
+export function updateSCIMSetting(payload,resourceId){
+  return testRequest.post(`${URL}/${resourceId}`, payload)
+}

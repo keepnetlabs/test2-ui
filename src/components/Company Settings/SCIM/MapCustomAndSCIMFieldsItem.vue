@@ -7,7 +7,10 @@
       outlined
       dense
       placeholder="Select a custom field"
+      :disabled="isEdit"
+      :rules="[(v) => Validations.required(v)]"
       :items="customFields"
+    
     />
     <KSelect
       v-model.trim="value.scimFieldResourceId"
@@ -17,7 +20,9 @@
       outlined
       dense
       placeholder="Select a scim field"
+      :disabled="isEdit"
       :items="scimFields"
+      :rules="[(v) => Validations.required(v)]"
     />
     <v-icon v-if="isShowDelete" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
       >mdi-delete
@@ -27,7 +32,7 @@
 
 <script>
 import KSelect from '@/components/Common/Inputs/KSelect'
-
+import * as Validations from '@/utils/validations'
 export default {
   name: 'MapCustomAndSCIMFieldsItem',
   components: { KSelect },
@@ -40,6 +45,9 @@ export default {
     },
     isShowDelete: {
       type: Boolean
+    },
+    isEdit:{
+      type:Boolean
     },
     index: {
       type: Number
@@ -54,10 +62,23 @@ export default {
       }
     }
   },
+  data(){
+    return {
+      Validations
+    }
+  },
+  watch:{
+'value.scimFieldResourceId'(val,oldVal){
+   this.$emit('on-scim-field-change',val,oldVal)
+},
+'value.customFieldResourceId'(val,oldVal){
+   this.$emit('on-custom-field-change',val,oldVal)
+}
+  },
   methods: {
     handleDeleteClick() {
       this.$emit('on-delete', this.index)
-    }
+    },
   }
 }
 </script>

@@ -5,13 +5,16 @@
         v-model="fieldMappings[index]"
         :index="index"
         :is-show-delete="isShowDelete"
+        :is-edit="isEdit"
         :custom-fields="customFields"
         :scim-fields="scimFields"
         @on-delete="handleItemDelete"
+        @on-custom-field-change="handleCustomFieldChange"
+        @on-scim-field-change="handleScimFieldChange"
       />
     </div>
-    <div class="custom-fields-overlay__add" style="margin-top: -8px;" @click="addCustomField">
-      <v-icon color="blue" left medium>
+    <div class="custom-fields-overlay__add" :style="getAddCustomFieldStyle" @click="addCustomField">
+      <v-icon :color="isEdit ? '#757575' : 'blue'" left medium>
         mdi-plus
       </v-icon>
       <div>
@@ -45,6 +48,15 @@ export default {
   computed: {
     isShowDelete() {
       return this.fieldMappings.length > 1
+    },
+    getAddCustomFieldStyle(){
+      const style={marginTop:"-8px"}
+      if(this.isEdit){
+        style.pointerEvents='none'
+        style.color="#757575 !important";
+        style.opacity="0.8"
+      }
+      return style
     }
   },
   created() {
@@ -56,7 +68,23 @@ export default {
     },
     handleItemDelete(index) {
       this.fieldMappings.splice(index, 1)
+    },
+    handleCustomFieldChange(val,oldVal){
+      const findedIndex=this.customFields.findIndex(item=>item.value===val)
+      if(findedIndex ===-1) return
+      this.$set(this.customFields,findedIndex,{...this.customFields[findedIndex],disabled:true})
+      const findedIndexOfOldVal=this.customFields.findIndex(item=>item.value===oldVal)
+      this.$set(this.customFields,findedIndexOfOldVal,{...this.customFields[findedIndexOfOldVal],disabled:false})
+    },
+    handleScimFieldChange(val,oldVal){
+    const findedIndex=this.scimFields.findIndex(item=>item.value===val)
+      if(findedIndex ===-1) return
+      this.$set(this.scimFields,findedIndex,{...this.scimFields[findedIndex],disabled:true})
+      const findedIndexOfOldVal=this.scimFields.findIndex(item=>item.value===oldVal)
+      this.$set(this.scimFields,findedIndexOfOldVal,{...this.scimFields[findedIndexOfOldVal],disabled:false})
     }
+
+
   }
 }
 </script>
