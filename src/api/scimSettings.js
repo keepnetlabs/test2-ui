@@ -24,3 +24,7 @@ export function revokeSCIMSetting(resourceId = '') {
     snackbar: COMMON_SNACKBAR
   })
 }
+
+export function getSCIMFields() {
+  return testRequest.get(`${URL}/fields`)
+}

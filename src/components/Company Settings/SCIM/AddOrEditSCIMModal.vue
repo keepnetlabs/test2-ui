@@ -31,6 +31,16 @@
             :items="groupItems"
           />
         </FormGroup>
+        <FormGroup :title="labels.ScimFields">
+          <KSelect
+            v-model.trim="formData.scimFields"
+            id="input--add-or-edit-scim-group"
+            outlined
+            dense
+            placeholder="Select a item"
+            :items="scimItems"
+          />
+        </FormGroup>
         <FormGroup
           style="max-width: 750px;"
           :title="labels.SecretToken"
@@ -63,7 +73,7 @@ import labels from '@/model/constants/labels'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { getSCIMSetting } from '@/api/scimSettings'
+import { getSCIMFields, getSCIMSetting } from '@/api/scimSettings'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
@@ -95,10 +105,12 @@ export default {
       formData: {
         name: '',
         group: [],
-        secretToken: ''
+        secretToken: '',
+        scimFields: []
       },
       labels,
-      groupItems: []
+      groupItems: [],
+      scimItems: []
     }
   },
   computed: {
@@ -107,6 +119,7 @@ export default {
     }
   },
   created() {
+    this.callForGetSCIMFields()
     if (this.isEdit && this.selectedRow && typeof this.selectedRow === 'object') {
       this.callForData()
     }
@@ -114,7 +127,15 @@ export default {
   methods: {
     callForData() {
       getSCIMSetting(this.selectedRow.resourceId).then((response) => {
-        debugger
+        const { data: { data = {} } = {} } = response
+        for (const key of Object.keys(data)) {
+          this.formData[key] = data[key]
+        }
+      })
+    },
+    callForGetSCIMFields() {
+      getSCIMFields().then((response) => {
+        this.scimItems = response?.data?.data || []
       })
     },
     handleClose() {

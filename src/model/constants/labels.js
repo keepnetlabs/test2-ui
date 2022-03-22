@@ -24,6 +24,7 @@ export const labels = {
   GroupNameSub: 'Set a user group for imported users from this integration',
   NewScimTitle: 'New SCIM Integration',
   EditScimTitle: 'Edit SCIM Integration',
+  ScimFields: 'SCIM Fields',
   ScimSubtitle: 'Set new SCIM integration',
   ScimNameSub: 'Name this SCIM configuration',
   Submitted: 'Submitted',
