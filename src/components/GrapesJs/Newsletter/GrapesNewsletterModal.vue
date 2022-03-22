@@ -114,7 +114,7 @@ export default {
         {
           name: 'Background Image',
           property: 'background-image',
-          type: 'color-linear'
+          type: 'text'
         },
         { at: 1 }
       )
@@ -1011,5 +1011,11 @@ export default {
 }
 .gjs-sm-property__background-image {
   width: 100%;
+  .gjs-fields {
+    width: 100%;
+    .gjs-field {
+      width: 100%;
+    }
+  }
 }
 </style>

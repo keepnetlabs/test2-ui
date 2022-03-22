@@ -13,3 +13,7 @@ export function getLookupListByTypeIdList(obj) {
 export function getLicences() {
   return testRequest.get('/lookups/licenses')
 }
+
+export function getTicket() {
+  return testRequest.get('/reports/ticket')
+}

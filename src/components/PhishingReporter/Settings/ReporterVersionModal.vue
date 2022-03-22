@@ -73,6 +73,9 @@ export default {
       if (key === 'EmailFormatErrorMessage') {
         formKey = 'badFormatEmailMessage'
       }
+      if (key === 'IsDefaultProxy') {
+        formKey = 'isEnableProxy'
+      }
       if (key === 'CompanyId') {
         formKey = 'companyKey'
       }
