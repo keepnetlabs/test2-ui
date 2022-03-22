@@ -35,9 +35,10 @@
           <KSelect
             v-model.trim="formData.scimFields"
             id="input--add-or-edit-scim-group"
+            class="scim-fields-mappign-select"
             outlined
             dense
-            placeholder="Select a item"
+            placeholder="Select a scim field"
             :items="scimItems"
           />
         </FormGroup>
@@ -127,6 +128,7 @@ export default {
   methods: {
     callForData() {
       getSCIMSetting(this.selectedRow.resourceId).then((response) => {
+        console.log("response",response)
         const { data: { data = {} } = {} } = response
         for (const key of Object.keys(data)) {
           this.formData[key] = data[key]
@@ -135,7 +137,10 @@ export default {
     },
     callForGetSCIMFields() {
       getSCIMFields().then((response) => {
-        this.scimItems = response?.data?.data || []
+        console.log("response3",response)
+          let { data: { data :{fields=[]} = {} } = {} } = response
+          fields=fields || []
+        this.scimItems = fields.map(({name,resourceId})=>({text:name,value:resourceId}))
       })
     },
     handleClose() {

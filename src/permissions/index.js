@@ -277,7 +277,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     REVOKE: {
-      url: `${ENUMS.SCIM.ROOT_URL}/search/revoke`,
+      url: `${ENUMS.SCIM.ROOT_URL}/{resourceId}/revoke`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     },

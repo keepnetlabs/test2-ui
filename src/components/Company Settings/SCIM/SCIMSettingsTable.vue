@@ -96,6 +96,18 @@ export default {
             width: 180
           },
           {
+            property: 'groupByCustomFieldName',
+            align: 'left',
+            editable: false,
+            label: 'Custom Field Name',
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'text',
+            filterableType: 'text',
+            width: 200
+          },
+          {
             property: 'createTime',
             align: 'left',
             editable: false,
@@ -116,8 +128,7 @@ export default {
           download: false
         },
         downloadButton: {
-          show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+          show: false,
         },
         rowActions: [
           {
@@ -125,7 +136,15 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             id: 'btn-edit--scim-settings-row-actions',
+            isNotShow:true,
             disabled: !this.PERMISSIONS.UPDATE.hasPermission
+          },
+           {
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            id: 'btn-delete--scim-settings-row-actions',
+            disabled: !this.PERMISSIONS.DELETE.hasPermission
           },
           {
             name: labels.Revoke,
@@ -134,13 +153,6 @@ export default {
             action: 'revokeAction',
             disabled: !this.PERMISSIONS.REVOKE.hasPermission
           },
-          {
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'deleteAction',
-            id: 'btn-delete--scim-settings-row-actions',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
-          }
         ],
         empty: {
           message: labels.EmptySCIMSettings,
@@ -164,6 +176,7 @@ export default {
     }
   },
   created() {
+    console.log("this.P",this.PERMISSIONS)
     this.getStoredTableSettings()
     this.setDefaultFilter()
     this.callForData()
@@ -184,6 +197,7 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results || []
+                console.log("results",results)
         })
         .finally(this.setLoading)
     },
@@ -217,7 +231,7 @@ export default {
         fieldName,
         this.axiosPayload
       )
-      this.calculateIsFilterColumnActive()
+      this.checkIsColumnFilterActive()
       this.callForData()
     },
     checkIsColumnFilterActive() {
@@ -253,7 +267,7 @@ export default {
       })
     },
     handleRestoreDefaultSearch() {
-      this.getDefaultFilterAndSearch()
+      this.setDefaultFilter()
       this.callForData()
     },
     handleClearFilters() {
@@ -275,7 +289,7 @@ export default {
       this.callForData()
     },
     sortChanged({ order, prop } = {}) {
-      this.axiosPayload.ascending = order === this.CONSTANTS.ascending
+      this.axiosPayload.ascending = order === 'ascending'
       this.axiosPayload.orderBy = prop
       this.callForData()
     },
