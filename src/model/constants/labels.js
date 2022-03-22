@@ -14,6 +14,8 @@ export const labels = {
   SecretTokenSub: 'Copy this token to service provider',
   Revoke: 'Revoke',
   To: 'To',
+  GroupBy: 'Group By',
+  GroupBySub: 'Select Scim Field to Group By',
   From: 'From',
   SenderIP: 'Sender IP',
   UserWhoOpened: 'User who opened the email',
