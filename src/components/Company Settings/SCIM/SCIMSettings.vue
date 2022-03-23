@@ -22,7 +22,7 @@
       @on-close-with-update="handleCloseWithUpdate"
     />
     <SCIMSettingsTable
-    ref="refTable"
+      ref="refTable"
       :PERMISSIONS="PERMISSIONS"
       @on-add="toggleAddOrEditModal"
       @on-edit="toggleAddOrEditModal"
@@ -90,7 +90,7 @@ export default {
       if (this.isShowRevokeDialog) this.setSelectedRowToNull()
       this.isShowRevokeDialog = !this.isShowRevokeDialog
     },
-    handleCloseWithUpdate(){
+    handleCloseWithUpdate() {
       this.$refs.refTable.callForData()
       this.toggleAddOrEditModal()
     }

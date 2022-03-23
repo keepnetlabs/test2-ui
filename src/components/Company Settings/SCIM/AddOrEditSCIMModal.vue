@@ -11,6 +11,12 @@
     @closeOverlay="handleClose"
   >
     <template v-slot:overlay-body>
+      <SCIMSuccessDialog
+        v-if="isShowSuccessDialog"
+        :status="isShowSuccessDialog"
+        :api-key="successApiKey"
+        @on-close="handleCloseSuccessDialog"
+      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -41,7 +47,12 @@
                 />
               </FormGroup>
               <FormGroup title="Map Fields">
-                <MapCustomAndSCIMFields ref="refMapCustomAndSCIMFields" :custom-fields="customFields" :scim-fields="scimFields" :is-edit="isEdit"  />
+                <MapCustomAndSCIMFields
+                  ref="refMapCustomAndSCIMFields"
+                  :custom-fields="customFields"
+                  :scim-fields="scimFields"
+                  :is-edit="isEdit"
+                />
               </FormGroup>
             </v-form>
           </v-stepper-content>
@@ -116,18 +127,25 @@ import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import labels from '@/model/constants/labels'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
-import { getSCIMFields, getSCIMSetting,createSCIMSetting,updateSCIMSetting } from '@/api/scimSettings'
+import {
+  getSCIMFields,
+  getSCIMSetting,
+  createSCIMSetting,
+  updateSCIMSetting
+} from '@/api/scimSettings'
 import MapCustomAndSCIMFields from '@/components/Company Settings/SCIM/MapCustomAndSCIMFields'
 import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import SCIMSuccessDialog from '@/components/Company Settings/SCIM/SCIMSuccessDialog'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
 export default {
   name: 'AddOrEditSCIMModal',
   components: {
+    SCIMSuccessDialog,
     KSelect,
     InputTargetGroup,
     MapCustomAndSCIMFields,
@@ -153,6 +171,7 @@ export default {
     return {
       step: 1,
       isActionButtonDisabled: false,
+      isShowSuccessDialog: false,
       formData: {
         name: '',
         groupResourceId: '',
@@ -160,6 +179,7 @@ export default {
       },
       Validations,
       labels,
+      successApiKey: '',
       groupByItems: [],
       scimFields: [],
       customFields: [],
@@ -178,23 +198,22 @@ export default {
   created() {
     if (this.isEdit && this.selectedRow && typeof this.selectedRow === 'object') {
       this.callForData()
-    }else {
-          this.callForGetSCIMFields()
-    this.callForCustomFields()
+    } else {
+      this.callForGetSCIMFields()
+      this.callForCustomFields()
     }
   },
   methods: {
     callForData() {
       getSCIMSetting(this.selectedRow.resourceId).then((response) => {
-        console.log("response",response)
+        console.log('response', response)
         const { data: { data = {} } = {} } = response
         for (const key of Object.keys(data)) {
-          if(key==="mappingDetails"){
-            const {refMapCustomAndSCIMFields}=this.$refs
-            refMapCustomAndSCIMFields.fieldMappings=data.mappingDetails
-          }
-          else {
-          this.formData[key] = data[key]
+          if (key === 'mappingDetails') {
+            const { refMapCustomAndSCIMFields } = this.$refs
+            refMapCustomAndSCIMFields.fieldMappings = data.mappingDetails
+          } else {
+            this.formData[key] = data[key]
           }
         }
       })
@@ -226,9 +245,15 @@ export default {
         const { refStep1Form } = this.$refs
         if (refStep1Form.validate()) {
           this.step += 1
-          this.groupByItems=this.$refs.refMapCustomAndSCIMFields.fieldMappings.map(({customFieldResourceId,scimFieldResourceId})=>({text:this.defaultCustomFields.find(customField=>customField.value===customFieldResourceId)?.text,value:scimFieldResourceId}))
+          this.groupByItems = this.$refs.refMapCustomAndSCIMFields.fieldMappings.map(
+            ({ customFieldResourceId, scimFieldResourceId }) => ({
+              text: this.defaultCustomFields.find(
+                (customField) => customField.value === customFieldResourceId
+              )?.text,
+              value: scimFieldResourceId
+            })
+          )
           console.log(this.groupByItems)
-          
         }
       } else {
         this.step += flag
@@ -239,24 +264,32 @@ export default {
     },
     handleSubmit() {
       if (this.step === 2) {
-        this.isActionButtonDisabled=true
-        if(this.isEdit){
-            updateSCIMSetting({name:this.formData.name},this.selectedRow.resourceId).then(()=>{
+        this.isActionButtonDisabled = true
+        if (this.isEdit) {
+          updateSCIMSetting({ name: this.formData.name }, this.selectedRow.resourceId)
+            .then(() => {
               this.$emit('on-close-with-update')
-            }).finally(()=>{  this.isActionButtonDisabled=false})
-        }
-        else {
-          const {refMapCustomAndSCIMFields}=this.$refs
+            })
+            .finally(() => {
+              this.isActionButtonDisabled = false
+            })
+        } else {
+          const { refMapCustomAndSCIMFields } = this.$refs
           debugger
-          const payload={
-            name:this.formData.name,
-            groupResourceId:this.formData.groupResourceId,
-            groupBySCIMFieldResourceId:this.formData.groupBySCIMFieldResourceId,
-            fieldMappings:refMapCustomAndSCIMFields.fieldMappings
+          const payload = {
+            name: this.formData.name,
+            groupResourceId: this.formData.groupResourceId,
+            groupBySCIMFieldResourceId: this.formData.groupBySCIMFieldResourceId,
+            fieldMappings: refMapCustomAndSCIMFields.fieldMappings
           }
-            createSCIMSetting(payload).then(()=>{
-              this.$emit('on-close-with-update')
-            }).finally(()=>{  this.isActionButtonDisabled=false})
+          createSCIMSetting(payload)
+            .then((response) => {
+              debugger
+              this.isShowSuccessDialog = true
+            })
+            .finally(() => {
+              this.isActionButtonDisabled = false
+            })
         }
       } else {
         this.changeStep()
@@ -273,6 +306,11 @@ export default {
     },
     handleManipulateItems(items = []) {
       return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))
+    },
+    handleCloseSuccessDialog() {
+      this.successApiKey = ''
+      this.isShowSuccessDialog = false
+      this.$emit('on-close-with-update')
     }
   }
 }
