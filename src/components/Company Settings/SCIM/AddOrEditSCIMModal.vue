@@ -51,6 +51,7 @@
                   ref="refMapCustomAndSCIMFields"
                   :custom-fields="customFields"
                   :scim-fields="scimFields"
+                  :initial-value="editedMapCustomSCIMFields"
                   :is-edit="isEdit"
                 />
               </FormGroup>
@@ -186,7 +187,8 @@ export default {
       scimFields: [],
       customFields: [],
       defaultScimFields: [],
-      defaultCustomFields: []
+      defaultCustomFields: [],
+      editedMapCustomSCIMFields:[]
     }
   },
   computed: {
@@ -213,21 +215,26 @@ export default {
           const { data: { data = {} } = {} } = response
           for (const key of Object.keys(data)) {
             if (key === 'mappingDetails') {
-              const { refMapCustomAndSCIMFields } = this.$refs
               const mappingDetails = data?.mappingDetails || []
-              refMapCustomAndSCIMFields.fieldMappings = mappingDetails.map(
+              const fieldMappings=mappingDetails.map(
                 ({ scimPath, customFieldName }) => ({
                   customFieldResourceId: customFieldName,
                   scimFieldResourceId: scimPath
                 })
               )
-              this.customFields = refMapCustomAndSCIMFields?.fieldMappings.map(
+              this.editedMapCustomSCIMFields = mappingDetails.map(
+                ({ scimPath, customFieldName }) => ({
+                  customFieldResourceId: customFieldName,
+                  scimFieldResourceId: scimPath
+                })
+              )
+              this.customFields = fieldMappings.map(
                 ({ customFieldResourceId }) => ({
                   text: customFieldResourceId,
                   value: customFieldResourceId
                 })
               )
-              this.scimFields = refMapCustomAndSCIMFields?.fieldMappings.map(
+              this.scimFields = fieldMappings.map(
                 ({ scimFieldResourceId }) => ({
                   text: scimFieldResourceId,
                   value: scimFieldResourceId
@@ -282,7 +289,7 @@ export default {
           this.step += 1
           if (!this.isEdit) {
             this.groupByItems = [
-              ...[{ text: 'Department', resourceId: '9fd0afec416c' }],
+              ...[{ text: 'Department', value: '9fd0afec416c' }],
               ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
                 (acc, { customFieldResourceId, scimFieldResourceId }) => {
                   const customField = this.defaultCustomFields.find(
@@ -359,6 +366,11 @@ export default {
   overflow: visible;
   &__items {
     overflow: visible;
+  }
+  #input--target-user-groups{
+    .input--target-user-groups{
+      color:rgba(0, 0, 0, 0.87) !important;
+    }
   }
 }
 .map-custom-and-scim-fields {

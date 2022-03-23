@@ -38,11 +38,14 @@ export default {
     },
     isEdit: {
       type: Boolean
+    },
+    initialValue:{
+      type:Array
     }
   },
   data() {
     return {
-      fieldMappings: []
+      fieldMappings:this.initialValue || []
     }
   },
   computed: {

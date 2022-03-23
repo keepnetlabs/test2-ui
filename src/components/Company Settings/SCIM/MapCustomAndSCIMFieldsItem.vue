@@ -23,7 +23,7 @@
       :items="scimFields"
       :rules="[(v) => Validations.required(v)]"
     />
-    <v-icon v-if="isShowDelete" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
+    <v-icon v-if="isShowDelete && !isEdit" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
       >mdi-delete
     </v-icon>
   </div>
