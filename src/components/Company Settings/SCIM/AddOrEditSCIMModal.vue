@@ -275,7 +275,6 @@ export default {
             })
         } else {
           const { refMapCustomAndSCIMFields } = this.$refs
-          debugger
           const payload = {
             name: this.formData.name,
             groupResourceId: this.formData.groupResourceId,
@@ -284,7 +283,7 @@ export default {
           }
           createSCIMSetting(payload)
             .then((response) => {
-              debugger
+              this.successApiKey=response?.data?.data?.token
               this.isShowSuccessDialog = true
             })
             .finally(() => {
@@ -310,6 +309,7 @@ export default {
     handleCloseSuccessDialog() {
       this.successApiKey = ''
       this.isShowSuccessDialog = false
+      this.handleClose()
       this.$emit('on-close-with-update')
     }
   }

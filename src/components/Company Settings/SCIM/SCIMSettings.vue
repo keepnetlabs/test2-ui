@@ -6,12 +6,14 @@
       :status="isShowDeleteDialog"
       :selected-row="selectedRow"
       @on-close="toggleDeleteDialog"
+      @on-close-with-update="handleCloseWithUpdate"
     />
     <RevokeSCIMDialog
       v-if="isShowRevokeDialog"
       :status="isShowRevokeDialog"
       :selected-row="selectedRow"
       @on-close="toggleRevokeDialog"
+      @on-close-with-update="handleCloseWithUpdate"
     />
     <AddOrEditSCIMModal
       v-if="isShowAddOrEditModal"
@@ -92,7 +94,6 @@ export default {
     },
     handleCloseWithUpdate() {
       this.$refs.refTable.callForData()
-      this.toggleAddOrEditModal()
     }
   }
 }

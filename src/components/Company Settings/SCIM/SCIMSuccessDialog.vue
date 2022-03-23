@@ -1,12 +1,30 @@
 <template>
   <AppDialog
     title-id="text--scim-settings-success-popup-title"
+    size="big"
     :icon="CONSTANTS.icon"
     :title="CONSTANTS.title"
     :status="status"
     @changeStatus="handleClose"
   >
-    <template #app-dialog-body> {{ CONSTANTS.body }}</template>
+    <template #app-dialog-body>  <div>
+    {{ CONSTANTS.body }}</div>
+    <div>
+     <v-textarea
+                  v-model.trim="apiKey"
+                  disabled
+                  outlined
+                  readonly
+                  class="saml-settings-text-area-disabled mt-2"
+                  dense
+                  rows="2"
+                  no-resize
+                  hide-details
+                  placeholder="Enter the key from your provider"
+                  height="115"
+                ></v-textarea>
+    </div>
+    </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
         <v-btn
@@ -15,7 +33,7 @@
           text
           color="#2196f3"
           @click="handleCopyToClipboard"
-          >COPY TO CLIPBOARD AND SAVE
+          >COPY TO CLIPBOARD AND QUIT
         </v-btn>
       </div>
     </template>

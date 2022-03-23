@@ -20,7 +20,7 @@ export function deleteSCIMSetting(resourceId = '') {
 }
 
 export function revokeSCIMSetting(resourceId = '') {
-  return testRequest.post(`${URL}/${resourceId}/revoke`, {
+  return testRequest.post(`${URL}/${resourceId}/revoke`,{}, {
     snackbar: COMMON_SNACKBAR
   })
 }
