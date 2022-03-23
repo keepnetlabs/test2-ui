@@ -11,12 +11,6 @@
     @closeOverlay="handleClose"
   >
     <template v-slot:overlay-body>
-      <SCIMSuccessDialog
-        v-if="isShowSuccessDialog"
-        :status="isShowSuccessDialog"
-        :api-key="successApiKey"
-        @on-close="handleCloseSuccessDialog"
-      />
       <v-stepper v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
           <v-stepper-step
@@ -138,14 +132,12 @@ import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import SCIMSuccessDialog from '@/components/Company Settings/SCIM/SCIMSuccessDialog'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
 export default {
   name: 'AddOrEditSCIMModal',
   components: {
-    SCIMSuccessDialog,
     KSelect,
     InputTargetGroup,
     MapCustomAndSCIMFields,
@@ -171,7 +163,6 @@ export default {
     return {
       step: 1,
       isActionButtonDisabled: false,
-      isShowSuccessDialog: false,
       formData: {
         name: '',
         groupResourceId: '',
@@ -179,7 +170,6 @@ export default {
       },
       Validations,
       labels,
-      successApiKey: '',
       groupByItems: [],
       scimFields: [],
       customFields: [],
@@ -283,8 +273,7 @@ export default {
           }
           createSCIMSetting(payload)
             .then((response) => {
-              this.successApiKey=response?.data?.data?.token
-              this.isShowSuccessDialog = true
+              this.$emit('on-success-create', response?.data?.data?.token)
             })
             .finally(() => {
               this.isActionButtonDisabled = false
@@ -305,12 +294,6 @@ export default {
     },
     handleManipulateItems(items = []) {
       return items.map(({ name, resourceId }) => ({ text: name, value: resourceId }))
-    },
-    handleCloseSuccessDialog() {
-      this.successApiKey = ''
-      this.isShowSuccessDialog = false
-      this.handleClose()
-      this.$emit('on-close-with-update')
     }
   }
 }

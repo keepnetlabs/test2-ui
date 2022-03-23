@@ -20,19 +20,23 @@ export function deleteSCIMSetting(resourceId = '') {
 }
 
 export function revokeSCIMSetting(resourceId = '') {
-  return testRequest.post(`${URL}/${resourceId}/revoke`,{}, {
-    snackbar: COMMON_SNACKBAR
-  })
+  return testRequest.post(
+    `${URL}/${resourceId}/revoke`,
+    {},
+    {
+      snackbar: COMMON_SNACKBAR
+    }
+  )
 }
 
 export function getSCIMFields() {
   return testRequest.get(`${URL}/fields`)
 }
 
-export function createSCIMSetting(payload){
+export function createSCIMSetting(payload) {
   return testRequest.post(`${URL}`, payload)
 }
 
-export function updateSCIMSetting(payload,resourceId){
+export function updateSCIMSetting(payload, resourceId) {
   return testRequest.post(`${URL}/${resourceId}`, payload)
 }

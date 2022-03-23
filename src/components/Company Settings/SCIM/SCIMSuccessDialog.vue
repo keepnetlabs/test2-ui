@@ -3,27 +3,29 @@
     title-id="text--scim-settings-success-popup-title"
     size="big"
     :icon="CONSTANTS.icon"
-    :title="CONSTANTS.title"
+    :title="title"
     :status="status"
     @changeStatus="handleClose"
   >
-    <template #app-dialog-body>  <div>
-    {{ CONSTANTS.body }}</div>
-    <div>
-     <v-textarea
-                  v-model.trim="apiKey"
-                  disabled
-                  outlined
-                  readonly
-                  class="saml-settings-text-area-disabled mt-2"
-                  dense
-                  rows="2"
-                  no-resize
-                  hide-details
-                  placeholder="Enter the key from your provider"
-                  height="115"
-                ></v-textarea>
-    </div>
+    <template #app-dialog-body>
+      <div>
+        {{ CONSTANTS.body }}
+      </div>
+      <div>
+        <v-textarea
+          v-model.trim="apiKey"
+          disabled
+          outlined
+          readonly
+          class="saml-settings-text-area-disabled mt-2"
+          dense
+          rows="2"
+          no-resize
+          hide-details
+          placeholder="Enter the key from your provider"
+          height="115"
+        ></v-textarea>
+      </div>
     </template>
     <template #app-dialog-footer>
       <div class="d-flex" style="justify-content: flex-end;">
@@ -52,13 +54,15 @@ export default {
     },
     apiKey: {
       type: String
+    },
+    title: {
+      type: String
     }
   },
   data() {
     return {
       CONSTANTS: {
         icon: 'mdi-check',
-        title: 'Successfully created SCIM Integration',
         body:
           'For security reasons, we can only show you this key once. Please make sure to store it somewhere safe!'
       },

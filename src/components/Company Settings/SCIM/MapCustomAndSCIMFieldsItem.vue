@@ -10,7 +10,6 @@
       :disabled="isEdit"
       :rules="[(v) => Validations.required(v)]"
       :items="customFields"
-    
     />
     <KSelect
       v-model.trim="value.scimFieldResourceId"
@@ -46,8 +45,8 @@ export default {
     isShowDelete: {
       type: Boolean
     },
-    isEdit:{
-      type:Boolean
+    isEdit: {
+      type: Boolean
     },
     index: {
       type: Number
@@ -62,23 +61,23 @@ export default {
       }
     }
   },
-  data(){
+  data() {
     return {
       Validations
     }
   },
-  watch:{
-'value.scimFieldResourceId'(val,oldVal){
-   this.$emit('on-scim-field-change',val,oldVal)
-},
-'value.customFieldResourceId'(val,oldVal){
-   this.$emit('on-custom-field-change',val,oldVal)
-}
+  watch: {
+    'value.scimFieldResourceId'(val, oldVal) {
+      this.$emit('on-scim-field-change', val, oldVal)
+    },
+    'value.customFieldResourceId'(val, oldVal) {
+      this.$emit('on-custom-field-change', val, oldVal)
+    }
   },
   methods: {
     handleDeleteClick() {
       this.$emit('on-delete', this.index)
-    },
+    }
   }
 }
 </script>

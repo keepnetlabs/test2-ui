@@ -128,7 +128,7 @@ export default {
           download: false
         },
         downloadButton: {
-          show: false,
+          show: false
         },
         rowActions: [
           {
@@ -136,10 +136,10 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             id: 'btn-edit--scim-settings-row-actions',
-            isNotShow:true,
+            isNotShow: true,
             disabled: !this.PERMISSIONS.UPDATE.hasPermission
           },
-           {
+          {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
@@ -152,7 +152,7 @@ export default {
             id: 'btn-revoke--scim-settings-row-actions',
             action: 'revokeAction',
             disabled: !this.PERMISSIONS.REVOKE.hasPermission
-          },
+          }
         ],
         empty: {
           message: labels.EmptySCIMSettings,
@@ -176,7 +176,7 @@ export default {
     }
   },
   created() {
-    console.log("this.P",this.PERMISSIONS)
+    console.log('this.P', this.PERMISSIONS)
     this.getStoredTableSettings()
     this.setDefaultFilter()
     this.callForData()
@@ -197,7 +197,7 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results || []
-                console.log("results",results)
+          console.log('results', results)
         })
         .finally(this.setLoading)
     },

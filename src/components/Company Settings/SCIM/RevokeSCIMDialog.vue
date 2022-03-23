@@ -53,9 +53,9 @@ export default {
     handleRevoke() {
       this.isActionButtonDisabled = true
       revokeSCIMSetting(this.selectedRow.resourceId)
-        .then(() => {
+        .then((response) => {
           this.handleClose()
-          this.$emit('on-close-with-update')
+          this.$emit('on-success-revoke', response?.data?.data?.token)
         })
         .finally(() => (this.isActionButtonDisabled = false))
     }

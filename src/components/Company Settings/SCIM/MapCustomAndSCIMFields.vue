@@ -49,12 +49,12 @@ export default {
     isShowDelete() {
       return this.fieldMappings.length > 1
     },
-    getAddCustomFieldStyle(){
-      const style={marginTop:"-8px"}
-      if(this.isEdit){
-        style.pointerEvents='none'
-        style.color="#757575 !important";
-        style.opacity="0.8"
+    getAddCustomFieldStyle() {
+      const style = { marginTop: '-8px' }
+      if (this.isEdit) {
+        style.pointerEvents = 'none'
+        style.color = '#757575 !important'
+        style.opacity = '0.8'
       }
       return style
     }
@@ -69,22 +69,29 @@ export default {
     handleItemDelete(index) {
       this.fieldMappings.splice(index, 1)
     },
-    handleCustomFieldChange(val,oldVal){
-      const findedIndex=this.customFields.findIndex(item=>item.value===val)
-      if(findedIndex ===-1) return
-      this.$set(this.customFields,findedIndex,{...this.customFields[findedIndex],disabled:true})
-      const findedIndexOfOldVal=this.customFields.findIndex(item=>item.value===oldVal)
-      this.$set(this.customFields,findedIndexOfOldVal,{...this.customFields[findedIndexOfOldVal],disabled:false})
+    handleCustomFieldChange(val, oldVal) {
+      const findedIndex = this.customFields.findIndex((item) => item.value === val)
+      if (findedIndex === -1) return
+      this.$set(this.customFields, findedIndex, {
+        ...this.customFields[findedIndex],
+        disabled: true
+      })
+      const findedIndexOfOldVal = this.customFields.findIndex((item) => item.value === oldVal)
+      this.$set(this.customFields, findedIndexOfOldVal, {
+        ...this.customFields[findedIndexOfOldVal],
+        disabled: false
+      })
     },
-    handleScimFieldChange(val,oldVal){
-    const findedIndex=this.scimFields.findIndex(item=>item.value===val)
-      if(findedIndex ===-1) return
-      this.$set(this.scimFields,findedIndex,{...this.scimFields[findedIndex],disabled:true})
-      const findedIndexOfOldVal=this.scimFields.findIndex(item=>item.value===oldVal)
-      this.$set(this.scimFields,findedIndexOfOldVal,{...this.scimFields[findedIndexOfOldVal],disabled:false})
+    handleScimFieldChange(val, oldVal) {
+      const findedIndex = this.scimFields.findIndex((item) => item.value === val)
+      if (findedIndex === -1) return
+      this.$set(this.scimFields, findedIndex, { ...this.scimFields[findedIndex], disabled: true })
+      const findedIndexOfOldVal = this.scimFields.findIndex((item) => item.value === oldVal)
+      this.$set(this.scimFields, findedIndexOfOldVal, {
+        ...this.scimFields[findedIndexOfOldVal],
+        disabled: false
+      })
     }
-
-
   }
 }
 </script>

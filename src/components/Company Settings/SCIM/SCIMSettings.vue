@@ -1,6 +1,13 @@
 <template>
   <div class="scim-settings">
     <CompanySettingsHeader :title="CONSTANTS.title" :sub-title="CONSTANTS.subtitle" />
+    <SCIMSuccessDialog
+      v-if="isShowSuccessDialog"
+      :status="isShowSuccessDialog"
+      :api-key="successApiKey"
+      :title="successDialogTitle"
+      @on-close="handleCloseSuccessDialog"
+    />
     <DeleteSCIMDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
@@ -13,13 +20,14 @@
       :status="isShowRevokeDialog"
       :selected-row="selectedRow"
       @on-close="toggleRevokeDialog"
-      @on-close-with-update="handleCloseWithUpdate"
+      @on-success-revoke="handleSuccessRevoke"
     />
     <AddOrEditSCIMModal
       v-if="isShowAddOrEditModal"
       :status="isShowAddOrEditModal"
       :is-edit="isEdit"
       :selected-row="selectedRow"
+      @on-success-create="handleSuccessCreate"
       @on-close="toggleAddOrEditModal"
       @on-close-with-update="handleCloseWithUpdate"
     />
@@ -40,9 +48,11 @@ import SCIMSettingsTable from '@/components/Company Settings/SCIM/SCIMSettingsTa
 import AddOrEditSCIMModal from '@/components/Company Settings/SCIM/AddOrEditSCIMModal'
 import DeleteSCIMDialog from '@/components/Company Settings/SCIM/DeleteSCIMDialog'
 import RevokeSCIMDialog from '@/components/Company Settings/SCIM/RevokeSCIMDialog'
+import SCIMSuccessDialog from '@/components/Company Settings/SCIM/SCIMSuccessDialog'
 export default {
   name: 'SCIMSettings',
   components: {
+    SCIMSuccessDialog,
     RevokeSCIMDialog,
     DeleteSCIMDialog,
     AddOrEditSCIMModal,
@@ -63,6 +73,9 @@ export default {
       isShowAddOrEditModal: false,
       isShowDeleteDialog: false,
       isShowRevokeDialog: false,
+      isShowSuccessDialog: false,
+      successApiKey: '',
+      successDialogTitle: 'Successfully created SCIM Integration',
       selectedRow: null,
       isEdit: false
     }
@@ -94,6 +107,25 @@ export default {
     },
     handleCloseWithUpdate() {
       this.$refs.refTable.callForData()
+    },
+    handleCloseSuccessDialog() {
+      this.successApiKey = ''
+      this.isShowSuccessDialog = false
+      if (this.isShowAddOrEditModal) {
+        //It is created table must be updated
+        this.isShowAddOrEditModal = false
+        this.handleCloseWithUpdate()
+      }
+    },
+    handleSuccessCreate(key) {
+      this.successDialogTitle = 'Successfully created SCIM Integration'
+      this.successApiKey = key
+      this.isShowSuccessDialog = true
+    },
+    handleSuccessRevoke(key) {
+      this.successDialogTitle = 'Successfully revoked SCIM Integration'
+      this.successApiKey = key
+      this.isShowSuccessDialog = true
     }
   }
 }
