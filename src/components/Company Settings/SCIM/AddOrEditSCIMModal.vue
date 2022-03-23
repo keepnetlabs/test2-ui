@@ -362,7 +362,7 @@ export default {
     overflow: visible;
   }
   #input--target-user-groups {
-    .input--target-user-groups {
+    &.v-input--is-disabled input  {
       color: rgba(0, 0, 0, 0.87) !important;
     }
   }
