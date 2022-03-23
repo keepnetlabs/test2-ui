@@ -38,5 +38,7 @@ export function createSCIMSetting(payload) {
 }
 
 export function updateSCIMSetting(payload, resourceId) {
-  return testRequest.post(`${URL}/${resourceId}`, payload)
+  return testRequest.put(`${URL}/${resourceId}`, payload, {
+    snackbar: COMMON_SNACKBAR
+  })
 }

@@ -55,11 +55,13 @@
             <v-form ref="refStep2Form">
               <FormGroup :title="labels.GroupName" :sub-title="labels.GroupNameSub" has-hint>
                 <InputTargetGroup
+                  ref="inputTargetGroup"
                   v-model.trim="formData.groupResourceId"
                   persistent-hint
                   hint="*Required"
                   :manipulate-items="handleManipulateItems"
                   :rules="[(v) => Validations.required(v)]"
+                  :disabled="isEdit"
                 />
               </FormGroup>
               <FormGroup :title="labels.GroupBy" :sub-title="labels.GroupBySub" has-hint>
@@ -72,6 +74,7 @@
                   hint="*Required"
                   placeholder="Select a item"
                   :items="groupByItems"
+                  :disabled="isEdit"
                 />
               </FormGroup>
             </v-form>
@@ -170,6 +173,7 @@ export default {
       },
       Validations,
       labels,
+      isLoading:false,
       groupByItems: [],
       scimFields: [],
       customFields: [],
@@ -195,17 +199,48 @@ export default {
   },
   methods: {
     callForData() {
+      this.isLoading=true
       getSCIMSetting(this.selectedRow.resourceId).then((response) => {
-        console.log('response', response)
         const { data: { data = {} } = {} } = response
         for (const key of Object.keys(data)) {
           if (key === 'mappingDetails') {
             const { refMapCustomAndSCIMFields } = this.$refs
-            refMapCustomAndSCIMFields.fieldMappings = data.mappingDetails
+            const mappingDetails = data?.mappingDetails || []
+            refMapCustomAndSCIMFields.fieldMappings = mappingDetails.map(
+              ({ scimPath, customFieldName }) => ({
+                customFieldResourceId: customFieldName,
+                scimFieldResourceId: scimPath
+              })
+            )
+            this.customFields = refMapCustomAndSCIMFields?.fieldMappings.map(
+              ({ customFieldResourceId }) => ({
+                text: customFieldResourceId,
+                value: customFieldResourceId
+              })
+            )
+            this.scimFields = refMapCustomAndSCIMFields?.fieldMappings.map(
+              ({ scimFieldResourceId }) => ({
+                text: scimFieldResourceId,
+                value: scimFieldResourceId
+              })
+            )
+          } else if (key === 'groupByCustomFieldName') {
+            this.formData.groupBySCIMFieldResourceId = data.groupByCustomFieldName
+            this.groupByItems = [
+              {
+                text: this.formData.groupBySCIMFieldResourceId,
+                value: this.formData.groupBySCIMFieldResourceId
+              }
+            ]
+          } else if (key === 'groupName') {
+            this.formData.groupResourceId = data.groupName
+            this.$refs.inputTargetGroup.items = [{ text: data.groupName, value: data.groupName }]
           } else {
             this.formData[key] = data[key]
           }
         }
+      }).finally(()=>{
+        this.isLoading=false
       })
     },
     callForGetSCIMFields() {
@@ -227,7 +262,7 @@ export default {
           value: resourceId,
           disabled: false
         }))
-        this.defaultCustomFields = JSON.parse(JSON.stringify(this.customFields))
+        this.defaultCustomFields = JSON.parse(JSON.stringify(customFields))
       })
     },
     changeStep(flag = 1) {
@@ -235,15 +270,22 @@ export default {
         const { refStep1Form } = this.$refs
         if (refStep1Form.validate()) {
           this.step += 1
-          this.groupByItems = this.$refs.refMapCustomAndSCIMFields.fieldMappings.map(
-            ({ customFieldResourceId, scimFieldResourceId }) => ({
-              text: this.defaultCustomFields.find(
-                (customField) => customField.value === customFieldResourceId
-              )?.text,
-              value: scimFieldResourceId
-            })
-          )
-          console.log(this.groupByItems)
+          if (!this.isEdit) {
+            this.groupByItems = [
+              ...[{ text: 'Department', resourceId: '9fd0afec416c' }],
+              ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce((acc,{customFieldResourceId, scimFieldResourceId})=>{
+                  const customField=this.defaultCustomFields.find(
+                    (customField) => customField.resourceId === customFieldResourceId
+                  )
+                  if(customField.fieldDataType!=='String') return acc
+                  acc.push({
+                  text:customField?.name,
+                  value: scimFieldResourceId
+                })
+                return acc
+                },[])
+            ]
+          }
         }
       } else {
         this.step += flag
@@ -258,6 +300,7 @@ export default {
         if (this.isEdit) {
           updateSCIMSetting({ name: this.formData.name }, this.selectedRow.resourceId)
             .then(() => {
+              this.$emit('on-close')
               this.$emit('on-close-with-update')
             })
             .finally(() => {

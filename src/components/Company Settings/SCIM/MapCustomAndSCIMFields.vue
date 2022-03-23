@@ -67,29 +67,42 @@ export default {
       this.fieldMappings.push({ scimFieldResourceId: '', customFieldResourceId: '' })
     },
     handleItemDelete(index) {
+      const { scimFieldResourceId, customFieldResourceId } = this.fieldMappings[index]
+      this.changeCustomFieldItemDisability(
+        this.getCustomFieldIndexByValue(customFieldResourceId),
+        false
+      )
+      this.changeScimFieldDisability(this.getScimFieldIndexByValue(scimFieldResourceId), false)
       this.fieldMappings.splice(index, 1)
     },
     handleCustomFieldChange(val, oldVal) {
-      const findedIndex = this.customFields.findIndex((item) => item.value === val)
+      const findedIndex = this.getCustomFieldIndexByValue(val)
       if (findedIndex === -1) return
+      this.changeCustomFieldItemDisability(findedIndex, true)
+      this.changeCustomFieldItemDisability(this.getCustomFieldIndexByValue(oldVal), false)
+    },
+    getCustomFieldIndexByValue(val) {
+      return this.customFields.findIndex((item) => item.value === val)
+    },
+    changeCustomFieldItemDisability(findedIndex, disabled) {
       this.$set(this.customFields, findedIndex, {
         ...this.customFields[findedIndex],
-        disabled: true
-      })
-      const findedIndexOfOldVal = this.customFields.findIndex((item) => item.value === oldVal)
-      this.$set(this.customFields, findedIndexOfOldVal, {
-        ...this.customFields[findedIndexOfOldVal],
-        disabled: false
+        disabled
       })
     },
     handleScimFieldChange(val, oldVal) {
-      const findedIndex = this.scimFields.findIndex((item) => item.value === val)
+      const findedIndex = this.getScimFieldIndexByValue(val)
       if (findedIndex === -1) return
-      this.$set(this.scimFields, findedIndex, { ...this.scimFields[findedIndex], disabled: true })
-      const findedIndexOfOldVal = this.scimFields.findIndex((item) => item.value === oldVal)
-      this.$set(this.scimFields, findedIndexOfOldVal, {
-        ...this.scimFields[findedIndexOfOldVal],
-        disabled: false
+      this.changeScimFieldDisability(findedIndex, true)
+      this.changeScimFieldDisability(this.getScimFieldIndexByValue(oldVal), false)
+    },
+    getScimFieldIndexByValue(val) {
+      return this.scimFields.findIndex((item) => item.value === val)
+    },
+    changeScimFieldDisability(findedIndex, disabled) {
+      this.$set(this.scimFields, findedIndex, {
+        ...this.scimFields[findedIndex],
+        disabled
       })
     }
   }

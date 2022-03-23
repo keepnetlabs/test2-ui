@@ -43,6 +43,9 @@ export default {
     },
     manipulateItems: {
       type: Function
+    },
+    defaultItems: {
+      type: Array
     }
   },
   directives: {
@@ -54,7 +57,7 @@ export default {
       isUserGroupsLoading: false,
       axiosPayload: getDefaultAxiosPayload(),
       totalNumberOfPagesOfTargetGroups: 1,
-      items: []
+      items: this.defaultItems || []
     }
   },
   created() {
