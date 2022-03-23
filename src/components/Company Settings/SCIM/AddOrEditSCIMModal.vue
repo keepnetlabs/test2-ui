@@ -41,7 +41,13 @@
                 />
               </FormGroup>
               <FormGroup title="Map Fields">
+                <DatatableLoading
+                  v-if="isLoading"
+                  class="map-custom-and-scim-fields-loading"
+                  :loading="isLoading"
+                />
                 <MapCustomAndSCIMFields
+                  v-else
                   ref="refMapCustomAndSCIMFields"
                   :custom-fields="customFields"
                   :scim-fields="scimFields"
@@ -135,12 +141,14 @@ import { getTargetUserCustomFieldsByCompanyId } from '@/api/targetUsers'
 import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
 export default {
   name: 'AddOrEditSCIMModal',
   components: {
+    DatatableLoading,
     KSelect,
     InputTargetGroup,
     MapCustomAndSCIMFields,
@@ -173,7 +181,7 @@ export default {
       },
       Validations,
       labels,
-      isLoading:false,
+      isLoading: false,
       groupByItems: [],
       scimFields: [],
       customFields: [],
@@ -199,49 +207,51 @@ export default {
   },
   methods: {
     callForData() {
-      this.isLoading=true
-      getSCIMSetting(this.selectedRow.resourceId).then((response) => {
-        const { data: { data = {} } = {} } = response
-        for (const key of Object.keys(data)) {
-          if (key === 'mappingDetails') {
-            const { refMapCustomAndSCIMFields } = this.$refs
-            const mappingDetails = data?.mappingDetails || []
-            refMapCustomAndSCIMFields.fieldMappings = mappingDetails.map(
-              ({ scimPath, customFieldName }) => ({
-                customFieldResourceId: customFieldName,
-                scimFieldResourceId: scimPath
-              })
-            )
-            this.customFields = refMapCustomAndSCIMFields?.fieldMappings.map(
-              ({ customFieldResourceId }) => ({
-                text: customFieldResourceId,
-                value: customFieldResourceId
-              })
-            )
-            this.scimFields = refMapCustomAndSCIMFields?.fieldMappings.map(
-              ({ scimFieldResourceId }) => ({
-                text: scimFieldResourceId,
-                value: scimFieldResourceId
-              })
-            )
-          } else if (key === 'groupByCustomFieldName') {
-            this.formData.groupBySCIMFieldResourceId = data.groupByCustomFieldName
-            this.groupByItems = [
-              {
-                text: this.formData.groupBySCIMFieldResourceId,
-                value: this.formData.groupBySCIMFieldResourceId
-              }
-            ]
-          } else if (key === 'groupName') {
-            this.formData.groupResourceId = data.groupName
-            this.$refs.inputTargetGroup.items = [{ text: data.groupName, value: data.groupName }]
-          } else {
-            this.formData[key] = data[key]
+      this.isLoading = true
+      getSCIMSetting(this.selectedRow.resourceId)
+        .then((response) => {
+          const { data: { data = {} } = {} } = response
+          for (const key of Object.keys(data)) {
+            if (key === 'mappingDetails') {
+              const { refMapCustomAndSCIMFields } = this.$refs
+              const mappingDetails = data?.mappingDetails || []
+              refMapCustomAndSCIMFields.fieldMappings = mappingDetails.map(
+                ({ scimPath, customFieldName }) => ({
+                  customFieldResourceId: customFieldName,
+                  scimFieldResourceId: scimPath
+                })
+              )
+              this.customFields = refMapCustomAndSCIMFields?.fieldMappings.map(
+                ({ customFieldResourceId }) => ({
+                  text: customFieldResourceId,
+                  value: customFieldResourceId
+                })
+              )
+              this.scimFields = refMapCustomAndSCIMFields?.fieldMappings.map(
+                ({ scimFieldResourceId }) => ({
+                  text: scimFieldResourceId,
+                  value: scimFieldResourceId
+                })
+              )
+            } else if (key === 'groupByCustomFieldName') {
+              this.formData.groupBySCIMFieldResourceId = data.groupByCustomFieldName
+              this.groupByItems = [
+                {
+                  text: this.formData.groupBySCIMFieldResourceId,
+                  value: this.formData.groupBySCIMFieldResourceId
+                }
+              ]
+            } else if (key === 'groupName') {
+              this.formData.groupResourceId = data.groupName
+              this.$refs.inputTargetGroup.items = [{ text: data.groupName, value: data.groupName }]
+            } else {
+              this.formData[key] = data[key]
+            }
           }
-        }
-      }).finally(()=>{
-        this.isLoading=false
-      })
+        })
+        .finally(() => {
+          this.isLoading = false
+        })
     },
     callForGetSCIMFields() {
       getSCIMFields().then((response) => {
@@ -273,17 +283,20 @@ export default {
           if (!this.isEdit) {
             this.groupByItems = [
               ...[{ text: 'Department', resourceId: '9fd0afec416c' }],
-              ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce((acc,{customFieldResourceId, scimFieldResourceId})=>{
-                  const customField=this.defaultCustomFields.find(
+              ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
+                (acc, { customFieldResourceId, scimFieldResourceId }) => {
+                  const customField = this.defaultCustomFields.find(
                     (customField) => customField.resourceId === customFieldResourceId
                   )
-                  if(customField.fieldDataType!=='String') return acc
+                  if (customField.fieldDataType !== 'String') return acc
                   acc.push({
-                  text:customField?.name,
-                  value: scimFieldResourceId
-                })
-                return acc
-                },[])
+                    text: customField?.name,
+                    value: scimFieldResourceId
+                  })
+                  return acc
+                },
+                []
+              )
             ]
           }
         }
@@ -352,6 +365,11 @@ export default {
   &-item {
     display: flex;
     align-items: center;
+  }
+  &-loading {
+    .v-skeleton-loader__bone {
+      padding-left: 0;
+    }
   }
 }
 </style>

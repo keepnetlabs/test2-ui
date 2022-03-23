@@ -176,7 +176,6 @@ export default {
     }
   },
   created() {
-    console.log('this.P', this.PERMISSIONS)
     this.getStoredTableSettings()
     this.setDefaultFilter()
     this.callForData()
@@ -197,7 +196,6 @@ export default {
           this.serverSideProps.totalNumberOfPages = totalNumberOfPages
           this.serverSideProps.pageNumber = pageNumber
           this.tableData = results || []
-          console.log('results', results)
         })
         .finally(this.setLoading)
     },
