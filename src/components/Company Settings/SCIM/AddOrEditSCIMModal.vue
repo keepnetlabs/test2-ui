@@ -188,7 +188,7 @@ export default {
       customFields: [],
       defaultScimFields: [],
       defaultCustomFields: [],
-      editedMapCustomSCIMFields:[]
+      editedMapCustomSCIMFields: []
     }
   },
   computed: {
@@ -216,30 +216,24 @@ export default {
           for (const key of Object.keys(data)) {
             if (key === 'mappingDetails') {
               const mappingDetails = data?.mappingDetails || []
-              const fieldMappings=mappingDetails.map(
-                ({ scimPath, customFieldName }) => ({
-                  customFieldResourceId: customFieldName,
-                  scimFieldResourceId: scimPath
-                })
-              )
+              const fieldMappings = mappingDetails.map(({ scimPath, customFieldName }) => ({
+                customFieldResourceId: customFieldName,
+                scimFieldResourceId: scimPath
+              }))
               this.editedMapCustomSCIMFields = mappingDetails.map(
                 ({ scimPath, customFieldName }) => ({
                   customFieldResourceId: customFieldName,
                   scimFieldResourceId: scimPath
                 })
               )
-              this.customFields = fieldMappings.map(
-                ({ customFieldResourceId }) => ({
-                  text: customFieldResourceId,
-                  value: customFieldResourceId
-                })
-              )
-              this.scimFields = fieldMappings.map(
-                ({ scimFieldResourceId }) => ({
-                  text: scimFieldResourceId,
-                  value: scimFieldResourceId
-                })
-              )
+              this.customFields = fieldMappings.map(({ customFieldResourceId }) => ({
+                text: customFieldResourceId,
+                value: customFieldResourceId
+              }))
+              this.scimFields = fieldMappings.map(({ scimFieldResourceId }) => ({
+                text: scimFieldResourceId,
+                value: scimFieldResourceId
+              }))
             } else if (key === 'groupByCustomFieldName') {
               this.formData.groupBySCIMFieldResourceId = data.groupByCustomFieldName
               this.groupByItems = [
@@ -367,9 +361,9 @@ export default {
   &__items {
     overflow: visible;
   }
-  #input--target-user-groups{
-    .input--target-user-groups{
-      color:rgba(0, 0, 0, 0.87) !important;
+  #input--target-user-groups {
+    .input--target-user-groups {
+      color: rgba(0, 0, 0, 0.87) !important;
     }
   }
 }

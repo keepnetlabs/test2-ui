@@ -39,13 +39,13 @@ export default {
     isEdit: {
       type: Boolean
     },
-    initialValue:{
-      type:Array
+    initialValue: {
+      type: Array
     }
   },
   data() {
     return {
-      fieldMappings:this.initialValue || []
+      fieldMappings: this.initialValue || []
     }
   },
   computed: {
