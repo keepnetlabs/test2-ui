@@ -92,6 +92,8 @@ export function getBtnStatusColor(type) {
       return '#217124'
     case 'successful':
       return '#217124'
+    case 'success':
+      return '#217124'
     case 'online':
       return '#217124'
     case 'deactivated':

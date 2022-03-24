@@ -1,7 +1,7 @@
 <template>
   <div v-if="col.type === 'status'">
     <v-btn style="display: none;"> </v-btn>
-    <v-tooltip v-if="col.isWithTooltip" bottom opacity="1" max-width="200px">
+    <v-tooltip v-if="shouldRenderTooltip" bottom opacity="1" max-width="200px">
       <template v-slot:activator="{ on }">
         <div v-on="on">
           <badge
@@ -57,14 +57,19 @@ export default {
     shouldRenderBadge() {
       const { scope } = this.$props
       return (
-        scope.row && (scope.row['status'] || scope.row['difficultyName'] || scope.row['difficulty'])
+        scope.row &&
+        (scope.row[this.col.property] || scope.row['difficultyName'] || scope.row['difficulty'])
       )
     },
     getBadgeText() {
       const { scope } = this.$props
       return this.getDataTableFieldLabel(
-        scope.row.status || scope.row['difficultyName'] || scope.row['difficulty']
+        scope.row[this.col.property] || scope.row['difficultyName'] || scope.row['difficulty']
       )
+    },
+    shouldRenderTooltip() {
+      if (this.col.tooltipKey) return !!this.scope.row[this.col.tooltipKey]
+      return this.col.isWithTooltip
     }
   },
   methods: {
@@ -75,7 +80,9 @@ export default {
       return getDataTableFieldLabel(field)
     },
     getStatusTooltipText(type) {
-      return getInvestigationStatusTooltipText(type)
+      return this.col.tooltipKey
+        ? this.scope.row[this.col.tooltipKey]
+        : getInvestigationStatusTooltipText(type)
     }
   }
 }
