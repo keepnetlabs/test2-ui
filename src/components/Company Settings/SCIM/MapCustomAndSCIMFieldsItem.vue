@@ -2,26 +2,23 @@
   <div class="map-custom-and-scim-fields-item">
     <KSelect
       v-model.trim="value.customFieldResourceId"
+      class="map-custom-and-scim-fields-item__select"
       id="input--add-or-edit-scim-group"
-      style="flex-basis: 50%;"
       outlined
       dense
       placeholder="Select a custom field"
       :disabled="isEdit"
-      :rules="[(v) => Validations.required(v)]"
       :items="customFields"
     />
     <KSelect
       v-model.trim="value.scimFieldResourceId"
       id="input--add-or-edit-scim-group"
-      style="flex-basis: 50%;"
-      class="ml-2"
+      class="map-custom-and-scim-fields-item__select ml-2"
       outlined
       dense
       placeholder="Select a scim field"
       :disabled="isEdit"
       :items="scimFields"
-      :rules="[(v) => Validations.required(v)]"
     />
     <v-icon v-if="isShowDelete && !isEdit" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
       >mdi-delete

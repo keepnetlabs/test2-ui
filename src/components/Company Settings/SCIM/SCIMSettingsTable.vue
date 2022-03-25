@@ -99,7 +99,7 @@ export default {
             property: 'groupByCustomFieldName',
             align: 'left',
             editable: false,
-            label: 'Custom Field Name',
+            label: 'Group By Field Name',
             sortable: true,
             show: true,
             fixed: false,

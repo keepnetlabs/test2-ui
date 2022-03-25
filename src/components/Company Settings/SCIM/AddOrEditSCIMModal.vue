@@ -40,7 +40,7 @@
                   entity-name="SCIM setting"
                 />
               </FormGroup>
-              <FormGroup title="Map Fields">
+              <FormGroup title="Map Fields" style="max-width:740px !important">
                 <DatatableLoading
                   v-if="isLoading"
                   class="map-custom-and-scim-fields-loading"
@@ -64,10 +64,7 @@
                 <InputTargetGroup
                   ref="inputTargetGroup"
                   v-model.trim="formData.groupResourceId"
-                  persistent-hint
-                  hint="*Required"
                   :manipulate-items="handleManipulateItems"
-                  :rules="[(v) => Validations.required(v)]"
                   :disabled="isEdit"
                 />
               </FormGroup>
@@ -77,8 +74,6 @@
                   id="input--add-or-edit-scim-group"
                   outlined
                   dense
-                  persistent-hint
-                  hint="*Required"
                   placeholder="Select a item"
                   :items="groupByItems"
                   :disabled="isEdit"
@@ -226,6 +221,9 @@ export default {
                   scimFieldResourceId: scimPath
                 })
               )
+              if(!this.editedMapCustomSCIMFields.length){
+                  this.editedMapCustomSCIMFields.push({ scimFieldResourceId: '', customFieldResourceId: '' })
+              }
               this.customFields = fieldMappings.map(({ customFieldResourceId }) => ({
                 text: customFieldResourceId,
                 value: customFieldResourceId
@@ -236,15 +234,21 @@ export default {
               }))
             } else if (key === 'groupByCustomFieldName') {
               this.formData.groupBySCIMFieldResourceId = data.groupByCustomFieldName
-              this.groupByItems = [
+              if(this.formData.groupBySCIMFieldResourceId){
+                this.groupByItems = [
                 {
                   text: this.formData.groupBySCIMFieldResourceId,
                   value: this.formData.groupBySCIMFieldResourceId
                 }
               ]
+              }
+             
             } else if (key === 'groupName') {
               this.formData.groupResourceId = data.groupName
-              this.$refs.inputTargetGroup.items = [{ text: data.groupName, value: data.groupName }]
+              if(this.formData.groupResourceId){
+ this.$refs.inputTargetGroup.items = [{ text: data.groupName, value: data.groupName }]
+              }
+            
             } else {
               this.formData[key] = data[key]
             }
@@ -289,6 +293,7 @@ export default {
                   const customField = this.defaultCustomFields.find(
                     (customField) => customField.resourceId === customFieldResourceId
                   )
+                  if(!customField) return acc
                   if (customField.fieldDataType !== 'String') return acc
                   acc.push({
                     text: customField?.name,
@@ -300,6 +305,7 @@ export default {
               )
             ]
           }
+       
         }
       } else {
         this.step += flag
@@ -327,6 +333,9 @@ export default {
             groupResourceId: this.formData.groupResourceId,
             groupBySCIMFieldResourceId: this.formData.groupBySCIMFieldResourceId,
             fieldMappings: refMapCustomAndSCIMFields.fieldMappings
+          }
+          if(payload.fieldMappings &&payload.fieldMappings.length){
+            payload.fieldMappings=payload.fieldMappings.filter(mapping=>mapping.customFieldResourceId && mapping.scimFieldResourceId)
           }
           createSCIMSetting(payload)
             .then((response) => {
@@ -371,6 +380,14 @@ export default {
   &-item {
     display: flex;
     align-items: center;
+    &__select{
+    flex-basis:50%;
+    width:360px;
+    .v-list.v-select-list .v-list-item .v-list-item__title{
+      word-break: break-all;
+          white-space: break-spaces;
+    }
+    }
   }
   &-loading {
     .v-skeleton-loader__bone {
