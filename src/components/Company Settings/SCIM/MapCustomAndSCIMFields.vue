@@ -13,7 +13,12 @@
         @on-scim-field-change="handleScimFieldChange"
       />
     </div>
-    <div v-if="!isEdit" class="custom-fields-overlay__add" :style="getAddCustomFieldStyle" @click="addCustomField">
+    <div
+      v-if="!isEdit"
+      class="custom-fields-overlay__add"
+      :style="getAddCustomFieldStyle"
+      @click="addCustomField"
+    >
       <v-icon :color="isEdit ? '#757575' : 'blue'" left medium>
         mdi-plus
       </v-icon>

@@ -599,7 +599,11 @@
                           v-on="on"
                           class="btn-hover"
                           icon
-                          :disabled="rowActions[0].disabled"
+                          :disabled="
+                            rowActions[0].checkDisability
+                              ? rowActions[0].checkDisability(scope.row)
+                              : rowActions[0].disabled
+                          "
                           :id="`${rowActions[0].id}-${
                             scope.$index
                           }-${Math.random().toString().substring(2)}`"
@@ -655,11 +659,14 @@
                       <v-list-item
                         v-if="!act.subElements && !act.isNotShow"
                         v-for="(act, ind) of rowActions"
-                        :disabled="
-                          act.disabled && act.disabled.constructor.name === 'Function'
+                        :style="
+                          (act.disabled && act.disabled.constructor.name === 'Function'
                             ? act.disabled(scope.row)
-                            : act.disabled
+                            : act.disabled) && { pointerEvents: 'none' }
                         "
+                        :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
+                            ? act.disabled(scope.row)
+                            : act.disabled) "
                         :key="ind"
                         :id="`${rowActions[ind].id}-${
                           scope.$index
@@ -667,7 +674,13 @@
                         class="sub-menu-el datatable-row-action-list"
                       >
                         <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
-                          <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                          <v-icon
+                            class="pr-3"
+                            :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
+                            ? act.disabled(scope.row)
+                            : act.disabled)"
+                            >{{ act.icon }}</v-icon
+                          >
                           <span>{{ act.name }}</span>
                         </v-list-item-title>
                       </v-list-item>

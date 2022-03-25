@@ -6,7 +6,6 @@
     filterable
     options
     is-server-side
-    is-server-side-selection
     :refName="'groupsTable'"
     :loading="loading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
