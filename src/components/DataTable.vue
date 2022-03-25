@@ -598,11 +598,6 @@
                         <v-btn
                           v-on="on"
                           class="btn-hover"
-                          :style="
-                            (rowActions[0].checkDisability
-                              ? rowActions[0].checkDisability(scope.row)
-                              : rowActions[0].disabled) && { pointerEvents: 'none' }
-                          "
                           icon
                           :disabled="
                             rowActions[0].checkDisability
@@ -664,10 +659,10 @@
                       <v-list-item
                         v-if="!act.subElements && !act.isNotShow"
                         v-for="(act, ind) of rowActions"
-                        :disabled="
-                          act.disabled && act.disabled.constructor.name === 'Function'
+                        :style="
+                          (act.disabled && act.disabled.constructor.name === 'Function'
                             ? act.disabled(scope.row)
-                            : act.disabled
+                            : act.disabled) && { pointerEvents: 'none' }
                         "
                         :key="ind"
                         :id="`${rowActions[ind].id}-${
