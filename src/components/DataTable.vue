@@ -664,6 +664,9 @@
                             ? act.disabled(scope.row)
                             : act.disabled) && { pointerEvents: 'none' }
                         "
+                        :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
+                            ? act.disabled(scope.row)
+                            : act.disabled) "
                         :key="ind"
                         :id="`${rowActions[ind].id}-${
                           scope.$index
@@ -671,7 +674,13 @@
                         class="sub-menu-el datatable-row-action-list"
                       >
                         <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
-                          <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                          <v-icon
+                            class="pr-3"
+                            :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
+                            ? act.disabled(scope.row)
+                            : act.disabled)"
+                            >{{ act.icon }}</v-icon
+                          >
                           <span>{{ act.name }}</span>
                         </v-list-item-title>
                       </v-list-item>
