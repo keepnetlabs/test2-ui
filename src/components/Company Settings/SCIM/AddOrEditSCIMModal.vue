@@ -40,7 +40,7 @@
                   entity-name="SCIM setting"
                 />
               </FormGroup>
-              <FormGroup title="Map Fields" style="max-width:740px !important">
+              <FormGroup title="Map Fields" style="max-width: 740px !important;">
                 <DatatableLoading
                   v-if="isLoading"
                   class="map-custom-and-scim-fields-loading"
@@ -221,8 +221,11 @@ export default {
                   scimFieldResourceId: scimPath
                 })
               )
-              if(!this.editedMapCustomSCIMFields.length){
-                  this.editedMapCustomSCIMFields.push({ scimFieldResourceId: '', customFieldResourceId: '' })
+              if (!this.editedMapCustomSCIMFields.length) {
+                this.editedMapCustomSCIMFields.push({
+                  scimFieldResourceId: '',
+                  customFieldResourceId: ''
+                })
               }
               this.customFields = fieldMappings.map(({ customFieldResourceId }) => ({
                 text: customFieldResourceId,
@@ -234,21 +237,21 @@ export default {
               }))
             } else if (key === 'groupByCustomFieldName') {
               this.formData.groupBySCIMFieldResourceId = data.groupByCustomFieldName
-              if(this.formData.groupBySCIMFieldResourceId){
+              if (this.formData.groupBySCIMFieldResourceId) {
                 this.groupByItems = [
-                {
-                  text: this.formData.groupBySCIMFieldResourceId,
-                  value: this.formData.groupBySCIMFieldResourceId
-                }
-              ]
+                  {
+                    text: this.formData.groupBySCIMFieldResourceId,
+                    value: this.formData.groupBySCIMFieldResourceId
+                  }
+                ]
               }
-             
             } else if (key === 'groupName') {
               this.formData.groupResourceId = data.groupName
-              if(this.formData.groupResourceId){
- this.$refs.inputTargetGroup.items = [{ text: data.groupName, value: data.groupName }]
+              if (this.formData.groupResourceId) {
+                this.$refs.inputTargetGroup.items = [
+                  { text: data.groupName, value: data.groupName }
+                ]
               }
-            
             } else {
               this.formData[key] = data[key]
             }
@@ -293,7 +296,7 @@ export default {
                   const customField = this.defaultCustomFields.find(
                     (customField) => customField.resourceId === customFieldResourceId
                   )
-                  if(!customField) return acc
+                  if (!customField) return acc
                   if (customField.fieldDataType !== 'String') return acc
                   acc.push({
                     text: customField?.name,
@@ -305,7 +308,6 @@ export default {
               )
             ]
           }
-       
         }
       } else {
         this.step += flag
@@ -334,8 +336,10 @@ export default {
             groupBySCIMFieldResourceId: this.formData.groupBySCIMFieldResourceId,
             fieldMappings: refMapCustomAndSCIMFields.fieldMappings
           }
-          if(payload.fieldMappings &&payload.fieldMappings.length){
-            payload.fieldMappings=payload.fieldMappings.filter(mapping=>mapping.customFieldResourceId && mapping.scimFieldResourceId)
+          if (payload.fieldMappings && payload.fieldMappings.length) {
+            payload.fieldMappings = payload.fieldMappings.filter(
+              (mapping) => mapping.customFieldResourceId && mapping.scimFieldResourceId
+            )
           }
           createSCIMSetting(payload)
             .then((response) => {
@@ -371,7 +375,7 @@ export default {
     overflow: visible;
   }
   #input--target-user-groups {
-    &.v-input--is-disabled input  {
+    &.v-input--is-disabled input {
       color: rgba(0, 0, 0, 0.87) !important;
     }
   }
@@ -380,13 +384,13 @@ export default {
   &-item {
     display: flex;
     align-items: center;
-    &__select{
-    flex-basis:50%;
-    width:360px;
-    .v-list.v-select-list .v-list-item .v-list-item__title{
-      word-break: break-all;
-          white-space: break-spaces;
-    }
+    &__select {
+      flex-basis: 50%;
+      width: 360px;
+      .v-list.v-select-list .v-list-item .v-list-item__title {
+        word-break: break-all;
+        white-space: break-spaces;
+      }
     }
   }
   &-loading {
