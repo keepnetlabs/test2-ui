@@ -428,7 +428,9 @@ export default {
             filterableItems: this.languageFilterOptions
           })
           this.$nextTick(() => {
-            this.$refs.refScenariosList.reRenderColumns()
+            if (this?.$refs?.refScenariosList) {
+              this.$refs.refScenariosList.reRenderColumns()
+            }
           })
         })
       }
