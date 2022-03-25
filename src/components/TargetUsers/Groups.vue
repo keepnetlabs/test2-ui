@@ -225,7 +225,9 @@ export default {
             id: 'btn-edit--target-users-group-row-actions',
             action: 'edit',
             isNotShow: true,
-            disabled: !checkPermission('target-groups/{resourceId}', 'PUT')
+            checkDisability(row) {
+              return !row.isEditable || !checkPermission('target-groups/{resourceId}', 'PUT')
+            }
           },
           {
             name: 'Add users to group',
@@ -238,7 +240,9 @@ export default {
             icon: 'mdi-delete',
             action: 'delete',
             id: 'btn-delete--target-users-people-row-actions',
-            disabled: !checkPermission('target-groups/{resourceId}', 'DELETE')
+            disabled(row) {
+              return !checkPermission('target-groups/{resourceId}', 'DELETE') || !row.isEditable
+            }
           }
         ],
         extendedViewOptions: {
@@ -515,10 +519,9 @@ export default {
   },
 
   created() {
-    if (this.isLoadState) {
-      const tableState =
-        this.$store.state['datatable'].tables['Groups'] &&
-        this.$store.state['datatable'].tables['Groups'].tableState
+    const storeOfGroupTable = this?.$store?.state['datatable']?.tables['Groups']
+    const tableState = storeOfGroupTable && storeOfGroupTable.tableState
+    if (this.isLoadState && tableState) {
       if (tableState) {
         this.serverSideProps = tableState.serverSideProps
         const { filterValues = {} } = tableState
@@ -552,7 +555,7 @@ export default {
         localStorage.getItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS)
       )
     }
-    if (!this.isLoadState) {
+    if (!this.isLoadState || !tableState) {
       this.getDefaultFilterAndSearch()
     }
   },
