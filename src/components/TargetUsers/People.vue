@@ -168,6 +168,42 @@
           </div>
         </div>
       </template>
+      <template #datatable-row-actions="{scope}">
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              :id="`${tableOptions.rowActions[0].id}-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
+              class="btn-hover mr-1"
+              icon
+              :disabled="getDisabledStatusOfAction(scope.row)"
+              @click.native="handleEditTargetUsers(scope.row)"
+            >
+              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ tableOptions.rowActions[0].name }}</span>
+        </v-tooltip>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              :id="`${tableOptions.rowActions[1].id}-${
+                scope.$index
+              }-${Math.random().toString().substring(2)}`"
+              class="btn-hover"
+              icon
+              :disabled="getDisabledStatusOfAction(scope.row)"
+              @click.native="handleDelete(scope.row)"
+            >
+              <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
+            </v-btn>
+          </template>
+          <span>{{ tableOptions.rowActions[1].name }}</span>
+        </v-tooltip>
+      </template>
     </datatable>
   </div>
 </template>
@@ -399,15 +435,20 @@ export default {
         this.payload.filter = savedFilter.filter
         this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refPeopleTable.search =
-            savedFilter?.filter?.FilterGroups[1]?.FilterItems[0]?.Value
-          this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
-          this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
-            .toString()
-            .substring(0, 5)}`
+          if (this?.$refs?.refPeopleTable) {
+            this.$refs.refPeopleTable.search =
+              savedFilter?.filter?.FilterGroups[1]?.FilterItems[0]?.Value
+            this.$refs.refPeopleTable.filterValues = savedFilter.filterValues
+            this.$refs.refPeopleTable.columnKey = `column-key${Math.random()
+              .toString()
+              .substring(0, 5)}`
+          }
         })
       }
       this.callForGetTargetUserCustomFieldsByCompanyId()
+    },
+    getDisabledStatusOfAction(row) {
+      return !row.isEditable
     },
     handleViewUserGroups(selectedRow = {}) {
       this.selectedUserToViewGroups = selectedRow
