@@ -2787,10 +2787,9 @@ export default {
       })
     },
     irPreviewOnClick(row) {
-      this.$router.push({
-        name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 'third' }
-      })
+      window.open(
+        `${window.location.href}/reported-emails/email-details/${row.resourceId}?tab=third`
+      )
     },
     handleIsNotify(value) {
       if (!value) {
@@ -2884,10 +2883,7 @@ export default {
       }
     },
     irDetailsOnClick(row) {
-      this.$router.push({
-        name: 'Analysis Details',
-        params: { id: row.resourceId, tab: 0 }
-      })
+      window.open(`${window.location.href}/reported-emails/email-details/${row.resourceId}`)
     },
     isPhishingEmpty(data) {
       if (data && !data.phishingReporterUserStatusCount) {

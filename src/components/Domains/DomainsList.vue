@@ -101,7 +101,8 @@ import DataTable from '../DataTable'
 import {
   PROPERTY_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS
+  TABLE_SETTINGS_KEYS,
+  getStoreValue
 } from '@/model/constants/commonConstants'
 import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
@@ -182,6 +183,21 @@ export default {
             width: 240,
             type: 'text',
             filterableType: 'text'
+          },
+          {
+            property: 'healthStatus',
+            align: 'center',
+            editable: false,
+            label: getStoreValue('status'),
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'status',
+            isEditable: true,
+            tooltipKey: 'healthStatusMessage',
+            width: 150,
+            filterableType: 'select',
+            filterableItems: ['Success', 'Failed', { text: 'Not Checked', value: 'NotChecked' }]
           },
           {
             property: 'createdBy',

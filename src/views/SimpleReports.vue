@@ -1,49 +1,22 @@
 <template>
   <div class="campaign-reports" id="campaign-reports">
     <div class="campaign-reports__content">
-      <iframe style="border: none; width: 100%; height: 100vh;" :src="src"></iframe>
+      <CampaignReportsTable just-show-report-action @on-view-report="handleViewReport" />
     </div>
   </div>
 </template>
 
 <script>
-import { useLoading } from '@/hooks/useLoading'
-import { getTicket } from '@/api/common'
+import CampaignReportsTable from '@/components/CampaignReports/CampaignReportsTable'
 export default {
   name: 'SimpleReports',
-  mixins: [useLoading],
-  data() {
-    return {
-      src: ``
-    }
-  },
-  created() {
-    this.callForData()
-  },
+  components: { CampaignReportsTable },
   methods: {
-    callForData() {
-      this.setLoading(true)
-      getTicket()
-        .then((response) => {
-          const {
-            data: {
-              data: { ticket }
-            }
-          } = response || { data: { data: { ticket: '' } } }
-          console.log('qlikTicket', ticket)
-          /*
-          const companyResourceId =
-            localStorage.getItem('isSelectCompany') === 'true'
-              ? localStorage.getItem('companyRequestId')
-              : localStorage.getItem('companyResourceId')
-
-           */
-          //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&obj=CRxuQjL&opt=ctxmenu,currsel
-          //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel
-          //https://qlik.devkeepnet.com/custom/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel?qlikTicket=
-          this.src = `https://qlik.devkeepnet.com/custom/single?qlikTicket=${ticket}&appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel`
-        })
-        .finally(this.setLoading)
+    handleViewReport(row) {
+      this.$router.push({
+        name: 'Simple Report Details',
+        params: { id: row.resourceId }
+      })
     }
   }
 }

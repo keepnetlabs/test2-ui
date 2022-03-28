@@ -33,6 +33,7 @@ import CampaignReports from '@/views/CampaignReports'
 import Reports from '@/views/Reports'
 import PhishingSimulatorRoute from '@/views/PhishingSimulatorRoute'
 import SimpleReports from '@/views/SimpleReports'
+import SimpleReportDetails from '@/views/SimpleReportDetails'
 
 Vue.use(Router)
 
@@ -360,8 +361,7 @@ const router = new Router({
                 isAuthenticated: true,
                 parentName: 'Reports'
               }
-            }
-            /*
+            },
             {
               path: '/simple-reports',
               name: 'Simple Reports',
@@ -370,8 +370,16 @@ const router = new Router({
                 isAuthenticated: true,
                 parentName: 'Reports'
               }
+            },
+            {
+              path: `/simple-reports/:id`,
+              name: 'Simple Report Details',
+              component: SimpleReportDetails,
+              meta: {
+                isAuthenticated: true,
+                parentName: 'Reports'
+              }
             }
-             */
           ]
         }
       ]

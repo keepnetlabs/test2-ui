@@ -9,7 +9,11 @@
         @on-close="toggleShowDeleteDialog"
         @on-delete="handleDeleteItem"
       />
-      <CampaignReportsTable ref="refTable" @on-delete="handleTableDeleteClick" />
+      <CampaignReportsTable
+        ref="refTable"
+        @on-delete="handleTableDeleteClick"
+        @on-view-report="handleViewReport"
+      />
     </div>
   </div>
 </template>
@@ -53,6 +57,12 @@ export default {
     handleTableDeleteClick(row) {
       this.selectedRow = row
       this.toggleShowDeleteDialog()
+    },
+    handleViewReport(row) {
+      this.$router.push({
+        name: 'Campaign Report',
+        params: { id: row.resourceId }
+      })
     }
   }
 }
