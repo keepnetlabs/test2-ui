@@ -44,7 +44,7 @@ export default {
           //https://qlik.devkeepnet.com/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel
           //https://qlik.devkeepnet.com/custom/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=ctxmenu,currsel?qlikTicket=
 
-          this.src = `https://qlik.devkeepnet.com/custom/single/?appid=6ef0b3f6-d3a2-4aed-a416-5afb1cf3ec83&sheet=5454d995-a0fe-4eb1-b741-0b6f26c1e7d4&opt=noselections,ctxmenu&qlikTicket=${ticket}&select=$::PhishingCampaignJob.ResourceId,${this?.$route?.params?.id}&select=$::Company.ResourceId,${companyResourceId}`
+          this.src = `https://qlik.devkeepnet.com/custom/single/?appid=e532f28a-5e2b-454f-acb7-054a907afb8e&sheet=5fe1fcbb-0701-49ed-8a24-79ef90f59831&opt=noselections,ctxmenu&qlikTicket=${ticket}&select=$::PhishingCampaignJob.ResourceId,${this?.$route?.params?.id}&select=$::Company.ResourceId,${companyResourceId}`
         })
         .finally(this.setLoading)
     }
