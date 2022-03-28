@@ -720,6 +720,8 @@ export default {
   created() {
     if (this.$route.params && this.$route.params.tab) {
       this.tab = this.$route.params.tab
+    } else if (this.$route.query && this.$route.query.tab) {
+      this.tab = this.$route.query.tab
     }
   },
   computed: {
