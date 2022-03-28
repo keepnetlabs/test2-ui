@@ -58,6 +58,12 @@ export default {
   name: 'CampaignReportsTable',
   components: { DataTable },
   mixins: [useLoading],
+  props: {
+    justShowReportAction: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       CONSTANTS: {
@@ -93,20 +99,29 @@ export default {
         iEmpty: {
           message: labels.EmptyCampaignReport
         },
-        rowActions: [
-          {
-            name: labels.ViewReport,
-            id: 'btn-view-report-row-actions-campaign-reports',
-            icon: 'mdi-text-box',
-            action: 'on-view-report'
-          },
-          {
-            id: 'btn-delete--campaign-reports',
-            name: 'Delete',
-            icon: 'mdi-delete',
-            action: 'on-delete'
-          }
-        ],
+        rowActions: this.justShowReportAction
+          ? [
+              {
+                name: labels.ViewReport,
+                id: 'btn-view-report-row-actions-campaign-reports',
+                icon: 'mdi-text-box',
+                action: 'on-view-report'
+              }
+            ]
+          : [
+              {
+                name: labels.ViewReport,
+                id: 'btn-view-report-row-actions-campaign-reports',
+                icon: 'mdi-text-box',
+                action: 'on-view-report'
+              },
+              {
+                id: 'btn-delete--campaign-reports',
+                name: 'Delete',
+                icon: 'mdi-delete',
+                action: 'on-delete'
+              }
+            ],
         selectEvent: {
           clipboard: true
         }
@@ -266,10 +281,7 @@ export default {
       })
     },
     handleViewReport(row = {}) {
-      this.$router.push({
-        name: 'Campaign Report',
-        params: { id: row.resourceId }
-      })
+      this.$emit('on-view-report', row)
     },
     handleDelete(row) {
       this.$emit('on-delete', row)
