@@ -221,12 +221,6 @@ export default {
                   scimFieldResourceId: scimPath
                 })
               )
-              if (!this.editedMapCustomSCIMFields.length) {
-                this.editedMapCustomSCIMFields.push({
-                  scimFieldResourceId: '',
-                  customFieldResourceId: ''
-                })
-              }
               this.customFields = fieldMappings.map(({ customFieldResourceId }) => ({
                 text: customFieldResourceId,
                 value: customFieldResourceId
@@ -273,15 +267,22 @@ export default {
       })
     },
     callForCustomFields() {
-      getTargetUserCustomFieldsByCompanyId().then((response) => {
-        const customFields = response?.data?.data || []
-        this.customFields = customFields.map(({ name, resourceId }) => ({
-          text: name,
-          value: resourceId,
-          disabled: false
-        }))
-        this.defaultCustomFields = JSON.parse(JSON.stringify(customFields))
-      })
+      this.isLoading = true
+      getTargetUserCustomFieldsByCompanyId()
+        .then((response) => {
+          const customFields = response?.data?.data || []
+          this.customFields = customFields.map(({ name, resourceId }) => ({
+            text: name,
+            value: resourceId,
+            disabled: true
+          }))
+          this.editedMapCustomSCIMFields = this.customFields.map((cField) => ({
+            customFieldResourceId: cField.value,
+            scimFieldResourceId: ''
+          }))
+          this.defaultCustomFields = JSON.parse(JSON.stringify(customFields))
+        })
+        .finally(() => (this.isLoading = false))
     },
     changeStep(flag = 1) {
       if (this.step === 1 && flag === 1) {

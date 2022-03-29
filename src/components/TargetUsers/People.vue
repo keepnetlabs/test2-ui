@@ -169,40 +169,8 @@
         </div>
       </template>
       <template #datatable-row-actions="{scope}">
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`${tableOptions.rowActions[0].id}-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover mr-1"
-              icon
-              :disabled="getDisabledStatusOfAction(scope.row)"
-              @click.native="handleEditTargetUsers(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[0].name }}</span>
-        </v-tooltip>
-        <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn
-              v-on="on"
-              :id="`${tableOptions.rowActions[1].id}-${
-                scope.$index
-              }-${Math.random().toString().substring(2)}`"
-              class="btn-hover"
-              icon
-              :disabled="getDisabledStatusOfAction(scope.row)"
-              @click.native="handleDelete(scope.row)"
-            >
-              <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
-            </v-btn>
-          </template>
-          <span>{{ tableOptions.rowActions[1].name }}</span>
-        </v-tooltip>
+        <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
+        <TargetUserRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
       </template>
     </datatable>
   </div>
@@ -239,10 +207,14 @@ import {
   createCustomFieldColumns,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
+import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/TargetUserRowActionsDeleteButton'
 
 export default {
   name: 'People',
   components: {
+    TargetUserRowActionsDeleteButton,
+    TargetUserRowActionsEditButton,
     TargetUsersViewTargetUserGroups,
     CustomFieldsModal,
     DeleteUserModal,
@@ -335,6 +307,7 @@ export default {
           fixed: 'left',
           sortable: true,
           show: true,
+          width: 140,
           type: 'text',
           filterableType: 'text',
           dbName: 'FirstName'
@@ -446,9 +419,6 @@ export default {
         })
       }
       this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    getDisabledStatusOfAction(row) {
-      return !row.isEditable
     },
     handleViewUserGroups(selectedRow = {}) {
       this.selectedUserToViewGroups = selectedRow
@@ -620,7 +590,14 @@ export default {
       this.loading = true
       deleteTargetUser(selectedUser.resourceId).then((response) => {
         if (response.data && response.data.message) {
-          this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
+          if (
+            this.$refs.refPeopleTable.multipleSelection.find(
+              (item) => item.resourceId === selectedUser.resourceId
+            )
+          ) {
+            this.$refs.refPeopleTable.$refs.elTableRef.toggleRowSelection(selectedUser, false)
+            this.$refs.refPeopleTable.serverSideSelectionCount -= 1
+          }
           if (selections?.[selections.length - 1]?.resourceId === selectedUser?.resourceId) {
             this.$emit('call-for-company-licenses')
             this.callForTargetUsers()

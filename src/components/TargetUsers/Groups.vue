@@ -91,6 +91,38 @@
           {{ scope.row[col.property] }}
         </span>
       </template>
+      <template #datatable-row-actions="{scope}">
+        <TargetUserRowActionsEditButton
+          type="groups"
+          :scope="scope"
+          @on-edit="handleEditBtnClick"
+        />
+        <v-menu bottom left offset-y transition="scale-transition">
+          <template v-slot:activator="{ on }">
+            <v-btn
+              v-on="on"
+              style="margin-top: -18px;"
+              :id="`btn-dots--row-actions-list-${scope.$index}`"
+              class="btn-hover ml-1"
+              icon
+            >
+              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical </v-icon>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item
+              :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
+              @click="handleAddGroup(scope.row)"
+            >
+              <v-list-item-title>
+                <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
+                <span>{{ tableOptions.rowActions[1].name }}</span>
+              </v-list-item-title>
+            </v-list-item>
+            <TargetGroupRowActionsDeleteButton :scope="scope" @on-delete="handleDelete" />
+          </v-list>
+        </v-menu>
+      </template>
     </datatable>
   </div>
 </template>
@@ -124,9 +156,13 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
+import TargetGroupRowActionsDeleteButton from '@/components/SmallComponents/TargetGroupRowActionsDeleteButton'
 export default {
   name: 'Groups',
   components: {
+    TargetGroupRowActionsDeleteButton,
+    TargetUserRowActionsEditButton,
     DeleteGroupModal,
     CreateNewUserGroupModal,
     TargetGroupUsersAddUsersModal,
@@ -317,6 +353,9 @@ export default {
     }
   },
   methods: {
+    handleEditBtnClick(row, scope) {
+      this.$refs.refGroupsTable.handleEdit(row, scope.$index)
+    },
     handleSetRenderedColumns(tableSettings = {}) {
       localStorage.setItem(TABLE_SETTINGS_KEYS.TARGET_USERS_GROUPS, JSON.stringify(tableSettings))
     },

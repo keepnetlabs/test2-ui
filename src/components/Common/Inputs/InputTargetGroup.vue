@@ -86,6 +86,7 @@ export default {
       } else {
         this.items = [...this.items, ...data.results]
       }
+      this.isUserGroupsLoading = false
     },
     callForSearchTargetGroups(search = '') {
       if (search) {
