@@ -14,7 +14,7 @@
       />
     </div>
     <div
-      v-if="!isEdit"
+      v-if="!isEdit && !isEmptyMessageRendered"
       class="custom-fields-overlay__add"
       :style="getAddCustomFieldStyle"
       @click="addCustomField"
@@ -25,6 +25,9 @@
       <div>
         ADD CUSTOM FIELD
       </div>
+    </div>
+    <div v-if="isEmptyMessageRendered">
+      You do not have any custom field
     </div>
   </div>
 </template>
@@ -57,6 +60,9 @@ export default {
     isShowDelete() {
       return this.fieldMappings.length > 1
     },
+    isEmptyMessageRendered() {
+      return !this.fieldMappings.length
+    },
     getAddCustomFieldStyle() {
       const style = { marginTop: '-8px' }
       if (this.isEdit) {
@@ -66,9 +72,6 @@ export default {
       }
       return style
     }
-  },
-  created() {
-    if (!this.isEdit) this.addCustomField()
   },
   methods: {
     addCustomField() {

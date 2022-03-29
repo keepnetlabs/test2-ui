@@ -429,7 +429,6 @@ export default {
             this.serverSideProps.pageNumber = pageNumber
             const { results = [] } = data
             this.tableData = results
-            console.log('results', results)
           })
           .catch(() => {
             this.tableData = []
