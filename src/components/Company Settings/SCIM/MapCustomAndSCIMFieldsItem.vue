@@ -1,7 +1,7 @@
 <template>
   <div class="map-custom-and-scim-fields-item">
     <KSelect
-      v-model.trim="value.customFieldResourceId"
+      :value="value.customFieldResourceId"
       class="map-custom-and-scim-fields-item__select"
       id="input--add-or-edit-scim-group"
       outlined
@@ -9,9 +9,10 @@
       placeholder="Select a custom field"
       :disabled="isEdit"
       :items="customFields"
+      @change="handleCustomFieldChange"
     />
     <KSelect
-      v-model.trim="value.scimFieldResourceId"
+      :value="value.scimFieldResourceId"
       id="input--add-or-edit-scim-group"
       class="map-custom-and-scim-fields-item__select ml-2"
       outlined
@@ -19,6 +20,7 @@
       placeholder="Select a scim field"
       :disabled="isEdit"
       :items="scimFields"
+      @change="handleScimFieldChange"
     />
     <v-icon v-if="isShowDelete && !isEdit" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
       >mdi-delete
@@ -63,17 +65,23 @@ export default {
       Validations
     }
   },
-  watch: {
-    'value.scimFieldResourceId'(val, oldVal) {
-      this.$emit('on-scim-field-change', val, oldVal)
-    },
-    'value.customFieldResourceId'(val, oldVal) {
-      this.$emit('on-custom-field-change', val, oldVal)
-    }
-  },
   methods: {
     handleDeleteClick() {
       this.$emit('on-delete', this.index)
+    },
+    handleScimFieldChange(val) {
+      this.$emit('on-scim-field-change', val, this.value.scimFieldResourceId)
+      this.$emit('input', {
+        customFieldResourceId: this.value.customFieldResourceId,
+        scimFieldResourceId: val
+      })
+    },
+    handleCustomFieldChange(val) {
+      this.$emit('on-custom-field-change', val, this.value.customFieldResourceId)
+      this.$emit('input', {
+        customFieldResourceId: val,
+        scimFieldResourceId: this.value.scimFieldResourceId
+      })
     }
   }
 }

@@ -22,10 +22,13 @@ const selectSearchHandler = {
     objRef.$watch(
       (vm) => vm.$_menuProps.value,
       (val) => {
-        vNode.context[isLoadingKey] = true
         if (selectSearchHandlerState.timeoutId) clearTimeout(selectSearchHandlerState.timeoutId)
         selectSearchHandlerState.timeoutId = setTimeout(() => {
-          if (!val && selectSearchHandlerState.searchVal) callback('')
+          if (!val && selectSearchHandlerState.searchVal) {
+            callback('')
+          } else {
+            vNode.context[isLoadingKey] = false
+          }
         }, 500)
       }
     )
