@@ -1,6 +1,12 @@
 <template>
   <div class="target-users-group-users">
     <div class="target-users-group-users__container">
+      <DefaultErrorDialog
+        v-if="!!bulkDeleteErrorMessage"
+        :status="!!bulkDeleteErrorMessage"
+        :error-message="bulkDeleteErrorMessage"
+        @on-close="bulkDeleteErrorMessage = ''"
+      />
       <TargetUserEditUserModal
         v-if="showEditUserModal"
         :editData="selectedRow"
@@ -30,6 +36,7 @@
         :selected-rows="getSelectedRow"
         :group-name="getGroupName"
         :resource-id="resourceId"
+        :bulk-delete-error-message.sync="bulkDeleteErrorMessage"
         @closeDialog="toggleShowRemoveUserModal"
         @handleRemoveUsers="handleRemoveUsers"
       />
@@ -57,9 +64,11 @@ import AddUserModal from '../AddUserModal'
 import TargetGroupUsersAddToAnExistingGroupModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddToAnExistingGroupModal'
 import TargetGroupUsersAddUsersModal from '@/components/TargetUsers/GroupUsers/TargetGroupUsersAddUsersModal'
 import TargetGroupsUsersRemoveFromGroups from '@/components/TargetUsers/GroupUsers/TargetGroupsUsersRemoveFromGroups'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 export default {
   name: 'TargetGroupUsers',
   components: {
+    DefaultErrorDialog,
     TargetGroupsUsersRemoveFromGroups,
     TargetGroupUsersAddUsersModal,
     TargetGroupUsersAddToAnExistingGroupModal,
@@ -71,6 +80,7 @@ export default {
       customFields: [],
       resourceId: null,
       showEditUserModal: false,
+      bulkDeleteErrorMessage: '',
       selectedRow: null,
       showAddToAnExistingGroupModal: false,
       showAddUsersModal: false,

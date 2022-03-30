@@ -18,7 +18,7 @@
     :rules="rules"
     prepend-inner-icon="mdi-magnify"
     autocomplete="disabled"
-    placeholder="Select user groups"
+    :placeholder="placeholder"
     :no-data-text="isUserGroupsLoading ? 'Loading...' : 'No user group available'"
     @change="handleInputChange"
   />
@@ -46,6 +46,10 @@ export default {
     },
     defaultItems: {
       type: Array
+    },
+    placeholder: {
+      type: String,
+      default: 'Select user groups'
     }
   },
   directives: {
