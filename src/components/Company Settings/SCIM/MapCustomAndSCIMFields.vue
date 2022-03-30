@@ -4,7 +4,7 @@
       <MapCustomAndSCIMFieldsItem
         v-model="fieldMappings[index]"
         :index="index"
-        :is-show-delete="isShowDelete"
+        :is-show-delete="false"
         :is-edit="isEdit"
         :custom-fields="customFields"
         :scim-fields="scimFields"
