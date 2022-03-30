@@ -64,6 +64,8 @@
                 <InputTargetGroup
                   ref="inputTargetGroup"
                   v-model.trim="formData.groupResourceId"
+                  clearable
+                  :placeholder="isEdit ? labels.NoneSelected : 'Select user groups'"
                   :manipulate-items="handleManipulateItems"
                   :disabled="isEdit"
                 />
@@ -74,7 +76,8 @@
                   id="input--add-or-edit-scim-group"
                   outlined
                   dense
-                  placeholder="Select a item"
+                  :placeholder="isEdit ? labels.NoneSelected : 'Select a item'"
+                  clearable
                   :items="groupByItems"
                   :disabled="isEdit"
                 />
@@ -271,11 +274,13 @@ export default {
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const customFields = response?.data?.data || []
-          this.customFields = customFields.map(({ name, resourceId }) => ({
-            text: name,
-            value: resourceId,
-            disabled: true
-          }))
+          this.customFields = customFields
+            .filter((cField) => cField.isActive)
+            .map(({ name, resourceId }) => ({
+              text: name,
+              value: resourceId,
+              disabled: true
+            }))
           this.editedMapCustomSCIMFields = this.customFields.map((cField) => ({
             customFieldResourceId: cField.value,
             scimFieldResourceId: ''
@@ -294,6 +299,7 @@ export default {
               ...[{ text: 'Department', value: '9fd0afec416c' }],
               ...this.$refs.refMapCustomAndSCIMFields.fieldMappings.reduce(
                 (acc, { customFieldResourceId, scimFieldResourceId }) => {
+                  if (!customFieldResourceId || !scimFieldResourceId) return acc
                   const customField = this.defaultCustomFields.find(
                     (customField) => customField.resourceId === customFieldResourceId
                   )

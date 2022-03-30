@@ -1,5 +1,11 @@
 <template>
   <div class="people">
+    <default-error-dialog
+      v-if="!!bulkDeleteErrorMessage"
+      :status="!!bulkDeleteErrorMessage"
+      :error-message="bulkDeleteErrorMessage"
+      @on-close="bulkDeleteErrorMessage = ''"
+    />
     <delete-user-modal
       v-if="isWantToShowDeleteUserModal"
       :is-show="isWantToShowDeleteUserModal"
@@ -24,6 +30,7 @@
     <custom-fields-modal
       v-if="isWantToShowCustomFieldsModal"
       :status="isWantToShowCustomFieldsModal"
+      :bulk-delete-error-message.sync="bulkDeleteErrorMessage"
       @closeCustomFieldsModal="toggleCustomFieldsModal"
       @closeCustomFieldsModalWithUpdate="closeCustomFieldsModalWithUpdate"
     />
@@ -209,10 +216,12 @@ import {
 } from '@/utils/helperFunctions'
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/TargetUserRowActionsDeleteButton'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 
 export default {
   name: 'People',
   components: {
+    DefaultErrorDialog,
     TargetUserRowActionsDeleteButton,
     TargetUserRowActionsEditButton,
     TargetUsersViewTargetUserGroups,
@@ -238,6 +247,7 @@ export default {
     isShowingTargetUserViewTargetGroups: false,
     tableData: [],
     loading: true,
+    bulkDeleteErrorMessage: '',
     isMultipleDelete: false,
     multipleDeletedUserCount: 0,
     multipleTargetUserPayload: {},
@@ -580,6 +590,9 @@ export default {
           this.$refs.refPeopleTable.resetSelectableParams()
           this.callForTargetUsers()
           this.changeDeleteModalStatus(false)
+        })
+        .catch((error) => {
+          this.bulkDeleteErrorMessage = error?.response?.data?.message
         })
         .finally(() => {
           this.loading = false

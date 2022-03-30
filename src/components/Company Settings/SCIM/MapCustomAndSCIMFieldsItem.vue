@@ -6,10 +6,12 @@
       id="input--add-or-edit-scim-group"
       outlined
       dense
+      clearable
       placeholder="Select a custom field"
       :disabled="isEdit"
       :items="customFields"
       @change="handleCustomFieldChange"
+      @click:clear="handleCustomFieldChange('')"
     />
     <KSelect
       :value="value.scimFieldResourceId"
@@ -17,10 +19,12 @@
       class="map-custom-and-scim-fields-item__select ml-2"
       outlined
       dense
+      clearable
       placeholder="Select a scim field"
       :disabled="isEdit"
       :items="scimFields"
       @change="handleScimFieldChange"
+      @click:clear="handleScimFieldChange('')"
     />
     <v-icon v-if="isShowDelete && !isEdit" class="ml-2 mt-n5" left medium @click="handleDeleteClick"
       >mdi-delete
