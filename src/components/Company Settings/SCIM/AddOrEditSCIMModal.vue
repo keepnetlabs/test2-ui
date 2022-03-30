@@ -274,11 +274,13 @@ export default {
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const customFields = response?.data?.data || []
-          this.customFields = customFields.map(({ name, resourceId }) => ({
-            text: name,
-            value: resourceId,
-            disabled: true
-          }))
+          this.customFields = customFields
+            .filter((cField) => cField.isActive)
+            .map(({ name, resourceId }) => ({
+              text: name,
+              value: resourceId,
+              disabled: true
+            }))
           this.editedMapCustomSCIMFields = this.customFields.map((cField) => ({
             customFieldResourceId: cField.value,
             scimFieldResourceId: ''
