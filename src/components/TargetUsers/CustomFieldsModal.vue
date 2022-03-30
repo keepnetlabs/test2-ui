@@ -6,7 +6,6 @@
     icon-name="mdi-file-excel"
     title="Edit Fields - Target Users / People"
     ref="refAppModal"
-    z-index="999"
     title-id="text--target-users-people-custom-fields-modal-title"
     subtitle-id="text--target-users-people-custom-fields-modal-subtitle"
   >
@@ -146,7 +145,6 @@ import {
 } from '@/api/targetUsers'
 import CustomFieldsLoading from '@/components/SkeletonLoading/CustomFieldsLoading'
 import labels from '@/model/constants/labels'
-
 export default {
   name: 'CustomFieldsModal',
   components: {
@@ -160,6 +158,9 @@ export default {
   props: {
     status: {
       type: Boolean
+    },
+    bulkDeleteErrorMessage: {
+      type: String
     }
   },
   data() {
@@ -230,9 +231,11 @@ export default {
       getTargetUserCustomFieldsByCompanyId()
         .then((response) => {
           const { data } = response
-          this.customFields = data.data.filter((item) => {
-            return item.isActive
-          })
+          this.customFields = data.data
+            .filter((item) => {
+              return item.isActive
+            })
+            .map((item) => ({ ...item, isEdit: true }))
           this.unActiveCustomFields = data.data.filter((item) => {
             return !item.isActive
           })
@@ -312,11 +315,14 @@ export default {
         .then(() => {
           this.isMakePost = true
           this.callForGetTargetUserCustomFieldsByCompanyId()
+          this.closeOverlay()
         })
-        .catch(() => (this.loading = false))
+        .catch((error) => {
+          this.$emit('update:bulkDeleteErrorMessage', error?.response?.data?.message)
+          this.loading = false
+        })
         .finally(() => {
           this.saveDisable = false
-          this.closeOverlay()
         })
     },
     handleDeleteTableField(item) {

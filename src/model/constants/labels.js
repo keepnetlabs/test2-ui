@@ -10,6 +10,7 @@ export const labels = {
   ApiKey: 'API Key',
   Completed: 'Completed',
   RequiredStar: '*Required',
+  NoneSelected: 'None selected',
   SecretToken: 'Secret Token',
   SecretTokenSub: 'Copy this token to service provider',
   Revoke: 'Revoke',

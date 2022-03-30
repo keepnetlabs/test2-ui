@@ -1,5 +1,11 @@
 <template>
   <div class="target-users-groups">
+    <default-error-dialog
+      v-if="!!bulkDeleteErrorMessage"
+      :status="!!bulkDeleteErrorMessage"
+      :error-message="bulkDeleteErrorMessage"
+      @on-close="bulkDeleteErrorMessage = ''"
+    />
     <TargetGroupUsersAddUsersModal
       v-if="showAddUsersModal"
       :status="showAddUsersModal"
@@ -158,9 +164,11 @@ import {
 } from '@/utils/helperFunctions'
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetGroupRowActionsDeleteButton from '@/components/SmallComponents/TargetGroupRowActionsDeleteButton'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 export default {
   name: 'Groups',
   components: {
+    DefaultErrorDialog,
     TargetGroupRowActionsDeleteButton,
     TargetUserRowActionsEditButton,
     DeleteGroupModal,
@@ -175,6 +183,7 @@ export default {
   },
   data() {
     return {
+      bulkDeleteErrorMessage: '',
       showAddUsersModal: false,
       isCreateButtonDisabled: false,
       loading: false,
@@ -531,10 +540,14 @@ export default {
       selection.forEach((item) => this.handleDeleteGroup(item))
     },
     handleDeleteGroup(selectedRow) {
-      deleteTargetGroup(selectedRow.resourceId).then(() => {
-        this.$refs.refGroupsTable.unSelectRow(selectedRow)
-        this.callForTargetGroups()
-      })
+      deleteTargetGroup(selectedRow.resourceId)
+        .then(() => {
+          this.$refs.refGroupsTable.unSelectRow(selectedRow)
+          this.callForTargetGroups()
+        })
+        .catch((error) => {
+          this.bulkDeleteErrorMessage = error?.response?.data?.message
+        })
     },
     columnFilterChanged(filter) {
       this.tableOptions.isColumnFilterActive = true

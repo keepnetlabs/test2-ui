@@ -40,6 +40,9 @@ export default {
     },
     selectedRows: {
       type: Array
+    },
+    bulkDeleteErrorMessage: {
+      type: String
     }
   },
   emits: ['closeDialog', 'handleRemoveUsers'],
@@ -63,6 +66,10 @@ export default {
       })
         .then(() => {
           this.$emit('handleRemoveUsers')
+        })
+        .catch((error) => {
+          this.$emit('closeDialog')
+          this.$emit('update:bulkDeleteErrorMessage', error?.response?.data?.message)
         })
         .finally(() => (this.confirmButtonDisabled = false))
     },

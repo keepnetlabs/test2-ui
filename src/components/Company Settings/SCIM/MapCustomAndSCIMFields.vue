@@ -88,8 +88,9 @@ export default {
     },
     handleCustomFieldChange(val, oldVal) {
       const findedIndex = this.getCustomFieldIndexByValue(val)
-      if (findedIndex === -1) return
-      this.changeCustomFieldItemDisability(findedIndex, true)
+      if (findedIndex !== -1) {
+        this.changeCustomFieldItemDisability(findedIndex, true)
+      }
       this.changeCustomFieldItemDisability(this.getCustomFieldIndexByValue(oldVal), false)
     },
     getCustomFieldIndexByValue(val) {
@@ -103,8 +104,9 @@ export default {
     },
     handleScimFieldChange(val, oldVal) {
       const findedIndex = this.getScimFieldIndexByValue(val)
-      if (findedIndex === -1) return
-      this.changeScimFieldDisability(findedIndex, true)
+      if (findedIndex !== -1) {
+        this.changeScimFieldDisability(findedIndex, true)
+      }
       this.changeScimFieldDisability(this.getScimFieldIndexByValue(oldVal), false)
     },
     getScimFieldIndexByValue(val) {

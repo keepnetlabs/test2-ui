@@ -19,9 +19,10 @@
         v-model="item.fieldDataType"
         class="mx-2 table-field__input"
         :id="`input--target-user-custom-field-type-${item.fieldDataType}-${index}`"
-        :items="fieldItems"
         dense
         outlined
+        :items="fieldItems"
+        :disabled="item.isEdit"
       />
       <v-checkbox
         v-model="item.isRequired"
