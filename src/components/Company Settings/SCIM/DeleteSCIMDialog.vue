@@ -8,7 +8,7 @@
     :status="status"
     @changeStatus="handleClose"
   >
-    <template #app-dialog-body> Instance will be deleted. </template>
+    <template #app-dialog-body> {{ selectedRow.name }} will be deleted. </template>
     <template #app-dialog-footer>
       <AppDialogFooter
         type="delete"
@@ -41,7 +41,7 @@ export default {
       CONSTANTS: {
         icon: 'mdi-delete',
         title: 'Delete SCIM Setting?',
-        subtitle: 'Instance will deleted permanently'
+        subtitle: 'SCIM Setting will deleted permanently'
       },
       isActionButtonDisabled: false
     }
