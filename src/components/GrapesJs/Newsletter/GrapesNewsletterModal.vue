@@ -265,6 +265,69 @@ export default {
             }
           }
         })
+        editor.DomComponents.addType('image', {
+          isComponent: (el) => {
+            return el.tagName === 'IMG'
+            if (
+              el.tagName === 'IMG' &&
+              el.parentElement.constructor.name !== 'HTMLinkElement' &&
+              el.parentElement.constructor.name !== 'HTMLBodyElement'
+            ) {
+              const result = {
+                type: 'link',
+                tagName: 'a',
+                components: [
+                  {
+                    tagName: 'img',
+                    type: 'image',
+                    content: el.outerHTML
+                  }
+                ]
+              }
+              return result
+            }
+          },
+          model: {
+            defaults: {
+              traits: ['src', 'href', 'alt']
+            },
+            init() {
+              this.on('change:attributes:href', this.handleAttrChange)
+            },
+            handleAttrChange(component, value) {
+              try {
+                if (component?.getEl()?.parentElement?.constructor?.name === 'HTMLAnchorElement') {
+                  const parent = component.closest('a')
+                  parent.set('attributes', { href: value })
+                  return
+                }
+              } catch (e) {
+                return
+              }
+              const style = component.getStyle()
+              let styleHTML = ''
+              const keys = Object.keys(style)
+              const el = component.getEl()
+              for (const key of keys) {
+                styleHTML += `${key}:${style[key]};`
+                el.style[key] = style[key]
+              }
+              const coll = component.collection
+              const at = coll.indexOf(component)
+              el.setAttribute('href', value)
+              coll.remove(component)
+              coll.add(`<a href='${value}'> ${el.outerHTML}</a>`, {
+                at
+              })
+            }
+          },
+          view: {
+            init() {},
+            onRender() {
+              console.log('iam updated')
+            }
+          }
+        })
       }
 
       this.editor = GrapesNewsletterModal.init({
