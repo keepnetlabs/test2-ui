@@ -289,10 +289,10 @@ export default {
           },
           model: {
             defaults: {
-              traits: ['src', 'href', 'alt']
+              traits: ['src', 'URL', 'alt']
             },
             init() {
-              this.on('change:attributes:href', this.handleAttrChange)
+              this.on('change:attributes:URL', this.handleAttrChange)
             },
             handleAttrChange(component, value) {
               try {
