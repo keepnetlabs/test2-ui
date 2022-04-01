@@ -24,6 +24,7 @@
     />
     <AddOrEditSCIMModal
       v-if="isShowAddOrEditModal"
+      ref="refScimAddOrEditModal"
       :status="isShowAddOrEditModal"
       :is-edit="isEdit"
       :selected-row="selectedRow"
@@ -126,6 +127,9 @@ export default {
       this.successDialogTitle = 'Successfully revoked SCIM Integration'
       this.successApiKey = key
       this.isShowSuccessDialog = true
+    },
+    checkIfCanCloseScimAddOrEditModal() {
+      if (this?.$refs?.refScimAddOrEditModal) this.$refs.refScimAddOrEditModal.handleClose()
     }
   }
 }

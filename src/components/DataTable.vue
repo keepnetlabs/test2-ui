@@ -592,124 +592,128 @@
             >
               <template slot-scope="scope">
                 <slot name="datatable-row-actions" :scope="scope">
-                  <template v-if="rowActions[0].action === 'edit'">
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-btn
-                          v-on="on"
-                          class="btn-hover"
-                          icon
-                          :disabled="
-                            rowActions[0].checkDisability
-                              ? rowActions[0].checkDisability(scope.row)
-                              : rowActions[0].disabled
-                          "
-                          :id="`${rowActions[0].id}-${
-                            scope.$index
-                          }-${Math.random().toString().substring(2)}`"
-                          @click="handleEdit(scope.row, scope.$index)"
-                        >
-                          <v-icon>{{ rowActions[0].icon }}</v-icon>
-                        </v-btn>
-                      </template>
-                      <span>{{ rowActions[0].name }}</span>
-                    </v-tooltip>
-                  </template>
-                  <template v-else>
-                    <v-tooltip bottom>
-                      <template v-slot:activator="{ on }">
-                        <v-btn
-                          v-on="on"
-                          class="btn-hover"
-                          icon
-                          :disabled="rowActions[0].disabled"
-                          :id="`${rowActions[0].id}-${
-                            scope.$index
-                          }-${Math.random().toString().substring(2)}`"
-                          @click="rowAct(rowActions[0].action, scope.row, scope)"
-                        >
-                          <v-icon>{{ rowActions[0].icon }}</v-icon>
-                        </v-btn>
-                      </template>
-                      <span> {{ rowActions[0].name }} </span>
-                    </v-tooltip>
-                  </template>
-                  <v-menu
-                    bottom
-                    left
-                    offset-y
-                    transition="scale-transition"
-                    :value="isRowActionsMenuOpen[scope.$index]"
-                    :return-value="isRowActionsMenuOpen[scope.$index]"
-                  >
-                    <template v-slot:activator="{ on }">
-                      <v-btn
-                        v-on="on"
-                        :id="`btn-dots--row-actions-list-${Math.random().toString().substring(2)}`"
-                        class="btn-hover ml-1"
-                        icon
-                        :disabled="rowActions[1].disabled"
-                      >
-                        <v-icon @click.native="selectedMenuIndex = scope.$index"
-                          >mdi-dots-vertical
-                        </v-icon>
-                      </v-btn>
+                  <template v-if="showDatatableRowActions">
+                    <template v-if="rowActions[0].action === 'edit'">
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            v-on="on"
+                            class="btn-hover"
+                            icon
+                            :disabled="
+                              rowActions[0].checkDisability
+                                ? rowActions[0].checkDisability(scope.row)
+                                : rowActions[0].disabled
+                            "
+                            :id="`${rowActions[0].id}-${
+                              scope.$index
+                            }-${Math.random().toString().substring(2)}`"
+                            @click="handleEdit(scope.row, scope.$index)"
+                          >
+                            <v-icon>{{ rowActions[0].icon }}</v-icon>
+                          </v-btn>
+                        </template>
+                        <span>{{ rowActions[0].name }}</span>
+                      </v-tooltip>
                     </template>
-                    <v-list class="v-cart-dropdown-list el-table__action-buttons">
-                      <v-list-item
-                        v-if="!act.subElements && !act.isNotShow"
-                        v-for="(act, ind) of rowActions"
-                        :style="
-                          (act.disabled && act.disabled.constructor.name === 'Function'
-                            ? act.disabled(scope.row)
-                            : act.disabled) && { pointerEvents: 'none' }
-                        "
-                        :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
+                    <template v-else>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            v-on="on"
+                            class="btn-hover"
+                            icon
+                            :disabled="rowActions[0].disabled"
+                            :id="`${rowActions[0].id}-${
+                              scope.$index
+                            }-${Math.random().toString().substring(2)}`"
+                            @click="rowAct(rowActions[0].action, scope.row, scope)"
+                          >
+                            <v-icon>{{ rowActions[0].icon }}</v-icon>
+                          </v-btn>
+                        </template>
+                        <span> {{ rowActions[0].name }} </span>
+                      </v-tooltip>
+                    </template>
+                    <v-menu
+                      bottom
+                      left
+                      offset-y
+                      transition="scale-transition"
+                      :value="isRowActionsMenuOpen[scope.$index]"
+                      :return-value="isRowActionsMenuOpen[scope.$index]"
+                    >
+                      <template v-slot:activator="{ on }">
+                        <v-btn
+                          v-on="on"
+                          :id="`btn-dots--row-actions-list-${Math.random()
+                            .toString()
+                            .substring(2)}`"
+                          class="btn-hover ml-1"
+                          icon
+                          :disabled="rowActions[1].disabled"
+                        >
+                          <v-icon @click.native="selectedMenuIndex = scope.$index"
+                            >mdi-dots-vertical
+                          </v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list class="v-cart-dropdown-list el-table__action-buttons">
+                        <v-list-item
+                          v-if="!act.subElements && !act.isNotShow"
+                          v-for="(act, ind) of rowActions"
+                          :style="
+                            (act.disabled && act.disabled.constructor.name === 'Function'
+                              ? act.disabled(scope.row)
+                              : act.disabled) && { pointerEvents: 'none' }
+                          "
+                          :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
                             ? act.disabled(scope.row)
                             : act.disabled) "
-                        :key="ind"
-                        :id="`${rowActions[ind].id}-${
-                          scope.$index
-                        }-${ind}-${Math.random().toString().substring(2)}`"
-                        class="sub-menu-el datatable-row-action-list"
-                      >
-                        <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
-                          <v-icon
-                            class="pr-3"
-                            :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
+                          :key="ind"
+                          :id="`${rowActions[ind].id}-${
+                            scope.$index
+                          }-${ind}-${Math.random().toString().substring(2)}`"
+                          class="sub-menu-el datatable-row-action-list"
+                        >
+                          <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
+                            <v-icon
+                              class="pr-3"
+                              :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
                             ? act.disabled(scope.row)
                             : act.disabled)"
-                            >{{ act.icon }}</v-icon
-                          >
-                          <span>{{ act.name }}</span>
-                        </v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        :key="ind + 'sub-item'"
-                        v-for="(act, ind) of rowActions"
-                        v-if="act.subElements && act.subElements.length"
-                      >
-                        <v-menu :content-class="'sub-menu-sub'" open-on-hover>
-                          <template v-slot:activator="{ on }">
-                            <v-list-item-title class="sub-element-wrapper" v-on="on">
-                              <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                              <span>{{ act.name }}</span>
-                              <v-icon style="float: right;">mdi-chevron-right</v-icon>
-                            </v-list-item-title>
-                          </template>
-                          <v-list>
-                            <v-list-item
-                              :key="item"
-                              @click="handleSubMenuItemClick(item)"
-                              v-for="item of act.subElements"
+                              >{{ act.icon }}</v-icon
                             >
-                              {{ item }}
-                            </v-list-item>
-                          </v-list>
-                        </v-menu>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
+                            <span>{{ act.name }}</span>
+                          </v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          :key="ind + 'sub-item'"
+                          v-for="(act, ind) of rowActions"
+                          v-if="act.subElements && act.subElements.length"
+                        >
+                          <v-menu :content-class="'sub-menu-sub'" open-on-hover>
+                            <template v-slot:activator="{ on }">
+                              <v-list-item-title class="sub-element-wrapper" v-on="on">
+                                <v-icon class="pr-3">{{ act.icon }}</v-icon>
+                                <span>{{ act.name }}</span>
+                                <v-icon style="float: right;">mdi-chevron-right</v-icon>
+                              </v-list-item-title>
+                            </template>
+                            <v-list>
+                              <v-list-item
+                                :key="item"
+                                @click="handleSubMenuItemClick(item)"
+                                v-for="item of act.subElements"
+                              >
+                                {{ item }}
+                              </v-list-item>
+                            </v-list>
+                          </v-menu>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </template>
                 </slot>
               </template>
             </el-table-column>
@@ -1014,6 +1018,10 @@ export default {
     'row-color-handler': RowColorHandler
   },
   props: {
+    showDatatableRowActions: {
+      type: Boolean,
+      default: true
+    },
     isShowDownloadModal: {
       default: false
     },

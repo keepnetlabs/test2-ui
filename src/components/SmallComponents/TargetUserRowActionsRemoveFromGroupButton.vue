@@ -1,15 +1,15 @@
 <template>
-  <v-tooltip bottom offset-overflow>
+  <v-tooltip bottom>
     <template v-slot:activator="{ on }">
       <v-list-item
         v-on="on"
         :disabled="getDisabledStatusOfAction"
-        :id="`btn-edit--target-group-${scope.$index}`"
-        @click="!getDisabledStatusOfAction && $emit('on-delete', scope.row)"
+        :id="`btn-remove--target-group-users-${scope.$index}`"
+        @click="!getDisabledStatusOfAction && $emit('on-remove', scope.row)"
       >
         <v-list-item-title>
-          <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">mdi-delete</v-icon>
-          <span>Delete</span>
+          <v-icon :disabled="getDisabledStatusOfAction" class="pr-3">mdi-minus-circle</v-icon>
+          <span>Remove from group</span>
         </v-list-item-title>
       </v-list-item>
     </template>
@@ -21,7 +21,7 @@
 import { checkPermission } from '@/utils/functions'
 
 export default {
-  name: 'TargetGroupRowActionsDeleteButton',
+  name: 'TargetUserRowActionsRemoveFromGroupButton',
   props: {
     scope: {
       type: Object
@@ -31,14 +31,15 @@ export default {
     getTooltipMessage() {
       const { row } = this.scope
       return !row.isEditable
-        ? `SCIM(${row.scimSettingName}) synced groups cannot be deleted`
+        ? `SCIM(${row.scimSettingName}) synced user cannot be removed from group`
         : !this.getDisabledStatusOfAction
-        ? 'Delete'
+        ? 'Remove from group'
         : 'No Permission'
     },
     getDisabledStatusOfAction() {
+      debugger
       const { row } = this.scope
-      return !row.isEditable || !checkPermission('target-groups/{resourceId}', 'DELETE')
+      return !row.isEditable || !checkPermission('target-groups/{resourceId}/users', 'DELETE')
     }
   }
 }

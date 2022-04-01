@@ -18,6 +18,7 @@
     :stored-table-settings="storedTableSettings"
     :server-side-props="serverSideProps"
     :server-side-events="{ pagination: true, search: true, sort: true }"
+    :show-datatable-row-actions="false"
     @addAction="handleAddAction"
     @downloadEvent="exportTargetGroupsUserList"
     @onEmptyBtnClicked="handleAddAction"
@@ -65,6 +66,37 @@
         <span class="tooltip-span">Remove Users</span>
       </v-tooltip>
     </template>
+    <template v-if="hasRowActions" #datatable-row-actions="{scope}">
+      <TargetUserRowActionsEditButton :scope="scope" @on-edit="handleEditTargetUsers" />
+      <v-menu bottom left offset-y transition="scale-transition">
+        <template v-slot:activator="{ on }">
+          <v-btn
+            v-on="on"
+            style="margin-top: -18px;"
+            :id="`btn-dots--row-actions-list-${scope.$index}`"
+            class="btn-hover ml-1"
+            icon
+          >
+            <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical </v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item
+            :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
+            @click="handleAddToAnExistingGroup(scope.row)"
+          >
+            <v-list-item-title>
+              <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
+              <span>{{ tableOptions.rowActions[1].name }}</span>
+            </v-list-item-title>
+          </v-list-item>
+          <TargetUserRowActionsRemoveFromGroupButton
+            :scope="scope"
+            @on-remove="handleRemoveToGroup"
+          />
+        </v-list>
+      </v-menu>
+    </template>
   </DataTable>
 </template>
 
@@ -92,9 +124,13 @@ import {
   createCustomFieldColumns,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
+import TargetUserRowActionsRemoveFromGroupButton from '@/components/SmallComponents/TargetUserRowActionsRemoveFromGroupButton'
 export default {
   name: 'TargetGroupUsersTable',
   components: {
+    TargetUserRowActionsRemoveFromGroupButton,
+    TargetUserRowActionsEditButton,
     DataTable
   },
   props: {

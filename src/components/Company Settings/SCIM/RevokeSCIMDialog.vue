@@ -8,7 +8,7 @@
     :status="status"
     @changeStatus="handleClose"
   >
-    <template #app-dialog-body> Instance will be revoked. </template>
+    <template #app-dialog-body> {{ selectedRow.name }} will be revoked. </template>
     <template #app-dialog-footer>
       <AppDialogFooter
         cancel-button-id="btn-cancel--scim-settings-revoke-popup"
@@ -41,7 +41,7 @@ export default {
       CONSTANTS: {
         icon: 'mdi-minus-circle-outline',
         title: 'Revoke SCIM Setting?',
-        subtitle: 'Instance will revoked permanently'
+        subtitle: 'SCIM Setting will revoked permanently'
       },
       isActionButtonDisabled: false
     }
