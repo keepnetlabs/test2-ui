@@ -141,6 +141,7 @@ import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import { isDifferent } from '@/utils/functions'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
@@ -174,6 +175,11 @@ export default {
       step: 1,
       isActionButtonDisabled: false,
       formData: {
+        name: '',
+        groupResourceId: '',
+        groupBySCIMFieldResourceId: ''
+      },
+      initialFormData: {
         name: '',
         groupResourceId: '',
         groupBySCIMFieldResourceId: ''
@@ -253,6 +259,7 @@ export default {
               this.formData[key] = data[key]
             }
           }
+          this.initialFormData = JSON.parse(JSON.stringify(this.formData))
         })
         .finally(() => {
           this.isLoading = false
@@ -321,7 +328,16 @@ export default {
       }
     },
     handleClose() {
-      this.$emit(EMITS.ON_CLOSE)
+      const isChanged = isDifferent(this.formData, this.initialFormData)
+      if (!isChanged) {
+        return this.$emit(EMITS.ON_CLOSE)
+      }
+      this.$store.dispatch('common/setIsShowLeavingDialog', {
+        show: true,
+        callback: () => {
+          this.$emit(EMITS.ON_CLOSE)
+        }
+      })
     },
     handleSubmit() {
       if (this.step === 2) {
