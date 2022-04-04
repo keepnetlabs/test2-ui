@@ -13,19 +13,6 @@
         @on-scim-field-change="handleScimFieldChange"
       />
     </div>
-    <div
-      v-if="!isEdit && !isEmptyMessageRendered"
-      class="custom-fields-overlay__add"
-      :style="getAddCustomFieldStyle"
-      @click="addCustomField"
-    >
-      <v-icon :color="isEdit ? '#757575' : 'blue'" left medium>
-        mdi-plus
-      </v-icon>
-      <div>
-        ADD CUSTOM FIELD
-      </div>
-    </div>
     <div v-if="isEmptyMessageRendered">
       You do not have any custom field
     </div>
@@ -57,26 +44,11 @@ export default {
     }
   },
   computed: {
-    isShowDelete() {
-      return this.fieldMappings.length > 1
-    },
     isEmptyMessageRendered() {
       return !this.fieldMappings.length
-    },
-    getAddCustomFieldStyle() {
-      const style = { marginTop: '-8px' }
-      if (this.isEdit) {
-        style.pointerEvents = 'none'
-        style.color = '#757575 !important'
-        style.opacity = '0.8'
-      }
-      return style
     }
   },
   methods: {
-    addCustomField() {
-      this.fieldMappings.push({ scimFieldResourceId: '', customFieldResourceId: '' })
-    },
     handleItemDelete(index) {
       const { scimFieldResourceId, customFieldResourceId } = this.fieldMappings[index]
       this.changeCustomFieldItemDisability(
