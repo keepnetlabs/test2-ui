@@ -261,11 +261,14 @@ export default {
         this.formValues.statusId = statusId
         this.formValues.phoneNumber =
           typeof phoneNumber === 'number' ? phoneNumber.toString() : phoneNumber || ''
-        _this.formValues.roleResourceIdList =
+        const resourceId =
           allRoles &&
           allRoles.find((item) => {
             return item.name === roles
-          }).resourceId
+          })?.resourceId
+        if (resourceId) {
+          _this.formValues.roleResourceIdList = resourceId
+        }
         availableRoles = allRoles
         this.roleItems = availableRoles.map((item) => {
           return {

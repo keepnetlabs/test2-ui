@@ -29,7 +29,8 @@ export default {
   components: { CampaignManagerTargetGroupsAndUserSummaryInfo, CampaignManagerSummaryCard },
   props: {
     items: {
-      type: Array
+      type: Array,
+      default: () => []
     },
     randomlySelectedUsersCount: {
       type: Number

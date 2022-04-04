@@ -2175,13 +2175,12 @@ export default {
       }
     },
     adjustTargetUserShowRecords(response = {}) {
-      const {
-        data: { data }
-      } = response
-      const { totalNumberOfRecords = 0, totalNumberOfPages, pageNumber } = data
-      this.serverSidePropsForTargetUsers.totalNumberOfRecords = totalNumberOfRecords
-      this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
-      this.serverSidePropsForTargetUsers.pageNumber = pageNumber
+      if (response?.data?.data) {
+        const { totalNumberOfRecords = 0, totalNumberOfPages, pageNumber } = response.data.data
+        this.serverSidePropsForTargetUsers.totalNumberOfRecords = totalNumberOfRecords
+        this.serverSidePropsForTargetUsers.totalNumberOfPages = totalNumberOfPages
+        this.serverSidePropsForTargetUsers.pageNumber = pageNumber
+      }
     },
     adjustInboxShowRecords(response = {}) {
       if (response.data) {
@@ -2278,7 +2277,7 @@ export default {
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
-          this.isRunning = this.statsAndMenuData.status === 'Running'
+          this.isRunning = this.statsAndMenuData?.status === 'Running'
           if (!isInitial) {
             this.itemStats.targetUsers.isInitial = false
             this.itemStats.Inbox.isInitial = false
