@@ -42,6 +42,7 @@ export function ipWithStars(value, message = 'Invalid IP address') {
 
 export function url(value, message = 'Invalid URL') {
   value = getValue(value)
+  if (value.includes(' ')) return message
   return value
     ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
         value
@@ -51,6 +52,7 @@ export function url(value, message = 'Invalid URL') {
 
 export function urlOrIpAddress(value, message = 'Invalid URL') {
   value = getValue(value)
+  if (value.includes(' ')) return message
   return value
     ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
         value
@@ -64,6 +66,7 @@ export function urlOrIpAddress(value, message = 'Invalid URL') {
 
 export function urlWithPort(value, message = 'Invalid URL') {
   value = getValue(value)
+  if (value.includes(' ')) return message
   return value
     ? /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}(\.[a-z])?\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi.test(
         value
