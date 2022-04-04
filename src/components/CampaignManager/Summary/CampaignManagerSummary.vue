@@ -239,7 +239,7 @@ export default {
     },
     getTotalTargetGroupsAndUsersCount() {
       let text = ''
-      if (Object.keys(this.formData).length && this.formData.targetGroupResourceIds) {
+      if (Object.keys(this.formData)?.length && this.formData.targetGroupResourceIds) {
         const { targetGroupResourceIds } = this.formData
         text = `${this.getTotalUsers} user(s) from ${targetGroupResourceIds.length} group(s)`
       }

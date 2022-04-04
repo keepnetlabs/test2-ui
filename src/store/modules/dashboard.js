@@ -101,7 +101,7 @@ const dashboard = {
       payload.companyResourceId &&
         localStorage.setItem('companyRequestId', payload.companyResourceId)
       return selectCompany(payload).then((response) => {
-        state.selectedCompanyObject = response.data.data
+        state.selectedCompanyObject = response?.data?.data || {}
         commit('SET_SELECTED_COMPANY', payload)
         if (window.location.pathname !== '/') {
           dispatch('getDropdownCompanies', payload)

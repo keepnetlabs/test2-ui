@@ -162,7 +162,18 @@ export default {
         : {}
     },
     getChartData() {
-      const { scenarioStats = {} } = this.campaignSummary
+      const defaultScenarioStatsObject = {
+        scenarioStats: {
+          clickedEmail: 0,
+          noResponseEmail: 0,
+          notDelivered: 0,
+          openedEmail: 0,
+          submittedEmail: 0
+        }
+      }
+      const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
+        ? this.campaignSummary
+        : defaultScenarioStatsObject
       const {
         clickedEmail = 0,
         noResponseEmail = 0,
@@ -279,7 +290,7 @@ export default {
           this.campaignSummary = response?.data?.data
           this.$store.dispatch(
             'common/setActivePageRouterName',
-            this.campaignSummary['phishingCampaignName']
+            this.campaignSummary['phishingCampaignName'] || ''
           )
         })
         .finally(() => {
@@ -288,7 +299,7 @@ export default {
           }
         })
       getCampaignJobSummaryTargetGroups(this.id).then((response) => {
-        this.targetGroups = response?.data?.data?.groups
+        this.targetGroups = response?.data?.data?.groups || []
       })
     }
   }
