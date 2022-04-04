@@ -164,7 +164,8 @@ export default {
       refNotificationTemplates,
       refCustomApi,
       refProxySettings,
-      refSamlSettings
+      refSamlSettings,
+      refScimSettings
     } = this.$refs
     if (refSmtpSettings && refSmtpSettings.newSmtpModalStatus) {
       refSmtpSettings.checkIfCanCloseSmtpModal()
@@ -189,6 +190,8 @@ export default {
     } else if (refSamlSettings && refSamlSettings.isEditOrNewModalOpen) {
       refSamlSettings.checkIfCanCloseSamlSettingsModal()
       next(false)
+    } else if (refScimSettings && refScimSettings.isShowAddOrEditModal) {
+      refScimSettings.checkIfCanCloseScimAddOrEditModal()
     } else {
       next()
     }

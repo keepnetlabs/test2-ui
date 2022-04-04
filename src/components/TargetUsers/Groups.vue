@@ -52,6 +52,7 @@
       :selectEvent="tableOptions.selectEvent"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :show-datatable-row-actions="false"
       @downloadEvent="exportTargetGroupsList"
       @handleMultipleDelete="handleMultipleDelete"
       @syncWithLDAP="handleSyncWithLDAP"
