@@ -953,7 +953,10 @@ export default {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
     },
     getCampaignReportName() {
-      return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
+      if (this.$store?.state?.common?.activePageRouterName) {
+        return `Campaign Report - ${this.$store?.state?.common?.activePageRouterName}`
+      }
+      return 'Campaign Report'
     },
     getRouterKey() {
       const { name } = this.$route
