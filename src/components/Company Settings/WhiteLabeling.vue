@@ -379,6 +379,7 @@ export default {
   },
   computed: {
     getActionButtonDisabled() {
+      if (this.$store.state?.auth?.userRoleName === labels.CompanyAdmin) return true
       return this.isActionButtonDisabled || !this.PERMISSIONS['UPDATE'].hasPermission
     },
     getMainLogo() {
