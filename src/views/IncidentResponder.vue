@@ -916,6 +916,7 @@ export default {
     isCustomOverflowedColumn: false,
     selectedCluster: '',
     selectedTemplateResourceId: '',
+    isMultipleSelectedTemplateResourceId: false,
     defaultSelectedTemplateResourceId: '',
     labels,
     clusteredRow: null,
@@ -1867,6 +1868,7 @@ export default {
       return this.selectedMatch && `Incidents matching Rule: ${this.selectedMatch.ruleName}`
     },
     getEmailTemplateName() {
+      if (this.isMultipleSelectedTemplateResourceId) return '(Multiple Values)'
       const template = this.emailTemplates.find(
         (item) => item.resourceId === this.selectedTemplateResourceId
       )
@@ -1944,6 +1946,7 @@ export default {
     },
     handleConfirmSelectedEmailTemplate(resourceId = '') {
       this.selectedTemplateResourceId = resourceId
+      this.isMultipleSelectedTemplateResourceId = false
       this.toggleEmailTemplateModal()
     },
     getReportedEmailPersistentStateAndLoad() {
@@ -2535,6 +2538,7 @@ export default {
         this.selectedRowsOfReportedEmailsLength = selections.length
         this.selectedReportedMails = selections
         if (selections.length === 1 && (!isMultiple || !this.extendedViewValue.length)) {
+          this.isMultipleSelectedTemplateResourceId = false
           getNotifiedEmail(selections[0].resourceId)
             .then((response) => {
               const selectedItem = response.data.data
@@ -2630,6 +2634,7 @@ export default {
           this.hasMultipleNoteValue = false
         }
       } else {
+        this.isMultipleSelectedTemplateResourceId = false
         this.extendedViewValue = []
       }
     },
@@ -2660,12 +2665,25 @@ export default {
       })
       const sets = {
         isNotifyUser: new Set(),
-        customMessage: new Set()
+        customMessage: new Set(),
+        notificationTemplateResourceId: new Set()
       }
       rows.forEach((item) => {
         sets.isNotifyUser.add(item.isNotifyUser)
         sets.customMessage.add(item.customMessage)
+        item.notificationTemplateResourceId =
+          item.notificationTemplateResourceId || this?.emailTemplates[0]?.resourceId
+        sets.notificationTemplateResourceId.add(item.notificationTemplateResourceId)
       })
+      if (sets.notificationTemplateResourceId.size > 1) {
+        this.selectedTemplateResourceId = ''
+        this.isMultipleSelectedTemplateResourceId = true
+      } else {
+        if (sets.notificationTemplateResourceId.size === 1) {
+          this.selectedTemplateResourceId = [...sets.notificationTemplateResourceId][0]
+        }
+        this.isMultipleSelectedTemplateResourceId = false
+      }
       if (sets.isNotifyUser.size === 1) {
         this.extendedView.isNotify = sets.isNotifyUser.has(true)
       } else {

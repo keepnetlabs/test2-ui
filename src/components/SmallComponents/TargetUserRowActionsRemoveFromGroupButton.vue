@@ -37,7 +37,6 @@ export default {
         : 'No Permission'
     },
     getDisabledStatusOfAction() {
-      debugger
       const { row } = this.scope
       return !row.isEditable || !checkPermission('target-groups/{resourceId}/users', 'DELETE')
     }
