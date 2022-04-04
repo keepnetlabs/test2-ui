@@ -7,18 +7,28 @@
       </div>
       <div class="campaign-manager-summary-card__body-item-value">{{ val }}</div>
     </template>
+    <template v-if="isTestCampaign" #header-right>
+      <div class="campaign-manager-report-summary-campaign-info__right-side">
+        <v-btn style="display: none;" />
+        <Badge color="#B6791D" text="Test Campaign" :outline="false" />
+      </div>
+    </template>
   </CampaignManagerSummaryCard>
 </template>
 
 <script>
 import CampaignManagerSummaryCard from '@/components/CampaignManager/Summary/CampaignManagerSummaryCard'
 import labels from '@/model/constants/labels'
+import Badge from '@/components/Badge'
 export default {
   name: 'CampaignManagerReportSummaryCampaignInfo',
-  components: { CampaignManagerSummaryCard },
+  components: { Badge, CampaignManagerSummaryCard },
   props: {
     items: {
       type: Object
+    },
+    isTestCampaign: {
+      type: Boolean
     }
   },
   data() {

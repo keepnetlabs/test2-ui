@@ -7,7 +7,10 @@
     />
     <CampaignManagerReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
     <div class="campaign-manager-report-summary__general-info mt-6">
-      <CampaignManagerReportSummaryCampaignInfo :items="getCampaignSummaryItems" />
+      <CampaignManagerReportSummaryCampaignInfo
+        :items="getCampaignSummaryItems"
+        :is-test-campaign="isTestCampaign"
+      />
       <CampaignManagerReportSummarySettings :items="getSettingsItems" />
     </div>
     <CampaignManagerReportSummaryTargetGroups
@@ -93,17 +96,24 @@ export default {
     getCampaignSummaryItems() {
       const { campaignInfo = {} } = this.campaignSummary
       const {
-        startDate,
-        endDate,
+        startDate = '0',
+        endDate = '0',
         totalTargetUserCount = 0,
         emailDeliveredUserCount = 0
       } = campaignInfo
+      const campaignLifeTime = `${Math.round(
+        (Date.parse(endDate) - Date.parse(startDate)) / (1000 * 60 * 60 * 24)
+      )} days (Ends at ${endDate})`
       return {
-        'Start Date': startDate,
-        'End Date': endDate,
-        'Total Target Users': totalTargetUserCount,
+        'Target Users': totalTargetUserCount,
+        'Campaign Lifetime': campaignLifeTime,
         'Not Delivered': totalTargetUserCount - emailDeliveredUserCount
       }
+    },
+    isTestCampaign() {
+      const { settings = {} } = this.campaignSummary
+      const { excludeFromReports = false } = settings
+      return excludeFromReports
     },
     getSettingsItems() {
       const { settings = {} } = this.campaignSummary
@@ -300,6 +310,14 @@ export default {
         max-width: 350px;
         margin: -60px auto;
         max-height: 350px;
+      }
+    }
+  }
+  &-campaign-info {
+    &__right-side {
+      margin-right: 24px;
+      button {
+        min-width: 102px !important;
       }
     }
   }
