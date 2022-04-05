@@ -93,7 +93,7 @@ export default {
       return this.$route?.params?.id
     },
     getPhishingScenarioName() {
-      return this.$store?.state?.common?.activePageRouterName
+      return this.$store?.state?.common?.activePageRouterName || ''
     }
   },
   created() {
