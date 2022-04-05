@@ -44,6 +44,7 @@
 
 <script>
 import AppDialog from '@/components/AppDialog'
+import { copyToClipboard } from '@/utils/functions'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 export default {
   name: 'SCIMSuccessDialog',
@@ -74,7 +75,7 @@ export default {
       this.$emit('on-close')
     },
     handleCopyToClipboard() {
-      navigator.clipboard.writeText(this.apiKey).then(() => {
+      copyToClipboard(this.apiKey).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,

@@ -141,7 +141,7 @@ import InputTargetGroup from '@/components/Common/Inputs/InputTargetGroup'
 import * as Validations from '@/utils/validations'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
-import { isDifferent } from '@/utils/functions'
+import { isDifferent, copyToClipboard } from '@/utils/functions'
 const EMITS = {
   ON_CLOSE: 'on-close'
 }
@@ -377,7 +377,7 @@ export default {
       }
     },
     handleCopyToClipboard(data = '') {
-      navigator.clipboard.writeText(data).then(() => {
+      copyToClipboard(data).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,

@@ -2079,7 +2079,12 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import AppModal from '@/components/AppModal'
 import labels from '@/model/constants/labels'
 import GrapesNewsletterModal from '@/components/GrapesJs/Newsletter/GrapesNewsletterModal'
-import { incidenPostReviewElementBind, scrollToComponent, isDifferent } from '@/utils/functions'
+import {
+  incidenPostReviewElementBind,
+  scrollToComponent,
+  isDifferent,
+  copyToClipboard
+} from '@/utils/functions'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
@@ -2607,7 +2612,7 @@ export default {
       return this.uploadRespond.PostedUserCompanyName || localStorage.getItem('companyName')
     },
     contentCopy(contentBody) {
-      navigator.clipboard.writeText(contentBody).then(() => [
+      copyToClipboard(contentBody).then(() => [
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'Content has been copied'

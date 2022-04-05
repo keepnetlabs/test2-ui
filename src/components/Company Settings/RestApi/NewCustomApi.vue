@@ -197,7 +197,7 @@ import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
 import { createRestApi, generateClientCredentials, getRestApi, updateRestApi } from '@/api/restApi'
-import { scrollToComponent, isDifferent } from '@/utils/functions'
+import { scrollToComponent, isDifferent, copyToClipboard } from '@/utils/functions'
 import RestApiModel from '@/components/Company Settings/RestApi/model'
 import * as Validations from '@/utils/validations'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -372,7 +372,7 @@ export default {
         this.formValues.allowedIpAddresses = [{ name: '', value: '' }]
     },
     handleCopyToClipboard(data = '') {
-      navigator.clipboard.writeText(data).then(() => {
+      copyToClipboard(data).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
