@@ -361,8 +361,7 @@ const router = new Router({
                 isAuthenticated: true,
                 parentName: 'Reports'
               }
-            }
-            /*
+            },
             {
               path: '/simple-reports',
               name: 'Simple Reports',
@@ -381,7 +380,6 @@ const router = new Router({
                 parentName: 'Reports'
               }
             }
-             */
           ]
         }
       ]

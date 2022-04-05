@@ -85,7 +85,7 @@ export default {
     border-bottom: 1px solid #e0e0e0;
     &-left {
       display: flex;
-      padding: 24px;
+      padding: 24px 24px 18px 24px;
     }
   }
   &__title {
@@ -108,9 +108,9 @@ export default {
       line-height: 19px;
       color: #383b41;
       word-break: break-all;
-      padding: 16px;
+      padding: 16px 0;
       &:first-child {
-        padding: 0 16px 16px 16px !important;
+        padding: 0 0 16px 0 !important;
         border-bottom: 1px solid #e0e0e0;
       }
       &:last-child {
