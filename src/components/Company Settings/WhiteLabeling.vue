@@ -440,15 +440,28 @@ export default {
         : true
     },
     onMenuLogoChange(file) {
+      // if image is removed, 'file' variable will be an array with 0 length and "Overload resolution failed" error will be thrown
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.mainLogoFile = null)
+      }
       this.formValues.mainLogoFile = file
     },
     onMinimizedLogoChange(file) {
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.minimizedMenuLogoFile = null)
+      }
       this.formValues.minimizedMenuLogoFile = file
     },
     onFavIconChange(file) {
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.favIconFile = null)
+      }
       this.formValues.favIconFile = file
     },
     onNotificationTemplateLogoChange(file) {
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.emailTemplateLogoFile = null)
+      }
       this.formValues.emailTemplateLogoFile = file
     },
     submit() {

@@ -645,6 +645,7 @@ import {
 } from '@/utils/functions'
 import ExtendedViewLoading from '@/components/SkeletonLoading/ExtendedViewLoading'
 import labels from '@/model/constants/labels'
+import { copyToClipboard } from '@/utils/functions'
 
 export default {
   name: 'ExtendedView',
@@ -960,7 +961,7 @@ export default {
       this.$forceUpdate()
     },
     writeTextToClipBoard(text) {
-      navigator.clipboard.writeText(text)
+      copyToClipboard(text)
     }
   },
   created() {

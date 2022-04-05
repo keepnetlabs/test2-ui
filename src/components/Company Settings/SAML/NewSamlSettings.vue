@@ -323,7 +323,7 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
-import { isDifferent } from '@/utils/functions'
+import { isDifferent, copyToClipboard } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import InputWithCopyToClipboard from '@/components/Common/Inputs/InputWithCopyToClipboard'
@@ -557,7 +557,7 @@ export default {
       }
     },
     handleCopyToClipboard(key = '') {
-      navigator.clipboard.writeText(this.formValues[key] || this[key]).then(() => {
+      copyToClipboard(this.formValues[key] || this[key]).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
