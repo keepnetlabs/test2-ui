@@ -491,8 +491,12 @@ export default {
       if (value.length < this.formValues.tags.length) {
         this.formValues.tags = value
       } else {
-        const tagSearch = this.tagSearch.trim()
-        if (!tagSearch && value[value.length - 1].trim() === '') {
+        const tagSearch = this.tagSearch?.trim() || ''
+        if (
+          !tagSearch ||
+          tagSearch === '' ||
+          (value.length > 0 && value[value.length - 1].trim() === '')
+        ) {
           value.splice(0, value[value.length - 1])
           return
         }

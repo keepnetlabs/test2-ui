@@ -146,17 +146,19 @@ export default {
     setMergeTextNames() {
       let _this = this
       const component = this.editor.getSelected()
-      setTimeout(() => {
-        let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
-        if (
-          component.getTrait('href').props().value === '' ||
-          !mergedTextsNames.includes(component.getTrait('href').props().value)
-        ) {
-          document.querySelector(
-            '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
-          ).selectedIndex = 0
-        }
-      }, 10)
+      if (component) {
+        setTimeout(() => {
+          let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
+          if (
+            component.getTrait('href').props().value === '' ||
+            !mergedTextsNames.includes(component.getTrait('href').props().value)
+          ) {
+            document.querySelector(
+              '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(4) > div > div.gjs-field-wrp.gjs-field-wrp--select > div > div:nth-child(1) > select'
+            ).selectedIndex = 0
+          }
+        }, 10)
+      }
     },
     setMergedTextsForLinks() {
       Object.keys(this.blockManagerComponents).forEach((key) => {
@@ -388,9 +390,12 @@ export default {
                 this.setMergeTextNames()
               })
             if (selected.getTrait('href').props().value === '') {
-              document.querySelector(
+              const el = document.querySelector(
                 '#gjsNewsletterModal > div.gjs-editor.gjs-one-bg.gjs-two-color > div.gjs-pn-panels > div.gjs-pn-panel.gjs-pn-views-container.gjs-one-bg.gjs-two-color > div:nth-child(3) > div:nth-child(1) > div.gjs-trt-traits.gjs-one-bg.gjs-two-color > div:nth-child(2) > div > div.gjs-field-wrp.gjs-field-wrp--text > div > input[type=text]'
-              ).value = ''
+              )
+              if (el) {
+                el.value = ''
+              }
             }
             let mergedTextsNames = _this.urlMergedTexts.map((item) => item.value)
             if (
@@ -705,14 +710,16 @@ export default {
       rte.get('link').result = (rte) => {
         rte.insertHTML(`<a href="" data-selectme>${rte.selection()}</a>`)
         const sel = this.editor.getSelected()
-        sel.trigger('disable')
-        const toSel = sel.find('[data-selectme]')[0]
-        if (toSel) {
-          const attr = toSel.getAttributes()
-          delete attr['data-selectme']
-          toSel.setAttributes(attr)
-          toSel.set('selectable', true)
-          this.editor.select(toSel)
+        if (sel) {
+          sel.trigger('disable')
+          const toSel = sel.find('[data-selectme]')[0]
+          if (toSel) {
+            const attr = toSel.getAttributes()
+            delete attr['data-selectme']
+            toSel.setAttributes(attr)
+            toSel.set('selectable', true)
+            this.editor.select(toSel)
+          }
         }
       }
       rte.get('link').btn.innerHTML =
