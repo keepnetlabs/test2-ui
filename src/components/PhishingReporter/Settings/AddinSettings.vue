@@ -695,7 +695,7 @@ export default {
         'To report an email you must first select the email and then click the report button.'
       this.formValues.badFormatEmailMessage = 'Your selection is not a valid email message'
       imageToBlob(PhishingReporterLogo, (err, blob) => {
-        this.formValues.file = blob
+        this.formValues.file = new File([blob], 'defaultlogo.png')
       })
       this.$emit('getInitialFormValues', this.formValues)
     }
