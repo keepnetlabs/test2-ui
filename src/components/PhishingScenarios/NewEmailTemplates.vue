@@ -125,24 +125,15 @@
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
-                  <k-select
-                    :value="formValues.tags"
-                    :search-input.sync="tagSearch"
-                    type="combobox"
+                  <InputTag 
                     ref="refTags"
-                    :id="`input--action-tags`"
+                    :value="formValues.tags"
+                    :searchInput="tagSearch"
                     :items="[]"
-                    chips
-                    deletable-chips
-                    outlined
+                    :id="`input--action-tags`"
                     class="hide-caret"
-                    multiple
-                    dense
-                    persistent-hint
-                    small-chips
-                    :return-object="false"
-                    placeholder="Enter tags and press enter key"
                     @input="handleTagItemChange"
+                    @searchInputChange="onSearchInputChange"
                   />
                 </form-group>
                 <form-group
@@ -340,6 +331,7 @@ import fromName from '@/components/GrapesJs/Newsletter/mergedTexts/fromName'
 import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
+import InputTag from '@/components/Common/Inputs/InputTag'
 
 export default {
   name: 'NewEmailTemplates',
@@ -349,7 +341,8 @@ export default {
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
-    InputSelectLanguage
+    InputSelectLanguage,
+    InputTag
   },
   data() {
     return {
@@ -487,6 +480,9 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
+    onSearchInputChange(value){
+      this.tagSearch = value
+    },
     handleTagItemChange(value) {
       if (value.length < this.formValues.tags.length) {
         this.formValues.tags = value
@@ -513,8 +509,10 @@ export default {
             this.formValues.tags.push(tagSearch.trim().substring(0, 20))
           }
         }
-        this.$refs.refTags.$refs.refComponent.initialValue = this.formValues.tags
-        this.$refs.refTags.$refs.refComponent.lazyValue = this.formValues.tags
+        this.$nextTick(() => {
+          this.$refs.refTags.initialValue = this.formValues.tags
+          this.$refs.refTags.lazyValue = this.formValues.tags
+        })
       }
     },
     changeNewEmailTemplateModalStatus() {
