@@ -561,6 +561,11 @@ export default {
     &-reset-to-default {
       padding: 0 8px !important;
       margin-right: -2px;
+      &.v-btn--disabled {
+        .v-btn__content {
+          color: inherit;
+        }
+      }
       .v-btn__content {
         text-transform: uppercase;
         font-size: 14px;
