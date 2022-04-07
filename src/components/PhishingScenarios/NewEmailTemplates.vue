@@ -125,15 +125,12 @@
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the template">
-                  <InputTag 
+                  <InputTag
                     ref="refTags"
-                    :value="formValues.tags"
-                    :searchInput="tagSearch"
+                    v-model="formValues.tags"
                     :items="[]"
                     :id="`input--action-tags`"
                     class="hide-caret"
-                    @input="handleTagItemChange"
-                    @searchInputChange="onSearchInputChange"
                   />
                 </form-group>
                 <form-group
@@ -480,41 +477,42 @@ export default {
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
     },
-    onSearchInputChange(value){
-      this.tagSearch = value
-    },
-    handleTagItemChange(value) {
-      if (value.length < this.formValues.tags.length) {
-        this.formValues.tags = value
-      } else {
-        const tagSearch = this.tagSearch?.trim() || ''
-        if (
-          !tagSearch ||
-          tagSearch === '' ||
-          (value.length > 0 && value[value.length - 1].trim() === '')
-        ) {
-          value.splice(0, value[value.length - 1])
-          return
-        }
-        value.splice(value.length - 1, 1)
-        if (tagSearch.includes(',')) {
-          const tags = tagSearch.split(',')
-          tags.forEach((tag) => {
-            if (tag.trim() && !value.includes(tag)) {
-              this.formValues.tags.push(tag.trim().substring(0, 20))
-            }
-          })
-        } else {
-          if (!value.includes(tagSearch)) {
-            this.formValues.tags.push(tagSearch.trim().substring(0, 20))
-          }
-        }
-        this.$nextTick(() => {
-          this.$refs.refTags.initialValue = this.formValues.tags
-          this.$refs.refTags.lazyValue = this.formValues.tags
-        })
-      }
-    },
+    // onSearchInputChange(value){
+    //   this.tagSearch = value
+    // },
+    // handleTagItemChange(value) {
+    //   if (value.length < this.formValues.tags.length) {
+    //     this.formValues.tags = value
+    //   } else {
+    //     const tagSearch = this.tagSearch?.trim() || ''
+    //     if (
+    //       !tagSearch ||
+    //       tagSearch === '' ||
+    //       (value.length > 0 && value[value.length - 1].trim() === '')
+    //     ) {
+    //       value.splice(0, value[value.length - 1])
+    //       return
+    //     }
+    //     value.splice(value.length - 1, 1)
+    //     if (tagSearch.includes(',')) {
+    //       const tags = tagSearch.split(',')
+    //       tags.forEach((tag) => {
+    //         if (tag.trim() && !value.includes(tag)) {
+    //           this.formValues.tags.push(tag.trim().substring(0, 20))
+    //         }
+    //       })
+    //     } else {
+    //       if (!value.includes(tagSearch)) {
+    //         this.formValues.tags.push(tagSearch.trim().substring(0, 20))
+    //       }
+    //     }
+    //     this.$nextTick(() => {
+    //       console.log(this.$refs.refTags)
+    //       this.$refs.refTags.$refs.refComponent.initialValue = this.formValues.tags
+    //       this.$refs.refTags.$refs.refComponent.lazyValue = this.formValues.tags
+    //     })
+    //   }
+    // },
     changeNewEmailTemplateModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
       if (!isChanged) {
