@@ -122,7 +122,7 @@ import Badge from '@/components/Badge'
 import DataTable from '@/components/DataTable'
 import { COMMON_CONSTANTS, getStoreValue, PROPERTY_STORE } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import { getBtnStatusColor } from '@/utils/functions'
+import { getBtnStatusColor, copyToClipboard } from '@/utils/functions'
 export default {
   name: 'EmailDetailsUrl',
   components: {
@@ -213,7 +213,7 @@ export default {
       return analysisList.some((item) => item.isSendFile || item.isSendFileHash)
     },
     handleCopyUrl(url = '') {
-      navigator.clipboard.writeText(url).then(() => {
+      copyToClipboard(url).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,

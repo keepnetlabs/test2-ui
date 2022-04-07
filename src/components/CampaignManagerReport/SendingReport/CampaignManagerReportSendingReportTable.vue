@@ -124,7 +124,7 @@ export default {
         id: 'campaign-manager-sending-report-data-table',
         ascending: 'ascending'
       },
-      axiosPayload: getDefaultAxiosPayload({ orderBy: 'FirstName' }),
+      axiosPayload: getDefaultAxiosPayload({ orderBy: 'lastSendingTime' }),
       isLoading: false,
       tableData: [],
       storedTableSettings: null,

@@ -317,7 +317,7 @@ import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeader
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import EmailDetailsContentDetails from '@/components/IncidentResponder/EmailDetails/EmailDetailsContentDetails'
 import EmailDetailsPreviewFooter from '@/components/IncidentResponder/EmailDetails/EmailDetailsPreviewFooter'
-import { getBtnStatusColor, scrollToComponent } from '@/utils/functions'
+import { getBtnStatusColor, scrollToComponent, copyToClipboard } from '@/utils/functions'
 import EmailDetailsUrl from '@/components/IncidentResponder/EmailDetails/EmailDetailsUrl'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
@@ -641,7 +641,7 @@ export default {
           this.isCopiedMd5Clipboard.splice(pushedIndex, 1)
         }, 5000)
       }
-      navigator.clipboard.writeText(value)
+      copyToClipboard(value)
     },
     handleDownloadEmail() {
       this.downloadModalStatus = true

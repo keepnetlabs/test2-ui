@@ -914,8 +914,8 @@ export default {
       () => {
         this.disabledLabel = `${
           this.landingPageData.urlSchemaTypes.find(
-            (item) => item.value == this.formValues.urlSchemaTypeId.toString()
-          ).text
+            (item) => item.value == this.formValues.urlSchemaTypeId?.toString() || ''
+          )?.text
         }${this.formValues.subDomain || 'subDomain'}.${
           this.landingPageData.domainRecords.find(
             (item) => item.value == this.formValues.domainRecordId.toString()

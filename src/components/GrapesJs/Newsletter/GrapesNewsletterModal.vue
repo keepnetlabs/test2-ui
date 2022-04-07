@@ -42,6 +42,7 @@ import store from '@/store'
 import submitButton from '@/components/GrapesJs/Newsletter/components/submitButton'
 import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 import { minifyHTML } from '@/api/scenarios'
+import { copyToClipboard } from '@/utils/functions'
 
 export default {
   name: 'GrapesNewsletterModal',
@@ -323,9 +324,7 @@ export default {
           },
           view: {
             init() {},
-            onRender() {
-              console.log('iam updated')
-            }
+            onRender() {}
           }
         })
       }
@@ -803,7 +802,7 @@ export default {
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
-            navigator.clipboard.writeText(codeViewer.editor.getValue()).then(() => {
+            copyToClipboard(codeViewer.editor.getValue()).then(() => {
               this.$store.dispatch('common/createSnackBar', {
                 message: 'COPIED TO CLIPBOARD',
                 color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,

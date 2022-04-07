@@ -894,7 +894,8 @@ import {
   incidenPostReviewElementBind,
   isOwner,
   isPostedByMe,
-  scrollToComponent
+  scrollToComponent,
+  copyToClipboard
 } from '@/utils/functions'
 import PreviewHeaderForSinglePost from '@/components/ThreatSharing/PreviewHeaderForSinglePost'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
@@ -1238,7 +1239,7 @@ export default {
       }
     },
     contentCopy(contentBody) {
-      navigator.clipboard.writeText(contentBody).then(() => {
+      copyToClipboard(contentBody).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
           message: 'Copied Successfully!'

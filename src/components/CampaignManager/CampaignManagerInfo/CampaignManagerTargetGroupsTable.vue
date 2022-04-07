@@ -146,6 +146,7 @@ export default {
         serverSideEvents: { pagination: true, search: true, sort: true }
       },
       serverSideProps: new ServerSideProps(),
+      defaultServerSideProps: { ...new ServerSideProps(), results: [] },
       highlightedRow: {}
     }
   },
@@ -171,16 +172,15 @@ export default {
       })
     },
     setDefaultResponseParams(response) {
-      const {
-        data: { data }
-      } = response
-      const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+      const { totalNumberOfRecords, totalNumberOfPages, pageNumber, results } = response?.data?.data
+        ? response.data.data
+        : this.defaultServerSideProps
       this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
       this.serverSideProps.totalNumberOfPages = totalNumberOfPages
       this.serverSideProps.pageNumber = pageNumber
       this.totalNumberOfRecords = totalNumberOfRecords
-      this.tableData = data.results
-      if (data.results.length) {
+      this.tableData = results
+      if (results.length) {
         this.highlightedRow = this.tableData[0]
         this.$emit('update:empty', false)
       } else {

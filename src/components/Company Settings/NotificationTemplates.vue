@@ -389,11 +389,13 @@ export default {
     handleClearFilters() {
       this.isRestoredOrClearedFilters = true
       this.axiosPayload = JSON.parse(JSON.stringify(this.defaultAxiosPayload))
-      this.$refs.refNotificationList.filterValues = {}
-      this.$refs.refNotificationList.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
       this.callForDatas()
+      this.$nextTick(() => {
+        this.$refs.refNotificationList.filterValues = {}
+        this.$refs.refNotificationList.columnKey = `column-key${Math.random()
+          .toString()
+          .substring(0, 5)}`
+      })
     },
     handleRestoreDefaultSearch() {
       this.isRestoredOrClearedFilters = true

@@ -379,8 +379,11 @@ export default {
   },
   computed: {
     getActionButtonDisabled() {
-      if (this.$store.state?.auth?.userRoleName === labels.CompanyAdmin) return true
+      if (this.isCompanyAdmin) return true
       return this.isActionButtonDisabled || !this.PERMISSIONS['UPDATE'].hasPermission
+    },
+    isCompanyAdmin() {
+      return this.$store.state?.auth?.userRoleName === labels.CompanyAdmin
     },
     getMainLogo() {
       return this.formValues.mainLogoFile || this.formValues.mainLogoUrl
@@ -395,6 +398,7 @@ export default {
       return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
     },
     hasDeletePermission() {
+      if (this.isCompanyAdmin) return false
       const { DELETE } = this.PERMISSIONS
       return DELETE.hasPermission
     }
@@ -441,15 +445,28 @@ export default {
         : true
     },
     onMenuLogoChange(file) {
+      // if image is removed, 'file' variable will be an array with 0 length and "Overload resolution failed" error will be thrown
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.mainLogoFile = null)
+      }
       this.formValues.mainLogoFile = file
     },
     onMinimizedLogoChange(file) {
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.minimizedMenuLogoFile = null)
+      }
       this.formValues.minimizedMenuLogoFile = file
     },
     onFavIconChange(file) {
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.favIconFile = null)
+      }
       this.formValues.favIconFile = file
     },
     onNotificationTemplateLogoChange(file) {
+      if (Array.isArray(file) && file.length === 0) {
+        return (this.formValues.emailTemplateLogoFile = null)
+      }
       this.formValues.emailTemplateLogoFile = file
     },
     submit() {

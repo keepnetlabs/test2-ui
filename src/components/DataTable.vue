@@ -981,7 +981,12 @@ import locale from 'element-ui/lib/locale/lang/en'
 import { mapGetters } from 'vuex'
 
 Vue.use(ElementUI, { locale })
-import { getBtnPriorityColor, getBtnStatusColor, getDataTableFieldLabel } from '@/utils/functions'
+import {
+  getBtnPriorityColor,
+  getBtnStatusColor,
+  getDataTableFieldLabel,
+  copyToClipboard
+} from '@/utils/functions'
 import { columnStandards } from '@/model/constants/commonConstants'
 import DataTableColorfulText from './DataTableComponents/DataTableColorfulText'
 import DatatableLoading from './SkeletonLoading/DatatableLoading'
@@ -2907,7 +2912,7 @@ export default {
         text += '\n'
       })
 
-      navigator.clipboard.writeText(text).then(() => {
+      copyToClipboard(text).then(() => {
         this.$store.dispatch('common/createSnackBar', {
           message: 'COPIED TO CLIPBOARD',
           color: COMMON_CONSTANTS.SUCCESSSNACKBARCOLOR,
