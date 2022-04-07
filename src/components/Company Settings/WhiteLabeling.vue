@@ -379,8 +379,11 @@ export default {
   },
   computed: {
     getActionButtonDisabled() {
-      if (this.$store.state?.auth?.userRoleName === labels.CompanyAdmin) return true
+      if (this.isCompanyAdmin) return true
       return this.isActionButtonDisabled || !this.PERMISSIONS['UPDATE'].hasPermission
+    },
+    isCompanyAdmin() {
+      return this.$store.state?.auth?.userRoleName === labels.CompanyAdmin
     },
     getMainLogo() {
       return this.formValues.mainLogoFile || this.formValues.mainLogoUrl
@@ -395,6 +398,7 @@ export default {
       return this.formValues.emailTemplateLogoFile || this.formValues.emailTemplateLogoUrl
     },
     hasDeletePermission() {
+      if (this.isCompanyAdmin) return false
       const { DELETE } = this.PERMISSIONS
       return DELETE.hasPermission
     }
