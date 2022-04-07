@@ -195,9 +195,7 @@ export default {
             type: 'status',
             isEditable: true,
             tooltipKey: 'healthStatusMessage',
-            width: 150,
-            filterableType: 'select',
-            filterableItems: ['Success', 'Failed', { text: 'Not Checked', value: 'NotChecked' }]
+            width: 150
           },
           {
             property: 'createdBy',
