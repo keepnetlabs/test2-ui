@@ -97,7 +97,7 @@ export default {
     background-color: #fafafa;
     border-bottom-left-radius: 12px;
     border-bottom-right-radius: 12px;
-    height: calc(100% - 73px);
+    height: calc(100% - 67px);
     &-container {
       padding: 24px;
     }

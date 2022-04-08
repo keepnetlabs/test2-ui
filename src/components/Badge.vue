@@ -36,7 +36,9 @@
         { 'k-badge--default': !props.outline }
       ]"
     >
-      {{ props.text }}
+      <slot name="content">
+        {{ props.text }}
+      </slot>
     </v-btn>
   </div>
 </template>

@@ -187,6 +187,7 @@ export default {
         this.highlightedRow = {}
         if (!this.tableOptions.isColumnFilterActive) this.$emit('update:empty', true)
       }
+      this.$refs.refTable.getSelectedObjectAndSelectRowsByRowKey()
       this.setLoading(false)
     },
     setLoading(val = false) {
