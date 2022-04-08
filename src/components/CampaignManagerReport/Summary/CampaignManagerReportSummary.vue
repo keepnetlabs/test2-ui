@@ -9,24 +9,16 @@
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo
         :items="getCampaignSummaryItems"
+        :helper-data="getCampaignSummaryHelperData"
         :is-test-campaign="isTestCampaign"
       />
-      <CampaignManagerReportSummarySettings :items="getSettingsItems" />
-    </div>
-    <CampaignManagerReportSummaryTargetGroups
-      :items="targetGroups"
-      :randomly-selected-users-count="getRandomlySelectedUsersCount"
-      :is-show-randomly-selected="getIsShowRandomlySelected"
-      :target-users-count="getTotalUsers"
-    />
-    <div class="campaign-manager-report-summary__general-info mt-4">
-      <CampaignManagerReportSummaryScenarioInfo :items="getScenarioInfoItems" />
-      <CampaignManagerReportSummaryScenarioStats
-        :chart-data="getChartData"
-        :chart-labels="chartLabels"
-        :percents="getPercents"
+      <CampaignManagerReportEmailDelivery
+        class="ml-4"
+        :items="getEmailDeliveryData"
+        :helper-data="getEmailDeliveryHelperData"
       />
     </div>
+    <div class="campaign-manager-report-summary__general-info mt-4"></div>
     <CampaignManagerReportSummaryEmail :form-data="getEmailTemplateData" />
     <CampaignManagerReportSummaryLandingPage :form-data="getLandingPageTemplateData" />
   </div>
@@ -36,24 +28,18 @@
 import CampaignManagerReportSummaryHeader from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryHeader'
 import CampaignManagerReportSummaryCards from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCards'
 import CampaignManagerReportSummaryCampaignInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryCampaignInfo'
-import CampaignManagerReportSummarySettings from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummarySettings'
-import CampaignManagerReportSummaryTargetGroups from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryTargetGroups'
-import CampaignManagerReportSummaryScenarioInfo from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioInfo'
-import CampaignManagerReportSummaryScenarioStats from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryScenarioStats'
 import CampaignManagerReportSummaryEmail from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryEmail'
 import CampaignManagerReportSummaryLandingPage from '@/components/CampaignManagerReport/Summary/CampaignManagerReportSummaryLanginPage'
 import { getCampaignJobSummary, getCampaignJobSummaryTargetGroups } from '@/api/phishingsimulator'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import { useLoading } from '@/hooks/useLoading'
+import CampaignManagerReportEmailDelivery from '@/components/CampaignManagerReport/Summary/CampaignManagerReportEmailDelivery'
 export default {
   name: 'CampaignManagerReportSummary',
   components: {
+    CampaignManagerReportEmailDelivery,
     CampaignManagerReportSummaryLandingPage,
     CampaignManagerReportSummaryEmail,
-    CampaignManagerReportSummaryScenarioStats,
-    CampaignManagerReportSummaryScenarioInfo,
-    CampaignManagerReportSummaryTargetGroups,
-    CampaignManagerReportSummarySettings,
     CampaignManagerReportSummaryCampaignInfo,
     CampaignManagerReportSummaryCards,
     CampaignManagerReportSummaryHeader
@@ -94,20 +80,33 @@ export default {
       ]
     },
     getCampaignSummaryItems() {
-      const { campaignInfo = {} } = this.campaignSummary
-      const {
-        startDate = '0',
-        endDate = '0',
-        totalTargetUserCount = 0,
-        emailDeliveredUserCount = 0
-      } = campaignInfo
-      const campaignLifeTime = `${Math.round(
+      const { campaignInfo = {}, scenarioInfo = {} } = this.campaignSummary
+      const { startDate = '0', endDate = '0', totalTargetUserCount = 0 } = campaignInfo
+      const { languageShortCode } = scenarioInfo
+      const campaignLifeTime = Math.round(
         (Date.parse(endDate) - Date.parse(startDate)) / (1000 * 60 * 60 * 24)
-      )} days (Ends at ${endDate})`
+      )
       return {
         'Target Users': totalTargetUserCount,
-        'Campaign Lifetime': campaignLifeTime,
-        'Not Delivered': totalTargetUserCount - emailDeliveredUserCount
+        'Campaign Lifetime': `${
+          isNaN(campaignLifeTime) ? '0' : campaignLifeTime
+        } days (Ends at ${endDate})`,
+        Languages: languageShortCode
+      }
+    },
+    getCampaignSummaryHelperData() {
+      const { targetUsers = {}, campaignInfo = {} } = this.campaignSummary
+      const {
+        randomlyUsersCount = 0,
+        sendOnlyActiveUsers = false,
+        sendRandomlyUsers = false
+      } = targetUsers
+      const { totalTargetUserCount = 0 } = campaignInfo
+      return {
+        randomlyUsersCount,
+        sendOnlyActiveUsers,
+        sendRandomlyUsers,
+        totalTargetUserCount
       }
     },
     isTestCampaign() {
@@ -129,18 +128,30 @@ export default {
       const { targetUsers = {} } = this.campaignSummary
       return targetUsers['randomlyUsersCount'] || 0
     },
-    getIsShowRandomlySelected() {
-      const { targetUsers = {} } = this.campaignSummary
-      return !!targetUsers.sendRandomlyUsers
-    },
-    getScenarioInfoItems() {
-      const { scenarioInfo = {} } = this.campaignSummary
-      const { name, difficultyTypeId = 1, methodTypeId = 1, languages } = scenarioInfo
+    getEmailDeliveryData() {
+      const { campaignInfo = {} } = this.campaignSummary
+      const {
+        emailDeliveryStartDate = '01/01/1970',
+        emailDeliveryEndDate = '01/01/1970',
+        emailDeliveryDuration = 0
+      } = campaignInfo
       return {
-        Name: name,
-        Method: methods[methodTypeId - 1].text,
-        Difficulty: difficulties[difficultyTypeId - 1].text,
-        Languages: languages || 'English'
+        'Delivery Start - End': `${emailDeliveryStartDate} - ${emailDeliveryEndDate}`,
+        Duration: `${emailDeliveryDuration} hours`,
+        'Delivery Status': ''
+      }
+    },
+    getEmailDeliveryHelperData() {
+      const { campaignInfo = {} } = this.campaignSummary
+      const {
+        emailDeliveredUserCount,
+        emailNotDeliveredUserCount,
+        totalTargetUserCount
+      } = campaignInfo
+      return {
+        emailDeliveredUserCount,
+        emailNotDeliveredUserCount,
+        totalTargetUserCount
       }
     },
     getResendDialogItems() {
@@ -234,7 +245,8 @@ export default {
         categoryResourceId,
         fromName,
         fromAddress,
-        resourceId
+        resourceId,
+        languageShortCode
       } = emailTemplateInfo
 
       return Object.keys(emailTemplateInfo).length
@@ -244,7 +256,8 @@ export default {
             fromName,
             fromAddress,
             name,
-            resourceId
+            resourceId,
+            languageShortCode
           }
         : {}
     },
@@ -255,10 +268,12 @@ export default {
         urlTemplate,
         difficultyTypeId = 1,
         methodTypeId = 1,
-        resourceId
+        resourceId,
+        languageShortCode
       } = landingPageTemplateInfo
       return Object.keys(landingPageTemplateInfo).length
         ? {
+            languageShortCode,
             name,
             urlTemplate,
             method: methods[methodTypeId - 1].text,

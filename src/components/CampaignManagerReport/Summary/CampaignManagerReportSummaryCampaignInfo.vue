@@ -1,11 +1,18 @@
 <template>
   <CampaignManagerSummaryCard icon="mdi-alert-circle" :title="labels.CampaignInfo" :items="items">
-    <template #NotDelivered="{ props:{ key, val } }">
+    <template #TargetUsers="{ props:{ key } }">
       <div class="campaign-manager-summary-card__body-item-key">
         {{ key.slice(0, 1).toUpperCase() + key.slice(1) }}
-        <v-icon v-if="val !== 0" small class="ml-2" color="#F56C6C">mdi-alert-circle</v-icon>
       </div>
-      <div class="campaign-manager-summary-card__body-item-value">{{ val }}</div>
+      <div class="campaign-manager-summary-card__body-item-value">
+        <span>{{ getBodyValue }}</span>
+        <v-tooltip v-if="isTooltip" bottom>
+          <template #activator="{on}">
+            <v-icon v-on="on" small class="ml-2" color="#000000">mdi-alert-circle</v-icon>
+          </template>
+          <span>{{ getTooltipText }}</span>
+        </v-tooltip>
+      </div>
     </template>
     <template v-if="isTestCampaign" #header-right>
       <div class="campaign-manager-report-summary-campaign-info__right-side">
@@ -27,6 +34,9 @@ export default {
     items: {
       type: Object
     },
+    helperData: {
+      type: Object
+    },
     isTestCampaign: {
       type: Boolean
     }
@@ -34,6 +44,24 @@ export default {
   data() {
     return {
       labels
+    }
+  },
+  computed: {
+    getTooltipText() {
+      const { randomlyUsersCount = 0, totalTargetUserCount } = this.helperData
+      return (
+        this.isTooltip &&
+        `(Only active and random ${randomlyUsersCount} of ${totalTargetUserCount} total users)`
+      )
+    },
+    isTooltip() {
+      const { sendOnlyActiveUsers = false, sendRandomlyUsers = false } = this.helperData
+      return sendOnlyActiveUsers && sendRandomlyUsers
+    },
+    getBodyValue() {
+      return `${this.items['Target Users']} users ${
+        this.isTooltip ? `of ${this.helperData?.totalTargetUserCount}` : ''
+      }`
     }
   }
 }

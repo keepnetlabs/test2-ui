@@ -338,7 +338,7 @@ export default {
         display: flex;
         justify-content: space-between;
         .k-badge {
-          height: 28px !important;
+          height: 24px !important;
           border-radius: 18px;
           min-width: 64px !important;
         }
@@ -350,12 +350,23 @@ export default {
         &-right {
           display: flex;
           align-items: center;
-          div:last-child .k-badge {
+          .badge-middle {
             margin-left: 8px;
-            padding: 0;
-            max-width: none;
+            padding: 8px;
+            max-width: 300px;
             .v-btn__content {
               color: #383b41;
+            }
+          }
+          div:last-child {
+            margin-left: 8px !important;
+            .k-badge {
+              margin-left: 8px;
+              max-width: none;
+              padding: 0;
+              i:before {
+                font-size: 18px;
+              }
             }
           }
         }
@@ -382,7 +393,7 @@ export default {
         display: flex;
         justify-content: space-between;
         .k-badge {
-          height: 28px !important;
+          height: 24px !important;
           border-radius: 18px;
           min-width: 64px !important;
         }
@@ -396,12 +407,23 @@ export default {
         &-right {
           display: flex;
           align-items: center;
-          div:last-child .k-badge {
+          .badge-middle {
             margin-left: 8px;
-            max-width: none;
-            padding: 0;
+            padding: 8px;
+            max-width: 300px;
             .v-btn__content {
               color: #383b41;
+            }
+          }
+          div:last-child {
+            margin-left: 8px;
+            .k-badge {
+              margin-left: 8px;
+              max-width: none;
+              padding: 0;
+              i:before {
+                font-size: 18px;
+              }
             }
           }
         }
