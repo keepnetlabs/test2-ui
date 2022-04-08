@@ -10,25 +10,37 @@
       <div v-if="isFormData" class="campaign-manager-last-step__landing-page-template-body pb-4">
         <div class="campaign-manager-last-step__landing-page-template-body-header">
           <div class="campaign-manager-last-step__landing-page-template-body-header-left">
-            <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-              >URL:</span
-            >
-            {{ formData.urlTemplate }}
+            <div class="campaign-manager-last-step__email-template-body-header-left">
+              {{ formData.name }}
+            </div>
           </div>
           <div class="campaign-manager-last-step__landing-page-template-body-header-right">
             <v-btn style="display: none;"></v-btn>
             <Badge
+              size="mini"
               :color="getBadgeColor(formData.difficulty)"
               :text="getBadgeText(formData.difficulty)"
               :outline="false"
             />
             <Badge
+              size="mini"
               color="#E0E0E0"
-              class-name="px-2 py-2"
+              class-name="badge-middle px-2 py-2"
               :text="getBadgeText(formData.method)"
               :outline="false"
             />
+            <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
+              <template #content>
+                <v-icon>mdi-web</v-icon>{{ formData.languageShortCode }}
+              </template>
+            </Badge>
           </div>
+        </div>
+        <div class="campaign-manager-last-step__email-template-body-header-sub">
+          <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
+            >URL:</span
+          >
+          {{ formData.urlTemplate }}
         </div>
       </div>
       <div

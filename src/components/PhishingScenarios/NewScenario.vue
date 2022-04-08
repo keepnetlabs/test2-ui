@@ -134,24 +134,12 @@
                   />
                 </form-group>
                 <form-group title="Tags" sub-title="Define tags for the scenario">
-                  <k-select
-                    :value="formValues.tags"
-                    :search-input.sync="tagSearch"
+                  <InputTag
                     ref="refTags"
-                    type="combobox"
                     id="input--action-tags-new-scenario"
+                    v-model="formValues.tags"
                     :items="[]"
-                    chips
-                    deletable-chips
-                    outlined
                     class="hide-caret"
-                    multiple
-                    dense
-                    persistent-hint
-                    small-chips
-                    :return-object="false"
-                    @input="handleTagItemChange"
-                    placeholder="Enter tags and press enter key"
                   />
                 </form-group>
                 <make-available-for
@@ -537,7 +525,6 @@
 
 <script>
 import AppModal from '../AppModal'
-import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import MakeAvailableFor from '@/components/Common/MakeAvailableFor/MakeAvailableFor'
@@ -550,17 +537,19 @@ import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KEmailPreview from '@/components/KEmailPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
+import InputTag from '@/components/Common/Inputs/InputTag'
+
 export default {
   name: 'NewScenarios',
   components: {
     KEmailPreview,
-    KSelect,
     AppModal,
     FormGroup,
     MakeAvailableFor,
     EmailTemplateListPreview,
     LandingPageListPreview,
-    InputSelectLanguage
+    InputSelectLanguage,
+    InputTag
   },
   data() {
     return {
@@ -669,32 +658,6 @@ export default {
       this.isAvailableForValidated = true
       this.isAvailableForValid = !!value.length
       this.$emit('validation', this.isAvailableForValid)
-    },
-    handleTagItemChange(value) {
-      if (value.length < this.formValues.tags.length) {
-        this.formValues.tags = value
-      } else {
-        const tagSearch = this.tagSearch.trim()
-        if (!tagSearch && value[value.length - 1].trim() === '') {
-          value.splice(0, value[value.length - 1])
-          return
-        }
-        value.splice(value.length - 1, 1)
-        if (tagSearch.includes(',')) {
-          const tags = tagSearch.split(',')
-          tags.forEach((tag) => {
-            if (tag.trim() && !value.includes(tag)) {
-              this.formValues.tags.push(tag.trim().substring(0, 20))
-            }
-          })
-        } else {
-          if (!value.includes(tagSearch)) {
-            this.formValues.tags.push(tagSearch.trim().substring(0, 20))
-          }
-        }
-        this.$refs.refTags.$refs.refComponent.initialValue = this.formValues.tags
-        this.$refs.refTags.$refs.refComponent.lazyValue = this.formValues.tags
-      }
     },
     changeNewScenarioModalStatus() {
       const isChanged = isDifferent(this.formValues, this.initialFormValues)
