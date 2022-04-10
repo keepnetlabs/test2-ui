@@ -460,6 +460,7 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            <!--
             <v-list-item style="padding-left: 0 !important; margin-left: -5px;">
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -472,6 +473,7 @@
                 />
               </v-list-item-content>
             </v-list-item>
+            !-->
           </v-list-group>
           <v-list-group
             v-if="checkCompanyPermissions()"
