@@ -80,17 +80,13 @@ export default {
       ]
     },
     getCampaignSummaryItems() {
-      const { campaignInfo = {}, scenarioInfo = {} } = this.campaignSummary
-      const { startDate = '0', endDate = '0', totalTargetUserCount = 0 } = campaignInfo
+      const { campaignInfo = {}, scenarioInfo = {}, settings = {} } = this.campaignSummary
+      const { endDate = '0', totalTargetUserCount = 0 } = campaignInfo
       const { languageShortCode } = scenarioInfo
-      const campaignLifeTime = Math.round(
-        (Date.parse(endDate) - Date.parse(startDate)) / (1000 * 60 * 60 * 24)
-      )
+      const { duration = '0' } = settings
       return {
         'Target Users': totalTargetUserCount,
-        'Campaign Lifetime': `${
-          isNaN(campaignLifeTime) ? '0' : campaignLifeTime
-        } days (Ends at ${endDate})`,
+        'Campaign Lifetime': `${duration} days (Ends at ${endDate})`,
         Languages: languageShortCode
       }
     },
