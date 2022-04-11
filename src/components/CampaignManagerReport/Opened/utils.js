@@ -282,7 +282,7 @@ export const COLUMNS = {
     sortable: true,
     show: true,
     type: 'badge',
-    width: 200,
+    width: 225,
     filterableType: 'select'
   },
   LAST_SUBMISSION: {
