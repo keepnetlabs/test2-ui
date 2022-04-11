@@ -157,7 +157,7 @@ export default {
       &.v-btn {
         border-radius: 4px;
         margin: 0 auto;
-        max-width: 76px;
+        max-width: 84px;
         height: 24px !important;
         box-shadow: none !important;
       }
