@@ -1639,9 +1639,13 @@ export default {
       if (!isAutoTrue) return false
       this.isRestoredOrClearedFilters = true
       this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
+      this.$nextTick(() => {
+        if (this.$refs.refInvestigationListData) {
+          this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        }
+      })
       this.refreshDatatable(isAutoTrue)
     },
     handleRestoreDefaultSearch() {
