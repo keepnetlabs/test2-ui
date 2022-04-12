@@ -27,7 +27,7 @@
             v-if="item.mailConfigurationName !== 'All'"
           >
             <div class="mail-configuration-select-sources__item-right-platform">
-              {{ item.type }}
+              {{ item.typeText }}
             </div>
             <div>
               <v-btn style="display: none;" />
@@ -75,7 +75,7 @@
         v-if="item.mailConfigurationName !== 'All'"
       >
         <div class="mail-configuration-select-sources__item-right-platform">
-          {{ item.type }}
+          {{ item.typeText }}
         </div>
         <div>
           <v-btn style="display: none;" />
