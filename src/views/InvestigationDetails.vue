@@ -1973,7 +1973,7 @@ export default {
       } will be deleted from ${this.getUserFriendlyName(this.activeMenu)}`
     },
     calculateProgressData() {
-      if (!Object.keys(this.investigationDetailsData)?.length) return
+      if (!this.investigationDetailsData || !Object.keys(this.investigationDetailsData).length) return
       let today = moment(new Date()).toDate()
       let createDate = moment(
         this.investigationDetailsData.createTime.split(' '),
