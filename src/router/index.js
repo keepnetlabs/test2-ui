@@ -211,7 +211,7 @@ const router = new Router({
           component: CampaignManagerReport,
           meta: {
             isAuthenticated: true,
-            parentName: 'Campaign Manager'
+            parentName: 'Campaign Reports'
           },
           props: true,
           params: true
