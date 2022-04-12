@@ -52,7 +52,9 @@ export default {
     isLoading() {
       let isLoading = this.checkApiConnectivity !== 'loading'
       if (isLoading) {
-        this.$emit('loading')
+        this.$emit('loading', true)
+      } else {
+        this.$emit('loading', false)
       }
       return !isLoading
     }
@@ -77,6 +79,7 @@ export default {
           this.checkApiConnectivity = 'success'
           this.checkApiConnectivityMessage = 'Connected successfully '
           this.isAllSuccess(true)
+          this.$emit('save-button-disabled', false)
         })
         .catch((error) => {
           this.checkApiConnectivity = 'error'
@@ -84,9 +87,7 @@ export default {
             (error.response.data.validationMessages && error.response.data.validationMessages[0]) ||
             error.response.data.message
           this.isAllSuccess(false)
-        })
-        .finally(() => {
-          this.$emit('save-button-disabled', false)
+          this.$emit('save-button-disabled', true)
         })
     },
     setLoadingStates() {
