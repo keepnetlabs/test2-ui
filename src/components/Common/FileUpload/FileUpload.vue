@@ -124,7 +124,7 @@ export default {
   },
   methods: {
     displayFileName(fileName) {
-      return fileName.length <= 30 ? fileName : fileName.substring(0,27) + '...' 
+      return fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...'
     },
     inputFile() {
       this.$emit('inputFile', this.files[0]?.file || [])
