@@ -116,6 +116,11 @@ export default {
       }
     }
   }
+
+  &--ultra {
+    min-width: 325px !important;
+  }
+
   &--big {
     // @media (max-width: 1400px) and (min-width: 1) {
     min-width: 300px !important;
