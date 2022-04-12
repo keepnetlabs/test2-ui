@@ -173,6 +173,7 @@ export default {
             this.maximumApiCount = Math.max(companies.totalNumberOfPages, groups.totalNumberOfPages)
           }
           this.apiCount++
+
           this.$set(this.treeSelectOptions, 3, {
             ...this.treeSelectOptions[3],
             children: companies.results.map((item) => {
@@ -199,6 +200,16 @@ export default {
           })
         })
         .finally(() => {
+          if (!this?.value?.length) {
+            this.handleInputChange([
+              {
+                id: 'MyCompanyOnly',
+                label: 'My company only',
+                type: 'MyCompanyOnly',
+                resourceId: null
+              }
+            ])
+          }
           this.isInfiniteLoading = false
         })
     },
@@ -231,6 +242,8 @@ export default {
           this.treeSelectionStatus = true
           this.setTreeSelectOptions(this.treeSelectionStatus)
         } else {
+          //that means it is deleted
+          this.$emit('input', emittedVal)
           this.treeSelectionStatus = false
           this.setTreeSelectOptions(this.treeSelectionStatus)
         }
