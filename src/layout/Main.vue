@@ -28,10 +28,11 @@
     />
     <v-row justify="center">
       <v-dialog
-        v-model="isSwitchDialogOpen"
+        :value="isSwitchDialogOpen"
         content-class="switch-dialog"
         width="600"
         @click:outside="setSwitchDialog(!isSwitchDialogOpen)"
+        @keydown.esc="setSwitchDialog(false)"
       >
         <switch-account
           v-if="isSwitchDialogOpen"
@@ -1090,14 +1091,6 @@ export default {
       },
       set(newValue) {
         this.changeFeedbackPopup(newValue)
-      }
-    },
-    switchDialog: {
-      get() {
-        return this.isSwitchDialogOpen
-      },
-      set(newValue) {
-        this.setSwitchDialog(newValue)
       }
     },
     getUnreadMessages() {
