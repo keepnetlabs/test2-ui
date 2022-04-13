@@ -2282,7 +2282,7 @@ export default {
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
-          this.isRunning = this.statsAndMenuData?.status === 'Running'
+          this.isRunning = this.statsAndMenuData && this.statsAndMenuData.status &&  this.statsAndMenuData.status === 'Running'
           if (!isInitial) {
             this.itemStats.targetUsers.isInitial = false
             this.itemStats.Inbox.isInitial = false
