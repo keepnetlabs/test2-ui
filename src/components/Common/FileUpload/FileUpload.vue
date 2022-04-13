@@ -19,7 +19,7 @@
       </file-upload>
       <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
         <div class="k-file-uploads__item-details">
-          <div class="k-file-uploads__item-details--filename">{{ file.name }}</div>
+          <div class="k-file-uploads__item-details--filename">{{ displayFileName(file.name) }}</div>
           <div class="k-file-uploads__item-details--filesize">
             <span>{{ file.size | formatSize }}</span>
             <span
@@ -123,6 +123,9 @@ export default {
     }
   },
   methods: {
+    displayFileName(fileName) {
+      return fileName.length <= 30 ? fileName : fileName.substring(0, 27) + '...'
+    },
     inputFile() {
       this.$emit('inputFile', this.files[0]?.file || [])
     },

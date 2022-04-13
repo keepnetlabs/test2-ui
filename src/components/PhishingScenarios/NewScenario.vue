@@ -269,7 +269,7 @@
                           outlined
                           color="#2196f3"
                           @click="showTemplate1 = !showTemplate1"
-                          >Details
+                          >Preview
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
                             {{ showTemplate1 ? 'mdi-menu-up' : 'mdi-menu-down' }}
                           </v-icon></v-btn
@@ -289,7 +289,13 @@
                         <div class="d-flex" v-if="!!summaryData">
                           <v-chip
                             class="template-list--item template-list--item__chip p mr-2"
-                            style="color: white;"
+                            style="
+                              color: white;
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
                             :color="
                               difficulties.find(
                                 (item) =>
@@ -314,6 +320,12 @@
                           </v-chip>
                           <v-chip
                             class="template-list--item template-list--item__chip p"
+                            style="
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
                             v-if="!!summaryData"
                           >
                             {{
@@ -323,10 +335,29 @@
                               ).text
                             }}
                           </v-chip>
+                          <v-chip
+                            v-if="!!summaryData"
+                            class="template-list--item template-list--item__chip p"
+                            style="
+                              background-color: #757575;
+                              margin-left: 8px;
+                              color: white;
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
+                          >
+                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
+                            >{{ summaryData.emailTemplate.languageShortCode }}
+                          </v-chip>
                         </div>
                       </div>
                     </div>
-                    <div class="summary-content" style="border: none; padding-top: 0;">
+                    <div
+                      class="summary-content"
+                      style="display: flex; border: none; padding-top: 0; padding-bottom: 8px;"
+                    >
                       <div
                         v-for="(att, ind) of summaryData.emailTemplate.attachments"
                         :key="ind + att.name"
@@ -398,7 +429,7 @@
                           outlined
                           color="#2196f3"
                           @click="showTemplate2 = !showTemplate2"
-                          >Details
+                          >Preview
                           <v-icon :color="'#2196f3'" class="ml-2" left medium>
                             {{ showTemplate2 ? 'mdi-menu-up' : 'mdi-menu-down' }}
                           </v-icon></v-btn
@@ -418,7 +449,13 @@
                         <div class="d-flex" v-if="!!summaryData">
                           <v-chip
                             class="template-list--item template-list--item__chip p mr-2"
-                            style="color: white;"
+                            style="
+                              color: white;
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
                             :color="
                               scenarioDetailsLookup.difficultyTypes.find(
                                 (item) =>
@@ -446,6 +483,12 @@
                           </v-chip>
                           <v-chip
                             class="template-list--item template-list--item__chip p"
+                            style="
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
                             v-if="!!summaryData"
                           >
                             {{
@@ -455,6 +498,22 @@
                                   summaryData.landingPageTemplate.methodTypeId.toString()
                               ).text
                             }}
+                          </v-chip>
+                          <v-chip
+                            v-if="!!summaryData"
+                            class="template-list--item template-list--item__chip p"
+                            style="
+                              color: white;
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              background-color: #757575;
+                              margin-left: 8px;
+                              font-size: 12px;
+                            "
+                          >
+                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
+                            >{{ summaryData.landingPageTemplate.languageShortCode }}
                           </v-chip>
                         </div>
                       </div>
@@ -648,7 +707,11 @@ export default {
     callForLanguages() {
       LookupLocalStorage.getSingle(21).then((response) => {
         this.languageOptions =
-          response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+          response?.map((language) => ({
+            text: language.name,
+            value: language.resourceId,
+            description: language.description
+          })) || []
       })
     },
     setAttachmentFile(file) {
@@ -696,7 +759,16 @@ export default {
           this.isSubmitDisabled = true
           getSummaryOfScenario(this.emailTemplateResourceId, this.landingPageTemplateResourceId)
             .then((response) => {
-              this.summaryData = response.data.data
+              const {
+                data: { data }
+              } = response
+              data.emailTemplate.languageShortCode = this.languageOptions.find(
+                (language) => language.value === data?.emailTemplate?.languageTypeResourceId
+              )?.description
+              data.landingPageTemplate.languageShortCode = this.languageOptions.find(
+                (language) => language.value === data?.landingPageTemplate?.languageTypeResourceId
+              )?.description
+              this.summaryData = data
               this.generalDifficultyTypeId = response.data.data.difficultyTypeId.toString()
               this.step += 1
             })

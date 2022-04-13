@@ -252,6 +252,7 @@ import { Multipane, MultipaneResizer } from 'vue-multipane'
 import { getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId } from '@/api/phishingsimulator'
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 export default {
   name: 'CampaignManagerPhishingScenarios',
   components: { ShowMoreTags, KEmailPreview, KSelect, AppDialog, Multipane, MultipaneResizer },
@@ -395,13 +396,23 @@ export default {
           (response) => {
             const { data: { data = {} } = {} } = response
             const { emailTemplate, landingPageTemplate } = data
-            const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
+            const {
+              template,
+              fromName,
+              fromAddress,
+              name,
+              difficultyResourceId,
+              attachments,
+              languageTypeResourceId: languageOfEmailTemplate
+            } = emailTemplate
 
             this.emailTemplateParams = {
               fromName,
               fromAddress,
               name,
-              difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+              difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+              attachments,
+              languageTypeResourceId: languageOfEmailTemplate
             }
             this.emailTemplate = template
             const {
@@ -410,14 +421,16 @@ export default {
               landingPages,
               urlTemplate,
               difficultyTypeId,
-              methodTypeId
+              methodTypeId,
+              languageTypeResourceId
             } = landingPageTemplate
             this.landingPageParams = {
               name: landingPageName,
               description,
               urlTemplate,
               difficulty: difficulties[difficultyTypeId - 1].text,
-              method: methods[methodTypeId - 1].text
+              method: methods[methodTypeId - 1].text,
+              languageTypeResourceId
             }
             this.landingPageTemplate = landingPages[0].content
           }

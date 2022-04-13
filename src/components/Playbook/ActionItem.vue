@@ -316,17 +316,28 @@
             </template>
           </k-select>
         </v-col>
-        <v-col v-if="actionsValues[index].val === 'notify'" md="2">
+        <v-col
+          v-if="actionsValues[index].val === 'notify'"
+          md="2"
+          @mouseover="handleMouseOverOnNotifyTemplates"
+          @mouseleave="handleMouseOutNotifyTemplates"
+        >
           <k-select
+            ref="refNotifyTemplatesSelect"
             v-model="notifyTemplate"
             :id="`input--action-notify-templates-${index}`"
             :items="act.notifyTemplates"
             item-value="resourceId"
             item-text="name"
             outlined
-            min-width-type="medium"
-            nudge-width="50"
+            min-width-type="ultra"
+            nudge-width="40"
             hide-details
+          />
+          <data-table-tooltip
+            v-if="showOverFlowTooltip"
+            :tooltip-style="overFlowTooltipStyle"
+            :content="overFlowTooltipContent"
           />
         </v-col>
         <v-col class="text-right" v-if="actionsValues.length > 1">
@@ -388,8 +399,9 @@ import { getDefaultAxiosPayload, getSelectSearchPayload } from '@/utils/function
 import { getSystemUsers } from '@/api/systemUsers'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
+import DataTableTooltip from '@/components/DataTableComponents/DataTableTooltip'
 export default {
-  components: { AppDialogFooter, KSelect, AppDialog, Investigate },
+  components: { DataTableTooltip, AppDialogFooter, KSelect, AppDialog, Investigate },
   name: 'ActionItem',
   props: {
     id: Number,
@@ -423,6 +435,9 @@ export default {
   data() {
     return {
       labels,
+      showOverFlowTooltip: false,
+      overFlowTooltipStyle: {},
+      overFlowTooltipContent: '',
       isSystemUsersLoading: false,
       searchEnginesData: null,
       searchEnginesModelInput: null,
@@ -599,6 +614,34 @@ export default {
           this.totalNumberOfPagesOfSystemUsers = response.data.data.totalNumberOfPages
         })
         .finally(() => (this.isSystemUsersLoading = false))
+    },
+    handleMouseOverOnNotifyTemplates(e) {
+      e.stopPropagation()
+      if (this.$refs.refNotifyTemplatesSelect[0].$refs.refComponent.$_menuProps.value) {
+        this.showOverFlowTooltip = false
+      }
+
+      if (Object.keys(this.overFlowTooltipStyle).length) return
+      if (
+        e.target
+          ?.querySelector('.v-select__selection.v-select__selection--comma')
+          ?.getBoundingClientRect()?.width > 179
+      ) {
+        const parentRect = e.target.getBoundingClientRect()
+        this.overFlowTooltipStyle = {
+          top: `${parentRect.top + 45}px`,
+          left: `${parentRect.left + 4}px`
+        }
+        this.overFlowTooltipContent = this.act.notifyTemplates.find(
+          (notifyTemplate) => notifyTemplate.resourceId === this.notifyTemplate
+        )?.name
+        this.showOverFlowTooltip = true
+      }
+    },
+    handleMouseOutNotifyTemplates(e) {
+      e.stopPropagation()
+      this.overFlowTooltipStyle = {}
+      this.showOverFlowTooltip = false
     },
     setSystemUsers(response) {
       const { data: { data = [] } = [] } = response

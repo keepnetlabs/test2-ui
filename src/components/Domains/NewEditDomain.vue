@@ -149,10 +149,11 @@
 
         <form-group :title="labels.TestConnection" class="mt-2">
           <TestConnection
-            :values="formValues"
             ref="testConnection"
-            @loading="saveButtonDisabled = false"
-            @save-button-disabled="saveButtonDisabled = $event"
+            :values="formValues"
+            @testConnectionValues="onTestConnectionValuesChange"
+            @loading="onTestConnectionLoadingChange"
+            @save-button-disabled="onTestConnectionSaveButtonDisabledChange"
           />
         </form-group>
       </v-form>
@@ -229,7 +230,19 @@ export default {
       isShowCustomizeDnsRecordsDetail: true,
       isValidate: null,
       availableForRequests: [],
+      isTestConnectionWorkedBefore: false,
       initialFormValues: {
+        domain: null,
+        recordTypeId: '2',
+        dnsServiceProviderId: null,
+        dnsRecord: null,
+        proxyStatusId: '1',
+        urlSchemaTypeId: '1',
+        zoneId: null,
+        active: true,
+        resourceId: null
+      },
+      formValuesAfterTest: {
         domain: null,
         recordTypeId: '2',
         dnsServiceProviderId: null,
@@ -324,6 +337,23 @@ export default {
     }
   },
   methods: {
+    onTestConnectionLoadingChange(newValue) {
+      this.saveButtonDisabled = !newValue
+    },
+    onTestConnectionSaveButtonDisabledChange(newValue) {
+      this.saveButtonDisabled = newValue
+    },
+    onTestConnectionValuesChange(isSuccess, isSave) {
+      this.formValuesAfterTest = JSON.parse(JSON.stringify(this.formValues))
+      if (isSuccess) {
+        this.isTestConnectionWorkedBefore = true
+        if (isSave) {
+          this.$nextTick(() => {
+            if (this.status) this.submit()
+          })
+        }
+      }
+    },
     resetForm() {
       this.formValues = {
         domain: null,
@@ -354,6 +384,13 @@ export default {
       })
     },
     submit() {
+      if (
+        JSON.stringify(this.formValues) !== JSON.stringify(this.initialFormValues) &&
+        this.isEdit
+      ) {
+        if (JSON.stringify(this.formValues) !== JSON.stringify(this.formValuesAfterTest))
+          this.isTestConnectionWorkedBefore = false
+      }
       this.saveButtonDisabled = true
       let isValid = true
       const { refMakeAvailableFor } = this.$refs
@@ -365,7 +402,7 @@ export default {
         ...this.formValues,
         availableForRequests: refMakeAvailableFor.getAvailableForValues(this.availableForRequests)
       }
-      if (this.$refs.domainForm.validate() && isValid) {
+      if (this.$refs.domainForm.validate() && isValid && this.isTestConnectionWorkedBefore) {
         //this line added for if the customize checkbox unselected
         if (!this.isShowCustomizeDnsRecordsDetail) {
           this.formValues.recordTypeId = null
@@ -388,6 +425,17 @@ export default {
               this.saveButtonDisabled = false
             })
         }
+      } else if (
+        this.$refs.domainForm.validate() &&
+        isValid &&
+        !this.isTestConnectionWorkedBefore
+      ) {
+        this.saveButtonDisabled = true
+        this.$refs.testConnection.testConnection(true)
+        setTimeout(() => {
+          let el = this.$el.querySelector('.test-connection__testing-content__item')
+          scrollToComponent(el)
+        }, 50)
       } else {
         this.saveButtonDisabled = false
         const el = this.$refs.domainForm.$el.querySelector('.v-messages__message')

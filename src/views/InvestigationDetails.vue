@@ -1639,9 +1639,13 @@ export default {
       if (!isAutoTrue) return false
       this.isRestoredOrClearedFilters = true
       this.investigationListBodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
-      this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
-        .toString()
-        .substring(0, 5)}`
+      this.$nextTick(() => {
+        if (this.$refs.refInvestigationListData) {
+          this.$refs.refInvestigationListData.columnKey = `column-key${Math.random()
+            .toString()
+            .substring(0, 5)}`
+        }
+      })
       this.refreshDatatable(isAutoTrue)
     },
     handleRestoreDefaultSearch() {
@@ -1973,7 +1977,7 @@ export default {
       } will be deleted from ${this.getUserFriendlyName(this.activeMenu)}`
     },
     calculateProgressData() {
-      if (!Object.keys(this.investigationDetailsData)?.length) return
+      if (!this.investigationDetailsData || !Object.keys(this.investigationDetailsData).length) return
       let today = moment(new Date()).toDate()
       let createDate = moment(
         this.investigationDetailsData.createTime.split(' '),
