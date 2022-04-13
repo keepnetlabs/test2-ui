@@ -1,7 +1,7 @@
 let timeout = null
 function setRowColors(container) {
   const domRows = container.querySelectorAll('tr')
-  if (!domRows) {
+  if (!domRows.length) {
     return
   }
   const rows = [...domRows]
