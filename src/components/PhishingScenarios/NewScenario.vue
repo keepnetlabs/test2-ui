@@ -294,6 +294,7 @@
                               border-radius: 6px;
                               height: 24px;
                               font-weight: 600;
+                              font-size: 12px;
                             "
                             :color="
                               difficulties.find(
@@ -319,7 +320,12 @@
                           </v-chip>
                           <v-chip
                             class="template-list--item template-list--item__chip p"
-                            style="border-radius: 6px; height: 24px; font-weight: 600;"
+                            style="
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
                             v-if="!!summaryData"
                           >
                             {{
@@ -339,9 +345,10 @@
                               border-radius: 6px;
                               height: 24px;
                               font-weight: 600;
+                              font-size: 12px;
                             "
                           >
-                            <v-icon style="font-size: 20px;" color="#fff">mdi-web</v-icon
+                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
                             >{{ summaryData.emailTemplate.languageShortCode }}
                           </v-chip>
                         </div>
@@ -447,6 +454,7 @@
                               border-radius: 6px;
                               height: 24px;
                               font-weight: 600;
+                              font-size: 12px;
                             "
                             :color="
                               scenarioDetailsLookup.difficultyTypes.find(
@@ -475,7 +483,12 @@
                           </v-chip>
                           <v-chip
                             class="template-list--item template-list--item__chip p"
-                            style="border-radius: 6px; height: 24px; font-weight: 600;"
+                            style="
+                              border-radius: 6px;
+                              height: 24px;
+                              font-weight: 600;
+                              font-size: 12px;
+                            "
                             v-if="!!summaryData"
                           >
                             {{
@@ -496,9 +509,10 @@
                               font-weight: 600;
                               background-color: #757575;
                               margin-left: 8px;
+                              font-size: 12px;
                             "
                           >
-                            <v-icon style="font-size: 20px;" color="#fff">mdi-web</v-icon
+                            <v-icon style="font-size: 18px;" color="#fff">mdi-web</v-icon
                             >{{ summaryData.landingPageTemplate.languageShortCode }}
                           </v-chip>
                         </div>
