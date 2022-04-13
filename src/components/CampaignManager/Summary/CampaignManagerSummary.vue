@@ -69,15 +69,24 @@
               <div class="campaign-manager-last-step__email-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
+                  size="mini"
                   :color="getBadgeColor(currentFormData.emailTemplateParams.difficulty)"
                   :text="getBadgeText(currentFormData.emailTemplateParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
+                  size="mini"
                   color="#E0E0E0"
+                  class-name="badge-middle px-2 py-2"
                   :text="getBadgeText(currentFormData.landingPageParams.method)"
                   :outline="false"
                 />
+                <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
+                  <template #content>
+                    <v-icon>mdi-web</v-icon
+                    >{{ currentFormData.emailTemplateParams.languageShortCode }}
+                  </template>
+                </Badge>
               </div>
             </div>
             <div class="campaign-manager-last-step__email-template-body-header-sub">
@@ -86,7 +95,42 @@
               {{ currentFormData.emailTemplateParams.fromAddress }}
               <span>&#62;</span>
             </div>
-            <div></div>
+            <div
+              class="campaign-manager-last-step__email-template-body-attachments"
+              style="border: none;"
+            >
+              <div
+                v-for="(att, ind) of getAttachments"
+                :key="ind + att.name"
+                class="preview-attch-wrapper"
+              >
+                <div class="attachment-wrapper">
+                  <div class="attachment blue-attach" :id="'single-post-attachments-' + att.name">
+                    <v-tooltip bottom opacity="1" z-index="9999">
+                      <template v-slot:activator="{ on }">
+                        <div
+                          v-on="on"
+                          id="text--attachment-preview-no-flaged"
+                          class="attach-icon blue-icon"
+                        >
+                          <v-icon color="white" style="font-size: 20px;">mdi-paperclip</v-icon>
+                        </div>
+                        <div
+                          v-on="on"
+                          id="text--attachment-preview-name"
+                          class="file-name safari-hide-tooltip max-char pl-2"
+                        >
+                          {{ att.fileName }}
+                        </div>
+                      </template>
+                      <span id="text--attachment-preview-tooltip-email-template">{{
+                        att.fileName
+                      }}</span>
+                    </v-tooltip>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           <div
             v-if="isShowEmailTemplate"
@@ -118,24 +162,38 @@
           >
             <div class="campaign-manager-last-step__landing-page-template-body-header">
               <div class="campaign-manager-last-step__landing-page-template-body-header-left">
-                <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
-                  >URL:</span
-                >
-                {{ currentFormData.landingPageParams.urlTemplate }}
+                <div class="campaign-manager-last-step__email-template-body-header-left">
+                  {{ currentFormData.landingPageParams.name }}
+                </div>
               </div>
               <div class="campaign-manager-last-step__landing-page-template-body-header-right">
                 <v-btn style="display: none;"></v-btn>
                 <Badge
+                  size="mini"
                   :color="getBadgeColor(currentFormData.landingPageParams.difficulty)"
                   :text="getBadgeText(currentFormData.landingPageParams.difficulty)"
                   :outline="false"
                 />
                 <Badge
+                  size="mini"
                   color="#E0E0E0"
+                  class-name="badge-middle px-2 py-2"
                   :text="getBadgeText(currentFormData.landingPageParams.method)"
                   :outline="false"
                 />
+                <Badge size="mini" color="#757575" class-name="px-2 py-2" :outline="false">
+                  <template #content>
+                    <v-icon>mdi-web</v-icon
+                    >{{ currentFormData.landingPageParams.languageShortCode }}
+                  </template>
+                </Badge>
               </div>
+            </div>
+            <div class="campaign-manager-last-step__email-template-body-header-sub">
+              <span class="campaign-manager-last-step__landing-page-template-body-header-left-url"
+                >URL:</span
+              >
+              {{ currentFormData.landingPageParams.urlTemplate }}
             </div>
           </div>
           <div
@@ -192,14 +250,17 @@ export default {
           fromName: val?.emailTemplateParams?.fromName || '',
           fromAddress: val?.emailTemplateParams?.fromAddress || '',
           name: val?.emailTemplateParams?.name || '',
-          difficulty: val?.emailTemplateParams?.difficulty || ''
+          difficulty: val?.emailTemplateParams?.difficulty || '',
+          attachments: val?.emailTemplateParams?.attachments || [],
+          languageShortCode: val?.emailTemplateParams?.languageShortCode
         },
         landingPageParams: {
           name: val?.landingPageParams?.name || '',
           description: val?.landingPageParams?.description || '',
           urlTemplate: val?.landingPageParams?.urlTemplate || '',
           difficulty: val?.landingPageParams?.difficulty || '',
-          method: val?.landingPageParams?.method || ''
+          method: val?.landingPageParams?.method || '',
+          languageShortCode: val?.landingPageParams?.languageShortCode
         },
         landingPageTemplate: val?.landingPageTemplate || ''
       }
@@ -208,6 +269,9 @@ export default {
   computed: {
     isFormData() {
       return Object.keys(this.formData).length
+    },
+    getAttachments() {
+      return this?.currentFormData?.emailTemplateParams?.attachments || []
     },
     getScenarioInfoItems() {
       const { selectedPhishingScenario = {} } = this.formData
@@ -334,6 +398,10 @@ export default {
       padding: 16px 24px 24px 24px;
       background-color: #fafafa;
       border-radius: 12px;
+      &-attachments {
+        display: flex;
+        margin-top: 24px;
+      }
       &-header {
         display: flex;
         justify-content: space-between;
