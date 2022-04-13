@@ -156,18 +156,22 @@
                     <v-list-item class="mt-6">
                       <v-list-item-content class="mb-2 target-user-import-file__list-item">
                         <label class="bottom-margin">Select Group</label>
-                        <v-select
-                          :items="groups"
+                        <v-autocomplete
                           v-model="formData.groups"
+                          :items="groups"
                           item-text="name"
                           item-value="resourceId"
                           outlined
                           placeholder="- All Users -"
-                          :rules="[(v) => !!v || 'Required']"
-                          :disabled="stepLock"
                           multiple
                           persistent-hint
                           hide-details
+                          prepend-inner-icon="mdi-magnify"
+                          :menu-props="{
+                            offsetY: true
+                          }"
+                          :rules="[(v) => !!v || 'Required']"
+                          :disabled="stepLock"
                         >
                           <template v-slot:selection="data" v-if="groups.length > 0">
                             <v-chip
@@ -185,7 +189,7 @@
                               >
                             </v-chip>
                           </template>
-                        </v-select>
+                        </v-autocomplete>
                       </v-list-item-content>
                     </v-list-item>
                     <v-list-item class="mt-6">

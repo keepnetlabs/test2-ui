@@ -126,6 +126,7 @@ import {
 } from '@/api/phishingsimulator'
 import { searchTargetGroups } from '@/api/targetUsers'
 import { getPhishingReportSummary } from '@/api/phishingReporter'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 
 const EMITS = {
   ON_CLOSE: 'on-close',
@@ -165,7 +166,8 @@ export default {
       labels,
       step: 1,
       selectedRowFormData: {},
-      initialFormValues: {}
+      initialFormValues: {},
+      languageOptions: []
     }
   },
   computed: {
@@ -192,6 +194,19 @@ export default {
       let formData = {}
       if (this.step === 3) {
         const { refCampaignManagerCampaignInfo, refCampaignManagerAdvancedSettings } = this.$refs
+        const emailTemplateParams =
+          refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
+            .emailTemplateParams
+        emailTemplateParams.languageShortCode = this.languageOptions.find(
+          (language) => language.value === emailTemplateParams.languageTypeResourceId
+        )?.text
+
+        const landingPageParams =
+          refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios.landingPageParams
+        landingPageParams.languageShortCode = this.languageOptions.find(
+          (language) => language.value === landingPageParams.languageTypeResourceId
+        )?.text
+
         formData = {
           ...formData,
           ...refCampaignManagerCampaignInfo.formData,
@@ -199,15 +214,11 @@ export default {
           emailTemplate:
             refCampaignManagerCampaignInfo?.$refs.refCampaignManagerPhishingScenarios
               ?.emailTemplate || '',
-          emailTemplateParams:
-            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
-              .emailTemplateParams,
+          emailTemplateParams,
           landingPageTemplate:
             refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
               .landingPageTemplate,
-          landingPageParams:
-            refCampaignManagerCampaignInfo.$refs.refCampaignManagerPhishingScenarios
-              .landingPageParams
+          landingPageParams
         }
 
         formData.selectedPhishingScenario =
@@ -290,6 +301,11 @@ export default {
     }
   },
   created() {
+    LookupLocalStorage.getSingle(21).then((response) => {
+      this.languageOptions =
+        response?.map((language) => ({ text: language.description, value: language.resourceId })) ||
+        []
+    })
     if (this.selectedRow) {
       this.callForData()
     }
