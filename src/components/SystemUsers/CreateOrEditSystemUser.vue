@@ -283,11 +283,12 @@ export default {
             resourceId: item.resourceId
           }
         })
-
-        this.formValues.roleResourceIdList =
-          availableRoles &&
-          availableRoles.length &&
-          availableRoles.find((role) => role.name === 'Company Admin').resourceId
+        if (availableRoles && availableRoles.length) {
+          const roleIndex = availableRoles.findIndex((role) => role.name === 'Company Admin')
+          if (roleIndex !== -1 && availableRoles[roleIndex].resourceId) {
+            this.formValues.roleResourceIdList = availableRoles[roleIndex].resourceId
+          }
+        }
       }
       this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
     }

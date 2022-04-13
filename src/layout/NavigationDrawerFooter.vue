@@ -81,8 +81,7 @@ export default {
       return isShowReleaseVersionNumber && this.isMini
     },
     getReleaseVersion() {
-      const { systemVersion = '0' } = this.navigatorMenuProps
-      return systemVersion
+      return this.navigatorMenuProps?.systemVersion || '0'
     },
     getReleaseNotesUrl() {
       const { releaseNotesUrl = '' } = this.navigatorMenuProps
