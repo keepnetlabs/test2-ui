@@ -478,7 +478,7 @@ export default {
             .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
             droppedComponent.attributes.src = logoUrl
             img.src = logoUrl
-            img.className = img.className.replaceAll('gjs-plh-image', '')
+            img.className = img.className.replace(new RegExp('gjs-plh-image', 'g'), '')
           }
         } else if (
           droppedComponent &&
