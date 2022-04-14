@@ -208,6 +208,9 @@ export default {
             width: 240,
             type: 'text',
             filterableType: 'text'
+            // TODO: For #24699 
+            // filterableType: 'select',
+            // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.CREATETIME,
