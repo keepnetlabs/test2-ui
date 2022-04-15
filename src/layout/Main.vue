@@ -68,12 +68,15 @@
           <v-app-bar-nav-icon
             class="page-nav__menu-toggle menu-icon-wrapper"
             color="blue"
-            @click.stop="onNavigationClick()"
             :style="getDrawerPadding2"
             height="48"
             width="48"
             x-large
-          ></v-app-bar-nav-icon>
+            @click.stop="onNavigationClick()"
+            ><v-icon style="height: 32px; width: 32px;">{{
+              iconPaths.mdiMenu
+            }}</v-icon></v-app-bar-nav-icon
+          >
           <div class="v-responsive">
             <img
               v-if="!mini && drawer"
@@ -167,7 +170,9 @@
                         </v-tooltip>
                       </div>
                       <div class="user-name-dropdown__icon">
-                        <v-icon class="user-name-dropdown-font__icon">mdi-chevron-right</v-icon>
+                        <v-icon class="user-name-dropdown-font__icon">{{
+                          iconPaths.mdiChevronRight
+                        }}</v-icon>
                       </div>
                     </div>
                   </div>
@@ -248,7 +253,7 @@
             to="/"
             class="menu-link-default"
           >
-            <app-router-item icon="mdi-home" title="Dashboard" />
+            <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
           <router-link
             v-if="!checkThreatSharingPermissions()"
@@ -258,15 +263,16 @@
             :class="[routerName === 'Community' && 'active-link']"
             @click.native="deleteTSVuexData"
           >
-            <app-router-item icon="mdi-flag" title="Threat Sharing" />
+            <app-router-item title="Threat Sharing" :icon="iconPaths.mdiFlag" />
           </router-link>
 
           <v-list-group
-            prepend-icon="mdi-hook"
+            v-if="checkPhishingSimulatorPermissions()"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorPermissions]"
-            v-if="checkPhishingSimulatorPermissions()"
+            :prepend-icon="iconPaths.mdiHook"
+            :append-icon="iconPaths.mdiChevronDown"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -321,10 +327,11 @@
 
           <v-list-group
             v-if="checkIncidentResponderListGroupPermissions()"
-            prepend-icon="mdi-flash"
+            :prepend-icon="iconPaths.mdiFlash"
             id="btn--link-navigator-menu-incident-responder-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
+            :append-icon="iconPaths.mdiChevronDown"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -424,7 +431,7 @@
             class="menu-link-default"
             :class="[routerName === 'Phishing Reporter' && 'active-link']"
           >
-            <app-router-item icon="mdi-account-voice" title="Phishing Reporter" />
+            <app-router-item title="Phishing Reporter" :icon="iconPaths.mdiAccountVoice" />
           </router-link>
           <v-list-group
             v-if="
@@ -433,7 +440,6 @@
               ])
             "
             id="btn--link-navigator-menu-reports-list-group"
-            prepend-icon="mdi-equalizer"
             no-action
             :class="[
               'menu-with-item menu-link-default',
@@ -444,6 +450,8 @@
                 ? 'primary--text active-menu-parent'
                 : 'un-selected-list-item'
             ]"
+            :prepend-icon="iconPaths.mdiEqualizer"
+            :append-icon="iconPaths.mdiChevronDown"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -480,9 +488,10 @@
           <v-list-group
             v-if="checkCompanyPermissions()"
             id="btn--link-navigator-menu-company-list-group"
-            prepend-icon="mdi-briefcase-variant"
             no-action
             :class="['menu-with-item menu-link-default', getCompanyClasses]"
+            :prepend-icon="iconPaths.mdiBriefcaseVariant"
+            :append-icon="iconPaths.mdiChevronDown"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -678,7 +687,7 @@
         <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
             <v-btn id="btn--dashboard-header-help-menu" icon color="white" v-on="on">
-              <v-icon>mdi-help-circle</v-icon>
+              <v-icon>{{ iconPaths.mdiHelpCircle }}</v-icon>
             </v-btn>
           </template>
           <v-list>
@@ -741,6 +750,19 @@
 </template>
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import {
+  mdiHome,
+  mdiChevronRight,
+  mdiFlag,
+  mdiFlash,
+  mdiHook,
+  mdiChevronDown,
+  mdiAccountVoice,
+  mdiEqualizer,
+  mdiBriefcaseVariant,
+  mdiMenu,
+  mdiHelpCircle
+} from '@mdi/js'
 import offline from 'v-offline'
 import ConnectionLost from '../components/ConnectionLost'
 import SwitchAccount from '../components/SwitchAccount'
@@ -786,6 +808,19 @@ export default {
     return {
       showSettingsModalStatus: false,
       labels,
+      iconPaths: {
+        mdiHome,
+        mdiChevronRight,
+        mdiFlag,
+        mdiFlash,
+        mdiHook,
+        mdiChevronDown,
+        mdiAccountVoice,
+        mdiEqualizer,
+        mdiBriefcaseVariant,
+        mdiMenu,
+        mdiHelpCircle
+      },
       switchDialogStatus: false,
       showNewPassword: false,
       currentPassword: null,
@@ -1723,6 +1758,10 @@ export default {
       transition: all 0.2s ease-in-out;
       background-color: #edf7fd;
       margin-left: -15px;
+      .v-icon__svg {
+        width: 100%;
+        height: 100%;
+      }
     }
     &__logo-wrapper {
       max-width: 150px;
@@ -1739,6 +1778,10 @@ export default {
       .page-nav__menu-toggle {
         transition: all 0.2s ease-in-out;
         margin-left: 0;
+        .v-icon__svg {
+          width: 100%;
+          height: 100%;
+        }
       }
       .page-nav__logo-wrapper {
         margin-left: 8px;
@@ -2687,6 +2730,13 @@ export default {
   }
   .v-step[x-placement^='top'] {
     margin-bottom: 1.2rem !important;
+  }
+}
+#btn--link-navigator-menu-phishing-simulator-list-group {
+  .v-list-group__header__prepend-icon {
+    .v-icon {
+      transform: rotateY(180deg);
+    }
   }
 }
 </style>
