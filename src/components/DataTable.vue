@@ -1470,9 +1470,7 @@ export default {
       //This is for refresh button when clicked caching refresh
       if ((!this.cacheChecks && !this.isServerSide) || (this.lazy && this.selectedCluster)) {
         this.multipleSelection = []
-        if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
-          this.$refs.elTableRef.clearSelection()
-        }
+        this.$refs?.elTableRef?.clearSelection?.()
       } else {
         //If there is clustered items selected table has reselect bug. It solves it
       }
@@ -1541,7 +1539,7 @@ export default {
         this.$nextTick(() => {
           const selections = JSON.parse(JSON.stringify(this.multipleSelection))
           this.multipleSelection = []
-          this.$refs.elTableRef.clearSelection()
+          this.$refs.elTableRef?.clearSelection?.()
           const allItems = this.getAllItems(this.tableData, [], false, false)
           selections.forEach((selectedItem) => {
             const thisTableItem = allItems.find((item) => {
@@ -1713,7 +1711,7 @@ export default {
     ) {
       this.$nextTick(() => {
         this.multipleSelection = []
-        this.$refs.elTableRef.clearSelection()
+        this.$refs.elTableRef?.clearSelection?.()
         selections.forEach((selectedItem) => {
           const thisTableItem = this.tableData.find((item) => {
             return JSON.stringify(item) === JSON.stringify(selectedItem)
@@ -1731,7 +1729,7 @@ export default {
     ) {
       this.$nextTick(() => {
         this.multipleSelection = []
-        this.$refs.elTableRef.clearSelection()
+        this.$refs.elTableRef?.clearSelection?.()
         selections.forEach((selectedItem) => {
           const thisTableItem = this.tableData.find((item) => {
             return item[this.rowKey] === selectedItem[this.rowKey]

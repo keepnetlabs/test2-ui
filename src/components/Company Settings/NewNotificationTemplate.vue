@@ -269,7 +269,7 @@ export default {
             continue
           }
           if (key === 'template') {
-            value = response.data.data.template.replaceAll(logoKey, logoUrl)
+            value = response.data.data.template.replace(new RegExp(logoKey, 'g'), logoUrl)
           }
           this.formValues[key] = value
         }
@@ -286,7 +286,7 @@ export default {
       if (htmlTemplate) {
         const logoKey = '{COMPANYLOGO}'
         const logoUrl = this.$store.state.dashboard.selectedCompanyObject.logoUrl
-        this.formValues.template = htmlTemplate.replaceAll(logoKey, logoUrl)
+        this.formValues.template = htmlTemplate.replace(new RegExp(logoKey, 'g'), logoUrl)
       }
     },
     callForDatas() {

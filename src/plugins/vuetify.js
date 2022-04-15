@@ -7,6 +7,9 @@ Vue.use(Vuetify)
 
 export default new Vuetify({
   icons: {
+    icons: {
+      iconfont: 'mdiSvg'
+    },
     values: {
       'custom-resend': {
         component: ResendIcon

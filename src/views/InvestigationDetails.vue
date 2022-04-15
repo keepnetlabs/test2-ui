@@ -1977,7 +1977,8 @@ export default {
       } will be deleted from ${this.getUserFriendlyName(this.activeMenu)}`
     },
     calculateProgressData() {
-      if (!this.investigationDetailsData || !Object.keys(this.investigationDetailsData).length) return
+      if (!this.investigationDetailsData || !Object.keys(this.investigationDetailsData).length)
+        return
       let today = moment(new Date()).toDate()
       let createDate = moment(
         this.investigationDetailsData.createTime.split(' '),
@@ -2281,7 +2282,10 @@ export default {
       this.$store
         .dispatch('investigations/getStatsAndMenuData', this.$route.params.id)
         .finally(() => {
-          this.isRunning = this.statsAndMenuData?.status === 'Running'
+          this.isRunning =
+            this.statsAndMenuData &&
+            this.statsAndMenuData.status &&
+            this.statsAndMenuData.status === 'Running'
           if (!isInitial) {
             this.itemStats.targetUsers.isInitial = false
             this.itemStats.Inbox.isInitial = false
@@ -2784,7 +2788,7 @@ export default {
     },
     investigationDetailsData(val) {
       const tempArr = []
-      if (val.targetUserType === 'Groups') {
+      if (val && val.targetUserType && val.targetUserType === 'Groups') {
         for (let user of val.targetUsers) {
           tempArr.push({ Group: user.targetUser })
         }

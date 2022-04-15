@@ -11,8 +11,8 @@
           color="transparent"
           :disabled="!checkPermissions('dashboard/widgets', 'GET')"
           @click="handleEdit"
-          ><v-icon class="mr-2" style="font-size: 22px;">mdi-view-dashboard</v-icon>Edit
-          Dashboard</v-btn
+          ><v-icon class="mr-2" style="font-size: 22px;">{{ mdiViewDashboard }}</v-icon
+          >Edit Dashboard</v-btn
         >
         <template v-else>
           <v-menu bottom offset-y max-height="500" content-class="no-box-shadow">
@@ -61,7 +61,7 @@
 
 <script>
 import { checkPermission } from '@/utils/functions'
-
+import { mdiViewDashboard } from '@mdi/js'
 export default {
   name: 'AvailableWidgets',
   props: {
@@ -75,7 +75,8 @@ export default {
   },
   data() {
     return {
-      isMinimized: false
+      isMinimized: false,
+      mdiViewDashboard
     }
   },
   methods: {

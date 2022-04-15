@@ -1474,13 +1474,15 @@ export default {
     },
     handleApiKeyChange() {
       if (!this.formValues.apiUrl) return true
-      this.formValues.apiKeys.map((item) => {
-        this.isTestConnectionDisabled = false
-        if (!item.value.length) {
-          this.isTestConnectionDisabled = true
-          return true
-        }
-      })
+      if (!!this.formValues.apiKeys) {
+        this.formValues.apiKeys.map((item) => {
+          this.isTestConnectionDisabled = false
+          if (!item.value.length) {
+            this.isTestConnectionDisabled = true
+            return true
+          }
+        })
+      }
     },
     cancelClickOnConfirmModal() {
       this.formValues.uploadFileTypes = []

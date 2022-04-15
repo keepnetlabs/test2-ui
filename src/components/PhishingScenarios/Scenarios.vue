@@ -307,8 +307,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            width: 180
+            width: 180,
+            filterableType: 'select',
+            filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.CREATETIME,

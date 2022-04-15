@@ -7,7 +7,7 @@
         @click="handleDocumentationClick"
       >
         <v-list-item-icon>
-          <v-icon>mdi-help-circle-outline</v-icon>
+          <v-icon>{{ mdiHelpCircleOutline }}</v-icon>
         </v-list-item-icon>
         <v-list-item-title data-content="https://doc.keepnetlabs.com"
           >Documentation</v-list-item-title
@@ -19,7 +19,7 @@
         @click="handleFeedbackClick"
       >
         <v-list-item-icon>
-          <v-icon>mdi-message-alert-outline</v-icon>
+          <v-icon>{{ mdiMessageAlertOutline }}</v-icon>
         </v-list-item-icon>
         <v-list-item-title>Give Feedback!</v-list-item-title>
       </v-list-item>
@@ -50,6 +50,7 @@
 </template>
 
 <script>
+import { mdiHelpCircleOutline, mdiMessageAlertOutline } from '@mdi/js'
 export default {
   name: 'NavigationDrawerFooter',
   props: {
@@ -58,6 +59,12 @@ export default {
     },
     navigatorMenuProps: {
       type: Object
+    }
+  },
+  data() {
+    return {
+      mdiHelpCircleOutline,
+      mdiMessageAlertOutline
     }
   },
   computed: {
@@ -81,8 +88,7 @@ export default {
       return isShowReleaseVersionNumber && this.isMini
     },
     getReleaseVersion() {
-      const { systemVersion = '0' } = this.navigatorMenuProps
-      return systemVersion
+      return this.navigatorMenuProps?.systemVersion || '0'
     },
     getReleaseNotesUrl() {
       const { releaseNotesUrl = '' } = this.navigatorMenuProps

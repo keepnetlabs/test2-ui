@@ -43,7 +43,7 @@ import submitButton from '@/components/GrapesJs/Newsletter/components/submitButt
 import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
-
+import * as validations from '@/utils/validations'
 export default {
   name: 'GrapesNewsletterModal',
   props: {
@@ -223,11 +223,28 @@ export default {
           }
         })
         editor.DomComponents.addType('phishing-submit-button', {
+          isComponent(el) {
+            const { tagName } = el
+            if (['BUTTON', 'INPUT'].includes(tagName) && el.getAttribute('type') === 'submit') {
+              return {
+                type: 'phishing-submit-button',
+                tagName: tagName.toLowerCase()
+              }
+            }
+          },
           model: {
             defaults: {
               traits: [
-                'value',
+                {
+                  name: 'value',
+                  label: 'Text'
+                },
                 'id',
+                {
+                  type: 'text',
+                  label: 'URL Redirection',
+                  name: 'urlredirection'
+                },
                 {
                   type: 'select',
                   label: 'Type',
@@ -236,6 +253,35 @@ export default {
                 }
               ],
               attributes: { type: 'submit' }
+            }
+          },
+          view: {
+            events: {
+              click: 'handleClick'
+            },
+            init({ model }) {
+              this.listenTo(
+                model,
+                'change:attributes:urlredirection',
+                this.handleURLRedirectionChange
+              )
+              this.listenTo(model, 'change:attributes:value', this.handleTextChange)
+            },
+            handleURLRedirectionChange(component, value) {
+              if (!validations.isDomainUrl(value, '')) {
+                window.alert('Please enter a valid URL')
+              }
+            },
+            handleTextChange(component, value) {
+              if (component.getEl().constructor.name === 'HTMLButtonElement') {
+                component.components(value)
+              }
+            },
+            handleClick(e) {
+              const { urlredirection } = this.model.getAttributes()
+              if (urlredirection) {
+                //urlredirection
+              }
             }
           }
         })
@@ -432,7 +478,7 @@ export default {
             .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
             droppedComponent.attributes.src = logoUrl
             img.src = logoUrl
-            img.className = img.className.replaceAll('gjs-plh-image', '')
+            img.className = img.className.replace(new RegExp('gjs-plh-image', 'g'), '')
           }
         } else if (
           droppedComponent &&
