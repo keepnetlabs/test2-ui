@@ -8,6 +8,16 @@
               <integrations v-if="tab === 'integrations'" ref="refIntegrations"></integrations>
             </el-tab-pane>
             <el-tab-pane
+              name="siem-integrations"
+              :label="labels.SIEMIntegrations"
+              :id="`${labels.SIEMIntegrations.toLowerCase()}-content`"
+            >
+              <s-i-e-m-integrations
+                v-if="tab === 'siem-integrations'"
+                ref="refSIEMIntegrations"
+              ></s-i-e-m-integrations>
+            </el-tab-pane>
+            <el-tab-pane
               name="advanced-settings"
               :label="labels.AdvancedSettings"
               :id="`${labels.AdvancedSettings.toLowerCase()}-content`"
@@ -28,9 +38,11 @@
 import Integrations from '../components/Integrations/Integrations'
 import labels from '@/model/constants/labels'
 import AdvancedSettings from '@/components/Integrations/AdvancedSettings/AdvancedSettings'
+import SIEMIntegrations from '@/components/Integrations/SIEMIntegrations/SIEMIntegrations'
 export default {
   name: 'Integrations',
   components: {
+    SIEMIntegrations,
     integrations: Integrations,
     'advanced-settings': AdvancedSettings
   },
