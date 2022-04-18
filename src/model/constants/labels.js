@@ -93,6 +93,7 @@ export const labels = {
   ResetPassword: 'Reset Password',
   Clicked: 'Clicked',
   SubmittedData: 'Submitted Data',
+  OpenedAttachment: 'Opened Attachment',
   NoResponse: 'No Response',
   SendingReport: 'Sending Report',
   PhishingScenarios: 'Phishing Scenarios',
