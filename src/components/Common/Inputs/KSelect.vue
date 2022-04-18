@@ -118,7 +118,11 @@ export default {
   }
 
   &--ultra {
-    min-width: 325px !important;
+    min-width: 400px !important;
+  }
+
+  &-huge {
+    min-width: 350px !important;
   }
 
   &--big {
