@@ -51,6 +51,8 @@ export const labels = {
   DateReported: 'Date Reported',
   LastSendingDate: 'Last Sending Date',
   LAST_SENDING_STATUS: 'Last Sending Status',
+  DELIVERY_STATUS: 'Delivery Status',
+  DATE_SENT: 'Date Sent',
   EmailSendDate: 'Email Send Date',
   DateOpened: 'Date Opened',
   CampaignSettingsSub:

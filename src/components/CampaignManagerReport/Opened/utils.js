@@ -321,10 +321,10 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
-  SENDING_REPORT_LAST_SENDING_DATE: {
+  DATE_SENT: {
     property: 'lastSendingTime',
     align: 'left',
-    label: labels.LastSendingDate,
+    label: labels.DATE_SENT,
     fixed: false,
     sortable: true,
     show: true,
@@ -333,10 +333,10 @@ export const COLUMNS = {
     isEditable: false,
     filterableType: 'date'
   },
-  LAST_SENDING_STATUS: {
+  DELIVERY_STATUS: {
     property: 'status',
     align: 'center',
-    label: labels.LAST_SENDING_STATUS,
+    label: labels.DELIVERY_STATUS,
     sortable: true,
     show: true,
     type: 'badge',

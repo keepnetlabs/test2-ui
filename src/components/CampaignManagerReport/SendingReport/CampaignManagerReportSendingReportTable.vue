@@ -137,8 +137,8 @@ export default {
           COLUMNS.LAST_NAME,
           COLUMNS.EMAIL,
           COLUMNS.DEPARTMENT,
-          COLUMNS.SENDING_REPORT_LAST_SENDING_DATE,
-          COLUMNS.LAST_SENDING_STATUS
+          COLUMNS.DATE_SENT,
+          COLUMNS.DELIVERY_STATUS
         ],
         addButton: {
           show: false
