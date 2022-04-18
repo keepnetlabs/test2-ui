@@ -11,6 +11,10 @@
               :name="item.name"
               :label="item.label"
             >
+              <span slot="label">
+                <v-skeleton-loader v-if="isLoading" :loading="isLoading" type="chip" />
+                <template v-else> {{ item.label }} </template>
+              </span>
               <component
                 v-if="item.name === tab"
                 :is="item.component"
@@ -34,12 +38,14 @@ import CampaignManagerReportClicked from '@/components/CampaignManagerReport/Cli
 import CampaignManagerReportSubmittedData from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedData'
 import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
-import { getCampaignManagerJobFormDetails } from '@/api/phishingsimulator'
+import { getCampaignManagerJobFormDetails, getCampaignJobSummary } from '@/api/phishingsimulator'
 import CampaignManagerReportPhishingReport from '@/components/CampaignManagerReport/PhishingReport/CampaignManagerReportPhishingReport'
+
 export default {
   name: 'CampaignManagerReport',
   data() {
     return {
+      isLoading: true,
       tab: labels.Summary,
       tabItems: [
         {
@@ -96,6 +102,17 @@ export default {
       return this.$store?.state?.common?.activePageRouterName || ''
     }
   },
+  watch: {
+    '$route.params.id': {
+      handler: function (id) {
+        if (id) {
+          this.setSubmittedDataTabLabel()
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   created() {
     this.callForFormDetails()
   },
@@ -104,6 +121,23 @@ export default {
       getCampaignManagerJobFormDetails().then((response) => {
         this.formDetails = response.data.data
       })
+    },
+    setSubmittedDataTabLabel() {
+      const id = this.$route?.params?.id
+      if (id) {
+        getCampaignJobSummary(this.$route?.params?.id)
+          .then((response) => {
+            if (response?.data?.data?.landingPageTemplateInfo?.methodTypeId === 3) {
+              const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
+              if (tabIndex) {
+                this.tabItems[tabIndex].label = labels.OpenedAttachment
+              }
+            }
+          })
+          .finally(() => {
+            this.isLoading = false
+          })
+      }
     }
   }
 }
