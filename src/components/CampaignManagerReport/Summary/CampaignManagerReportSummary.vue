@@ -163,7 +163,8 @@ export default {
         clickedEmail = 0,
         submittedEmail = 0,
         noResponseEmail = 0,
-        notDelivered = 0
+        notDelivered = 0,
+        openedAttachment = 0
       ] = this.getChartData
       return this.getChartData.length
         ? {
@@ -171,7 +172,8 @@ export default {
             noResponseEmail,
             notDelivered,
             openedEmail,
-            submittedEmail
+            submittedEmail,
+            openedAttachment
           }
         : {}
     },

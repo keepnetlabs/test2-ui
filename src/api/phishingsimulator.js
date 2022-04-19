@@ -241,6 +241,30 @@ export function exportCampaignJobUserEmailOpened(payload, id) {
   )
 }
 
+export function searchCampaignJobUserAttachmentOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/opened-attachment/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserAttachmentOpenedDetaiils(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-opened-attachment/search/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserAttachmentOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/opened-attachment/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
 export function exportCampaignJobUserEmailClicked(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/clicked/search/export/${id}`,
