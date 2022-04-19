@@ -268,7 +268,7 @@ export default {
               this.listenTo(model, 'change:attributes:value', this.handleTextChange)
             },
             handleURLRedirectionChange(component, value) {
-              if (!validations.isDomainUrl(value, '')) {
+              if (value && !validations.isDomainUrl(value, '')) {
                 window.alert('Please enter a valid URL')
               }
             },

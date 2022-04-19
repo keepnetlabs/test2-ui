@@ -190,7 +190,7 @@
               </v-list-item>
               <v-list-item class="mt-4">
                 <v-list-item-content>
-                  <v-form ref="refEmailTemplateContent" style="padding-right: 72px;">
+                  <v-form ref="refEmailTemplateContent" style="padding-right: 68px;">
                     <form-group
                       title="Phishing Link"
                       class-name="email-template mt-2 p-4"
@@ -291,35 +291,51 @@
                         />
                       </div>
                       <el-tabs v-model="tab" class="landing-page-tab-content">
-                        <el-tab-pane label="Page 1" name="page1" id="landingPage-content">
+                        <el-tab-pane
+                          v-for="(page, index) in formValues.landingPages"
+                          :key="`page-${index + 1}`"
+                          :label="`Page ${index + 1}`"
+                          :name="`page${index + 1}`"
+                          :id="`landingPage-content-${index + 1}`"
+                        >
+                          <template #label>
+                            <div
+                              style="display: flex;"
+                              :style="formValues.landingPages.length > 1 && { width: '68px' }"
+                            >
+                              <span class="landing-page-tab__label">
+                                {{ `Page ${index + 1}` }}
+                              </span>
+                              <v-menu
+                                v-if="formValues.landingPages.length > 1"
+                                :min-width="128"
+                                :offset-y="true"
+                                nudge-left="50"
+                                bottom
+                              >
+                                <template v-slot:activator="{ on }">
+                                  <v-icon
+                                    v-ripple="false"
+                                    v-on="on"
+                                    class="landing-page-tab-content__button"
+                                    >mdi-dots-horizontal</v-icon
+                                  >
+                                </template>
+                                <v-list>
+                                  <v-list-item
+                                    style="cursor: pointer;"
+                                    @click="handleDeleteLandingPage(index)"
+                                  >
+                                    <v-list-item-title>Delete</v-list-item-title>
+                                  </v-list-item>
+                                </v-list>
+                              </v-menu>
+                            </div>
+                          </template>
                           <email-template
                             ref="refEmailTemplate"
                             template-type="landing"
                             :active-block-manager-components="activeBlockManagerComponents"
-                            :edit-items-disabled="editItemsDisabled"
-                            :template.sync="formValues.landingPages[0].content"
-                            :is-edit="!!isEdit"
-                            :is-phishing-template="true"
-                            @setAttachmentFile="setAttachmentFile"
-                            :onlyGrapes="true"
-                          />
-                        </el-tab-pane>
-                      </el-tabs>
-                      <!-- For future improvements -->
-                      <!-- <el-tabs v-model="tab" class="landing-page-tab-content">
-                        <el-tab-pane
-                          v-for="(page, index) in formValues.landingPages"
-                          :key="`page-${index + 1}`"
-                          :label="page.name"
-                          :name="`page${index + 1}`"
-                          :id="`landingPage-content-${index + 1}`"
-                        >
-                          <email-template
-                            ref="refEmailTemplate"
-                            template-type="landing"
-                            :active-block-manager-components="
-                              activeBlockManagerComponents
-                            "
                             :edit-items-disabled="editItemsDisabled"
                             :template.sync="page.content"
                             :is-edit="!!isEdit"
@@ -328,14 +344,9 @@
                             @setAttachmentFile="setAttachmentFile"
                           />
                         </el-tab-pane>
-                        <el-tab-pane name="addPage">
+                        <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
                           <template #label>
-                            <v-menu
-                              :min-width="128"
-                              :offset-y="true"
-                              nudge-right="5"
-                              left
-                            >
+                            <v-menu :min-width="128" :offset-y="true" nudge-right="5" left>
                               <template v-slot:activator="{ on: menu }">
                                 <v-btn v-on="menu" text color="#2196f3">
                                   <v-icon class="mr-2" size="18" color="#2196f3"
@@ -347,26 +358,23 @@
                                 </v-btn>
                               </template>
                               <v-list>
-                                <v-list-item @click="handleAddBlankPage">
-                                  <v-list-item-title
-                                    >Blank page</v-list-item-title
-                                  >
+                                <v-list-item style="cursor: pointer;" @click="handleAddBlankPage">
+                                  <v-list-item-title>Blank page</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item @click="handleUploadHTML">
-                                  <v-list-item-title
-                                    >Upload HTML</v-list-item-title
-                                  >
+                                <v-list-item style="cursor: pointer;" @click="handleUploadHTML">
+                                  <v-list-item-title>Upload HTML</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item @click="handleCloneWebsite">
-                                  <v-list-item-title
-                                    >Clone a websıte</v-list-item-title
-                                  >
-                                </v-list-item>
+                                <input
+                                  v-show="false"
+                                  ref="refHtmlFile"
+                                  type="file"
+                                  @change="handleHTMLUploadChange"
+                                />
                               </v-list>
                             </v-menu>
                           </template>
                         </el-tab-pane>
-                      </el-tabs> -->
+                      </el-tabs>
                     </form-group>
                   </v-form>
                 </v-list-item-content>
@@ -529,7 +537,7 @@ export default {
         extensionTypeId: null,
         parameterTypeId: null,
         tags: [],
-        landingPages: [{ name: 'landing-page', content: null }],
+        landingPages: [{ name: 'landing-page', content: '', order: 1 }],
         languageTypeResourceId: '862249c19aad'
       },
       commonRules: {
@@ -624,14 +632,37 @@ export default {
     }
   },
   methods: {
-    // For future improvements
-    // handleAddBlankPage() {
-    //   this.formValues.landingPages.push({
-    //     name: `Page ${this.formValues.landingPages.length + 1}`,
-    //   });
-    // },
-    // handleUploadHTML() {},
-    // handleCloneWebsite() {},
+    handleAddBlankPage() {
+      this.formValues.landingPages.push({
+        name: `Page ${this.formValues.landingPages.length + 1}`,
+        order: this.formValues.landingPages.length <= 1 ? 1 : 2,
+        content: '<html><head></head><body></body></html>'
+      })
+      this.tab = this.formValues.landingPages.length === 1 ? 'page1' : 'page2'
+    },
+    handleDeleteLandingPage(index) {
+      this.formValues.landingPages.splice(index, 1)
+      if (index === 1 || index === 0) {
+        this.tab = 'page1'
+      }
+    },
+    handleUploadHTML() {
+      this.$refs.refHtmlFile.click()
+    },
+    handleHTMLUploadChange(e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      const that = this
+      reader.onload = function (e) {
+        that.formValues.landingPages.push({
+          name: `Page 2`,
+          order: 2,
+          content: e.target.result
+        })
+        that.tab = 'page2'
+      }
+      reader.readAsText(file)
+    },
     handleChangeDomainRecord(value) {
       const domainRecord = this.landingPageData.domainRecords.find((item) => item.value === value)
       this.landingPageData.urlSchemaTypes = this.landingPageData.urlSchemaTypes.map((schema) => {
@@ -1050,6 +1081,18 @@ export default {
   }
   .email-template__container {
     box-shadow: none !important;
+  }
+  #tab-addPage {
+    padding-left: 0 !important;
+  }
+  &__button {
+    background: none !important;
+    font-size: 20px !important;
+    margin-left: 4px;
+    margin-top: 1px;
+    &:after {
+      background: none !important;
+    }
   }
 }
 .landing-page-tab__label {
