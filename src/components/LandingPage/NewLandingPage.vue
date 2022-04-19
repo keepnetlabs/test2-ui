@@ -364,6 +364,12 @@
                                 <v-list-item style="cursor: pointer;" @click="handleUploadHTML">
                                   <v-list-item-title>Upload HTML</v-list-item-title>
                                 </v-list-item>
+                                <input
+                                  v-show="false"
+                                  ref="refHtmlFile"
+                                  type="file"
+                                  @change="handleHTMLUploadChange"
+                                />
                               </v-list>
                             </v-menu>
                           </template>
@@ -640,7 +646,23 @@ export default {
         this.tab = 'page1'
       }
     },
-    handleUploadHTML() {},
+    handleUploadHTML() {
+      this.$refs.refHtmlFile.click()
+    },
+    handleHTMLUploadChange(e) {
+      const file = e.target.files[0]
+      const reader = new FileReader()
+      const that = this
+      reader.onload = function (e) {
+        that.formValues.landingPages.push({
+          name: `Page 2`,
+          order: 2,
+          content: e.target.result
+        })
+        that.tab = 'page2'
+      }
+      reader.readAsText(file)
+    },
     handleChangeDomainRecord(value) {
       const domainRecord = this.landingPageData.domainRecords.find((item) => item.value === value)
       this.landingPageData.urlSchemaTypes = this.landingPageData.urlSchemaTypes.map((schema) => {
@@ -942,7 +964,6 @@ export default {
             (item) => item.value == this.formValues.parameterTypeId.toString()
           ).text
         }=${(Math.random() * 10 + 1).toString().replace('.', '')}`
-        this.disabledLabel += `&order=1`
       },
       {
         immediate: true, // run immediately
