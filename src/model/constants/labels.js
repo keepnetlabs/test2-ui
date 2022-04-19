@@ -21,6 +21,7 @@ export const labels = {
   From: 'From',
   SenderIP: 'Sender IP',
   UserWhoOpened: 'User who opened the email',
+  UserWhoOpenedAttachment: 'User who opened the attachment',
   UserWhoHaventOpened: 'Users who haven’t opened the email',
   Connected: 'Connected',
   ScimName: 'SCIM Name',
