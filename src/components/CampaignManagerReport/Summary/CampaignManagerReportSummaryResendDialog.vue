@@ -52,6 +52,15 @@
             v-model="types"
             id="input--campaign-manager-report-email-failed-to-send"
             color="#2196f3"
+            :disabled="!items.openedAttachment"
+            :value="6"
+          >
+            <template #label> Opened attachment {{ `(${items.openedAttachment || 0})` }}</template>
+          </v-checkbox>
+          <v-checkbox
+            v-model="types"
+            id="input--campaign-manager-report-email-failed-to-send"
+            color="#2196f3"
             hide-details
             :disabled="!items.noResponseEmail"
             :value="4"

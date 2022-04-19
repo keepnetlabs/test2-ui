@@ -36,6 +36,7 @@ import CampaignManagerReportSummary from '@/components/CampaignManagerReport/Sum
 import CampaignManagerReportOpened from '@/components/CampaignManagerReport/Opened/CampaignManagerReportOpened'
 import CampaignManagerReportClicked from '@/components/CampaignManagerReport/Clicked/CampaignManagerReportClicked'
 import CampaignManagerReportSubmittedData from '@/components/CampaignManagerReport/SubmittedData/CampaignManagerReportSubmittedData'
+import CampaignManagerReportOpenedAttachment from '@/components/CampaignManagerReport/OpenedAttachment/CampaignManagerReportOpenedAttachment'
 import CampaignManagerReportNoResponse from '@/components/CampaignManagerReport/NoResponse/CampaignManagerReportNoResponse'
 import CampaignManagerReportSendingReport from '@/components/CampaignManagerReport/SendingReport/CampaignManagerReportSendingReport'
 import { getCampaignManagerJobFormDetails, getCampaignJobSummary } from '@/api/phishingsimulator'
@@ -130,7 +131,12 @@ export default {
             if (response?.data?.data?.landingPageTemplateInfo?.methodTypeId === 3) {
               const tabIndex = this.tabItems.findIndex((tab) => tab.name === labels.SubmittedData)
               if (tabIndex) {
-                this.tabItems[tabIndex].label = labels.OpenedAttachment
+                this.tabItems[tabIndex] = {
+                  label: labels.OpenedAttachment,
+                  name: labels.OpenedAttachment,
+                  id: 'campaign-manager-report-opened-attachment-content',
+                  component: CampaignManagerReportOpenedAttachment
+                }
               }
             }
           })
