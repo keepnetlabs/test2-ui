@@ -317,8 +317,9 @@ export default {
             type: 'text',
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
-            filterableType: 'select',
-            filterableItems: ['Custom', 'System']
+            filterableType: 'text'
+            // filterableType: 'select',
+            // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.TAGS,
