@@ -1,5 +1,11 @@
 <template>
   <div style="margin-bottom: 70px !important;" id="threat-sharing-post-incident-grapesjs-modal">
+    <DefaultErrorDialog
+      v-if="showInvalidUrlMessage"
+      :status="showInvalidUrlMessage"
+      error-message="Please enter a invalid URL"
+      @on-close="showInvalidUrlMessage = false"
+    />
     <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
@@ -44,8 +50,10 @@ import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 export default {
   name: 'GrapesNewsletterModal',
+  components: { DefaultErrorDialog },
   props: {
     htmlData: {
       required: false
@@ -74,6 +82,7 @@ export default {
   },
   data() {
     return {
+      showInvalidUrlMessage: false,
       cloneUrl: null,
       cloneUrlPage: null,
       editor: null,
@@ -268,8 +277,23 @@ export default {
               this.listenTo(model, 'change:attributes:value', this.handleTextChange)
             },
             handleURLRedirectionChange(component, value) {
-              if (value && !validations.isDomainUrl(value, '')) {
-                window.alert('Please enter a valid URL')
+              if (!value) return
+
+              const renderErrorMessage = () => {
+                setTimeout(() => {
+                  component.addAttributes({ urlredirection: '' })
+                }, 100)
+                _this.showInvalidUrlMessage = true
+              }
+
+              try {
+                //checking is valid url
+                const url = new URL(value)
+                if (!validations.isDomainUrl(value, '')) {
+                  renderErrorMessage()
+                }
+              } catch (e) {
+                renderErrorMessage()
               }
             },
             handleTextChange(component, value) {

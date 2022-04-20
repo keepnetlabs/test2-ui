@@ -1500,13 +1500,7 @@ export default {
           id: 'btn-re-analyze--incident-responder-emails-row-actions',
           icon: 'mdi-refresh',
           action: 'handleReAnalyze',
-          disabled: (row) => {
-            return (
-              row.status === 'BeingAnalyzed' ||
-              row.status === 'InProgress' ||
-              !checkPermission('notified-emails/{resourceId}/reanalyze', 'GET')
-            )
-          }
+          disabled: !checkPermission('notified-emails/{resourceId}/reanalyze', 'GET')
         }
       ],
       addMenu: {
