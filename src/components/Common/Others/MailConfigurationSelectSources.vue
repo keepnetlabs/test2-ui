@@ -230,12 +230,12 @@ export default {
       box-shadow: none !important;
     }
   }
-}
-.v-list-item--disabled {
-  pointer-events: auto;
+  .v-list-item--disabled {
+    pointer-events: auto;
 
-  .v-ripple__container {
-    display: none;
+    .v-ripple__container {
+      display: none;
+    }
   }
 }
 </style>
