@@ -1,5 +1,8 @@
 <template>
-  <div id="campaign-manager-report-opened-attachment" class="campaign-manager-report-opened-attachment">
+  <div
+    id="campaign-manager-report-opened-attachment"
+    class="campaign-manager-report-opened-attachment"
+  >
     <CampaignManagerReportResendDialog
       v-if="isShowResendDialog"
       :status="isShowResendDialog"
