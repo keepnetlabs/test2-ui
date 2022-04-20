@@ -166,13 +166,8 @@ export function getCampaignManagerFormDetails() {
   return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
 }
 
-export function getPhishingScenarioLandingPageAndEmailTemplate(
-  emailTemplateId = '',
-  landingPageId = ''
-) {
-  return testRequest.get(
-    `/phishing-simulator/phishing-scenario/preview/${emailTemplateId}/${landingPageId}`
-  )
+export function getPhishingScenarioLandingPageAndEmailTemplate(resourceId = '') {
+  return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${resourceId}`)
 }
 
 export function getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(id) {
