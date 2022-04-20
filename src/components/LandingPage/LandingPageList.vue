@@ -312,8 +312,9 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'select',
-            filterableItems: ['Custom', 'System'],
+            filterableType: 'text',
+            // filterableType: 'select',
+            // filterableItems: ['Custom', 'System'],
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           },
