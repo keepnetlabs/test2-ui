@@ -651,7 +651,6 @@ export default {
       this.$refs.refHtmlFile.click()
     },
     handleHTMLUploadChange(e) {
-      debugger
       const file = e.target.files[0]
       if (file.type !== 'text/html') {
         return this.$store.dispatch('common/createSnackBar', {
