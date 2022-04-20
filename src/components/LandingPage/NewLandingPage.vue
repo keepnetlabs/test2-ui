@@ -499,6 +499,7 @@ import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import { createLandingPage, getLandingPageTemplate, updateLandingPage } from '@/api/landingPage'
+import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 
 export default {
   name: 'NewEmailTemplates',
@@ -650,14 +651,37 @@ export default {
       this.$refs.refHtmlFile.click()
     },
     handleHTMLUploadChange(e) {
+      debugger
       const file = e.target.files[0]
+      if (file.type !== 'text/html') {
+        return this.$store.dispatch('common/createSnackBar', {
+          message: `Invalid file type`,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+      }
+      if (file.size > 5242880) {
+        return this.$store.dispatch('common/createSnackBar', {
+          message: `File size should be less than 5MB`,
+          color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+          icon: 'mdi-alert-circle'
+        })
+      }
       const reader = new FileReader()
       const that = this
       reader.onload = function (e) {
+        const { result } = e.target
+        if (!result?.length) {
+          return this.$store.dispatch('common/createSnackBar', {
+            message: `Empty file`,
+            color: COMMON_CONSTANTS.ERRORSNACKBARCOLOR,
+            icon: 'mdi-alert-circle'
+          })
+        }
         that.formValues.landingPages.push({
           name: `Page 2`,
           order: 2,
-          content: e.target.result
+          content: result
         })
         that.tab = 'page2'
       }
