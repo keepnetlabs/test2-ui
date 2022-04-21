@@ -1625,7 +1625,7 @@ export default {
         }
       }
       if (this.isIbmXForce) {
-        payload['apiCredential']['password'] = this.formValues.password
+        payload['apiCredential']['password'] = item.password
       }
       testAnalysis(this.formValues.analysisEngineTypeResourceId, payload)
         .then((response) => {
