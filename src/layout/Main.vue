@@ -1004,27 +1004,19 @@ export default {
     },
     getCompanyClasses() {
       const routerName = this.routerName
+      const isSelected =
+        routerName === 'Company' ||
+        routerName === 'Target Users' ||
+        routerName === 'Companies' ||
+        routerName === 'Company Settings' ||
+        routerName === 'Company Group Details' ||
+        routerName === 'Target Group Users' ||
+        routerName === 'System Users' ||
+        routerName === 'Job Log' ||
+        routerName === 'Audit'
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Company' ||
-          routerName === 'Target Users' ||
-          routerName === 'Companies' ||
-          routerName === 'Company Settings' ||
-          routerName === 'Company Group Details' ||
-          routerName === 'Target Group Users' ||
-          routerName === 'System Users' ||
-          routerName === 'Job Log' ||
-          routerName === 'Audit',
-        'un-selected-list-item':
-          routerName !== 'Company' ||
-          routerName === 'Target Users' ||
-          routerName === 'Companies' ||
-          routerName === 'Company Settings' ||
-          routerName === 'System Users' ||
-          routerName === 'Target Group Users' ||
-          routerName === 'Company Group Details' ||
-          routerName === 'Audit' ||
-          routerName === 'Job Log'
+        'primary--text active-menu-parent': isSelected,
+        'un-selected-list-item': !isSelected
       }
     },
     getIncidentResponderClasses() {
@@ -2583,16 +2575,18 @@ export default {
     }
   }
 
-  .active-menu-parent > .v-list-group__header {
-    border-left: solid 5px !important;
-    border-color: #2196f3 !important;
+  .active-menu-parent {
+    .v-list-group__header {
+      border-left: solid 5px !important;
+      border-color: #2196f3 !important;
 
-    .v-list-item__title {
-      color: #2196f3 !important;
-    }
+      .v-list-item__title {
+        color: #2196f3 !important;
+      }
 
-    .v-list-item__icon > i {
-      color: #2196f3 !important;
+      .v-list-item__icon .v-icon__svg {
+        color: #2196f3 !important;
+      }
     }
   }
 
