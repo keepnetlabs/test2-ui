@@ -452,7 +452,9 @@ export default {
         let valueIndex = 0
         keys.map((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
-            playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            if (ref?.$refs[key][0].investigateData) {
+              playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            }
             valueIndex++
           }
         })
@@ -536,12 +538,13 @@ export default {
       const keys = Object.keys(ref.$refs)
       const playbookActionInvestigations = []
       let playbookActionAnalyzers = []
-
       if (keys.length > 0) {
         let valueIndex = 0
         keys.map((key) => {
           if (ref.$refs[key].length > 0 && key !== 'refForm') {
-            playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            if (ref?.$refs[key][0].investigateData) {
+              playbookActionInvestigations[valueIndex] = ref.$refs[key][0].investigateData
+            }
             valueIndex++
           }
         })
