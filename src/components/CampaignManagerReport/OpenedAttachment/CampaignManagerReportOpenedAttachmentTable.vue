@@ -52,8 +52,8 @@ import {
 } from '@/model/constants/commonConstants'
 
 import {
-  exportCampaignJobUserEmailOpened,
-  searchCampaignJobUserEmailOpened
+  searchCampaignJobUserAttachmentOpened,
+  exportCampaignJobUserAttachmentOpened
 } from '@/api/phishingsimulator'
 import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import { useLoading } from '@/hooks/useLoading'
@@ -123,7 +123,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpened(this.axiosPayload, this.id)
+      searchCampaignJobUserAttachmentOpened(this.axiosPayload, this.id)
         .then((response) => {
           const {
             data: {
@@ -247,7 +247,7 @@ export default {
           exportType: item === 'XLS' ? 'Excel' : item,
           filter: this.axiosPayload.filter
         }
-        exportCampaignJobUserEmailOpened(payload, this.id).then((response) => {
+        exportCampaignJobUserAttachmentOpened(payload, this.id).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)

@@ -86,7 +86,7 @@ export const COLUMNS = {
     filterableType: 'text'
   },
   LAST_OPENED: {
-    property: 'lastOpenedTime',
+    property: 'lastAttachmentOpenedTime',
     align: 'left',
     fixed: false,
     editable: false,
@@ -122,7 +122,7 @@ export const COLUMNS = {
     filterableType: 'date'
   },
   TIMES_OPENED: {
-    property: 'openedCount',
+    property: 'attachmentOpenedCount',
     align: 'right',
     editable: false,
     label: labels.TimesOpened,

@@ -238,21 +238,21 @@ export function exportCampaignJobUserEmailOpened(payload, id) {
 
 export function searchCampaignJobUserAttachmentOpened(payload, id) {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/opened-attachment/search/${id}`,
+    `/phishing-simulator/phishing-campaign-job-report/attachmentopened/search/${id}`,
     payload
   )
 }
 
 export function searchCampaignJobUserAttachmentOpenedDetaiils(payload, id) {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/search-opened-attachment/search/${id}`,
+    `/phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/${id}`,
     payload
   )
 }
 
 export function exportCampaignJobUserAttachmentOpened(payload, id) {
   return testRequest.post(
-    `/phishing-simulator/phishing-campaign-job-report/opened-attachment/search/export/${id}`,
+    `/phishing-simulator/phishing-campaign-job-report/attachmentopened/search/export/${id}`,
     payload,
     {
       responseType: 'blob'
