@@ -63,7 +63,7 @@ import {
   isColumnFilterActive
 } from '@/utils/helperFunctions'
 import { getDefaultAxiosPayload } from '@/utils/functions'
-import { searchCampaignJobUserEmailOpenedDetails } from '@/api/phishingsimulator'
+import { searchCampaignJobUserAttachmentOpenedDetaiils } from '@/api/phishingsimulator'
 import { useLoading } from '@/hooks/useLoading'
 export default {
   name: 'CampaignManagerReportOpenedItemDetailDialog',
@@ -124,7 +124,7 @@ export default {
   methods: {
     callForData() {
       this.setLoading(true)
-      searchCampaignJobUserEmailOpenedDetails(this.axiosPayload, this.item?.resourceId)
+      searchCampaignJobUserAttachmentOpenedDetaiils(this.axiosPayload, this.item?.resourceId)
         .then((response) => {
           const {
             data: {

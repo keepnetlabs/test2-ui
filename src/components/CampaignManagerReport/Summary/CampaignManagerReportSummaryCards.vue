@@ -81,8 +81,8 @@ export default {
       return openedEmail ? openedEmail : {}
     },
     getOpenedAttachmentData() {
-      const { openedAttachment } = this.items
-      return openedAttachment ? openedAttachment : {}
+      const { attachmentOpenedEmail } = this.items
+      return attachmentOpenedEmail ? attachmentOpenedEmail : {}
     },
     getSubmittedData() {
       const { submittedEmail } = this.items

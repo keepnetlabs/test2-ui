@@ -1021,23 +1021,18 @@ export default {
     },
     getIncidentResponderClasses() {
       const routerName = this.routerName
+      const isSelected =
+        routerName === 'Incident Responder' ||
+        routerName === 'Investigations' ||
+        routerName === 'Integrations' ||
+        routerName === 'Playbook' ||
+        routerName === 'Mail Configurations' ||
+        routerName === 'Analysis Details' ||
+        routerName === 'Investigation Details' ||
+        routerName === 'Cross Company Integration'
       return {
-        'primary--text active-menu-parent':
-          routerName === 'Incident Responder' ||
-          routerName === 'Investigations' ||
-          routerName === 'Integrations' ||
-          routerName === 'Playbook' ||
-          routerName === 'Mail Configurations' ||
-          routerName === 'Analysis Details' ||
-          routerName === 'Investigation Details',
-        'un-selected-list-item':
-          routerName !== 'Incident Responder' ||
-          routerName === 'Investigations' ||
-          routerName === 'Integrations' ||
-          routerName === 'Playbook' ||
-          routerName === 'Analysis Details' ||
-          routerName === 'Mail Configurations' ||
-          routerName === 'Investigation Details'
+        'primary--text active-menu-parent': isSelected,
+        'un-selected-list-item': !isSelected
       }
     },
     getPhishingSimulatorPermissions() {
