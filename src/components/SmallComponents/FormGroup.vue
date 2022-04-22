@@ -1,9 +1,11 @@
 <template>
   <v-list-item :class="['k-form-group', className]">
     <v-list-item-content>
-      <label class="k-form-group__title" v-if="title">
-        {{ title }}
-      </label>
+      <slot name="title">
+        <label class="k-form-group__title" v-if="title">
+          {{ title }}
+        </label>
+      </slot>
       <v-list-item-subtitle class="k-form-group__sub-title" v-if="subTitle">
         {{ subTitle }}
       </v-list-item-subtitle>
