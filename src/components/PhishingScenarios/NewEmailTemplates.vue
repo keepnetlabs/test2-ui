@@ -183,6 +183,35 @@
                       class-name="email-template mt-8 p-4"
                       onsubmit="return false"
                     >
+                      <template #title>
+                        <div style="display: flex; justify-content: space-between;">
+                          <label class="k-form-group__title">Email Template</label>
+                          <v-tooltip bottom opacity="1">
+                            <template v-slot:activator="{ on }">
+                              <v-btn
+                                v-on="on"
+                                rounded
+                                outlined
+                                color="#2196f3"
+                                style="font-weight: 600;"
+                                @click="handleUploadEmailButtonClick"
+                              >
+                                <v-icon style="font-size: 20px; margin-top: 1px;"
+                                  >mdi-upload</v-icon
+                                >
+                                <span class="button-new__text">IMPORT EMAIL</span>
+                              </v-btn>
+                            </template>
+                            <span class="tooltip-span">Only .eml or .msg files. Max. 5MB</span>
+                          </v-tooltip>
+                          <input
+                            v-show="false"
+                            ref="refInputFileUpload"
+                            type="file"
+                            @change="handleFileUpload"
+                          />
+                        </div>
+                      </template>
                       <email-template
                         ref="refEmailTemplate"
                         :active-block-manager-components="activeBlockManagerComponents"
@@ -329,6 +358,7 @@ import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
+import { parseEmailOrMessageFile } from '@/api/file'
 
 export default {
   name: 'NewEmailTemplates',
@@ -457,6 +487,29 @@ export default {
     }
   },
   methods: {
+    handleUploadEmailButtonClick() {
+      this?.$refs?.refInputFileUpload?.click()
+    },
+    handleFileUpload(e) {
+      const { files } = e.target
+      const formData = new FormData()
+      formData.append('File', files[0])
+      parseEmailOrMessageFile(formData).then((response) => {
+        const {
+          data: { data }
+        } = response
+        let { from, fromName, subject, attachments, body } = data
+        this.formValues.fromAddress = from
+        this.formValues.template = body
+        this.formValues.subject = subject
+        this.formValues.name = fromName
+        if (attachments) {
+          attachments = attachments.map((item) => ({ ...item, fileName: item.name }))
+          this.formValues.attachmentFiles = attachments
+          this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
+        }
+      })
+    },
     handleAttachmentRemove(item, index, callback) {
       this.formValues.attachmentFilesToRemove = item.fileName
       const newAttachmentFilesFromApi = JSON.parse(
