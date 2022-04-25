@@ -112,7 +112,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return `Opened Attachment ${this.item?.['openedCount'] || 0} Time(s)`
+      return `Opened Attachment ${this.item?.['attachmentOpenedCount'] || 0} Time(s)`
     },
     getSubtitle() {
       return `${this.item?.firstName} ${this.item?.lastName}`
