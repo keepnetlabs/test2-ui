@@ -1317,14 +1317,14 @@ export default {
         ].includes(this.selectedIntegrationType.name)
       ) {
         data.apiKeys = data.apiKeys.map((i) => i.value)
-        data.apiCredentials = data.apiKeys.map((i) => {
+        data.apiCredentials = data.apiKeys.map((apiKey, index) => {
           const obj = {
-            apiKey: i,
+            apiKey,
             resourceId: data.analysisEngineTypeResourceId,
             proxyResourceId: this.formValues.proxyResourceId
           }
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
-            obj['password'] = this.formValues.password
+            obj['password'] = this.formValues.apiKeys[index]?.password
           }
 
           return obj
@@ -1554,12 +1554,16 @@ export default {
         ].includes(this.selectedIntegrationType.name)
       ) {
         response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
-          return {
+          const obj = {
             value: item.apiKey,
             status: null,
             resourceId: item.resourceId,
             proxyResourceId: item.proxyResourceId
           }
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+            obj.password = item?.password
+          }
+          return obj
         })
 
         response['data'].data.apiKeys = response['data'].data.apiKeys.length
