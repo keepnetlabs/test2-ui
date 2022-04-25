@@ -636,7 +636,7 @@ export default {
     handleAddBlankPage() {
       this.formValues.landingPages.push({
         name: `Page ${this.formValues.landingPages.length + 1}`,
-        order: this.formValues.landingPages.length <= 1 ? 1 : 2,
+        order: 2,
         content: '<html><head></head><body></body></html>'
       })
       this.tab = this.formValues.landingPages.length === 1 ? 'page1' : 'page2'
