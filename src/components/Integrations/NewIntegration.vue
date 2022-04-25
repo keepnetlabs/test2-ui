@@ -1539,7 +1539,6 @@ export default {
       return getIntegrationDetails(id)
     },
     updateModels(response = {}) {
-      debugger
       this.selectedIntegrationType =
         this.integrationTypes.find(
           (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
