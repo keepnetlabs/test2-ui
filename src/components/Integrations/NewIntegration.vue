@@ -1324,7 +1324,7 @@ export default {
             proxyResourceId: this.formValues.proxyResourceId
           }
           if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
-            obj['password'] = this.formValues.password
+            obj['password'] = i.password || this.formValues.password
           }
 
           return obj
@@ -1539,6 +1539,7 @@ export default {
       return getIntegrationDetails(id)
     },
     updateModels(response = {}) {
+      debugger
       this.selectedIntegrationType =
         this.integrationTypes.find(
           (item) => item.resourceId === response['data'].data.analysisEngineTypeResourceId
@@ -1554,12 +1555,16 @@ export default {
         ].includes(this.selectedIntegrationType.name)
       ) {
         response['data'].data.apiKeys = response['data'].data['apiCredentials'].map((item) => {
-          return {
+          const obj = {
             value: item.apiKey,
             status: null,
             resourceId: item.resourceId,
             proxyResourceId: item.proxyResourceId
           }
+          if (this.selectedIntegrationType.name === INTEGRATION_TYPES.IBMXFORCE) {
+            obj.password = item?.password
+          }
+          return obj
         })
 
         response['data'].data.apiKeys = response['data'].data.apiKeys.length

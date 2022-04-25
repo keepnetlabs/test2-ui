@@ -492,23 +492,25 @@ export default {
     },
     handleFileUpload(e) {
       const { files } = e.target
-      const formData = new FormData()
-      formData.append('File', files[0])
-      parseEmailOrMessageFile(formData).then((response) => {
-        const {
-          data: { data }
-        } = response
-        let { from, fromName, subject, attachments, body } = data
-        this.formValues.fromAddress = from
-        this.formValues.template = body
-        this.formValues.subject = subject
-        this.formValues.name = fromName
-        if (attachments) {
-          attachments = attachments.map((item) => ({ ...item, fileName: item.name }))
-          this.formValues.attachmentFiles = attachments
-          this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
-        }
-      })
+      if (files.length) {
+        const formData = new FormData()
+        formData.append('File', files[0])
+        parseEmailOrMessageFile(formData).then((response) => {
+          const {
+            data: { data }
+          } = response
+          let { from, fromName, subject, attachments, body } = data
+          this.formValues.fromAddress = from
+          this.formValues.template = body
+          this.formValues.subject = subject
+          this.formValues.name = fromName
+          if (attachments) {
+            attachments = attachments.map((item) => ({ ...item, fileName: item.name }))
+            this.formValues.attachmentFiles = attachments
+            this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
+          }
+        })
+      }
     },
     handleAttachmentRemove(item, index, callback) {
       this.formValues.attachmentFilesToRemove = item.fileName
