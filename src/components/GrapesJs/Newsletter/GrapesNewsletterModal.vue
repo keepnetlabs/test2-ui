@@ -871,7 +871,11 @@ export default {
               editor.setComponents(importedCode)
               editor.Modal.close()
             }
-            callback(code)
+            minifyHTML(code)
+              .then((response) => {
+                callback(response?.data?.data?.htmlContent || '')
+              })
+              .catch(() => callback(code))
           }
           btnCopyToClipboard.type = 'button'
           btnCopyToClipboard.onclick = () => {
