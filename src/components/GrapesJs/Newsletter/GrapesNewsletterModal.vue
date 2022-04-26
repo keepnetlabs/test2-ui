@@ -101,7 +101,6 @@ export default {
     }
   },
   created() {
-    console.log('this.template', this.htmlData)
     this.callForImages()
   },
   mounted() {
