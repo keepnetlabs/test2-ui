@@ -248,8 +248,29 @@
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
+                  <v-list-item-content class="mb-4">
+                    <label class="bottom-margin">{{ labels.StartDate }}</label>
+                     <el-form>
+                      <el-form-item
+                        :error="startDateValidation"
+                      >
+                    <InputDate
+                          v-model="formData.LicenseStartDate"
+                          id="input--company-license-start-date"
+                          type="date"
+                          format="dd.MM.yyyy"
+                          :disabled="stepLock"
+                          :picker-options="datePickerOptions"
+                          :rules="[(v) => !!v || 'Required']"
+                        />
+                      </el-form-item>
+                     </el-form>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item>
                   <v-list-item-content class="mb-2">
                     <label class="bottom-margin">{{ labels.ExpiryPeriod }}</label>
+                    <div class="company__license-end-date__container">
                     <k-select
                       :items="expiryPeriods"
                       v-model="formData.LicensePeriodTypeResourceId"
@@ -284,26 +305,20 @@
                     </k-select>
                     <el-form>
                       <el-form-item
-                        class="mt-2"
-                        v-show="
-                          !stepLock && formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'
-                        "
-                        prop="LicenseDates"
-                        :error="datePickerValidation()"
+                        :error="endDateValidation"
                       >
                         <InputDate
-                          v-model="LicenseDates"
-                          id="input--company-license-dates"
-                          type="daterange"
-                          value-format="yyyy-MM-dd"
-                          format="yyyy-MM-dd"
-                          :disabled="stepLock"
+                          v-model="formData.LicenseEndDate"
+                          id="input--company-license-end-date"
+                          type="date"
+                          format="dd.MM.yyyy"
+                          :disabled="stepLock || isEndDateDisabled"
                           :picker-options="datePickerOptions"
                           :rules="[(v) => !!v || 'Required']"
-                          @change="dataPickerChange"
                         />
                       </el-form-item>
                     </el-form>
+                    </div>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -536,6 +551,7 @@
 
         <v-btn
           v-if="canNext"
+          :disabled="isSecondStepDisabled"
           id="btn-next--company-modal"
           class="playbook-rule-form__button"
           style="color: white;"
@@ -650,7 +666,8 @@ export default {
       smtpConfigurations: [],
       datePickerOptions: {
         disabledDate(date) {
-          return date < new Date() - 3600 * 1000 * 24
+          // return date < new Date() - 3600 * 1000 * 24
+          return false
         }
       },
       validations: validations,
@@ -678,6 +695,18 @@ export default {
     }
   },
   computed: {
+    isEndDateDisabled() {
+      return this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' || this.formData.LicensePeriodTypeResourceId ==='6EXwfaM5ZDT4'
+    },
+    isSecondStepDisabled() {
+      return this.activeStep === 2 && (!this.formData.LicenseStartDate || !this.formData.LicenseEndDate)
+    },
+    startDateValidation() {
+      return this.formData.LicenseStartDate ? '' : 'Start date should be picked'
+    },
+    endDateValidation() {
+      return this.formData.LicenseEndDate ? '' : 'End date should be picked'
+    },
     canNext() {
       return this.activeStep < this.totalStep
     },
@@ -718,10 +747,6 @@ export default {
       this.formData.IsReleaseNotesVisible = this.selectedExtend.isReleaseNotesVisible
       this.formData.ReleaseNotesUrl = this.selectedExtend.releaseNotesUrl
       this.formData.statusId = this.selectedExtend.statusId.toString()
-      this.LicenseDates =
-        !this.formData.LicenseStartDate || !this.formData.LicenseEndDate
-          ? []
-          : [new Date(this.formData.LicenseStartDate), new Date(this.formData.LicenseEndDate)]
       Array.isArray(this.selectedExtend.companyGroups) &&
         this.selectedExtend.companyGroups.forEach((x) => {
           this.formData.CompanyGroupResourceIdArray.push(x.resourceId)
@@ -963,33 +988,37 @@ export default {
       return validation
     },
     expiryPeriodChange() {
-      const end = new Date()
-      const start = new Date()
+      let end = new Date()
+      let start = new Date()
+      if(!!this.formData.LicenseStartDate){
+        const [datePart,timePart] = this.formData.LicenseStartDate.split(' ')
+        const [date,month,year] = datePart.split('/')
+        const [hours,minutes] = timePart.split(":")
+        start = new Date(year,month - 1,date,hours,minutes)
+      }
       if (this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
-        this.formData.LicenseStartDate = this.$moment(start).format('YYYY-MM-DD')
-        this.formData.LicenseEndDate = this.$moment(end).format('YYYY-MM-DD')
+        this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
+        this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
       } else if (this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
-        this.formData.LicenseStartDate = this.$moment(start).format('YYYY-MM-DD')
-        this.formData.LicenseEndDate = this.$moment(end).format('YYYY-MM-DD')
+        this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
+        this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
       } else {
         this.formData.LicenseStartDate = ''
-        this.formData.LicenseEndDate = ''
       }
-      this.LicenseDates = []
-    },
-    dataPickerChange() {
-      this.formData.LicenseStartDate = this.LicenseDates ? this.LicenseDates[0] : ''
-      this.formData.LicenseEndDate = this.LicenseDates ? this.LicenseDates[1] : ''
-      this.datePickerValidation()
-      this.$refs.refStep2Form.validate()
     },
     editStepLock() {
       this.stepLock = false
     }
   },
   watch: {
+    'formData.LicenseStartDate'(newVal) {
+      this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
+    },
+    'formData.LicenseEndDate'(newVal) {
+      this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
+    },
     'formData.LicenseModuleResourceIdArray'(newVal) {
       if (newVal.length) {
         const findedLicense = this.licenceTypes.find((license) => {
@@ -1310,6 +1339,17 @@ export default {
   }
   .k-checkbox:nth-child(2n) {
     margin-left: 120px;
+  }
+}
+
+.company__license-end-date__container {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: center;
+
+  #input--company-license-end-date {
+    // margin-top: -1rem;
   }
 }
 </style>
