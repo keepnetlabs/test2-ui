@@ -97,6 +97,7 @@ export default {
     }
   },
   created() {
+    console.log('this.template', this.htmlData)
     this.callForImages()
   },
   mounted() {
@@ -870,7 +871,6 @@ export default {
               editor.setComponents(importedCode)
               editor.Modal.close()
             }
-
             minifyHTML(code)
               .then((response) => {
                 callback(response?.data?.data?.htmlContent || '')
@@ -923,11 +923,35 @@ export default {
       })
     },
     getGrapesEditorContent() {
-      try {
-        return this.editor.Commands.run('get-html-juiced')
-      } catch (e) {
-        return ''
+      const { editor } = this
+      const html = editor.getHtml()
+      const css = editor.getCss()
+      const htmlDOM = document.createElement('template')
+      htmlDOM.innerHTML = html
+      let head = htmlDOM.querySelector('head')
+      let style = document.createElement('style')
+      style.innerHTML = css
+      if (head) {
+        head.appendChild(style)
+      } else {
+        head = document.createElement('head')
+        head.appendChild(style)
+        const htmlElement = htmlDOM.querySelector('html')
+        if (htmlElement) {
+          let headOfHtmlElement = htmlElement.querySelector('head')
+          if (headOfHtmlElement) {
+            headOfHtmlElement.innerHTML = head.innerHTML
+          }
+          htmlElement.insertAdjacentElement('afterbegin', head)
+        } else {
+          const newHtmlDOM = document.createElement('html')
+          newHtmlDOM.innerHTML = htmlDOM.innerHTML
+          newHtmlDOM.insertAdjacentElement('afterbegin', head)
+          return newHtmlDOM.outerHTML
+        }
       }
+      console.log('htmlDOM.outerHTML', htmlDOM.outerHTML)
+      return htmlDOM.outerHTML
     }
   }
 }

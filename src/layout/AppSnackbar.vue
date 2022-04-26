@@ -8,7 +8,7 @@
         bottom
         @input="changeSnackbarStatus($event, snackbar)"
         :style="getSnackBarStyle(snackbar.message, index)"
-        :timeout="3000"
+        :timeout="10000"
       >
         <div class="snackbar__left-column">
           <div v-if="snackbar.icon">
