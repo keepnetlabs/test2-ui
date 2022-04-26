@@ -78,6 +78,10 @@ export default {
           macroUrl: macroUrl
         }
       }
+    },
+    templateType: {
+      type: String,
+      default: 'email'
     }
   },
   data() {
@@ -924,6 +928,14 @@ export default {
     },
     getGrapesEditorContent() {
       const { editor } = this
+      if (this.templateType === 'email') {
+        try {
+          return this.editor.Commands.run('get-html-juiced')
+        } catch (e) {
+          return ''
+        }
+      }
+      //this is for the landing page
       const html = editor.getHtml()
       const css = editor.getCss()
       const htmlDOM = document.createElement('template')
@@ -950,7 +962,6 @@ export default {
           return newHtmlDOM.outerHTML
         }
       }
-      console.log('htmlDOM.outerHTML', htmlDOM.outerHTML)
       return htmlDOM.outerHTML
     }
   }
