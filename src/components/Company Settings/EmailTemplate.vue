@@ -18,6 +18,7 @@
           :htmlData="template"
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
+          :template-type="templateType"
         />
       </template>
     </app-modal>

@@ -503,7 +503,7 @@ export default {
           this.formValues.fromAddress = from
           this.formValues.template = body
           this.formValues.subject = subject
-          this.formValues.name = fromName
+          this.formValues.fromName = fromName
           if (attachments) {
             attachments = attachments.map((item) => ({ ...item, fileName: item.name }))
             this.formValues.attachmentFiles = attachments
