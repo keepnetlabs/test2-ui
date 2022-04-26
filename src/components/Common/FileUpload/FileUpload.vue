@@ -17,7 +17,8 @@
         Select or drop file
         <v-icon>mdi-folder-open</v-icon>
       </file-upload>
-      <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
+      <template v-if="isPreviewVisible">
+      <div  v-for="file in files" :key="file.id" class="k-file-uploads__item">
         <div class="k-file-uploads__item-details">
           <div class="k-file-uploads__item-details--filename">{{ displayFileName(file.name) }}</div>
           <div class="k-file-uploads__item-details--filesize">
@@ -44,6 +45,7 @@
           <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
         </div>
       </div>
+      </template>
     </div>
     <div v-if="hint" class="k-file-uploads__hint">{{ hint }}</div>
   </div>
@@ -96,6 +98,10 @@ export default {
       default: undefined
     },
     isShowFileProgress: {
+      type: Boolean,
+      default: true
+    },
+    isPreviewVisible: {
       type: Boolean,
       default: true
     }

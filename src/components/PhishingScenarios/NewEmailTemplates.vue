@@ -10,6 +10,41 @@
         : 'Edit Email Template'
     "
   >
+  <AppDialog :status="isRenameModalVisible" title="Rename The Attachment"
+   @changeStatus="onCloseRenameModal">
+    <template v-slot:app-dialog-body>
+      <v-text-field
+                    v-model.trim="attachmentName"
+                    v-bind="commonRules"
+                    id="input--new-email-templates-template-name"
+                    placeholder="Enter a name"
+                    hint="*Required"
+                    required
+                    outlined
+                    dense
+                    persistent-hint
+                  />
+    </template>
+    <template v-slot:app-dialog-footer>
+      <AppDialogFooter
+        @handleClose="onCancelRename"
+        @handleConfirm="onConfirmRename"
+      />
+       <!-- <v-btn
+          @click="onCancelRename"
+          class="new-email-template__footer-btn-cancel"
+        >
+          CANCEL
+        </v-btn>
+        <v-btn
+          @click="onConfirmRename"
+          class="new-email-template__footer-btn-next"
+          color="#2196f3"
+        >
+          CONFIRM
+        </v-btn> -->
+    </template>
+  </AppDialog>
     <template v-slot:overlay-body>
       <v-stepper light v-model="step" class="k-stepper">
         <v-stepper-header class="k-stepper__header">
@@ -224,10 +259,14 @@
                         :template.sync="formValues.template"
                         :is-edit="!!isEdit"
                         :is-phishing-template="true"
+                        :extensions="['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'html', 'htm']"
+                        fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 2MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
                         @handleInitialTemplate="handleInitialTemplate"
+                        @handleRenameAttachment="handleRenameAttachment"
+                        @handleDeleteAttachment="handleDeleteAttachment"
                       />
                     </form-group>
                   </v-form>
@@ -280,6 +319,7 @@
 </template>
 
 <script>
+import AppDialog from '../AppDialog'
 import AppModal from '../AppModal'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
@@ -359,20 +399,25 @@ import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUr
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import { parseEmailOrMessageFile } from '@/api/file'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 
 export default {
   name: 'NewEmailTemplates',
   components: {
     KSelect,
     AppModal,
+    AppDialog,
     FormGroup,
     MakeAvailableFor,
     EmailTemplate,
     InputSelectLanguage,
-    InputTag
+    InputTag,
+    AppDialogFooter
   },
   data() {
     return {
+      isRenameModalVisible: false,
+      attachmentName: '',
       languageOptions: [],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
@@ -395,6 +440,7 @@ export default {
         subject: null,
         template: null,
         attachmentFiles: [],
+        importedEmailAttachments: [],
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad'
       },
@@ -486,7 +532,31 @@ export default {
       type: String
     }
   },
+  watch: {
+    'formValues.attachmentFiles'(newVal) {
+        console.log('attachmentFiles',newVal)
+    },
+    'formValues.attachmentFilesFromApi'(newVal) {
+        console.log('attachmentFilesFromApi',newVal)
+    },
+    'formValues.importedEmailAttachments'(newVal) {
+        console.log('importedEmailAttachments',newVal)
+    }
+  },
   methods: {
+    onCloseRenameModal() {
+      this.isRenameModalVisible = false
+    },
+    handleDeleteAttachment() {
+      this.formValues.attachmentFiles = []
+    },
+    handleRenameAttachment() {
+      this.isRenameModalVisible = true
+      console.log('handleRenameAttachment')
+    },
+    onRenameAttachment() {
+      this.formValues.attachmentFiles[0].name = this.attachmentName
+    },
     handleUploadEmailButtonClick() {
       this?.$refs?.refInputFileUpload?.click()
     },
@@ -505,21 +575,26 @@ export default {
           this.formValues.subject = subject
           this.formValues.fromName = fromName
           if (attachments) {
-            attachments = attachments.map((item) => ({ ...item, fileName: item.name }))
-            this.formValues.attachmentFiles = attachments
+            attachments = attachments.map((item) => ({ ...item, fileName: item.name, isDeletable:true }))
+            this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
         })
       }
     },
-    handleAttachmentRemove(item, index, callback) {
+    handleAttachmentRemove({item,index}) {
       this.formValues.attachmentFilesToRemove = item.fileName
       const newAttachmentFilesFromApi = JSON.parse(
         JSON.stringify(this.formValues.attachmentFilesFromApi)
       )
-      newAttachmentFilesFromApi.splice(index, 1)
+      if(this.formValues.attachmentFiles && this.formValues.attachmentFiles.length === 1) {
+        newAttachmentFilesFromApi.splice(index - 1, 1)
+        this.formValues.importedEmailAttachments.splice(index - 1, 1)
+      } else {
+        newAttachmentFilesFromApi.splice(index, 1)
+        this.formValues.importedEmailAttachments.splice(index, 1)
+      }
       this.formValues.attachmentFilesFromApi = newAttachmentFilesFromApi
-      callback(newAttachmentFilesFromApi)
     },
     handleInitialTemplate(value) {
       this.initialFormValues.template = value
@@ -571,6 +646,7 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
+          attachmentFiles:[...this.formValues.attachmentFiles,...this.formValues.importedEmailAttachments],
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )

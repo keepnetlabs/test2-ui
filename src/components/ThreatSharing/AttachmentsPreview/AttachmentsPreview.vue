@@ -18,7 +18,7 @@
         id="text--attachment-preview-name"
         class="file-name safari-hide-tooltip max-char pl-2"
       >
-        {{ att.name }}
+        {{ getFileName }}
       </div>
       <div
         v-on="on"
@@ -34,7 +34,7 @@
         id="text--attachment-email-template-preview-name"
         class="file-name safari-hide-tooltip max-char pl-2"
       >
-        {{ att.fileName }}
+        {{ getFileName }}
       </div>
       <v-icon
         v-if="isEmailTemplate && deletable"
@@ -47,7 +47,7 @@
       >{{ !att.isHidden ? att.name : 'Hidden by Owner'
       }}{{ att.isFlagged ? ' has been reported as a malicious file' : '' }}</span
     >
-    <span id="text--attachment-preview-tooltip-email-template" v-else>{{ att.fileName }}</span>
+    <span id="text--attachment-preview-tooltip-email-template" v-else>{{ getFileName }}</span>
   </v-tooltip>
 </template>
 
@@ -55,6 +55,11 @@
 export default {
   name: 'AttachmentsPreview',
   props: ['att', 'isEmailTemplate', 'deletable', 'index'],
+  computed:{
+    getFileName() {
+      return this.att.fileName || this.att.name
+    }
+  },
   methods: {
     handleDelete() {
       this.$emit('on-delete', this.index)
