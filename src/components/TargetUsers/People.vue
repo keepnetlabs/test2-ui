@@ -239,6 +239,7 @@ export default {
   emits: ['call-for-company-licenses'],
   data: () => ({
     labels,
+    isInitial: true,
     selectedUserToViewGroups: null,
     payload: getDefaultAxiosPayload(),
     storedTableSettings: null,
@@ -645,6 +646,10 @@ export default {
     },
     callForGetTargetUserCustomFieldsByCompanyId(forceUpdate = false) {
       this.loading = true
+      if (!this.isInitial && !this.customFields.length && !forceUpdate) {
+        return this.callForTargetUsers()
+      }
+      this.isInitial = false
       if (this.customFields.length && !forceUpdate) {
         this.callForTargetUsers()
       } else {
