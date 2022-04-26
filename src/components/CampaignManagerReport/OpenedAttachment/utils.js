@@ -174,7 +174,7 @@ export const COLUMNS = {
     fixed: 'left',
     sortable: true,
     show: true,
-    type: 'text',
+    type: 'date',
     width: 180,
     isEditable: false,
     filterableType: 'date'
