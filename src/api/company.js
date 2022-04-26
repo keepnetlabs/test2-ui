@@ -54,7 +54,7 @@ export function createCompany(payload) {
   const parsedEndDate = parsedEndDatePart.split('/').reverse().join('-')
   payload.LicenseStartDate = parsedStartDate
   payload.LicenseEndDate = parsedEndDate
-  
+
   const formData = new FormData()
 
   for (const key in payload) {

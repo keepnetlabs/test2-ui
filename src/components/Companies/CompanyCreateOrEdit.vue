@@ -250,11 +250,9 @@
                 <v-list-item>
                   <v-list-item-content class="mb-4">
                     <label class="bottom-margin">{{ labels.StartDate }}</label>
-                     <el-form>
-                      <el-form-item
-                        :error="startDateValidation"
-                      >
-                    <InputDate
+                    <el-form>
+                      <el-form-item :error="startDateValidation">
+                        <InputDate
                           v-model="formData.LicenseStartDate"
                           id="input--company-license-start-date"
                           type="date"
@@ -264,60 +262,60 @@
                           :rules="[(v) => !!v || 'Required']"
                         />
                       </el-form-item>
-                     </el-form>
+                    </el-form>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
                   <v-list-item-content class="mb-2">
                     <label class="bottom-margin">{{ labels.ExpiryPeriod }}</label>
                     <div class="company__license-end-date__container">
-                    <k-select
-                      :items="expiryPeriods"
-                      v-model="formData.LicensePeriodTypeResourceId"
-                      id="input--company-expiry-period"
-                      item-text="name"
-                      item-value="resourceId"
-                      outlined
-                      placeholder="Select an option"
-                      :rules="[expiryPeriodValidation]"
-                      @change="expiryPeriodChange"
-                      :disabled="stepLock"
-                      hint="*Required"
-                      :menu-props="{ offsetY: true }"
-                      persistent-hint
-                    >
-                      <template v-slot:selection="{ item }">
-                        <span>
-                          {{ item.name }}
-                          <template
-                            v-if="
-                              (stepLock && formData.LicenseStartDate && formData.LicenseEndDate) ||
-                              (item.name !== 'Custom' &&
-                                formData.LicenseStartDate &&
-                                formData.LicenseEndDate)
-                            "
-                            >({{ formData.LicenseStartDate | moment('YYYY.MM.DD') }}
-                            -
-                            {{ formData.LicenseEndDate | moment('YYYY.MM.DD') }})</template
-                          >
-                        </span>
-                      </template>
-                    </k-select>
-                    <el-form>
-                      <el-form-item
-                        :error="endDateValidation"
+                      <k-select
+                        :items="expiryPeriods"
+                        v-model="formData.LicensePeriodTypeResourceId"
+                        id="input--company-expiry-period"
+                        item-text="name"
+                        item-value="resourceId"
+                        outlined
+                        placeholder="Select an option"
+                        :rules="[expiryPeriodValidation]"
+                        @change="expiryPeriodChange"
+                        :disabled="stepLock"
+                        hint="*Required"
+                        :menu-props="{ offsetY: true }"
+                        persistent-hint
                       >
-                        <InputDate
-                          v-model="formData.LicenseEndDate"
-                          id="input--company-license-end-date"
-                          type="date"
-                          format="dd.MM.yyyy"
-                          :disabled="stepLock || isEndDateDisabled"
-                          :picker-options="datePickerOptions"
-                          :rules="[(v) => !!v || 'Required']"
-                        />
-                      </el-form-item>
-                    </el-form>
+                        <template v-slot:selection="{ item }">
+                          <span>
+                            {{ item.name }}
+                            <template
+                              v-if="
+                                (stepLock &&
+                                  formData.LicenseStartDate &&
+                                  formData.LicenseEndDate) ||
+                                (item.name !== 'Custom' &&
+                                  formData.LicenseStartDate &&
+                                  formData.LicenseEndDate)
+                              "
+                              >({{ formData.LicenseStartDate | moment('YYYY.MM.DD') }}
+                              -
+                              {{ formData.LicenseEndDate | moment('YYYY.MM.DD') }})</template
+                            >
+                          </span>
+                        </template>
+                      </k-select>
+                      <el-form>
+                        <el-form-item :error="endDateValidation">
+                          <InputDate
+                            v-model="formData.LicenseEndDate"
+                            id="input--company-license-end-date"
+                            type="date"
+                            format="dd.MM.yyyy"
+                            :disabled="stepLock || isEndDateDisabled"
+                            :picker-options="datePickerOptions"
+                            :rules="[(v) => !!v || 'Required']"
+                          />
+                        </el-form-item>
+                      </el-form>
                     </div>
                   </v-list-item-content>
                 </v-list-item>
@@ -696,10 +694,15 @@ export default {
   },
   computed: {
     isEndDateDisabled() {
-      return this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' || this.formData.LicensePeriodTypeResourceId ==='6EXwfaM5ZDT4'
+      return (
+        this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' ||
+        this.formData.LicensePeriodTypeResourceId === '6EXwfaM5ZDT4'
+      )
     },
     isSecondStepDisabled() {
-      return this.activeStep === 2 && (!this.formData.LicenseStartDate || !this.formData.LicenseEndDate)
+      return (
+        this.activeStep === 2 && (!this.formData.LicenseStartDate || !this.formData.LicenseEndDate)
+      )
     },
     startDateValidation() {
       return this.formData.LicenseStartDate ? '' : 'Start date should be picked'
@@ -990,11 +993,11 @@ export default {
     expiryPeriodChange() {
       let end = new Date()
       let start = new Date()
-      if(!!this.formData.LicenseStartDate){
-        const [datePart,timePart] = this.formData.LicenseStartDate.split(' ')
-        const [date,month,year] = datePart.split('/')
-        const [hours,minutes] = timePart.split(":")
-        start = new Date(year,month - 1,date,hours,minutes)
+      if (!!this.formData.LicenseStartDate) {
+        const [datePart, timePart] = this.formData.LicenseStartDate.split(' ')
+        const [date, month, year] = datePart.split('/')
+        const [hours, minutes] = timePart.split(':')
+        start = new Date(year, month - 1, date, hours, minutes)
       }
       if (this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG') {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365) // 1 year
