@@ -218,16 +218,20 @@
                         :edit-items-disabled="editItemsDisabled"
                         :from-address.sync="formValues.fromAddress"
                         :from-name.sync="formValues.fromName"
-                        :attachment-files.sync="formValues.attachmentFiles"
-                        :attachmentFilesFromApi.sync="formValues.attachmentFilesFromApi"
+                        :attachmentFiles.sync="formValues.attachmentFiles"
+                        :importedEmailAttachments.sync="formValues.importedEmailAttachments"
                         :subject.sync="formValues.subject"
                         :template.sync="formValues.template"
                         :is-edit="!!isEdit"
                         :is-phishing-template="true"
+                        :extensions="['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'html', 'htm']"
+                        fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 2MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"
                         @handleInitialTemplate="handleInitialTemplate"
+                        @handleRenameAttachment="handleRenameAttachment"
+                        @handleDeleteAttachment="handleDeleteAttachment"
                       />
                     </form-group>
                   </v-form>
@@ -373,6 +377,8 @@ export default {
   },
   data() {
     return {
+      isRenameModalVisible: false,
+      attachmentName: '',
       languageOptions: [],
       isSubmitDisabled: false,
       activeBlockManagerComponents: {},
@@ -395,6 +401,7 @@ export default {
         subject: null,
         template: null,
         attachmentFiles: [],
+        importedEmailAttachments: [],
         attachmentFilesFromApi: [],
         languageTypeResourceId: '862249c19aad'
       },
@@ -487,6 +494,15 @@ export default {
     }
   },
   methods: {
+    onCloseRenameModal() {
+      this.isRenameModalVisible = false
+    },
+    handleDeleteAttachment() {
+      this.formValues.attachmentFiles = []
+    },
+    handleRenameAttachment() {
+      this.$emit('showRenameAttachmentModal')
+    },
     handleUploadEmailButtonClick() {
       this?.$refs?.refInputFileUpload?.click()
     },
@@ -505,27 +521,49 @@ export default {
           this.formValues.subject = subject
           this.formValues.fromName = fromName
           if (attachments) {
-            attachments = attachments.map((item) => ({ ...item, fileName: item.name }))
-            this.formValues.attachmentFiles = attachments
+            attachments = attachments.map((item) => ({
+              ...item,
+              fileName: item.name,
+              isDeletable: true
+            }))
+            this.formValues.importedEmailAttachments = attachments
             this.formValues.attachmentFilesFromApi = JSON.parse(JSON.stringify(attachments))
           }
         })
       }
     },
-    handleAttachmentRemove(item, index, callback) {
+    handleAttachmentRemove({ item, index }) {
       this.formValues.attachmentFilesToRemove = item.fileName
       const newAttachmentFilesFromApi = JSON.parse(
         JSON.stringify(this.formValues.attachmentFilesFromApi)
       )
-      newAttachmentFilesFromApi.splice(index, 1)
+      if (this.formValues.attachmentFiles && this.formValues.attachmentFiles.length === 1) {
+        newAttachmentFilesFromApi.splice(index - 1, 1)
+        this.formValues.importedEmailAttachments.splice(index - 1, 1)
+      } else {
+        newAttachmentFilesFromApi.splice(index, 1)
+        this.formValues.importedEmailAttachments.splice(index, 1)
+      }
       this.formValues.attachmentFilesFromApi = newAttachmentFilesFromApi
-      callback(newAttachmentFilesFromApi)
     },
     handleInitialTemplate(value) {
       this.initialFormValues.template = value
     },
     setAttachmentFile(file) {
-      this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
+      if (!file.type) {
+        let newFile = null
+        const fileExtension = file.name.substring(file.name.length - 4)
+        if (fileExtension === 'doc') {
+          newFile = new File([file], file.name, { type: 'application/msword' })
+        } else if (fileExtension === 'docx') {
+          newFile = new File([file], file.name, {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          })
+        }
+        this.formValues.attachmentFiles = Array.isArray(newFile) ? newFile : [newFile] || []
+      } else {
+        this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
+      }
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
@@ -571,6 +609,10 @@ export default {
       if (this.$refs.refEmailTemplateContent.validate() && isValid) {
         let payload = {
           ...this.formValues,
+          attachmentFiles: [
+            ...this.formValues.attachmentFiles,
+            ...this.formValues.importedEmailAttachments
+          ],
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
@@ -759,7 +801,10 @@ export default {
     }
     if (this.isEdit) {
       getEmailTemplatePreviewContent(this.emailTemplateId).then((response) => {
-        this.formValues = response.data.data
+        this.formValues = {
+          ...response.data.data,
+          attachmentFiles: response.data.data.phishingFile ? [response.data.data.phishingFile] : []
+        }
         this.formValues.name = `${this.formValues.name}`
         if (this.isDuplicate) this.formValues.name = `${this.formValues.name} - Copy`
         if (this.$refs.refMakeAvailableFor) {
@@ -772,10 +817,21 @@ export default {
           )
         }
         if (this.formValues.attachments) {
-          this.formValues.attachmentFiles = this.formValues.attachments
+          this.formValues.importedEmailAttachments = this.formValues.attachments.map((item) => ({
+            ...item,
+            isDeletable: true
+          }))
           this.formValues.attachmentFilesFromApi = JSON.parse(
             JSON.stringify(this.formValues.attachments)
           )
+        }
+        if (response.data.data.phishingFileName) {
+          this.formValues.attachmentFiles = [
+            {
+              fileName: response.data.data.phishingFileName,
+              url: response.data.data.phishingFileUrl
+            }
+          ]
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
