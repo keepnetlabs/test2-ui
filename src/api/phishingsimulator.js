@@ -27,8 +27,13 @@ export function updatePhishingEmailTemplate(payload, id) {
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
   formData.append('attachmentFiles', payload.importedEmailAttachments[0])
-  formData.append('phishingFile', payload.attachmentFiles[0])
+  formData.append(
+    'phishingFile',
+    payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
+  )
   formData.append('phishingFileType', phishingFileType)
+  formData.append('isPhishingFileModified', payload.isPhishingFileModified)
+  formData.append('phishingFileName', payload.phishingFileName)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
