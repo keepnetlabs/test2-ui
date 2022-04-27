@@ -113,7 +113,7 @@
           <v-checkbox
             v-model="formValues.isDefault"
             id="input--proxy-settings-is-authentication"
-            class="mt-n3 mb-1"
+            class="mt-n1 mb-n2"
             color="#2196f3"
             label="Make this setting default"
           />
