@@ -64,6 +64,7 @@
                         ),
                       (v) => validations.isProxyAddressOrIp(v)
                     ]"
+                    :readonly="!showForm"
                   ></InputUrl>
                   <v-text-field
                     ref="refTextField"
@@ -73,6 +74,7 @@
                     dense
                     :placeholder="labels.Port"
                     :rules="[(v) => validations.required(v), (v) => validations.port(v)]"
+                    :readonly="!showForm"
                     @input="onPortChange"
                   ></v-text-field>
                 </div>
@@ -83,6 +85,7 @@
                   class="send-welcome-email__radio-group"
                   hide-details
                   row
+                  :readonly="!showForm"
                   @change="handleAuthenticationMethodChange"
                 >
                   <v-radio
@@ -106,6 +109,7 @@
                   hint="*Required"
                   placeholder="Enter proxy username"
                   :rules="getUserNameRules"
+                  :readonly="!showForm"
                 ></v-text-field>
               </form-group>
               <form-group v-if="authenticationTypeId === 1" title="Password">
@@ -121,6 +125,7 @@
                   class="username-field input-group--focused mb-3"
                   :append-icon="showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                   :rules="getPasswordRules"
+                  :readonly="!showForm"
                   @click:append="showPassword = !showPassword"
                 ></v-text-field>
               </form-group>
