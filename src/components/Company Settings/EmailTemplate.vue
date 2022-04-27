@@ -75,31 +75,49 @@
         id="input--email-template-upload"
         is-stand-alone
         class="mb-2"
-        hint="Only jpg, png, gif, bmp files. Max. file size 2MB"
         ref="refFileUpload"
+        :hint="fileUploadHint"
+        :extensions="attachmentExtensions"
         :is-show-file-progress="false"
-        :value="AttachmentFiles"
+        :value="attachmentFiles"
+        :is-preview-visible="false"
         @inputFile="onFileChanged"
       />
       <div
         class="email-template__attachment-list"
-        style="display: flex; align-items: center; flex-wrap: wrap;"
-        :key="attachmentListKey"
+        style="display: flex; align-self: start; flex-wrap: wrap;"
       >
-        <div
-          v-for="(item, index) in attachmentFilesFromApi"
-          :key="item.fileName"
-          class="preview-attch-wrapper"
-        >
+        <div v-for="(item, index) in attachments" :key="index">
           <div class="attachment-wrapper" style="position: relative;">
-            <div class="attachment blue-attach" :id="'email-template-' + item.fileName">
+            <div class="attachment blue-attach" :id="'email-template-' + item.name">
               <AttachmentsPreview
-                :deletable="true"
+                :deletable="item.isDeletable"
                 :att="item"
                 :index="index"
                 :isEmailTemplate="true"
                 @on-delete="handleFileDelete"
               />
+            </div>
+            <div v-if="!item.isDeletable" style="margin-left: -1rem;">
+              <v-menu bottom left offset-y transition="scale-transition">
+                <template #activator="{ on }">
+                  <v-btn v-on="on" class="btn-hover" icon>
+                    <v-icon>mdi-chevron-down</v-icon>
+                  </v-btn>
+                </template>
+                <v-list class="v-cart-dropdown-list el-table__action-buttons">
+                  <v-list-item class="sub-menu-el datatable-row-action-list">
+                    <v-list-item-title @click="handleRenameItem">
+                      <span>Rename</span>
+                    </v-list-item-title>
+                  </v-list-item>
+                  <v-list-item class="sub-menu-el datatable-row-action-list">
+                    <v-list-item-title @click="handleDeleteItem">
+                      <span>Delete</span>
+                    </v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
             </div>
           </div>
         </div>
@@ -160,15 +178,17 @@ export default {
     'fromName',
     'subject',
     'template',
-    'AttachmentFiles',
+    'attachmentFiles',
     'activeBlockManagerComponents',
     'isEdit',
     'editItemsDisabled',
     'isPhishingTemplate',
     'setAttachmentFile',
-    'attachmentFilesFromApi',
+    'importedEmailAttachments',
     'onlyGrapes',
-    'templateType'
+    'templateType',
+    'extensions',
+    'fileUploadHint'
   ],
   data() {
     return {
@@ -181,7 +201,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' })
+    ...mapGetters({ emailTemplateLogo: 'whitelabel/getEmailTemplateLogoUrl' }),
+    attachmentExtensions() {
+      return this.extensions ? this.extensions : ['gif', 'jpg', 'jpeg', 'png', 'bmp']
+    },
+    attachments() {
+      return [...this.attachmentFiles, ...this.importedEmailAttachments]
+    }
   },
   watch: {
     activeBlockManagerComponents() {
@@ -194,22 +220,19 @@ export default {
     this.$emit('handleInitialTemplate', this.defaultTemplate)
   },
   methods: {
+    handleRenameItem() {
+      this.$emit('handleRenameAttachment')
+    },
+    handleDeleteItem() {
+      this.$emit('handleDeleteAttachment')
+    },
     setInitialTemplateData() {
       setTimeout(() => {
         this.initialTemplate = this.$refs.grapesJsPostIncident.getGrapesEditorContent() || ''
       }, 1000)
     },
     handleFileDelete(index) {
-      this.$emit(
-        'handleAttachmentRemove',
-        this.attachmentFilesFromApi[index],
-        index,
-        (newFiles) => {
-          this.onFileChanged(newFiles)
-          this.attachmentListKey = `${Math.random().toString().substring(0, 7)}-key`
-          this.attachmentFilesFromApi = newFiles
-        }
-      )
+      this.$emit('handleAttachmentRemove', { item: this.attachments[index], index })
     },
     onFileChanged(file) {
       this.$emit('setAttachmentFile', file)

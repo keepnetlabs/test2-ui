@@ -16,8 +16,34 @@
         :isDuplicate="isDuplicate"
         :editableFormValues="editableFormValues"
         @changeNewEmailTemplateModalStatus="changeNewEmailTemplateModalStatus"
+        @showRenameAttachmentModal="onShowRenameAttachmentModal"
       />
     </v-overlay>
+    <AppDialog
+      :status="isRenameAttachmentModalVisible"
+      title="Rename The Attachment"
+      @changeStatus="onCloseRenameAttachmentModal"
+    >
+      <template v-slot:app-dialog-body>
+        <v-text-field
+          v-model.trim="attachmentName"
+          v-bind="commonRules"
+          id="input--new-email-templates-template-name"
+          placeholder="Enter a name"
+          hint="*Required"
+          required
+          outlined
+          dense
+          persistent-hint
+        />
+      </template>
+      <template v-slot:app-dialog-footer>
+        <AppDialogFooter
+          @handleClose="onCloseRenameAttachmentModal"
+          @handleConfirm="onConfirmRenameAttachment"
+        />
+      </template>
+    </AppDialog>
     <DeleteEmailTemplates
       :status="showDeleteModal"
       @handleSuccessDeleteAction="handleSuccessDeleteAction"
@@ -215,6 +241,9 @@ import {
 import KEmailPreview from '@/components/KEmailPreview'
 import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import * as Validations from '@/utils/validations'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+
 export default {
   name: 'EmailTemplates',
   components: {
@@ -223,10 +252,13 @@ export default {
     DataTable,
     DeleteEmailTemplates,
     NewEmailTemplates,
-    AppDialog
+    AppDialog,
+    AppDialogFooter
   },
   data() {
     return {
+      attachmentName: '',
+      isRenameAttachmentModalVisible: false,
       languageFilterOptions: [],
       editableFormValues: {},
       timeoutId: '',
@@ -242,6 +274,14 @@ export default {
       storedTableSettings: null,
       isPreviewLoading: false,
       selectedEmailTemplate: {},
+      commonRules: {
+        hint: '*Required',
+        persistentHint: true,
+        rules: [
+          (v) => Validations.required(v, labels.Required),
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
+      },
       tableOptions: {
         isColumnFilterActive: false,
         columns: [
@@ -424,6 +464,39 @@ export default {
     }
   },
   methods: {
+    onShowRenameAttachmentModal() {
+      this.isRenameAttachmentModalVisible = true
+    },
+    onCloseRenameAttachmentModal() {
+      this.attachmentName = ''
+      this.isRenameAttachmentModalVisible = false
+    },
+    onConfirmRenameAttachment() {
+      if (this.$refs.newEmailTemplate) {
+        let fileExtension = ''
+        const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
+        if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
+          fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
+            '.'
+          )[1]
+          const file = { ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0] }
+          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+            new File([file], `${this.attachmentName}.${fileExtension}`, { type })
+          ]
+        } else {
+          fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].fileName.split(
+            '.'
+          )[1]
+          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+            {
+              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
+              fileName: `${this.attachmentName}.${fileExtension}`
+            }
+          ]
+        }
+      }
+      this.onCloseRenameAttachmentModal()
+    },
     callForLanguages() {
       const languageColumnIndex = this.tableOptions.columns.findIndex(
         (column) => column.property === PROPERTY_STORE.LANGUAGE

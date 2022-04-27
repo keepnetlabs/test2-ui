@@ -48,6 +48,13 @@ export function createCompanyGroups(payload) {
   return testRequest.post('/company-groups', payload, { snackbar: COMMON_SNACKBAR })
 }
 export function createCompany(payload) {
+  const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
+  const parsedStartDate = parsedStartDatePart.split('/').reverse().join('-')
+  const parsedEndDatePart = payload.LicenseEndDate.split(' ')[0]
+  const parsedEndDate = parsedEndDatePart.split('/').reverse().join('-')
+  payload.LicenseStartDate = parsedStartDate
+  payload.LicenseEndDate = parsedEndDate
+
   const formData = new FormData()
 
   for (const key in payload) {
@@ -61,6 +68,13 @@ export function createCompany(payload) {
   return testRequest.post(`/companies`, formData, { loading: true, snackbar: COMMON_SNACKBAR })
 }
 export function updateCompany(id, payload) {
+  const parsedStartDatePart = payload.LicenseStartDate.split(' ')[0]
+  const parsedStartDate = parsedStartDatePart.split('/').reverse().join('-')
+  const parsedEndDatePart = payload.LicenseEndDate.split(' ')[0]
+  const parsedEndDate = parsedEndDatePart.split('/').reverse().join('-')
+  payload.LicenseStartDate = parsedStartDate
+  payload.LicenseEndDate = parsedEndDate
+
   const formData = new FormData()
 
   for (const key in payload) {
