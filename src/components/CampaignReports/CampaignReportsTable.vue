@@ -89,8 +89,14 @@ export default {
           COLUMNS.DELIVERY
         ],
         chartOptions: {
-          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C'],
-          labels: [labels.NoResponse, labels.Clicked, labels.Opened, labels.Submitted],
+          backgroundColor: ['#67C23A', '#E6A23C', '#FBF280', '#F56C6C', '#F56C6C'],
+          labels: [
+            labels.NoResponse,
+            labels.Clicked,
+            labels.Opened,
+            labels.Submitted,
+            labels.OpenedAttachment
+          ],
           showTooltipLine: true
         },
         addButton: {
@@ -150,7 +156,8 @@ export default {
               row['totalNoResponseCount'],
               row['totalClickedCount'],
               row['totalOpenedCount'],
-              row['totalSubmittedCount']
+              row['totalSubmittedCount'],
+              row['totalAttachmentOpenedCount']
             ],
             progress:
               Math.round((row['emailDeliveredUserCount'] / row['totalTargetUserCount']) * 100) || 0
