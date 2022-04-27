@@ -377,6 +377,8 @@ export default {
   },
   data() {
     return {
+      isPhishingFileModified: false,
+      isAddedNewPhishingFile: false,
       isRenameModalVisible: false,
       attachmentName: '',
       languageOptions: [],
@@ -499,6 +501,7 @@ export default {
     },
     handleDeleteAttachment() {
       this.formValues.attachmentFiles = []
+      this.isAddedNewPhishingFile = false
     },
     handleRenameAttachment() {
       this.$emit('showRenameAttachmentModal')
@@ -550,10 +553,11 @@ export default {
       this.initialFormValues.template = value
     },
     setAttachmentFile(file) {
-      if (!file.type) {
+      if (Array.isArray(file) && file.length === 0) return
+      if (file && !file.type) {
         let newFile = null
         const fileExtension = file.name.substring(file.name.length - 4)
-        if (fileExtension === 'doc') {
+        if (fileExtension === '.doc') {
           newFile = new File([file], file.name, { type: 'application/msword' })
         } else if (fileExtension === 'docx') {
           newFile = new File([file], file.name, {
@@ -564,6 +568,8 @@ export default {
       } else {
         this.formValues.attachmentFiles = Array.isArray(file) ? file : [file] || []
       }
+      this.isPhishingFileModified = true
+      this.isAddedNewPhishingFile = true
     },
     validateAvailableFor(value = {}) {
       this.isAvailableForValidated = true
@@ -613,6 +619,12 @@ export default {
             ...this.formValues.attachmentFiles,
             ...this.formValues.importedEmailAttachments
           ],
+          isPhishingFileModified: this.isPhishingFileModified,
+          isAddedNewPhishingFile: this.isAddedNewPhishingFile,
+          phishingFileName:
+            !this.isAddedNewPhishingFile && !!this.formValues.attachmentFiles
+              ? this.formValues.attachmentFiles[0]?.fileName
+              : null,
           availableForRequests: this.$refs.refMakeAvailableFor.getAvailableForValues(
             this.availableForRequests
           )
