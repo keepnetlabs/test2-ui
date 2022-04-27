@@ -183,7 +183,7 @@ export default {
       }
 
       //this is added for previewing and deleting obj key on sending
-      if (!newFormData?.file.name) {
+      if (!newFormData?.file?.name) {
         delete newFormData.file
       }
 
