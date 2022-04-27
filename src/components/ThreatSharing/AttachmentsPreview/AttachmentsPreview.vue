@@ -55,7 +55,7 @@
 export default {
   name: 'AttachmentsPreview',
   props: ['att', 'isEmailTemplate', 'deletable', 'index'],
-  computed:{
+  computed: {
     getFileName() {
       return this.att.fileName || this.att.name
     }

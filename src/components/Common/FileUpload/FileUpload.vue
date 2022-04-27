@@ -18,33 +18,35 @@
         <v-icon>mdi-folder-open</v-icon>
       </file-upload>
       <template v-if="isPreviewVisible">
-      <div  v-for="file in files" :key="file.id" class="k-file-uploads__item">
-        <div class="k-file-uploads__item-details">
-          <div class="k-file-uploads__item-details--filename">{{ displayFileName(file.name) }}</div>
-          <div class="k-file-uploads__item-details--filesize">
-            <span>{{ file.size | formatSize }}</span>
-            <span
-              v-if="isStandAlone && file.progress && uploadProgress < 100 && isShowFileProgress"
-              class="k-file-uploads__item-details--progress-value"
-              >{{ uploadProgress }}%</span
+        <div v-for="file in files" :key="file.id" class="k-file-uploads__item">
+          <div class="k-file-uploads__item-details">
+            <div class="k-file-uploads__item-details--filename">
+              {{ displayFileName(file.name) }}
+            </div>
+            <div class="k-file-uploads__item-details--filesize">
+              <span>{{ file.size | formatSize }}</span>
+              <span
+                v-if="isStandAlone && file.progress && uploadProgress < 100 && isShowFileProgress"
+                class="k-file-uploads__item-details--progress-value"
+                >{{ uploadProgress }}%</span
+              >
+            </div>
+            <div
+              v-if="isStandAlone && file.progress && isShowFileProgress"
+              class="k-file-uploads__item-details--fileprogress"
             >
+              <v-progress-linear :value="uploadProgress" v-if="uploadProgress < 100" />
+              <span
+                v-if="isStandAlone && file.progress && uploadProgress === 100"
+                class="k-file-uploads__item-details--progress-value"
+                >{{ constant.UPLOADED_SUCCESSFULLY }}</span
+              >
+            </div>
           </div>
-          <div
-            v-if="isStandAlone && file.progress && isShowFileProgress"
-            class="k-file-uploads__item-details--fileprogress"
-          >
-            <v-progress-linear :value="uploadProgress" v-if="uploadProgress < 100" />
-            <span
-              v-if="isStandAlone && file.progress && uploadProgress === 100"
-              class="k-file-uploads__item-details--progress-value"
-              >{{ constant.UPLOADED_SUCCESSFULLY }}</span
-            >
+          <div class="k-file-uploads__item-actions">
+            <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
           </div>
         </div>
-        <div class="k-file-uploads__item-actions">
-          <v-icon :disabled="isLoading" @click="clear">mdi-close-circle</v-icon>
-        </div>
-      </div>
       </template>
     </div>
     <div v-if="hint" class="k-file-uploads__hint">{{ hint }}</div>
