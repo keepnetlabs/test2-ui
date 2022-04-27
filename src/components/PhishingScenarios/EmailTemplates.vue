@@ -494,6 +494,7 @@ export default {
             }
           ]
         }
+        this.$refs.newEmailTemplate.isPhishingFileModified = true
       }
       this.onCloseRenameAttachmentModal()
     },
