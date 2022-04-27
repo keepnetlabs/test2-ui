@@ -22,17 +22,11 @@
       </v-list-item>
       <v-list-item class="new-user-group__list-item mt-2">
         <v-list-item-content>
-          <v-text-field
+          <InputEntityName
             v-model.trim="groupName"
             id="input--target-group-name"
-            dense
-            outlined
-            placeholder="Enter user group name"
-            :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.UserGroupName))
-            ]"
-          ></v-text-field>
+            entityName="user group"
+          />
         </v-list-item-content>
       </v-list-item>
       <v-list-item class="new-user-group__list-item" style="margin-top: -2px;">
@@ -108,9 +102,14 @@
 import AppDialog from '../AppDialog'
 import { maxLength, required } from '@/utils/validations'
 import labels from '@/model/constants/labels'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 export default {
   name: 'CreateNewUserGroupModal',
+  components: {
+    AppDialog,
+    InputEntityName
+  },
   data() {
     return {
       labels,
@@ -139,9 +138,6 @@ export default {
       type: String,
       default: 'Enter name and priority for the new group'
     }
-  },
-  components: {
-    AppDialog
   },
   methods: {
     handleSave() {

@@ -62,7 +62,12 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.CompanyName }}</label>
-                    <InputCompany v-model.trim="formData.Name" id="input--company-name" />
+                    <InputEntityName
+                      v-model.trim="formData.Name"
+                      entityName="company"
+                      initialPlaceholder="Enter a name for the company"
+                      id="input--company-name"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -582,7 +587,6 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { getSelectSearchPayload, scrollToComponent } from '@/utils/functions'
 import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
@@ -592,6 +596,7 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import InputAddress from '@/components/Common/Inputs/InputAddress'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -604,10 +609,10 @@ export default {
     InputDescription,
     ConfigureNewCompanyDialog,
     KSelect,
-    InputCompany,
     InputUrl,
     KFileUpload,
-    InputDate
+    InputDate,
+    InputEntityName
   },
   directives: {
     'infinite-scroll': InfiniteScroll,

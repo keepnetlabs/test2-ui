@@ -31,10 +31,20 @@
           sub-title="Define user properties"
         />
         <form-group :title="labels.FirstName" has-hint>
-          <InputFirstName v-model.trim="formValues.firstName" id="input--target-user-first-name" />
+          <InputEntityName
+            v-model.trim="formValues.firstName"
+            entityName="first name"
+            initialPlaceholder="Enter first name"
+            id="input--target-user-first-name"
+          />
         </form-group>
         <form-group :title="labels.LastName" has-hint>
-          <InputLastName v-model.trim="formValues.lastName" id="input--target-user-last-name" />
+          <InputEntityName
+            v-model.trim="formValues.lastName"
+            entityName="last name"
+            initialPlaceholder="Enter last name"
+            id="input--target-user-last-name"
+          />
         </form-group>
         <form-group has-hint title="Email">
           <InputEmail v-model.trim="formValues.email" id="input--target-user-email" />
@@ -178,9 +188,8 @@ import { mail, maxLength, required } from '@/utils/validations'
 import { createTargetUser, getTargetGroups, updateTargetUser } from '@/api/targetUsers'
 import AppModal from '../AppModal'
 import { scrollToComponent } from '@/utils/functions'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDepartment from '@/components/Common/Inputs/InputDepartment'
-import InputLastName from '@/components/Common/Inputs/InputLastName'
-import InputFirstName from '@/components/Common/Inputs/InputFirstName'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import FormGroup from '@/components/SmallComponents/FormGroup'
@@ -199,12 +208,11 @@ export default {
     InputEmail,
     FormGroup,
     AppModalBodyHeader,
-    InputDepartment,
     AppModal,
     KSelect,
-    InputFirstName,
-    InputLastName,
+    InputEntityName,
     InputDate,
+    InputDepartment,
     TargetUsersCheckLicenseDialog
   },
   props: {
