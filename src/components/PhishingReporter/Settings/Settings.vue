@@ -22,12 +22,12 @@
         <addin-settings
           ref="refAddinSettings"
           :formData="formData"
-          @updateForm="callForCreatePhishingReporter"
           :spinnerStatus="spinnerStatus"
           :show-footer="!inModal"
           :show-header-link="!inModal"
           :showForm="!inModal"
           :saveDisable="saveDisable"
+          @updateForm="callForCreatePhishingReporter"
       /></el-tab-pane>
       <el-tab-pane
         label="Email Settings"
@@ -182,6 +182,11 @@ export default {
         ...updatedValues
       }
 
+      //this is added for previewing and deleting obj key on sending
+      if (!newFormData?.file.name) {
+        delete newFormData.file
+      }
+
       const formData = new FormData()
       Object.keys(newFormData).map((key) => {
         formData.append(
@@ -190,11 +195,6 @@ export default {
         )
       })
 
-      /*
-      formData.append('File', addinSettings.file)
-      formData.append('file', addinSettings.file)
-
-       */
       if (updatedValues.isAddIn) {
         this.activateLoader()
       }
