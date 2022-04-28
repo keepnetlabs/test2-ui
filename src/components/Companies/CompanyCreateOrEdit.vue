@@ -263,7 +263,6 @@
                           type="date"
                           format="dd.MM.yyyy"
                           :disabled="stepLock"
-                          :picker-options="datePickerOptions"
                           :rules="[(v) => !!v || 'Required']"
                         />
                       </el-form-item>
@@ -334,9 +333,7 @@
                       <v-text-field
                         v-mask="'###########'"
                         ref="userLimit"
-                        :placeholder="
-                          formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
-                        "
+                        :placeholder="numberOfUsersPlaceholder"
                         id="input--company-numbers-limited"
                         outlined
                         dense
@@ -344,14 +341,7 @@
                         autocomplete="off"
                         v-model.number="formData.NumberOfUsers"
                         :disabled="!formData.IsNumberOfUsersLimited || stepLock"
-                        :rules="
-                          formData.IsNumberOfUsersLimited
-                            ? [
-                                (v) => validations.required(v, 'Required'),
-                                (v) => /^\d+$/gi.test(v) || 'Invalid number'
-                              ]
-                            : [true]
-                        "
+                        :rules="numberOfUsersRules"
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
@@ -408,9 +398,7 @@
                       small-chips
                       deletable-chips
                       outlined
-                      :no-data-text="
-                        isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
-                      "
+                      :no-data-text="noCompanyGroupText"
                       placeholder="Select company groups (optional)"
                       :items="companyGroupList"
                     ></k-select>
@@ -668,10 +656,7 @@ export default {
       trainingContents: [],
       smtpConfigurations: [],
       datePickerOptions: {
-        disabledDate(date) {
-          // return date < new Date() - 3600 * 1000 * 24
-          return false
-        }
+        disabledDate: this.disabledEndDates
       },
       validations: validations,
       companyGroupPayload: {
@@ -698,6 +683,20 @@ export default {
     }
   },
   computed: {
+    noCompanyGroupText() {
+      return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
+    },
+    numberOfUsersRules() {
+      return this.formData.IsNumberOfUsersLimited
+        ? [
+            (v) => this.validations.required(v, 'Required'),
+            (v) => /^\d+$/gi.test(v) || 'Invalid number'
+          ]
+        : [true]
+    },
+    numberOfUsersPlaceholder() {
+      return this.formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
+    },
     isEndDateDisabled() {
       return (
         this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' ||
@@ -764,6 +763,14 @@ export default {
     }
   },
   methods: {
+    disabledEndDates(val) {
+      let selectedStartDate = new Date()
+      if (this.formData.LicenseStartDate) {
+        const [day, month, year] = this.formData.LicenseStartDate.split(' ')[0].split('/')
+        selectedStartDate = new Date(year, month - 1, day)
+      }
+      return selectedStartDate.getTime() > val.getTime()
+    },
     handleCancel() {
       if (this.isFormDataChanged()) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {

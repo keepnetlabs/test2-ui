@@ -7,8 +7,12 @@
     dense
     no-resize
     autocomplete="disabled"
+    :height="height"
+    :rows="rows"
+    :disabled="disabled"
     :placeholder="placeholder"
     :rules="rules"
+    :readonly="readonly"
     @input="$emit('input', $event)"
   />
 </template>
@@ -42,6 +46,21 @@ export default {
     maxLength: {
       type: Number,
       default: 2000
+    },
+    disabled: {
+      default: false
+    },
+    readonly: {
+      default: false
+    },
+    applyRules: {
+      default: true
+    },
+    height: {
+      type: String
+    },
+    rows: {
+      type: String
     }
   },
   data() {
@@ -65,7 +84,7 @@ export default {
       this.requiredProps = { hint: labels.RequiredStar, persistentHint: true }
       this.rules.unshift((v) => Validations.required(v))
     }
-    this.rules = this.initialRules || this.rules
+    this.rules = this.applyRules ? this.initialRules || this.rules : []
     this.placeholder = this.initialPlaceholder || labels.EnterDescription
   }
 }

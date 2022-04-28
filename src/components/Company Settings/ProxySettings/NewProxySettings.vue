@@ -86,8 +86,8 @@
             placeholder="Enter password"
             outlined
             dense
-            :type="showPassword ? 'text' : 'password'"
-            :append-icon="isEdit ? '' : showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+            :type="passwordFieldType"
+            :append-icon="passwordAppendIcon"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
             :rules="getPasswordRules"
@@ -207,6 +207,12 @@ export default {
     }
   },
   computed: {
+    passwordAppendIcon() {
+      return this.isEdit ? '' : this.showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
+    },
+    passwordFieldType() {
+      return this.showPassword ? 'text' : 'password'
+    },
     getTitle() {
       return this.isEdit && this.resourceId ? 'Edit Proxy Setting' : 'Create Proxy Setting'
     },

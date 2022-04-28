@@ -29,46 +29,30 @@
       <v-list-item class="px-0 add-in-settings__list-item mt-0">
         <v-list-item-content>
           <label class="add-in-settings__label">{{ labels.AddIn }} {{ labels.Name }}</label>
-          <v-text-field
-            :rules="
-              showForm
-                ? [
-                    (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Add-in name')),
-                    (v) => validations.required(v, labels.Required)
-                  ]
-                : []
-            "
+          <InputEntityName
+            v-model.trim="formValues.addInName"
+            initialPlaceholder="Enter an add-in name"
+            entityName="add-in name"
             id="input--phishing-reporter-settings-add-in-name"
             class="k-textfield mt-2"
-            dense
-            outlined
-            placeholder="Enter an add-in name"
             :readonly="!showForm"
-            v-model.trim="formValues.addInName"
-          ></v-text-field>
+            :applyRules="showForm"
+          />
         </v-list-item-content>
       </v-list-item>
 
       <v-list-item class="px-0 add-in-settings__list-item">
         <v-list-item-content>
           <label class="add-in-settings__label">{{ labels.Brand }} {{ labels.Name }}</label>
-          <v-text-field
-            :rules="
-              showForm
-                ? [
-                    (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand name')),
-                    (v) => validations.required(v, labels.Required)
-                  ]
-                : []
-            "
-            class="k-textfield mt-2"
-            id="input--phishing-reporter-settings-brand-name"
-            dense
-            outlined
-            placeholder="Enter a Company Name"
-            :readonly="!showForm"
+          <InputEntityName
             v-model.trim="formValues.brandName"
-          ></v-text-field>
+            initialPlaceholder="Enter a Brand Name"
+            entityName="brand name"
+            id="input--phishing-reporter-settings-brand-name"
+            class="k-textfield mt-2"
+            :readonly="!showForm"
+            :applyRules="showForm"
+          />
         </v-list-item-content>
       </v-list-item>
 
@@ -106,280 +90,154 @@
       <v-list-item class="px-0 add-in-settings__list-item add-in-settings__body-container mt-6">
         <v-list-item-content>
           <label class="add-in-settings__label">{{ labels.DialogBox }} {{ labels.Settings }}</label>
-          <div class="add-in-settings__body-item mt-4">
+          <div class="add-in-settings__body-item mt-4 mb-4">
             <label class="add-in-settings__list-item-header"
               >{{ labels.DialogBox }} {{ labels.Heading }}</label
             >
-            <v-text-field
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('Dialog box heading')
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
-              id="input--phishing-reporter-message-box-title"
-              :readonly="!showForm"
-              class="k-textfield"
-              dense
-              outlined
-              placeholder="Enter a dialog box name"
-              required
+            <InputEntityName
               v-model.trim="formValues.msgBoxTitle"
-            ></v-text-field>
-          </div>
-          <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header">Confirm Button Label</label>
-            <v-text-field
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('Confirm button label')
-                        ),
-                      (v) => validations.required(v, 'Required')
-                    ]
-                  : []
-              "
+              initialPlaceholder="Enter a dialog box name"
+              entityName="dialog box name"
+              id="input--phishing-reporter-message-box-title"
+              class="k-textfield"
               :readonly="!showForm"
+              :applyRules="showForm"
+            />
+          </div>
+          <div class="add-in-settings__body-item mb-4">
+            <label class="add-in-settings__list-item-header">Confirm Button Label</label>
+            <InputEntityName
+              v-model.trim="formValues.msgBoxBtnYesText"
+              initialPlaceholder="Enter confirm button label"
+              entityName="confirm button label"
               id="input--phishing-reporter-message-button-yes-text"
               class="k-textfield"
-              dense
-              outlined
-              placeholder="Enter confirm button label"
-              required
-              v-model.trim="formValues.msgBoxBtnYesText"
-            ></v-text-field>
-          </div>
-          <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header">No Button Label</label>
-            <v-text-field
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(v, 64, labels.getMaxLengthMessage('No button label')),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
               :readonly="!showForm"
+              :applyRules="showForm"
+            />
+          </div>
+          <div class="add-in-settings__body-item mb-4">
+            <label class="add-in-settings__list-item-header">No Button Label</label>
+            <InputEntityName
+              v-model.trim="formValues.msgBoxBtnNoText"
+              initialPlaceholder="Enter a no button label"
+              entityName="no button label"
               id="input--phishing-reporter-message-button-no-text"
               class="k-textfield"
-              dense
-              outlined
-              placeholder="Enter a no button label"
-              required
-              v-model.trim="formValues.msgBoxBtnNoText"
-            ></v-text-field>
-          </div>
-          <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header">Cancel Button Label</label>
-            <v-text-field
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('Cancel button label')
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
               :readonly="!showForm"
+              :applyRules="showForm"
+            />
+          </div>
+          <div class="add-in-settings__body-item mb-4">
+            <label class="add-in-settings__list-item-header">Cancel Button Label</label>
+            <InputEntityName
+              v-model.trim="formValues.msgBoxBtnCancelText"
+              initialPlaceholder="Enter cancel button label"
+              entityName="cancel button label"
               id="input--phishing-reporter-message-button-cancel-text"
               class="k-textfield"
-              dense
-              outlined
-              placeholder="Enter cancel button label"
-              required
-              v-model.trim="formValues.msgBoxBtnCancelText"
-            ></v-text-field>
-          </div>
-          <div class="add-in-settings__body-item">
-            <label class="add-in-settings__list-item-header">Okay Button Label</label>
-            <v-text-field
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          64,
-                          labels.getMaxLengthMessage('Okay button label')
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
               :readonly="!showForm"
-              class="k-textfield"
-              dense
-              outlined
-              id="input--phishing-reporter-message-button-ok-text"
-              placeholder="Enter okay button label"
-              required
-              v-model.trim="formValues.msgBoxBtnOkText"
-            ></v-text-field>
+              :applyRules="showForm"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
+            <label class="add-in-settings__list-item-header">Okay Button Label</label>
+            <InputEntityName
+              v-model.trim="formValues.msgBoxBtnOkText"
+              initialPlaceholder="Enter okay button label"
+              entityName="okay button label"
+              id="input--phishing-reporter-message-button-ok-text"
+              class="k-textfield"
+              :readonly="!showForm"
+              :applyRules="showForm"
+            />
+          </div>
+          <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Instant Report Message</label
             >
-            <v-textarea
-              placeholder="Enter instant report message"
-              outlined
-              dense
-              rows="2"
-              no-resize
-              height="80"
-              id="input--phishing-reporter-analysis-thank-you-message"
+            <InputDescription
               v-model.trim="formValues.analysisThankYouMessage"
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Instant report message', 256)
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
+              initialPlaceholder="Enter instant report message"
+              entityName="instant report message"
+              id="input--phishing-reporter-analysis-thank-you-message"
+              rows="2"
+              height="80"
               :readonly="!showForm"
-            ></v-textarea>
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Connection error message</label
             >
-            <v-textarea
-              placeholder="Enter a connection error message"
-              outlined
-              dense
-              rows="2"
-              no-resize
-              height="80"
-              id="input--phishing-reporter-no-internet-connection-message"
+            <InputDescription
               v-model.trim="formValues.noInternetConnectionMessage"
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Connection error message', 256)
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
+              initialPlaceholder="Enter a connection error message"
+              entityName="connection error message"
+              id="input--phishing-reporter-no-internet-connection-message"
+              rows="2"
+              height="80"
               :readonly="!showForm"
-            ></v-textarea>
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Sending error message</label
             >
-            <v-textarea
-              placeholder="Enter sending error message"
-              outlined
-              dense
-              rows="2"
-              no-resize
-              height="80"
-              id="input--phishing-reporter-email-sending-error-message"
+            <InputDescription
               v-model.trim="formValues.emailSendingErrorMessage"
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Sending error message', 256)
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
+              initialPlaceholder="Enter sending error message"
+              entityName="sending error message"
+              id="input--phishing-reporter-email-sending-error-message"
+              rows="2"
+              height="80"
               :readonly="!showForm"
-            ></v-textarea>
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >No email selected message</label
             >
-            <v-textarea
-              placeholder="Enter a no email selected message"
-              outlined
-              dense
-              rows="2"
-              no-resize
-              height="80"
-              id="input--phishing-reporter-email-selection-error-message"
+            <InputDescription
               v-model.trim="formValues.emailSelectionErrorMessage"
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('No email selected message', 256)
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
+              initialPlaceholder="Enter a no email selected message"
+              entityName="no email selected error message"
+              id="input--phishing-reporter-email-selection-error-message"
+              rows="2"
+              height="80"
               :readonly="!showForm"
-            ></v-textarea>
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
               >Bad format email message</label
             >
-            <v-textarea
-              placeholder="Enter a bad format email message"
-              outlined
-              dense
-              rows="2"
-              no-resize
-              height="80"
-              id="input--phishing-reporter-bad-format-email-message"
+            <InputDescription
               v-model.trim="formValues.badFormatEmailMessage"
-              :rules="
-                showForm
-                  ? [
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Bad format email message', 256)
-                        ),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : []
-              "
+              initialPlaceholder="Enter a bad format email message"
+              entityName="bad format email message"
+              id="input--phishing-reporter-bad-format-email-message"
+              rows="2"
+              height="80"
               :readonly="!showForm"
-            ></v-textarea>
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
             <v-checkbox
               color="#2196f3"
               label="Show confirmation messsage when reporting email"
@@ -388,21 +246,21 @@
               v-model="formValues.isConfirmationBeforeAnalysis"
               :readonly="!showForm"
             ></v-checkbox>
-            <v-textarea
-              placeholder="Enter a confirmation message when reporting email"
+            <InputDescription
+              v-model.trim="formValues.analysisConfirmationMessage"
+              initialPlaceholder="Enter a confirmation message when reporting email"
+              entityName="confirmation message when reporting email"
               id="input--phishing-reporter-analysis-confirmation-message-rules"
-              outlined
-              dense
               rows="2"
-              no-resize
               height="80"
               :disabled="!formValues.isConfirmationBeforeAnalysis"
-              v-model.trim="formValues.analysisConfirmationMessage"
-              :rules="getAnalysisConfirmationMessageRules"
+              :initialRules="getAnalysisConfirmationMessageRules"
               :readonly="!showForm"
-            ></v-textarea>
+              :maxLength="256"
+              :required="true"
+            />
           </div>
-          <div class="add-in-settings__body-item">
+          <div class="add-in-settings__body-item mb-4">
             <v-checkbox
               color="#2196f3"
               label="Show confirmation message to delete email"
@@ -411,19 +269,19 @@
               v-model="formValues.isDeleteEmailBeforeAnalysis"
               :readonly="!showForm"
             ></v-checkbox>
-            <v-textarea
-              placeholder="Enter a confirmation message to delete email"
+            <InputDescription
+              v-model.trim="formValues.analysisEmailDeleteMessage"
+              initialPlaceholder="Enter a confirmation message to delete email"
+              entityName="confirmation message to delete email"
               id="input--phishing-reporter-analysis-email-delete-message"
-              outlined
-              dense
               rows="2"
-              no-resize
               height="80"
               :disabled="!formValues.isDeleteEmailBeforeAnalysis"
-              v-model.trim="formValues.analysisEmailDeleteMessage"
-              :rules="getAnalysisConfirmationMessageRules"
+              :initialRules="getAnalysisConfirmationMessageRules"
               :readonly="!showForm"
-            ></v-textarea>
+              :maxLength="256"
+              :required="true"
+            />
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -434,25 +292,15 @@
           <label class="add-in-settings__subtitle"
             >Appears on email header when suspicious email is opened</label
           >
-          <v-text-field
-            :rules="
-              showForm
-                ? [
-                    (v) =>
-                      validations.maxLength(v, 64, labels.getMaxLengthMessage('Warning label')),
-                    (v) => validations.required(v, labels.Required)
-                  ]
-                : []
-            "
-            class="k-textfield mt-2"
-            id="input--phishing-reporter-warning-label"
-            dense
-            outlined
-            placeholder="Enter a warning label"
-            required
-            :readonly="!showForm"
+          <InputEntityName
             v-model.trim="formValues.warningLabel"
-          ></v-text-field>
+            initialPlaceholder="Enter a warning label"
+            entityName="warning label"
+            id="input--phishing-reporter-warning-label"
+            class="k-textfield mt-2"
+            :readonly="!showForm"
+            :applyRules="showForm"
+          />
         </v-list-item-content>
       </v-list-item>
       <phishing-settings-footer
@@ -478,13 +326,17 @@ import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettin
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 export default {
   name: 'AddinSettings',
   components: {
     KFileUpload,
     ReporterVersionModal,
     VersionHistoryModal,
-    PhishingSettingsFooter
+    PhishingSettingsFooter,
+    InputEntityName,
+    InputDescription
   },
   props: {
     showFooter: {
