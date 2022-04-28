@@ -629,7 +629,7 @@ export default {
         WebsiteUrl: '',
         LicenseTypeResourceId: '',
         LicenseTypeName: '',
-        LicensePeriodTypeResourceId: '',
+        LicensePeriodTypeResourceId: 'MaR9NJslgSGW',
         LicenseStartDate: '',
         LicenseEndDate: '',
         IsNumberOfUsersLimited: true,
@@ -769,7 +769,8 @@ export default {
         const [day, month, year] = this.formData.LicenseStartDate.split(' ')[0].split('/')
         selectedStartDate = new Date(year, month - 1, day)
       }
-      return selectedStartDate.getTime() > val.getTime()
+      // Add a day and control
+      return selectedStartDate.getTime() + (1000 * 60 * 60 * 24 )> val.getTime()
     },
     handleCancel() {
       if (this.isFormDataChanged()) {
@@ -1028,8 +1029,21 @@ export default {
     }
   },
   watch: {
-    'formData.LicenseStartDate'(newVal) {
+    'formData.LicenseStartDate'(newVal,oldVal) {
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
+      if(this.formData.LicensePeriodTypeResourceId && this.formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW') {
+        if(!newVal && oldVal) {
+          this.formData.LicenseEndDate = ''
+          return
+        }
+        if(newVal && oldVal) {
+          const newSelectedDate = newVal.split(' ')[0]
+          const oldSelectedDate = oldVal.split(' ')[0]
+          if(newSelectedDate !== oldSelectedDate){
+            this.formData.LicenseEndDate = ''
+          }
+        }
+      }
     },
     'formData.LicenseEndDate'(newVal) {
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
