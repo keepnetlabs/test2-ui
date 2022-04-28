@@ -9,6 +9,7 @@
     :rules="rules"
     :disabled="disabled"
     :readonly="readonly"
+    :hide-details="hideDetails"
     @input="$emit('input', $event)"
   />
 </template>
@@ -46,6 +47,9 @@ export default {
     applyRules: {
       default: true,
     },
+    hideDetails: {
+      default: false
+    }
   },
   data() {
     return {
