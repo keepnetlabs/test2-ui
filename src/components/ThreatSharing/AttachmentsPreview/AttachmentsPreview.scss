@@ -4,10 +4,11 @@
   flex-wrap: wrap;
   max-width: max-content;
   min-height: auto;
+  position: relative;
 
   .attachment {
-    width: 182px;
-    min-width: 182px;
+    width: 260px;
+    min-width: 260px;
     height: 32px;
     align-items: center;
     display: flex;
@@ -53,11 +54,12 @@
   }
 
   .file-name {
+    font-size: 14px;
+    line-height: 16px;
     display: block;
     max-width: 66%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 2;
   }
 }

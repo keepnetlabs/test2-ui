@@ -182,18 +182,11 @@ export default {
       })
     },
     callForGetPhishingScenario() {
-      getScenario(this.selectedScenario.resourceId).then((response) => {
-        const {
-          data: { data }
-        } = response
-        this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
-          this.selectedScenario.name
-        )
-        const { emailTemplateResourceId, landingPageTemplateResourceId } = data
-        getPhishingScenarioLandingPageAndEmailTemplate(
-          emailTemplateResourceId,
-          landingPageTemplateResourceId
-        ).then((response) => {
+      getPhishingScenarioLandingPageAndEmailTemplate(this.selectedScenario.resourceId).then(
+        (response) => {
+          this.$refs.refFastLaunch.$refs.refCampaignManagerCampaignInfo.setInitialName(
+            this.selectedScenario.name
+          )
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
           const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
@@ -221,8 +214,8 @@ export default {
             method: methods[methodTypeId - 1].text
           }
           this.landingPageTemplate = landingPages[0].content
-        })
-      })
+        }
+      )
     },
     changeStep(flag = 1) {
       this.step += flag

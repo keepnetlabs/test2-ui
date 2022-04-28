@@ -1,5 +1,11 @@
 <template>
   <div style="margin-bottom: 70px !important;" id="threat-sharing-post-incident-grapesjs-modal">
+    <DefaultErrorDialog
+      v-if="showInvalidUrlMessage"
+      :status="showInvalidUrlMessage"
+      error-message="Please enter a invalid URL"
+      @on-close="showInvalidUrlMessage = false"
+    />
     <div class="grapes-container-modal">
       <div class="panel__top-modal">
         <div class="panel__basic-actions-modal"></div>
@@ -44,8 +50,10 @@ import { deleteFiles, getUploadedFiles, uploadFiles } from '@/api/file'
 import { minifyHTML } from '@/api/scenarios'
 import { copyToClipboard } from '@/utils/functions'
 import * as validations from '@/utils/validations'
+import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
 export default {
   name: 'GrapesNewsletterModal',
+  components: { DefaultErrorDialog },
   props: {
     htmlData: {
       required: false
@@ -70,10 +78,15 @@ export default {
           macroUrl: macroUrl
         }
       }
+    },
+    templateType: {
+      type: String,
+      default: 'email'
     }
   },
   data() {
     return {
+      showInvalidUrlMessage: false,
       cloneUrl: null,
       cloneUrlPage: null,
       editor: null,
@@ -268,8 +281,23 @@ export default {
               this.listenTo(model, 'change:attributes:value', this.handleTextChange)
             },
             handleURLRedirectionChange(component, value) {
-              if (!validations.isDomainUrl(value, '')) {
-                window.alert('Please enter a valid URL')
+              if (!value) return
+
+              const renderErrorMessage = () => {
+                setTimeout(() => {
+                  component.addAttributes({ urlredirection: '' })
+                }, 100)
+                _this.showInvalidUrlMessage = true
+              }
+
+              try {
+                //checking is valid url
+                const url = new URL(value)
+                if (!validations.isDomainUrl(value, '')) {
+                  renderErrorMessage()
+                }
+              } catch (e) {
+                renderErrorMessage()
               }
             },
             handleTextChange(component, value) {
@@ -478,7 +506,7 @@ export default {
             .contentWindow.document.querySelectorAll('[data-title="Company Logo"]')) {
             droppedComponent.attributes.src = logoUrl
             img.src = logoUrl
-            img.className = img.className.replaceAll('gjs-plh-image', '')
+            img.className = img.className.replace(new RegExp('gjs-plh-image', 'g'), '')
           }
         } else if (
           droppedComponent &&
@@ -846,7 +874,6 @@ export default {
               editor.setComponents(importedCode)
               editor.Modal.close()
             }
-
             minifyHTML(code)
               .then((response) => {
                 callback(response?.data?.data?.htmlContent || '')
@@ -899,11 +926,42 @@ export default {
       })
     },
     getGrapesEditorContent() {
-      try {
-        return this.editor.Commands.run('get-html-juiced')
-      } catch (e) {
-        return ''
+      const { editor } = this
+      if (this.templateType === 'email') {
+        try {
+          return this.editor.Commands.run('get-html-juiced')
+        } catch (e) {
+          return ''
+        }
       }
+      //this is for the landing page
+      const html = editor.getHtml()
+      const css = editor.getCss()
+      const htmlDOM = document.createElement('template')
+      htmlDOM.innerHTML = html
+      let head = htmlDOM.querySelector('head')
+      let style = document.createElement('style')
+      style.innerHTML = css
+      if (head) {
+        head.appendChild(style)
+      } else {
+        head = document.createElement('head')
+        head.appendChild(style)
+        const htmlElement = htmlDOM.querySelector('html')
+        if (htmlElement) {
+          let headOfHtmlElement = htmlElement.querySelector('head')
+          if (headOfHtmlElement) {
+            headOfHtmlElement.innerHTML = head.innerHTML
+          }
+          htmlElement.insertAdjacentElement('afterbegin', head)
+        } else {
+          const newHtmlDOM = document.createElement('html')
+          newHtmlDOM.innerHTML = htmlDOM.innerHTML
+          newHtmlDOM.insertAdjacentElement('afterbegin', head)
+          return newHtmlDOM.outerHTML
+        }
+      }
+      return htmlDOM.outerHTML
     }
   }
 }

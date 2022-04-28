@@ -5,7 +5,11 @@
       :resend-dialog-items="getResendDialogItems"
       :id="id"
     />
-    <CampaignManagerReportSummaryCards :items="getCardsData" :is-loading="isLoading" />
+    <CampaignManagerReportSummaryCards
+      :isAttachment="isAttachment"
+      :items="getCardsData"
+      :is-loading="isLoading"
+    />
     <div class="campaign-manager-report-summary__general-info mt-6">
       <CampaignManagerReportSummaryCampaignInfo
         :items="getCampaignSummaryItems"
@@ -68,15 +72,19 @@ export default {
     }
   },
   computed: {
+    isAttachment() {
+      return this.campaignSummary?.landingPageTemplateInfo?.methodTypeId === 3 || false
+    },
     getPercents() {
-      if (!this.getChartData.length) return [0, 0, 0, 0, 0]
+      if (!this.getChartData.length) return [0, 0, 0, 0, 0, 0]
       const cardsData = this.getCardsData
       return [
         cardsData.openedEmail.userPercent,
         cardsData.clickedEmail.userPercent,
         cardsData.submittedEmail.userPercent,
         cardsData.noResponse.userPercent,
-        cardsData.notDelivered.userPercent
+        cardsData.notDelivered.userPercent,
+        cardsData.attachmentOpenedEmail.userPercent
       ]
     },
     getCampaignSummaryItems() {
@@ -156,7 +164,8 @@ export default {
         clickedEmail = 0,
         submittedEmail = 0,
         noResponseEmail = 0,
-        notDelivered = 0
+        notDelivered = 0,
+        attachmentOpenedEmail = 0
       ] = this.getChartData
       return this.getChartData.length
         ? {
@@ -164,7 +173,8 @@ export default {
             noResponseEmail,
             notDelivered,
             openedEmail,
-            submittedEmail
+            submittedEmail,
+            attachmentOpenedEmail
           }
         : {}
     },
@@ -175,7 +185,8 @@ export default {
           noResponseEmail: 0,
           notDelivered: 0,
           openedEmail: 0,
-          submittedEmail: 0
+          submittedEmail: 0,
+          attachmentOpenedEmail: 0
         }
       }
       const { scenarioStats = {} } = this.campaignSummary?.scenarioStats
@@ -186,14 +197,16 @@ export default {
         noResponseEmail = 0,
         notDelivered = 0,
         openedEmail = 0,
-        submittedEmail = 0
+        submittedEmail = 0,
+        attachmentOpenedEmail = 0
       } = scenarioStats
       const dataContainer = [
         openedEmail,
         clickedEmail,
         submittedEmail,
         noResponseEmail,
-        notDelivered
+        notDelivered,
+        attachmentOpenedEmail
       ]
       return dataContainer.every((item) => item === 0) ? [] : dataContainer
     },
@@ -204,7 +217,8 @@ export default {
         clickedEmail = 0,
         submittedEmail = 0,
         noResponseEmail = 0,
-        notDelivered = 0
+        notDelivered = 0,
+        attachmentOpenedEmail = 0
       ] = this.getChartData
       return {
         noResponse: {
@@ -214,6 +228,10 @@ export default {
         openedEmail: {
           userCount: openedEmail,
           userPercent: ((openedEmail / this.getTotalUsers) * 100).toFixed()
+        },
+        attachmentOpenedEmail: {
+          userCount: attachmentOpenedEmail,
+          userPercent: ((attachmentOpenedEmail / this.getTotalUsers) * 100).toFixed()
         },
         clickedEmail: {
           userCount: clickedEmail,

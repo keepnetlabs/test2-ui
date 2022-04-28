@@ -1217,7 +1217,8 @@ export default {
                 placeholder: 'Enter Tags'
               }
             },
-            show: true
+            show: true,
+            filterableType: 'text'
           },
           {
             property: 'note',
@@ -1433,7 +1434,8 @@ export default {
               placeholder: 'Enter Tags'
             }
           },
-          width: '150'
+          width: '150',
+          filterableType: 'text'
         }
       ],
       firstColumnProperties: {
@@ -1500,13 +1502,7 @@ export default {
           id: 'btn-re-analyze--incident-responder-emails-row-actions',
           icon: 'mdi-refresh',
           action: 'handleReAnalyze',
-          disabled: (row) => {
-            return (
-              row.status === 'BeingAnalyzed' ||
-              row.status === 'InProgress' ||
-              !checkPermission('notified-emails/{resourceId}/reanalyze', 'GET')
-            )
-          }
+          disabled: !checkPermission('notified-emails/{resourceId}/reanalyze', 'GET')
         }
       ],
       addMenu: {
@@ -1683,7 +1679,8 @@ export default {
           show: true,
           type: 'smallBadge',
           isEditable: true,
-          width: '150'
+          width: '150',
+          filterableType: 'text'
         }
       ],
       iEmpty: {

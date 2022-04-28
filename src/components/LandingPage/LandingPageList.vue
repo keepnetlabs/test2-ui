@@ -313,6 +313,8 @@ export default {
             show: true,
             type: 'text',
             filterableType: 'text',
+            // filterableType: 'select',
+            // filterableItems: ['Custom', 'System'],
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY
           },

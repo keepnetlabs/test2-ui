@@ -18,3 +18,7 @@ export function deleteFiles(ResourceIdList) {
     }
   })
 }
+
+export function parseEmailOrMessageFile(payload) {
+  return testRequest.post('/file/parse-email-file', payload)
+}

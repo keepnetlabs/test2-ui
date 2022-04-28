@@ -251,7 +251,7 @@ export default {
         if (emittedVal && emittedVal[0]) {
           this.$emit('input', emittedVal)
           if (['MyCompanyOnly', 'AllCompanies'].includes(emittedVal[0].type)) {
-            if (this.$refs.refTreeSelect['menu'].isOpen) {
+            if (this?.$refs?.refTreeSelect?.menu?.isOpen) {
               this.$refs.refTreeSelect['menu'].isOpen = false
             }
           }

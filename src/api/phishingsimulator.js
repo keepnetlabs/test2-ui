@@ -19,11 +19,21 @@ export function updatePhishingEmailTemplate(payload, id) {
       payload.availableForRequests[i].resourceId
     )
   }
+  const phishingFileType = payload.attachmentFiles[0].name
+    ? payload.attachmentFiles[0]?.name?.split('.')[1]
+    : payload.attachmentFiles[0]?.fileName?.split('.')[1]
   formData.append('fromAddress', payload.fromAddress)
   formData.append('fromName', payload.fromName)
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
-  formData.append('attachmentFiles', payload.attachmentFiles[0])
+  formData.append('attachmentFiles', payload.importedEmailAttachments[0])
+  formData.append(
+    'phishingFile',
+    payload.isAddedNewPhishingFile ? payload.attachmentFiles[0] : null
+  )
+  formData.append('phishingFileType', phishingFileType)
+  formData.append('isPhishingFileModified', payload.isPhishingFileModified)
+  formData.append('phishingFileName', payload.phishingFileName)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   return testRequest.put(`phishing-simulator/email-templates/${id}`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -48,11 +58,17 @@ export function createPhishingEmailTemplate(payload) {
       payload.availableForRequests[i].resourceId
     )
   }
+
+  const phishingFileType = payload.attachmentFiles[0].name
+    ? payload.attachmentFiles[0]?.name?.split('.')[1]
+    : payload.attachmentFiles[0]?.fileName?.split('.')[1]
   formData.append('fromAddress', payload.fromAddress)
   formData.append('fromName', payload.fromName)
   formData.append('subject', payload.subject)
   formData.append('template', payload.template)
-  formData.append('attachmentFiles', payload.attachmentFiles[0])
+  formData.append('attachmentFiles', payload.importedEmailAttachments[0])
+  formData.append('phishingFile', payload.attachmentFiles[0])
+  formData.append('phishingFileType', phishingFileType)
   formData.append('languageTypeResourceId', payload.languageTypeResourceId)
   return testRequest.post(`phishing-simulator/email-templates`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
@@ -166,13 +182,8 @@ export function getCampaignManagerFormDetails() {
   return testRequest.get('/phishing-simulator/phishing-campaign/form-details')
 }
 
-export function getPhishingScenarioLandingPageAndEmailTemplate(
-  emailTemplateId = '',
-  landingPageId = ''
-) {
-  return testRequest.get(
-    `/phishing-simulator/phishing-scenario/preview/${emailTemplateId}/${landingPageId}`
-  )
+export function getPhishingScenarioLandingPageAndEmailTemplate(resourceId = '') {
+  return testRequest.get(`/phishing-simulator/phishing-scenario/preview/${resourceId}`)
 }
 
 export function getPhishingScenarioLandingPageAndEmailTemplateByPhishingScenarioId(id) {
@@ -234,6 +245,30 @@ export function searchCampaignJobUserEmailOpened(payload, id) {
 export function exportCampaignJobUserEmailOpened(payload, id) {
   return testRequest.post(
     `/phishing-simulator/phishing-campaign-job-report/opened/search/export/${id}`,
+    payload,
+    {
+      responseType: 'blob'
+    }
+  )
+}
+
+export function searchCampaignJobUserAttachmentOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/attachmentopened/search/${id}`,
+    payload
+  )
+}
+
+export function searchCampaignJobUserAttachmentOpenedDetaiils(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/${id}`,
+    payload
+  )
+}
+
+export function exportCampaignJobUserAttachmentOpened(payload, id) {
+  return testRequest.post(
+    `/phishing-simulator/phishing-campaign-job-report/attachmentopened/search/export/${id}`,
     payload,
     {
       responseType: 'blob'

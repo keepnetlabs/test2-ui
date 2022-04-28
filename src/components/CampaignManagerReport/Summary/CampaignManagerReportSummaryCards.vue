@@ -24,10 +24,14 @@
         :icon-src="clickedLinkIcon"
       />
       <CampaignManagerReportSummaryInfoCard
-        v-bind="getSubmittedData"
-        class="campaign-manager-report-summary-info-card--submitted-data"
+        v-bind="isAttachment ? getOpenedAttachmentData : getSubmittedData"
+        :class="
+          isAttachment
+            ? 'campaign-manager-report-summary-info-card--opened-attachment-data'
+            : 'campaign-manager-report-summary-info-card--submitted-data'
+        "
         background-color="#B83A3A"
-        :title="labels.SubmittedData"
+        :title="isAttachment ? labels.OpenedAttachment : labels.SubmittedData"
         :is-loading="isLoading"
       >
         <template #icon>
@@ -53,6 +57,9 @@ export default {
     },
     items: {
       type: Object
+    },
+    isAttachment: {
+      type: Boolean
     }
   },
   data() {
@@ -72,6 +79,10 @@ export default {
     getOpenedData() {
       const { openedEmail } = this.items
       return openedEmail ? openedEmail : {}
+    },
+    getOpenedAttachmentData() {
+      const { attachmentOpenedEmail } = this.items
+      return attachmentOpenedEmail ? attachmentOpenedEmail : {}
     },
     getSubmittedData() {
       const { submittedEmail } = this.items

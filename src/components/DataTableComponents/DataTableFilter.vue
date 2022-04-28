@@ -310,7 +310,7 @@ export default {
   data() {
     return {
       status: false,
-      zIndex: '201',
+      zIndex: '202',
       menu: null,
       btnKeySafariFix: `btn-key${Math.random().toString().substring(0, 5)}`,
       isFilterActive:
@@ -386,7 +386,7 @@ export default {
   watch: {
     menu(newVal) {
       if (newVal) {
-        this.zIndex = ['date', 'dateOnly'].includes(this.filterableType) ? '201 !important' : '201'
+        this.zIndex = ['date', 'dateOnly'].includes(this.filterableType) ? '202 !important' : '202'
         this.$emit('update:isSettingsOpened', false)
       }
     },

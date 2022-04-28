@@ -662,14 +662,14 @@
                         <v-list-item
                           v-if="!act.subElements && !act.isNotShow"
                           v-for="(act, ind) of rowActions"
-                          :style="
-                            (act.disabled && act.disabled.constructor.name === 'Function'
-                              ? act.disabled(scope.row)
-                              : act.disabled) && { pointerEvents: 'none' }
+                          :style="act.disabled && { pointerEvents: 'none' }"
+                          :disabled="
+                            act.disabled
+                              ? act.disabled
+                              : act.name === 'Re-analyze' &&
+                                (scope.row.status === 'BeingAnalyzed' ||
+                                  scope.row.status === 'InProgress')
                           "
-                          :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
-                            ? act.disabled(scope.row)
-                            : act.disabled) "
                           :key="ind"
                           :id="`${rowActions[ind].id}-${
                             scope.$index
@@ -677,39 +677,9 @@
                           class="sub-menu-el datatable-row-action-list"
                         >
                           <v-list-item-title @click="rowAct(act.action, scope.row, scope)">
-                            <v-icon
-                              class="pr-3"
-                              :disabled=" (act.disabled && act.disabled.constructor.name === 'Function'
-                            ? act.disabled(scope.row)
-                            : act.disabled)"
-                              >{{ act.icon }}</v-icon
-                            >
+                            <v-icon class="pr-3" :disabled="act.disabled">{{ act.icon }}</v-icon>
                             <span>{{ act.name }}</span>
                           </v-list-item-title>
-                        </v-list-item>
-                        <v-list-item
-                          :key="ind + 'sub-item'"
-                          v-for="(act, ind) of rowActions"
-                          v-if="act.subElements && act.subElements.length"
-                        >
-                          <v-menu :content-class="'sub-menu-sub'" open-on-hover>
-                            <template v-slot:activator="{ on }">
-                              <v-list-item-title class="sub-element-wrapper" v-on="on">
-                                <v-icon class="pr-3">{{ act.icon }}</v-icon>
-                                <span>{{ act.name }}</span>
-                                <v-icon style="float: right;">mdi-chevron-right</v-icon>
-                              </v-list-item-title>
-                            </template>
-                            <v-list>
-                              <v-list-item
-                                :key="item"
-                                @click="handleSubMenuItemClick(item)"
-                                v-for="item of act.subElements"
-                              >
-                                {{ item }}
-                              </v-list-item>
-                            </v-list>
-                          </v-menu>
                         </v-list-item>
                       </v-list>
                     </v-menu>
@@ -781,11 +751,7 @@
                   <v-tooltip bottom>
                     <template v-slot:activator="{ on }">
                       <v-btn
-                        :disabled="
-                          rowActions[1]['disabled'] ||
-                          (rowActions[1].getButtonVisibility &&
-                            !rowActions[1].getButtonVisibility(scope.row.status))
-                        "
+                        :disabled="rowActions[1]['disabled']"
                         :id="`${rowActions[1].id}-${
                           scope.$index
                         }-${Math.random().toString().substring(2)}`"
@@ -1470,9 +1436,7 @@ export default {
       //This is for refresh button when clicked caching refresh
       if ((!this.cacheChecks && !this.isServerSide) || (this.lazy && this.selectedCluster)) {
         this.multipleSelection = []
-        if (this.$refs && this.$refs.elTableRef && this.$refs.elTableRef.clearSelection) {
-          this.$refs.elTableRef.clearSelection()
-        }
+        this.$refs?.elTableRef?.clearSelection?.()
       } else {
         //If there is clustered items selected table has reselect bug. It solves it
       }
@@ -1541,7 +1505,7 @@ export default {
         this.$nextTick(() => {
           const selections = JSON.parse(JSON.stringify(this.multipleSelection))
           this.multipleSelection = []
-          this.$refs.elTableRef.clearSelection()
+          this.$refs.elTableRef?.clearSelection?.()
           const allItems = this.getAllItems(this.tableData, [], false, false)
           selections.forEach((selectedItem) => {
             const thisTableItem = allItems.find((item) => {
@@ -1713,7 +1677,7 @@ export default {
     ) {
       this.$nextTick(() => {
         this.multipleSelection = []
-        this.$refs.elTableRef.clearSelection()
+        this.$refs.elTableRef?.clearSelection?.()
         selections.forEach((selectedItem) => {
           const thisTableItem = this.tableData.find((item) => {
             return JSON.stringify(item) === JSON.stringify(selectedItem)
@@ -1731,7 +1695,7 @@ export default {
     ) {
       this.$nextTick(() => {
         this.multipleSelection = []
-        this.$refs.elTableRef.clearSelection()
+        this.$refs.elTableRef?.clearSelection?.()
         selections.forEach((selectedItem) => {
           const thisTableItem = this.tableData.find((item) => {
             return item[this.rowKey] === selectedItem[this.rowKey]
@@ -2782,9 +2746,6 @@ export default {
         pageSize: this.serverSideEvents.pagination ? this.serverSideProps.pageSize : this.rowCount,
         reportAllPages: this.downloadModalTitle === this.downloadButtonOptions[1]
       })
-    },
-    handleSubMenuItemClick(item) {
-      this.$emit('submenuItemClick', item)
     },
     toggleAll() {
       if (this.selectionCheckbox) {

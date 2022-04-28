@@ -49,6 +49,8 @@ export const COLUMNS = {
     type: 'text',
     width: 160,
     filterableType: 'text'
+    // filterableType: 'select',
+    // filterableItems: ['Custom', 'System']
   },
   SCHEDULE: {
     property: 'startDate',

@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import { mdiChevronRight } from '@mdi/js'
 export default {
   name: 'Breadcrumb',
   props: {
@@ -30,7 +31,8 @@ export default {
   },
   data() {
     return {
-      breadcrumb: []
+      breadcrumb: [],
+      mdiChevronRight
     }
   },
   mounted() {
