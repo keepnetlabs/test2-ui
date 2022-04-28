@@ -34,35 +34,10 @@
             class="k-textfield mt-2"
             v-model.trim="formValues.to"
             id="input--phishing-reporter-recipient-email-address"
-            :required="showForm ? !!formValues.isSendInformationEmail : false"
-            :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
-            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
-            :rules="
-              showForm
-                ? formValues.isSendInformationEmail
-                  ? [
-                      (v) => validations.mail(v, labels.InvalidEmailAddress),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          320,
-                          labels.getMaxLengthMessage(labels.Email, 320)
-                        ),
-                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : [
-                      (v) => validations.mail(v, labels.InvalidEmailAddress),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          320,
-                          labels.getMaxLengthMessage(labels.Email, 320)
-                        ),
-                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
-                    ]
-                : []
-            "
+            :required="isRecipientEmailRequired"
+            :persistent-hint="isRecipientEmailRequired"
+            :hint="recipientEmailHint"
+            :rules="recipientEamilRules"
             :readonly="!showForm"
           />
         </v-list-item-content>
@@ -77,16 +52,7 @@
             :persistent-hint="false"
             :required="false"
             :hint="null"
-            :rules="
-              showForm
-                ? [
-                    (v) =>
-                      validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
-                    (v) => validations.mail(v, labels.InvalidEmailAddress),
-                    (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
-                  ]
-                : []
-            "
+            :rules="ccEmailRules"
             :readonly="!showForm"
           />
         </v-list-item-content>
@@ -102,16 +68,7 @@
             :persistent-hint="false"
             :required="false"
             :hint="null"
-            :rules="
-              showForm
-                ? [
-                    (v) =>
-                      validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
-                    (v) => validations.mail(v, labels.InvalidEmailAddress),
-                    (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
-                  ]
-                : []
-            "
+            :rules="ccEmailRules"
           />
         </v-list-item-content>
       </v-list-item>
@@ -123,23 +80,10 @@
             class="k-textfield mt-2"
             id="input--phishing-reporter-email-subject"
             v-model.trim="formValues.subject"
-            :required="showForm ? !!formValues.isSendInformationEmail : false"
-            :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
-            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
-            :rules="
-              showForm
-                ? formValues.isSendInformationEmail
-                  ? [
-                      (v) =>
-                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : [
-                      (v) =>
-                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject'))
-                    ]
-                : []
-            "
+            :required="isRecipientEmailRequired"
+            :persistent-hint="isRecipientEmailRequired"
+            :hint="recipientEmailHint"
+            :rules="emailSubjectRules"
             :readonly="!showForm"
           ></InputEmail>
         </v-list-item-content>
@@ -154,32 +98,11 @@
             dense
             no-resize
             class="mt-2"
-            :required="showForm ? !!formValues.isSendInformationEmail : false"
-            :persistent-hint="showForm ? !!formValues.isSendInformationEmail : false"
-            :hint="showForm ? (formValues.isSendInformationEmail ? '*Required' : null) : null"
+            :required="isRecipientEmailRequired"
+            :persistent-hint="isRecipientEmailRequired"
+            :hint="recipientEmailHint"
             v-model.trim="formValues.content"
-            :rules="
-              showForm
-                ? formValues.isSendInformationEmail
-                  ? [
-                      (v) =>
-                        this.validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Message', 256)
-                        ),
-                      (v) => this.validations.required(v, labels.Required)
-                    ]
-                  : [
-                      (v) =>
-                        this.validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Message', 256)
-                        )
-                    ]
-                : []
-            "
+            :rules="emailMessageRules"
             :readonly="!showForm"
           ></v-textarea>
         </v-list-item-content>
@@ -257,6 +180,88 @@ export default {
         isSendInformationEmail: null
       },
       validations: validations
+    }
+  },
+  computed: {
+    isRecipientEmailRequired() {
+      return this.showForm ? !!this.formValues.isSendInformationEmail : false
+    },
+    recipientEmailHint() {
+      return this.showForm ? (this.formValues.isSendInformationEmail ? '*Required' : null) : null
+    },
+    recipientEamilRules() {
+      return this.showForm
+                ? this.formValues.isSendInformationEmail
+                  ? [
+                      (v) => validations.mail(v, labels.InvalidEmailAddress),
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          320,
+                          labels.getMaxLengthMessage(labels.Email, 320)
+                        ),
+                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
+                      (v) => validations.required(v, labels.Required)
+                    ]
+                  : [
+                      (v) => validations.mail(v, labels.InvalidEmailAddress),
+                      (v) =>
+                        validations.maxLength(
+                          v,
+                          320,
+                          labels.getMaxLengthMessage(labels.Email, 320)
+                        ),
+                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
+                    ]
+                : []
+            
+    },
+    ccEmailRules() {
+      return  this.showForm
+                ? [
+                    (v) =>
+                      validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+                    (v) => validations.mail(v, labels.InvalidEmailAddress),
+                    (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
+                  ]
+                : []
+            
+    },
+    emailSubjectRules() {
+      return this.showForm
+                ? this.formValues.isSendInformationEmail
+                  ? [
+                      (v) =>
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
+                      (v) => validations.required(v, labels.Required)
+                    ]
+                  : [
+                      (v) =>
+                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject'))
+                    ]
+                : []
+    },
+    emailMessageRules() {
+       return this.showForm
+                ? this.formValues.isSendInformationEmail
+                  ? [
+                      (v) =>
+                        this.validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Message', 256)
+                        ),
+                      (v) => this.validations.required(v, labels.Required)
+                    ]
+                  : [
+                      (v) =>
+                        this.validations.maxLength(
+                          v,
+                          256,
+                          labels.getMaxLengthMessage('Message', 256)
+                        )
+                    ]
+                : []
     }
   },
   methods: {

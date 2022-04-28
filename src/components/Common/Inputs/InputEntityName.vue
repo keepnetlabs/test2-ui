@@ -8,61 +8,73 @@
     :placeholder="placeholder"
     :rules="rules"
     :disabled="disabled"
+    :readonly="readonly"
     @input="$emit('input', $event)"
-  ></v-text-field>
+  />
 </template>
 <script>
-import * as Validations from '@/utils/validations'
-import labels from '@/model/constants/labels'
+import * as Validations from "@/utils/validations";
+import labels from "@/model/constants/labels";
 export default {
-  name: 'InputEntityName',
+  name: "InputEntityName",
   props: {
     value: {
-      type: String
+      type: String,
     },
     initialPlaceholder: {
       type: String,
-      default: ''
+      default: "",
     },
     initialRules: {
-      type: Array
+      type: Array,
     },
     entityName: {
-      type: String
+      type: String,
     },
     id: {
-      type: String
+      type: String,
     },
     required: {
-      default: true
+      default: true,
     },
     disabled: {
-      default: false
-    }
+      default: false,
+    },
+    readonly: {
+      default: false,
+    },
+    applyRules: {
+      default: true,
+    },
   },
   data() {
     return {
       rules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
-        (v) => Validations.isEntityNameSpecialCharacter(v)
+        (v) => Validations.isEntityNameSpecialCharacter(v),
       ],
-      placeholder: '',
-      requiredProps: {}
-    }
+      placeholder: "",
+      requiredProps: {},
+    };
   },
   created() {
     if (this.required) {
-      this.requiredProps = { hint: '*Required', persistentHint: true }
-      this.rules.unshift((v) => Validations.required(v))
+      this.requiredProps = { hint: "*Required", persistentHint: true };
+      this.rules.unshift((v) => Validations.required(v));
     }
 
     this.rules.unshift((v) =>
-      Validations.maxLength(v, 64, labels.getMaxLengthMessage(this.entityName, 64))
-    )
+      Validations.maxLength(
+        v,
+        64,
+        labels.getMaxLengthMessage(this.entityName, 64)
+      )
+    );
 
-    this.placeholder = this.initialPlaceholder || `Enter ${this.entityName} name`
+    this.placeholder =
+      this.initialPlaceholder || `Enter ${this.entityName} name`;
 
-    this.rules = this.initialRules || this.rules
-  }
-}
+    this.rules = this.applyRules ? this.initialRules || this.rules : [];
+  },
+};
 </script>

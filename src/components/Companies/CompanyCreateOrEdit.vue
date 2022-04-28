@@ -334,9 +334,7 @@
                       <v-text-field
                         v-mask="'###########'"
                         ref="userLimit"
-                        :placeholder="
-                          formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
-                        "
+                        :placeholder="numberOfUsersPlaceholder"
                         id="input--company-numbers-limited"
                         outlined
                         dense
@@ -344,14 +342,7 @@
                         autocomplete="off"
                         v-model.number="formData.NumberOfUsers"
                         :disabled="!formData.IsNumberOfUsersLimited || stepLock"
-                        :rules="
-                          formData.IsNumberOfUsersLimited
-                            ? [
-                                (v) => validations.required(v, 'Required'),
-                                (v) => /^\d+$/gi.test(v) || 'Invalid number'
-                              ]
-                            : [true]
-                        "
+                        :rules="numberOfUsersRules"
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
@@ -408,9 +399,7 @@
                       small-chips
                       deletable-chips
                       outlined
-                      :no-data-text="
-                        isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
-                      "
+                      :no-data-text="noCompanyGroupText"
                       placeholder="Select company groups (optional)"
                       :items="companyGroupList"
                     ></k-select>
@@ -698,6 +687,21 @@ export default {
     }
   },
   computed: {
+    noCompanyGroupText() {
+      return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
+                      
+    },
+    numberOfUsersRules() {
+      return  this.formData.IsNumberOfUsersLimited
+                            ? [
+                                (v) => this.validations.required(v, 'Required'),
+                                (v) => /^\d+$/gi.test(v) || 'Invalid number'
+                              ]
+                            : [true]
+    },
+    numberOfUsersPlaceholder() {
+      return this.formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
+    },
     isEndDateDisabled() {
       return (
         this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' ||
