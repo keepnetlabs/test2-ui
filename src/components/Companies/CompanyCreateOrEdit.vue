@@ -263,7 +263,6 @@
                           type="date"
                           format="dd.MM.yyyy"
                           :disabled="stepLock"
-                          :picker-options="datePickerOptions"
                           :rules="[(v) => !!v || 'Required']"
                         />
                       </el-form-item>
@@ -657,10 +656,7 @@ export default {
       trainingContents: [],
       smtpConfigurations: [],
       datePickerOptions: {
-        disabledDate(date) {
-          // return date < new Date() - 3600 * 1000 * 24
-          return false
-        }
+        disabledDate: this.disabledEndDates
       },
       validations: validations,
       companyGroupPayload: {
@@ -767,6 +763,14 @@ export default {
     }
   },
   methods: {
+    disabledEndDates(val) {
+      let selectedStartDate = new Date()
+      if (this.formData.LicenseStartDate) {
+        const [day, month, year] = this.formData.LicenseStartDate.split(' ')[0].split('/')
+        selectedStartDate = new Date(year, month - 1, day)
+      }
+      return selectedStartDate.getTime() > val.getTime()
+    },
     handleCancel() {
       if (this.isFormDataChanged()) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
