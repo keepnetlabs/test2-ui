@@ -207,33 +207,27 @@ export default {
         apiKey: ''
       },
       enterpriseVaultDisabled: true,
-      validations,
+      validations
     }
   },
   computed: {
     siteUrlRules() {
       return this.showForm
-                  ? [
-                      (v) => validations.required(v, labels.Required),
-                      (v) => validations.urlWithPort(v, labels.InvalidURL),
-                      (v) =>
-                        validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
-                    ]
-                  : []
+        ? [
+            (v) => validations.required(v, labels.Required),
+            (v) => validations.urlWithPort(v, labels.InvalidURL),
+            (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+          ]
+        : []
     },
     apiKeyRules() {
       return this.showForm
-                  ? [
-                      (v) => validations.required(v, labels.Required),
-                      (v) => validations.startsWithSpace(v),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage(labels.ApiKey, 256)
-                        )
-                    ]
-                  : []
+        ? [
+            (v) => validations.required(v, labels.Required),
+            (v) => validations.startsWithSpace(v),
+            (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.ApiKey, 256))
+          ]
+        : []
     },
     getHintValues() {
       return this.showForm && { persistentHint: true, hint: '*Required' }

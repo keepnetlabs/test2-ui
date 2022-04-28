@@ -394,11 +394,13 @@ export default {
   }),
   computed: {
     showRequestMembersTab() {
-      return this.communityDetails &&
-              this.communityDetails.myMembershipStatusId &&
-              this.communityDetails.myMembershipStatusId == 1 &&
-              this.communityDetails.privacyStatusId &&
-              this.communityDetails.privacyStatusId === 2
+      return (
+        this.communityDetails &&
+        this.communityDetails.myMembershipStatusId &&
+        this.communityDetails.myMembershipStatusId == 1 &&
+        this.communityDetails.privacyStatusId &&
+        this.communityDetails.privacyStatusId === 2
+      )
     },
     numberOfPages() {
       return Math.ceil(this.members && this.members.length / this.itemsPerPage)

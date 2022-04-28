@@ -240,17 +240,12 @@ export default {
       validations,
       labels,
       proxyAddressRules: [
-                      (v) => validations.required(v),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          200,
-                          labels.getMaxLengthMessage('Proxy Address or IP', 200)
-                        ),
-                      (v) => validations.isProxyAddressOrIp(v)
-                    ],
-      proxyPortRules: [(v) => validations.required(v), (v) => validations.port(v)],
-
+        (v) => validations.required(v),
+        (v) =>
+          validations.maxLength(v, 200, labels.getMaxLengthMessage('Proxy Address or IP', 200)),
+        (v) => validations.isProxyAddressOrIp(v)
+      ],
+      proxyPortRules: [(v) => validations.required(v), (v) => validations.port(v)]
     }
   },
   computed: {

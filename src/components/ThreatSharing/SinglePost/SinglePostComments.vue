@@ -133,7 +133,7 @@ import { checkPermission } from '@/utils/functions'
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
-import InputEntityName from "@/components/Common/Inputs/InputEntityName"
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 export default {
   name: 'SinglePostComments',

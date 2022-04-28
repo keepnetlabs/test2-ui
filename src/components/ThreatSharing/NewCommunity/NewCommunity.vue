@@ -77,7 +77,7 @@
                 initialPlaceholder="Description"
                 :initialRules="communityDescriptionRules"
                 :required="true"
-               />
+              />
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-industry-area-autocomplete pb-0 pa-0">
@@ -210,8 +210,8 @@ import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
-import InputEntityName from "@/components/Common/Inputs/InputEntityName"
-import InputDescription from "@/components/Common/Inputs/InputDescription"
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 
 export default {
   components: {
@@ -247,19 +247,19 @@ export default {
       acceptCheckbox: false,
       isCheckboxChecked: false,
       communityNameRules: [
-                  (v) => validations.required(v, labels.Required),
-                  (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space',
-                  (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
-                  (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
-                  (v) => validations.isEntityNameSpecialCharacter(v)
+        (v) => validations.required(v, labels.Required),
+        (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space',
+        (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
+        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
+        (v) => validations.isEntityNameSpecialCharacter(v)
       ],
       communityDescriptionRules: [
-                  (v) => validations.required(v, labels.Required),
-                  (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space',
-                  (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
-                  (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
-                  (v) => validations.isDescriptionSpecialCharacter(v)
-                ],
+        (v) => validations.required(v, labels.Required),
+        (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space',
+        (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
+        (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
+        (v) => validations.isDescriptionSpecialCharacter(v)
+      ],
       checkboxRule: {
         required: (v) => {
           return v || 'You must accept terms and conditions before creating the community'
