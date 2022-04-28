@@ -144,7 +144,7 @@ export function isDescriptionSpecialCharacter(
   message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
   value = getValue(value)
-  return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
+  return /^([0-9]|[A-Z]|[-\/,&\s().öğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
 }
 
 export function isProxyAddressOrIp(

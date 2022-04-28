@@ -19,20 +19,13 @@
     <DatatableLoading class="mt-5" :loading="isWhiteLabelLoading" v-if="isWhiteLabelLoading" />
     <v-form v-show="!isWhiteLabelLoading" ref="refForm" lazy-validation>
       <form-group has-hint :title="labels.BrandName" :sub-title="labels.BrandNameSubTitle">
-        <v-text-field
+        <InputEntityName
           v-model.trim="formValues.brandName"
           id="input--whitelabeling-brand-name"
-          outlined
-          persistent-hint
-          dense
-          hint="*Required"
-          :placeholder="labels.BrandNamePlaceHolder"
-          :rules="[
-            (v) => validations.required(v, labels.Required),
-            (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-            (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand Name'))
-          ]"
-        ></v-text-field>
+          entityName="brand"
+          :initialPlaceholder="labels.BrandNamePlaceHolder"
+          :initialRules="brandRules"
+         />
       </form-group>
       <form-group has-hint :title="labels.MainDomain" :sub-title="labels.MainDomainSubTitle">
         <div class="d-flex">
@@ -299,6 +292,7 @@
 import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import labels from '@/model/constants/labels'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import KSelect from '@/components/Common/Inputs/KSelect'
@@ -318,7 +312,8 @@ export default {
     InputUrl,
     InputEmail,
     KFileUpload,
-    FormGroup
+    FormGroup,
+    InputEntityName
   },
   props: {
     PERMISSIONS: {
@@ -374,7 +369,13 @@ export default {
         (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
         (v) => validations.isDomainUrl(v),
         (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
-      ]
+      ],
+      brandRules: [
+            (v) => validations.required(v, labels.Required),
+            (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
+            (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand Name')),
+            (v) => validations.isEntityNameSpecialCharacter(v)
+          ]
     }
   },
   computed: {
