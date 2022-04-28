@@ -7,6 +7,7 @@
     dense
     :placeholder="placeholder"
     :rules="rules"
+    :disabled="disabled"
     @input="$emit('input', $event)"
   ></v-text-field>
 </template>
@@ -34,6 +35,9 @@ export default {
     },
     required: {
       default: true
+    },
+    disabled: {
+      default: false
     }
   },
   data() {

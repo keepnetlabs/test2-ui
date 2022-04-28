@@ -20,26 +20,12 @@
         <v-list-item class="px-0">
           <v-list-item-content class="pt-0">
             <label class="create-company-group__label">Company Group Name</label>
-            <v-text-field
+            <InputEntityName
               v-model.trim="groupName"
               id="input--company-group-name"
-              placeholder="Enter name"
-              dense
-              outlined
-              persistent-hint
-              hint="*Required"
-              autocomplete="off"
-              :rules="[
-                (v) => validations.required(v),
-                (v) => validations.startsWithSpace(v),
-                (v) =>
-                  validations.maxLength(
-                    v,
-                    64,
-                    labels.getMaxLengthMessage(labels.CompanyGroupNameSecondLower)
-                  )
-              ]"
-            ></v-text-field>
+              entityName="company group"
+              :initialRules="companyGroupNameRules"
+            />
           </v-list-item-content>
         </v-list-item>
         <v-list-item class="p-0">
@@ -124,10 +110,12 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import { searchTargetGroups } from '@/api/targetUsers'
 import { getSelectSearchPayload } from '@/utils/functions'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'CreateItemModal',
   components: {
-    AppDialog
+    AppDialog,
+    InputEntityName
   },
   directives: {
     'infinite-scroll': InfiniteScroll,
@@ -185,7 +173,17 @@ export default {
           ]
         }
       },
-      showLoader: false
+      showLoader: false,
+      companyGroupNameRules: [
+        (v) => this.validations.required(v),
+        (v) => this.validations.startsWithSpace(v),
+        (v) =>
+          this.validations.maxLength(
+            v,
+            64,
+            labels.getMaxLengthMessage(labels.CompanyGroupNameSecondLower)
+          )
+      ]
     }
   },
   created() {
