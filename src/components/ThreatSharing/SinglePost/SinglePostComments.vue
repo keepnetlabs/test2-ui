@@ -24,14 +24,12 @@
       v-if="!commentsLoading"
     >
       <v-form ref="refCommentForm" class="add-comment-row" onSubmit="return false;">
-        <v-text-field
+        <InputEntityName
+          v-model.trim="addCommentValue"
           :id="'single-post-comment-' + post.communityPostResourceId"
           class="comment-input"
-          placeholder="Write your comment here"
-          outlined
-          v-model.trim="addCommentValue"
-          validate-on-blur
-          :rules="[rules.required, rules.maxLength, rules.minLength]"
+          initialPlaceholder="Write your comment here"
+          :initialRules="commentRules"
         />
         <v-btn
           :id="'single-post-send-comment' + post.communityPostResourceId"
@@ -89,15 +87,13 @@
           <div class="add-comment-row w-100" v-else>
             <div class="d-flex align-center w-100">
               <div style="width: 80%;" class="d-flex">
-                <v-text-field
+                <InputEntityName
+                  v-model.trim="com.commentValue"
                   :id="'single-post-comment-' + com.resourceId"
                   class="comment-input"
-                  placeholder="Write your comment here"
-                  outlined
-                  v-model.trim="com.commentValue"
-                  validate-on-blur
-                  :rules="[rules.required]"
-                  hide-details
+                  initialPlaceholder="Write your comment here"
+                  :initialRules="commentRules"
+                  hideDetails
                 />
                 <v-btn
                   @click="updateComments(com)"
@@ -137,9 +133,16 @@ import { checkPermission } from '@/utils/functions'
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 export default {
   name: 'SinglePostComments',
+  components: {
+    AppDialog,
+    AppDialogFooter,
+    PostCardLoading,
+    InputEntityName
+  },
   props: {
     commentOpened: {
       required: false
@@ -157,22 +160,15 @@ export default {
       required: false
     }
   },
-  components: {
-    AppDialog,
-    AppDialogFooter,
-    PostCardLoading
-  },
   data() {
     return {
       addCommentValue: null,
-      rules: {
-        required: (v) => Validations.required(v),
-        maxLength: (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
-        minLength: (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
-        regex: (v) =>
-          /^[A-Za-z0-9ışŞğĞçÇöÖüÜ\/,\/.\/\-\/_\s]*$/gi.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen'
-      },
+      commentRules: [
+        (v) => Validations.required(v),
+        (v) => Validations.maxLength(v, 300, labels.getMaxLengthMessage('Comment', 300)),
+        (v) => Validations.minLength(v, 5, labels.getMinLengthMessage('Comment', 5)),
+        (v) => Validations.isEntityNameSpecialCharacter(v)
+      ],
       isPostButtonDisabled: false,
       isEditCommentButtonDisabled: false,
       getCommentDetails: false,

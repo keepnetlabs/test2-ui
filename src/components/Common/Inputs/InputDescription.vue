@@ -18,43 +18,43 @@
 </template>
 
 <script>
-import * as Validations from "@/utils/validations";
-import labels from "@/model/constants/labels";
+import * as Validations from '@/utils/validations'
+import labels from '@/model/constants/labels'
 export default {
-  name: "InputDescription",
+  name: 'InputDescription',
   props: {
     value: {
-      type: String,
+      type: String
     },
     id: {
-      type: String,
+      type: String
     },
     initialPlaceholder: {
       type: String,
-      default: "",
+      default: ''
     },
     initialRules: {
-      type: Array,
+      type: Array
     },
     entityName: {
-      type: String,
+      type: String
     },
     required: {
       type: Boolean,
-      default: false,
+      default: false
     },
     maxLength: {
       type: Number,
-      default: 2000,
+      default: 2000
     },
     disabled: {
-      default: false,
+      default: false
     },
     readonly: {
-      default: false,
+      default: false
     },
     applyRules: {
-      default: true,
+      default: true
     },
     height: {
       type: String
@@ -73,19 +73,19 @@ export default {
             this.maxLength,
             labels.getMaxLengthMessage(labels.Description, this.maxLength)
           ),
-        (v) => Validations.isDescriptionSpecialCharacter(v),
+        (v) => Validations.isDescriptionSpecialCharacter(v)
       ],
-      placeholder: "",
-      requiredProps: {},
-    };
+      placeholder: '',
+      requiredProps: {}
+    }
   },
   created() {
     if (this.required) {
-      this.requiredProps = { hint: labels.RequiredStar, persistentHint: true };
-      this.rules.unshift((v) => Validations.required(v));
+      this.requiredProps = { hint: labels.RequiredStar, persistentHint: true }
+      this.rules.unshift((v) => Validations.required(v))
     }
-    this.rules = this.applyRules ? this.initialRules || this.rules : [];
-    this.placeholder = this.initialPlaceholder || labels.EnterDescription;
-  },
-};
+    this.rules = this.applyRules ? this.initialRules || this.rules : []
+    this.placeholder = this.initialPlaceholder || labels.EnterDescription
+  }
+}
 </script>

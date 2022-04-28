@@ -187,16 +187,16 @@ export default {
       Validations,
       attachmentListKey: `${Math.random().toString().substring(0, 7)}-key`,
       subjectRules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320)),
-          (v) => Validations.isEntityNameSpecialCharacter(v)
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v),
+        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320)),
+        (v) => Validations.isEntityNameSpecialCharacter(v)
       ],
       senderNameRules: [
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40),
-          (v) => Validations.isEntityNameSpecialCharacter(v)
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v),
+        (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40),
+        (v) => Validations.isEntityNameSpecialCharacter(v)
       ]
     }
   },

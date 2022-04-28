@@ -689,15 +689,14 @@ export default {
   computed: {
     noCompanyGroupText() {
       return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
-                      
     },
     numberOfUsersRules() {
-      return  this.formData.IsNumberOfUsersLimited
-                            ? [
-                                (v) => this.validations.required(v, 'Required'),
-                                (v) => /^\d+$/gi.test(v) || 'Invalid number'
-                              ]
-                            : [true]
+      return this.formData.IsNumberOfUsersLimited
+        ? [
+            (v) => this.validations.required(v, 'Required'),
+            (v) => /^\d+$/gi.test(v) || 'Invalid number'
+          ]
+        : [true]
     },
     numberOfUsersPlaceholder() {
       return this.formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'

@@ -191,77 +191,48 @@ export default {
     },
     recipientEamilRules() {
       return this.showForm
-                ? this.formValues.isSendInformationEmail
-                  ? [
-                      (v) => validations.mail(v, labels.InvalidEmailAddress),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          320,
-                          labels.getMaxLengthMessage(labels.Email, 320)
-                        ),
-                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : [
-                      (v) => validations.mail(v, labels.InvalidEmailAddress),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          320,
-                          labels.getMaxLengthMessage(labels.Email, 320)
-                        ),
-                      (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
-                    ]
-                : []
-            
+        ? this.formValues.isSendInformationEmail
+          ? [
+              (v) => validations.mail(v, labels.InvalidEmailAddress),
+              (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+              (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress),
+              (v) => validations.required(v, labels.Required)
+            ]
+          : [
+              (v) => validations.mail(v, labels.InvalidEmailAddress),
+              (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+              (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
+            ]
+        : []
     },
     ccEmailRules() {
-      return  this.showForm
-                ? [
-                    (v) =>
-                      validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
-                    (v) => validations.mail(v, labels.InvalidEmailAddress),
-                    (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
-                  ]
-                : []
-            
+      return this.showForm
+        ? [
+            (v) => validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Email, 320)),
+            (v) => validations.mail(v, labels.InvalidEmailAddress),
+            (v) => validations.controlEmailLength(v, labels.InvalidEmailAddress)
+          ]
+        : []
     },
     emailSubjectRules() {
       return this.showForm
-                ? this.formValues.isSendInformationEmail
-                  ? [
-                      (v) =>
-                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
-                      (v) => validations.required(v, labels.Required)
-                    ]
-                  : [
-                      (v) =>
-                        validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject'))
-                    ]
-                : []
+        ? this.formValues.isSendInformationEmail
+          ? [
+              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject')),
+              (v) => validations.required(v, labels.Required)
+            ]
+          : [(v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Email subject'))]
+        : []
     },
     emailMessageRules() {
-       return this.showForm
-                ? this.formValues.isSendInformationEmail
-                  ? [
-                      (v) =>
-                        this.validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Message', 256)
-                        ),
-                      (v) => this.validations.required(v, labels.Required)
-                    ]
-                  : [
-                      (v) =>
-                        this.validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage('Message', 256)
-                        )
-                    ]
-                : []
+      return this.showForm
+        ? this.formValues.isSendInformationEmail
+          ? [
+              (v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Message', 256)),
+              (v) => this.validations.required(v, labels.Required)
+            ]
+          : [(v) => this.validations.maxLength(v, 256, labels.getMaxLengthMessage('Message', 256))]
+        : []
     }
   },
   methods: {

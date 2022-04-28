@@ -37,7 +37,7 @@
             class="k-textfield mt-2"
             :readonly="!showForm"
             :applyRules="showForm"
-           />
+          />
         </v-list-item-content>
       </v-list-item>
 
@@ -52,7 +52,7 @@
             class="k-textfield mt-2"
             :readonly="!showForm"
             :applyRules="showForm"
-           />
+          />
         </v-list-item-content>
       </v-list-item>
 
@@ -96,62 +96,61 @@
             >
             <InputEntityName
               v-model.trim="formValues.msgBoxTitle"
-            initialPlaceholder="Enter a dialog box name"
-            entityName="dialog box name"
+              initialPlaceholder="Enter a dialog box name"
+              entityName="dialog box name"
               id="input--phishing-reporter-message-box-title"
               class="k-textfield"
-            :readonly="!showForm"
-            :applyRules="showForm"
-
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header">Confirm Button Label</label>
             <InputEntityName
               v-model.trim="formValues.msgBoxBtnYesText"
-            initialPlaceholder="Enter confirm button label"
-            entityName="confirm button label"
+              initialPlaceholder="Enter confirm button label"
+              entityName="confirm button label"
               id="input--phishing-reporter-message-button-yes-text"
               class="k-textfield"
-            :readonly="!showForm"
-            :applyRules="showForm"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header">No Button Label</label>
-             <InputEntityName
+            <InputEntityName
               v-model.trim="formValues.msgBoxBtnNoText"
-            initialPlaceholder="Enter a no button label"
-            entityName="no button label"
+              initialPlaceholder="Enter a no button label"
+              entityName="no button label"
               id="input--phishing-reporter-message-button-no-text"
               class="k-textfield"
-            :readonly="!showForm"
-            :applyRules="showForm"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header">Cancel Button Label</label>
             <InputEntityName
               v-model.trim="formValues.msgBoxBtnCancelText"
-            initialPlaceholder="Enter cancel button label"
-            entityName="cancel button label"
+              initialPlaceholder="Enter cancel button label"
+              entityName="cancel button label"
               id="input--phishing-reporter-message-button-cancel-text"
               class="k-textfield"
-            :readonly="!showForm"
-            :applyRules="showForm"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header">Okay Button Label</label>
             <InputEntityName
               v-model.trim="formValues.msgBoxBtnOkText"
-            initialPlaceholder="Enter okay button label"
-            entityName="okay button label"
+              initialPlaceholder="Enter okay button label"
+              entityName="okay button label"
               id="input--phishing-reporter-message-button-ok-text"
               class="k-textfield"
-            :readonly="!showForm"
-            :applyRules="showForm"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
@@ -159,16 +158,16 @@
             >
             <InputDescription
               v-model.trim="formValues.analysisThankYouMessage"
-            initialPlaceholder="Enter instant report message"
-            entityName="instant report message"
+              initialPlaceholder="Enter instant report message"
+              entityName="instant report message"
               id="input--phishing-reporter-analysis-thank-you-message"
               rows="2"
               height="80"
-            :readonly="!showForm"
-            :applyRules="showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
@@ -176,16 +175,16 @@
             >
             <InputDescription
               v-model.trim="formValues.noInternetConnectionMessage"
-            initialPlaceholder="Enter a connection error message"
-            entityName="connection error message"
+              initialPlaceholder="Enter a connection error message"
+              entityName="connection error message"
               id="input--phishing-reporter-no-internet-connection-message"
               rows="2"
               height="80"
-            :readonly="!showForm"
-            :applyRules="showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
@@ -193,16 +192,16 @@
             >
             <InputDescription
               v-model.trim="formValues.emailSendingErrorMessage"
-            initialPlaceholder="Enter sending error message"
-            entityName="sending error message"
+              initialPlaceholder="Enter sending error message"
+              entityName="sending error message"
               id="input--phishing-reporter-email-sending-error-message"
               rows="2"
               height="80"
-            :readonly="!showForm"
-            :applyRules="showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
@@ -210,16 +209,16 @@
             >
             <InputDescription
               v-model.trim="formValues.emailSelectionErrorMessage"
-            initialPlaceholder="Enter a no email selected message"
-            entityName="no email selected error message"
+              initialPlaceholder="Enter a no email selected message"
+              entityName="no email selected error message"
               id="input--phishing-reporter-email-selection-error-message"
               rows="2"
               height="80"
-            :readonly="!showForm"
-            :applyRules="showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <label class="add-in-settings__list-item-header add-in-settings__list-item-header--1"
@@ -227,16 +226,16 @@
             >
             <InputDescription
               v-model.trim="formValues.badFormatEmailMessage"
-            initialPlaceholder="Enter a bad format email message"
-            entityName="bad format email message"
+              initialPlaceholder="Enter a bad format email message"
+              entityName="bad format email message"
               id="input--phishing-reporter-bad-format-email-message"
               rows="2"
               height="80"
-            :readonly="!showForm"
-            :applyRules="showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :applyRules="showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
@@ -249,17 +248,17 @@
             ></v-checkbox>
             <InputDescription
               v-model.trim="formValues.analysisConfirmationMessage"
-            initialPlaceholder="Enter a confirmation message when reporting email"
-            entityName="confirmation message when reporting email"
+              initialPlaceholder="Enter a confirmation message when reporting email"
+              entityName="confirmation message when reporting email"
               id="input--phishing-reporter-analysis-confirmation-message-rules"
               rows="2"
               height="80"
               :disabled="!formValues.isConfirmationBeforeAnalysis"
               :initialRules="getAnalysisConfirmationMessageRules"
-            :readonly="!showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
           <div class="add-in-settings__body-item mb-4">
             <v-checkbox
@@ -272,17 +271,17 @@
             ></v-checkbox>
             <InputDescription
               v-model.trim="formValues.analysisEmailDeleteMessage"
-            initialPlaceholder="Enter a confirmation message to delete email"
-            entityName="confirmation message to delete email"
+              initialPlaceholder="Enter a confirmation message to delete email"
+              entityName="confirmation message to delete email"
               id="input--phishing-reporter-analysis-email-delete-message"
               rows="2"
               height="80"
               :disabled="!formValues.isDeleteEmailBeforeAnalysis"
               :initialRules="getAnalysisConfirmationMessageRules"
-            :readonly="!showForm"
-            :maxLength="256"
-            :required="true"
-           />
+              :readonly="!showForm"
+              :maxLength="256"
+              :required="true"
+            />
           </div>
         </v-list-item-content>
       </v-list-item>
@@ -301,7 +300,7 @@
             class="k-textfield mt-2"
             :readonly="!showForm"
             :applyRules="showForm"
-           />
+          />
         </v-list-item-content>
       </v-list-item>
       <phishing-settings-footer
@@ -327,8 +326,8 @@ import PhishingSettingsFooter from '@/components/PhishingReporter/PhishingSettin
 import labels from '@/model/constants/labels'
 import { scrollToComponent } from '@/utils/functions'
 import { mapGetters } from 'vuex'
-import InputEntityName from "@/components/Common/Inputs/InputEntityName"
-import InputDescription from "@/components/Common/Inputs/InputDescription"
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 export default {
   name: 'AddinSettings',
   components: {

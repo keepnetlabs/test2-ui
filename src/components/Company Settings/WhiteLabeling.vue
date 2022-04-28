@@ -25,7 +25,7 @@
           entityName="brand"
           :initialPlaceholder="labels.BrandNamePlaceHolder"
           :initialRules="brandRules"
-         />
+        />
       </form-group>
       <form-group has-hint :title="labels.MainDomain" :sub-title="labels.MainDomainSubTitle">
         <div class="d-flex">
@@ -371,11 +371,11 @@ export default {
         (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
       ],
       brandRules: [
-            (v) => validations.required(v, labels.Required),
-            (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-            (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand Name')),
-            (v) => validations.isEntityNameSpecialCharacter(v)
-          ]
+        (v) => validations.required(v, labels.Required),
+        (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
+        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Brand Name')),
+        (v) => validations.isEntityNameSpecialCharacter(v)
+      ]
     }
   },
   computed: {
