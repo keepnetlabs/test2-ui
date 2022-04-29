@@ -14,7 +14,30 @@
   >
     <template v-slot:overlay-body>
       <AppModalBodyHeader :title="getModalTitle" :sub-title="getBodySubtitle" />
-      <v-form ref="refForm" lazy-validation> </v-form>
+      <v-form ref="refForm" lazy-validation>
+        <FormGroup has-hint :title="ENUMS.URL">
+          <InputUrl
+            v-model.trim="formData.url"
+            id="input--siem-integrations-url"
+            placeholder="Enter URL"
+          />
+        </FormGroup>
+        <FormGroup :title="labels.SecretToken" has-hint>
+          <v-text-field
+            v-model.trim="formData.secretToken"
+            id="input--siem-integrations-secret-token"
+            outlined
+            dense
+            persistent-hint
+            placeholder="Enter Secret Token"
+            hint="*Required"
+            :rules="secretTokenRules"
+          ></v-text-field>
+        </FormGroup>
+        <form-group :title="labels.TestConnection" class="mt-2">
+          <TestConnection ref="testConnection" />
+        </form-group>
+      </v-form>
     </template>
   </AppModal>
 </template>
@@ -26,9 +49,12 @@ import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 
 import { scrollToComponent } from '@/utils/functions'
+import FormGroup from '@/components/SmallComponents/FormGroup'
+import InputUrl from '@/components/Common/Inputs/InputUrl'
+import TestConnection from '@/components/MailConfiguration/TestConnection'
 export default {
   name: 'SIEMIntegrationsAddOrEditModal',
-  components: { AppModalBodyHeader, AppModal },
+  components: { TestConnection, InputUrl, FormGroup, AppModalBodyHeader, AppModal },
   props: {
     status: {
       type: Boolean,
@@ -40,9 +66,21 @@ export default {
   },
   data() {
     return {
+      formData: {
+        url: '',
+        secretToken: ''
+      },
+      ENUMS: {
+        URL: labels.URL.toUpperCase()
+      },
+      secretTokenRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
+        (v) => Validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.SecretToken, 2000))
+      ],
       isActionButtonDisabled: false,
       labels,
-      Validations: Validations
+      Validations
     }
   },
   computed: {

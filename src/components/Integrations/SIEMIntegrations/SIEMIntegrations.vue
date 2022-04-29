@@ -6,6 +6,8 @@
       :item="selectedRow"
     />
     <SIEMIntegrationsAddOrEditModal
+      v-if="isShowAddOrEditModal"
+      :status="isShowAddOrEditModal"
       :selected-item="selectedRow"
       @on-close="toggleShowAddOrEditModal"
     />
@@ -27,6 +29,7 @@ export default {
   data() {
     return {
       isShowDeleteDialog: false,
+      isShowAddOrEditModal: false,
       selectedRow: null
     }
   },
