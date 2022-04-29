@@ -21,20 +21,12 @@
             sub-title="Select filters and date options to start an investigation"
           />
           <form-group title="Name" has-hint>
-            <v-text-field
-              placeholder="Enter name"
-              id="input--mail-configuration-name"
-              outlined
-              dense
+            <InputEntityName
               v-model.trim="formValues.name"
-              :rules="[
-                (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
-              ]"
-              hint="*Required"
-              persistent-hint
-              height="40"
-            ></v-text-field>
+              id="input--mail-configuration-name"
+              entityName="Configuration name"
+              initialPlaceholder="Enter configuration name"
+             />
           </form-group>
           <form-group title="Application (client) ID" has-hint>
             <v-text-field
@@ -199,20 +191,12 @@
             sub-title="Select filters and date options to start an investigation"
           />
           <form-group title="Name" has-hint>
-            <v-text-field
-              placeholder="Enter name"
-              id="input--ews-configuration-name"
-              outlined
-              dense
+            <InputEntityName
               v-model.trim="ewsFormValues.Name"
-              :rules="[
-                (v) => validations.required(v, labels.Required),
-                (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
-              ]"
-              hint="*Required"
-              persistent-hint
-              height="40"
-            ></v-text-field>
+              id="input--ews-configuration-name"
+              entityName="Configuration name"
+              initialPlaceholder="Enter configuration name"
+             />
           </form-group>
           <form-group title="Service URL" has-hint>
             <InputUrl
@@ -445,17 +429,12 @@
             </template>
           </app-modal-body-header>
           <form-group title="Name" has-hint>
-            <v-text-field
-              placeholder="Microsoft 365 Mail Configuration"
-              outlined
-              dense
+            <InputEntityName
               v-model.trim="googleWorkSpaceForm.name"
-              :rules="[(v) => validations.required(v, 'Required')]"
-              hint="*Required"
-              persistent-hint
               id="name"
-              height="40"
-            ></v-text-field>
+              entityName="Configuration name"
+              initialPlaceholder="Enter configuration name"
+             />
           </form-group>
           <form-group title="Credential JSON" has-hint>
             <v-textarea
@@ -721,6 +700,7 @@ import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { getTargetGroups } from '@/api/targetUsers'
 import TestConnectionGoogleWorkspace from '@/components/MailConfiguration/TestConnectionGoogleWorkspace'
 import {
@@ -728,6 +708,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+
 export default {
   name: 'MailConfiguration',
   components: {
@@ -741,7 +722,8 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     KSelect,
-    InputUrl
+    InputUrl,
+    InputEntityName
   },
   computed: {
     getTitle() {
