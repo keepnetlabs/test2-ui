@@ -3,7 +3,7 @@
     v-if="status"
     :status="status"
     :icon-name="'mdi-book-search'"
-    :title="status && resourceId ? 'Edit Domain' : 'Create New Domain'"
+    :title="getTitle"
     className="mail-configuration__modal"
     ref="domain__modal"
     title-id="text--create-domain-modal-title"
@@ -16,20 +16,13 @@
           sub-title="Create a phishing domain for your phishing landing pages"
         />
         <form-group title="Domain" has-hint>
-          <v-text-field
-            placeholder="yourdomain.com"
-            id="input--domain"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
-            height="40"
+          <InputEntityName
             v-model.trim="formValues.domain"
-            :rules="[
-              (v) => Validations.required(v, labels.Required),
-              (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
-            ]"
-          ></v-text-field>
+            id="input--domain"
+            entityName="domain"
+            initialPlaceholder="yourdomain.com"
+            :initialRules="domainRules"
+          />
         </form-group>
         <form-group title="DNS Service" has-hint>
           <k-select
@@ -126,20 +119,14 @@
           </div>
         </form-group>
         <form-group title="Zone ID" has-hint sub-title="Enter Cloudflare Zone ID">
-          <v-text-field
-            placeholder="Enter Zone ID"
-            id="input--domain"
-            outlined
-            dense
+          <InputEntityName
             v-model.trim="formValues.zoneId"
-            :rules="[
-              (v) => Validations.required(v, labels.Required),
-              (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.ZoneID, 64))
-            ]"
-            hint="*Required"
-            persistent-hint
-            height="40"
-          ></v-text-field>
+            placeholder="Enter Zone ID"
+            id="input--zoneId"
+            entityName="zone id"
+            initialPlaceholder="Enter Zone ID"
+            :initialRules="zoneIdRules"
+          />
         </form-group>
         <make-available-for
           ref="refMakeAvailableFor"
@@ -198,6 +185,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import * as Validations from '@/utils/validations'
 import { createDomain, getDomainEditData, updateDomain } from '@/api/domains'
 import TestConnection from '@/components/Domains/TestConnection'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 const ENUMS = {
   CNAME: '1',
@@ -211,7 +199,8 @@ export default {
     AppModalBodyHeader,
     FormGroup,
     MakeAvailableFor,
-    KSelect
+    KSelect,
+    InputEntityName
   },
   props: {
     status,
@@ -267,10 +256,21 @@ export default {
       nonEditableAvailableForRequests: [],
       labels,
       Validations,
-      saveButtonDisabled: false
+      saveButtonDisabled: false,
+      domainRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+      ],
+      zoneIdRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.ZoneID, 64))
+      ]
     }
   },
   computed: {
+    getTitle() {
+      return this.status && this.resourceId ? 'Edit Domain' : 'Create New Domain'
+    },
     isShowCustomizeDnsRecords() {
       return this.$store.state.auth.userRoleName !== 'CompanyAdmin'
     },
