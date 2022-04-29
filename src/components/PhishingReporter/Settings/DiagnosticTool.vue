@@ -54,18 +54,9 @@
                     v-model.trim="formValues.proxyAddress"
                     id="input--diagnostic-tool-proxy-address"
                     placeholder="Enter proxy address"
-                    :rules="[
-                      (v) => validations.required(v),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          200,
-                          labels.getMaxLengthMessage('Proxy Address or IP', 200)
-                        ),
-                      (v) => validations.isProxyAddressOrIp(v)
-                    ]"
+                    :rules="proxyAddressRules"
                     :readonly="!showForm"
-                  ></InputUrl>
+                  />
                   <v-text-field
                     ref="refTextField"
                     id="input--diagnostic-tool-server-port"
@@ -73,7 +64,7 @@
                     outlined
                     dense
                     :placeholder="labels.Port"
-                    :rules="[(v) => validations.required(v), (v) => validations.port(v)]"
+                    :rules="proxyPortRules"
                     :readonly="!showForm"
                     @input="onPortChange"
                   ></v-text-field>
@@ -247,7 +238,14 @@ export default {
       intervalItems: ['Daily', 'Weekly', 'Monthly'],
       dayItems: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
       validations,
-      labels
+      labels,
+      proxyAddressRules: [
+        (v) => validations.required(v),
+        (v) =>
+          validations.maxLength(v, 200, labels.getMaxLengthMessage('Proxy Address or IP', 200)),
+        (v) => validations.isProxyAddressOrIp(v)
+      ],
+      proxyPortRules: [(v) => validations.required(v), (v) => validations.port(v)]
     }
   },
   computed: {

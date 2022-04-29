@@ -27,39 +27,24 @@
           />
         </form-group>
         <form-group :title="'Proxy Address or IP'" has-hint>
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.address"
             id="input--proxy-settings-name"
-            placeholder="Enter proxy address or IP"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
+            initialPlaceholder="Enter proxy address or IP"
+            entityName="Proxy address"
+            :initialRules="proxyAddressRules"
             @input="saveDisable = true"
-            :rules="[
-              (v) => validations.required(v),
-              (v) =>
-                validations.maxLength(
-                  v,
-                  2000,
-                  labels.getMaxLengthMessage('Proxy Address or IP', 2000)
-                ),
-              (v) => validations.isProxyAddressOrIp(v)
-            ]"
-          ></v-text-field>
+          />
         </form-group>
         <form-group :title="'Port'" has-hint>
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.port"
             id="input--proxy-settings-name"
-            placeholder="Enter port"
-            outlined
-            dense
-            hint="*Required"
-            persistent-hint
+            initialPlaceholder="Enter port"
+            entityName="port"
+            :initialRules="portRules"
             @input="saveDisable = true"
-            :rules="[(v) => validations.required(v), (v) => validations.port(v)]"
-          ></v-text-field>
+          />
         </form-group>
         <form-group :title="'Authentication Method'" has-hint class-name="mb-4">
           <v-radio-group
@@ -78,16 +63,16 @@
           :has-hint="!!getUserNameAndPasswordCommonProps"
           v-if="formValues.authenticationTypeId === 1"
         >
-          <v-text-field
+          <InputEntityName
             v-bind="getUserNameAndPasswordCommonProps"
             v-model.trim="formValues.userName"
             id="input--smtp-settings-username"
-            placeholder="Enter username"
-            outlined
-            dense
-            :rules="getUserNameRules"
+            initialPlaceholder="Enter username"
+            entityName="username"
+            :initialRules="getUserNameRules"
+            :required="false"
             @input="saveDisable = true"
-          ></v-text-field>
+          />
         </form-group>
         <form-group
           title="Password"
@@ -101,8 +86,8 @@
             placeholder="Enter password"
             outlined
             dense
-            :type="showPassword ? 'text' : 'password'"
-            :append-icon="isEdit ? '' : showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
+            :type="passwordFieldType"
+            :append-icon="passwordAppendIcon"
             class="username-field input-group--focused"
             @click:append="showPassword = !showPassword"
             :rules="getPasswordRules"
@@ -211,10 +196,23 @@ export default {
       nonEditableAvailableForRequests: [],
       serviceProviderItems: [],
       validations: validations,
-      isTestMailSend: false
+      isTestMailSend: false,
+      proxyAddressRules: [
+        (v) => validations.required(v),
+        (v) =>
+          validations.maxLength(v, 2000, labels.getMaxLengthMessage('Proxy Address or IP', 2000)),
+        (v) => validations.isProxyAddressOrIp(v)
+      ],
+      portRules: [(v) => validations.required(v), (v) => validations.port(v)]
     }
   },
   computed: {
+    passwordAppendIcon() {
+      return this.isEdit ? '' : this.showPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
+    },
+    passwordFieldType() {
+      return this.showPassword ? 'text' : 'password'
+    },
     getTitle() {
       return this.isEdit && this.resourceId ? 'Edit Proxy Setting' : 'Create Proxy Setting'
     },

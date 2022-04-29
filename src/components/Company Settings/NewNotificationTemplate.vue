@@ -17,13 +17,12 @@
       <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm" lazy-validation>
         <form-group title="Template Name" has-hint>
-          <v-text-field
+          <InputEntityName
             v-model.trim="formValues.name"
             v-bind="commonRules"
             id="input--notification-template-name"
-            placeholder="Enter template name"
-            outlined
-            dense
+            initialPlaceholder="Enter template name"
+            :initialRules="commonRules.rules"
             :disabled="editItemsDisabled"
           />
         </form-group>
@@ -152,6 +151,7 @@ import productName from '@/components/GrapesJs/Newsletter/mergedTexts/productNam
 import analysisDetailUrl from '@/components/GrapesJs/Newsletter/mergedTexts/analysisDetailUrl'
 import companyLogo from '@/components/GrapesJs/Newsletter/mergedTexts/companyLogo'
 import investigationUrl from '@/components/GrapesJs/Newsletter/mergedTexts/investigationUrl'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 
 export default {
   name: 'NewNotificationTemplate',
@@ -161,7 +161,8 @@ export default {
     EmailTemplate,
     AppModal,
     AppModalBodyHeader,
-    FormGroup
+    FormGroup,
+    InputEntityName
   },
   props: {
     status: {

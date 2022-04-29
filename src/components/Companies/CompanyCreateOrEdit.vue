@@ -62,7 +62,12 @@
                 <v-list-item class="mt-6">
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.CompanyName }}</label>
-                    <InputCompany v-model.trim="formData.Name" id="input--company-name" />
+                    <InputEntityName
+                      v-model.trim="formData.Name"
+                      entityName="company"
+                      initialPlaceholder="Enter a name for the company"
+                      id="input--company-name"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -258,7 +263,6 @@
                           type="date"
                           format="dd.MM.yyyy"
                           :disabled="stepLock"
-                          :picker-options="datePickerOptions"
                           :rules="[(v) => !!v || 'Required']"
                         />
                       </el-form-item>
@@ -329,9 +333,7 @@
                       <v-text-field
                         v-mask="'###########'"
                         ref="userLimit"
-                        :placeholder="
-                          formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
-                        "
+                        :placeholder="numberOfUsersPlaceholder"
                         id="input--company-numbers-limited"
                         outlined
                         dense
@@ -339,14 +341,7 @@
                         autocomplete="off"
                         v-model.number="formData.NumberOfUsers"
                         :disabled="!formData.IsNumberOfUsersLimited || stepLock"
-                        :rules="
-                          formData.IsNumberOfUsersLimited
-                            ? [
-                                (v) => validations.required(v, 'Required'),
-                                (v) => /^\d+$/gi.test(v) || 'Invalid number'
-                              ]
-                            : [true]
-                        "
+                        :rules="numberOfUsersRules"
                         hint="*Required"
                         persistent-hint
                       ></v-text-field>
@@ -403,9 +398,7 @@
                       small-chips
                       deletable-chips
                       outlined
-                      :no-data-text="
-                        isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
-                      "
+                      :no-data-text="noCompanyGroupText"
                       placeholder="Select company groups (optional)"
                       :items="companyGroupList"
                     ></k-select>
@@ -582,7 +575,6 @@ import KFileUpload from '@/components/Common/FileUpload/FileUpload'
 import { getSelectSearchPayload, scrollToComponent } from '@/utils/functions'
 import { getLicences } from '@/api/common'
 import KSelect from '@/components/Common/Inputs/KSelect'
-import InputCompany from '@/components/Common/Inputs/InputCompany'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
 import labels from '@/model/constants/labels'
 import InputDate from '@/components/Common/Inputs/InputDate'
@@ -592,6 +584,7 @@ import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
 import InputAddress from '@/components/Common/Inputs/InputAddress'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'CompanyCreateOrEdit',
   props: {
@@ -604,10 +597,10 @@ export default {
     InputDescription,
     ConfigureNewCompanyDialog,
     KSelect,
-    InputCompany,
     InputUrl,
     KFileUpload,
-    InputDate
+    InputDate,
+    InputEntityName
   },
   directives: {
     'infinite-scroll': InfiniteScroll,
@@ -636,7 +629,7 @@ export default {
         WebsiteUrl: '',
         LicenseTypeResourceId: '',
         LicenseTypeName: '',
-        LicensePeriodTypeResourceId: '',
+        LicensePeriodTypeResourceId: 'MaR9NJslgSGW',
         LicenseStartDate: '',
         LicenseEndDate: '',
         IsNumberOfUsersLimited: true,
@@ -663,10 +656,7 @@ export default {
       trainingContents: [],
       smtpConfigurations: [],
       datePickerOptions: {
-        disabledDate(date) {
-          // return date < new Date() - 3600 * 1000 * 24
-          return false
-        }
+        disabledDate: this.disabledEndDates
       },
       validations: validations,
       companyGroupPayload: {
@@ -693,6 +683,20 @@ export default {
     }
   },
   computed: {
+    noCompanyGroupText() {
+      return this.isCompanyGroupsLoading ? 'Loading...' : 'No company group available'
+    },
+    numberOfUsersRules() {
+      return this.formData.IsNumberOfUsersLimited
+        ? [
+            (v) => this.validations.required(v, 'Required'),
+            (v) => /^\d+$/gi.test(v) || 'Invalid number'
+          ]
+        : [true]
+    },
+    numberOfUsersPlaceholder() {
+      return this.formData.IsNumberOfUsersLimited ? 'Enter number of users' : 'Unlimited'
+    },
     isEndDateDisabled() {
       return (
         this.formData.LicensePeriodTypeResourceId === 'HTHpWWXGJshG' ||
@@ -759,6 +763,15 @@ export default {
     }
   },
   methods: {
+    disabledEndDates(val) {
+      let selectedStartDate = new Date()
+      if (this.formData.LicenseStartDate) {
+        const [day, month, year] = this.formData.LicenseStartDate.split(' ')[0].split('/')
+        selectedStartDate = new Date(year, month - 1, day)
+      }
+      // Add a day and control
+      return selectedStartDate.getTime() + (1000 * 60 * 60 * 24 )> val.getTime()
+    },
     handleCancel() {
       if (this.isFormDataChanged()) {
         this.$store.dispatch('common/setIsShowLeavingDialog', {
@@ -1016,8 +1029,21 @@ export default {
     }
   },
   watch: {
-    'formData.LicenseStartDate'(newVal) {
+    'formData.LicenseStartDate'(newVal,oldVal) {
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
+      if(this.formData.LicensePeriodTypeResourceId && this.formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW') {
+        if(!newVal && oldVal) {
+          this.formData.LicenseEndDate = ''
+          return
+        }
+        if(newVal && oldVal) {
+          const newSelectedDate = newVal.split(' ')[0]
+          const oldSelectedDate = oldVal.split(' ')[0]
+          if(newSelectedDate !== oldSelectedDate){
+            this.formData.LicenseEndDate = ''
+          }
+        }
+      }
     },
     'formData.LicenseEndDate'(newVal) {
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)

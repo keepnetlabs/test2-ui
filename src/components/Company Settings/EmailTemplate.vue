@@ -18,46 +18,33 @@
           :htmlData="template"
           :key="grapeJsKey"
           :blockManagerComponents="activeBlockManagerComponents"
+          :template-type="templateType"
         />
       </template>
     </app-modal>
     <div class="email-template__item mx-4 pt-4" v-if="!onlyGrapes">
       <label>Subject</label>
-      <v-text-field
+      <InputEntityName
         id="input--notification-template-subject"
-        placeholder="Enter email subject"
-        outlined
-        dense
-        hint="*Required"
-        persistent-hint
-        :disabled="editItemsDisabled"
+        initialPlaceholder="Enter email subject"
+        entityName="email subject"
         :value="subject"
-        :rules="[
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320))
-        ]"
+        :disabled="editItemsDisabled"
+        :initialRules="subjectRules"
         @input="$emit('update:subject', $event)"
-      ></v-text-field>
+      />
     </div>
     <div v-if="!onlyGrapes" class="email-template__item mx-4">
       <label>From Name</label>
-      <v-text-field
+      <InputEntityName
         id="input--notification-template-sender-name"
-        placeholder="Enter sender name"
-        outlined
-        dense
-        hint="*Required"
-        persistent-hint
-        :disabled="editItemsDisabled"
+        initialPlaceholder="Enter sender name"
+        entityName="sender name"
         :value="fromName"
-        :rules="[
-          (v) => Validations.required(v, labels.Required),
-          (v) => Validations.startsWithSpace(v),
-          (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
-        ]"
+        :disabled="editItemsDisabled"
+        :initialRules="senderNameRules"
         @input="$emit('update:fromName', $event)"
-      ></v-text-field>
+      />
     </div>
     <div v-if="!onlyGrapes" class="email-template__item mx-4">
       <label>From Email</label>
@@ -80,6 +67,7 @@
         :is-show-file-progress="false"
         :value="attachmentFiles"
         :is-preview-visible="false"
+        :size="size"
         @inputFile="onFileChanged"
       />
       <div
@@ -160,6 +148,7 @@ import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/At
 import KEmailPreview from '@/components/KEmailPreview'
 import EmailTemplateDefault from '@/components/EmailTemplates/EmailTemplateDefault'
 import LandingPageTemplateDefault from '@/components/EmailTemplates/LandingPageTemplateDefault'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'EmailTemplate',
   components: {
@@ -170,7 +159,8 @@ export default {
     AppModal,
     InputEmail,
     KFileUpload,
-    AttachmentsPreview
+    AttachmentsPreview,
+    InputEntityName
   },
   props: [
     'fromAddress',
@@ -187,7 +177,8 @@ export default {
     'onlyGrapes',
     'templateType',
     'extensions',
-    'fileUploadHint'
+    'fileUploadHint',
+    'size'
   ],
   data() {
     return {
@@ -196,7 +187,19 @@ export default {
       showGrapesModal: false,
       grapeJsKey: `${Math.random().toString().substring(0, 7)}-key`,
       Validations,
-      attachmentListKey: `${Math.random().toString().substring(0, 7)}-key`
+      attachmentListKey: `${Math.random().toString().substring(0, 7)}-key`,
+      subjectRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v),
+        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320)),
+        (v) => Validations.isEntityNameSpecialCharacter(v)
+      ],
+      senderNameRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.startsWithSpace(v),
+        (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40),
+        (v) => Validations.isEntityNameSpecialCharacter(v)
+      ]
     }
   },
   computed: {

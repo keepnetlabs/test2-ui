@@ -75,13 +75,7 @@
         <v-tab
           @click="getRequestMembers()"
           id="threat-sharing-requests-tab-button"
-          v-if="
-            communityDetails &&
-            communityDetails.myMembershipStatusId &&
-            communityDetails.myMembershipStatusId == 1 &&
-            communityDetails.privacyStatusId &&
-            communityDetails.privacyStatusId === 2
-          "
+          v-if="showRequestMembersTab"
         >
           Requests
           <span
@@ -399,6 +393,15 @@ export default {
     memberCompId: null
   }),
   computed: {
+    showRequestMembersTab() {
+      return (
+        this.communityDetails &&
+        this.communityDetails.myMembershipStatusId &&
+        this.communityDetails.myMembershipStatusId == 1 &&
+        this.communityDetails.privacyStatusId &&
+        this.communityDetails.privacyStatusId === 2
+      )
+    },
     numberOfPages() {
       return Math.ceil(this.members && this.members.length / this.itemsPerPage)
     },

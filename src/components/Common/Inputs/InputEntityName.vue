@@ -7,8 +7,11 @@
     dense
     :placeholder="placeholder"
     :rules="rules"
+    :disabled="disabled"
+    :readonly="readonly"
+    :hide-details="hideDetails"
     @input="$emit('input', $event)"
-  ></v-text-field>
+  />
 </template>
 <script>
 import * as Validations from '@/utils/validations'
@@ -34,6 +37,18 @@ export default {
     },
     required: {
       default: true
+    },
+    disabled: {
+      default: false
+    },
+    readonly: {
+      default: false
+    },
+    applyRules: {
+      default: true
+    },
+    hideDetails: {
+      default: false
     }
   },
   data() {
@@ -58,7 +73,7 @@ export default {
 
     this.placeholder = this.initialPlaceholder || `Enter ${this.entityName} name`
 
-    this.rules = this.initialRules || this.rules
+    this.rules = this.applyRules ? this.initialRules || this.rules : []
   }
 }
 </script>

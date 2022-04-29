@@ -144,7 +144,7 @@ export function isDescriptionSpecialCharacter(
   message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
   value = getValue(value)
-  return /^([0-9]|[A-Z]|[-\/,&\s()öğüıçş]){0,2001}$/gi.test(value) || message
+  return /^([0-9]|[A-Z]|[-\/,&\s().öğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
 }
 
 export function isProxyAddressOrIp(
@@ -152,14 +152,14 @@ export function isProxyAddressOrIp(
   message = "Only use letters, numbers, dot '.' dash '-', slash '/', paranthesis '( ), comma ',' and ampersand '&'"
 ) {
   value = getValue(value)
-  return /^([0-9]|[A-Z]|[-\/,&()ö.ğüıçş]){0,2001}$/gi.test(value) || message
+  return /^([0-9]|[A-Z]|[-\/,&()ö.ğüıçşÖĞÜİÇŞ]){0,2001}$/gi.test(value) || message
 }
 
 export function isNameSpecialCharacter(
   value,
   message = `Only use letters, dash '-' and apostrophe '`
 ) {
-  return /^([A-Z]|[-'\söğüıçş]){0,40}$/gi.test(value) || message
+  return /^([A-Z]|[-'\söğüıçşÖĞÜİÇŞ]){0,40}$/gi.test(value) || message
 }
 
 export function isEntityNameSpecialCharacter(
@@ -167,7 +167,7 @@ export function isEntityNameSpecialCharacter(
   message = `Only use letters, numbers, dash '-' slash '/' comma ',' and ampersand '&'`
 ) {
   value = getValue(value)
-  return /^([A-Z]|[0-9]|[-/,:&\söğüıçş]){0,64}$/gi.test(value) || message
+  return /^([A-Z]|[0-9]|[-/,:&\söğüıçşÖĞÜİÇŞ]){0,64}$/gi.test(value) || message
 }
 
 export function isEmailSpacialCharacter(value) {

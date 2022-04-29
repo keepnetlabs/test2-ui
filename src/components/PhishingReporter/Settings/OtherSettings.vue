@@ -49,16 +49,7 @@
               class="mt-2 other-settings__list-item-container-item--1"
               id="input--phishing-reporter-api-settings"
               v-model.trim="formValues.apiUrl"
-              :rules="
-                showForm
-                  ? [
-                      (v) => validations.required(v, labels.Required),
-                      (v) => validations.urlWithPort(v, labels.InvalidURL),
-                      (v) =>
-                        validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
-                    ]
-                  : []
-              "
+              :rules="siteUrlRules"
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -73,20 +64,7 @@
               v-bind="getHintValues"
               class="mt-2 other-settings__list-item-container-item--2"
               v-model.trim="formValues.apiKey"
-              :rules="
-                showForm
-                  ? [
-                      (v) => validations.required(v, labels.Required),
-                      (v) => validations.startsWithSpace(v),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage(labels.ApiKey, 256)
-                        )
-                    ]
-                  : []
-              "
+              :rules="apiKeyRules"
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -101,20 +79,7 @@
               class="mt-n1 ml-6"
               id="input--phishing-reporter-company-id"
               v-model.trim="formValues.companyKey"
-              :rules="
-                showForm
-                  ? [
-                      (v) => validations.required(v, labels.Required),
-                      (v) => validations.startsWithSpace(v),
-                      (v) =>
-                        validations.maxLength(
-                          v,
-                          256,
-                          labels.getMaxLengthMessage(labels.CompanyId, 256)
-                        )
-                    ]
-                  : []
-              "
+              :rules="apiKeyRules"
               height="40"
               :readonly="!showForm"
             ></v-text-field>
@@ -246,6 +211,24 @@ export default {
     }
   },
   computed: {
+    siteUrlRules() {
+      return this.showForm
+        ? [
+            (v) => validations.required(v, labels.Required),
+            (v) => validations.urlWithPort(v, labels.InvalidURL),
+            (v) => validations.maxLength(v, 2000, labels.getMaxLengthMessage(labels.URL, 2000))
+          ]
+        : []
+    },
+    apiKeyRules() {
+      return this.showForm
+        ? [
+            (v) => validations.required(v, labels.Required),
+            (v) => validations.startsWithSpace(v),
+            (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.ApiKey, 256))
+          ]
+        : []
+    },
     getHintValues() {
       return this.showForm && { persistentHint: true, hint: '*Required' }
     },

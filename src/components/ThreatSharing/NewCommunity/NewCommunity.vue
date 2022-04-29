@@ -50,21 +50,14 @@
               <label id="label--threat-sharing-new-community-name" class="pb-3 edit-labels"
                 >Community Name</label
               >
-              <v-text-field
+              <InputEntityName
                 v-model.trim="name"
                 id="input--threat-sharing-community-name"
-                :rules="[
-                  nameRules.required,
-                  nameRules.empty,
-                  nameRules.minLength,
-                  nameRules.maxLength
-                ]"
                 class="edit-name-textfield"
-                outlined
-                placeholder="Community Name"
-                required
-              >
-              </v-text-field>
+                entityName="community name"
+                initialPlaceholder="Community Name"
+                :initialRules="communityNameRules"
+              />
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-descrition-area pa-0">
@@ -77,22 +70,14 @@
                 class="edit-sub-labels"
                 >Describe the community’s goals and rules. (Max. 300 characters)</label
               >
-              <v-textarea
+              <InputDescription
                 v-model.trim="description"
                 id="input--threat-sharing-community-description"
-                :rules="[
-                  descriptionRules.required,
-                  descriptionRules.empty,
-                  descriptionRules.minLength,
-                  descriptionRules.maxLength
-                ]"
                 class="edit-description"
-                name="description"
-                no-resize
-                outlined
-                placeholder="Description"
-                required
-              ></v-textarea>
+                initialPlaceholder="Description"
+                :initialRules="communityDescriptionRules"
+                :required="true"
+              />
             </v-list-item-content>
           </v-list-item>
           <v-list-item class="edit-industry-area-autocomplete pb-0 pa-0">
@@ -225,11 +210,15 @@ import { scrollToComponent, isDifferent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as validations from '@/utils/validations'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 
 export default {
   components: {
     KSelect,
-    AppDialog
+    AppDialog,
+    InputEntityName,
+    InputDescription
   },
   props: {
     resourceId: {
@@ -257,25 +246,20 @@ export default {
       privacystatusid: '1',
       acceptCheckbox: false,
       isCheckboxChecked: false,
-      nameRules: {
-        required: (v) => validations.required(v, labels.Required),
-        minLength: (v) =>
-          validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
-        maxLength: (v) =>
-          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
-        regex: (v) =>
-          /^[a-z\d\-_\s]+$/i.test(v) ||
-          'Only use letters, digits, period, comma, underline and hyphen',
-        empty: (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space'
-      },
-      descriptionRules: {
-        required: (v) => validations.required(v, labels.Required),
-        minLength: (v) =>
-          validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
-        maxLength: (v) =>
-          validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
-        empty: (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space'
-      },
+      communityNameRules: [
+        (v) => validations.required(v, labels.Required),
+        (v) => (v && !v.startsWith(' ')) || 'Community Name cannot start with space',
+        (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.CommunityName, 5)),
+        (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.CommunityName, 64)),
+        (v) => validations.isEntityNameSpecialCharacter(v)
+      ],
+      communityDescriptionRules: [
+        (v) => validations.required(v, labels.Required),
+        (v) => (v && !v.startsWith(' ')) || 'Description cannot start with space',
+        (v) => validations.minLength(v, 5, labels.getMinLengthMessage(labels.Description, 5)),
+        (v) => validations.maxLength(v, 300, labels.getMaxLengthMessage(labels.Description, 300)),
+        (v) => validations.isDescriptionSpecialCharacter(v)
+      ],
       checkboxRule: {
         required: (v) => {
           return v || 'You must accept terms and conditions before creating the community'

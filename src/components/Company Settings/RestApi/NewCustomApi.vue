@@ -42,17 +42,15 @@
           has-hint
         >
           <div class="copy-to-clipboard__container">
-            <v-text-field
-              :placeholder="labels.GeneratedClientId"
-              id="input--rest-api-generated-client-id"
-              outlined
-              dense
-              hint="*Required"
-              persistent-hint
-              class="auth-key__textfield"
-              :disabled="true"
+            <InputEntityName
               v-model.trim="formValues.clientId"
-            ></v-text-field>
+              id="input--rest-api-generated-client-id"
+              class="auth-key__textfield"
+              entityName="Client Id"
+              :disabled="true"
+              :initialPlaceholder="labels.GeneratedClientId"
+              :initialRules="[]"
+            />
             <v-btn
               v-if="formValues.clientId"
               id="input--rest-api-client-id"
@@ -77,17 +75,15 @@
           has-hint
         >
           <div class="copy-to-clipboard__container">
-            <v-text-field
+            <InputEntityName
               v-model.trim="formValues.clientSecret"
               id="input--rest-api-client-secret"
-              :placeholder="labels.GeneratedClientSecret"
-              outlined
-              dense
-              hint="*Required"
-              persistent-hint
               class="auth-key__textfield"
+              entityName="Client Secret"
               :disabled="true"
-            ></v-text-field>
+              :initialPlaceholder="labels.GeneratedClientSecret"
+              :initialRules="[]"
+            />
             <v-btn
               v-if="isShowGenerateCredentialsBtn && formValues.clientSecret"
               text
