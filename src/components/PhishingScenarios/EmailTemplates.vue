@@ -25,17 +25,19 @@
       @changeStatus="onCloseRenameAttachmentModal"
     >
       <template v-slot:app-dialog-body>
-        <v-text-field
-          v-model.trim="attachmentName"
-          v-bind="commonRules"
-          id="input--new-email-templates-template-name"
-          placeholder="Enter a name"
-          hint="*Required"
-          required
-          outlined
-          dense
-          persistent-hint
-        />
+        <v-form ref="refAttachmentNameForm">
+          <v-text-field
+            v-model.trim="attachmentName"
+            v-bind="commonRules"
+            id="input--new-email-templates-template-name"
+            placeholder="Enter a name"
+            hint="*Required"
+            required
+            outlined
+            dense
+            persistent-hint
+          />
+        </v-form>
       </template>
       <template v-slot:app-dialog-footer>
         <AppDialogFooter
@@ -472,31 +474,33 @@ export default {
       this.isRenameAttachmentModalVisible = false
     },
     onConfirmRenameAttachment() {
-      if (this.$refs.newEmailTemplate) {
-        let fileExtension = ''
-        const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
-        if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
-          fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
-            '.'
-          )[1]
-          const file = { ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0] }
-          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-            new File([file], `${this.attachmentName}.${fileExtension}`, { type })
-          ]
-        } else {
-          fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].fileName.split(
-            '.'
-          )[1]
-          this.$refs.newEmailTemplate.formValues.attachmentFiles = [
-            {
-              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
-              fileName: `${this.attachmentName}.${fileExtension}`
-            }
-          ]
+      if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
+        if (this.$refs.newEmailTemplate) {
+          let fileExtension = ''
+          const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
+          if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
+            fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
+              '.'
+            )[1]
+            const file = { ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0] }
+            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+              new File([file], `${this.attachmentName}.${fileExtension}`, { type })
+            ]
+          } else {
+            fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].fileName.split(
+              '.'
+            )[1]
+            this.$refs.newEmailTemplate.formValues.attachmentFiles = [
+              {
+                ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
+                fileName: `${this.attachmentName}.${fileExtension}`
+              }
+            ]
+          }
+          this.$refs.newEmailTemplate.isPhishingFileModified = true
         }
-        this.$refs.newEmailTemplate.isPhishingFileModified = true
+        this.onCloseRenameAttachmentModal()
       }
-      this.onCloseRenameAttachmentModal()
     },
     callForLanguages() {
       const languageColumnIndex = this.tableOptions.columns.findIndex(

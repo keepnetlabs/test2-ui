@@ -67,6 +67,7 @@
         :is-show-file-progress="false"
         :value="attachmentFiles"
         :is-preview-visible="false"
+        :size="size"
         @inputFile="onFileChanged"
       />
       <div
@@ -176,7 +177,8 @@ export default {
     'onlyGrapes',
     'templateType',
     'extensions',
-    'fileUploadHint'
+    'fileUploadHint',
+    'size'
   ],
   data() {
     return {
