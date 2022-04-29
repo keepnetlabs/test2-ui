@@ -71,7 +71,7 @@
               id="input--integration-name"
               entityName="integration name"
               initialPlaceholder="Enter integration name"
-             />
+            />
           </form-group>
           <form-group title="Description">
             <InputDescription
@@ -81,7 +81,7 @@
               rows="2"
               height="80"
               :maxLength="300"
-             />
+            />
           </form-group>
           <form-group title="Integration Type" has-hint>
             <k-select
@@ -955,8 +955,8 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
-import InputEntityName from "@/components/Common/Inputs/InputEntityName"
-import InputDescription from "@/components/Common/Inputs/InputDescription"
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 export default {
   name: 'NewIntegration',
   components: {

@@ -46,7 +46,7 @@
                       id="input--playbook-rule-name"
                       initialPlaceholder="Enter rule name"
                       :entityName="labels.RuleName"
-                     />
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item class="margin-top">
@@ -252,12 +252,19 @@ import { scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import { isDifferent } from '@/utils/functions'
-import InputEntityName from "@/components/Common/Inputs/InputEntityName"
-import InputDescription from "@/components/Common/Inputs/InputDescription"
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 
 export default {
   name: 'CreateOrEditRule',
-  components: { KSelect, ActionItem, VueQueryBuilder, QueryBuilderGroup,InputEntityName,InputDescription },
+  components: {
+    KSelect,
+    ActionItem,
+    VueQueryBuilder,
+    QueryBuilderGroup,
+    InputEntityName,
+    InputDescription
+  },
   props: {
     playbookId: {
       type: String,

@@ -26,7 +26,7 @@
               id="input--mail-configuration-name"
               entityName="Configuration name"
               initialPlaceholder="Enter configuration name"
-             />
+            />
           </form-group>
           <form-group title="Application (client) ID" has-hint>
             <v-text-field
@@ -196,7 +196,7 @@
               id="input--ews-configuration-name"
               entityName="Configuration name"
               initialPlaceholder="Enter configuration name"
-             />
+            />
           </form-group>
           <form-group title="Service URL" has-hint>
             <InputUrl
@@ -434,7 +434,7 @@
               id="name"
               entityName="Configuration name"
               initialPlaceholder="Enter configuration name"
-             />
+            />
           </form-group>
           <form-group title="Credential JSON" has-hint>
             <v-textarea
