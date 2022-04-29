@@ -47,39 +47,24 @@
 
               <v-form ref="refFormStep1" lazy-validation>
                 <form-group title="Scenario Name" has-hint class-name="mt-8">
-                  <v-text-field
+                  <InputEntityName
                     v-model.trim="formValues.name"
-                    v-bind="commonRules"
                     id="input--new-phishing-scenarios-template-name"
-                    placeholder="Enter a name"
-                    hint="*Required"
-                    required
-                    outlined
-                    dense
-                    persistent-hint
+                    entityName="scenario name"
+                    initialPlaceholder="Enter a name"
                     :disabled="editItemsDisabled"
                   />
                 </form-group>
                 <form-group title="Description" sub-title="Describe the template briefly">
-                  <v-textarea
+                  <InputDescription
                     v-model.trim="formValues.description"
                     id="input--new-phishing-scenarios-description"
-                    outlined
-                    dense
+                    entityName="description"
+                    initialPlaceholder="Enter description"
                     rows="2"
-                    no-resize
-                    placeholder="Description"
                     height="100"
-                    :rules="[
-                      (v) =>
-                        Validations.maxLength(
-                          v,
-                          300,
-                          labels.getMaxLengthMessage(labels.Description, 300)
-                        )
-                    ]"
-                    persistent-hint
-                  ></v-textarea>
+                    :maxLength="300"
+                  />
                 </form-group>
                 <form-group
                   has-hint
@@ -296,19 +281,7 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            :color="
-                              difficulties.find(
-                                (item) =>
-                                  item.value === summaryData.emailTemplate.difficultyResourceId
-                              ).text === 'Easy'
-                                ? '#217124'
-                                : difficulties.find(
-                                    (item) =>
-                                      item.value === summaryData.emailTemplate.difficultyResourceId
-                                  ).text === 'Medium'
-                                ? '#2196F3'
-                                : '#F56C6C'
-                            "
+                            :color="getEmailDifficultyChipColor"
                             v-if="!!summaryData"
                           >
                             {{
@@ -456,21 +429,7 @@
                               font-weight: 600;
                               font-size: 12px;
                             "
-                            :color="
-                              scenarioDetailsLookup.difficultyTypes.find(
-                                (item) =>
-                                  item.value ===
-                                  summaryData.landingPageTemplate.difficultyTypeId.toString()
-                              ).text === 'Easy'
-                                ? '#217124'
-                                : scenarioDetailsLookup.difficultyTypes.find(
-                                    (item) =>
-                                      item.value ===
-                                      summaryData.landingPageTemplate.difficultyTypeId.toString()
-                                  ).text === 'Medium'
-                                ? '#2196F3'
-                                : '#F56C6C'
-                            "
+                            :color="getLandingPageDifficultyColor"
                             v-if="!!summaryData"
                           >
                             {{
@@ -597,6 +556,8 @@ import KEmailPreview from '@/components/KEmailPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 
 export default {
   name: 'NewScenarios',
@@ -608,7 +569,9 @@ export default {
     EmailTemplateListPreview,
     LandingPageListPreview,
     InputSelectLanguage,
-    InputTag
+    InputTag,
+    InputEntityName,
+    InputDescription
   },
   data() {
     return {
@@ -811,6 +774,29 @@ export default {
   },
 
   computed: {
+    getEmailDifficultyChipColor() {
+      return this.difficulties.find(
+        (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
+      )?.text === 'Easy'
+        ? '#217124'
+        : this.difficulties.find(
+            (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
+          )?.text === 'Medium'
+        ? '#2196F3'
+        : '#F56C6C'
+    },
+    getLandingPageDifficultyColor() {
+      return this.scenarioDetailsLookup.difficultyTypes.find(
+        (item) => item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
+      )?.text === 'Easy'
+        ? '#217124'
+        : this.scenarioDetailsLookup.difficultyTypes.find(
+            (item) =>
+              item.value === this.summaryData.landingPageTemplate.difficultyTypeId.toString()
+          )?.text === 'Medium'
+        ? '#2196F3'
+        : '#F56C6C'
+    },
     isRenderMakeAvailableFor() {
       return !this.editItemsDisabled
     },

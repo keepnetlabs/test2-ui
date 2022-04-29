@@ -3,9 +3,7 @@
     v-if="status"
     :status="status"
     :icon-name="'mdi-book-search'"
-    :title="
-      status && resourceId ? 'Edit DNS Provider Integration' : 'Create New DNS Provider Integration'
-    "
+    :title="getTitle"
     className="mail-configuration__modal"
     ref="mail-configuration__modal"
     title-id="text--create-dns-mail-configuration-modal-title"
@@ -18,20 +16,12 @@
           sub-title="Create a DNS provider integration for phishing domains"
         />
         <form-group title="DNS Name" has-hint>
-          <v-text-field
-            placeholder="Enter DNS name"
-            id="input--dns-name"
-            outlined
-            dense
+          <InputEntityName
             v-model.trim="formValues.dnsServiceProviderName"
-            :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
-            ]"
-            hint="*Required"
-            persistent-hint
-            height="40"
-          ></v-text-field>
+            id="input--dns-name"
+            entityName="dns name"
+            initialPlaceholder="Enter DNS name"
+          />
         </form-group>
         <form-group title="Service Type" has-hint>
           <k-select
@@ -59,19 +49,13 @@
           />
         </form-group>
         <form-group title="API Key" has-hint>
-          <v-text-field
-            placeholder="Enter API Key from your provider"
-            outlined
-            class="new-client__textfield new-client__api-key__textfield"
+          <InputEntityName
             v-model="formValues.password"
-            required
-            persistent-hint
-            height="40"
-            hint="*Required"
-            :rules="[
-              (v) => validations.required(v, labels.Required),
-              (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
-            ]"
+            id="input--password"
+            entityName="api key"
+            class="new-client__textfield new-client__api-key__textfield"
+            initialPlaceholder="Enter API Key from your provider"
+            :initialRules="apiKeyRules"
           />
         </form-group>
         <make-available-for
@@ -131,6 +115,7 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import { createDnsServiceList, getDnsService, updateDnsServiceList } from '@/api/dnsServices'
 import * as Validations from '@/utils/validations'
 import InputEmail from '@/components/Common/Inputs/InputEmail'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 export default {
   name: 'NewEditDnsService',
   components: {
@@ -140,7 +125,8 @@ export default {
     FormGroup,
     MakeAvailableFor,
     KSelect,
-    InputEmail
+    InputEmail,
+    InputEntityName
   },
   props: {
     status,
@@ -190,7 +176,18 @@ export default {
       nonEditableAvailableForRequests: [],
       labels,
       validations: Validations,
-      saveButtonDisabled: false
+      saveButtonDisabled: false,
+      apiKeyRules: [
+        (v) => Validations.required(v, labels.Required),
+        (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name, 64))
+      ]
+    }
+  },
+  computed: {
+    getTitle() {
+      return this.status && this.resourceId
+        ? 'Edit DNS Provider Integration'
+        : 'Create New DNS Provider Integration'
     }
   },
   methods: {

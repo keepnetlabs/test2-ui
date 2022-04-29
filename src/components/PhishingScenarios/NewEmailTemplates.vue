@@ -37,39 +37,23 @@
 
               <v-form ref="refFormStep1" lazy-validation>
                 <form-group title="Template Name" has-hint class-name="mt-8">
-                  <v-text-field
+                  <InputEntityName
                     v-model.trim="formValues.name"
-                    v-bind="commonRules"
                     id="input--new-email-templates-template-name"
-                    placeholder="Enter a name"
-                    hint="*Required"
-                    required
-                    outlined
-                    dense
-                    persistent-hint
+                    entityName="template name"
+                    initialPlaceholder="Enter a name"
                     :disabled="editItemsDisabled"
                   />
                 </form-group>
                 <form-group title="Description" sub-title="Describe the template briefly">
-                  <v-textarea
-                    id="input--new-email-templates-description"
-                    outlined
-                    dense
-                    rows="2"
-                    no-resize
-                    placeholder="Description"
-                    height="100"
+                  <InputDescription
                     v-model.trim="formValues.description"
-                    persistent-hint
-                    :rules="[
-                      (v) =>
-                        Validations.maxLength(
-                          v,
-                          300,
-                          labels.getMaxLengthMessage(labels.Description, 300)
-                        )
-                    ]"
-                  ></v-textarea>
+                    id="input--new-email-templates-description"
+                    initialPlaceholder="Description"
+                    rows="2"
+                    height="100"
+                    :maxLength="300"
+                  />
                 </form-group>
                 <form-group
                   title="Method"
@@ -362,6 +346,8 @@ import lastName from '@/components/GrapesJs/Newsletter/mergedTexts/lastName'
 import phishingUrl from '@/components/GrapesJs/Newsletter/mergedTexts/phishingUrl'
 import { getAvailableForListFromBackend } from '@/utils/helperFunctions'
 import InputTag from '@/components/Common/Inputs/InputTag'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 import { parseEmailOrMessageFile } from '@/api/file'
 
 export default {
@@ -373,7 +359,9 @@ export default {
     MakeAvailableFor,
     EmailTemplate,
     InputSelectLanguage,
-    InputTag
+    InputTag,
+    InputEntityName,
+    InputDescription
   },
   data() {
     return {
