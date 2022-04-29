@@ -225,6 +225,7 @@
                         :is-edit="!!isEdit"
                         :is-phishing-template="true"
                         :extensions="['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'html', 'htm']"
+                        :size="2"
                         fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 2MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
