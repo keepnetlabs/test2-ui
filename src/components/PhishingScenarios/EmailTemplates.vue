@@ -169,16 +169,49 @@
             </v-btn>
           </template>
           <v-list class="v-cart-dropdown-list el-table__action-buttons emailTemplates__row-actions">
+            <v-tooltip
+              bottom
+              :z-index="1010"
+              v-if="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
+            >
+              <template v-slot:activator="{ on: onTooltip }">
+                <div v-on="onTooltip">
+                  <v-list-item
+                    :id="`btn-status--emailTemplates-row-action-${
+                      scope.$index
+                    }-0-${Math.random().toString().substring(2)}`"
+                    class="sub-menu-el"
+                    :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
+                    @click="handleEdit(scope.row, false)"
+                  >
+                    <v-list-item-title @click="() => {}">
+                      <v-icon
+                        :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
+                        class="pr-3"
+                        >{{ 'mdi-pencil' }}</v-icon
+                      >
+                      <span>Edit</span>
+                    </v-list-item-title>
+                  </v-list-item>
+                </div>
+              </template>
+              <span>You are not authorized to edit this scenario</span>
+            </v-tooltip>
             <v-list-item
+              v-else
               :id="`btn-status--emailTemplates-row-action-${
                 scope.$index
               }-0-${Math.random().toString().substring(2)}`"
               class="sub-menu-el"
-              :disabled="tableOptions.rowActions[1].disabled"
+              :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
               @click="handleEdit(scope.row, false)"
             >
               <v-list-item-title @click="() => {}">
-                <v-icon class="pr-3">{{ 'mdi-pencil' }}</v-icon>
+                <v-icon
+                  :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
+                  class="pr-3"
+                  >{{ 'mdi-pencil' }}</v-icon
+                >
                 <span>Edit</span>
               </v-list-item-title>
             </v-list-item>
@@ -194,15 +227,47 @@
                 <span>Duplicate</span>
               </v-list-item-title>
             </v-list-item>
+            <v-tooltip
+              bottom
+              :z-index="1010"
+              v-if="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
+            >
+              <template v-slot:activator="{ on: onTooltip }">
+                <div v-on="onTooltip">
+                  <v-list-item
+                    :id="`btn-delete--emailTemplates-row-action-${
+                      scope.$index
+                    }-1-${Math.random().toString().substring(3)}`"
+                    class="sub-menu-el"
+                    :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
+                  >
+                    <v-list-item-title @click="handleActionDelete(scope.row)">
+                      <v-icon
+                        :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
+                        class="pr-3"
+                        >mdi-delete</v-icon
+                      >
+                      <span>{{ labels.Delete }}</span>
+                    </v-list-item-title>
+                  </v-list-item>
+                </div>
+              </template>
+              <span>You are not authorized to edit this scenario</span>
+            </v-tooltip>
             <v-list-item
+              v-else
               :id="`btn-delete--emailTemplates-row-action-${
                 scope.$index
               }-1-${Math.random().toString().substring(3)}`"
               class="sub-menu-el"
-              :disabled="tableOptions.rowActions[3].disabled"
+              :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
             >
               <v-list-item-title @click="handleActionDelete(scope.row)">
-                <v-icon class="pr-3">mdi-delete</v-icon>
+                <v-icon
+                  :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
+                  class="pr-3"
+                  >mdi-delete</v-icon
+                >
                 <span>{{ labels.Delete }}</span>
               </v-list-item-title>
             </v-list-item>
@@ -509,7 +574,10 @@ export default {
       if (languageColumnIndex !== -1) {
         LookupLocalStorage.getSingle(21).then((response) => {
           this.languageFilterOptions =
-            response?.map((language) => ({ text: language.name, value: language.resourceId })) || []
+            response?.map((language) => ({
+              text: language.name,
+              value: language.resourceId
+            })) || []
           this.$set(this.tableOptions.columns, languageColumnIndex, {
             ...this.tableOptions.columns[languageColumnIndex],
             filterableItems: this.languageFilterOptions

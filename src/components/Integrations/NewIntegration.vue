@@ -66,30 +66,22 @@
         />
         <v-form ref="form" lazy-validation>
           <form-group title="Integration Name" has-hint>
-            <v-text-field
-              id="input--integration-name"
+            <InputEntityName
               v-model.trim="formValues.name"
-              :rules="[nameValidation.required, nameValidation.empty, nameValidation.maxLength]"
-              dense
-              hint="*Required"
-              persistent-hint
-              outlined
-              placeholder="Enter Name"
-              required
-            ></v-text-field>
+              id="input--integration-name"
+              entityName="integration name"
+              initialPlaceholder="Enter integration name"
+            />
           </form-group>
           <form-group title="Description">
-            <v-textarea
-              id="input--integration-description"
-              rows="2"
-              no-resize
-              height="80"
+            <InputDescription
               v-model.trim="formValues.description"
-              :rules="[descriptionValidation.empty, descriptionValidation.maxLength]"
-              dense
-              outlined
-              placeholder="Enter description"
-            ></v-textarea>
+              id="input--integration-description"
+              initialPlaceholder="Enter description"
+              rows="2"
+              height="80"
+              :maxLength="300"
+            />
           </form-group>
           <form-group title="Integration Type" has-hint>
             <k-select
@@ -963,6 +955,8 @@ import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
 import AppDialog from '@/components/AppDialog'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 export default {
   name: 'NewIntegration',
   components: {
@@ -970,7 +964,9 @@ export default {
     KSelect,
     FormGroup,
     AppModal,
-    AppModalBodyHeader
+    AppModalBodyHeader,
+    InputEntityName,
+    InputDescription
   },
   props: {
     showModal: {

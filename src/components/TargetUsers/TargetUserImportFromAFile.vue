@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="target-users-people-import-from-file">
     <app-dialog
       icon="mdi-close-circle"
       :status="closeTargetUserImport"
@@ -1533,6 +1533,11 @@ export default {
 </script>
 
 <style lang="scss">
+#target-users-people-import-from-file {
+  .v-stepper__items {
+    overflow: visible;
+  }
+}
 .target-user-import-file {
   #validate-data-table {
     .selection-row {
