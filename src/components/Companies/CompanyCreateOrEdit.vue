@@ -894,7 +894,6 @@ export default {
       this.cancelForm()
     },
     handleSave() {
-      console.log('final formData', this.formData)
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
         this.saveDisable = true
         !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 9999) : null
@@ -1030,7 +1029,6 @@ export default {
       }
     },
     'formData.LicenseStartDate'(newVal, oldVal) {
-      console.log('LicenseStartDate', newVal)
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
       if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
         this.expiryPeriodChange()
@@ -1053,7 +1051,6 @@ export default {
       }
     },
     'formData.LicenseEndDate'(newVal) {
-      console.log('LicenseEndDate', newVal)
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
     },
     'formData.LicenseModuleResourceIdArray'(newVal) {
