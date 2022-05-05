@@ -770,7 +770,7 @@ export default {
         selectedStartDate = new Date(year, month - 1, day)
       }
       // Add a day and control
-      return selectedStartDate.getTime() + (1000 * 60 * 60 * 24 )> val.getTime()
+      return selectedStartDate.getTime() + 1000 * 60 * 60 * 24 > val.getTime()
     },
     handleCancel() {
       if (this.isFormDataChanged()) {
@@ -894,6 +894,7 @@ export default {
       this.cancelForm()
     },
     handleSave() {
+      console.log('final formData', this.formData)
       if (this.activeStep === this.totalStep && this.$refs.refStep4Form.validate()) {
         this.saveDisable = true
         !this.formData.IsNumberOfUsersLimited ? (this.formData.NumberOfUsers = 9999) : null
@@ -902,7 +903,7 @@ export default {
         }).name
 
         if (this.edit) {
-          updateCompany(this.selectedExtend.resourceId, this.formData)
+          updateCompany(this.selectedExtend.resourceId, { ...this.formData })
             .then(() => {
               this.saveDisable = false
               this.cancelForm()
@@ -911,7 +912,7 @@ export default {
               this.saveDisable = false
             })
         } else {
-          createCompany(this.formData)
+          createCompany({ ...this.formData })
             .then((response) => {
               const {
                 data: { data }
@@ -990,17 +991,11 @@ export default {
     },
     expiryPeriodValidation(value) {
       let validation = true
-      if (
-        value === 'MaR9NJslgSGW' &&
-        !this.formData.LicenseStartDate &&
-        !this.formData.LicenseEndDate
-      ) {
-        validation = 'Required'
-      }
 
       if (!value) {
         validation = 'Required'
       }
+
       return validation
     },
     expiryPeriodChange() {
@@ -1029,23 +1024,36 @@ export default {
     }
   },
   watch: {
-    'formData.LicenseStartDate'(newVal,oldVal) {
+    'formData.LicensePeriodTypeResourceId'(newVal, oldVal) {
+      if (oldVal && newVal === 'MaR9NJslgSGW' && this.edit) {
+        this.formData.LicenseEndDate = this.selectedExtend.licenseEndDate
+      }
+    },
+    'formData.LicenseStartDate'(newVal, oldVal) {
+      console.log('LicenseStartDate', newVal)
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
-      if(this.formData.LicensePeriodTypeResourceId && this.formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW') {
-        if(!newVal && oldVal) {
+      if (this.formData.LicensePeriodTypeResourceId !== 'MaR9NJslgSGW') {
+        this.expiryPeriodChange()
+      }
+      if (
+        this.formData.LicensePeriodTypeResourceId &&
+        this.formData.LicensePeriodTypeResourceId === 'MaR9NJslgSGW'
+      ) {
+        if (!newVal && oldVal && !this.edit) {
           this.formData.LicenseEndDate = ''
           return
         }
-        if(newVal && oldVal) {
+        if (newVal && oldVal) {
           const newSelectedDate = newVal.split(' ')[0]
           const oldSelectedDate = oldVal.split(' ')[0]
-          if(newSelectedDate !== oldSelectedDate){
+          if (newSelectedDate !== oldSelectedDate && !this.edit) {
             this.formData.LicenseEndDate = ''
           }
         }
       }
     },
     'formData.LicenseEndDate'(newVal) {
+      console.log('LicenseEndDate', newVal)
       this.expiryPeriodValidation(this.formData.LicensePeriodTypeResourceId)
     },
     'formData.LicenseModuleResourceIdArray'(newVal) {
