@@ -92,6 +92,7 @@
               prepend-inner-icon="mdi-magnify"
               ref="searchInput"
               @input="searchChangedEvent"
+              @keydown.enter="onEnterPressed($event)"
             />
             <data-table-filter-options
               v-if="showFilterOptions"
@@ -1637,6 +1638,10 @@ export default {
     window.removeEventListener('resize', this.renderFixedItems)
   },
   methods: {
+    onEnterPressed(event) {
+      event.preventDefault()
+      return
+    },
     handleClearFilters() {
       this.search = ''
       this.$emit('clear-filters')
