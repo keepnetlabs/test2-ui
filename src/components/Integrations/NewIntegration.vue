@@ -227,16 +227,16 @@
                       outlined
                       dense
                       hide-details
-                      :type="showPassword ? 'text' : 'password'"
+                      :type="showPasswords[index] ? 'text' : 'password'"
                       :append-icon="
                         integrationId
                           ? ''
-                          : showPassword
+                          : showPasswords[index]
                           ? 'mdi-eye-outline'
                           : 'mdi-eye-off-outline'
                       "
                       class="ml-2 username-field input-group--focused"
-                      @click:append="showPassword = !showPassword"
+                      @click:append="handlePasswordToggle(index)"
                     ></v-text-field>
                   </div>
                   <div
@@ -311,7 +311,7 @@
                       class="ml-2"
                       left
                       medium
-                      @click="formValues.apiKeys.splice(index, 1)"
+                      @click="handleApiKeyDelete(index)"
                       >mdi-delete
                     </v-icon>
                   </div>
@@ -979,6 +979,7 @@ export default {
   },
   data() {
     return {
+      showPasswords: [false],
       isRoksitTestingConnection: false,
       proxyTestStatusMessage: null,
       proxyTestLoadingStatus: 'initial',
@@ -1160,6 +1161,15 @@ export default {
     this.getFormOptions()
   },
   methods: {
+    handleApiKeyDelete(index) {
+      this.formValues.apiKeys.splice(index, 1)
+      if (this.showPasswords.length && this.isIbmXForce) {
+        this.showPasswords.splice(index, 1)
+      }
+    },
+    handlePasswordToggle(index) {
+      this.$set(this.showPasswords, index, !this.showPasswords[index])
+    },
     getFormOptions() {
       this.proxyLoading = true
       const promises = []
