@@ -25,6 +25,7 @@
 <script>
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { deleteSIEMIntegration } from '@/api/siemIntegrations'
 export default {
   name: 'SIEMIntegrationDeleteDialog',
   components: { AppDialogFooter, AppDialog },
@@ -34,9 +35,6 @@ export default {
     },
     item: {
       type: Object
-    },
-    isActionButtonDisabled: {
-      type: Boolean
     },
     isMultiple: {
       type: Boolean,
@@ -49,11 +47,12 @@ export default {
   },
   data() {
     return {
+      isActionButtonDisabled: false,
       isMultipleDelete: false,
       multipleDeletedUserCount: 0,
       CONSTANTS: {
         icon: 'mdi-delete',
-        title: 'Delete Integration(s)?'
+        title: 'Delete Integration?'
       }
     }
   },
@@ -74,11 +73,14 @@ export default {
       this.$emit('on-close')
     },
     handleDelete() {
-      if (this.isMultiple) {
-        this.$emit('on-multiple-delete')
-      } else {
-        this.$emit('on-delete', this.item)
-      }
+      this.isActionButtonDisabled = true
+      deleteSIEMIntegration(this.item.resourceId)
+        .then(() => {
+          this.$emit('on-delete')
+        })
+        .finally(() => {
+          this.isActionButtonDisabled = false
+        })
     }
   }
 }

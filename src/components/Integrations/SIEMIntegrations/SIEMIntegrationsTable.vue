@@ -32,7 +32,7 @@
     @clear-filters="handleClearFilters"
     @server-side-page-number-changed="serverSidePageNumberChanged"
     @server-side-size-changed="serverSideSizeChanged"
-    @handleSortChange="sortChanged"
+    @sortChangedEvent="sortChanged"
     @searchChangedEvent="handleSearchChange"
     @on-table-settings-change="handleSetRenderedColumns"
   />
@@ -51,16 +51,21 @@ import {
 import { getDefaultAxiosPayload, getDefaultFilter } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { useLoading } from '@/hooks/useLoading'
-import { exportReportedEmails } from '@/api/integrations'
 import {
   columnFilterChanged,
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { exportSIEMIntegrations, searchSIEMIntegrations } from '@/api/siemIntegrations'
 export default {
   name: 'SIEMIntegrationsTable',
   components: { DataTable },
   mixins: [useLoading],
+  props: {
+    PERMISSIONS: {
+      type: Object
+    }
+  },
   data() {
     return {
       labels,
@@ -79,11 +84,10 @@ export default {
             type: 'text',
             fixed: 'left',
             width: 240,
-            filterableType: 'text',
-            filterableCustomFieldName: 'Name'
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.ANALYSISENGINENAME,
+            property: PROPERTY_STORE.TYPENAME,
             align: 'left',
             editable: false,
             label: labels.IntegrationType,
@@ -92,23 +96,21 @@ export default {
             type: 'text',
             fixed: false,
             width: 240,
-            filterableType: 'select',
-            filterableCustomFieldName: 'analysisEngineTypeId',
-            filterableItems: []
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.DESCRIPTION,
+            property: 'apiUrl',
             align: 'left',
             editable: false,
-            label: getStoreValue(PROPERTY_STORE.DESCRIPTION),
+            label: labels.ApiURL,
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'text',
-            filterableCustomFieldName: 'Description'
+            width: 260,
+            filterableType: 'text'
           },
           {
-            property: PROPERTY_STORE.STATUS,
+            property: 'statusName',
             align: 'center',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.STATUS),
@@ -116,10 +118,9 @@ export default {
             sortable: true,
             show: true,
             type: 'status',
-            width: 150,
+            width: 170,
             hasTooltip: true,
             filterableType: 'select',
-            filterableCustomFieldName: 'Status',
             filterableItems: ['Active', { text: 'Inactive', value: 'InActive' }]
           },
           {
@@ -131,24 +132,26 @@ export default {
             sortable: true,
             show: true,
             type: 'text',
-            filterableType: 'date',
-            filterableCustomFieldName: 'createTime'
+            filterableType: 'date'
           }
         ],
         rowActions: [
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
-            action: 'handleEdit'
+            action: 'handleEdit',
+            disabled: !this?.PERMISSIONS?.UPDATE?.hasPermission
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
-            action: 'deleteAction'
+            action: 'deleteAction',
+            disabled: !this?.PERMISSIONS?.DELETE?.hasPermission
           }
         ],
         downloadButton: {
-          show: true
+          show: true,
+          disabled: !this?.PERMISSIONS?.EXPORT?.hasPermission
         },
         selectEvent: {
           clipboard: true,
@@ -160,13 +163,15 @@ export default {
           message: LABEL_STORE.NO_INTEGRATIONS,
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--siem-integrations'
+          id: 'btn-empty--siem-integrations',
+          disabled: !this?.PERMISSIONS?.CREATE?.hasPermission
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add an integration',
-          id: 'btn-add--integrations'
+          id: 'btn-add--integrations',
+          disabled: !this?.PERMISSIONS?.CREATE?.hasPermission
         }
       },
       modalStatus: false,
@@ -178,9 +183,24 @@ export default {
   created() {
     this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.SIEMIntegration))
     this.setDefaultFilter()
+    this.callForData()
   },
   methods: {
-    callForData() {},
+    callForData() {
+      this.setLoading(true)
+      searchSIEMIntegrations(this.axiosPayload)
+        .then((response) => {
+          const {
+            data: { data = [] }
+          } = response
+          const { results = [], totalNumberOfRecords, totalNumberOfPages, pageNumber } = data
+          this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+          this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+          this.serverSideProps.pageNumber = pageNumber
+          this.tableData = results
+        })
+        .finally(this.setLoading)
+    },
     toggleAddOrEditModal() {
       this.$emit('on-open-add-or-edit-modal')
     },
@@ -266,7 +286,9 @@ export default {
       }
       this.callForData()
     },
-    handleDeleteRowClick(row) {},
+    handleDeleteRowClick(row) {
+      this.$emit('on-delete', row)
+    },
     handleEdit(row) {
       this.$emit('on-open-add-or-edit-modal', row)
     },
@@ -286,11 +308,12 @@ export default {
           exportType: exportType === 'XLS' ? 'Excel' : exportType,
           filter: this.axiosPayload.filter
         }
-        exportReportedEmails(payload).then((response) => {
+
+        exportSIEMIntegrations(payload).then((response) => {
           const { data } = response
           const link = document.createElement('a')
           link.href = window.URL.createObjectURL(data)
-          link.download = `Integrations.${
+          link.download = `SIEM-Integrations.${
             exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
           }`
           link.click()

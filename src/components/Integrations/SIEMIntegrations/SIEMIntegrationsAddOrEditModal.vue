@@ -2,29 +2,53 @@
   <AppModal
     v-if="status"
     :status="status"
-    :title="getModalTitle"
-    icon-name="mdi-plus"
     :id="selectedItem ? 'edit-siem-integrations-modal' : 'new-siem-integrations-modal'"
+    :title="getModalTitle"
+    :save-disable="isActionButtonDisabled"
+    icon-name="mdi-plus"
     confirm-button-id="btn-save--siem-integrations-template-modal"
     cancel-button-id="btn-siem-integrations--notification-template-modal"
     title-id="text--siem-integrations-modal-title"
-    :saveDisable="isActionButtonDisabled"
     @closeOverlay="handleClose"
     @submit="handleSubmit"
   >
     <template v-slot:overlay-body>
       <AppModalBodyHeader :title="getModalTitle" :sub-title="getBodySubtitle" />
       <v-form ref="refForm" lazy-validation>
+        <FormGroup :title="labels.IntegrationName" has-hint>
+          <InputEntityName
+            v-model.trim="formData.name"
+            id="input--siem-integration-name"
+            entity-name="Integration"
+          />
+        </FormGroup>
+        <FormGroup :title="labels.SIEMProvider" has-hint>
+          <KSelect
+            v-model.trim="formData.typeId"
+            persistent-hint
+            dense
+            outlined
+            autocomplete="off"
+            item-value="value"
+            item-text="text"
+            no-data-text="No service type available"
+            hint="*Required"
+            custom-menu-class="menu--provider"
+            placeholder="Select SIEM type"
+            :rules="[(v) => Validations.required(v, labels.Required)]"
+            :items="providerTypes"
+          ></KSelect>
+        </FormGroup>
         <FormGroup has-hint :title="ENUMS.URL">
           <InputUrl
-            v-model.trim="formData.url"
+            v-model.trim="formData.apiUrl"
             id="input--siem-integrations-url"
             placeholder="Enter URL"
           />
         </FormGroup>
         <FormGroup :title="labels.SecretToken" has-hint>
           <v-text-field
-            v-model.trim="formData.secretToken"
+            v-model.trim="formData.token"
             id="input--siem-integrations-secret-token"
             outlined
             dense
@@ -34,9 +58,65 @@
             :rules="secretTokenRules"
           ></v-text-field>
         </FormGroup>
-        <form-group :title="labels.TestConnection" class="mt-2">
-          <TestConnection ref="testConnection" />
-        </form-group>
+        <FormGroup title="SIEM Settings">
+          <div>
+            <v-checkbox
+              v-model="formData.isForwardHistoricalAuditLog"
+              id="input--siem-integration-forward-historical-audit-log"
+              label="Forward Historical Audit Log"
+              color="#2196f3"
+              style="margin-top: 2px;"
+            ></v-checkbox>
+          </div>
+        </FormGroup>
+
+        <FormGroup
+          has-hint
+          class-name="mt-2"
+          title="Status"
+          sub-title="Activate and deactivate integration"
+        >
+          <v-switch
+            v-model.trim="formData.statusId"
+            id="input--switch-siem-integration-status"
+            class="playbook-rule-form__switch"
+            hide-details
+            color="#2196f3"
+            style="max-width: 100px;"
+            :label="formData.statusId ? 'Active' : 'Inactive'"
+          />
+        </FormGroup>
+        <FormGroup :title="labels.TestConnection" class="mt-3">
+          <v-btn
+            id="btn-test-connection--proxy-settings"
+            class="btn-util btn-save-changes"
+            rounded
+            color="white"
+            style="box-shadow: none !important;"
+            :style="
+              !getTestConnectionDisableStatus && {
+                border: '1px solid #2196f3 !important',
+                color: '#2196f3'
+              }
+            "
+            :disabled="getTestConnectionDisableStatus"
+            @click="handleTestConnection(false)"
+          >
+            <span>Test Connection</span>
+            <v-icon v-if="isTesting" class="ml-2 loading-spin" color="#2196f3" left medium
+              >mdi-rotate-left
+            </v-icon>
+          </v-btn>
+          <v-icon
+            v-if="isTested"
+            :id="`btn--siem-integration-api-key-check`"
+            class="ml-1"
+            color="#43a047"
+            left
+            medium
+            >mdi-check
+          </v-icon>
+        </FormGroup>
       </v-form>
     </template>
   </AppModal>
@@ -47,14 +127,20 @@ import AppModal from '@/components/AppModal'
 import AppModalBodyHeader from '@/components/SmallComponents/AppModalBodyHeader'
 import labels from '@/model/constants/labels'
 import * as Validations from '@/utils/validations'
-
 import { scrollToComponent } from '@/utils/functions'
 import FormGroup from '@/components/SmallComponents/FormGroup'
 import InputUrl from '@/components/Common/Inputs/InputUrl'
-import TestConnection from '@/components/MailConfiguration/TestConnection'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import KSelect from '@/components/Common/Inputs/KSelect'
+import {
+  createSIEMIntegration,
+  getSIEMIntegration,
+  testSIEMIntegration,
+  updateSIEMIntegration
+} from '@/api/siemIntegrations'
 export default {
   name: 'SIEMIntegrationsAddOrEditModal',
-  components: { TestConnection, InputUrl, FormGroup, AppModalBodyHeader, AppModal },
+  components: { KSelect, InputEntityName, InputUrl, FormGroup, AppModalBodyHeader, AppModal },
   props: {
     status: {
       type: Boolean,
@@ -66,9 +152,16 @@ export default {
   },
   data() {
     return {
+      isTesting: false,
+      isTested: false,
+      providerTypes: [{ text: 'Splunk', value: 1 }],
       formData: {
-        url: '',
-        secretToken: ''
+        name: '',
+        apiUrl: '',
+        token: '',
+        typeId: '',
+        isForwardHistoricalAuditLog: false,
+        statusId: 1
       },
       ENUMS: {
         URL: labels.URL.toUpperCase()
@@ -85,10 +178,42 @@ export default {
   },
   computed: {
     getModalTitle() {
-      return this.selectedItem ? labels.EditSEIMIntegration : labels.NewSEIMIntegartion
+      return this.selectedItem ? labels.EditSIEMIntegration : labels.NewSIEMIntegration
     },
     getBodySubtitle() {
       return labels.SIEMSettingSubtitle
+    },
+    getTestConnectionDisableStatus() {
+      return (
+        !this.formData.apiUrl ||
+        !this.formData.token ||
+        !this.formData.typeId ||
+        this.isTesting ||
+        Validations.url(this.formData.apiUrl, 'Invalid URL') === 'Invalid URL'
+      )
+    }
+  },
+  watch: {
+    formData(val, oldVal) {
+      if (
+        val.apiUrl !== oldVal.apiUrl ||
+        val.token !== oldVal.token ||
+        val.typeId !== oldVal.typeId
+      ) {
+        this.isTested = false
+      }
+    }
+  },
+  created() {
+    if (this.selectedItem) {
+      getSIEMIntegration(this.selectedItem.resourceId).then((response) => {
+        const {
+          data: { data }
+        } = response
+        Object.keys(this.formData).map((key) => {
+          this.formData[key] = data[key]
+        })
+      })
     }
   },
   methods: {
@@ -97,12 +222,60 @@ export default {
     },
     handleSubmit() {
       if (this.$refs.refForm.validate()) {
-        this.isActionButtonDisabled = true
+        if (this.isTested) this.submitForm()
+        else this.handleTestConnection(true)
       } else {
         this.$nextTick(() => {
-          scrollToComponent(this.$refs.refForm)
+          scrollToComponent(this.$refs.refForm.$el.querySelector('.error--text'))
         })
       }
+    },
+    submitForm() {
+      this.isActionButtonDisabled = true
+      if (!this.selectedItem) {
+        createSIEMIntegration(this.formData)
+          .then(() => {
+            this.$emit('on-submit')
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      } else {
+        updateSIEMIntegration(this.selectedItem.resourceId, this.formData)
+          .then(() => {
+            this.$emit('on-submit')
+          })
+          .finally(() => {
+            this.isActionButtonDisabled = false
+          })
+      }
+    },
+    handleTestConnection(isSubmitForm = false) {
+      this.isTesting = true
+      const payload = {
+        resourceId: '',
+        apiUrl: this.formData.apiUrl,
+        token: this.formData.token,
+        typeId: this.formData.typeId
+      }
+
+      if (this.selectedItem) {
+        payload.resourceId = this.selectedItem.resourceId
+      }
+      this.isActionButtonDisabled = true
+      testSIEMIntegration(payload)
+        .then(() => {
+          this.isTested = true
+          if (isSubmitForm) this.submitForm()
+          else this.isActionButtonDisabled = false
+        })
+        .catch(() => {
+          this.isTested = false
+          this.isActionButtonDisabled = false
+        })
+        .finally(() => {
+          this.isTesting = false
+        })
     }
   }
 }

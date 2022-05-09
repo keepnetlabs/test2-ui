@@ -4,14 +4,22 @@
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
       :item="selectedRow"
+      @on-close="toggleShowDeleteDialog"
+      @on-delete="handleDeleteItem"
     />
     <SIEMIntegrationsAddOrEditModal
       v-if="isShowAddOrEditModal"
       :status="isShowAddOrEditModal"
       :selected-item="selectedRow"
       @on-close="toggleShowAddOrEditModal"
+      @on-submit="handleSubmit"
     />
-    <SIEMIntegrationsTable @on-open-add-or-edit-modal="toggleShowAddOrEditModal" />
+    <SIEMIntegrationsTable
+      ref="refTable"
+      :PERMISSIONS="PERMISSIONS"
+      @on-open-add-or-edit-modal="toggleShowAddOrEditModal"
+      @on-delete="handleDeleteTableRowClick"
+    />
   </div>
 </template>
 
@@ -26,6 +34,11 @@ export default {
     SIEMIntegrationDeleteDialog,
     SIEMIntegrationsTable
   },
+  props: {
+    PERMISSIONS: {
+      type: Object
+    }
+  },
   data() {
     return {
       isShowDeleteDialog: false,
@@ -34,9 +47,30 @@ export default {
     }
   },
   methods: {
+    callForData() {
+      this.$refs.refTable.callForData()
+    },
     toggleShowAddOrEditModal(row = null) {
       this.selectedRow = row
       this.isShowAddOrEditModal = !this.isShowAddOrEditModal
+    },
+    toggleShowDeleteDialog() {
+      if (this.isShowDeleteDialog) {
+        this.selectedRow = null
+      }
+      this.isShowDeleteDialog = !this.isShowDeleteDialog
+    },
+    handleDeleteTableRowClick(row) {
+      this.selectedRow = row
+      this.toggleShowDeleteDialog()
+    },
+    handleSubmit() {
+      this.toggleShowAddOrEditModal()
+      this.callForData()
+    },
+    handleDeleteItem() {
+      this.toggleShowDeleteDialog()
+      this.callForData()
     }
   }
 }
