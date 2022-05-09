@@ -1280,7 +1280,11 @@ export default {
     },
     setExistItems() {
       setTimeout(() => {
-        return this.$refs.refMapTable.setExistItems()
+        this.$nextTick(() => {
+          if (this.$refs.refMapTable) {
+            return this.$refs.refMapTable.setExistItems()
+          }
+        })
       }, 200)
     },
     submit() {},

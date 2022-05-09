@@ -176,15 +176,17 @@ export default {
 
           this.$set(this.treeSelectOptions, 3, {
             ...this.treeSelectOptions[3],
-            children: companies.results.map((item) => {
-              return {
-                id: item['companyResourceId'],
-                label: item.companyName,
-                resourceId: item['companyResourceId'],
-                type: 'Company',
-                isDisabled: this.treeSelectionStatus
-              }
-            })
+            children: companies?.results
+              ? companies.results.map((item) => {
+                  return {
+                    id: item['companyResourceId'],
+                    label: item.companyName,
+                    resourceId: item['companyResourceId'],
+                    type: 'Company',
+                    isDisabled: this.treeSelectionStatus
+                  }
+                })
+              : []
           })
           this.$set(this.treeSelectOptions, 2, {
             ...this.treeSelectOptions[2],
