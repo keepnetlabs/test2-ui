@@ -8,6 +8,9 @@ const ENUMS = {
   SCIM: {
     ROOT_URL: 'scim'
   },
+  SIEM_INTEGRATION: {
+    ROOT_URL: 'companies/siem-settings'
+  },
   METHODS: {
     POST: 'POST',
     GET: 'GET',
@@ -285,6 +288,38 @@ export default {
       url: `${ENUMS.SCIM.ROOT_URL}/fields`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
+    }
+  },
+  SIEM_INTEGRATION: {
+    CREATE: {
+      url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   }
 }

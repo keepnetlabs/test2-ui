@@ -19,9 +19,11 @@ export function updatePhishingEmailTemplate(payload, id) {
       payload.availableForRequests[i].resourceId
     )
   }
-  const phishingFileType = payload.attachmentFiles[0].name
-    ? payload.attachmentFiles[0]?.name?.split('.')[1]
-    : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+  const phishingFileType = payload.attachmentFiles[0]
+    ? payload.attachmentFiles[0]?.name
+      ? payload.attachmentFiles[0]?.name?.split('.')[1]
+      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+    : null
   formData.append('fromAddress', payload.fromAddress)
   formData.append('fromName', payload.fromName)
   formData.append('subject', payload.subject)
@@ -59,9 +61,11 @@ export function createPhishingEmailTemplate(payload) {
     )
   }
 
-  const phishingFileType = payload.attachmentFiles[0].name
-    ? payload.attachmentFiles[0]?.name?.split('.')[1]
-    : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+  const phishingFileType = payload.attachmentFiles[0]
+    ? payload.attachmentFiles[0]?.name
+      ? payload.attachmentFiles[0]?.name?.split('.')[1]
+      : payload.attachmentFiles[0]?.fileName?.split('.')[1]
+    : null
   formData.append('fromAddress', payload.fromAddress)
   formData.append('fromName', payload.fromName)
   formData.append('subject', payload.subject)
