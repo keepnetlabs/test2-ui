@@ -1,15 +1,12 @@
 <template>
   <v-form ref="refForm">
     <FormGroup :title="labels.CampaignName" has-hint>
-      <v-text-field
+      <InputEntityName
         v-model.trim="formData.name"
         id="input--campaign-info-name"
-        placeholder="Enter a name"
-        outlined
-        dense
-        persistent-hint
-        hint="*Required"
-        :rules="rules.name"
+        entityName="campaign name"
+        initialPlaceholder="Enter a name"
+        :initialRules="rules.name"
       />
     </FormGroup>
     <FormGroup
@@ -228,6 +225,7 @@ import CampaignManagerTargetGroups from '@/components/CampaignManager/CampaignMa
 import { getScenariosList } from '@/api/scenarios'
 import CampaignManagerPhishingScenarios from '@/components/CampaignManager/CampaignManagerInfo/CampaignManagerPhishingScenarios'
 import InputDate from '@/components/Common/Inputs/InputDate'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import { mapGetters } from 'vuex'
 import CustomError from '@/components/CustomError'
 const axiosPayloadOfPhishingScenarios = {
@@ -261,7 +259,8 @@ export default {
     CampaignManagerTargetGroups,
     KSelectLoading,
     KSelect,
-    FormGroup
+    FormGroup,
+    InputEntityName
   },
   props: {
     defaultValues: {
@@ -346,7 +345,8 @@ export default {
         name: [
           (v) => validations.required(v, labels.Required),
           (v) => validations.startsWith(v, labels.CannotStartWithSpace, ' '),
-          (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName))
+          (v) => validations.maxLength(v, 256, labels.getMaxLengthMessage(labels.CampaignName)),
+          (v) => validations.isEntityNameSpecialCharacter(v)
         ],
         select: [
           (v) => !!v.length || labels.Required,
