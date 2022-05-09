@@ -93,10 +93,12 @@ const login = {
       const formData = new FormData()
       formData.append('DomainUrl', window.location.origin)
       getWhiteLabelByUrl(formData).then((response) => {
-        const {
-          data: { data }
-        } = response
-        commit('SET_LOGIN_WHITELABEL', data)
+        if (response?.data?.data) {
+          const {
+            data: { data }
+          } = response
+          commit('SET_LOGIN_WHITELABEL', data)
+        }
       })
     }
   }
