@@ -96,7 +96,7 @@
                     />
                     <p
                       class="target-user-import-file__total-excel-score"
-                      v-if="!step1Loading && excelInfo"
+                      v-if="!step1Loading && excelInfo && isValidUserFile"
                     >
                       {{
                         `This uploaded file contains ${excelInfo.rowCount} rows and ${
@@ -107,6 +107,12 @@
                             : ''
                         }`
                       }}
+                    </p>
+                    <p
+                      class="target-user-import-file__total-excel-score target-user-import-file__total-excel-score--error"
+                      v-if="formData.file && !isValidUserFile && !step1Loading"
+                    >
+                      This file does not contain enough records to continue this process.
                     </p>
                     <p class="target-user-import-file__total-excel-score" v-if="step1Loading">
                       {{ `The uploaded file is loading` }}
@@ -367,7 +373,12 @@
             rounded
             color="#2196f3"
             @click="nextStep"
-            :disabled="step1Loading || step2Loading || !(excelInfo && excelInfo.transactionId)"
+            :disabled="
+              step1Loading ||
+              step2Loading ||
+              !(excelInfo && excelInfo.transactionId) ||
+              !canAccessStepTwo
+            "
           >
             {{ labels.Next }}
           </v-btn>
@@ -540,6 +551,12 @@ export default {
         this.mappingStatus.invalidUserCount
       let number = (users * 100) / this.mappingStatus.totalRowCount
       return Math.round(number)
+    },
+    isValidUserFile() {
+      return this.excelInfo && this.excelInfo.rowCount > 0 && this.excelInfo.transactionId
+    },
+    canAccessStepTwo() {
+      return this.activeStep === 1 && this.excelInfo.rowCount > 0
     },
     canNext() {
       return this.activeStep < this.totalStep
@@ -1742,6 +1759,9 @@ export default {
     letter-spacing: normal;
     margin-top: 16px;
     color: #2196f3;
+    &--error {
+      color: #f56c6c !important;
+    }
   }
   .stepper {
     &__title {
