@@ -1014,9 +1014,7 @@ export default {
         end.setTime(start.getTime() + 3600 * 1000 * 24 * 365 * 3) // 3 year
         this.formData.LicenseStartDate = this.$moment(start).format('DD/MM/YYYY hh:mm')
         this.formData.LicenseEndDate = this.$moment(end).format('DD/MM/YYYY hh:mm')
-      } else {
-        this.formData.LicenseStartDate = ''
-      }
+      } 
     },
     editStepLock() {
       this.stepLock = false
