@@ -110,7 +110,7 @@
                     </p>
                     <p
                       class="target-user-import-file__total-excel-score target-user-import-file__total-excel-score--error"
-                      v-if="formData.file && !isValidUserFile"
+                      v-if="formData.file && !isValidUserFile && !step1Loading"
                     >
                       This file does not contain enough records to continue this process.
                     </p>
