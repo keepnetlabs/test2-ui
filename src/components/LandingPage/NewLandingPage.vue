@@ -290,7 +290,11 @@
                           label="Your link is"
                         />
                       </div>
-                      <el-tabs v-model="tab" class="landing-page-tab-content">
+                      <el-tabs
+                        v-model="tab"
+                        class="landing-page-tab-content"
+                        id="landing-page-tab-content"
+                      >
                         <el-tab-pane
                           v-for="(page, index) in formValues.landingPages"
                           :key="`page-${index + 1}`"
@@ -346,7 +350,14 @@
                         </el-tab-pane>
                         <el-tab-pane v-if="formValues.landingPages.length <= 1" name="addPage">
                           <template #label>
-                            <v-menu :min-width="128" :offset-y="true" nudge-right="5" left>
+                            <v-menu
+                              :min-width="128"
+                              :nudge-right="83"
+                              :nudge-bottom="240"
+                              id="add-page-menu"
+                              attach="#landing-page-tab-content"
+                              :z-index="10000"
+                            >
                               <template v-slot:activator="{ on: menu }">
                                 <v-btn v-on="menu" text color="#2196f3">
                                   <v-icon class="mr-2" size="18" color="#2196f3"
@@ -358,10 +369,18 @@
                                 </v-btn>
                               </template>
                               <v-list>
-                                <v-list-item style="cursor: pointer;" @click="handleAddBlankPage">
+                                <v-list-item
+                                  class="px-4"
+                                  style="cursor: pointer;"
+                                  @click="handleAddBlankPage"
+                                >
                                   <v-list-item-title>Blank page</v-list-item-title>
                                 </v-list-item>
-                                <v-list-item style="cursor: pointer;" @click="handleUploadHTML">
+                                <v-list-item
+                                  class="px-4"
+                                  style="cursor: pointer;"
+                                  @click="handleUploadHTML"
+                                >
                                   <v-list-item-title>Upload HTML</v-list-item-title>
                                 </v-list-item>
                                 <input
