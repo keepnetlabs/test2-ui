@@ -184,24 +184,6 @@
                       </transition>
                     </div>
                   </div>
-                  <!-- <div
-                    v-if="list.option === 'size'"
-                    class="filter-item__file-size-option-selectbox"
-                  >
-                    <k-select
-                      v-model.trim="list.subOption"
-                      id="input--file-size-option-selectbox"
-                      custom-menu-class="menu--investigation-duration"
-                      outlined
-                      class="input-select standard-height"
-                      item-text="label"
-                      item-value="value"
-                      placeholder="equal"
-                      minWidthType="big"
-                      :items="fileSizeOptions"
-                      :rules="[(v) => !!v || 'File size option is required']"
-                    ></k-select>
-                  </div> -->
                   <div
                     :class="{
                       'filter-item__input': list.option !== 'size',
@@ -777,14 +759,16 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject))
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Subject)),
+          (v) => Validations.isEntityNameSpecialCharacter(v)
         )
         return rules
       } else if (option === 'senderName') {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName))
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.SenderName)),
+          (v) => Validations.isEntityNameSpecialCharacter(v)
         )
         return rules
       } else if (option === 'url') {
@@ -799,7 +783,8 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword))
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Keyword)),
+          (v) => Validations.isEntityNameSpecialCharacter(v)
         )
         return rules
       } else if (option === 'size') {
@@ -814,7 +799,8 @@ export default {
         rules.push(
           (v) => Validations.startsWithSpace(v),
           (v) => Validations.required(v),
-          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name))
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.Name)),
+          (v) => Validations.isEntityNameSpecialCharacter(v)
         )
         return rules
       } else if (option === 'sha512') {

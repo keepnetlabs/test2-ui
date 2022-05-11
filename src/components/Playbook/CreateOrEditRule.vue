@@ -41,42 +41,23 @@
                 <v-list-item class="mt-6" style="margin-bottom: 17px;">
                   <v-list-item-content>
                     <label class="bottom-margin">{{ labels.RuleName }}</label>
-                    <v-text-field
-                      id="input--playbook-rule-name"
-                      placeholder="Enter rule name"
-                      outlined
-                      dense
-                      hint="*Required"
-                      persistent-hint
-                      autocomplete="off"
+                    <InputEntityName
                       v-model.trim="name"
-                      :rules="[
-                        (v) => validations.required(v, labels.Required),
-                        (v) =>
-                          validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.RuleName))
-                      ]"
-                    ></v-text-field>
+                      id="input--playbook-rule-name"
+                      initialPlaceholder="Enter rule name"
+                      :entityName="labels.RuleName"
+                    />
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item class="margin-top">
                   <v-list-item-content class="pt-0">
                     <label class="bottom-margin">{{ labels.Description }}</label>
-                    <v-textarea
-                      placeholder="Enter description"
-                      id="input--playbook-description"
-                      outlined
-                      dense
-                      no-resize
+                    <InputDescription
                       v-model.trim="description"
-                      :rules="[
-                        (v) =>
-                          validations.maxLength(
-                            v,
-                            300,
-                            labels.getMaxLengthMessage(labels.Description, 300)
-                          )
-                      ]"
-                      autocomplete="disabled"
+                      initialPlaceholder="Enter description"
+                      entityName="Description"
+                      id="input--playbook-description"
+                      :maxLength="300"
                     />
                   </v-list-item-content>
                 </v-list-item>
@@ -271,10 +252,19 @@ import { scrollToComponent } from '@/utils/functions'
 import KSelect from '@/components/Common/Inputs/KSelect'
 import labels from '@/model/constants/labels'
 import { isDifferent } from '@/utils/functions'
+import InputEntityName from '@/components/Common/Inputs/InputEntityName'
+import InputDescription from '@/components/Common/Inputs/InputDescription'
 
 export default {
   name: 'CreateOrEditRule',
-  components: { KSelect, ActionItem, VueQueryBuilder, QueryBuilderGroup },
+  components: {
+    KSelect,
+    ActionItem,
+    VueQueryBuilder,
+    QueryBuilderGroup,
+    InputEntityName,
+    InputDescription
+  },
   props: {
     playbookId: {
       type: String,
