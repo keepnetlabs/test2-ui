@@ -373,12 +373,7 @@
             rounded
             color="#2196f3"
             @click="nextStep"
-            :disabled="
-              step1Loading ||
-              step2Loading ||
-              !(excelInfo && excelInfo.transactionId) ||
-              !canAccessStepTwo
-            "
+            :disabled="isNextStepDisabled"
           >
             {{ labels.Next }}
           </v-btn>
@@ -554,6 +549,21 @@ export default {
     },
     isValidUserFile() {
       return this.excelInfo && this.excelInfo.rowCount > 0 && this.excelInfo.transactionId
+    },
+    isNextStepDisabled() {
+      if (this.step1Loading || this.step2Loading) {
+        return true
+      }
+
+      if (this.activeStep === 1 && !this.isValidUserFile) {
+        return true
+      }
+
+      if (!(this.excelInfo && this.excelInfo.transactionId)) {
+        return true
+      }
+
+      return false
     },
     canAccessStepTwo() {
       return this.activeStep === 1 && this.excelInfo.rowCount > 0
