@@ -227,7 +227,7 @@
                   imported.
                 </div>
                 <DatatableLoading :loading="step3InitialLoading" />
-                <div class="mb-10">
+                <div class="mb-16 pb-16">
                   <data-table
                     v-if="mappingStatus && showDatatable"
                     :loading="step3Loading"
