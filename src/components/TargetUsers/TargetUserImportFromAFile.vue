@@ -227,7 +227,7 @@
                   imported.
                 </div>
                 <DatatableLoading :loading="step3InitialLoading" />
-                <div class="mb-16 pb-16">
+                <div class="validate-data-table-wrapper">
                   <data-table
                     v-if="mappingStatus && showDatatable"
                     :loading="step3Loading"
@@ -1890,5 +1890,9 @@ export default {
       display: none;
     }
   }
+}
+
+.validate-data-table-wrapper {
+  margin-bottom: 200px;
 }
 </style>
