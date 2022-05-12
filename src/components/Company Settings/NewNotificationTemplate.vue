@@ -2,16 +2,16 @@
   <app-modal
     v-if="status"
     :status="status"
-    @closeOverlay="closeOverlay"
-    @submit="submit"
     :title="getModalTitle"
     icon-name="mdi-email"
     class-name="new-smtp-setting"
-    :id="selectedItem ? 'edit-notification-template-modal' : 'new-notification-template-modal'"
+    :id="getModalId"
     confirm-button-id="btn-save--notification-template-modal"
     cancel-button-id="btn-cancel--notification-template-modal"
     title-id="text--notification-template-modal-title"
     :saveDisable="saveDisable"
+    @closeOverlay="closeOverlay"
+    @submit="submit"
   >
     <template v-slot:overlay-body>
       <app-modal-body-header :title="getBodyTitle" :sub-title="getBodySubtitle" />
@@ -172,6 +172,10 @@ export default {
     selectedItem: {
       type: Object
     },
+    isDuplicate: {
+      type: Boolean,
+      default: false
+    },
     editItemsDisabled: {
       type: Boolean,
       default: false
@@ -229,17 +233,32 @@ export default {
     }
   },
   computed: {
+    getModalId() {
+      return this.selectedItem
+        ? this.isDuplicate
+          ? 'duplicate-notification-template-modal'
+          : 'edit-notification-template-modal'
+        : 'new-notification-template-modal'
+    },
     getModalTitle() {
-      return this.selectedItem ? labels.EditNotificationTemplate : labels.NewNotificationTemplate
+      return this.selectedItem
+        ? this.isDuplicate
+          ? labels.DuplicateNotificationTemplate
+          : labels.EditNotificationTemplate
+        : labels.NewNotificationTemplate
     },
     getBodyTitle() {
       return this.selectedItem
-        ? labels.EditNewNotificationTemplate
+        ? this.isDuplicate
+          ? labels.DuplicateNotificationTemplate
+          : labels.EditNotificationTemplate
         : labels.CreateNewNotificationTemplate
     },
     getBodySubtitle() {
       return this.selectedItem
-        ? labels.EditNotificationTemplateSubtitle
+        ? this.isDuplicate
+          ? labels.DuplicateNotificationTemplateSubtitle
+          : labels.EditNotificationTemplateSubtitle
         : labels.NewNotificationTemplateSubtitle
     },
     isRenderMakeAvailableFor() {
@@ -273,6 +292,9 @@ export default {
             value = response.data.data.template.replace(new RegExp(logoKey, 'g'), logoUrl)
           }
           this.formValues[key] = value
+        }
+        if (this.isDuplicate) {
+          this.formValues.name = this.formValues.name + ' - COPY'
         }
         this.initialFormValues = JSON.parse(JSON.stringify(this.formValues))
       })
@@ -492,7 +514,7 @@ export default {
           }
         }
 
-        if (this.selectedItem && this.selectedItem.resourceId) {
+        if (this.selectedItem && this.selectedItem.resourceId && !this.isDuplicate) {
           updateEmailTemplate(this.selectedItem.resourceId, payload)
             .then(() => {
               this.$emit('closeOverlayWithUpdate')

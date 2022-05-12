@@ -452,8 +452,11 @@ export const labels = {
   NewNotificationTemplateSubtitle:
     'Define notification template settings and create email template',
   EditNotificationTemplateSubtitle: 'Define notification template settings and edit email template',
+  DuplicateNotificationTemplateSubtitle:
+    'Define notification template settings and duplicate email template',
   SIEMSettingSubtitle: 'Define SIEM settings',
   EditNotificationTemplate: 'Edit Notification Template',
+  DuplicateNotificationTemplate: 'Duplicate Notification Template',
   EditSIEMIntegration: 'Edit SIEM Integration',
   NewSIEMIntegration: 'New SIEM Integration',
   NewSMTPSetting: 'New SMTP Setting',
