@@ -49,17 +49,6 @@
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
         <div class="page-nav__logo-wrapper" style="display: flex; align-items: center;">
-          <div
-            v-show="isTourActive"
-            class="tour-btn-container tour-five"
-            :class="{ z_index_custom_1: getTourData['4'] }"
-          >
-            <div class="tour-btn-wrapper">
-              <div class="tour-btn-circle">
-                <div class="tour-btn-circle-inner"></div>
-              </div>
-            </div>
-          </div>
           <offline @detected-condition="handleConnectivityChange" :ping-url="baseUrl">
             <div slot="online"></div>
             <!-- Only renders when the device is offline -->
@@ -230,23 +219,7 @@
         touchless
         class="page-nav"
       >
-        <v-overlay
-          :z-index="12"
-          :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
-        ></v-overlay>
         <v-list dense class="page-nav__content" ref="pageNavContent">
-          <div
-            v-show="isTourActive"
-            class="tour-btn-container tour-six"
-            :class="{ z_index_custom_1: getTourData['5'] }"
-          >
-            <div class="tour-btn-wrapper">
-              <div class="tour-btn-circle">
-                <div class="tour-btn-circle-inner"></div>
-              </div>
-            </div>
-          </div>
-
           <router-link
             v-if="getDashboardPermissions"
             id="btn--link-navigator-menu-dashboard"
@@ -606,55 +579,6 @@
         </div>
       </div>
       <div class="page-header__actions">
-        <v-menu
-          v-if="false"
-          offset-y
-          min-width="300"
-          max-width="300"
-          max-height="520"
-          :close-on-content-click="false"
-          transition="scale-transition"
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn icon color="white" v-on="on">
-              <div class="notification-bell">
-                <v-icon color="white">mdi-bell</v-icon>
-                <span v-if="getUnreadMessages > 0" class="manuel-badge">
-                  {{ getUnreadMessages }}
-                </span>
-              </div>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item-group>
-              <div v-if="!notificationList.length" class="no-notification">No notifications</div>
-              <template
-                v-for="(notification, index) in notificationList"
-                v-if="notificationList.length"
-              >
-                <v-list-item :key="index">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ notification.content }}</v-list-item-title>
-                    <v-list-item-subtitle
-                      >{{ getFormattedDate(notification.date) }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action v-if="notification.isSeen === false">
-                    <v-btn
-                      :key="index"
-                      v-on:click="onNotificationSeen(notification)"
-                      v-ripple="false"
-                      icon
-                    >
-                      <v-icon x-small color="#409eff">mdi-circle</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-                <v-divider v-if="index + 1 < notificationList.length" :key="index" />
-              </template>
-            </v-list-item-group>
-          </v-list>
-        </v-menu>
         <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
             <v-btn id="btn--dashboard-header-help-menu" icon color="white" v-on="on">
@@ -942,11 +866,7 @@ export default {
       getErrors: 'common/getErrors',
       getColor: 'common/getColor',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
-      getTourData: 'tour/getTourData',
-      isTourActive: 'tour/isTourActive',
-      menuList: 'dashboard/getMenuList',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
-      notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading',
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
       brandName: 'whitelabel/getBrandName',
@@ -1089,10 +1009,7 @@ export default {
     getDrawer: {
       get() {
         if (this.drawer == null) {
-          if (window.outerWidth > 768) {
-            return true
-          }
-          return false
+          return window.outerWidth > 768
         }
         return this.drawer
       },
@@ -1122,13 +1039,11 @@ export default {
         this.changeFeedbackPopup(newValue)
       }
     },
-    getUnreadMessages() {
-      return this.notificationList.filter((x) => x.isSeen == false).length
+    getUser() {
+      return this?.$store?.state?.auth?.user
     },
     getLogoImage() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.getUser) return ''
       let image =
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
@@ -1136,98 +1051,39 @@ export default {
       return image || require('../assets/img/no-logo.png')
     },
     getMainLogo() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.getUser) return ''
       let image = this.navigatorMenuProps.mainLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
     getMiniLogo() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.getUser) return ''
       let image = this.navigatorMenuProps.minimizedMenuLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
     getFirstName() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.user.firstName
-    },
-    getCompanyName() {
-      if (this.$store.state.auth.companyName == undefined) {
-        return ''
-      }
-      return (
-        this.$store.state.dashboard.selectedCompanyObject.name || this.$store.state.auth.companyName
-      )
+      return this.$store.state.auth.user.firstName || ''
     },
     getSelectedCompanyName() {
-      if (this.$store.state.auth.companyName == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.selectedCompanyName
+      return this?.$store?.state?.auth?.selectedCompanyName || ''
     },
     getRolename() {
-      if (this.$store.state.auth.userRoleName == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.userRoleName
+      return this?.$store?.state?.auth?.userRoleName || ''
     },
     getDrawerPadding2() {
       if (this.mini) {
         return 'left: 5px !important;'
       }
       return 'left : 244px !important;'
-      if (this.drawer) {
-        return 'left: 244px !important;'
-      }
-      return 'left : 262px !important;'
-    },
-    getDrawerPadding() {
-// eslint-disable-line
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-          return 'left : 278px;'
-        case 'sm':
-          return 'left : 278px;'
-        case 'md':
-          return 'left : 278px;' // 46
-        case 'lg':
-          return 'left : 232px;'
-        case 'xl':
-          return 'left : 232px;'
-        default:
-          return ''
-      }
-    },
-    isLoading: {
-      get() {
-        return this.isLoadingFromStore
-      },
-      set() {}
     }
   },
   watch: {
-    getTourData(payload) {
-      if (payload['4'] == true || payload['5'] == true) {
-        if (window.outerWidth > 778) {
-          this.getDrawer = true
-          this.getMini = false
-        } else {
-          this.getMini = false
-          this.getDrawer = true
-        }
-      }
-    },
-    openPasswordChange(newVal, oldVal) {
+    openPasswordChange(newVal) {
       if (!newVal) {
         this.showNewPassword = false
       }
     },
     $route: {
-      handler: function (to, from) {
+      handler: function (to) {
         if (to.name === 'Community') {
           this.communityName = to.params.communityName
         }
@@ -1244,7 +1100,6 @@ export default {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
         this.callForSystemSummary()
-        //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
@@ -1257,7 +1112,7 @@ export default {
       if (contentDom && !this.isEventAdded) {
         document
           .getElementsByClassName('v-navigation-drawer__content')[0]
-          .addEventListener('scroll', (event) => {
+          .addEventListener('scroll', () => {
             this.getNavigationDrawerClasses()
           })
         this.isEventAdded = true
@@ -1360,14 +1215,6 @@ export default {
       this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
       this.companyGroupName = localStorage.getItem('companyGroupName')
     },
-    onNotificationSeen(notification) {
-      notification.isSeen = true
-      this.notificationSeen(notification)
-    },
-    getFormattedDate() {
-      const date1 = new Date('2019-10-24T08:41:23.927')
-      return `${date1.toDateString().split(' ')[2]} ${date1.toDateString().split(' ')[0]}`
-    },
     handleClickRightDropdown(item = { text: '' }) {
       const { text } = item
       const domElem = document.createElement('a')
@@ -1394,12 +1241,9 @@ export default {
     ...mapActions({
       setSnackStatus: 'common/setSnackStatus',
       changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
-      setTourStatus: 'tour/setTourStatus',
       getMenus: 'dashboard/getMenus',
       logoutUser: 'dashboard/logoutUser',
-      getNotifications: 'dashboard/getNotifications',
       setSwitchDialog: 'dashboard/setSwitchDialog',
-      notificationSeen: 'dashboard/notificationSeen',
       changeSessionExpiredStatus: 'common/changeSessionExpiredStatus'
     }),
     tourSafeStarter(tourName) {
@@ -1479,17 +1323,7 @@ export default {
       }
     }
   }
-  .no-notification {
-    color: rgba(0, 0, 0, 0.54);
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding: 16px 24px;
-  }
+
   &__background {
     height: 285px;
     width: 100%;
@@ -1612,7 +1446,6 @@ export default {
       justify-content: center;
       &--mini {
         top: 92px;
-        width: 100%;
         height: 13px;
         background-color: #e6a23c;
         font-size: 9px;
@@ -1759,11 +1592,8 @@ export default {
       margin-right: -4px !important;
     }
     .v-list-group__header__append-icon {
-      margin-left: 6px !important;
       min-width: 24px !important;
-      margin-right: -4px !important;
-      margin-bottom: 0 !important;
-      margin-top: 0px !important;
+      margin: 0px -4px 0 6px !important;
     }
 
     .v-list-item__title {
@@ -1896,52 +1726,8 @@ export default {
     box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
       0 3px 14px 2px rgba(80, 80, 80, 0.12);
     background-color: white;
-    padding-left: 26px;
-    padding-right: 26px;
-    padding-top: 26px;
-    padding-bottom: 26px;
+    padding: 26px;
     overflow: auto;
-  }
-
-  .notification-content {
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 60px;
-  }
-
-  .notification-title {
-    width: 246px;
-    max-height: 60px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  .notification-light {
-    margin-top: 7px;
-    width: 8px;
-    height: 8px;
-    background-color: #409eff;
-    position: absolute;
-    right: 0;
-    top: -2px;
-    border-radius: 50%;
-  }
-
-  .notification-light-off {
-    display: none;
   }
 
   //Notification end
@@ -1981,7 +1767,7 @@ export default {
   }
 
   .v-breadcrumbs li:nth-child(even) {
-    padding: 0px 3px;
+    padding: 0 3px;
   }
 
   .user-name-dropdown-detail {
@@ -2104,7 +1890,6 @@ export default {
       display: flex;
       width: 100%;
       align-items: center;
-      display: flex;
       height: 60px;
       cursor: pointer;
     }
@@ -2115,15 +1900,12 @@ export default {
     background: white;
     padding: 8px;
     &__scroll-on {
-      box-shadow: 0px 2px 3px 0 rgb(142 142 142 / 20%);
+      box-shadow: 0 2px 3px 0 rgb(142 142 142 / 20%);
     }
   }
 
   .logo-wrapper {
-    margin-top: 56px;
-    margin-bottom: 16px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 56px auto 16px;
     width: 180px;
     height: 60px;
   }
@@ -2204,18 +1986,17 @@ export default {
 
   .divider-header {
     margin-right: 14px;
-    border-color: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.3);
     align-self: stretch;
-    border: solid;
-    border-width: 0 thin 0 0;
+    border: 0 solid rgba(255, 255, 255, 0.3);
+    border-right-width: thin;
     display: -ms-inline-flexbox;
     display: inline-flex;
     margin-top: 8px;
     min-height: 25px;
     max-height: 25px;
-    max-width: 0px;
-    width: 0px;
+    max-width: 0;
+    width: 0;
     vertical-align: text-bottom;
   }
 
@@ -2328,37 +2109,6 @@ export default {
     height: 100%;
   }
 
-  .Shape {
-    margin-top: 10px;
-    width: 24px;
-    height: 16px;
-    color: #2196f3;
-  }
-
-  .Oval-3 {
-    box-shadow: 0 2px 10px 5px rgba(33, 150, 243, 0.2);
-    background-color: #edf7fd;
-  }
-
-  .RoundedButton {
-    border-radius: 50%;
-    width: 51px;
-    height: 51px;
-  }
-
-  .btn-custom {
-    margin-left: 259px !important;
-    margin-top: -50px;
-    z-index: 9999;
-    position: absolute;
-    width: 50px;
-    height: 50px;
-  }
-
-  .v-dialog {
-    //overflow: hidden !important;
-  }
-
   .v-navigation-drawer--mini-variant {
     .user-wrapper {
       height: 0 !important;
@@ -2435,14 +2185,6 @@ export default {
       font-size: 11px;
     }
   }
-  /*
-
-    .breadcrumb-links {
-      text-decoration: none !important;
-      color: #fff !important;
-      cursor: pointer;
-    }
-  */
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .v-cart-dropdown-list {
       width: 160px !important;
@@ -2452,24 +2194,12 @@ export default {
       }
     }
   }
-
-  /*
-    .v-application--is-ltr
-    .v-list-group--no-action
-    > .v-list-group__items
-    > div
-    > .v-list-item {
-    padding-left: 0 !important;
-  }
-*/
   .menu-item-wrapper {
     line-height: 1.2 !important;
-    border-radius: 23px;
     padding-left: 72px;
     height: 36px !important;
     margin-right: 30px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0 23px 23px 0;
     cursor: pointer;
 
     .menu-item-span {
@@ -2639,7 +2369,7 @@ export default {
     }
   }
   .v-step[x-placement^='bottom'] .v-step__arrow {
-    border-width: 0px 0.9rem 0.9rem 0.9rem !important;
+    border-width: 0 0.9rem 0.9rem 0.9rem !important;
     top: -0.9rem !important;
   }
   .v-step[x-placement^='top'] .v-step__arrow {
