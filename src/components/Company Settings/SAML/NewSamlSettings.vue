@@ -332,8 +332,10 @@ import {
   getDefaultSamlSettings,
   getSamlSetting,
   parseMetadata,
-  updateSamlSetting
+  updateSamlSetting,
+  downloadMetadata
 } from '@/api/samlSettings'
+import { downloadExportedFile } from '@/utils/helperFunctions'
 import DataContainerWithSearch from '@/components/Common/Others/DataContainerWithSearch'
 import BatchImportPopup from '@/components/Company Settings/SAML/BatchImportPopup'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
@@ -443,12 +445,10 @@ export default {
   },
   methods: {
     downloadMetadata() {
-      window
-        .open(
-          `${APP_CONFIG.VUE_APP_APP_API_TEST}/companies/saml-settings/download-metadata`,
-          '_blank'
-        )
-        .focus()
+      downloadMetadata().then((response) => {
+        const { data } = response
+        downloadExportedFile(data, 'SAML Settings', 'XML')
+      })
     },
     callForSamlSetting() {
       getSamlSetting(this.selectedRow.resourceId).then((response) => {
