@@ -65,6 +65,21 @@
               :PERMISSIONS="PERMISSIONS['SCIM_SETTINGS_PERMISSIONS']"
             />
           </el-tab-pane>
+          <el-tab-pane
+            v-if="
+              PERMISSIONS.SIEM_PERMISSIONS.SEARCH &&
+              PERMISSIONS.SIEM_PERMISSIONS.SEARCH.hasPermission
+            "
+            name="siem-integrations"
+            :label="labels.SIEMIntegrations"
+            :id="`${labels.SIEMIntegrations.toLowerCase()}-content`"
+          >
+            <s-i-e-m-integrations
+              v-if="tab === 'siem-integrations'"
+              ref="refSIEMIntegrations"
+              :PERMISSIONS="PERMISSIONS.SIEM_PERMISSIONS"
+            ></s-i-e-m-integrations>
+          </el-tab-pane>
         </el-tabs>
       </v-card>
     </v-layout>
@@ -82,9 +97,12 @@ import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
 import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
 import { checkPermission } from '@/utils/functions'
 import SCIMSettings from '@/components/Company Settings/SCIM/SCIMSettings'
+import SIEMIntegrations from '@/components/Integrations/SIEMIntegrations/SIEMIntegrations'
+import labels from '@/model/constants/labels'
 export default {
   name: 'CompanySettings',
   components: {
+    SIEMIntegrations,
     SCIMSettings,
     SamlSettings,
     SMTPSettings,
@@ -96,6 +114,7 @@ export default {
   data() {
     return {
       tab: 'smtp-settings',
+      labels,
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
       },
@@ -106,7 +125,8 @@ export default {
         WHITE_LABEL_PERMISSIONS: {},
         PROXY_SETTINGS_PERMISSIONS: {},
         SAML_SETTINGS_PERMISSIONS: {},
-        SCIM_SETTINGS_PERMISSIONS: {}
+        SCIM_SETTINGS_PERMISSIONS: {},
+        SIEM_PERMISSIONS: {}
       }
     }
   },
@@ -122,7 +142,8 @@ export default {
         SMTP_SETTINGS_PERMISSIONS,
         WHITE_LABEL_PERMISSIONS,
         PROXY_SETTINGS_PERMISSIONS,
-        SCIM_SETTINGS_PERMISSIONS
+        SCIM_SETTINGS_PERMISSIONS,
+        SIEM_INTEGRATION_PERMISSIONS
       } = PERMISSIONS
       this.$set(
         this.PERMISSIONS,
@@ -143,6 +164,11 @@ export default {
         this.PERMISSIONS,
         'SCIM_SETTINGS_PERMISSIONS',
         getPermissionsOfAllItems(SCIM_SETTINGS_PERMISSIONS)
+      )
+      this.$set(
+        this.PERMISSIONS,
+        'SIEM_PERMISSIONS',
+        getPermissionsOfAllItems(SIEM_INTEGRATION_PERMISSIONS)
       )
     },
     changeTabByRoute() {

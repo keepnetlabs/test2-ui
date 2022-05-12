@@ -1,5 +1,6 @@
 <template>
   <div>
+    <CompanySettingsHeader :title="CONSTANTS.title" :sub-title="CONSTANTS.subtitle" />
     <SIEMIntegrationDeleteDialog
       v-if="isShowDeleteDialog"
       :status="isShowDeleteDialog"
@@ -27,9 +28,11 @@
 import SIEMIntegrationsTable from '@/components/Integrations/SIEMIntegrations/SIEMIntegrationsTable'
 import SIEMIntegrationDeleteDialog from '@/components/Integrations/SIEMIntegrations/SIEMIntegrationDeleteDialog'
 import SIEMIntegrationsAddOrEditModal from '@/components/Integrations/SIEMIntegrations/SIEMIntegrationsAddOrEditModal'
+import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
 export default {
   name: 'SIEMIntegrations',
   components: {
+    CompanySettingsHeader,
     SIEMIntegrationsAddOrEditModal,
     SIEMIntegrationDeleteDialog,
     SIEMIntegrationsTable
@@ -41,6 +44,10 @@ export default {
   },
   data() {
     return {
+      CONSTANTS: {
+        title: 'SIEM Settings',
+        subtitle: 'Manage SIEM Integrations'
+      },
       isShowDeleteDialog: false,
       isShowAddOrEditModal: false,
       selectedRow: null
