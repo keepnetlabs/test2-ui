@@ -43,3 +43,9 @@ export function exportSamlSettings(payload = {}) {
     responseType: 'blob'
   })
 }
+
+export function downloadMetadata() {
+  return testRequest.get(`${BASE_URL}/download-metadata`, {
+    responseType: 'blob'
+  })
+}
