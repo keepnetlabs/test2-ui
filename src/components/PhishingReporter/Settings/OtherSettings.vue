@@ -98,10 +98,10 @@
             v-model.trim="formValues.enableEnterpriseVault"
             id="input--phishing-reporter-is-enable-enterprise-vault"
             class="other-settings__checkbox k-checkbox mt-n1"
-            @change="handleEnterpriseVaultChange"
             color="#2196f3"
             label="Enable enterprise vault"
             :readonly="!showForm"
+            @change="handleEnterpriseVaultChange"
           ></v-checkbox>
           <template v-if="formValues.enableEnterpriseVault">
             <transition appear name="fade">
@@ -113,6 +113,8 @@
                   id="input--phishing-reporter-enterprise-vault-url"
                   outlined
                   dense
+                  persistent-hint
+                  hint="*Required"
                   class="k-textfield mt-2"
                   height="40"
                   :disabled="enterpriseVaultDisabled"
@@ -177,17 +179,10 @@ export default {
   watch: {
     formData: {
       handler(data) {
-        const {
-          companyKey,
-          enterpriseVaultUrl,
-          apiUrl,
-          isEnableProxy,
-          apiKey,
-          enableEnterpriseVault
-        } = data
+        const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = data
         this.formValues.companyKey = companyKey
         this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
-        this.formValues.enableEnterpriseVault = enableEnterpriseVault || false
+        this.formValues.enableEnterpriseVault = !!enterpriseVaultUrl || false
         this.enterpriseVaultDisabled = !enterpriseVaultUrl
         this.formValues.apiUrl = apiUrl || ''
         this.formValues.isEnableProxy = isEnableProxy || false
@@ -268,21 +263,15 @@ export default {
     },
     handleEnterpriseVaultChange(value) {
       this.enterpriseVaultDisabled = !value
+      if (!value) this.formValues.enterpriseVaultUrl = ''
     }
   },
   created() {
     if (this.formData) {
-      const {
-        companyKey,
-        enterpriseVaultUrl,
-        apiUrl,
-        isEnableProxy,
-        apiKey,
-        enableEnterpriseVault
-      } = this.formData
+      const { companyKey, enterpriseVaultUrl, apiUrl, isEnableProxy, apiKey } = this.formData
       this.formValues.companyKey = companyKey
       this.formValues.enterpriseVaultUrl = enterpriseVaultUrl || ''
-      this.formValues.enableEnterpriseVault = enableEnterpriseVault || false
+      this.formValues.enableEnterpriseVault = enterpriseVaultUrl || false
       this.enterpriseVaultDisabled = !enterpriseVaultUrl
       this.formValues.apiUrl = apiUrl || ''
       this.formValues.isEnableProxy = isEnableProxy || false

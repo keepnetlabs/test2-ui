@@ -290,7 +290,7 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
-  SIEM_INTEGRATION: {
+  SIEM_INTEGRATION_PERMISSIONS: {
     CREATE: {
       url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}`,
       hasPermission: false,
