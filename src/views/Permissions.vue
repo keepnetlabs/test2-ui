@@ -328,7 +328,7 @@ export default {
     },
     getPermissions() {
       getPermissionAll().then((response) => {
-        const sortedPermissions = []
+        let sortedPermissions = []
         response.data.data.map((item) => {
           switch (item.moduleName) {
             case 'Threat Sharing':
@@ -350,7 +350,7 @@ export default {
               break
           }
         })
-        this.permissions = sortedPermissions
+        this.permissions = sortedPermissions.filter((item) => item)
         function search_and_delete(obj, search_term) {
           if (obj && obj.children === null) {
             delete obj['children']
