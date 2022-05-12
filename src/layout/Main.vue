@@ -2,7 +2,7 @@
   <v-app class="layout-container">
     <app-snackbar />
     <v-dialog v-model="feedbackdialog" v-if="feedbackdialog" persistent :width="600">
-      <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
+      <feedback-popup></feedback-popup>
     </v-dialog>
     <SecurityModal
       v-if="openPasswordChange"
@@ -95,7 +95,7 @@
           </div>
         </div>
         <div class="page-nav__simulated-company" v-if="isReturnMainAccountVisible">Managing as</div>
-        <div :class="scroll()">
+        <div :class="navigationDrawerClass">
           <div class="user-name-dropdown">
             <div class="user-name-dropdown__menu">
               <v-menu
@@ -115,8 +115,8 @@
               >
                 <template #activator="{ on: onMenu }">
                   <div
-                    class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                     v-on="onMenu"
+                    class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                   >
                     <div class="user-name-dropdown-font__tooltip-wrapper">
                       <div class="user-name-dropdown__logo">
@@ -248,7 +248,7 @@
           </div>
 
           <router-link
-            v-if="checkDashboardPermission()"
+            v-if="getDashboardPermissions"
             id="btn--link-navigator-menu-dashboard"
             to="/"
             class="menu-link-default"
@@ -256,7 +256,7 @@
             <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
           <router-link
-            v-if="!checkThreatSharingPermissions()"
+            v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
             class="menu-link-default"
@@ -267,7 +267,7 @@
           </router-link>
 
           <v-list-group
-            v-if="checkPhishingSimulatorPermissions()"
+            v-if="getPhishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorPermissions]"
@@ -280,7 +280,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="checkPhishingScenariosPermissions()"
+              v-if="getPhishingScenarioLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -293,7 +293,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['phishing-simulator/phishing-campaign/search|POST'])"
+              v-if="getCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -307,12 +307,7 @@
             </v-list-item>
             <v-list-item
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                checkPermissionMultiple([
-                  'phishing-simulator/dns-services/search|POST',
-                  'phishing-simulator/domain-records/search|POST'
-                ])
-              "
+              v-if="getSettingsLeftMenuPermissions"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -326,12 +321,12 @@
           </v-list-group>
 
           <v-list-group
-            v-if="checkIncidentResponderListGroupPermissions()"
-            :prepend-icon="iconPaths.mdiFlash"
+            v-if="getIncidentResponderListGroupPermissions"
             id="btn--link-navigator-menu-incident-responder-list-group"
-            no-action
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
+            no-action
             :append-icon="iconPaths.mdiChevronDown"
+            :prepend-icon="iconPaths.mdiFlash"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -339,8 +334,8 @@
               </v-list-item-content>
             </template>
             <v-list-item
+              v-if="getIncidentResponderLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkIncidentResponderPermissions()"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -354,8 +349,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getInvestigationsSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['investigations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -369,7 +364,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
+              v-if="getIntegrationsSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -382,7 +377,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['playbooks/search|POST'])"
+              v-if="getPlaybookSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -395,8 +390,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getMailConfigurationSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -408,7 +403,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkCrossCompanyPermissions()"
+              v-if="getCrossCompanyPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -423,9 +418,7 @@
           </v-list-group>
 
           <router-link
-            v-if="
-              checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])
-            "
+            v-if="getPhishingReporterLeftMenuPermissions"
             to="/phishing-reporter"
             id="btn--link-navigator-phishing-reporter"
             class="menu-link-default"
@@ -434,22 +427,10 @@
             <app-router-item title="Phishing Reporter" :icon="iconPaths.mdiAccountVoice" />
           </router-link>
           <v-list-group
-            v-if="
-              checkPermissionMultiple([
-                'phishing-simulator/phishing-campaign-job-report/search|POST'
-              ])
-            "
+            v-if="getReportsLeftMenuPermissions"
             id="btn--link-navigator-menu-reports-list-group"
             no-action
-            :class="[
-              'menu-with-item menu-link-default',
-              routerName === 'Campaign Reports' ||
-              routerName === 'Simple Reports' ||
-              routerName === 'Campaign Report' ||
-              routerName === 'Simple Report Details'
-                ? 'primary--text active-menu-parent'
-                : 'un-selected-list-item'
-            ]"
+            :class="getReportsClasses"
             :prepend-icon="iconPaths.mdiEqualizer"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -486,7 +467,7 @@
             !-->
           </v-list-group>
           <v-list-group
-            v-if="checkCompanyPermissions()"
+            v-if="getCompanyLeftMenuPermissions"
             id="btn--link-navigator-menu-company-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getCompanyClasses]"
@@ -499,9 +480,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="
-                checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST'])
-              "
+              v-if="getTargetUsersLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -516,11 +495,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getCompaniesLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                this.$store.state.auth.userRoleName !== 'Company Admin' &&
-                checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST'])
-              "
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -535,12 +511,7 @@
             </v-list-item>
 
             <v-list-item
-              v-if="
-                checkPermissionMultiple([
-                  'companies/smtp-settings/search|POST',
-                  'roles/search|POST'
-                ])
-              "
+              v-if="getCompanySettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -553,8 +524,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getSystemUserSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['system-users/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -566,7 +537,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              v-if="getAuditLogSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
@@ -579,7 +550,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              v-if="getAuditLogSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
@@ -774,7 +745,6 @@ import 'grapesjs/dist/css/grapes.min.css'
 import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
 import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import Breadcrumb from '@/components/Breadcrumb'
-import { checkPermissionMultiple } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
@@ -808,6 +778,7 @@ export default {
     return {
       showSettingsModalStatus: false,
       labels,
+      navigationDrawerClass: '',
       iconPaths: {
         mdiHome,
         mdiChevronRight,
@@ -981,13 +952,49 @@ export default {
       brandName: 'whitelabel/getBrandName',
       supportEmailAddress: 'whitelabel/getSupportEmailAddress',
       showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
-      companyLicense: 'whitelabel/getCompanyLicense'
+      companyLicense: 'whitelabel/getCompanyLicense',
+      getDashboardPermissions: 'permissions/getDashboardPermissions',
+      getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
+      getPhishingSimulatorLeftMenuPermissions:
+        'permissions/getPhishingSimulatorLeftMenuPermissions',
+      getPhishingScenarioLeftMenuPermissions: 'permissions/getPhishingScenarioLeftMenuPermissions',
+      getCampaignManagerLeftMenuPermissions: 'permissions/getCampaignManagerLeftMenuPermissions',
+      getSettingsLeftMenuPermissions: 'permissions/getSettingsLeftMenuPermissions',
+      getIncidentResponderListGroupPermissions:
+        'permissions/getIncidentResponderListGroupPermissions',
+      getIncidentResponderLeftMenuPermissions:
+        'permissions/getIncidentResponderLeftMenuPermissions',
+      getInvestigationsSearchPermission: 'permissions/getInvestigationsSearchPermission',
+      getIntegrationsSearchPermission: 'permissions/getIntegrationsSearchPermission',
+      getPlaybookSearchPermission: 'permissions/getPlaybookSearchPermission',
+      getMailConfigurationSearchPermission: 'permissions/getMailConfigurationSearchPermission',
+      getCrossCompanyPermissions: 'permissions/getCrossCompanyPermissions',
+      getPhishingReporterLeftMenuPermissions: 'permissions/getPhishingReporterLeftMenuPermissions',
+      getReportsLeftMenuPermissions: 'permissions/getReportsLeftMenuPermissions',
+      getCompanyLeftMenuPermissions: 'permissions/getCompanyLeftMenuPermissions',
+      getTargetUsersLeftMenuPermissions: 'permissions/getTargetUsersLeftMenuPermissions',
+      getCompaniesLeftMenuPermissions: 'permissions/getCompaniesLeftMenuPermissions',
+      getCompanySettingsLeftMenuPermissions: 'permissions/getCompanySettingsLeftMenuPermissions',
+      getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
+      getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission'
     }),
     getBreadCrumbBaseName() {
       return this.brandName || this.$store.state.auth.selectedCompanyName
     },
     getTargetGroupUsersRouterName() {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+    },
+    getReportsClasses() {
+      const { routerName } = this
+      return [
+        'menu-with-item menu-link-default',
+        routerName === 'Campaign Reports' ||
+        routerName === 'Simple Reports' ||
+        routerName === 'Campaign Report' ||
+        routerName === 'Simple Report Details'
+          ? 'primary--text active-menu-parent'
+          : 'un-selected-list-item'
+      ]
     },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
@@ -1231,6 +1238,7 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
+    this.getNavigationDrawerClasses()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         this.getCurrentUser()
@@ -1246,12 +1254,13 @@ export default {
     })
     setTimeout(() => {
       let contentDom = document.getElementsByClassName('v-navigation-drawer__content')[0]
-      if (contentDom) {
+      if (contentDom && !this.isEventAdded) {
         document
           .getElementsByClassName('v-navigation-drawer__content')[0]
           .addEventListener('scroll', (event) => {
-            this.scroll()
+            this.getNavigationDrawerClasses()
           })
+        this.isEventAdded = true
       }
     }, 500)
   },
@@ -1259,6 +1268,7 @@ export default {
     clearInterval(this.interval)
   },
   updated() {
+    console.log('updated')
     this.routerName === 'Company Group Details' && this.getCompanyGroupName()
   },
   methods: {
@@ -1266,25 +1276,6 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
-    checkThreatSharingPermissions() {
-      return checkPermissionMultiple(
-        [
-          'communities/search/all|POST',
-          'communities/search/my|POST',
-          'community-posts/search|POST'
-        ],
-        false
-      )
-    },
-    checkIncidentResponderListGroupPermissions() {
-      return checkPermissionMultiple([
-        'notified-emails/search|POST',
-        'is/dashboard/summary|POST',
-        'is/dashboard/search-log|POST',
-        'is/dashboard/search-stats|POST',
-        'notify/result|POST'
-      ])
-    },
     isProd() {
       const location = window.location.href
       return !(
@@ -1302,20 +1293,10 @@ export default {
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },
-    checkCompanyPermissions() {
-      return [
-        this.checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST']),
-        this.checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST']),
-        this.checkPermissionMultiple(['companies/smtp-settings/search|POST', 'roles/search|POST']),
-        this.checkPermissionMultiple(['companies/smtp-settings/search|POST', 'roles/search|POST']),
-        this.checkPermissionMultiple(['system-users/search|POST']),
-        this.checkPermissionMultiple(['audit-logs|POST'])
-      ].some((isPermission) => isPermission)
-    },
     changePasswordChange() {
       this.openPasswordChange = !this.openPasswordChange
     },
-    scroll() {
+    getNavigationDrawerClasses() {
       const main = `d-flex justify-center flex-wrap user-wrapper ${
         this.isReturnMainAccountVisible && 'p-0'
       }`
@@ -1330,53 +1311,7 @@ export default {
       let _class = main
       if (isScroll) _class = _class + ' ' + shadow
       if (userContent) userContent.className = _class
-      return _class
-    },
-    checkDashboardPermission() {
-      return checkPermissionMultiple([
-        'dashboard/widgets|GET',
-        'dashboard/widgets|POST',
-        'community-posts/top-posts|GET',
-        'notified-emails/search|POST',
-        'dashboard/summary|GET',
-        'dashboard/reported-email-trends|POST',
-        'ir/dashboard/summary|GET',
-        'ir/dashboard/top-rules|GET',
-        'ir/dashboard/running-investigations|GET',
-        'community-posts/search|POST'
-      ])
-    },
-    checkIncidentResponderPermissions() {
-      return checkPermissionMultiple([
-        'notified-emails/search|POST',
-        'investigations/search|POST',
-        'analysis-engines/search|POST',
-        'playbooks/search|POST',
-        'mail-configurations/search|POST'
-      ])
-    },
-    checkCrossCompanyPermissions() {
-      return checkPermissionMultiple([
-        'is/dashboard/summary|POST',
-        'is/dashboard/search-log|POST',
-        'is/dashboard/search-stats|POST',
-        'notify/result|POST'
-      ])
-    },
-    checkPhishingSimulatorPermissions() {
-      return checkPermissionMultiple([
-        'phishing-simulator/email-templates|POST',
-        'phishing-simulator/phishing-scenario/search|POST',
-        'phishing-simulator/dns-services/search|POST',
-        'phishing-simulator/domain-records/search|POST'
-      ])
-    },
-    checkPhishingScenariosPermissions() {
-      return checkPermissionMultiple([
-        'phishing-simulator/email-templates|POST',
-        'phishing-simulator/phishing-scenario/search|POST',
-        'phishing-simulator/landing-page-template|POST'
-      ])
+      this.navigationDrawerClass = _class
     },
     deleteTSVuexData() {
       let communitiesData = null
@@ -1396,9 +1331,6 @@ export default {
         payload.checkExceedDialog = true
       }
       this.$store.dispatch('whitelabel/callForSystemInfoSummary', payload)
-    },
-    checkPermissionMultiple(data, contain) {
-      return checkPermissionMultiple(data, contain)
     },
     removeTooltip() {
       this.$refs.accountTooltip.isActive = false
