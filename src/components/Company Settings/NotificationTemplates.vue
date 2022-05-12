@@ -9,6 +9,7 @@
       ref="newNotificationTemplate"
       :edit-items-disabled="editItemsDisabled"
       :selectedItem="selectedItem"
+      :isDuplicate="isDuplicate"
       :status="newNotificationTemplateStatus"
       @closeOverlay="toggleNewNotificationTemplate"
       @closeOverlayWithUpdate="closeNotificationTemplateWithUpdate"
@@ -90,7 +91,36 @@
             </template>
             <span>{{ tableOptions.rowActions[0].name }}</span>
           </v-tooltip>
-          <v-tooltip bottom>
+          <v-menu bottom left offset-y transition="scale-transition">
+            <template v-slot:activator="{ on }">
+              <v-btn class="btn-hover" icon v-on="on">
+                <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-list class="v-cart-dropdown-list el-table__action-buttons scenarios__row-actions">
+              <v-list-item
+                :id="`${tableOptions.rowActions[1].id}-${scope.$index}`"
+                class="sub-menu-el"
+                :disabled="getDisabledStatusOfAction(scope.row, 'POST')"
+              >
+                <v-list-item-title @click="handleDuplicate(scope.row, true)">
+                  <v-icon class="pr-3">{{ tableOptions.rowActions[1].icon }}</v-icon>
+                  <span>{{ tableOptions.rowActions[1].name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                :id="`${tableOptions.rowActions[2].id}-${scope.$index}`"
+                class="sub-menu-el"
+                :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+              >
+                <v-list-item-title @click="handleDelete(scope.row, true)">
+                  <v-icon class="pr-3">{{ tableOptions.rowActions[2].icon }}</v-icon>
+                  <span>{{ tableOptions.rowActions[2].name }}</span>
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <!-- <v-tooltip bottom>
             <template v-slot:activator="{ on }">
               <v-btn
                 v-on="on"
@@ -106,7 +136,7 @@
               </v-btn>
             </template>
             <span>{{ tableOptions.rowActions[1].name }}</span>
-          </v-tooltip>
+          </v-tooltip> -->
           <!-- <v-menu bottom left offset-y transition="scale-transition">
             <template v-slot:activator="{ on }">
               <v-btn class="btn-hover" icon v-on="on">
@@ -197,6 +227,7 @@ export default {
   },
   data() {
     return {
+      isDuplicate: false,
       categories: [],
       loading: false,
       storedTableSettings: null,
@@ -295,6 +326,12 @@ export default {
             icon: 'mdi-pencil',
             id: 'btn-edit--notification-template-row-actions',
             action: 'handleEdit'
+          },
+          {
+            name: 'Duplicate',
+            icon: 'mdi-eye',
+            id: 'btn-duplicate--notification-template-row-actions',
+            action: 'handleDuplicate'
           },
           {
             name: 'Delete',
@@ -445,6 +482,11 @@ export default {
       this.selectedItem = row
       this.toggleDeleteNotificationTemplate()
     },
+    handleDuplicate(row) {
+      this.selectedItem = row
+      this.isDuplicate = true
+      this.toggleNewNotificationTemplate()
+    },
     handleMakeDefault(selectedRow) {},
     handleDeleteNotificationTemplate(resourceId) {
       this.isDeleteButtonDisabled = true
@@ -547,6 +589,7 @@ export default {
         this.editItemsDisabled = true
       }
       this.selectedItem = row
+      this.isDuplicate = false
       this.toggleNewNotificationTemplate()
     },
     getDefaultFilterAndSearch() {
