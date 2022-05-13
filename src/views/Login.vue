@@ -36,20 +36,10 @@
               <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
                   <div id="text--login-title" class="login-title">
-                    {{
-                      isSessionExpired
-                        ? 'Session Expired'
-                        : `Welcome To ${loginWhiteLabel.brandName}`
-                    }}
+                    {{ getLoginTitle }}
                   </div>
                   <div id="text--login-description" class="login-desc mb-14">
-                    {{
-                      isSessionExpired
-                        ? 'Your session has been timed out. Please log in.'
-                        : showPasswordField
-                        ? `Enter password for ${email}`
-                        : 'Please Login'
-                    }}
+                    {{ getLoginDescription }}
                   </div>
                   <div v-if="!!mfaLoginErrors.length" class="login-error-container">
                     <div class="login-error-wrapper">
@@ -193,8 +183,8 @@
 
                           <div
                             id="btn--login-forget-password"
-                            @click="onForgetPasswordButtonClick()"
                             class="forgot-password"
+                            @click="onForgetPasswordButtonClick()"
                           >
                             Forgot Password
                           </div>
@@ -351,8 +341,8 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="isPasswordAreEqual()" class="login-error-container">
-                    <div v-if="isPasswordAreEqual()" class="login-error-wrapper">
+                  <div v-if="isPasswordAreEqual" class="login-error-container">
+                    <div v-if="isPasswordAreEqual" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
@@ -375,11 +365,11 @@
                               >New Password</label
                             >
                             <v-text-field
+                              v-model.trim="newPassword"
                               id="input--login-new-password"
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                               :type="show2 ? '' : 'password'"
                               data-recording-ignore="mask"
-                              v-model.trim="newPassword"
                               placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
                               :rules="[
@@ -387,13 +377,13 @@
                                 rules.minPassword,
                                 rules.equalToConfirmPassword(reNewPassword)
                               ]"
-                              @click="newPasswordError = false"
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                               :class="{ 'input-error': isErrorActive }"
                               validate-on-blur
                               autocomplete="disabled"
                               @click:append="show2 = !show2"
+                              @click="newPasswordError = false"
                             ></v-text-field>
                           </div>
                           <div>
@@ -409,14 +399,8 @@
                               v-model.trim="reNewPassword"
                               id="input--login-confirm-password"
                               data-recording-ignore="mask"
-                              :rules="[
-                                rules.required,
-                                rules.minPassword,
-                                rules.equalToNewPassword(newPassword)
-                              ]"
                               placeholder="Enter new password again"
                               class="reset-pass-textfield"
-                              @click="newPasswordError = false"
                               outlined
                               :class="{ 'input-error': isErrorActive }"
                               validate-on-blur
@@ -424,9 +408,15 @@
                                 showReNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
                               "
                               :type="showReNewPassword ? '' : 'password'"
-                              @click:append="showReNewPassword = !showReNewPassword"
                               autocomplete="disabled"
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
+                              :rules="[
+                                rules.required,
+                                rules.minPassword,
+                                rules.equalToNewPassword(newPassword)
+                              ]"
+                              @click:append="showReNewPassword = !showReNewPassword"
+                              @click="newPasswordError = false"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -449,11 +439,11 @@
               </div>
               <div v-if="pageNumber === 6">
                 <MFAWelcome
+                  ref="refMfaWelcome"
                   :mfaDetails="mfaDetails"
+                  :rules="rules"
                   @withoutContinueMFA="withoutContinueMFA()"
                   @setupMFA="setupMFA"
-                  :rules="rules"
-                  ref="refMfaWelcome"
                 />
               </div>
               <div v-if="pageNumber === 7">
@@ -488,14 +478,14 @@
                   </div>
                 </div>
                 <MFALogin
+                  ref="refMfaLogin"
                   :validReset="validReset"
                   :verificationCode="verificationCode"
                   :rememberMeOnThisDevice="rememberMeOnThisDevice"
-                  @onCantLoginButtonClick="onCantLoginButtonClick"
-                  @verificationCodeLogin="verificationCodeLogin"
                   :recaptcha="recaptcha"
                   :rules="rules"
-                  ref="refMfaLogin"
+                  @onCantLoginButtonClick="onCantLoginButtonClick"
+                  @verificationCodeLogin="verificationCodeLogin"
                 />
               </div>
               <div v-if="pageNumber === 9">
@@ -510,18 +500,18 @@
                   </div>
                 </div>
                 <MFACantLogin
+                  ref="refMfaCantLogin"
                   :phoneNumber="phoneNumber"
                   :validReset="validReset"
                   :verificationCode="verificationCode"
                   :rememberMeOnThisDevice="rememberMeOnThisDevice"
+                  :rules="rules"
                   @onCantLoginButtonClick="onCantLoginButtonClick"
                   @verificationCodeLogin="verificationCodeLogin"
-                  :rules="rules"
-                  ref="refMfaCantLogin"
                 />
               </div>
-              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber) || showPasswordField">
-                <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick()">
+              <div v-if="isBackButtonRendered">
+                <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
                 </div>
@@ -641,6 +631,9 @@ export default {
       validReset: false
     }
   },
+  updated() {
+    console.log('updated')
+  },
   created() {
     //if it is not logined then remove permissions from local storage
     localStorage.removeItem('permissions')
@@ -648,6 +641,7 @@ export default {
     this.pageNumber = 1
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
     this.$store.dispatch('whitelabel/resetState')
+
     if (this.$route.query && this.$route.query.mfaRequired) {
       this.showMfaMessage = true
       if (this.$route.name === 'login') {
@@ -771,6 +765,28 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    getLoginTitle() {
+      return this.isSessionExpired
+        ? 'Session Expired'
+        : `Welcome To ${this.loginWhiteLabel.brandName}`
+    },
+    getLoginDescription() {
+      return this.isSessionExpired
+        ? 'Your session has been timed out. Please log in.'
+        : this.showPasswordField
+        ? `Enter password for ${this.email}`
+        : 'Please Login'
+    },
+    isBackButtonRendered() {
+      return [2, 3, 5, 6, 7, 8, 9].includes(this.pageNumber) || this.showPasswordField
+    },
+    isPasswordAreEqual() {
+      if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
+        return this.reNewPassword !== this.newPassword
+      } else {
+        return false
+      }
+    },
     snackbar: {
       get() {
         return this.getSnackStatus
@@ -1599,13 +1615,6 @@ export default {
       this.isMfaAuthenticated = false
       this.pageNumber = 2
       this.clearError()
-    },
-    isPasswordAreEqual() {
-      if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
-        return this.reNewPassword !== this.newPassword
-      } else {
-        return false
-      }
     },
     clearError() {
       this.$store.commit('common/SET_ERROR_STATE', false, { root: true })

@@ -1,7 +1,7 @@
 <template>
   <v-app class="layout-container">
     <app-snackbar />
-    <v-dialog v-model="feedbackdialog" v-if="feedbackdialog" persistent :width="600">
+    <v-dialog v-model="feedbackDialog" v-if="feedbackDialog" persistent :width="600">
       <feedback-popup></feedback-popup>
     </v-dialog>
     <SecurityModal
@@ -42,14 +42,14 @@
     </v-row>
     <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
       <div class="connection-lost-wrapper">
-        <connection-lost v-on:onIUnderstand="onIUndestandClick($event)"></connection-lost>
+        <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
       </div>
     </v-overlay>
     <div class="layout-container__background"></div>
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
         <div class="page-nav__logo-wrapper" style="display: flex; align-items: center;">
-          <offline @detected-condition="handleConnectivityChange" :ping-url="baseUrl">
+          <offline :ping-url="baseUrl" @detected-condition="handleConnectivityChange">
             <div slot="online"></div>
             <!-- Only renders when the device is offline -->
             <div slot="offline"></div>
@@ -57,10 +57,10 @@
           <v-app-bar-nav-icon
             class="page-nav__menu-toggle menu-icon-wrapper"
             color="blue"
-            :style="getDrawerPadding2"
             height="48"
             width="48"
             x-large
+            :style="getDrawerStyle"
             @click.stop="onNavigationClick()"
             ><v-icon style="height: 32px; width: 32px;">{{
               iconPaths.mdiMenu
@@ -113,9 +113,9 @@
                       </div>
                       <div class="user-name-dropdown__details">
                         <v-tooltip
-                          bottom
-                          :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
                           ref="accountTooltip"
+                          bottom
+                          :disabled="isSelectedCompanyNameDisabled"
                         >
                           <template #activator="{ on: onTooltip }">
                             <span
@@ -128,9 +128,9 @@
                           <span>{{ getSelectedCompanyName }}</span>
                         </v-tooltip>
                         <v-tooltip
+                          ref="firstNameTooltip"
                           bottom
                           :disabled="getFirstName && getFirstName.length < 15"
-                          ref="firstNameTooltip"
                         >
                           <template #activator="{ on: onTooltipFirstName }">
                             <span
@@ -143,9 +143,9 @@
                           <span>{{ getFirstName }}</span>
                         </v-tooltip>
                         <v-tooltip
+                          ref="roleTooltip"
                           bottom
                           :disabled="getRolename && getRolename.length < 15"
-                          ref="roleTooltip"
                         >
                           <template #activator="{ on: onTooltipRoleName }">
                             <span
@@ -169,12 +169,12 @@
 
                 <v-list class="user-name-dropdown__content">
                   <v-list-item
+                    v-if="setDropdownVisibility(item)"
                     v-for="item in dropdownData"
                     :id="item.id"
                     :key="item.key"
-                    @click="changeDropdownItem(item.value)"
-                    v-if="setDropdownVisibility(item)"
                     :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
+                    @click="changeDropdownItem(item.value)"
                   >
                     <v-list-item-title>
                       <v-icon>{{ item.icon }}</v-icon>
@@ -192,13 +192,13 @@
         <v-app-bar-nav-icon
           class="page-nav__menu-toggle menu-icon-wrapper"
           color="blue"
-          @click.stop="onNavigationClick()"
-          :style="getDrawerPadding2"
+          :style="getDrawerStyle"
           height="48"
           width="48"
           id="mini-menu"
           x-large
           style="left: 22px !important;"
+          @click.stop="onNavigationClick()"
         ></v-app-bar-nav-icon>
         <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">M</div>
         <div class="v-responsive">
@@ -208,10 +208,10 @@
         </div>
       </div>
       <v-navigation-drawer
+        v-model="getDrawer"
         color="rgba(255, 255, 255, 0.9)"
         app
         width="285"
-        v-model="getDrawer"
         :mini-variant.sync="getMini"
         transition="scale-transition"
         :mobile-break-point="767"
@@ -232,13 +232,11 @@
             v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
-            class="menu-link-default"
-            :class="[routerName === 'Community' && 'active-link']"
+            :class="['menu-link-default', routerName === 'Community' && 'active-link']"
             @click.native="deleteTSVuexData"
           >
             <app-router-item title="Threat Sharing" :icon="iconPaths.mdiFlag" />
           </router-link>
-
           <v-list-group
             v-if="getPhishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
@@ -279,8 +277,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              style="padding-left: 0 !important; margin-left: -5px;"
               v-if="getSettingsLeftMenuPermissions"
+              style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -394,8 +392,7 @@
             v-if="getPhishingReporterLeftMenuPermissions"
             to="/phishing-reporter"
             id="btn--link-navigator-phishing-reporter"
-            class="menu-link-default"
-            :class="[routerName === 'Phishing Reporter' && 'active-link']"
+            :class="['menu-link-default', routerName === 'Phishing Reporter' && 'active-link']"
           >
             <app-router-item title="Phishing Reporter" :icon="iconPaths.mdiAccountVoice" />
           </router-link>
@@ -482,7 +479,6 @@
                 />
               </v-list-item-content>
             </v-list-item>
-
             <v-list-item
               v-if="getCompanySettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
@@ -599,6 +595,7 @@
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title
+                    v-text="item.text"
                     :data-content="
                       item.text === 'Get Help'
                         ? `mailto:${supportEmailAddress || 'support@keepnetlabs.com'}`
@@ -606,7 +603,6 @@
                         ? 'https://doc.keepnetlabs.com'
                         : ''
                     "
-                    v-text="item.text"
                   ></v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -665,9 +661,6 @@ import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
 import AuthenticationService from '../services/authentication'
-import 'grapesjs/dist/css/grapes.min.css'
-import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
-import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import Breadcrumb from '@/components/Breadcrumb'
 import labels from '@/model/constants/labels'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
@@ -1031,7 +1024,7 @@ export default {
         this.mini = newValue
       }
     },
-    feedbackdialog: {
+    feedbackDialog: {
       get() {
         return this.isFeedbackPopupOpened
       },
@@ -1069,11 +1062,11 @@ export default {
     getRolename() {
       return this?.$store?.state?.auth?.userRoleName || ''
     },
-    getDrawerPadding2() {
-      if (this.mini) {
-        return 'left: 5px !important;'
-      }
-      return 'left : 244px !important;'
+    getDrawerStyle() {
+      return this.mini ? 'left: 5px !important;' : 'left : 244px !important;'
+    },
+    isSelectedCompanyNameDisabled() {
+      return this.getSelectedCompanyName && this.getSelectedCompanyName.length < 15
     }
   },
   watch: {
@@ -1131,14 +1124,6 @@ export default {
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
-    isProd() {
-      const location = window.location.href
-      return !(
-        location.includes('dev') ||
-        location.includes('test') ||
-        location.includes('localhost')
-      )
-    },
     getRightDropdownDataItemRender({ text }) {
       if (text === 'Tour') {
         return this.$route.name === 'Dashboard'
@@ -1223,7 +1208,7 @@ export default {
           this.tourSafeStarter('tourDashboard')
           break
         case 'Feedback':
-          this.feedbackdialog = true
+          this.feedbackDialog = true
           break
         case 'Get Help':
           domElem.href = `mailto:${this.supportEmailAddress || 'support@keepnetlabs.com'}`
@@ -1283,7 +1268,7 @@ export default {
           return
       }
     },
-    onIUndestandClick(data) {
+    onIUnderstandClick(data) {
       this.isDisconnected = data
     },
     handleConnectivityChange(status) {
@@ -1624,55 +1609,6 @@ export default {
 }
 
 .layout-container {
-  .z_index_custom_1 {
-    z-index: 99999 !important;
-  }
-
-  .tour-five {
-    left: 210px;
-    top: 77px;
-  }
-
-  .tour-six {
-    left: 210px;
-    top: 244px;
-  }
-
-  .tour-btn-container {
-    cursor: pointer;
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    display: flex;
-
-    .tour-btn-wrapper {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      border: solid 1px #e5f1ff;
-      margin-top: 10px;
-
-      .tour-btn-circle {
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        background-color: #e5f1ff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .tour-btn-circle-inner {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background-color: #b3d4fc;
-        }
-      }
-    }
-  }
   .page-nav {
     .v-list-item--active > .v-list-item__icon,
     .menu-list-item > .v-list-item__icon {
@@ -1694,100 +1630,9 @@ export default {
     }
   }
 
-  // End Footer
-
   // Notification
   .v-menu__content {
     border-radius: 20px;
-  }
-
-  .notification-confirmation-buttons {
-    position: absolute;
-    bottom: -20px;
-    right: 1px;
-  }
-
-  .notification-date-time {
-    height: 17px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 12px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-  }
-
-  .notification-wrapper {
-    width: 306px;
-    max-height: 520px;
-    border-radius: 20px;
-    box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
-      0 3px 14px 2px rgba(80, 80, 80, 0.12);
-    background-color: white;
-    padding: 26px;
-    overflow: auto;
-  }
-
-  //Notification end
-  .v-cart-icon-wrapper {
-    color: red;
-  }
-
-  .breadcrumb-wrapper {
-    font-size: 12px;
-    font-weight: bold;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(255, 255, 255, 1);
-    text-align: right;
-    display: flex;
-    align-items: center;
-    flex-direction: row-reverse;
-
-    .pr-2 {
-      display: flex;
-      align-items: center;
-    }
-
-    .v-breadcrumbs__item {
-      color: white;
-    }
-
-    .bread-last-step {
-      color: rgba(255, 255, 255, 0.7);
-    }
-  }
-
-  .v-breadcrumbs li {
-    font-size: 12px !important;
-  }
-
-  .v-breadcrumbs li:nth-child(even) {
-    padding: 0 3px;
-  }
-
-  .user-name-dropdown-detail {
-    -webkit-flex-direction: column;
-    flex-direction: column !important;
-    padding-top: 5px;
-
-    span {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      display: block;
-      font-weight: 600;
-      font-style: normal;
-      font-stretch: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      text-align: center;
-      color: rgba(0, 0, 0, 0.87);
-      // border: solid red 1px;
-    }
   }
 
   .user-name-dropdown {
@@ -1984,28 +1829,6 @@ export default {
     }
   }
 
-  .divider-header {
-    margin-right: 14px;
-    color: rgba(255, 255, 255, 0.3);
-    align-self: stretch;
-    border: 0 solid rgba(255, 255, 255, 0.3);
-    border-right-width: thin;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    margin-top: 8px;
-    min-height: 25px;
-    max-height: 25px;
-    max-width: 0;
-    width: 0;
-    vertical-align: text-bottom;
-  }
-
-  .bell-badge-wrapper {
-    width: 48px;
-    height: 48px;
-    align-items: center;
-  }
-
   .v-toolbar__title {
     margin-left: 8px;
     font-size: 34px;
@@ -2047,15 +1870,11 @@ export default {
   }
 
   .v-content {
-    // min-height: calc(100vh - 46px);
     height: 100%;
     margin-top: 16px;
     @media only screen and (max-width: 769px) {
       padding: 160px 0 0 60px !important;
     }
-  }
-
-  header {
   }
 
   .v-navigation-drawer--mini-variant {
@@ -2156,35 +1975,7 @@ export default {
   .menu-link-default {
     text-decoration: none;
   }
-  /*
-  .help-wrapper {
-    padding-left: 30px;
-  }
 
-  .search-notification-wrapper {
-    .v-toolbar__content .v-btn.v-btn--icon.v-size--default {
-      height: 44px !important;
-    }
-  }
-*/
-
-  .manuel-badge {
-    width: 18px !important;
-    min-width: 18px !important;
-    height: 18px !important;
-    top: 3px !important;
-    right: 5px !important;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    background-color: red;
-    border-radius: 50%;
-    position: absolute;
-
-    span {
-      font-size: 11px;
-    }
-  }
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .v-cart-dropdown-list {
       width: 160px !important;
