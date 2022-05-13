@@ -11,13 +11,15 @@ const {
   INCIDENT_RESPONDER_LEFT_MENU_PERMISSIONS,
   PHISHING_REPORTER_LEFT_MENU_PERMISSIONS,
   REPORTS_LEFT_MENU_PERMISSIONS,
-  COMPANY_LEFT_MENU_PERMISSIONS
+  COMPANY_LEFT_MENU_PERMISSIONS,
+  THREAT_SHARING_PERMISSIONS
 } = PERMISSIONS
 
 const state = JSON.parse(localStorage.getItem('permissions')) || {
   permissions: [],
   playbookPermissions: PLAYBOOK_PERMISSIONS,
   dashboardPermissions: DASHBOARD_PERMISSIONS,
+  threatSharingPermissions: THREAT_SHARING_PERMISSIONS,
   threatSharingLeftMenuPermissions: THREAT_SHARING_LEFT_MENU_PERMISSIONS,
   phishingSimulatorLeftMenuPermissions: PHISHING_SIMULATOR_LEFT_MENU_PERMISSIONS,
   phishingScenarioLeftMenuPermissions: PHISHING_SCENARIO_LEFT_MENU_PERMISSIONS,
@@ -44,6 +46,63 @@ const store = {
     },
     getThreatSharingLeftMenuPermissions(state) {
       return state?.threatSharingLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getThreatSharingAllCommunitiesPermission(state) {
+      return state?.threatSharingLeftMenuPermissions?.ALL_COMMUNITIES?.hasPermission
+    },
+    getThreatSharingMyCommunitiesPermission(state) {
+      return state?.threatSharingLeftMenuPermissions?.MY_COMMUNITIES?.hasPermission
+    },
+    getThreatSharingCommunityPostsPermission(state) {
+      return state?.threatSharingLeftMenuPermissions?.COMMUNITY_POSTS?.hasPermission
+    },
+    getThreatSharingMyInvitationsPermission(state) {
+      return state?.threatSharingPermissions?.MY_INVITATIONS?.hasPermission
+    },
+    getThreatSharingCreateCommunityPermission(state) {
+      return state?.threatSharingPermissions?.CREATE_COMMUNITY?.hasPermission
+    },
+    getThreatSharingEditCommunityPermission(state) {
+      return state?.threatSharingPermissions?.EDIT_COMMUNITYT?.hasPermission
+    },
+    getThreatSharingLeaveCommunityPermission(state) {
+      return state?.threatSharingPermissions?.LEAVE_COMMUNITYT?.hasPermission
+    },
+    getThreatSharingDeleteCommunityPermission(state) {
+      return state?.threatSharingPermissions?.DELETE_COMMUNITY?.hasPermission
+    },
+    getThreatSharingInviteToCommunityPermission(state) {
+      return state?.threatSharingPermissions?.INVITE_TO_COMMUNITY?.hasPermission
+    },
+    getThreatSharingSuggestedCommunitiesPermission(state) {
+      return state?.threatSharingPermissions?.SUGGESTED_COMMUNITIES?.hasPermission
+    },
+    getThreatSharingPostIncidentPermission(state) {
+      return state?.threatSharingPermissions?.POST_INCIDENT?.hasPermission
+    },
+    getThreatSharingMyLastPostsPermission(state) {
+      return state?.threatSharingPermissions?.MY_LAST_POSTS?.hasPermission
+    },
+    getThreatSharingTopPostsPermission(state) {
+      return state?.threatSharingPermissions?.TOP_POSTS?.hasPermission
+    },
+    getThreatSharingGetPostPermission(state) {
+      return state?.threatSharingPermissions?.GET_POST?.hasPermission
+    },
+    getThreatSharingSharePostPermission(state) {
+      return state?.threatSharingPermissions?.SHARE_POST?.hasPermission
+    },
+    getThreatSharingDeletePostPermission(state) {
+      return state?.threatSharingPermissions?.DELETE_POST?.hasPermission
+    },
+    getThreatSharingCreateCommentPermission(state) {
+      return state?.threatSharingPermissions?.CREATE_COMMENT?.hasPermission
+    },
+    getThreatSharingEditCommentPermission(state) {
+      return state?.threatSharingPermissions?.EDIT_COMMENT?.hasPermission
+    },
+    getThreatSharingDeleteCommentPermission(state) {
+      return state?.threatSharingPermissions?.DELETE_COMMENT?.hasPermission
     },
     getPhishingSimulatorLeftMenuPermissions(state) {
       return state?.phishingSimulatorLeftMenuPermissions?.isOneOfThemPermitted
@@ -127,6 +186,7 @@ const store = {
       const statePermissionKeys = [
         'playbookPermissions',
         'dashboardPermissions',
+        'threatSharingPermissions',
         'threatSharingLeftMenuPermissions',
         'phishingSimulatorLeftMenuPermissions',
         'phishingScenarioLeftMenuPermissions',

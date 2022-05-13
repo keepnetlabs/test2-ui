@@ -145,7 +145,7 @@
                   rounded
                   medium
                   color="blue"
-                  :disabled="!checkPermissions('community-posts/{resourceId}', 'GET')"
+                  :disabled="!getPostPermission"
                   >COLLAPSE
                 </v-btn>
                 <v-btn
@@ -159,7 +159,7 @@
                   rounded
                   medium
                   color="blue"
-                  :disabled="!checkPermissions('community-posts/{resourceId}', 'GET')"
+                  :disabled="!getPostPermission"
                   >DETAILS
                 </v-btn>
               </template>
@@ -184,7 +184,7 @@
                 <v-list-item-group color="primary">
                   <v-list-item
                     :id="'threat-sharing-single-post-edit-button' + post.communityPostResourceId"
-                    v-if="checkPermissions('community-posts/{resourceId}', 'GET') && canEdit(post)"
+                    v-if="getPostPermission && canEdit(post)"
                     @click="editIncident(post, post.communityPostResourceId, post.communityName)"
                   >
                     <v-list-item-icon>
@@ -198,7 +198,7 @@
                     :id="
                       'threat-sharing-single-post-investigate-button' + post.communityPostResourceId
                     "
-                    v-if="checkPermissions('community-posts/{resourceId}', 'GET')"
+                    v-if="getPostPermission"
                     @click="openInvestigate(post)"
                   >
                     <v-list-item-icon>
@@ -210,10 +210,7 @@
                   </v-list-item>
                   <v-list-item
                     style="cursor: not-allowed; opacity: 0.3;"
-                    v-if="
-                      checkPermissions('community-posts/{resourceId}/share', 'POST') &&
-                      post.communityPrivacyStatusId !== 1
-                    "
+                    v-if="getSharePostPermission && post.communityPrivacyStatusId !== 1"
                     :id="'threat-sharing-single-post-share-button' + post.communityPostResourceId"
                   >
                     <v-tooltip bottom opacity="1">
@@ -244,9 +241,7 @@
                   </v-list-item>
                   <v-list-item
                     :id="'threat-sharing-single-post-delete-button' + post.communityPostResourceId"
-                    v-if="
-                      checkPermissions('community-posts/{resourceId}', 'DELETE') && canDelete(post)
-                    "
+                    v-if="getDeletePostPermission && canDelete(post)"
                     @click="deleteIncident(post)"
                   >
                     <v-list-item-icon>
@@ -874,6 +869,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import VClamp from 'vue-clamp'
 import NewInvestigation from '@/components/Investigation/NewInvestigation'
 import KShadowFrame from '@/components/KShadowFrame'
@@ -890,7 +886,6 @@ import {
 } from '@/api/threatSharing'
 import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
 import {
-  checkPermission,
   incidenPostReviewElementBind,
   isOwner,
   isPostedByMe,
@@ -1149,7 +1144,15 @@ export default {
     addCommentValue: '',
     selectedEmail: {}
   }),
-
+  computed: {
+    ...mapGetters({
+      getPostPermission: 'permissions/getThreatSharingGetPostPermission,',
+      getSharePostPermission: 'permissions/getThreatSharingSharePostPermission,',
+      getDeletePostPermission: 'permissions/getThreatSharingDeletePostPermission,',
+      getEditCommentPermission: 'permissions/getThreatSharingEditCommentPermission,',
+      getDeleteCommentPermission: 'permissions/getThreatSharingDeleteCommentPermission,'
+    })
+  },
   watch: {
     '$route.query.postId'(val) {
       this.getPostDetails(this.$route.query.postId, 0, true)
@@ -1173,9 +1176,6 @@ export default {
         ).commentCount = comments.length
       }
       this.$forceUpdate()
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     getAttachmentLength(hasAttachment, categories) {
       if (hasAttachment) {
@@ -1439,9 +1439,9 @@ export default {
     },
     canDeleteOrEditComment(type) {
       if (type === 'update') {
-        return this.checkPermissions('community-posts/comments/{resourceId}', 'PUT')
+        return this.getEditCommentPermission
       } else {
-        return this.checkPermissions('community-posts/comments/{resourceId}', 'DELETE')
+        return this.getDeletePostPermission
       }
     }
   }

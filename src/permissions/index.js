@@ -88,6 +88,88 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  THREAT_SHARING_PERMISSIONS: {
+    MY_INVITATIONS: {
+      url: `communities/my-invitations`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    CREATE_COMMUNITY: {
+      url: 'communities',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_COMMUNITYT: {
+      url: 'communities/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    LEAVE_COMMUNITYT: {
+      url: 'communities/{resourceId}/leave',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE_COMMUNITY: {
+      url: 'communities/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    POST_INCIDENT: {
+      url: 'community-posts',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    INVITE_TO_COMMUNITY: {
+      url: 'communities/{resourceId}/invite',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    MY_LAST_POSTS: {
+      url: 'community-posts/my-last-posts',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    TOP_POSTS: {
+      url: 'community-posts/top-posts',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SUGGESTED_COMMUNITIES: {
+      url: 'communities/suggested',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    GET_POST: {
+      url: 'community-posts/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SHARE_POST: {
+      url: 'community-posts/{resourceId}/share',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE_POST: {
+      url: 'community-posts/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    CREATE_COMMENT: {
+      url: 'community-posts/{communityPostResourceId}/comments',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT_COMMENT: {
+      url: 'community-posts/comments/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE_COMMENT: {
+      url: 'community-posts/comments/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
   PHISHING_SIMULATOR_LEFT_MENU_PERMISSIONS: {
     EMAIL_TEMPLATE: {
       url: `phishing-simulator/email-templates`,
