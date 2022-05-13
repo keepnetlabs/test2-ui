@@ -36,20 +36,10 @@
               <div v-if="pageNumber === 1">
                 <v-card-text class="pa-0">
                   <div id="text--login-title" class="login-title">
-                    {{
-                      isSessionExpired
-                        ? 'Session Expired'
-                        : `Welcome To ${loginWhiteLabel.brandName}`
-                    }}
+                    {{ getLoginTitle }}
                   </div>
                   <div id="text--login-description" class="login-desc mb-14">
-                    {{
-                      isSessionExpired
-                        ? 'Your session has been timed out. Please log in.'
-                        : showPasswordField
-                        ? `Enter password for ${email}`
-                        : 'Please Login'
-                    }}
+                    {{ getLoginDescription }}
                   </div>
                   <div v-if="!!mfaLoginErrors.length" class="login-error-container">
                     <div class="login-error-wrapper">
@@ -193,8 +183,8 @@
 
                           <div
                             id="btn--login-forget-password"
-                            @click="onForgetPasswordButtonClick()"
                             class="forgot-password"
+                            @click="onForgetPasswordButtonClick()"
                           >
                             Forgot Password
                           </div>
@@ -351,8 +341,8 @@
                       </div>
                     </div>
                   </div>
-                  <div v-if="isPasswordAreEqual()" class="login-error-container">
-                    <div v-if="isPasswordAreEqual()" class="login-error-wrapper">
+                  <div v-if="isPasswordAreEqual" class="login-error-container">
+                    <div v-if="isPasswordAreEqual" class="login-error-wrapper">
                       <div class="login-error-icon dark pr-2">
                         <v-icon dark large color="#f56c6c">mdi-close-circle</v-icon>
                       </div>
@@ -375,11 +365,11 @@
                               >New Password</label
                             >
                             <v-text-field
+                              v-model.trim="newPassword"
                               id="input--login-new-password"
                               :append-icon="show2 ? 'mdi-eye-outline' : 'mdi-eye-off-outline'"
                               :type="show2 ? '' : 'password'"
                               data-recording-ignore="mask"
-                              v-model.trim="newPassword"
                               placeholder="Enter new password"
                               class="reset-pass-textfield mb-6"
                               :rules="[
@@ -387,13 +377,13 @@
                                 rules.minPassword,
                                 rules.equalToConfirmPassword(reNewPassword)
                               ]"
-                              @click="newPasswordError = false"
                               outlined
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
                               :class="{ 'input-error': isErrorActive }"
                               validate-on-blur
                               autocomplete="disabled"
                               @click:append="show2 = !show2"
+                              @click="newPasswordError = false"
                             ></v-text-field>
                           </div>
                           <div>
@@ -409,14 +399,8 @@
                               v-model.trim="reNewPassword"
                               id="input--login-confirm-password"
                               data-recording-ignore="mask"
-                              :rules="[
-                                rules.required,
-                                rules.minPassword,
-                                rules.equalToNewPassword(newPassword)
-                              ]"
                               placeholder="Enter new password again"
                               class="reset-pass-textfield"
-                              @click="newPasswordError = false"
                               outlined
                               :class="{ 'input-error': isErrorActive }"
                               validate-on-blur
@@ -424,9 +408,15 @@
                                 showReNewPassword ? 'mdi-eye-outline' : 'mdi-eye-off-outline'
                               "
                               :type="showReNewPassword ? '' : 'password'"
-                              @click:append="showReNewPassword = !showReNewPassword"
                               autocomplete="disabled"
                               hint="At least 8 characters with 1 capital letter, 1 lowercase letter, 1 number and 1 special character"
+                              :rules="[
+                                rules.required,
+                                rules.minPassword,
+                                rules.equalToNewPassword(newPassword)
+                              ]"
+                              @click:append="showReNewPassword = !showReNewPassword"
+                              @click="newPasswordError = false"
                             ></v-text-field>
                           </div>
                         </v-form>
@@ -449,11 +439,11 @@
               </div>
               <div v-if="pageNumber === 6">
                 <MFAWelcome
+                  ref="refMfaWelcome"
                   :mfaDetails="mfaDetails"
+                  :rules="rules"
                   @withoutContinueMFA="withoutContinueMFA()"
                   @setupMFA="setupMFA"
-                  :rules="rules"
-                  ref="refMfaWelcome"
                 />
               </div>
               <div v-if="pageNumber === 7">
@@ -488,14 +478,14 @@
                   </div>
                 </div>
                 <MFALogin
+                  ref="refMfaLogin"
                   :validReset="validReset"
                   :verificationCode="verificationCode"
                   :rememberMeOnThisDevice="rememberMeOnThisDevice"
-                  @onCantLoginButtonClick="onCantLoginButtonClick"
-                  @verificationCodeLogin="verificationCodeLogin"
                   :recaptcha="recaptcha"
                   :rules="rules"
-                  ref="refMfaLogin"
+                  @onCantLoginButtonClick="onCantLoginButtonClick"
+                  @verificationCodeLogin="verificationCodeLogin"
                 />
               </div>
               <div v-if="pageNumber === 9">
@@ -510,18 +500,18 @@
                   </div>
                 </div>
                 <MFACantLogin
+                  ref="refMfaCantLogin"
                   :phoneNumber="phoneNumber"
                   :validReset="validReset"
                   :verificationCode="verificationCode"
                   :rememberMeOnThisDevice="rememberMeOnThisDevice"
+                  :rules="rules"
                   @onCantLoginButtonClick="onCantLoginButtonClick"
                   @verificationCodeLogin="verificationCodeLogin"
-                  :rules="rules"
-                  ref="refMfaCantLogin"
                 />
               </div>
-              <div v-if="[2, 3, 5, 6, 7, 8, 9].includes(pageNumber) || showPasswordField">
-                <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick()">
+              <div v-if="isBackButtonRendered">
+                <div id="btn-back--login" class="back-to-login" @click="onBackButtonClick">
                   <v-icon right dark class="pr-2" color="#2196f3">mdi-arrow-left</v-icon>
                   {{ labels.Back }}
                 </div>
@@ -641,10 +631,17 @@ export default {
       validReset: false
     }
   },
+  updated() {
+    console.log('updated')
+  },
   created() {
+    //if it is not logined then remove permissions from local storage
+    localStorage.removeItem('permissions')
+
     this.pageNumber = 1
     this.isSessionExpired = this.$route.params && this.$route.params.isSessionExpired
     this.$store.dispatch('whitelabel/resetState')
+
     if (this.$route.query && this.$route.query.mfaRequired) {
       this.showMfaMessage = true
       if (this.$route.name === 'login') {
@@ -768,6 +765,28 @@ export default {
     ...mapActions({
       getCurrentUser: 'auth/getCurrentUser'
     }),
+    getLoginTitle() {
+      return this.isSessionExpired
+        ? 'Session Expired'
+        : `Welcome To ${this.loginWhiteLabel.brandName}`
+    },
+    getLoginDescription() {
+      return this.isSessionExpired
+        ? 'Your session has been timed out. Please log in.'
+        : this.showPasswordField
+        ? `Enter password for ${this.email}`
+        : 'Please Login'
+    },
+    isBackButtonRendered() {
+      return [2, 3, 5, 6, 7, 8, 9].includes(this.pageNumber) || this.showPasswordField
+    },
+    isPasswordAreEqual() {
+      if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
+        return this.reNewPassword !== this.newPassword
+      } else {
+        return false
+      }
+    },
     snackbar: {
       get() {
         return this.getSnackStatus
@@ -800,7 +819,8 @@ export default {
       loginAction2: 'login/loginAction',
       setPageNumber: 'login/setPageNumber',
       setSnackStatus: 'common/setSnackStatus',
-      twoStepLogin: 'login/twoStepLogin'
+      twoStepLogin: 'login/twoStepLogin',
+      setPermissionsList: 'permissions/setPermissionsList'
     }),
     handleContinueClick() {
       if (this.showPasswordField) {
@@ -953,6 +973,434 @@ export default {
       Sentry.captureException(e)
     },
     onSuccessLogin(payload, response) {
+      this.setPermissionsList([
+        'phishing-simulator/email-templates/{resourceId}|DELETE',
+        'company-groups/{resourceId}|DELETE',
+        'investigations/{resourceId}/actions-warning|POST',
+        'mail-configurations/ews/{resourceId}|DELETE',
+        'analysis-engines/{resourceId}|GET',
+        'available-for/can-i-access-it|POST',
+        'target-users/{transactionId}/search/export|POST',
+        'system-users/mfa/resync|PUT',
+        'phishing-simulator/phishing-scenario/preview/{emailTemplateResourceId}/{landingPageTemplateResourceId}|GET',
+        'mail-configurations/gsuite/check-all-users-access|POST',
+        'companies/proxy-settings/search/export|POST',
+        'company-groups/{resourceId}|PUT',
+        'mail-configurations/o365/check-all-users-access|POST',
+        'feedback|POST',
+        'target-groups/{resourceId}/users/export|POST',
+        'mail-configurations/gsuite/check-create-new-category|POST',
+        'roles/{resourceId}|GET',
+        'company-groups/{resourceId}|GET',
+        'phishing-simulator/phishing-scenario/preview/{resourceId}|GET',
+        'roles|GET',
+        'target-users/{resourceId}|PUT',
+        'phishing-reporter/history/search/export|POST',
+        'system-users/search/export|POST',
+        'mail-configurations/o365/{resourceId}|DELETE',
+        'target-groups/{resourceId}|PUT',
+        'community-posts/{communityPostResourceId}/comments|GET',
+        'investigations/{resourceId}/search-email/export|POST',
+        'phishing-reporter/download/outlook-addin/{resourceId}|GET',
+        'company-groups/{resourceId}/participants|PUT',
+        'communities/membershiprequest/{resourceId}/accept|PUT',
+        'available-for/search|POST',
+        'phishing-simulator/phishing-campaign-job/start/{resourceId}|POST',
+        'system-users/notification-setting|POST',
+        'analysis-engines/{resourceId}/disable|PUT',
+        'custom-fields/bulk-update|POST',
+        'mail-configurations/o365/list-related-domains|POST',
+        'mail-configurations/o365/check-api-connectivity|POST',
+        'phishing-simulator/landing-page-template|POST',
+        'analysis-engines|POST',
+        'companies/clients/{resourceId}|DELETE',
+        'mail-configurations/gsuite/check-privileges-access|POST',
+        'scim/{resourceId}/revoke|POST',
+        'mail-configurations/o365/check-inbox-access|POST',
+        'notified-emails/{resourceId}|PUT',
+        'phishing-simulator/phishing-campaign-job-report/search/export|POST',
+        'heartbeat|POST',
+        'phishing-simulator/phishing-campaign-job/pause/{resourceId}|PATCH',
+        'companies/clients/{resourceId}|PUT',
+        'companies/smtp-settings/search/export|POST',
+        'playbooks/{resourceId}|DELETE',
+        'ldap-setting/test-connection|POST',
+        'notified-emails/fortisandbox-attachments-report/{resourceId}|GET',
+        'target-groups/search-name|POST',
+        'investigations/{resourceId}/summary|GET',
+        'phishing-simulator/phishing-campaign/search/export|POST',
+        'whitelabeling/resolve-whitelabeling|GET',
+        'phishing-simulator/dns-services/{resourceId}|DELETE',
+        'target-users/search-email|POST',
+        'codetypes|GET',
+        'ldap-job/create|POST',
+        'phishing-reporter/search|POST',
+        'communities/membershiprequest/{resourceId}/cancel|PUT',
+        'mail-configurations/ews/check-api-connectivity|POST',
+        'investigations/{resourceId}/search-email|POST',
+        'investigations/{resourceId}/user|POST',
+        'CompanyAdminPermission|GET',
+        'phishing-simulator/phishing-campaign-job/email-activity/{resourceId}|GET',
+        'phishing-simulator/phishing-campaign-job-report/{searchType}/search/export/{resourceId}|POST',
+        'dashboard/widgets|POST',
+        'companies/email-templates/{resourceId}|PUT',
+        'companies/{resourceId}/license-check|GET',
+        'ResellerPermission|GET',
+        'phishing-simulator/phishing-campaign/{resourceId}|DELETE',
+        'community-posts/top-posts|GET',
+        'target-groups/upload/{transactionId}|GET',
+        'system-users/search|POST',
+        'phishing-simulator/phishing-scenario/{resourceId}|PUT',
+        'target-users/example-file|POST',
+        'investigations/search/export|POST',
+        'mail-configurations/gsuite/check-email-access|POST',
+        'custom-fields|POST',
+        'ir/dashboard/running-investigations|GET',
+        'company-groups|GET',
+        'phishing-simulator/phishing-campaign-job-report/summary/{resourceId}|GET',
+        'community-posts/my-last-posts|GET',
+        'community-posts/comments/{resourceId}|DELETE',
+        'mail-configurations/ews/check-inbox-access|POST',
+        'custom-fields/groups/{resourceId}|GET',
+        'mail-configurations/ews/check-mail-filter|POST',
+        'mail-configurations/gsuite/check-delete-email|POST',
+        'mail-configurations/gsuite/check-inbox-access|POST',
+        'phishing-simulator/email-templates/{resourceId}|GET',
+        'phishing-simulator/domain-records/form-details|GET',
+        'playbooks/{resourceId}|PUT',
+        'phishing-simulator/phishing-scenario/search/export|POST',
+        'companies/siem-settings/search/export|POST',
+        'phishing-simulator/email-templates/merge-tags|GET',
+        'jobs|GET',
+        'companies/{resourceId}|PUT',
+        'companies/saml-settings|POST',
+        'community-posts/{resourceId}|DELETE',
+        'ldap-setting/{resourceId}|GET',
+        'investigations/actions-delete|PUT',
+        'companies/clients/search/export|POST',
+        'phishing-simulator/phishing-scenario/{resourceId}|GET',
+        'system-users/{resourceId}|PUT',
+        'companies/siem-settings/{resourceId}|GET',
+        'target-users/{transactionId}/update|PUT',
+        'communities/{resourceId}/member|POST',
+        'communities/my-invitations|GET',
+        'analysis-engines/{resourceId}|DELETE',
+        'companies/email-templates|POST',
+        'target-users/upload|POST',
+        'phishing-simulator/phishing-campaign-job/resume/{resourceId}|PATCH',
+        'phishing-simulator/phishing-campaign/root-company-shared-smtp-resource-id|GET',
+        'phishing-reporter/generate/diagnostic-tool|GET',
+        'analysis-engines/analysis-exclusions|GET',
+        'phishing-simulator/email-templates/{resourceId}|PUT',
+        'system-users/{resourceId}|DELETE',
+        'companies/clients/{resourceId}|GET',
+        'communities/{resourceId}/membershiprequest|POST',
+        'whitelabeling|GET',
+        'companies/proxy-settings/{resourceId}|GET',
+        'system-info/version|GET',
+        'phishing-simulator/email-templates/download-attachment/{resourceId}|GET',
+        'lookups/licenses|GET',
+        'system-users/{resourceId}/send-information-email|POST',
+        'phishing-simulator/landing-page-template/{resourceId}|GET',
+        'communities|POST',
+        'mail-configurations/o365/check-email-access|POST',
+        'target-groups|POST',
+        'company-groups/search/export|POST',
+        'communities/invitations/{resourceId}/decline|PUT',
+        'notified-emails/{resourceId}|GET',
+        'target-users/{transactionId}/search|POST',
+        'communities/{resourceId}/remove-member|DELETE',
+        'scim|POST',
+        'analysis-engines-types/{resourceId}/test-connection|PUT',
+        'file/upload|POST',
+        'companies/search/export|POST',
+        'investigations/{resourceId}/progress|PUT',
+        'target-groups|GET',
+        'analysis-engines/{resourceId}/enable|PUT',
+        'companies|POST',
+        'notified-emails/msg-files/{resourceId}|GET',
+        'phishing-simulator/phishing-campaign/preview/{smtpSettingResourceId}/{phishingScenarioResourceId}|GET',
+        'companies/smtp-settings|POST',
+        'jobs/{resourceId}|GET',
+        'audit-logs/search/export|POST',
+        'phishing-simulator/phishing-campaign/preview/{resourceId}|GET',
+        'companies/saml-settings/{resourceId}|DELETE',
+        'system-users/{resourceId}/role|POST',
+        'phishing-simulator/landing-page-template/search|POST',
+        'company-groups/{resourceId}/companies/search/export|POST',
+        'target-users/search|POST',
+        'mail-configurations/googleworkspace/{resourceId}|GET',
+        'communities/{resourceId}/membershiprequest-count|GET',
+        'investigations/{resourceId}/actions-delete-and-notify|POST',
+        'system-users/change-password|PUT',
+        'company-groups/{resourceId}/companies/search|POST',
+        'phishing-simulator/phishing-campaign-job-report/{searchType}/search/{resourceId}|POST',
+        'companies/proxy-settings/search|POST',
+        'analysis-engines|GET',
+        'companies/siem-settings/{resourceId}|PUT',
+        'audit-logs/search|POST',
+        'mail-configurations/search|POST',
+        'phishing-reporter/generate/gsuite-addin|GET',
+        'phishing-simulator/dns-services/{resourceId}|GET',
+        'target-users/{resourceId}|GET',
+        'notified-emails/bulk-update|PUT',
+        'phishing-simulator/phishing-scenario/search|POST',
+        'roles|POST',
+        'analysis-engines/analysis-exclusions|PUT',
+        'community-posts/notified-email-preview/{resourceId}|GET',
+        'mail-configurations/{providerName}/{resourceId}|GET',
+        'ldap-fields|GET',
+        'phishing-simulator/phishing-campaign-job-report/search-email-submitted/{resourceId}|POST',
+        'companies/email-templates/search/export|POST',
+        'companies/email-templates/{resourceId}|DELETE',
+        'companies/smtp-settings/search|POST',
+        'ldap-setting|POST',
+        'investigations/{resourceId}/search-user/export|POST',
+        'target-users/mapping-job/{resourceId}|GET',
+        'phishing-simulator/phishing-campaign-job-report/{resourceId}/search|POST',
+        'mail-configurations/gsuite/check-update-category|POST',
+        'phishing-simulator/phishing-campaign-job/resend/{resourceId}|POST',
+        'scim/{resourceId}|DELETE',
+        'companies/{resourceId}|DELETE',
+        'phishing-simulator/email-templates|POST',
+        'mail-configurations/o365/check-update-category|POST',
+        'target-groups/{resourceId}|GET',
+        'phishing-simulator/dns-services/{resourceId}/test|POST',
+        'notify/url|POST',
+        'analysis-engines/search|POST',
+        'companies/saml-settings/{resourceId}|GET',
+        'notified-emails/matching-playbooks/{playbookResourceId}/search|POST',
+        'companies/saml-settings/default|GET',
+        'mail-configurations/o365/check-delete-email|POST',
+        'communities/{resourceId}/leave|POST',
+        'system-users/{userResourceId}/role/{roleResourceId}|DELETE',
+        'companies/my|GET',
+        'phishing-simulator/phishing-campaign-job-report/summary/target-groups/{resourceId}|GET',
+        'phishing-simulator/email-templates/search|POST',
+        'available-for/process-available-for-requests|POST',
+        'dashboard/reported-email-trends|POST',
+        'phishing-simulator/phishing-campaign-job/stop/{resourceId}|PATCH',
+        'companies/clients|POST',
+        'target-groups/search/export|POST',
+        'companies/email-templates/categorylookup|GET',
+        'companies/{resourceId}|GET',
+        'roles/{resourceId}|PUT',
+        'phishing-simulator/phishing-campaign/{resourceId}|GET',
+        'companies/siem-settings/test|POST',
+        'phishing-simulator/phishing-scenario|POST',
+        'available-for/validate-available-for-requests|POST',
+        'target-users|POST',
+        'communities/{resourceId}|GET',
+        'investigations/actions-delete-and-notify|PUT',
+        'phishing-reporter/img|GET',
+        'phishing-simulator/domain-records/test|POST',
+        'file/{resourceId}|GET',
+        'phishing-simulator/phishing-campaign/bulk-delete|DELETE',
+        'system-users/mfa/status|GET',
+        'is/dashboard/search-stats|POST',
+        'ir/dashboard/summary|GET',
+        'communities/my-invitations-count|GET',
+        'companies/saml-settings/parse-metadata-file|POST',
+        'communities/invitations/{resourceId}/accept|PUT',
+        'ldap-setting/create-mapping|POST',
+        'file/delete|DELETE',
+        'system-users/settings|GET',
+        'company-groups/search|POST',
+        'investigations/search|POST',
+        'phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/{resourceId}|POST',
+        'permissions/all|GET',
+        'ldap-setting/check-status/{transactionId}|POST',
+        'community-posts/{resourceId}/preview|GET',
+        'phishing-reporter/summary|GET',
+        'community-posts/comments/{resourceId}|PUT',
+        'phishing-simulator/phishing-campaign-job/resend/list/{resourceId}|POST',
+        'notify/email|POST',
+        'companies/email-templates/search|POST',
+        'system-users/notification-setting|PUT',
+        'custom-fields/{resourceId}|GET',
+        'community-posts/{resourceId}|GET',
+        'RootPermission|GET',
+        'analysis-engines/search/export|POST',
+        'companies/saml-settings/search/export|POST',
+        'investigations/actions-warning|PUT',
+        'target-users/{resourceId}/groups|POST',
+        'mail-configurations/googleworkspace/search|POST',
+        'phishing-simulator/phishing-scenario/{resourceId}|DELETE',
+        'phishing-simulator/phishing-campaign/form-details|GET',
+        'phishing-simulator/phishing-campaign-job-report/search-email-reported/{resourceId}|POST',
+        'phishing-simulator/phishing-campaign-job-report/export/{resourceId}|GET',
+        'companies/my/search|POST',
+        'audit-logs|POST',
+        'phishing-simulator/landing-page-template/{resourceId}|DELETE',
+        'analysis-engines/form-details|GET',
+        'mail-configurations|GET',
+        'companies/saml-settings/{resourceId}|PUT',
+        'system-info/summary|GET',
+        'communities/membershiprequest/{resourceId}/refuse|PUT',
+        'phishing-simulator/domain-records|POST',
+        'mail-configurations/search/export|POST',
+        'phishing-simulator/landing-page-template/search/export|POST',
+        'target-groups/{resourceId}|DELETE',
+        'companies/siem-settings/{resourceId}|DELETE',
+        'phishing-simulator/landing-page-template/form-details|GET',
+        'target-users/{transactionId}/import|POST',
+        'mail-configurations/ews/check-email-body-access|POST',
+        'lookups/{typeId}|GET',
+        'phishing-simulator/phishing-campaign-job/{resourceId}|DELETE',
+        'communities/{resourceId}/appoint-owner|POST',
+        'mail-configurations/googleworkspace/{resourceId}|PUT',
+        'communities/suggested|GET',
+        'mail-configurations/o365|POST',
+        'phishing-reporter/generate/microsoft365-addin|GET',
+        'companies/community-companies|GET',
+        'ir/dashboard/top-rules|GET',
+        'phishing-simulator/phishing-scenario/form-details|GET',
+        'mail-configurations/ews/{resourceId}|PUT',
+        'phishing-simulator/dns-services/search/export|POST',
+        'companies/proxy-settings/{resourceId}|DELETE',
+        'companies/email-templates/typelookup|GET',
+        'companies/email-templates/{resourceId}|GET',
+        'mail-configurations/o365/check-create-new-category|POST',
+        'phishing-simulator/landing-page-template/{resourceId}|PUT',
+        'target-groups/{resourceId}/users|DELETE',
+        'whitelabeling/{resourceId}|DELETE',
+        'investigations/{resourceId}|GET',
+        'companies/proxy-settings|POST',
+        'phishing-simulator/email-templates/search/export|POST',
+        'companies/smtp-settings/{resourceId}|DELETE',
+        'whitelabeling/{resourceId}|PUT',
+        'communities/{resourceId}/join|POST',
+        'mail-configurations/googleworkspace|POST',
+        'is/dashboard/search-log/export|POST',
+        'system-users|POST',
+        'phishing-simulator/domain-records/search|POST',
+        'notify/attachment-hash|POST',
+        'mail-configurations/o365/check-privileges-access|POST',
+        'companies/smtp-settings/test|POST',
+        'ldap-setting/search|POST',
+        'scim/{resourceId}|PUT',
+        'community-posts/{resourceId}/like|POST',
+        'is/dashboard/summary|POST',
+        'companies/roi-settings|GET',
+        'phishing-simulator/phishing-campaign-job-report/search-email-opened/{resourceId}|POST',
+        'ldap-setting/{resourceId}|DELETE',
+        'target-groups/upload|POST',
+        'phishing-reporter/download/diagnostic-tool/{resourceId}|GET',
+        'phishing-simulator/domain-records/search/export|POST',
+        'is/dashboard/search-stats/export|POST',
+        'tags/search|POST',
+        'file/all|GET',
+        'mail-configurations/gsuite/check-api-connectivity|POST',
+        'phishing-simulator/phishing-campaign|POST',
+        'system-users/mfa/setup|GET',
+        'community-posts/message-file-preview|POST',
+        'notified-emails/matching-playbooks/{playbookResourceId}/search/export|POST',
+        'mail-configurations/ews/check-email-header-access|POST',
+        'scim/fields|GET',
+        'mail-configurations/googleworkspace/{resourceId}|DELETE',
+        'companies/clients/search|POST',
+        'phishing-simulator/phishing-campaign-job-report/search-email-clicked/{resourceId}|POST',
+        'notify/result|POST',
+        'companies/proxy-settings/test|POST',
+        'target-users/upload/{transactionId}|GET',
+        'target-groups/{resourceId}/users|PUT',
+        'communities/{resourceId}|PUT',
+        'phishing-simulator/phishing-campaign-job-report/{resourceId}/search/export|POST',
+        'companies/email-templates/merge-tags/{resourceId}|GET',
+        'target-groups/{resourceId}/users|POST',
+        'audit|POST',
+        'file/uploaded|GET',
+        'diagnostic|POST',
+        'system-users/bulk-delete|DELETE',
+        'phishing-simulator/phishing-campaign-job-report/search|POST',
+        'community-posts/parse-email-url|POST',
+        'phishing-simulator/phishing-campaign-job/form-details|GET',
+        'community-posts|POST',
+        'analysis-engines/types|GET',
+        'playbooks/search|POST',
+        'ldap-setting/{resourceId}|PUT',
+        'target-groups/upload/{transactionId}/search|GET',
+        'mail-configurations/ews|POST',
+        'dashboard/reporters|GET',
+        'playbooks/search/export|POST',
+        'phishing-simulator/dns-services/search|POST',
+        'roles/search|POST',
+        'phishing-reporter-users/{resourceId}|DELETE',
+        'companies/siem-settings/search|POST',
+        'companies/roi-settings|PUT',
+        'investigations/scan-types|GET',
+        'phishing-reporter|GET',
+        'notified-emails/{resourceId}/reanalyze|GET',
+        'phishing-simulator/phishing-campaign/search|POST',
+        'companies/email-templates/check-availability|POST',
+        'scim/search|POST',
+        'mail-configurations/googleworkspace/search/export|POST',
+        'communities/search/all|POST',
+        'communities/search/my|POST',
+        'mail-configurations/o365/{resourceId}|PUT',
+        'phishing-simulator/phishing-campaign/{resourceId}|PUT',
+        'phishing-reporter/search/export|POST',
+        'timezone/timezones|GET',
+        'investigations/{resourceId}/cancel|PUT',
+        'community-posts/{resourceId}/share|POST',
+        'companies/siem-settings|POST',
+        'playbooks/{resourceId}|GET',
+        'investigations/{resourceId}/actions-delete|POST',
+        'phishing-simulator/phishing-campaign/calculate-sending-info|POST',
+        'dashboard/widgets|GET',
+        'communities/{resourceId}/invite|POST',
+        'is/dashboard/search-log|POST',
+        'investigations/{resourceId}/result|POST',
+        'target-users/{resourceId}|DELETE',
+        'phishing-reporter/history/search|POST',
+        'phishing-reporter/generate/outlook-addin|GET',
+        'target-groups/search|POST',
+        'phishing-simulator/domain-records/{resourceId}|DELETE',
+        'phishing-simulator/dns-services|POST',
+        'scim/{resourceId}|GET',
+        'community-posts/{resourceId}|PUT',
+        'target-users/bulk-delete|DELETE',
+        'community-posts/search|POST',
+        'roles/{resourceId}|DELETE',
+        'notified-emails/search/export|POST',
+        'communities/{resourceId}|DELETE',
+        'dashboard/summary|GET',
+        'companies/saml-settings/search|POST',
+        'system-users/mfa/disable|PUT',
+        'phishing-reporter|POST',
+        'investigations|POST',
+        'lookups|POST',
+        'active-directory/users|POST',
+        'system-users/settings|PUT',
+        'active-directory/groups|POST',
+        'custom-fields/{resourceId}|PUT',
+        'community-posts/search/{communityResourceId}|POST',
+        'file/compress-html|POST',
+        'company-groups/{resourceId}/participants|DELETE',
+        'investigations/{resourceId}/search-user|POST',
+        'companies/search|POST',
+        'target-users/search/export|POST',
+        'analysis-engines/{resourceId}|PUT',
+        'phishing-simulator/dns-services/form-details|GET',
+        'playbooks|POST',
+        'target-users/create-mapping|POST',
+        'companies/proxy-settings/{resourceId}|PUT',
+        'notified-emails/search|POST',
+        'companies/smtp-settings/{resourceId}|GET',
+        'mail-configurations/ews/check-privileges-access|POST',
+        'companies/smtp-settings/{resourceId}|PUT',
+        'company-groups|POST',
+        'phishing-simulator/domain-records/{resourceId}|GET',
+        'notified-emails/attachments/{resourceId}|GET',
+        'account/logout|GET',
+        'file/parse-email-file|POST',
+        'investigations/{resourceId}/user|PUT',
+        'custom-fields/company|GET',
+        'companies/clients/generate-client-credentials|GET',
+        'community-posts/{communityPostResourceId}/comments|POST',
+        'phishing-simulator/domain-records/{resourceId}|PUT',
+        'phishing-simulator/dns-services/{resourceId}|PUT'
+      ])
       let _this = this
       let isSessionExpired = payload.sessionExpired
       this.$store.commit('common/SET_ERROR_STATE', false, { root: true })
@@ -1167,13 +1615,6 @@ export default {
       this.isMfaAuthenticated = false
       this.pageNumber = 2
       this.clearError()
-    },
-    isPasswordAreEqual() {
-      if (this.reNewPassword !== this.newPassword && this.blurConfirm) {
-        return this.reNewPassword !== this.newPassword
-      } else {
-        return false
-      }
     },
     clearError() {
       this.$store.commit('common/SET_ERROR_STATE', false, { root: true })

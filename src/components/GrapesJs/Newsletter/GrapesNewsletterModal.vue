@@ -864,8 +864,8 @@ export default {
           btnImp.innerHTML = 'Import'
           btnImp.type = 'button'
           btnCopyToClipboard.innerHTML = 'Copy to clipboard'
-          btnImp.className = 'gjs-btn-prim gjs-btn-import'
-          btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import'
+          btnImp.className = 'gjs-btn-prim gjs-btn-import mt-2'
+          btnCopyToClipboard.className = 'ml-2 gjs-btn-prim gjs-btn-import mt-2'
           btnImp.onclick = () => {
             editor.DomComponents.getWrapper().set('content', '')
             const code = codeViewer.editor.getValue()
@@ -1031,6 +1031,8 @@ export default {
   }
   .gjs-pn-views-container {
     border-top: none !important;
+    padding-top: 0 !important;
+    padding-bottom: 42px !important;
   }
   .gjs-blocks-c {
     justify-content: space-between !important;
@@ -1190,5 +1192,8 @@ export default {
       width: 100%;
     }
   }
+}
+.CodeMirror {
+  font-size: 12px;
 }
 </style>

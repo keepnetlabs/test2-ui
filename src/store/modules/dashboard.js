@@ -13,7 +13,6 @@ const dashboard = {
   namespaced: true,
   state: {
     popupFeedback: false,
-    overallMonths: [],
     notificationList: [],
     dropdownCompanies: [],
     selectedCompany: 'Loading...',

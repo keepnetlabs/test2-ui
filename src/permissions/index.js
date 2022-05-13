@@ -19,6 +19,248 @@ const ENUMS = {
   }
 }
 export default {
+  DASHBOARD_PERMISSIONS: {
+    WIDGETS: {
+      url: `dashboard/widgets`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    WIDGET_POST: {
+      url: `dashboard/widgets`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    COMMUNITY_POST_TOP_POSTS: {
+      url: `community-posts/top-posts`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    COMMUNITY_POSTS: {
+      url: 'community-posts/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    NOTIFIED_EMAIL: {
+      url: `notified-emails/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUMMARY: {
+      url: `dashboard/summary`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    REPORTED_EMAIL_TRENDS: {
+      url: 'dashboard/reported-email-trends',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    IR_SUMMARY: {
+      url: 'ir/dashboard/summary',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    IR_TOP_RULES: {
+      url: 'ir/dashboard/top-rules',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    IR_RUNNING_INVESTIGATIONS: {
+      url: 'ir/dashboard/running-investigations',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  THREAT_SHARING_LEFT_MENU_PERMISSIONS: {
+    ALL_COMMUNITIES: {
+      url: `communities/search/all`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    MY_COMMUNITIES: {
+      url: `communities/search/my`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    COMMUNITY_POSTS: {
+      url: `community-posts/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  PHISHING_SIMULATOR_LEFT_MENU_PERMISSIONS: {
+    EMAIL_TEMPLATE: {
+      url: `phishing-simulator/email-templates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PHISHING_SCENARIO: {
+      url: `phishing-simulator/phishing-scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DNS: {
+      url: `phishing-simulator/dns-services/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DOMAIN: {
+      url: `phishing-simulator/domain-records/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  PHISHING_SCENARIO_LEFT_MENU_PERMISSIONS: {
+    EMAIL_TEMPLATE: {
+      url: `phishing-simulator/email-templates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PHISHING_SCENARIO: {
+      url: `phishing-simulator/phishing-scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    LANDING_PAGE: {
+      url: 'phishing-simulator/landing-page-template|POST',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  CAMPAIGN_MANAGER_LEFT_MENU_PERMISSIONS: {
+    CAMPAIGN_MANAGER: {
+      url: `phishing-simulator/phishing-campaign/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SETTINGS_LEFT_MENU_PERMISSIONS: {
+    DNS: {
+      url: `phishing-simulator/dns-services/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DOMAIN: {
+      url: `phishing-simulator/domain-records/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  INCIDENT_RESPONDER_LIST_GROUP_PERMISSIONS: {
+    NOTIFIED_EMAIL: {
+      url: `notified-emails/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUMMARY: {
+      url: `is/dashboard/summary`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH_LOG: {
+      url: `is/dashboard/search-log`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH_STATS: {
+      url: `is/dashboard/search-stats`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    NOTIFY_RESULT: {
+      url: `notify/result`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  INCIDENT_RESPONDER_LEFT_MENU_PERMISSIONS: {
+    NOTIFIED_EMAIL: {
+      url: `notified-emails/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    INVESTIGATIONS: {
+      url: `investigations/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    INTEGRATIONS: {
+      url: `analysis-engines/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PLAYBOOKS: {
+      url: `playbooks/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    MAIL_CONFIGURATIONS: {
+      url: `mail-configurations/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  PHISHING_REPORTER_LEFT_MENU_PERMISSIONS: {
+    SEARCH: {
+      url: `phishing-reporter/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET: {
+      url: `phishing-reporter`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  REPORTS_LEFT_MENU_PERMISSIONS: {
+    SEARCH: {
+      url: `phishing-simulator/phishing-campaign-job-report/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  COMPANY_LEFT_MENU_PERMISSIONS: {
+    TARGET_USERS: {
+      url: `target-users/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    TARGET_GROUPS: {
+      url: `target-groups/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    COMPANY_GROUPS: {
+      url: `company-groups/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    COMPANY: {
+      url: `companies/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SMTP_SETTINGS: {
+      url: `companies/smtp-settings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    ROLES: {
+      url: `roles/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SYSTEM_USERS: {
+      url: `system-users/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    AUDIT_LOGS: {
+      url: `audit-logs`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   PLAYBOOK_PERMISSIONS: {
     MATCHING_PLAYBOOKS_SEARCH: {
       url: 'notified-emails/matching-playbooks/{playbookResourceId}/search',
