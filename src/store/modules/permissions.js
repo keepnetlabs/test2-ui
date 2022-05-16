@@ -24,7 +24,8 @@ const {
   INVESTIGATION_PERMISSIONS,
   INTEGRATION_PERMISSIONS,
   ADVANCED_SETTINGS_PERMISSIONS,
-  MAIL_CONFIGURATION_PERMISSIONS
+  MAIL_CONFIGURATION_PERMISSIONS,
+  PHISHING_REPORTER_PERMISSIONS
 } = PERMISSIONS
 let state = JSON.parse(localStorage.getItem('permissions')) || {
   permissions: [],
@@ -52,7 +53,8 @@ let state = JSON.parse(localStorage.getItem('permissions')) || {
   investigationPermissions: INVESTIGATION_PERMISSIONS,
   integrationPermissions: INTEGRATION_PERMISSIONS,
   advancedSettingsPermissions: ADVANCED_SETTINGS_PERMISSIONS,
-  mailConfigurationPermissions: MAIL_CONFIGURATION_PERMISSIONS
+  mailConfigurationPermissions: MAIL_CONFIGURATION_PERMISSIONS,
+  phishingReporterPermissions: PHISHING_REPORTER_PERMISSIONS
 }
 state = JSON.parse(JSON.stringify(state))
 const store = {
@@ -293,6 +295,21 @@ const store = {
     getPhishingReporterLeftMenuPermissions(state) {
       return state?.phishingReporterLeftMenuPermissions?.isOneOfThemPermitted
     },
+    getPhishingReporterSearchPermissions(state) {
+      return state?.phishingReporterPermissions?.SEARCH?.hasPermission
+    },
+    getPhishingReporterSummaryPermissions(state) {
+      return state?.phishingReporterPermissions?.SUMMARY?.hasPermission
+    },
+    getPhishingReporterGetPermissions(state) {
+      return state?.phishingReporterPermissions?.GET?.hasPermission
+    },
+    getPhishingReporterSavePermissions(state) {
+      return state?.phishingReporterPermissions?.SAVE?.hasPermission
+    },
+    getPhishingReporterDeleteUserPermissions(state) {
+      return state?.phishingReporterPermissions?.DELETE_USER?.hasPermission
+    },
     getReportsLeftMenuPermissions(state) {
       return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted
     },
@@ -386,7 +403,8 @@ const store = {
         'investigationPermissions',
         'integrationPermissions',
         'advancedSettingsPermissions',
-        'mailConfigurationPermissions'
+        'mailConfigurationPermissions',
+        'phishingReporterPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

@@ -469,6 +469,33 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  PHISHING_REPORTER_PERMISSIONS: {
+    SEARCH: {
+      url: `phishing-reporter/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUMMARY: {
+      url: `phishing-reporter/summary`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    GET: {
+      url: `phishing-reporter`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    SAVE: {
+      url: `phishing-reporter`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE_USER: {
+      url: `phishing-reporter-users/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
   REPORTS_LEFT_MENU_PERMISSIONS: {
     SEARCH: {
       url: `phishing-simulator/phishing-campaign-job-report/search`,

@@ -1,9 +1,6 @@
 <template>
   <div class="phishing-reporter__header" id="phishing-reporter">
-    <div
-      class="phishing-reporter__header-container"
-      v-if="checkPermissions('phishing-reporter/summary', 'GET')"
-    >
+    <div class="phishing-reporter__header-container" v-if="getPhishingReporterSummaryPermissions">
       <div class="phishing-reporter__stats">
         <div
           class="phishing-reporter__header-left-column"
@@ -138,7 +135,7 @@
                 :label="labels.Users"
                 name="phishing-reporter-users"
                 id="phishing-reporter-users-content"
-                v-if="checkPermissions('phishing-reporter/search', 'POST')"
+                v-if="getPhishingReporterSearchPermissions"
                 ><users
                   v-if="tab === 'phishing-reporter-users'"
                   ref="refUsers"
@@ -148,7 +145,7 @@
                 :label="labels.Settings"
                 name="phishing-reporter-settings"
                 id="phishing-reporter-settings-content"
-                v-if="checkPermissions('phishing-reporter', 'GET')"
+                v-if="getPhishingReporterGetPermissions"
               >
                 <DatatableLoading class="mt-5" :loading="isLoading" v-if="isLoading" />
                 <component
@@ -175,7 +172,7 @@ import PhishingReporterTopBar from '../components/SkeletonLoading/PhishingReport
 import DatatableLoading from '@/components/SkeletonLoading/DatatableLoading'
 import InvestigationDetailsTopBarLoading from '@/components/SkeletonLoading/InvestigationDetailsTopBarLoading'
 import labels from '@/model/constants/labels'
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'PhishingReporter',
   components: {
@@ -219,14 +216,17 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getPhishingReporterSearchPermissions: 'permissions/getPhishingReporterSearchPermissions',
+      getPhishingReporterSummaryPermissions: 'permissions/getPhishingReporterSummaryPermissions',
+      getPhishingReporterGetPermissions: 'permissions/getPhishingReporterGetPermissions',
+      getPhishingReporterSavePermissions: 'permissions/getPhishingReporterSavePermissions'
+    }),
     getAddOnStatus() {
       return this.phishingReportSummary ? this.phishingReportSummary['totalUsersCount'] : 0
     }
   },
   methods: {
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     handleTabClick({ label = '' }) {
       if (label === 'Settings') {
         this.getPhishingReport()
