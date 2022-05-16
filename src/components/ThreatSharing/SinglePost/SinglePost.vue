@@ -1146,11 +1146,11 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      getPostPermission: 'permissions/getThreatSharingGetPostPermission,',
-      getSharePostPermission: 'permissions/getThreatSharingSharePostPermission,',
-      getDeletePostPermission: 'permissions/getThreatSharingDeletePostPermission,',
-      getEditCommentPermission: 'permissions/getThreatSharingEditCommentPermission,',
-      getDeleteCommentPermission: 'permissions/getThreatSharingDeleteCommentPermission,'
+      getPostPermission: 'permissions/getThreatSharingGetPostPermission',
+      getSharePostPermission: 'permissions/getThreatSharingSharePostPermission',
+      getDeletePostPermission: 'permissions/getThreatSharingDeletePostPermission',
+      getEditCommentPermission: 'permissions/getThreatSharingEditCommentPermission',
+      getDeleteCommentPermission: 'permissions/getThreatSharingDeleteCommentPermission'
     })
   },
   watch: {
