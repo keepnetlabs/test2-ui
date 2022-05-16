@@ -3283,21 +3283,6 @@ export default {
           transition: none !important;
           -ms-flex-wrap: wrap;
           flex-wrap: wrap;
-
-          .k-table__wrapper {
-            //padding-bottom: 0;
-          }
-
-          .card.v-card.v-sheet.theme--light {
-            /*
-            padding: 0 !important;
-            border-radius: 0 !important;
-            -webkit-box-shadow: none !important;
-            box-shadow: none !important;
-
-            */
-          }
-
           &__summary {
             display: flex;
             justify-content: space-between;
@@ -3416,22 +3401,6 @@ export default {
           }
         }
       }
-    }
-  }
-
-  .newInvestigationOverlay {
-    background-color: #fff !important;
-    overflow: auto !important;
-    height: 100% !important;
-    max-width: 100vw !important;
-    width: 100% !important;
-    display: block !important;
-    justify-content: center !important;
-    align-items: center !important;
-
-    > .v-overlay__content {
-      height: auto;
-      width: 100%;
     }
   }
 }

@@ -310,6 +310,11 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Incident Responder'
           },
+          beforeEnter(to, from, next) {
+            to.params.PERMISSIONS =
+              store?.getters['permissions/getMailConfigurationPermissions'] || {}
+            next()
+          },
           props: true,
           params: true
         },
@@ -331,6 +336,10 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
+          },
+          beforeEnter(to, from, next) {
+            to.params.PERMISSIONS = store?.getters['permissions/getInvestigationPermissions'] || {}
+            next()
           },
           props: true
         },

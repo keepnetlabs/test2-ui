@@ -46,8 +46,8 @@
                 placeholder="Select integration type"
                 no-data-text="No integration available"
                 persistent-hint
-                @change="changeEngineType"
                 clearable
+                @change="changeEngineType"
               ></k-select>
             </div>
             <div class="d-flex p-relative w-100">
@@ -62,17 +62,17 @@
                 outlined
                 placeholder="Select a date"
                 persistent-hint
-                @input="changeDateValueSelect('constant')"
                 return-object
+                @input="changeDateValueSelect('constant')"
                 @click:clear="filteredDateValueSelect = { name: 'All Time', value: '' }"
               ></k-select>
               <div
                 v-if="filteredDateValueSelect.value === 'custom' && menuOpen"
                 class="absolute-date-filter"
                 id="input--date-picker-select-main-div"
-                @blur="changeBlurValue($event)"
-                tabindex="1"
                 :style="filteredSelectValueDate === 'between' ? 'width: 400px' : ''"
+                tabindex="1"
+                @blur="changeBlurValue($event)"
               >
                 <v-select
                   :items="dateFilterItems"
@@ -324,11 +324,11 @@
           </CardLoading>
         </div>
         <v-tabs id="tab-sandbox" v-model="tab" background-color="white" color="basil">
-          <v-tab id="tab-stats">Stats</v-tab>
-          <v-tab id="tab-logs">Logs</v-tab>
+          <v-tab v-if="isStatsRender" id="tab-stats">Stats</v-tab>
+          <v-tab v-if="isLogsRender" id="tab-logs">Logs</v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
-          <v-tab-item>
+          <v-tab-item v-if="isStatsRender">
             <div class="mt-4 pa-2">
               <v-card>
                 <div class="header">
@@ -345,7 +345,7 @@
               </v-card>
             </div>
           </v-tab-item>
-          <v-tab-item>
+          <v-tab-item v-if="isLogsRender">
             <div class="mt-4 pa-2">
               <v-card>
                 <div class="header">
@@ -370,7 +370,6 @@
 
 <script>
 import {
-  checkPermission,
   getDefaultAxiosPayload,
   getSelectSearchPayload,
   getTimeZoneForMoment
@@ -391,6 +390,7 @@ import { searchRestApi } from '@/api/restApi'
 import { searchTargetGroups } from '@/api/targetUsers'
 import InfiniteScroll from '@/directives/infinite-scroll'
 import SelectSearchHandler from '@/directives/select-search-handler'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Sandbox',
   components: {
@@ -504,6 +504,15 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      permissions: 'permissions/getCrossCompanyPagePermissions'
+    }),
+    isStatsRender() {
+      return this?.permissions?.SEARCH_STATS?.hasPermission
+    },
+    isLogsRender() {
+      return this?.permissions?.SEARCH_LOG?.hasPermission
+    },
     getDateKey() {
       return this.$store?.state?.auth?.user?.userCompany?.timeZone
     }
@@ -514,7 +523,6 @@ export default {
     if (localStorage.getItem('sandboxIntegration'))
       this.analysisEngineTypeResourceId =
         localStorage.getItem('sandboxIntegration').split(',') || ''
-    //this.filteredDateValueSelect = localStorage.getItem('sandboxDate') //select
     if (localStorage.getItem('sandboxDateValue'))
       this.filteredSelectValueDate = localStorage.getItem('sandboxDateFormat')
     if (localStorage.getItem('sandboxDateValue'))
@@ -523,7 +531,6 @@ export default {
         value: 'custom'
       }
     let dateValue = localStorage.getItem('sandboxDateOption')
-    //localStorage.setItem('sandboxFilteredSelectValueDate', this.filteredSelectValueDate) //between
     if (this.filteredSelectValueDate === 'between') {
       this.filteredDateValueRange = dateValue.split(',')
     } else {
@@ -885,9 +892,6 @@ export default {
         .finally(() => {
           this.incidentLoading = false
         })
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     }
   }
 }
@@ -1538,29 +1542,6 @@ export default {
       .btn-investigations,
       .btn-playbook {
         font-size: 12px !important;
-      }
-    }
-
-    ::v-deep .newInvestigationOverlay {
-      background-color: #fff !important;
-      overflow: auto !important;
-      height: 100% !important;
-      max-width: 100vw !important;
-      width: 100% !important;
-      display: block !important;
-      justify-content: center !important;
-      align-items: center !important;
-
-      > ::v-deep .v-overlay__content {
-        height: auto;
-        width: 100%;
-      }
-
-      .v-overlay__content {
-        height: 100%;
-        position: absolute;
-        left: 0;
-        width: 100%;
       }
     }
 
