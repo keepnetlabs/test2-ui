@@ -64,7 +64,7 @@
               }-${Math.random().toString().substring(2)}`"
               class="btn-hover mr-1"
               icon
-              :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
+              :disabled="!getDnsUpdatePermissions"
               @click.native="handleEdit(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -81,7 +81,7 @@
               }-${Math.random().toString().substring(2)}`"
               class="btn-hover"
               icon
-              :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+              :disabled="!getDnsDeletePermissions"
               @click.native="handleActionDelete(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -102,7 +102,7 @@ import {
   TABLE_SETTINGS_KEYS,
   getStoreValue
 } from '@/model/constants/commonConstants'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { deleteEmailTemplate, exportDnsService, getDnsServiceList } from '@/api/dnsServices'
@@ -113,6 +113,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DnsServiceList',
@@ -120,11 +121,6 @@ export default {
     NewEditDnsService,
     DataTable,
     DeleteServiceModal
-  },
-  props: {
-    PERMISSIONS: {
-      type: Object
-    }
   },
   data() {
     return {
@@ -219,18 +215,18 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+            disabled: !this.$store.getters['permissions/getDnsUpdatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            disabled: !this.$store.getters['permissions/getDnsDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+          disabled: !this.$store.getters['permissions/getDnsExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -249,7 +245,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a DNS Service',
           id: 'btn-add--DnsServiceList',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getDnsCreatePermissions']
         }
       },
       modalStatus: false,
@@ -260,14 +256,18 @@ export default {
       templateHTML: null
     }
   },
+  computed: {
+    ...mapGetters({
+      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions',
+      getDnsUpdatePermissions: 'permissions/getDnsUpdatePermissions',
+      getDnsDeletePermissions: 'permissions/getDnsDeletePermissions'
+    })
+  },
   methods: {
     checkIfCanCloseDnsServiceModal() {
       if (this.$refs.newEditDnsServiceModal) {
         this.$refs.newEditDnsServiceModal.cancelDns()
       }
-    },
-    getDisabledStatusOfAction(row, actionStatus) {
-      return !(this.PERMISSIONS[actionStatus]?.hasPermission && row.isOwner)
     },
     changeStatus(value, restart) {
       this.modalStatus = !this.modalStatus
@@ -420,8 +420,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      const { SEARCH } = this.PERMISSIONS
-      if (SEARCH.hasPermission) {
+      if (this.getDnsSearchPermissions) {
         getDnsServiceList(this.bodyData)
           .then((response) => {
             const {

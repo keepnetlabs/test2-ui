@@ -155,20 +155,22 @@ export default {
           action: 'on-add-button-click',
           tooltip: 'Add a Campaign',
           id: 'btn-add--item-campaign-manager',
-          disabled: false
+          disabled: !this.$store.getters['permissions/getCampaignManagerParentCreatePermissions']
         },
         rowActions: [
           {
             name: labels.Stop,
             id: 'btn-stop--row-actions-campaign-item-manager',
             icon: 'mdi-stop',
-            action: 'on-stop'
+            action: 'on-stop',
+            disabled: !this.$store.getters['permissions/getCampaignReportsPausePermissions']
           },
           {
             name: labels.Delete,
             id: 'btn-delete--row-actions-campaign-manager',
             icon: 'mdi-delete',
-            action: 'on-delete'
+            action: 'on-delete',
+            disabled: !this.$store.getters['permissions/getCampaignReportsDeletePermissions']
           }
         ],
         serverSideEvents: { pagination: true, search: true, sort: true }

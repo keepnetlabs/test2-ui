@@ -12,7 +12,14 @@ const {
   PHISHING_REPORTER_LEFT_MENU_PERMISSIONS,
   REPORTS_LEFT_MENU_PERMISSIONS,
   COMPANY_LEFT_MENU_PERMISSIONS,
-  THREAT_SHARING_PERMISSIONS
+  THREAT_SHARING_PERMISSIONS,
+  PHISHING_SCENARIO_PERMISSIONS,
+  EMAIL_TEMPLATES_PERMISSIONS,
+  LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  CAMPAIGN_MANAGER_PARENT,
+  CAMPAIGN_REPORTS_PERMISSIONS,
+  DOMAIN_PERMISSIONS,
+  DNS_PERMISSIONS
 } = PERMISSIONS
 
 const state = JSON.parse(localStorage.getItem('permissions')) || {
@@ -29,7 +36,14 @@ const state = JSON.parse(localStorage.getItem('permissions')) || {
   incidentResponderLeftMenuPermissions: INCIDENT_RESPONDER_LEFT_MENU_PERMISSIONS,
   phishingReporterLeftMenuPermissions: PHISHING_REPORTER_LEFT_MENU_PERMISSIONS,
   reportsLeftMenuPermissions: REPORTS_LEFT_MENU_PERMISSIONS,
-  companyLeftMenuPermissions: COMPANY_LEFT_MENU_PERMISSIONS
+  companyLeftMenuPermissions: COMPANY_LEFT_MENU_PERMISSIONS,
+  phishingScenariosPermissions: PHISHING_SCENARIO_PERMISSIONS,
+  emailTemplatesPermissions: EMAIL_TEMPLATES_PERMISSIONS,
+  landingPageTemplatesPermissions: LANDING_PAGE_TEMPLATES_PERMISSIONS,
+  campaignManagerParentPermissions: CAMPAIGN_MANAGER_PARENT,
+  campaignReportsPermissions: CAMPAIGN_REPORTS_PERMISSIONS,
+  domainPermisisons: DOMAIN_PERMISSIONS,
+  dnsPermissions: DNS_PERMISSIONS
 }
 const store = {
   namespaced: true,
@@ -110,11 +124,125 @@ const store = {
     getPhishingScenarioLeftMenuPermissions(state) {
       return state?.phishingScenarioLeftMenuPermissions?.isOneOfThemPermitted
     },
+    getPhishingScenariosSearchPermissions(state) {
+      return state?.phishingScenariosPermissions?.SEARCH?.hasPermission
+    },
+    getPhishingScenariosPreviewPermissions(state) {
+      return state?.phishingScenariosPermissions?.PREVIEW?.hasPermission
+    },
+    getPhishingScenariosEditPermissions(state) {
+      return state?.phishingScenariosPermissions?.EDIT?.hasPermission
+    },
+    getPhishingScenariosCreatePermissions(state) {
+      return state?.phishingScenariosPermissions?.CREATE?.hasPermission
+    },
+    getPhishingScenariosDeletePermissions(state) {
+      return state?.phishingScenariosPermissions?.DELETE?.hasPermission
+    },
+    getPhishingScenariosExportPermissions(state) {
+      return state?.phishingScenariosPermissions?.EXPORT?.hasPermission
+    },
+    getEmailTemplatesSearchPermissions(state) {
+      return state?.emailTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getEmailTemplatesPreviewPermissions(state) {
+      return state?.emailTemplatesPermissions?.PREVIEW?.hasPermission
+    },
+    getEmailTemplatesEditPermissions(state) {
+      return state?.emailTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getEmailTemplatesCreatePermissions(state) {
+      return state?.emailTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getEmailTemplatesDeletePermissions(state) {
+      return state?.emailTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getEmailTemplatesExportPermissions(state) {
+      return state?.emailTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getLandingPageTemplatesSearchPermissions(state) {
+      return state?.landingPageTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getLandingPageTemplatesPreviewPermissions(state) {
+      return state?.landingPageTemplatesPermissions?.PREVIEW?.hasPermission
+    },
+    getLandingPageTemplatesEditPermissions(state) {
+      return state?.landingPageTemplatesPermissions?.EDIT?.hasPermission
+    },
+    getLandingPageTemplatesCreatePermissions(state) {
+      return state?.landingPageTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getLandingPageTemplatesDeletePermissions(state) {
+      return state?.landingPageTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getLandingPageTemplatesExportPermissions(state) {
+      return state?.landingPageTemplatesPermissions?.EXPORT?.hasPermission
+    },
     getCampaignManagerLeftMenuPermissions(state) {
       return state?.campaignManagerLeftMenuPermissions?.isOneOfThemPermitted
     },
+    getCampaignManagerParentSearchPermissions(state) {
+      return state?.campaignManagerParentPermissions?.SEARCH?.hasPermission
+    },
+    getCampaignManagerParentPreviewPermissions(state) {
+      return state?.campaignManagerParentPermissions?.PREVIEW?.hasPermission
+    },
+    getCampaignManagerParentDeletePermissions(state) {
+      return state?.campaignManagerParentPermissions?.DELETE?.hasPermission
+    },
+    getCampaignManagerParentGetPermissions(state) {
+      return state?.campaignManagerParentPermissions?.GET?.hasPermission
+    },
+    getCampaignManagerParentCreatePermissions(state) {
+      return state?.campaignManagerParentPermissions?.CREATE?.hasPermission
+    },
+    getCampaignManagerParentExportPermissions(state) {
+      return state?.campaignManagerParentPermissions?.EXPORT?.hasPermission
+    },
+    getCampaignManagerParentUpdatePermissions(state) {
+      return state?.campaignManagerParentPermissions?.UPDATE?.hasPermission
+    },
     getSettingsLeftMenuPermissions(state) {
       return state?.settingsLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getDomainCreatePermissions(state) {
+      return state?.domainPermisisons?.CREATE?.hasPermission
+    },
+    getDomainSearchPermissions(state) {
+      return state?.domainPermisisons?.SEARCH?.hasPermission
+    },
+    getDomainUpdatePermissions(state) {
+      return state?.domainPermisisons?.UPDATE?.hasPermission
+    },
+    getDomainDeletePermissions(state) {
+      return state?.domainPermisisons?.DELETE?.hasPermission
+    },
+    getDomainGetPermissions(state) {
+      return state?.domainPermisisons?.GET?.hasPermission
+    },
+    getDomainExportPermissions(state) {
+      return state?.domainPermisisons?.EXPORT?.hasPermission
+    },
+    getDomainFormDetailsPermissions(state) {
+      return state?.domainPermisisons?.FORM_DETAILS?.hasPermission
+    },
+    getDnsCreatePermissions(state) {
+      return state?.dnsPermissions?.CREATE?.hasPermission
+    },
+    getDnsSearchPermissions(state) {
+      return state?.dnsPermissions?.SEARCH?.hasPermission
+    },
+    getDnsUpdatePermissions(state) {
+      return state?.dnsPermissions?.UPDATE?.hasPermission
+    },
+    getDnsDeletePermissions(state) {
+      return state?.dnsPermissions?.DELETE?.hasPermission
+    },
+    getDnsGetPermissions(state) {
+      return state?.dnsPermissions?.GET?.hasPermission
+    },
+    getDnsExportPermissions(state) {
+      return state?.dnsPermissions?.EXPORT?.hasPermission
     },
     getIncidentResponderListGroupPermissions(state) {
       return state?.incidentResponderListGroupPermissions?.isOneOfThemPermitted
@@ -153,6 +281,12 @@ const store = {
     },
     getReportsLeftMenuPermissions(state) {
       return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted
+    },
+    getCampaignReportsGetPermissions(state) {
+      return state?.campaignReportsPermissions?.GET?.hasPermission
+    },
+    getCampaignReportsDeletePermissions(state) {
+      return state?.campaignReportsPermissions?.DELETE?.hasPermission
     },
     getCompanyLeftMenuPermissions(state) {
       return state?.companyLeftMenuPermissions?.isOneOfThemPermitted
@@ -196,7 +330,14 @@ const store = {
         'incidentResponderLeftMenuPermissions',
         'phishingReporterLeftMenuPermissions',
         'reportsLeftMenuPermissions',
-        'companyLeftMenuPermissions'
+        'companyLeftMenuPermissions',
+        'phishingScenariosPermissions',
+        'emailTemplatesPermissions',
+        'landingPageTemplatesPermissions',
+        'campaignManagerParentPermissions',
+        'campaignReportsPermissions',
+        'domainPermisisons',
+        'dnsPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

@@ -15,7 +15,8 @@ const ENUMS = {
     POST: 'POST',
     GET: 'GET',
     PUT: 'PUT',
-    DELETE: 'DELETE'
+    DELETE: 'DELETE',
+    PATCH: 'PATCH'
   }
 }
 export default {
@@ -204,7 +205,103 @@ export default {
       method: ENUMS.METHODS.POST
     },
     LANDING_PAGE: {
-      url: 'phishing-simulator/landing-page-template|POST',
+      url: 'phishing-simulator/landing-page-template',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  PHISHING_SCENARIO_PERMISSIONS: {
+    SEARCH: {
+      url: `phishing-simulator/phishing-scenario/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `phishing-simulator/phishing-scenario/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `phishing-simulator/phishing-scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `phishing-simulator/phishing-scenario`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `phishing-simulator/phishing-scenario/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `phishing-simulator/phishing-scenario/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  EMAIL_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: `phishing-simulator/email-templates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `phishing-simulator/email-templates/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `phishing-simulator/email-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `phishing-simulator/email-templates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `phishing-simulator/email-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `phishing-simulator/email-templates/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  LANDING_PAGE_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: 'phishing-simulator/landing-page-template/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `phishing-simulator/landing-page-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `phishing-simulator/landing-page-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `phishing-simulator/landing-page-template`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `phishing-simulator/landing-page-template/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `phishing-simulator/landing-page-template/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }
@@ -299,6 +396,18 @@ export default {
       url: `phishing-simulator/phishing-campaign-job-report/search`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
+    }
+  },
+  CAMPAIGN_REPORTS_PERMISSIONS: {
+    GET: {
+      url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    DELETE: {
+      url: `phishing-simulator/phishing-campaign-job-report/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
     }
   },
   COMPANY_LEFT_MENU_PERMISSIONS: {
@@ -476,6 +585,11 @@ export default {
       url: 'phishing-simulator/phishing-campaign/search',
       hasPermission: false,
       method: 'POST'
+    },
+    PREVIEW: {
+      url: 'phishing-simulator/phishing-campaign/preview/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
     },
     DELETE: {
       url: 'phishing-simulator/phishing-campaign/{resourceId}',

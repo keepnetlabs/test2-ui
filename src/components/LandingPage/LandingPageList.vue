@@ -66,7 +66,7 @@
     </app-dialog>
 
     <data-table
-      v-if="checkPermissions('phishing-simulator/landing-page-template', 'POST')"
+      v-if="getLandingPageTemplatesSearchPermissions"
       id="landingPage-data-table"
       ref="refLandingPageList"
       is-server-side
@@ -274,7 +274,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -291,6 +291,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'EmailTemplates',
   components: {
@@ -414,37 +415,25 @@ export default {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/landing-page-template/{resourceId}',
-              'GET'
-            )
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/landing-page-template/{resourceId}',
-              'PUT'
-            )
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions']
           },
           {
             name: labels.Disable,
             icon: 'mdi-content-copy',
             action: 'disable',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/landing-page-template/{resourceId}',
-              'PUT'
-            )
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/landing-page-template/{resourceId}',
-              'DELETE'
-            )
+            disabled: !this.$store.getters['permissions/getLandingPageTemplatesDeletePermissions']
           }
           // {
           //   name: labels.MakeDefault,
@@ -458,10 +447,7 @@ export default {
         ],
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions(
-            'phishing-simulator/landing-page-template/search/export',
-            'POST'
-          )
+          disabled: !this.$store.getters['permissions/getLandingPageTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -481,7 +467,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--landingPage',
-          disabled: !this.checkPermissions('phishing-simulator/landing-page-template', 'POST')
+          disabled: !this.$store.getters['permissions/getLandingPageTemplatesCreatePermissions']
         }
       },
       modalStatus: false,
@@ -493,6 +479,12 @@ export default {
       templateHTML: null,
       timeoutId: ''
     }
+  },
+  computed: {
+    ...mapGetters({
+      getLandingPageTemplatesSearchPermissions:
+        'permissions/getLandingPageTemplatesSearchPermissions'
+    })
   },
   methods: {
     callForLanguages() {
@@ -603,9 +595,6 @@ export default {
       } else {
         localStorage.removeItem(DEFAULT_SEARCH_CONTAINER_KEYS.LANDINGPAGES)
       }
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
@@ -726,7 +715,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.checkPermissions('phishing-simulator/landing-page-template', 'POST')) {
+      if (this.getLandingPageTemplatesSearchPermissions) {
         getLandingPageList(this.bodyData)
           .then((response) => {
             const {
