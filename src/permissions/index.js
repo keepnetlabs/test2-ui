@@ -379,6 +379,84 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  INCIDENT_RESPONDER_OTHER_PERMISSIONS: {
+    RE_ANALYZE: {
+      url: `notified-emails/{resourceId}/reanalyze`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  INVESTIGATION_PERMISSIONS: {
+    GET: {
+      url: `investigations/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    STOP: {
+      url: `investigations/{resourceId}/cancel`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    SEARCH: {
+      url: `investigations/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    POST: {
+      url: `investigations`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    RE_ANALYZE: {
+      url: `notified-emails/{resourceId}/reanalyze`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    }
+  },
+  INTEGRATION_PERMISSIONS: {
+    SEARCH: {
+      url: `analysis-engines/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `analysis-engines/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DISABLE: {
+      url: `analysis-engines/{resourceId}/disable`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    EXPORT: {
+      url: `analysis-engines/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    POST: {
+      url: `analysis-engines`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `analysis-engines/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
+  ADVANCED_SETTINGS_PERMISSIONS: {
+    SEARCH: {
+      url: `analysis-engines/analysis-exclusions`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    UPDATE: {
+      url: `analysis-engines/analysis-exclusions`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    }
+  },
   PHISHING_REPORTER_LEFT_MENU_PERMISSIONS: {
     SEARCH: {
       url: `phishing-reporter/search`,
@@ -492,6 +570,28 @@ export default {
       url: 'playbooks/search/export',
       hasPermission: false,
       method: 'POST'
+    }
+  },
+  MAIL_CONFIGURATION_PERMISSIONS: {
+    O365_POST: {
+      url: 'mail-configurations/o365',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    O365_UPDATE: {
+      url: 'mail-configurations/o365/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    SEARCH: {
+      url: 'mail-configurations/search',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    O365_DELETE: {
+      url: 'mail-configurations/o365/{resourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
     }
   },
   SMTP_SETTINGS_PERMISSIONS: {

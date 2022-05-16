@@ -19,10 +19,14 @@ const {
   CAMPAIGN_MANAGER_PARENT,
   CAMPAIGN_REPORTS_PERMISSIONS,
   DOMAIN_PERMISSIONS,
-  DNS_PERMISSIONS
+  DNS_PERMISSIONS,
+  INCIDENT_RESPONDER_OTHER_PERMISSIONS,
+  INVESTIGATION_PERMISSIONS,
+  INTEGRATION_PERMISSIONS,
+  ADVANCED_SETTINGS_PERMISSIONS,
+  MAIL_CONFIGURATION_PERMISSIONS
 } = PERMISSIONS
-
-const state = JSON.parse(localStorage.getItem('permissions')) || {
+let state = JSON.parse(localStorage.getItem('permissions')) || {
   permissions: [],
   playbookPermissions: PLAYBOOK_PERMISSIONS,
   dashboardPermissions: DASHBOARD_PERMISSIONS,
@@ -43,17 +47,20 @@ const state = JSON.parse(localStorage.getItem('permissions')) || {
   campaignManagerParentPermissions: CAMPAIGN_MANAGER_PARENT,
   campaignReportsPermissions: CAMPAIGN_REPORTS_PERMISSIONS,
   domainPermisisons: DOMAIN_PERMISSIONS,
-  dnsPermissions: DNS_PERMISSIONS
+  dnsPermissions: DNS_PERMISSIONS,
+  incidentResponderOtherPermissions: INCIDENT_RESPONDER_OTHER_PERMISSIONS,
+  investigationPermissions: INVESTIGATION_PERMISSIONS,
+  integrationPermissions: INTEGRATION_PERMISSIONS,
+  advancedSettingsPermissions: ADVANCED_SETTINGS_PERMISSIONS,
+  mailConfigurationPermissions: MAIL_CONFIGURATION_PERMISSIONS
 }
+state = JSON.parse(JSON.stringify(state))
 const store = {
   namespaced: true,
   state,
   getters: {
     getPermissions(state) {
       return state.permission
-    },
-    getPlaybookPermissions(state) {
-      return state.PLAYBOOK_PERMISSIONS
     },
     getDashboardPermissions(state) {
       return state?.dashboardPermissions?.isOneOfThemPermitted
@@ -276,6 +283,13 @@ const store = {
         NOTIFY_RESULT?.hasPermission
       ].some((permission) => permission)
     },
+    getCrossCompanyPagePermissions() {
+      const { SEARCH_LOG = {}, SEARCH_STATS = {} } = state?.incidentResponderListGroupPermissions
+      return {
+        SEARCH_LOG,
+        SEARCH_STATS
+      }
+    },
     getPhishingReporterLeftMenuPermissions(state) {
       return state?.phishingReporterLeftMenuPermissions?.isOneOfThemPermitted
     },
@@ -310,6 +324,36 @@ const store = {
     getAuditLogSearchPermission(state) {
       const { AUDIT_LOG = {} } = state?.companyLeftMenuPermissions
       return AUDIT_LOG?.hasPermission
+    },
+    getIncidentResponderSummaryPermission(state) {
+      return state?.dashboardPermissions?.IR_SUMMARY?.hasPermission
+    },
+    getIncidentResponderTopRulesPermission(state) {
+      return state?.dashboardPermissions?.IR_TOP_RULES?.hasPermission
+    },
+    getIncidentResponderRunningInvestigationsPermission(state) {
+      return state?.dashboardPermissions?.IR_RUNNING_INVESTIGATIONS?.hasPermission
+    },
+    getIncidentResponderNotifiedEmailPermission(state) {
+      return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission
+    },
+    getIncidentResponderNotifiedEmailReAnalyze(state) {
+      return state?.incidentResponderOtherPermissions?.RE_ANALYZE?.hasPermission
+    },
+    getInvestigationPermissions(state) {
+      return state?.investigationPermissions
+    },
+    getIntegrationPermissions(state) {
+      return state?.integrationPermissions
+    },
+    getAdvancedSettingsPermissions(state) {
+      return state?.advancedSettingsPermissions
+    },
+    getPlaybookPermissions(state) {
+      return state?.playbookPermissions
+    },
+    getMailConfigurationPermissions() {
+      return state?.mailConfigurationPermissions
     }
   },
   mutations: {
@@ -327,6 +371,7 @@ const store = {
         'campaignManagerLeftMenuPermissions',
         'settingsLeftMenuPermissions',
         'incidentResponderListGroupPermissions',
+        'incidentResponderOtherPermissions',
         'incidentResponderLeftMenuPermissions',
         'phishingReporterLeftMenuPermissions',
         'reportsLeftMenuPermissions',
@@ -337,7 +382,11 @@ const store = {
         'campaignManagerParentPermissions',
         'campaignReportsPermissions',
         'domainPermisisons',
-        'dnsPermissions'
+        'dnsPermissions',
+        'investigationPermissions',
+        'integrationPermissions',
+        'advancedSettingsPermissions',
+        'mailConfigurationPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }
