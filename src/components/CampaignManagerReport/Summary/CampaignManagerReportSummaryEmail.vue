@@ -39,6 +39,15 @@
           <span>&#60;</span>
           {{ formData.fromAddress }} <span>&#62;</span>
         </div>
+        <div v-if="formData.attachment" class="attachment-wrapper mt-2" style="position: relative;">
+          <div class="attachment blue-attach mb-0">
+            <AttachmentsPreview
+              :deletable="false"
+              :att="formData.attachment"
+              :isEmailTemplate="true"
+            />
+          </div>
+        </div>
         <div></div>
       </div>
       <div
@@ -62,9 +71,17 @@ import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
 import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+
 export default {
   name: 'CampaignManagerReportSummaryEmail',
-  components: { DatatableLoading, KEmailPreview, Badge, CampaignManagerSummaryCard },
+  components: {
+    AttachmentsPreview,
+    DatatableLoading,
+    KEmailPreview,
+    Badge,
+    CampaignManagerSummaryCard
+  },
   mixins: [useLoading],
   props: {
     formData: {

@@ -16,7 +16,7 @@
         v-on="on"
         v-if="!att.isHidden && !isEmailTemplate"
         id="text--attachment-preview-name"
-        class="file-name safari-hide-tooltip max-char pl-2"
+        class="file-name safari-hide-tooltip max-char px-2"
       >
         {{ getFileName }}
       </div>
@@ -24,7 +24,7 @@
         v-on="on"
         v-if="att.isHidden && !isEmailTemplate"
         id="text--attachment-preview-hidden-by-owner"
-        class="file-name max-char pl-2"
+        class="file-name max-char px-2"
       >
         Hidden by Owner
       </div>
@@ -32,13 +32,13 @@
         v-on="on"
         v-if="isEmailTemplate"
         id="text--attachment-email-template-preview-name"
-        class="file-name safari-hide-tooltip max-char pl-2"
+        class="file-name safari-hide-tooltip max-char px-2"
       >
         {{ getFileName }}
       </div>
       <v-icon
         v-if="isEmailTemplate && deletable"
-        style="position: absolute; right: 20px;"
+        style="position: absolute; right: -28px;"
         @click="handleDelete"
         >mdi-close</v-icon
       >

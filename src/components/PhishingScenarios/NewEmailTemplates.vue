@@ -85,7 +85,7 @@
                                 ? 'See who falls for phishing links'
                                 : item.name === 'Data Submission'
                                 ? 'Gather information from users'
-                                : 'Send a trackable macro file '
+                                : 'Send a trackable file '
                             }}
                           </div>
                         </div>
@@ -208,9 +208,9 @@
                         :template.sync="formValues.template"
                         :is-edit="!!isEdit"
                         :is-phishing-template="true"
-                        :extensions="['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'html', 'htm']"
+                        :extensions="['doc', 'docx', 'html', 'htm']"
                         :size="2"
-                        fileUploadHint="Only word, excel, powerpoint, html files. Max. file size 2MB"
+                        fileUploadHint="Only word and html files. Max. file size 2MB"
                         @setAttachmentFile="setAttachmentFile"
                         @handleAttachmentRemove="handleAttachmentRemove"
                         @handleEditHtmlTemplate="formValues.template = $event"

@@ -232,8 +232,9 @@ export default {
     },
     submitForm() {
       this.isActionButtonDisabled = true
+      const payload = { ...this.formData, statusId: Number(this.formData.statusId) }
       if (!this.selectedItem) {
-        createSIEMIntegration(this.formData)
+        createSIEMIntegration(payload)
           .then(() => {
             this.$emit('on-submit')
           })
@@ -241,7 +242,7 @@ export default {
             this.isActionButtonDisabled = false
           })
       } else {
-        updateSIEMIntegration(this.selectedItem.resourceId, this.formData)
+        updateSIEMIntegration(this.selectedItem.resourceId, payload)
           .then(() => {
             this.$emit('on-submit')
           })
