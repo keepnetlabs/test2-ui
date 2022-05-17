@@ -876,7 +876,6 @@ export default {
       resourceId: ''
     },
     showReAnalyzeIncidentDialog: false,
-    totalNumberOfRecordsMatchingPopup: 0,
     isCustomOverflowedColumn: false,
     selectedCluster: '',
     selectedTemplateResourceId: '',
@@ -903,14 +902,8 @@ export default {
     selectedMatch: null,
     isShowRoi: false,
     extendedViewLoading: true,
-    openInvestigationOverlay: false,
-    investigationListData: [],
-    matchingInvestigationData: [],
     isShowingClusteredTable: false,
     showMatchingModal: false,
-    selectedRowsOfReportedEmailsLength: 0,
-    selectedReportedMails: null,
-    noteDisableStatus: false,
     baseManHour: null,
     baseManHourCost: null,
     validations: {
@@ -1026,58 +1019,6 @@ export default {
         btn: labels.New,
         icon: 'mdi-plus',
         id: 'btn-empty--incident-responder-investigation'
-      },
-      selectEvent: {}
-    },
-    matchingInvestigation: {
-      table: [],
-      columns: [
-        {
-          property: 'subject',
-          align: 'left',
-          editable: false,
-          label: 'Subject',
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'text',
-          minWidth: '33'
-        },
-        {
-          property: 'createDate',
-          align: 'left',
-          editable: false,
-          label: getStoreValue('createDate'),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'text',
-          minWidth: '33'
-        },
-        {
-          property: 'reportedBy',
-          align: 'left',
-          editable: false,
-          label: getStoreValue('reportedBy'),
-          fixed: false,
-          sortable: false,
-          show: true,
-          type: 'text',
-          minWidth: '34'
-        }
-      ],
-      addUsers: {
-        show: false,
-        popUp: false
-      },
-      addMenu: {
-        show: false,
-        popUp: false
-      },
-      iEmpty: {
-        message: labels.EmptyMatchingIncidents,
-        btn: '',
-        icon: 'mdi-plus'
       },
       selectEvent: {}
     },
@@ -2230,23 +2171,11 @@ export default {
 
       this.$refs.refReportedEmails.columnKey = `key-${Math.random().toString().substring(0, 7)}`
     },
-    getManipulatedChildData(data, isChild = false) {
-      data.forEach((item) => {
-        if (isChild) {
-          item.isChild = true
-        }
-        if (item.children) {
-          this.getManipulatedChildData(item.children, true)
-        }
-      })
-      return data
-    },
     handleRecordButtonClick(row) {
       this.clusteredRow = row
       this.dynamicClusterProps = null
       this.getDefaultFilterAndSearchReportedEmailClustered(false)
       this.setClusteredTableFilters()
-
       const persistentStateContainer = this.$refs.refReportedEmails.getState()
       let { filterValues = {}, search, sortProps } = persistentStateContainer
       const savedFilter = JSON.parse(
@@ -2528,8 +2457,6 @@ export default {
     onEditClick({ selected: selections, isEditPopupOpen, isMultiple, isSelectedAllEver }) {
       if (isEditPopupOpen && selections.length) {
         this.extendedViewLoading = true
-        this.selectedRowsOfReportedEmailsLength = selections.length
-        this.selectedReportedMails = selections
         if (selections.length === 1 && (!isMultiple || !this.extendedViewValue.length)) {
           this.isMultipleSelectedTemplateResourceId = false
           getNotifiedEmail(selections[0].resourceId)
@@ -2706,14 +2633,6 @@ export default {
 
       this.extendedViewValue = rows
     },
-    closeNewInvestigationModal(value) {
-      if (value) {
-        this.callForGetRunningInvestigations()
-        this.callForGetTopRules()
-        this.callForSearchNotifiedMail()
-      }
-      this.isWantToAddNewInvestigation = false
-    },
     callForGetRunningInvestigations() {
       if (this.getIncidentResponderRunningInvestigationsPermission) {
         this.investigationsLoading = true
@@ -2722,7 +2641,6 @@ export default {
             const {
               data: { data }
             } = response
-            this.investigationListData = data
             this.investigationsData = data || []
           })
           .catch(() => {
@@ -3009,10 +2927,7 @@ export default {
 
   beforeRouteLeave(to, from, next) {
     const { refNewInvestigation } = this.$refs
-    if (this.openInvestigationOverlay) {
-      this.openInvestigationOverlay = false
-      next(false)
-    } else if (refNewInvestigation && this.isWantToAddNewInvestigation) {
+    if (refNewInvestigation && this.isWantToAddNewInvestigation) {
       if (to.name === 'Investigation Details') {
         return next()
       }
@@ -3145,7 +3060,6 @@ export default {
       }
 
       .card-body {
-        //font-size: 48px;
         font-weight: normal;
         line-height: 1.13;
         letter-spacing: normal;
@@ -3167,11 +3081,6 @@ export default {
           display: flex;
           flex-direction: column;
         }
-
-        .body-row:first-child {
-          //width: 100%;
-        }
-
         .body-row__number {
           font-size: 44px;
           line-height: 1;
@@ -3188,9 +3097,6 @@ export default {
           color: #fff;
           opacity: 1;
         }
-
-        .body-row:nth-child(2) {
-        }
       }
 
       .card-footer {
@@ -3201,8 +3107,6 @@ export default {
         line-height: 1.25;
         color: #fff;
         opacity: 1;
-        //padding-bottom: 16px;
-
         &.no-data-text {
           font-size: 16px;
           font-weight: 600;

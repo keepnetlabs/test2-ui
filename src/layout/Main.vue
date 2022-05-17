@@ -219,7 +219,7 @@
         touchless
         class="page-nav"
       >
-        <v-list dense class="page-nav__content" ref="pageNavContent">
+        <v-list dense class="page-nav__content">
           <router-link
             v-if="getDashboardPermissions"
             id="btn--link-navigator-menu-dashboard"
@@ -544,10 +544,10 @@
           <div class="page-header__title" id="text--router-name">
             <h1 v-if="routerName === 'Community'">
               <router-link
-                :to="`/threat-sharing?detailsId=${communityId}`"
                 v-if="communityId"
-                class="page-header__title-link text-decoration-none"
                 ref="communityNameRef"
+                :to="`/threat-sharing?detailsId=${communityId}`"
+                class="page-header__title-link text-decoration-none"
                 >{{ communityName || $route.params.name }}</router-link
               ><span v-else>
                 <MainListItemLoading
@@ -560,7 +560,7 @@
               </span>
             </h1>
             <h1 v-else-if="routerName === 'Company Group Details'">
-              {{ companyGroupName || $route.params.name }}
+              {{ getCompanyGroupName || $route.params.name }}
             </h1>
             <h1 v-else-if="routerName === 'Target Group Users'">
               {{ getTargetGroupUsersRouterName }}
@@ -570,7 +570,6 @@
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
-
           <Breadcrumb :base-name="getBreadCrumbBaseName" />
         </div>
       </div>
@@ -611,7 +610,6 @@
         </v-menu>
       </div>
     </v-app-bar>
-    <!-- Header End -->
     <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'">
       <v-container
         fluid
@@ -721,10 +719,8 @@ export default {
       baseUrl: null,
       communityName: null,
       companyGroupName: null,
-      companyGroupResourceId: null,
       drawer: null,
       mini: null,
-      dialog: true,
       isDisconnected: true,
       rightDropdownData: [
         {
@@ -855,9 +851,6 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getMenuStatus: 'common/getMenuStatus',
-      getErrors: 'common/getErrors',
-      getColor: 'common/getColor',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
       isLoadingFromStore: 'common/getIsLoading',
@@ -891,6 +884,11 @@ export default {
       getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
       getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission'
     }),
+    getCompanyGroupName() {
+      return this.routerName === 'Company Group Details'
+        ? localStorage.getItem('companyGroupName')
+        : ''
+    },
     getBreadCrumbBaseName() {
       return this.brandName || this.$store.state.auth.selectedCompanyName
     },
@@ -1115,12 +1113,11 @@ export default {
   beforeDestroy() {
     clearInterval(this.interval)
   },
-  updated() {
-    console.log('updated')
-    this.routerName === 'Company Group Details' && this.getCompanyGroupName()
-  },
   methods: {
     ...mapActions({
+      changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
+      logoutUser: 'dashboard/logoutUser',
+      setSwitchDialog: 'dashboard/setSwitchDialog',
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
@@ -1196,10 +1193,6 @@ export default {
         return true
       }
     },
-    getCompanyGroupName() {
-      this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
-      this.companyGroupName = localStorage.getItem('companyGroupName')
-    },
     handleClickRightDropdown(item = { text: '' }) {
       const { text } = item
       const domElem = document.createElement('a')
@@ -1223,14 +1216,6 @@ export default {
           break
       }
     },
-    ...mapActions({
-      setSnackStatus: 'common/setSnackStatus',
-      changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
-      getMenus: 'dashboard/getMenus',
-      logoutUser: 'dashboard/logoutUser',
-      setSwitchDialog: 'dashboard/setSwitchDialog',
-      changeSessionExpiredStatus: 'common/changeSessionExpiredStatus'
-    }),
     tourSafeStarter(tourName) {
       const arr = []
       this.tourSteps.forEach((x) => document.querySelector(x.target) && arr.push(x))
@@ -1332,8 +1317,6 @@ export default {
     }
     &__details {
       max-width: 85%;
-    }
-    &__actions {
     }
     &__search {
       width: 180px;
@@ -1477,8 +1460,6 @@ export default {
       box-shadow: inset -1.5px 0 0 0 rgba(0, 0, 0, 0.07), inset -2px 0 0 0 rgba(0, 0, 0, 0.02),
         inset 1.5px 0 0 0 rgba(0, 0, 0, 0.02), inset 1px 0 0 0 rgba(0, 0, 0, 0.07);
     }
-
-    //::-webkit-scrollbar-track {}
 
     ::-webkit-scrollbar-thumb {
       background-color: rgba(0, 0, 0, 0.51);
@@ -1630,7 +1611,6 @@ export default {
     }
   }
 
-  // Notification
   .v-menu__content {
     border-radius: 20px;
   }
@@ -1741,7 +1721,6 @@ export default {
   }
 
   .user-wrapper {
-    //margin: 0 0 88px;
     background: white;
     padding: 8px;
     &__scroll-on {
@@ -1912,22 +1891,6 @@ export default {
     }
   }
 
-  .svg-wrapper {
-    position: absolute;
-    display: inline-block;
-    width: 2030px;
-    overflow: hidden;
-    height: 450px;
-  }
-
-  .svg-wrapper svg {
-    position: center;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-  }
-
   .v-navigation-drawer--mini-variant {
     .user-wrapper {
       height: 0 !important;
@@ -2037,13 +2000,6 @@ export default {
       }
     }
   }
-
-  /* .disabled-cursor,
-  button:disabled {
-    cursor: no-drop !important;
-    pointer-events: all !important;
-  }
-*/
   .switch-dialog {
     width: 600px !important;
     border-radius: 20px !important;
