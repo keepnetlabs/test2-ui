@@ -95,7 +95,7 @@
                                 ? 'See who fails for phishing links'
                                 : item.text === 'Data Submission'
                                 ? 'Gather information from users'
-                                : 'Send a trackable macro file '
+                                : 'Send a trackable file '
                             }}
                           </div>
                         </div>
