@@ -322,6 +322,48 @@ const store = {
     getCampaignReportsDeletePermissions(state) {
       return state?.campaignReportsPermissions?.DELETE?.hasPermission
     },
+    getCampaignReportsOpenedPermissions(state) {
+      return state?.campaignReportsPermissions?.OPENED?.hasPermission
+    },
+    getCampaignReportsOpenedDetailsPermissions(state) {
+      return state?.campaignReportsPermissions?.OPENED_DETAILS?.hasPermission
+    },
+    getCampaignReportsClickedPermissions(state) {
+      return state?.campaignReportsPermissions?.CLICKED?.hasPermission
+    },
+    getCampaignReportsClickedDetailsPermissions(state) {
+      return state?.campaignReportsPermissions?.CLICKED_DETAILS?.hasPermission
+    },
+    getCampaignReportsOpenedAttachmentPermissions(state) {
+      return state?.campaignReportsPermissions?.OPENED_ATTACHMENT?.hasPermission
+    },
+    getCampaignReportsOpenedAttachmentDetailsPermissions(state) {
+      return state?.campaignReportsPermissions?.OPENED_ATTACHMENT_DETAILS?.hasPermission
+    },
+    getCampaignReportsSubmittedDataPermissions(state) {
+      return state?.campaignReportsPermissions?.SUBMITTED_DATA?.hasPermission
+    },
+    getCampaignReportsSubmittedDataDetailsPermissions(state) {
+      return state?.campaignReportsPermissions?.SUBMITTED_DATA_DETAILS?.hasPermission
+    },
+    getCampaignReportsNoResponsePermissions(state) {
+      return state?.campaignReportsPermissions?.NO_RESPONSE?.hasPermission
+    },
+    getCampaignReportsPhishingReporterPermissions(state) {
+      return state?.campaignReportsPermissions?.PHISHING_REPORTER?.hasPermission
+    },
+    getCampaignReportsPhishingReporterDetailsPermissions(state) {
+      return state?.campaignReportsPermissions?.PHISHING_REPORTER_DETAILS?.hasPermission
+    },
+    getCampaignReportsSendingReportPermissions(state) {
+      return state?.campaignReportsPermissions?.SENDING_REPORT?.hasPermission
+    },
+    getCampaignReportsSendingReportDetailsPermissions(state) {
+      return state?.campaignReportsPermissions?.SENDING_REPORT_DETAILS?.hasPermission
+    },
+    getCampaignReportsResendPermissions(state) {
+      return state?.campaignReportsPermissions?.RESEND?.hasPermission
+    },
     getCompanyLeftMenuPermissions(state) {
       return state?.companyLeftMenuPermissions?.isOneOfThemPermitted
     },

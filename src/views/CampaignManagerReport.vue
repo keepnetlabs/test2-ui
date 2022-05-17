@@ -6,6 +6,7 @@
           <el-tabs v-model="tab">
             <el-tab-pane
               v-for="item in tabItems"
+              v-if="item.isVisible"
               :key="item.name"
               :id="item.id"
               :name="item.name"
@@ -53,43 +54,52 @@ export default {
           name: labels.Summary,
           id: 'campaign-manager-report-summary-content',
           label: labels.Summary,
-          component: CampaignManagerReportSummary
+          component: CampaignManagerReportSummary,
+          isVisible: this.$store.getters['permissions/getCampaignReportsGetPermissions']
         },
         {
           name: labels.Opened,
           id: 'campaign-manager-report-opened-content',
           label: labels.Opened,
-          component: CampaignManagerReportOpened
+          component: CampaignManagerReportOpened,
+          isVisible: this.$store.getters['permissions/getCampaignReportsOpenedPermissions']
         },
         {
           name: labels.Clicked,
           id: 'campaign-manager-report-clicked-content',
           label: labels.Clicked,
-          component: CampaignManagerReportClicked
+          component: CampaignManagerReportClicked,
+          isVisible: this.$store.getters['permissions/getCampaignReportsClickedPermissions']
         },
         {
           name: labels.SubmittedData,
           id: 'campaign-manager-report-submitted-date-content',
           label: labels.SubmittedData,
-          component: CampaignManagerReportSubmittedData
+          component: CampaignManagerReportSubmittedData,
+          isVisible: this.$store.getters['permissions/getCampaignReportsSubmittedDataPermissions']
         },
         {
           name: labels.NoResponse,
           id: 'campaign-manager-report-no-response-content',
           label: labels.NoResponse,
-          component: CampaignManagerReportNoResponse
+          component: CampaignManagerReportNoResponse,
+          isVisible: this.$store.getters['permissions/getCampaignReportsNoResponsePermissions']
         },
         {
           name: labels.PhishingReporter,
           id: 'campaign-manager-report-phishing-report-content',
           label: labels.PhishingReporter,
-          component: CampaignManagerReportPhishingReport
+          component: CampaignManagerReportPhishingReport,
+          isVisible: this.$store.getters[
+            'permissions/getCampaignReportsPhishingReporterPermissions'
+          ]
         },
         {
           name: labels.SendingReport,
           id: 'campaign-manager-report-sending-response-content',
           label: labels.SendingReport,
-          component: CampaignManagerReportSendingReport
+          component: CampaignManagerReportSendingReport,
+          isVisible: this.$store.getters['permissions/getCampaignReportsSendingReportPermissions']
         }
       ],
       formDetails: null
@@ -135,7 +145,10 @@ export default {
                   label: labels.OpenedAttachment,
                   name: labels.OpenedAttachment,
                   id: 'campaign-manager-report-opened-attachment-content',
-                  component: CampaignManagerReportOpenedAttachment
+                  component: CampaignManagerReportOpenedAttachment,
+                  isVisible: this.$store.getters[
+                    'permissions/getCampaignReportsOpenedAttachmentPermissions'
+                  ]
                 }
               }
             }

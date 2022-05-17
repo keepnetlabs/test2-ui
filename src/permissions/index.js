@@ -520,9 +520,79 @@ export default {
       method: ENUMS.METHODS.GET
     },
     DELETE: {
-      url: `phishing-simulator/phishing-campaign-job-report/{resourceId}`,
+      url: `phishing-simulator/phishing-campaign-job/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
+    },
+    OPENED: {
+      url: `phishing-simulator/phishing-campaign-job-report/opened/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    OPENED_DETAILS: {
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-opened/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CLICKED: {
+      url: `phishing-simulator/phishing-campaign-job-report/clicked/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CLICKED_DETAILS: {
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-clicked/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    OPENED_ATTACHMENT: {
+      url: `phishing-simulator/phishing-campaign-job-report/attachmentopened/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    OPENED_ATTACHMENT_DETAILS: {
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-opened-attachment/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUBMITTED_DATA: {
+      url: `phishing-simulator/phishing-campaign-job-report/submitteddata/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SUBMITTED_DATA_DETAILS: {
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-submitted/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    NO_RESPONSE: {
+      url: `phishing-simulator/phishing-campaign-job-report/noresponse/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PHISHING_REPORTER: {
+      url: `phishing-simulator/phishing-campaign-job-report/reported/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PHISHING_REPORTER_DETAILS: {
+      url: `phishing-simulator/phishing-campaign-job-report/search-email-reported/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SENDING_REPORT: {
+      url: `phishing-simulator/phishing-campaign-job-report/all/search/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SENDING_REPORT_DETAILS: {
+      url: `phishing-simulator/phishing-campaign-job-report/email-activity/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    RESEND: {
+      url: `phishing-simulator/phishing-campaign-job-report/resend/list/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   },
   COMPANY_LEFT_MENU_PERMISSIONS: {

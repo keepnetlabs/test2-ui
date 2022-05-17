@@ -123,7 +123,6 @@ export default {
                 icon: 'mdi-text-box',
                 action: 'on-view-report',
                 disabled: !this.$store.getters['permissions/getCampaignReportsGetPermissions']
-
               },
               {
                 id: 'btn-delete--campaign-reports',
