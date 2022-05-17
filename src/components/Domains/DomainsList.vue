@@ -66,7 +66,7 @@
               }-${Math.random().toString().substring(2)}`"
               class="btn-hover mr-1"
               icon
-              :disabled="getDisabledStatusOfAction(scope.row, 'UPDATE')"
+              :disabled="!getDomainUpdatePermissions"
               @click.native="handleEdit(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[0].icon }}</v-icon>
@@ -83,7 +83,7 @@
               }-${Math.random().toString().substring(2)}`"
               class="btn-hover"
               icon
-              :disabled="getDisabledStatusOfAction(scope.row, 'DELETE')"
+              :disabled="!getDomainDeletePermissions"
               @click.native="handleActionDelete(scope.row)"
             >
               <v-icon>{{ tableOptions.rowActions[1].icon }}</v-icon>
@@ -104,7 +104,7 @@ import {
   TABLE_SETTINGS_KEYS,
   getStoreValue
 } from '@/model/constants/commonConstants'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { getDomainsList, deleteEmailTemplate, exportDnsService, getDomainData } from '@/api/domains'
@@ -115,6 +115,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'DomainList',
@@ -228,18 +229,18 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+            disabled: !this.$store.getters['permissions/getDomainUpdatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            disabled: !this.$store.getters['permissions/getDomainDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+          disabled: !this.$store.getters['permissions/getDomainExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -252,14 +253,15 @@ export default {
           message: 'You do not have any domains',
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--domainList'
+          id: 'btn-empty--domainList',
+          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add a Domain',
           id: 'btn-add--DomainList',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getDomainCreatePermissions']
         }
       },
       modalStatus: false,
@@ -270,10 +272,15 @@ export default {
       templateHTML: null
     }
   },
+  computed: {
+    ...mapGetters({
+      getDomainUpdatePermissions: 'permissions/getDomainUpdatePermissions',
+      getDomainDeletePermissions: 'permissions/getDomainDeletePermissions',
+      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
+      getDomainFormDetailsPermissions: 'permissions/getDomainFormDetailsPermissions'
+    })
+  },
   methods: {
-    getDisabledStatusOfAction(row, actionStatus) {
-      return !(this.PERMISSIONS[actionStatus].hasPermission && row.isOwner)
-    },
     checkIfCanCloseDomainModal() {
       if (this.$refs.newEditDomainModal) {
         this.$refs.newEditDomainModal.cancelDomain()
@@ -368,9 +375,6 @@ export default {
     calculateIsFilterColumnActive() {
       this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()
@@ -431,8 +435,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      const { SEARCH } = this.PERMISSIONS
-      if (SEARCH.hasPermission) {
+      if (this.getDomainSearchPermissions) {
         getDomainsList(this.bodyData)
           .then((response) => {
             const {
@@ -472,8 +475,7 @@ export default {
     }
   },
   created() {
-    const { FORM_DETAILS } = this.PERMISSIONS
-    if (FORM_DETAILS.hasPermission)
+    if (this.getDomainFormDetailsPermissions)
       getDomainData().then((response) => {
         this.domainData = response.data.data
         this.getDefaultFilterAndSearch()

@@ -102,7 +102,7 @@
     </app-dialog>
 
     <data-table
-      v-if="checkPermissions('phishing-simulator/email-templates', 'POST')"
+      v-if="getEmailTemplatesSearchPermissions"
       id="emailTemplates-data-table"
       ref="refEmailTemplatesList"
       :loading="loading"
@@ -310,6 +310,7 @@ import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/u
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import * as Validations from '@/utils/validations'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'EmailTemplates',
@@ -460,45 +461,30 @@ export default {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
-              'GET'
-            )
+            disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
-              'PUT'
-            )
+            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
           },
           {
             name: labels.Disable,
             icon: 'mdi-content-copy',
             action: 'disable',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
-              'PUT'
-            )
+            disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/email-templates/{resourceId}',
-              'DELETE'
-            )
+            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions(
-            'phishing-simulator/email-templates/search/export',
-            'POST'
-          )
+          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -518,7 +504,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Template',
           id: 'btn-add--emailTemplates',
-          disabled: !this.checkPermissions('phishing-simulator/email-templates', 'POST')
+          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
         }
       },
       modalStatus: false,
@@ -529,6 +515,11 @@ export default {
       selectedTemplateHeader: null,
       templateHTML: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
+    })
   },
   methods: {
     onShowRenameAttachmentModal() {
@@ -691,9 +682,6 @@ export default {
         })
       )
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
@@ -818,7 +806,7 @@ export default {
       })
     },
     getDatatableList() {
-      if (this.checkPermissions('phishing-simulator/email-templates', 'POST')) {
+      if (this.getEmailTemplatesSearchPermissions) {
         this.loading = true
         getEmailTemplatesList(this.bodyData)
           .then((response) => {

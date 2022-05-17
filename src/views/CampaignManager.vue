@@ -41,7 +41,6 @@
         ref="campaignManagerParentTable"
         :axios-payload.sync="axiosPayloadOfParent"
         :is-loading.sync="isParentTableLoading"
-        :PERMISSIONS="PERMISSIONS['CAMPAIGN_MANAGER_PARENT']"
         :status-items="getStatusItems"
         @on-record-button-click="handleOnRecordButtonClick"
         @toggle-add-campaign-manager-modal="toggleAddCampaignManagerModal"
@@ -77,8 +76,7 @@ import CampaignManagerParentTable from '@/components/CampaignManager/CampaignMan
 import { axiosPayload } from '@/components/CampaignManager/utils'
 import CampaignManagerItemTable from '@/components/CampaignManager/CampaignManagerItemTable'
 import CampaignManagerAddOrEditModal from '@/components/CampaignManager/CampaignManagerAddOrEditModal'
-import PERMISSIONS from '@/permissions'
-import { getDefaultAxiosPayload, getPermissionsOfAllItems } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import CampaignManagerDeleteDialog from '@/components/CampaignManager/CampaignManagerDeleteDialog'
 import {
   bulkDeleteCampaignReports,
@@ -90,6 +88,7 @@ import {
 } from '@/api/phishingsimulator'
 import CampaignManagerPreview from '@/components/CampaignManager/CampaignManagerPreview'
 import CampaignManagerCreateNewInstanceDialog from '@/components/CampaignManager/CampaignManagerCreateNewInstanceDialog'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CampaignManager',
   components: {
@@ -119,14 +118,15 @@ export default {
       isShowDeleteDialog: false,
       isDeleteDialogActionButtonDisabled: false,
       isShowLaunchDialog: false,
-      PERMISSIONS: {
-        CAMPAIGN_MANAGER_PARENT: {}
-      },
       formDetails: {},
       multipleSystemUserPayload: {}
     }
   },
   computed: {
+    ...mapGetters({
+      getCampaignManagerParentDeletePermissions:
+        'permissions/getCampaignManagerParentDeletePermissions'
+    }),
     getStatusItems() {
       return this.formDetails.status
     }
@@ -137,7 +137,6 @@ export default {
     }
   },
   created() {
-    this.getPermissions()
     this.callForFormDetails()
   },
   methods: {
@@ -159,14 +158,6 @@ export default {
         } = response
         this.formDetails = data
       })
-    },
-    getPermissions() {
-      const { CAMPAIGN_MANAGER_PARENT } = PERMISSIONS
-      this.$set(
-        this.PERMISSIONS,
-        'CAMPAIGN_MANAGER_PARENT',
-        getPermissionsOfAllItems(CAMPAIGN_MANAGER_PARENT)
-      )
     },
     handleMultipleDelete(payload = {}, totalUserCount = 0) {
       this.multipleSystemUserPayload = payload
@@ -269,8 +260,7 @@ export default {
       this.isDeleteDialogActionButtonDisabled = flag
     },
     handleOnDelete(item = {}) {
-      const { CAMPAIGN_MANAGER_PARENT } = this.PERMISSIONS
-      if (CAMPAIGN_MANAGER_PARENT.DELETE.hasPermission) {
+      if (this.getCampaignManagerParentDeletePermissions) {
         this.setDeleteDialogActionButtonDisabled(true)
         deleteCampaignManager(item.resourceId)
           .then(() => {
