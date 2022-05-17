@@ -560,24 +560,19 @@ export default {
     if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
       this.$router.push('/incident-responder')
     }
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    if (this.$route.params && this.$route.params.selectedEmail) {
-      this.isShowNewInvestigationModal = true
-    }
-    this.$nextTick(() => {
-      if (this.$route.params && this.$route.params.selectedEmail) {
-        if (this.$refs.refNewInvestigation && this.init) {
-          this.init = false
-          this.$refs.refNewInvestigation.fillForm(this.$route.params.selectedEmail)
-        }
-      }
-    })
-
-    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
-    this.getDefaultFilterAndSearch()
-
     if (this.$route.query.openPopup) {
       this.isShowNewInvestigationModal = true
+    }
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.INVESTIGATIONS))
+    this.getDefaultFilterAndSearch()
+  },
+  mounted() {
+    if (this.$route.params && this.$route.params.selectedEmail) {
+      this.isShowNewInvestigationModal = true
+      if (this.$refs.refNewInvestigation && this.init) {
+        this.init = false
+        this.$refs.refNewInvestigation.fillForm(this.$route.params.selectedEmail)
+      }
     }
   },
   beforeDestroy() {
