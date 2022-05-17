@@ -35,6 +35,19 @@
                 }}</span>
               </div>
             </div>
+            <div
+              v-if="emailTemplateParams.attachment"
+              class="attachment-wrapper mt-2"
+              style="position: relative;"
+            >
+              <div class="attachment blue-attach mb-0">
+                <AttachmentsPreview
+                  :deletable="false"
+                  :att="emailTemplateParams.attachment"
+                  :isEmailTemplate="true"
+                />
+              </div>
+            </div>
             <hr class="mt-2" v-if="!!emailTemplate" />
             <KEmailPreview v-if="!!emailTemplate" ref="refPreview" :html="emailTemplate" />
           </div>
@@ -77,13 +90,14 @@
 import AppDialog from '@/components/AppDialog'
 import { getPhishingScenarioLandingPageAndEmailTemplate } from '@/api/phishingsimulator'
 import labels from '@/model/constants/labels'
-import { getScenario } from '@/api/scenarios'
 import { difficulties, methods } from '@/components/CampaignManager/CampaignManagerInfo/utils'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import KEmailPreview from '@/components/KEmailPreview'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+
 export default {
   name: 'PhishingScenarioPreview',
-  components: { KEmailPreview, DatatableLoading, AppDialog },
+  components: { KEmailPreview, DatatableLoading, AppDialog, AttachmentsPreview },
   props: {
     status: {
       type: Boolean
@@ -125,15 +139,26 @@ export default {
         .then((response) => {
           const { data: { data = {} } = {} } = response
           const { emailTemplate, landingPageTemplate } = data
-          const { template, fromName, fromAddress, name, difficultyResourceId } = emailTemplate
+          const {
+            template,
+            fromName,
+            fromAddress,
+            name,
+            difficultyResourceId,
+            phishingFileName
+          } = emailTemplate
 
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+            attachment: {
+              name: phishingFileName
+            }
           }
           this.emailTemplate = template
+
           const {
             name: landingPageName,
             description,
@@ -142,12 +167,14 @@ export default {
             difficultyTypeId,
             methodTypeId
           } = landingPageTemplate
+
           this.landingPageParams = {
             name: landingPageName,
             description,
             urlTemplate,
             difficulty: difficulties[difficultyTypeId - 1].text,
-            method: methods[methodTypeId - 1].text
+            method: methods[methodTypeId - 1].text,
+            isAttachmentBasedTemplate: methodTypeId === 3
           }
           this.landingPageTemplate = landingPages[0]?.content || ''
         })

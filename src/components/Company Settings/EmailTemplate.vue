@@ -85,7 +85,7 @@
                 @on-delete="handleFileDelete"
               />
             </div>
-            <div v-if="!item.isDeletable" style="margin-left: -1rem;">
+            <div v-if="!item.isDeletable" class="attachment-delete-wrapper">
               <v-menu bottom left offset-y transition="scale-transition">
                 <template #activator="{ on }">
                   <v-btn v-on="on" class="btn-hover" icon>
