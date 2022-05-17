@@ -69,6 +69,11 @@ export default {
       url: 'ir/dashboard/running-investigations',
       hasPermission: false,
       method: ENUMS.METHODS.GET
+    },
+    REPORTERS: {
+      url: 'dashboard/reporters',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
     }
   },
   THREAT_SHARING_LEFT_MENU_PERMISSIONS: {

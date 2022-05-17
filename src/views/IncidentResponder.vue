@@ -130,13 +130,7 @@
                   id="card--incident-responder-phishing-reporter-total-users-count"
                 >
                   of
-                  {{
-                    (irSummary &&
-                      irSummary.phishingReporterUserStatusCount &&
-                      irSummary.phishingReporterUserStatusCount.onlineUsersCount +
-                        irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
-                    0
-                  }}
+                  {{ getPhishingReporterTotalUserCount }}
                   user(s) are
                 </div>
                 <div class="card-status">{{ labels.Online }}</div>
@@ -181,12 +175,7 @@
                     class="biggest"
                     id="card--incident-responder-incident-analysis-notified-harmful-count"
                   >
-                    {{
-                      (irSummary &&
-                        irSummary.notifiedEmailResultCount &&
-                        irSummary.notifiedEmailResultCount.harmfulCount) ||
-                      0
-                    }}
+                    {{ getIncidentAnalysisNotifiedHarmfulCount }}
                   </div>
                 </div>
                 <div
@@ -194,12 +183,7 @@
                   class="card-footer"
                 >
                   of
-                  {{
-                    (irSummary &&
-                      irSummary.notifiedEmailResultCount &&
-                      irSummary.notifiedEmailResultCount.reportedMailCount) ||
-                    0
-                  }}
+                  {{ getIncidentAnalysisNotifiedReportedMailCount }}
                   reported email(s)
                 </div>
                 <div class="card-status">{{ labels.FoundHarmful }}</div>
@@ -470,18 +454,10 @@
           <div class="header">
             <div class="title">
               <h2>
-                {{
-                  isShowingClusteredTable
-                    ? clusteredRow[getClusteredField(selectedCluster)]
-                    : labels.ReportedEmails
-                }}
+                {{ getReportedEmailTitle }}
               </h2>
               <p class="mb-10">
-                {{
-                  isShowingClusteredTable
-                    ? `Reported emails clustered by ${this.selectedCluster}`
-                    : labels.SummaryOfReportedEmails
-                }}
+                {{ getReportedEmailDescription }}
               </p>
             </div>
           </div>
@@ -1834,6 +1810,32 @@ export default {
     },
     getAutomaticInvestigationCount() {
       return this?.irSummary?.investigationTypeCount?.automaticInvestigationCount || 0
+    },
+    getIncidentAnalysisNotifiedHarmfulCount() {
+      return this?.irSummary?.notifiedEmailResultCount?.harmfulCount || 0
+    },
+    getIncidentAnalysisNotifiedReportedMailCount() {
+      return this?.irSummary.notifiedEmailResultCount.reportedMailCount || 0
+    },
+    getReportedEmailTitle() {
+      return this.isShowingClusteredTable
+        ? this.clusteredRow[this.getClusteredField(this.selectedCluster)]
+        : labels.ReportedEmails
+    },
+    getReportedEmailDescription() {
+      return this.isShowingClusteredTable
+        ? `Reported emails clustered by ${this.selectedCluster}`
+        : labels.SummaryOfReportedEmails
+    },
+    getPhishingReporterTotalUserCount() {
+      const { irSummary } = this
+      return (
+        (irSummary &&
+          irSummary.phishingReporterUserStatusCount &&
+          irSummary.phishingReporterUserStatusCount.onlineUsersCount +
+            irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
+        0
+      )
     },
     getROISummaryTime() {
       return this?.irSummary?.roiSummary?.time || 0

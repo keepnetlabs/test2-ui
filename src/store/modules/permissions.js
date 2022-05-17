@@ -200,11 +200,20 @@ const store = {
     getIncidentResponderRunningInvestigationsPermission(state) {
       return state?.dashboardPermissions?.IR_RUNNING_INVESTIGATIONS?.hasPermission
     },
+    getDashboardReportersPermission(state) {
+      return state?.dashboardPermissions?.REPORTERS?.hasPermission
+    },
+    getDashboardReportedEmailTrendsPermission(state) {
+      return state?.dashboardPermissions?.REPORTED_EMAIL_TRENDS?.hasPermission
+    },
     getIncidentResponderNotifiedEmailPermission(state) {
       return state?.incidentResponderListGroupPermissions?.NOTIFIED_EMAIL?.hasPermission
     },
     getIncidentResponderNotifiedEmailReAnalyze(state) {
       return state?.incidentResponderOtherPermissions?.RE_ANALYZE?.hasPermission
+    },
+    getDashboardWidgetsPermission(state) {
+      return state?.dashboardPermissions?.WIDGETS?.hasPermission
     },
     getInvestigationPermissions(state) {
       return state?.investigationPermissions
@@ -218,8 +227,21 @@ const store = {
     getPlaybookPermissions(state) {
       return state?.playbookPermissions
     },
-    getMailConfigurationPermissions() {
+    getMailConfigurationPermissions(state) {
       return state?.mailConfigurationPermissions
+    },
+    getWidgetsPermissions(state, getters) {
+      return {
+        runningInvestigation: getters?.getIncidentResponderRunningInvestigationsPermission,
+        irSummary: getters?.getIncidentResponderSummaryPermission,
+        communityPosts: getters?.getThreatSharingCommunityPostsPermission,
+        topRules: getters?.getIncidentResponderTopRulesPermission,
+        topPosts: getters?.getThreatSharingTopPostsPermission,
+        reporters: getters?.getDashboardReportersPermission,
+        reportedEmailTrends: getters?.getDashboardReportedEmailTrendsPermission,
+        notifiedEmail: getters?.getIncidentResponderNotifiedEmailPermission,
+        widgets: getters?.getDashboardWidgetsPermission
+      }
     }
   },
   mutations: {
