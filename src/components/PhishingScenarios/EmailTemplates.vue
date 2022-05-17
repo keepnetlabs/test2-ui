@@ -84,6 +84,19 @@
               }}</span>
             </div>
           </div>
+          <div
+            v-if="emailTemplateParams.attachment"
+            class="attachment-wrapper mt-2"
+            style="position: relative;"
+          >
+            <div class="attachment blue-attach mb-0">
+              <AttachmentsPreview
+                :deletable="false"
+                :att="emailTemplateParams.attachment"
+                :isEmailTemplate="true"
+              />
+            </div>
+          </div>
           <hr class="mt-2" v-if="!!templateHTML" />
           <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
         </div>
@@ -310,6 +323,7 @@ import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/u
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import * as Validations from '@/utils/validations'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 
 export default {
   name: 'EmailTemplates',
@@ -320,7 +334,8 @@ export default {
     DeleteEmailTemplates,
     NewEmailTemplates,
     AppDialog,
-    AppDialogFooter
+    AppDialogFooter,
+    AttachmentsPreview
   },
   data() {
     return {
@@ -738,12 +753,17 @@ export default {
         .then((response) => {
           const data = response.data.data
           this.selectedTemplateHeader = data.subject
-          const { fromName, fromAddress, name, difficultyResourceId } = data
+          const { fromName, fromAddress, name, difficultyResourceId, phishingFileName } = data
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
-            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
+            attachment: phishingFileName
+              ? {
+                  name: phishingFileName
+                }
+              : null
           }
           this.templateHTML = data.template
         })

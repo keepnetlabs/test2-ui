@@ -260,7 +260,8 @@ export default {
         fromName,
         fromAddress,
         resourceId,
-        languageShortCode
+        languageShortCode,
+        phishingFileName
       } = emailTemplateInfo
 
       return Object.keys(emailTemplateInfo).length
@@ -271,7 +272,12 @@ export default {
             fromAddress,
             name,
             resourceId,
-            languageShortCode
+            languageShortCode,
+            attachment: phishingFileName
+              ? {
+                  name: phishingFileName
+                }
+              : null
           }
         : {}
     },
