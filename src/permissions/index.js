@@ -504,6 +504,11 @@ export default {
     }
   },
   CAMPAIGN_REPORTS_PERMISSIONS: {
+    SEARCH: {
+      url: `phishing-simulator/phishing-campaign-job-report/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
     GET: {
       url: `phishing-simulator/phishing-campaign-job-report/summary/{resourceId}`,
       hasPermission: false,

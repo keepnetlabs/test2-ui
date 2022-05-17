@@ -313,6 +313,9 @@ const store = {
     getReportsLeftMenuPermissions(state) {
       return state?.reportsLeftMenuPermissions?.isOneOfThemPermitted
     },
+    getCampaignReportsSearchPermissions(state) {
+      return state?.campaignReportsPermissions?.SEARCH?.hasPermission
+    },
     getCampaignReportsGetPermissions(state) {
       return state?.campaignReportsPermissions?.GET?.hasPermission
     },

@@ -1,11 +1,11 @@
 <template>
   <DataTable
-    :id="CONSTANTS.id"
     ref="refTable"
     selectable
     filterable
     options
     is-server-side
+    :id="CONSTANTS.id"
     :refName="'campaignReportTable'"
     :loading="isLoading"
     :is-column-filter-active="tableOptions.isColumnFilterActive"
@@ -43,6 +43,7 @@ import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { COLUMNS } from './utils'
 import labels from '@/model/constants/labels'
 import { useLoading } from '@/hooks/useLoading'
+import { mapGetters } from 'vuex'
 
 import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
@@ -111,7 +112,8 @@ export default {
                 name: labels.ViewReport,
                 id: 'btn-view-report-row-actions-campaign-reports',
                 icon: 'mdi-text-box',
-                action: 'on-view-report'
+                action: 'on-view-report',
+                disabled: !this.$store.getters['permissions/getCampaignReportsGetPermissions']
               }
             ]
           : [
@@ -119,13 +121,16 @@ export default {
                 name: labels.ViewReport,
                 id: 'btn-view-report-row-actions-campaign-reports',
                 icon: 'mdi-text-box',
-                action: 'on-view-report'
+                action: 'on-view-report',
+                disabled: !this.$store.getters['permissions/getCampaignReportsGetPermissions']
+
               },
               {
                 id: 'btn-delete--campaign-reports',
                 name: 'Delete',
                 icon: 'mdi-delete',
-                action: 'on-delete'
+                action: 'on-delete',
+                disabled: !this.$store.getters['permissions/getCampaignReportsDeletePermissions']
               }
             ],
         selectEvent: {
@@ -133,6 +138,11 @@ export default {
         }
       }
     }
+  },
+  computed: {
+    ...mapGetters({
+      getCampaignReportsSearchPermissions: 'permissions/getCampaignReportsSearchPermissions'
+    })
   },
   created() {
     this.callForData()
