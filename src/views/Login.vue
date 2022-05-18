@@ -658,6 +658,7 @@ export default {
       loginWithSaml({ authcode: newAuthCode, username })
         .then((response) => {
           //lets remove old permissions
+          this.$store.dispatch('permissions/resetState')
           localStorage.removeItem('permissions')
           this.onSuccessLogin({}, response)
         })
@@ -697,6 +698,7 @@ export default {
       }
     } else {
       //if it is not logined then remove permissions from local storage
+      this.$store.dispatch('permissions/resetState')
       localStorage.removeItem('permissions')
       if (this.checkQueryHasResetPasswordOrCreatePassword()) {
         this.setQueryResetPasswordOrCreatePassword()

@@ -73,7 +73,7 @@
               cancel-button-id="btn-cancel--incident-responder-roi-popup"
               confirm-button-id="btn-save--incident-responder-roi-popup"
               :actionButtonText="labels.Save"
-              :confirmButtonDisabled="isConfirmButtonDisabled"
+              :confirmButtonDisabled="isRoiSettingSubmitButtonDisabled"
               @handleClose="isShowRoi = false"
               @handleConfirm="submitRoiModal"
             />
@@ -285,6 +285,7 @@
               <div class="card-header">
                 <span class="head">{{ labels.RoiSummary }}</span>
                 <v-icon
+                  v-if="getIncidentResponderROISettingGetPermission"
                   id="btn-show--incident-responder-roi-summary"
                   color="#fff"
                   @click="isShowRoi = true"
@@ -1741,7 +1742,11 @@ export default {
       getIncidentResponderNotifiedEmailPermission:
         'permissions/getIncidentResponderNotifiedEmailPermission',
       getIncidentResponderNotifiedEmailReAnalyze:
-        'permissions/getIncidentResponderNotifiedEmailReAnalyze'
+        'permissions/getIncidentResponderNotifiedEmailReAnalyze',
+      getIncidentResponderROISettingGetPermission:
+        'permissions/getIncidentResponderROISettingGetPermission',
+      getIncidentResponderROISettingPostPermission:
+        'permissions/getIncidentResponderROISettingPostPermission'
     }),
     getPhishingReporterOnlineUserCount() {
       return this?.irSummary?.phishingReporterUserStatusCount?.onlineUsersCount || 0
@@ -1777,6 +1782,9 @@ export default {
             irSummary.phishingReporterUserStatusCount.offlineUsersCount) ||
         0
       )
+    },
+    isRoiSettingSubmitButtonDisabled() {
+      return this.isConfirmButtonDisabled || !this.getIncidentResponderROISettingPostPermission
     },
     getROISummaryTime() {
       return this?.irSummary?.roiSummary?.time || 0
@@ -2371,7 +2379,9 @@ export default {
       if (!isLoadState) {
         this.getDefaultFilterAndSearchReportedEmail()
       }
-      this.callForGetRoiSettings()
+      if (this.getIncidentResponderROISettingGetPermission) {
+        this.callForGetRoiSettings()
+      }
     },
     closePlaybookWithUpdate() {
       this.togglePlaybookModal()

@@ -112,15 +112,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getSMTPSettingsSearchPermissions: 'permissions:/getSMTPSettingsSearchPermissions',
+      getSMTPSettingsSearchPermissions: 'permissions/getSMTPSettingsSearchPermissions',
       getNotificationTemplatesSearchPermissions:
-        'permissions:/getNotificationTemplatesSearchPermissions',
-      getRestApiSearchPermissions: 'permissions:/getRestApiSearchPermissions',
-      getWhiteLabelingGetPermissions: 'permissions:/getWhiteLabelingGetPermissions',
-      getProxySettingsSearchPermissions: 'permissions:/getProxySettingsSearchPermissions',
-      getSAMLIntegrationSearchPermissions: 'permissions:/getSAMLIntegrationSearchPermissions',
-      getSCIMSettingsSearchPermissions: 'permissions:/getSCIMSettingsSearchPermissions',
-      getSIEMIntegrationSearchPermissions: 'permissions:/getSIEMIntegrationSearchPermissions'
+        'permissions/getNotificationTemplatesSearchPermissions',
+      getRestApiSearchPermissions: 'permissions/getRestApiSearchPermissions',
+      getWhiteLabelingGetPermissions: 'permissions/getWhiteLabelingGetPermissions',
+      getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions',
+      getSAMLIntegrationSearchPermissions: 'permissions/getSAMLIntegrationSearchPermissions',
+      getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
+      getSIEMIntegrationSearchPermissions: 'permissions/getSIEMIntegrationSearchPermissions'
     })
   },
   methods: {

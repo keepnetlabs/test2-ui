@@ -399,6 +399,16 @@ export default {
       url: `notified-emails/{resourceId}/reanalyze`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
+    },
+    GET_ROI_SETTINGS: {
+      url: 'companies/roi-settings',
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    POST_ROI_SETTINGS: {
+      url: 'companies/roi-settings',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   },
   INVESTIGATION_PERMISSIONS: {

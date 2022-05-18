@@ -132,7 +132,7 @@
 <script>
 import ReAnalyzeIncidentDialog from '@/components/IncidentResponder/ReAnalyzeIncidentDialog'
 import EmailDetailsSenderIpBlacklistCheck from '@/components/IncidentResponder/EmailDetails/EmailDetailsSenderIpBlacklistCheck'
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'EmailDetailsContentDetails',
   components: { EmailDetailsSenderIpBlacklistCheck, ReAnalyzeIncidentDialog },
@@ -153,6 +153,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getIncidentResponderNotifiedEmailReAnalyze:
+        'permissions/getIncidentResponderNotifiedEmailReAnalyze'
+    }),
     getMailDetailsTo() {
       const mailDetails = this.mailDetails
       return mailDetails && mailDetails.to && mailDetails.to.toString()
@@ -173,16 +177,13 @@ export default {
       return (
         mailDetails.status === 'BeingAnalyzed' ||
         mailDetails.status === 'InProgress' ||
-        !this.checkPermissions('notified-emails/{resourceId}/reanalyze', 'GET')
+        !this.getIncidentResponderNotifiedEmailReAnalyze
       )
     }
   },
   methods: {
     handleReAnalyze() {
       this.toggleShowReAnalyzeDialog()
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     toggleShowReAnalyzeDialog() {
       this.showReAnalyzeIncidentDialog = !this.showReAnalyzeIncidentDialog

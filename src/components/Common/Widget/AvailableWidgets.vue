@@ -60,7 +60,6 @@
 </template>
 
 <script>
-import { checkPermission } from '@/utils/functions'
 import { mdiViewDashboard } from '@mdi/js'
 export default {
   name: 'AvailableWidgets',
@@ -90,9 +89,6 @@ export default {
     }
   },
   methods: {
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     handleAddWidget(widget) {
       this.$emit('addWidget', widget)
     },

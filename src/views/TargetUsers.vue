@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getTargetUsersSearchPermissions: 'permisisons/getTargetUsersSearchPermissions',
+      getTargetUsersSearchPermissions: 'permissions/getTargetUsersSearchPermissions',
       getTargetGroupsSearchPermissions: 'permissions/getTargetGroupsSearchPermissions'
     }),
     getDialogBody() {

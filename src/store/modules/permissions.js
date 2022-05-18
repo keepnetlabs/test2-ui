@@ -1,4 +1,5 @@
 import PERMISSIONS from '@/permissions'
+import Vue from 'vue'
 const {
   PLAYBOOK_PERMISSIONS,
   DASHBOARD_PERMISSIONS,
@@ -42,7 +43,7 @@ const {
   ROLES_PERMISSIONS
 } = PERMISSIONS
 
-let state = JSON.parse(localStorage.getItem('permissions')) || {
+const defaultState = {
   permissions: [],
   playbookPermissions: PLAYBOOK_PERMISSIONS,
   dashboardPermissions: DASHBOARD_PERMISSIONS,
@@ -85,6 +86,7 @@ let state = JSON.parse(localStorage.getItem('permissions')) || {
   systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
   systemRolesPermissions: ROLES_PERMISSIONS
 }
+let state = JSON.parse(localStorage.getItem('permissions')) || defaultState
 state = JSON.parse(JSON.stringify(state))
 const store = {
   namespaced: true,
@@ -609,6 +611,16 @@ const store = {
     getSIEMIntegrationExportPermissions(state) {
       return state?.siemIntegrationPermissions?.EXPORT?.hasPermission
     },
+    getSIEMIntegrationPermissions(state, getters) {
+      return {
+        search: getters.getSIEMIntegrationSearchPermissions,
+        create: getters.getSIEMIntegrationCreatePermissions,
+        update: getters.getSIEMIntegrationUpdatePermissions,
+        delete: getters.getSIEMIntegrationDeletePermissions,
+        get: getters.getSIEMIntegrationGetPermissions,
+        export: getters.getSIEMIntegrationExportPermissions
+      }
+    },
     getSystemUserSearchPermission(state) {
       const { SYSTEM_USERS = {} } = state?.companyLeftMenuPermissions
       return SYSTEM_USERS?.hasPermission
@@ -667,6 +679,12 @@ const store = {
     },
     getIncidentResponderNotifiedEmailReAnalyze(state) {
       return state?.incidentResponderOtherPermissions?.RE_ANALYZE?.hasPermission
+    },
+    getIncidentResponderROISettingGetPermission(state) {
+      return state?.incidentResponderOtherPermissions?.GET_ROI_SETTINGS?.hasPermission
+    },
+    getIncidentResponderROISettingPostPermission(state) {
+      return state?.incidentResponderOtherPermissions?.POST_ROI_SETTINGS?.hasPermission
     },
     getDashboardWidgetsPermission(state) {
       return state?.dashboardPermissions?.WIDGETS?.hasPermission
@@ -763,7 +781,12 @@ const store = {
         state[key] = permissionObject
       })
       localStorage.setItem('permissions', JSON.stringify(state))
-      console.log('state', state)
+    },
+    RESET_STATE(state) {
+      const defaultStateKeys = Object.keys(defaultState)
+      for (const key of defaultStateKeys) {
+        Vue.set(state, key, defaultState[key])
+      }
     }
   },
   actions: {
@@ -773,6 +796,9 @@ const store = {
     },
     setAllPermissions({ commit }) {
       commit('SET_ALL_PERMISSIONS')
+    },
+    resetState({ commit }) {
+      commit('RESET_STATE')
     }
   }
 }
