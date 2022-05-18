@@ -553,6 +553,7 @@ import MFALogin from '@/components/MFA/MFALogin'
 import * as Sentry from '@sentry/browser'
 
 import { getSystemUserSettings } from '@/api/settings'
+import CookieKeys from '@/model/constants/cookieKeys'
 export default {
   name: 'Login',
   components: {
@@ -1051,7 +1052,7 @@ export default {
           this.setQueryResetPasswordOrCreatePassword()
         } else {
           //login to the application
-          let token = JSON.parse(localStorage.getItem('auth-token')).token
+          let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
           let tokenData = jwt_decode(token)
           let currentUserData = setGlobalUserData(tokenData)
           localStorage.setItem('userData', JSON.stringify(currentUserData))
