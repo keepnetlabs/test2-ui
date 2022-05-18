@@ -135,7 +135,7 @@ export default {
           i: Math.random().toString(),
           key: 'PhishingReporterIrHeader',
           title: 'Phishing Reporter Ir Header',
-          isAllowed: this?.permissions?.irSummary
+          isAllowed: this?.permissions?.phishingReporterCard
         },
         IncidentAnalysisIrHeader: {
           x: 0,
@@ -183,7 +183,7 @@ export default {
           i: Math.random().toString(),
           key: 'ROISummaryIrHeader',
           title: 'ROI Summary Ir Header',
-          isAllowed: this?.permissions?.irSummary
+          isAllowed: this?.permissions?.roiSettingCard
         },
         RecentlyReportedIncidents: {
           x: 0,
@@ -321,7 +321,7 @@ export default {
         {
           name: 'Phishing Reporter Ir Header',
           key: 'PhishingReporterIrHeader',
-          isAllowed: this?.permissions?.irSummary
+          isAllowed: this?.permissions?.phishingReporterCard
         },
         {
           name: 'Incident Analysis Ir Header',
@@ -336,7 +336,7 @@ export default {
         {
           name: 'ROI Summary Ir Header',
           key: 'ROISummaryIrHeader',
-          isAllowed: this?.permissions?.irSummary
+          isAllowed: this?.permissions?.roiSettingCard
         }
       ],
       style:
@@ -537,7 +537,7 @@ export default {
           i: '0.8129690089605317',
           key: 'ROISummaryIrHeader',
           title: 'ROI Summary Ir Header',
-          isAllowed: this?.permissions?.irSummary
+          isAllowed: this?.permissions?.roiSettingCard
         },
         {
           x: 0,
@@ -553,7 +553,7 @@ export default {
           i: '0.36222415873736824',
           key: 'PhishingReporterIrHeader',
           title: 'Phishing Reporter Ir Header',
-          isAllowed: this?.permissions?.irSummary
+          isAllowed: this?.permissions?.phishingReporterCard
         },
         {
           x: 6,
