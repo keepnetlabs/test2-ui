@@ -656,8 +656,8 @@ const store = {
       return state?.systemRolesPermissions?.EXPORT?.hasPermission
     },
     getAuditLogSearchPermission(state) {
-      const { AUDIT_LOG = {} } = state?.companyLeftMenuPermissions
-      return AUDIT_LOG?.hasPermission
+      const { AUDIT_LOGS = {} } = state?.companyLeftMenuPermissions
+      return AUDIT_LOGS?.hasPermission
     },
     getIncidentResponderSummaryPermission(state) {
       return state?.dashboardPermissions?.IR_SUMMARY?.hasPermission
