@@ -41,7 +41,7 @@
       @on-close="toggleShowPreviewDialog"
     />
     <data-table
-      v-if="checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')"
+      v-if="getPhishingScenariosSearchPermissions"
       id="scenarios-data-table"
       class="scenarios"
       ref="refScenariosList"
@@ -62,6 +62,7 @@
       :stored-table-settings="storedTableSettings"
       :server-side-props="serverSideProps"
       :server-side-events="{ pagination: true, search: true, sort: true }"
+      :download-button="tableOptions.downloadButton"
       @deleteAction="showDeleteModal = true"
       @handleEdit="handleEdit"
       @onEmptyBtnClicked="modalStatus = true"
@@ -71,7 +72,6 @@
       @paginationChangedEvent="paginationChangedEvent($event)"
       @columnFilterChanged="columnFilterChanged"
       @columnFilterCleared="columnFilterCleared"
-      :download-button="tableOptions.downloadButton"
       @refreshAction="getDatatableList"
       @set-default-search="handleSetDefaultSearch"
       @restore-default-search="handleRestoreDefaultSearch"
@@ -242,7 +242,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -254,12 +254,13 @@ import {
 import {
   columnFilterChanged,
   columnFilterCleared,
-  isColumnActive,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
 import PhishingScenariosFastLaunch from '@/components/PhishingScenarios/FastLaunch/PhishingScenariosFastLaunch'
 import PhishingScenarioPreview from '@/components/PhishingScenarios/PhishingScenarioPreview'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'EmailTemplates',
   components: {
@@ -395,51 +396,36 @@ export default {
             name: labels.FastLaunch,
             icon: 'mdi-send',
             action: 'on-fast-launch',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/phishing-scenario/preview/{resourceId}',
-              'GET'
-            )
+            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/phishing-scenario/{resourceId}',
-              'PUT'
-            )
+            disabled: !this.$store.getters['permissions/getPhishingScenariosEditPermissions']
           },
           {
             name: labels.Preview,
             icon: 'mdi-eye',
             action: 'handlePreview',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/phishing-scenario/preview/{resourceId}',
-              'GET'
-            )
+            disabled: !this.$store.getters['permissions/getPhishingScenariosPreviewPermissions']
           },
           {
             name: 'Duplicate',
             icon: 'mdi-eye',
             action: 'handlePreview',
-            disabled: !this.checkPermissions('phishing-simulator/phishing-scenario', 'POST')
+            disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this.checkPermissions(
-              'phishing-simulator/phishing-scenario/{resourceId}',
-              'DELETE'
-            )
+            disabled: !this.$store.getters['permissions/getPhishingScenariosDeletePermissions']
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions(
-            'phishing-simulator/phishing-scenario/search/export',
-            'POST'
-          )
+          disabled: !this.$store.getters['permissions/getPhishingScenariosExportPermissions']
         },
         selectEvent: {
           clipboard: true,
@@ -459,7 +445,7 @@ export default {
           action: 'addAction',
           tooltip: 'Add a Scenario',
           id: 'btn-add--scenarios',
-          disabled: !this.checkPermissions('phishing-simulator/phishing-scenario', 'POST')
+          disabled: !this.$store.getters['permissions/getPhishingScenariosCreatePermissions']
         }
       },
       modalStatus: false,
@@ -470,6 +456,11 @@ export default {
       templateHTML: null,
       selectedPhishingScenario: {}
     }
+  },
+  computed: {
+    ...mapGetters({
+      getPhishingScenariosSearchPermissions: 'permissions/getPhishingScenariosSearchPermissions'
+    })
   },
   methods: {
     handleSetRenderedColumns(tableSettings = {}) {
@@ -579,9 +570,6 @@ export default {
         })
       )
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
@@ -685,7 +673,7 @@ export default {
     },
     getDatatableList() {
       this.loading = true
-      if (this.checkPermissions('phishing-simulator/phishing-scenario/search', 'POST')) {
+      if (this.getPhishingScenariosSearchPermissions) {
         getScenariosList(this.bodyData)
           .then((response) => {
             const {

@@ -6,7 +6,7 @@
           <template v-if="!$route.params.groupId && $route.name === 'Companies'">
             <el-tabs v-model="tab">
               <el-tab-pane
-                v-if="checkPermissions('companies/search', 'POST')"
+                v-if="getCompaniesSearchPermissions"
                 label="Companies"
                 name="company-companies"
                 id="company-companies-content"
@@ -14,7 +14,7 @@
                 <company-list v-if="tab === 'company-companies'" ref="refCompanyList"
               /></el-tab-pane>
               <el-tab-pane
-                v-if="checkPermissions('company-groups/search', 'POST')"
+                v-if="getCompanyGroupsSearchPermissions"
                 label="Company Groups"
                 name="company-company-groups"
                 id="company-company-groups-content"
@@ -38,7 +38,7 @@
 import CompanyList from '@/components/Companies/CompanyList'
 import CompanyGroupList from '@/components/CompanyGroups/CompanyGroupList'
 import CompanyGroupDetails from '@/components/CompanyGroups/CompanyGroupDetails'
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Companies',
   props: {},
@@ -48,6 +48,12 @@ export default {
       tab: 'company-companies',
       isLoadState: false
     }
+  },
+  computed: {
+    ...mapGetters({
+      getCompaniesSearchPermissions: 'permissions/getCompaniesSearchPermissions',
+      getCompanyGroupsSearchPermissions: 'permissions/getCompanyGroupsSearchPermissions'
+    })
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -85,7 +91,7 @@ export default {
     }
   },
   created() {
-    if (!this.checkPermissions('companies/search', 'POST')) {
+    if (!this.getCompaniesSearchPermissions) {
       this.tab = 'company-company-groups'
     }
   },
@@ -93,14 +99,11 @@ export default {
     if (this.$route.params && this.$route.params.tab && !this.$route.params.force) {
       this.tab = this.$route.params.tab
     }
-    if (!this.checkPermissions('companies/search', 'POST')) {
+    if (!this.getCompaniesSearchPermissions) {
       this.tab = 'company-company-groups'
     }
   },
   methods: {
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     changeTabStatus(status) {
       this.tab = status
     }

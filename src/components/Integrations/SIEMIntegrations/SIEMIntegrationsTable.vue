@@ -140,18 +140,18 @@ export default {
             name: labels.Edit,
             icon: 'mdi-pencil',
             action: 'handleEdit',
-            disabled: !this?.PERMISSIONS?.UPDATE?.hasPermission
+            disabled: !this?.PERMISSIONS?.update
           },
           {
             name: labels.Delete,
             icon: 'mdi-delete',
             action: 'deleteAction',
-            disabled: !this?.PERMISSIONS?.DELETE?.hasPermission
+            disabled: !this?.PERMISSIONS?.delete
           }
         ],
         downloadButton: {
           show: true,
-          disabled: !this?.PERMISSIONS?.EXPORT?.hasPermission
+          disabled: !this?.PERMISSIONS?.export
         },
         selectEvent: {
           clipboard: true,
@@ -164,14 +164,14 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--siem-integrations',
-          disabled: !this?.PERMISSIONS?.CREATE?.hasPermission
+          disabled: !this?.PERMISSIONS?.create
         },
         addButton: {
           show: true,
           action: 'addAction',
           tooltip: 'Add an integration',
           id: 'btn-add--integrations',
-          disabled: !this?.PERMISSIONS?.CREATE?.hasPermission
+          disabled: !this?.PERMISSIONS?.create
         }
       },
       modalStatus: false,

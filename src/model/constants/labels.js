@@ -325,6 +325,7 @@ export const labels = {
   MainDomain: 'Main Domain',
   Domain: 'Domain',
   AdvancedSettings: 'Advanced Settings',
+  LowerAdvancedSettings: 'advanced settings',
   AdvancedSettingsSubTitle:
     'You can exclude domains, URLs, IP addresses , attachment extensions from the analysis process',
   MainDomainSubTitle: 'Your company’s web domain',
@@ -403,8 +404,10 @@ export const labels = {
   NoEmailAnalysed: 'You haven’t analysed any emails',
   Money: 'Money',
   Auto: 'Auto',
+  LowerAuto: 'auto',
   Investigations: 'Investigations',
   Manual: 'Manual',
+  LowerManual: 'manual',
   FoundHarmful: 'Found harmful',
   IncidentAnalysis: 'Incident Analysis',
   Progress: 'Progress',

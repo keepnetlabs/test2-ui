@@ -47,6 +47,7 @@
           :id="`btn--delete-row-action-${Math.random().toString().substring(2)}`"
           class="btn-hover"
           icon
+          :disabled="!getCampaignReportsDeletePermissions"
           @click="$emit('on-delete', scope.row)"
         >
           <v-icon>mdi-delete</v-icon>
@@ -60,6 +61,7 @@
 <script>
 import { ACTION_STATUSES } from '@/components/CampaignManager/utils'
 import labels from '@/model/constants/labels'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CampaignManagerItemRowActions',
@@ -77,6 +79,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getCampaignReportsDeletePermissions: 'permissions/getCampaignReportsDeletePermissions'
+    }),
     isMenuRender() {
       return ![
         ACTION_STATUSES.COMPLETE,

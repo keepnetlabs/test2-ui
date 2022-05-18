@@ -4,21 +4,19 @@
       <v-col class="k-container__tab-container" cols="12">
         <v-card id="dns-services-card" class="k-card">
           <el-tabs v-model="tab">
-            <el-tab-pane v-if="isDomainRender" label="Domains" name="Domains" id="domains-content"
-              ><DomainsList
-                v-if="tab === 'Domains'"
-                :PERMISSIONS="PERMISSIONS['DOMAIN']"
-                ref="refDomains"
+            <el-tab-pane
+              v-if="getDomainSearchPermissions"
+              label="Domains"
+              name="Domains"
+              id="domains-content"
+              ><DomainsList v-if="tab === 'Domains'" ref="refDomains"
             /></el-tab-pane>
             <el-tab-pane
-              v-if="isDNSRender"
+              v-if="getDnsSearchPermissions"
               label="DNS Services"
               name="DNSServices"
               id="dns-services-content"
-              ><DnsServiceList
-                v-if="tab === 'DNSServices'"
-                :PERMISSIONS="PERMISSIONS['DNS']"
-                ref="refDnsServiceList"
+              ><DnsServiceList v-if="tab === 'DNSServices'" ref="refDnsServiceList"
             /></el-tab-pane>
           </el-tabs>
         </v-card>
@@ -30,8 +28,7 @@
 <script>
 import DnsServiceList from '@/components/DnsServices/DnsServicesList'
 import DomainsList from '@/components/Domains/DomainsList'
-import PERMISSIONS from '@/permissions'
-import { getPermissionsOfAllItems } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'DNSandDomains',
   components: {
@@ -40,23 +37,16 @@ export default {
   },
   data() {
     return {
-      tab: 'Domains',
-      PERMISSIONS: {
-        DOMAIN: {},
-        DNS: {}
-      }
+      tab: 'Domains'
     }
   },
   computed: {
-    isDomainRender() {
-      return this.PERMISSIONS?.DOMAIN?.SEARCH?.hasPermission
-    },
-    isDNSRender() {
-      return this.PERMISSIONS?.DNS?.SEARCH?.hasPermission
-    }
+    ...mapGetters({
+      getDomainSearchPermissions: 'permissions/getDomainSearchPermissions',
+      getDnsSearchPermissions: 'permissions/getDnsSearchPermissions'
+    })
   },
   created() {
-    this.getPermissions()
     if (!this.isDomainRender) {
       this.tab = 'DNSServices'
     }
@@ -64,11 +54,6 @@ export default {
   methods: {
     changeTabStatus(tabStatus) {
       this.tab = tabStatus
-    },
-    getPermissions() {
-      const { DNS_PERMISSIONS, DOMAIN_PERMISSIONS } = PERMISSIONS
-      this.$set(this.PERMISSIONS, 'DNS', getPermissionsOfAllItems(DNS_PERMISSIONS))
-      this.$set(this.PERMISSIONS, 'DOMAIN', getPermissionsOfAllItems(DOMAIN_PERMISSIONS))
     }
   },
   beforeRouteLeave(to, from, next) {

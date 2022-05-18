@@ -2,7 +2,7 @@
   <div class="smtp-settings">
     <company-settings-header title="SMTP Settings" sub-title="Manage SMTP server settings" />
     <new-smtp-settings
-      v-if="newSmtpModalStatus && PERMISSIONS.CREATE.hasPermission"
+      v-if="newSmtpModalStatus && getSMTPSettingsCreatePermissions"
       ref="newSmtpSettings"
       :status="newSmtpModalStatus"
       @closeOverlay="toggleSmtpModalStatus"
@@ -12,7 +12,7 @@
       :isEdit="isEdit"
     />
     <delete-smtp-settings
-      v-if="deleteSmtpModalStatus && PERMISSIONS.DELETE.hasPermission"
+      v-if="deleteSmtpModalStatus && getSMTPSettingsDeletePermissions"
       :status="deleteSmtpModalStatus"
       :data="selectedDeleteSmtpSettings"
       @closeOverlay="toggleDeleteSmtpModalStatus"
@@ -174,6 +174,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'SMTPSettings',
   components: {
@@ -181,12 +182,6 @@ export default {
     CompanySettingsHeader,
     DataTable,
     NewSmtpSettings
-  },
-  props: {
-    PERMISSIONS: {
-      type: Object,
-      required: true
-    }
   },
   data() {
     return {
@@ -271,7 +266,7 @@ export default {
         selectEvent: {
           clipboard: true,
           edit: false,
-          delete: this.PERMISSIONS.DELETE.hasPermission,
+          delete: this.$store.getters['permissions/getSMTPSettingsDeletePermissions'],
           download: false,
           disabledStatuses: {
             delete: false
@@ -279,7 +274,7 @@ export default {
         },
         downloadButton: {
           show: true,
-          disabled: !this.PERMISSIONS.EXPORT.hasPermission
+          disabled: !this.$store.getters['permissions/getSMTPSettingsExportPermissions']
         },
         rowActions: [
           {
@@ -287,21 +282,21 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             id: 'btn-edit--smtp-settings-row-actions',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+            disabled: !this.$store.getters['permissions/getSMTPSettingsUpdatePermissions']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--smtp-settings-row-actions',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            disabled: !this.$store.getters['permissions/getSMTPSettingsDeletePermissions']
           }
           // {
           //   name: "Make Default",
           //   icon: "mdi-star-circle",
           //   action: "makeDefaultAction",
           //   id: "btn-make-default--smtp-settings-row-actions",
-          //   disabled: !this.PERMISSIONS.UPDATE.hasPermission,
+          //   disabled: !this.$store.getters['permissions/getSMTPSettingsUpdatePermissions']
           // },
         ],
         empty: {
@@ -309,14 +304,14 @@ export default {
           btn: labels.EmptySmtpSettingsSub,
           icon: 'mdi-plus',
           id: 'btn-empty--smtp-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getSMTPSettingsCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addNewSmtpSetting',
           tooltip: 'Add SMTP Setting',
           id: 'btn-add--smtp-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getSMTPSettingsCreatePermissions']
         }
       },
       newSmtpModalStatus: false,
@@ -325,6 +320,16 @@ export default {
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
+  },
+  computed: {
+    ...mapGetters({
+      getSMTPSettingsSearchPermissions: 'permissions/getSMTPSettingsSearchPermissions',
+      getSMTPSettingsCreatePermissions: 'permissions/getSMTPSettingsCreatePermissions',
+      getSMTPSettingsUpdatePermissions: 'permissions/getSMTPSettingsUpdatePermissions',
+      getSMTPSettingsDeletePermissions: 'permissions/getSMTPSettingsDeletePermissions',
+      getSMTPSettingsGetPermissions: 'permissions/getSMTPSettingsGetPermissions',
+      getSMTPSettingsExportPermissions: 'permissions/getSMTPSettingsExportPermissions'
+    })
   },
   methods: {
     handleTableSelectionChange(items) {
@@ -387,8 +392,7 @@ export default {
       return this.tableOptions.rowActions[1].disabled || !isOwner
     },
     exportSmtpSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const { EXPORT } = this.PERMISSIONS
-      if (EXPORT.hasPermission) {
+      if (this.getSMTPSettingsExportPermissions) {
         const clientTableExportHelper = new ClientTableExportHelper(
           JSON.parse(JSON.stringify(this.bodyOptions.filter)),
           this.$refs.refSmtpSettingsList,
@@ -433,8 +437,7 @@ export default {
       this.deleteSmtpModalStatus = !this.deleteSmtpModalStatus
     },
     callForSearchSmtpSettings() {
-      const { SEARCH } = this.PERMISSIONS
-      if (SEARCH.hasPermission) {
+      if (this.getSMTPSettingsSearchPermissions) {
         this.loading = true
         searchSmtpSettings(this.bodyOptions)
           .then((response) => {
@@ -468,8 +471,7 @@ export default {
       )
     },
     handleEditAction({ resourceId } = {}) {
-      const { UPDATE, GET } = this.PERMISSIONS
-      if (UPDATE.hasPermission && GET.hasPermission) {
+      if (this.getSMTPSettingsUpdatePermissions && this.getSMTPSettingsGetPermissions) {
         this.isEdit = true
         this.selectedEditSmtpSettings = resourceId
         this.toggleSmtpModalStatus()
@@ -480,8 +482,7 @@ export default {
       this.callForSearchSmtpSettings()
     },
     callForDeleteSmtpSettings(resourceId) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
+      if (this.getSMTPSettingsDeletePermissions) {
         deleteSmtpSettings(resourceId)
           .then(() => {
             this.callForSearchSmtpSettings()
@@ -492,16 +493,14 @@ export default {
       }
     },
     handleDeleteSmtpSettings(row) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
+      if (this.getSMTPSettingsDeletePermissions) {
         const { resourceId } = row
         this.$refs.refSmtpSettingsList.unSelectRow(row)
         this.callForDeleteSmtpSettings(resourceId)
       }
     },
     handleDeleteAction(selectedRow) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
+      if (this.getSMTPSettingsDeletePermissions) {
         this.selectedDeleteSmtpSettings = selectedRow
         this.toggleDeleteSmtpModalStatus()
       }
@@ -537,8 +536,7 @@ export default {
       this.getDefaultFilterAndSearch()
     },
     handleMultipleDelete(selections) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
+      if (this.getSMTPSettingsDeletePermissions) {
         this.selectedDeleteSmtpSettings = selections
         this.toggleDeleteSmtpModalStatus()
       }
@@ -553,8 +551,7 @@ export default {
       this.callForSearchSmtpSettings()
     },
     handleDeleteMultipleSmtpSettings(selections) {
-      const { DELETE } = this.PERMISSIONS
-      if (DELETE.hasPermission) {
+      if (this.getSMTPSettingsDeletePermissions) {
         selections.forEach((item) => {
           this.handleDeleteSmtpSettings(item)
         })

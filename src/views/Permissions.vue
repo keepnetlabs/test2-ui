@@ -34,6 +34,7 @@
     <div class="permission-logs__container">
       <div class="permission-logs__datatable">
         <data-table
+          v-if="getSystemRolesSearchPermission"
           id="permission-data-list"
           ref="refPermissionList"
           is-server-side
@@ -116,9 +117,8 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
-import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import NewPermissions from '@/components/Permissions/NewPermissions'
 import {
   deletePermission,
@@ -127,13 +127,13 @@ import {
   getPermissionData
 } from '@/api/permissions'
 import AppDialog from '../components/AppDialog'
-
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import {
   columnFilterChanged,
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Permission',
@@ -227,7 +227,7 @@ export default {
           tooltip: labels.ADDAPERMISSION,
           action: 'openPermissionModal',
           id: 'btn-add--permissions',
-          disabled: !checkPermission('roles', 'POST')
+          disabled: !this.$store.getters['permissions/getSystemRolesCreatePermission']
         },
         selectEvent: {
           clipboard: true,
@@ -245,14 +245,14 @@ export default {
             id: 'btn-empty--permissions',
             action: 'editPermissions',
             isNotShow: true,
-            disabled: !checkPermission('roles/{resourceId}', 'PUT')
+            disabled: !this.$store.getters['permissions/getSystemRolesUpdatePermission']
           },
           {
             name: 'Delete',
             id: 'btn-delete--permissions',
             icon: 'mdi-delete',
             action: 'delete',
-            disabled: !checkPermission('roles/{resourceId}', 'DELETE')
+            disabled: !this.$store.getters['permissions/getSystemRolesDeletePermission']
           }
         ]
       },
@@ -267,6 +267,12 @@ export default {
       permissionEditData: null
     }
   },
+  computed: {
+    ...mapGetters({
+      getSystemRolesUpdatePermission: 'permissions/getSystemRolesUpdatePermission',
+      getSystemRolesSearchPermission: 'permissions/getSystemRolesSearchPermission'
+    })
+  },
   methods: {
     getDisabledStatusOfEdit({ isOwner } = {}) {
       return this.tableOptions.rowActions[0].disabled || !isOwner
@@ -275,8 +281,7 @@ export default {
       return this.tableOptions.rowActions[1].disabled || !isOwner
     },
     handleEditAction({ resourceId } = {}) {
-      const { UPDATE, GET } = this.PERMISSIONS
-      if (UPDATE.hasPermission && GET.hasPermission) {
+      if (this.getSystemRolesUpdatePermission) {
         this.isEdit = true
         this.selectedEditSmtpSettings = resourceId
         this.toggleSmtpModalStatus()

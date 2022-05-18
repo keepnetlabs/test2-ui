@@ -1,5 +1,6 @@
 import jwt_decode from 'jwt-decode'
 import { setGlobalUserData } from '@/utils/functions'
+import CookieKeys from '@/model/constants/cookieKeys'
 
 const auth = {
   namespaced: true,
@@ -43,7 +44,7 @@ const auth = {
   },
   actions: {
     getCurrentUser({ commit, dispatch }) {
-      let token = JSON.parse(localStorage.getItem('auth-token')).token
+      let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
       let tokenData = jwt_decode(token)
       if (localStorage.getItem('isSelectCompany')) {
         let payload = {

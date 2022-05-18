@@ -11,36 +11,37 @@
     >
       <template v-slot:overlay-body>
         <CreateOrEditRule
+          v-if="showPlaybookModal"
           :playbookId="selectedPlaybookId"
           @cancelForm="togglePlaybookModal"
           @closeFormWithUpdate="closePlaybookWithUpdate"
-          v-if="showPlaybookModal"
         />
       </template>
     </app-modal>
     <div class="k-widget__header" id="available-widgets">
       <available-widgets
-        @handleEdit="changeWidgetStatus"
         :edit-mode="editMode"
         :available-widgets="availableWidgets"
+        :permissions="permissions"
+        @handleEdit="changeWidgetStatus"
         @addWidget="addWidget"
         @handleOpenMenu="handleOpenMenu"
       />
     </div>
 
     <k-smart-grid
+      ref="refGrid"
       :layout="layout"
       :col-num="colNum"
-      @layout-mounted="layoutMounted"
       :is-static="!editMode"
       :row-height="50"
-      ref="refGrid"
       @breakpointChanged="breakpointChanged"
       @layout-updated="layoutUpdated"
+      @layout-mounted="layoutMounted"
     >
       <smart-widget
-        :key="item.i"
         v-for="(item, index) in layout"
+        :key="item.i"
         :slot="item.i"
         :padding="[0, 0]"
         :ref="`ref${item.i}`"
@@ -75,11 +76,9 @@ import KSmartGrid from '@/components/Common/Widget/KSmartGrid'
 import IncidentAnalysisIrHeader from '@/components/Common/Widget/WidgetComponents/IncidentAnalysisIrHeader'
 import InvestigationsIrHeader from '@/components/Common/Widget/WidgetComponents/InvestigationsIrHeader'
 import RoiSummaryIrHeader from '@/components/Common/Widget/WidgetComponents/RoiSummaryIrHeader'
-import { getWidgets, postWidgets } from '@/api/widgets'
-import { COMMON_CONSTANTS } from '@/model/constants/commonConstants'
+import { postWidgets } from '@/api/widgets'
 import CreateOrEditRule from '@/components/Playbook/CreateOrEditRule'
 import AppModal from '@/components/AppModal'
-import { checkPermission } from '@/utils/functions'
 export default {
   name: 'Widgets',
   components: {
@@ -87,6 +86,14 @@ export default {
     AvailableWidgets,
     AppModal,
     CreateOrEditRule
+  },
+  props: {
+    permissions: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
   },
   data() {
     return {
@@ -112,7 +119,7 @@ export default {
           i: Math.random().toString(),
           title: 'Recent Investigations',
           key: 'RecentInvestigations',
-          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
+          isAllowed: this?.permissions?.runningInvestigation
         },
         PhishingReporterIrHeader: {
           x: 0,
@@ -128,7 +135,7 @@ export default {
           i: Math.random().toString(),
           key: 'PhishingReporterIrHeader',
           title: 'Phishing Reporter Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         IncidentAnalysisIrHeader: {
           x: 0,
@@ -144,7 +151,7 @@ export default {
           i: Math.random().toString(),
           key: 'IncidentAnalysisIrHeader',
           title: 'Incident Analysis Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         InvestigationsIrHeader: {
           x: 0,
@@ -160,7 +167,7 @@ export default {
           i: Math.random().toString(),
           key: 'InvestigationsIrHeader',
           title: 'Investigations Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         ROISummaryIrHeader: {
           x: 0,
@@ -176,7 +183,7 @@ export default {
           i: Math.random().toString(),
           key: 'ROISummaryIrHeader',
           title: 'ROI Summary Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         RecentlyReportedIncidents: {
           x: 0,
@@ -192,7 +199,7 @@ export default {
           i: Math.random().toString(),
           title: 'Recently Reported Incidents',
           key: 'RecentlyReportedIncidents',
-          isAllowed: checkPermission('notified-emails/search', 'POST')
+          isAllowed: this?.permissions?.notifiedEmail
         },
         RecentlyPostedThreats: {
           x: 0,
@@ -208,7 +215,7 @@ export default {
           i: Math.random().toString(),
           title: 'Recently Posted Threats',
           key: 'RecentlyPostedThreats',
-          isAllowed: checkPermission('community-posts/search', 'POST')
+          isAllowed: this?.permissions?.communityPosts
         },
         TopRules: {
           x: 0,
@@ -224,7 +231,7 @@ export default {
           i: Math.random().toString(),
           key: 'TopRules',
           title: 'Top Rules',
-          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
+          isAllowed: this?.permissions?.topRules
         },
         TopPosts: {
           x: 0,
@@ -240,7 +247,7 @@ export default {
           i: Math.random().toString(),
           key: 'TopPosts',
           title: 'Top Posts',
-          isAllowed: checkPermission('community-posts/top-posts', 'GET')
+          isAllowed: this?.permissions?.topPosts
         },
         Reporters: {
           x: 0,
@@ -256,24 +263,8 @@ export default {
           i: Math.random().toString(),
           key: 'Reporters',
           title: 'Reporters',
-          isAllowed: checkPermission('dashboard/reporters', 'GET')
+          isAllowed: this?.permissions?.reporters
         },
-        /*IncidentClusters: {
-          x: 0,
-          y: 0,
-          w: 6,
-          minW: 6,
-          defaultW: 6,
-          h: 6,
-          midW: 12,
-          defaultH: 6,
-          minH: 6,
-          maxH: 6,
-          i: Math.random().toString(),
-          key: 'IncidentClusters',
-          title: 'Incident Clusters',
-          isAllowed: checkPermission('dashboard/widgets', 'GET')
-        },*/
         ReportedEmailTrends: {
           x: 0,
           y: 0,
@@ -288,72 +279,64 @@ export default {
           i: Math.random().toString(),
           key: 'ReportedEmailTrends',
           title: 'Reported Email Trends',
-          isAllowed: checkPermission('dashboard/reported-email-trends', 'POST')
+          isAllowed: this?.permissions?.reportedEmailTrends
         }
       },
       availableWidgets: [
         {
           name: 'Recent Investigations',
           key: 'RecentInvestigations',
-          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
+          isAllowed: this?.permissions?.runningInvestigation
         },
         {
           name: 'Top Rules',
           key: 'TopRules',
-          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
+          isAllowed: this?.permissions?.topRules
         },
         {
           name: 'Top Posts',
           key: 'TopPosts',
-          isAllowed: checkPermission('community-posts/top-posts', 'GET')
+          isAllowed: this?.permissions?.topPosts
         },
         {
           name: 'Reporters',
           key: 'Reporters',
-          isAllowed: checkPermission('dashboard/reporters', 'GET')
+          isAllowed: this?.permissions?.reporters
         },
-        /*
-        {
-          name: 'Incident Clusters',
-          key: 'IncidentClusters',
-          isAllowed: checkPermission('dashboard/widgets', 'GET')
-        },
-
-         */
         {
           name: 'Recently Posted Threats',
           key: 'RecentlyPostedThreats',
-          isAllowed: checkPermission('community-posts/search', 'POST')
+          isAllowed: this?.permissions?.communityPosts
         },
         {
           name: 'Recently Reported Incidents',
           key: 'RecentlyReportedIncidents',
-          isAllowed: checkPermission('notified-emails/search', 'POST')
+          isAllowed: this?.permissions?.notifiedEmail
         },
         {
           name: 'Reported Email Trends',
           key: 'ReportedEmailTrends',
-          isAllowed: checkPermission('dashboard/reported-email-trends', 'POST')
+          isAllowed: this?.permissions?.reportedEmailTrends
         },
         {
           name: 'Phishing Reporter Ir Header',
           key: 'PhishingReporterIrHeader',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         {
           name: 'Incident Analysis Ir Header',
           key: 'IncidentAnalysisIrHeader',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         {
           name: 'Investigations Ir Header',
           key: 'InvestigationsIrHeader',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         {
           name: 'ROI Summary Ir Header',
           key: 'ROISummaryIrHeader',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         }
       ],
       style:
@@ -538,7 +521,7 @@ export default {
           i: '0.4439548718965418',
           key: 'IncidentAnalysisIrHeader',
           title: 'Incident Analysis Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         {
           x: 9,
@@ -554,7 +537,7 @@ export default {
           i: '0.8129690089605317',
           key: 'ROISummaryIrHeader',
           title: 'ROI Summary Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         {
           x: 0,
@@ -570,7 +553,7 @@ export default {
           i: '0.36222415873736824',
           key: 'PhishingReporterIrHeader',
           title: 'Phishing Reporter Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         {
           x: 6,
@@ -586,7 +569,7 @@ export default {
           i: '0.955736738495951',
           key: 'InvestigationsIrHeader',
           title: 'Investigations Ir Header',
-          isAllowed: checkPermission('ir/dashboard/summary', 'GET')
+          isAllowed: this?.permissions?.irSummary
         },
         /*
         {
@@ -620,7 +603,7 @@ export default {
           i: '0.5602556581402198',
           key: 'ReportedEmailTrends',
           title: 'Reported Email Trends',
-          isAllowed: checkPermission('dashboard/reported-email-trends', 'POST')
+          isAllowed: this?.permissions?.reportedEmailTrends
         },
         {
           x: 0,
@@ -636,7 +619,7 @@ export default {
           i: '0.30768881243195656',
           title: 'Recent Investigations',
           key: 'RecentInvestigations',
-          isAllowed: checkPermission('ir/dashboard/running-investigations', 'GET')
+          isAllowed: this?.permissions?.runningInvestigation
         },
         {
           x: 6,
@@ -652,7 +635,7 @@ export default {
           i: '0.1349604029153395',
           key: 'TopPosts',
           title: 'Top Posts',
-          isAllowed: checkPermission('community-posts/top-posts', 'GET')
+          isAllowed: this?.permissions?.topPosts
         },
         {
           x: 0,
@@ -668,7 +651,7 @@ export default {
           i: '0.6104982760663944',
           title: 'Recently Reported Incidents',
           key: 'RecentlyReportedIncidents',
-          isAllowed: checkPermission('notified-emails/search', 'POST')
+          isAllowed: this?.permissions?.notifiedEmail
         },
         {
           x: 6,
@@ -684,7 +667,7 @@ export default {
           i: '0.15876452855409506',
           title: 'Recently Posted Threats',
           key: 'RecentlyPostedThreats',
-          isAllowed: checkPermission('community-posts/search', 'POST')
+          isAllowed: this?.permissions?.communityPosts
         },
         {
           x: 0,
@@ -700,7 +683,7 @@ export default {
           i: '0.3901775633662319',
           key: 'Reporters',
           title: 'Reporters',
-          isAllowed: checkPermission('dashboard/reporters', 'GET')
+          isAllowed: this?.permissions?.reporters
         },
         {
           x: 6,
@@ -716,7 +699,7 @@ export default {
           i: '0.8761474288298772',
           key: 'TopRules',
           title: 'Top Rules',
-          isAllowed: checkPermission('ir/dashboard/top-rules', 'GET')
+          isAllowed: this?.permissions?.topRules
         }
       ]
       widgets = widgets.reduce((acc, widget) => {
@@ -740,13 +723,10 @@ export default {
         { settings: [] }
       )
       postWidgets(payload)
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     }
   },
   async created() {
-    if (this.checkPermissions('dashboard/widgets', 'GET')) {
+    if (this?.permissions?.widgets) {
       try {
         const response = await this.$store.dispatch('widgets/callForWidgets')
         const settings = response.data['dashboardWidgetsOrdering'].data.settings
@@ -809,15 +789,8 @@ export default {
     z-index: 999999;
     cursor: pointer;
   }
-
-  &-label {
-  }
-}
-::v-deep .widget-body__content {
-  //n overflow-y: auto;
 }
 .widget-body__content {
-  //overflow-y: auto;
   overflow: hidden;
   border-radius: 12px;
   .incident-responder-parent .columns-row .dashboard-cards .card-body .body-row__text {
@@ -833,12 +806,6 @@ export default {
       padding-bottom: 0 !important;
     }
   }
-  &::-webkit-scrollbar {
-    //display: none;
-  }
-
-  //  -ms-overflow-style: none; /* IE and Edge */
-  // scrollbar-width: none;
 }
 .vue-grid-layout {
   margin-left: -12px;

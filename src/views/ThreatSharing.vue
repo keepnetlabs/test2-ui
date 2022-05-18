@@ -16,23 +16,20 @@
         <v-card id="ts-card" class="pl-1 pt-2 pr-1">
           <v-tabs id="ts-tabs" v-model="tab" background-color="transparent" color="basil">
             <v-tab
-              v-if="checkPermissions('community-posts/search', 'POST')"
+              v-if="getCommunityPostsPermission"
               id="ts-tab-incident"
               :disabled="isStepDisabled"
               >Incidents</v-tab
             >
             <v-tab
-              v-if="checkPermissions('communities/search/all', 'POST')"
+              v-if="getAllCommunitiesPermission"
               :disabled="isStepDisabled"
               id="ts-tab-community"
               >Communities</v-tab
             >
           </v-tabs>
           <v-tabs-items v-model="tab" class="component-threat-sharing__tabs">
-            <v-tab-item
-              v-if="checkPermissions('community-posts/search', 'POST')"
-              :disabled="isStepDisabled"
-            >
+            <v-tab-item v-if="getCommunityPostsPermission" :disabled="isStepDisabled">
               <incidents
                 ref="tsIncidents"
                 :isLoadState="isLoadState"
@@ -41,10 +38,7 @@
                 @setThreatSharingStepLoading="setThreatSharingStepLoading"
               />
             </v-tab-item>
-            <v-tab-item
-              v-if="checkPermissions('communities/search/all', 'POST')"
-              :disabled="isStepDisabled"
-            >
+            <v-tab-item v-if="getAllCommunitiesPermission" :disabled="isStepDisabled">
               <communities
                 ref="tsCommunities"
                 :refresh="refreshMemberTable"
@@ -79,7 +73,7 @@ import Incidents from '@/components/ThreatSharing/Incidents/Incidents'
 import Communities from '@/components/ThreatSharing/Communities/Communities'
 import RightColumn from '@/components/ThreatSharing/RightColumn/RightColumn'
 import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'ThreatSharing',
@@ -104,6 +98,13 @@ export default {
     subSelectedTab: null,
     isStepDisabled: false
   }),
+  computed: {
+    ...mapGetters({
+      getAllCommunitiesPermission: 'permissions/getThreatSharingAllCommunitiesPermission',
+      getMyCommunitiesPermission: 'permissions/getThreatSharingMyCommunitiesPermission',
+      getCommunityPostsPermission: 'permissions/getThreatSharingCommunityPostsPermission'
+    })
+  },
   beforeRouteLeave(to, from, next) {
     const { refNewCommunity, tsCommunities, tsIncidents } = this.$refs
     if (this.isWantToAddNewCommunity && !refNewCommunity.isSubmitted) {
@@ -131,16 +132,13 @@ export default {
       this.isLoadState = false
       this.isTableReload = false
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     joinRequestSuccess() {
       this.getSelectedTabData()
     },
     getSelectedTabData() {
       let _this = this
       setTimeout(() => {
-        if (this.tab === 0 && this.checkPermissions('community-posts/search', 'POST')) {
+        if (this.tab === 0 && this.getCommunityPostsPermission) {
           if (!this.isLoadState) {
             if (this.$refs && this.$refs.tsIncidents) {
               this.$refs.tsIncidents.getIncidentList()
@@ -149,7 +147,7 @@ export default {
             }
           }
         } else {
-          if (this.checkPermissions('communities/search/all', 'POST')) {
+          if (this.getAllCommunitiesPermission) {
             const communitiesDataGlobal =
               _this.$store.state['communities'].communities &&
               _this.$store.state['communities'].communities.communitiesData
@@ -203,10 +201,7 @@ export default {
           vm.$refs.tsCommunities.subTabSelected('tab-2')
         }, 1250)
       }
-      if (
-        !vm.checkPermissions('community-posts/search', 'POST') &&
-        !vm.checkPermissions('communities/search/all', 'POST')
-      ) {
+      if (!vm.getCommunityPostsPermission && !vm.getAllCommunitiesPermission) {
         vm.$router.push('/')
       }
       if (from.name === 'Community') {

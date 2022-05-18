@@ -55,14 +55,10 @@ import {
 } from '@/utils/helperFunctions'
 import { exportSCIMSettings, searchSCIMSettings } from '@/api/scimSettings'
 import { useLoading } from '@/hooks/useLoading'
+import { mapGetters } from 'vuex'
 export default {
   name: 'SCIMSettingsTable',
   components: { DataTable },
-  props: {
-    PERMISSIONS: {
-      type: Object
-    }
-  },
   mixins: [useLoading],
   data() {
     return {
@@ -137,21 +133,21 @@ export default {
             action: 'editAction',
             id: 'btn-edit--scim-settings-row-actions',
             isNotShow: true,
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+            disabled: !this.$store.getters['permissions/getSCIMSettingsUpdatePermissions']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--scim-settings-row-actions',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            disabled: !this.$store.getters['permissions/getSCIMSettingsDeletePermissions']
           },
           {
             name: labels.Revoke,
             icon: 'mdi-minus-circle-outline',
             id: 'btn-revoke--scim-settings-row-actions',
             action: 'revokeAction',
-            disabled: !this.PERMISSIONS.REVOKE.hasPermission
+            disabled: !this.$store.getters['permissions/getSCIMSettingsRevokePermissions']
           }
         ],
         empty: {
@@ -160,20 +156,26 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--scim-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getSCIMSettingsCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addNewSCIMSetting',
           tooltip: 'Add SCIM Setting',
           id: 'btn-add--scim-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getSCIMSettingsCreatePermissions']
         }
       },
       axiosPayload: getDefaultAxiosPayload(),
       defaultAxiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
+  },
+  computed: {
+    ...mapGetters({
+      getSCIMSettingsSearchPermissions: 'permissions/getSCIMSettingsSearchPermissions',
+      getSCIMSettingsExportPermissions: 'permissions/getSCIMSettingsExportPermissions'
+    })
   },
   created() {
     this.getStoredTableSettings()
@@ -182,8 +184,7 @@ export default {
   },
   methods: {
     callForData() {
-      const { SEARCH } = this.PERMISSIONS
-      if (!SEARCH.hasPermission) return
+      if (!this.getSCIMSettingsSearchPermissions) return
       this.setLoading(true)
       searchSCIMSettings(this.axiosPayload)
         .then((response) => {
@@ -308,8 +309,7 @@ export default {
       this.callForData()
     },
     exportSCIMSettingsList({ exportTypes, reportAllPages, pageNumber, pageSize }) {
-      const { EXPORT } = this.PERMISSIONS
-      if (!EXPORT.hasPermission) return
+      if (!this.getSCIMSettingsExportPermissions) return
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber,

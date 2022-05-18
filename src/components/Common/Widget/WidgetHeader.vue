@@ -37,8 +37,7 @@ export default {
     editMode: {
       type: Boolean
     }
-  },
-  updated() {}
+  }
 }
 </script>
 

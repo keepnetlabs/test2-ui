@@ -73,7 +73,7 @@ import {
 } from '@/model/constants/commonConstants'
 import labels from '@/model/constants/labels'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   columnFilterChanged,
@@ -158,7 +158,7 @@ export default {
           id: 'btn-add--company-group',
           action: 'addButton',
           tooltip: 'Add Company Group',
-          disabled: !this.checkPermissions('company-groups', 'POST')
+          disabled: !this.$store.getters['permissions/getCompanyGroupsCreatePermissions']
         },
         rowActions: [
           {
@@ -167,14 +167,14 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             isNotShow: true,
-            disabled: !this.checkPermissions('company-groups/{resourceId}', 'PUT')
+            disabled: !this.$store.getters['permissions/getCompanyGroupsEditPermissions']
           },
           {
             id: 'btn-delete--company-group-row-actions',
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'delete',
-            disabled: !this.checkPermissions('company-groups/{resourceId}', 'DELETE')
+            disabled: !this.$store.getters['permissions/getCompanyGroupsDeletePermissions']
           }
         ]
       },
@@ -369,9 +369,6 @@ export default {
           })
           .catch(() => {})
       })
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     getTableData() {
       this.loading = true

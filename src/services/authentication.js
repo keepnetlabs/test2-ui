@@ -11,7 +11,6 @@ const AuthenticationService = {
     } else {
       return AuthenticationStatus.AUTHENTICATED
     }
-    //return AuthenticationStatus.AUTHENTICATED @todo delete
   },
   getTokenModel() {
     let tokenString = localStorage.getItem(CookieKeys.AUTH_KEY)
@@ -26,9 +25,6 @@ const AuthenticationService = {
   },
   isExpired() {
     return this.getAuthenticationStatus() === AuthenticationStatus.EXPIRED
-  },
-  isTwoFactor() {
-    return this.getAuthenticationStatus() === AuthenticationStatus.REQUIRETWOSTEP
   },
   getToken() {
     let tokenString = localStorage.getItem(CookieKeys.AUTH_KEY)

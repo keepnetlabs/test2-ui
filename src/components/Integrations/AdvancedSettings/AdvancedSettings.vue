@@ -17,6 +17,7 @@
           v-else-if="!isLoading && tab === item.name"
           :is="item.component"
           :form-data="formData"
+          :is-action-button-disabled="isActionButtonDisabled"
           @on-submit="handleSubmit"
         />
       </el-tab-pane>
@@ -35,6 +36,14 @@ import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'AdvancedSettings',
   components: { DatatableLoading, CompanySettingsHeader },
+  props: {
+    permissions: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
+  },
   data() {
     return {
       labels,
@@ -62,6 +71,11 @@ export default {
         }
       ],
       formData: []
+    }
+  },
+  computed: {
+    isActionButtonDisabled() {
+      return !this?.permissions?.UPDATE?.hasPermission
     }
   },
   created() {

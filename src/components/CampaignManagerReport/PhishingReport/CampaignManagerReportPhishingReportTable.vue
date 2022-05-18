@@ -100,13 +100,17 @@ export default {
             name: labels.Resend,
             id: 'btn-resend--row-actions-campaign-manager-report-phishing-reporter',
             icon: '$custom-resend',
-            action: 'on-resend'
+            action: 'on-resend',
+            disabled: !this.$store.getters['permissions/getCampaignReportsResendPermissions']
           },
           {
             name: labels.Details,
             id: 'btn-details--row-actions-campaign-manager-report-phishing-reporter',
             icon: '$custom-details',
-            action: 'on-detail'
+            action: 'on-detail',
+            disabled: !this.$store.getters[
+              'permissions/getCampaignReportsPhishingReporterDetailsPermissions'
+            ]
           }
         ]
       }

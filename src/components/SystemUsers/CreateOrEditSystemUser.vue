@@ -56,6 +56,7 @@ import jwt_decode from 'jwt-decode'
 import CreateOrEditSystemUserForm from '@/components/SystemUsers/CreateOrEditSystemUserForm'
 import SystemUserModel from '@/components/SystemUsers/system-user-model'
 import { isDifferent } from '@/utils/functions'
+import CookieKeys from '@/model/constants/cookieKeys'
 
 export default {
   name: 'CreateOrEditSystemUser',
@@ -189,7 +190,7 @@ export default {
     this.$nextTick(() => {
       this.$refs.refForm.resetValidation()
     })
-    let token = JSON.parse(localStorage.getItem('auth-token')).token
+    let token = JSON.parse(localStorage.getItem(CookieKeys.AUTH_KEY)).token
     let tokenData = jwt_decode(token)
     this.role = tokenData.role
   },

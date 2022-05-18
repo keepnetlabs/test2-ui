@@ -34,7 +34,6 @@
     />
     <SCIMSettingsTable
       ref="refTable"
-      :PERMISSIONS="PERMISSIONS"
       @on-add="toggleAddOrEditModal"
       @on-edit="toggleAddOrEditModal"
       @on-revoke="toggleRevokeDialog"
@@ -59,11 +58,6 @@ export default {
     AddOrEditSCIMModal,
     SCIMSettingsTable,
     CompanySettingsHeader
-  },
-  props: {
-    PERMISSIONS: {
-      type: Object
-    }
   },
   data() {
     return {
