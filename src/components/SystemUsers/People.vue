@@ -21,7 +21,7 @@
         @closeOverlay="toggleShowDeleteSystemUserModal"
       />
       <data-table
-        v-if="checkPermissions('system-users/search', 'POST')"
+        v-if="getSystemUsersSearchPermission"
         id="system-users-people-data-table"
         ref="refSystemUsersList"
         is-server-side
@@ -81,7 +81,7 @@ import {
   bulkDeleteSystemUsers
 } from '@/api/systemUsers'
 import DeleteSystemUserModal from '@/components/SystemUsers/DeleteSystemUserModal'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ClientTableExportHelper from '@/helper-classes/client-table-export-helper'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import labels from '@/model/constants/labels'
@@ -90,6 +90,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'People',
   components: {
@@ -109,7 +110,7 @@ export default {
       tableOptions: {
         downloadButton: {
           show: true,
-          disabled: !this.checkPermissions('system-users/search/export', 'POST')
+          disabled: !this.$store.getters['permissions/getSystemUsersExportPermission']
         },
         isColumnFilterActive: false,
         columns: [
@@ -232,28 +233,29 @@ export default {
             icon: 'mdi-pencil',
             id: 'btn-edit--system-users-people-row-actions',
             action: 'editAction',
-            disabled: !this.checkPermissions('system-users/{resourceId}', 'PUT')
+            disabled: !this.$store.getters['permissions/getSystemUsersUpdatePermission']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--system-users-people-row-actions',
-            disabled: !this.checkPermissions('system-users/{resourceId}', 'DELETE')
+            disabled: !this.$store.getters['permissions/getSystemUsersDeletePermission']
           }
         ],
         empty: {
           message: 'You do not have any System Users',
           btn: labels.New,
           id: 'btn-empty--system-users-people',
-          icon: 'mdi-plus'
+          icon: 'mdi-plus',
+          disabled: !this.$store.getters['permissions/getSystemUsersCreatePermission']
         },
         addButton: {
           show: true,
           action: 'handleAddNewSystemUsers',
           id: 'btn-add--system-users-people',
           tooltip: 'Add a New System User',
-          disabled: !this.checkPermissions('system-users', 'POST')
+          disabled: !this.$store.getters['permissions/getSystemUsersCreatePermission']
         }
       },
       requestBody: getDefaultAxiosPayload(),
@@ -264,6 +266,11 @@ export default {
       selectedDeleteRow: null,
       serverSideProps: new ServerSideProps()
     }
+  },
+  computed: {
+    ...mapGetters({
+      getSystemUsersSearchPermission: 'permissions/getSystemUsersSearchPermission'
+    })
   },
   methods: {
     resetPageNumber() {
@@ -408,9 +415,6 @@ export default {
         })
       })
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     handleAddNewSystemUsers() {},
     toggleCreateOrEditSystemUser() {
       this.showCreateOrEditSystemUserModal = !this.showCreateOrEditSystemUserModal
@@ -424,7 +428,7 @@ export default {
     },
     callForListSystemUsers() {
       this.loading = true
-      if (this.checkPermissions('system-users/search', 'POST')) {
+      if (this.getSystemUsersSearchPermission) {
         getSystemUsers(this.requestBody)
           .then((response) => {
             const {

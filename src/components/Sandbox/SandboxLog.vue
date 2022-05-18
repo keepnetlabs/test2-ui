@@ -49,7 +49,7 @@ import {
   DEFAULT_SEARCH_CONTAINER_KEYS,
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import { exportSandboxLog, getSandboxLog } from '@/api/sandbox'
@@ -393,9 +393,6 @@ export default {
           filterValues
         })
       )
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }

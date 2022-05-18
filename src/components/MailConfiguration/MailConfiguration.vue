@@ -3,21 +3,17 @@
     <app-modal
       v-if="status"
       ref="mail-configuration__modal"
-      :icon-name="'mdi-book-search'"
+      title-id="text--create-o365-mail-configuration-modal-title"
+      className="mail-configuration__modal"
+      icon-name="mdi-book-search"
       :title="getTitle"
       :status="status"
       @closeOverlay="status = false"
-      className="mail-configuration__modal"
-      title-id="text--create-o365-mail-configuration-modal-title"
     >
       <template v-slot:overlay-body>
         <v-form ref="mailConfiguration">
           <app-modal-body-header
-            :title="
-              editData
-                ? 'Edit Microsoft 365 Mail Configuration'
-                : 'New Microsoft 365 Mail Configuration'
-            "
+            :title="getTitle"
             sub-title="Select filters and date options to start an investigation"
           />
           <form-group title="Name" has-hint>
@@ -68,11 +64,11 @@
           </form-group>
           <form-group title="Directory (tenant) ID" has-hint>
             <v-text-field
+              v-model.trim="formValues.directoryId"
               placeholder="Enter a directory ID"
               id="input--mail-configuration-directory-id"
               outlined
               dense
-              v-model.trim="formValues.directoryId"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.maxLength(v, 64, labels.getMaxLengthMessage('Directory ID', 64))
@@ -86,13 +82,13 @@
           </form-group>
           <form-group title="Test Email Address" has-hint>
             <v-text-field
+              v-model.trim="formValues.email"
               placeholder="Enter an email address"
               id="input--mail-configuration-test-email-address"
               outlined
               dense
               hint="*Required"
               persistent-hint
-              v-model.trim="formValues.email"
               :rules="[
                 (v) => validations.required(v, labels.Required),
                 (v) => validations.startsWithSpace(v, labels.CannotStartWithSpace),
@@ -111,6 +107,7 @@
           </form-group>
           <form-group title="Domain Selection">
             <k-select
+              v-model.trim="formValues.allowedDomains"
               :items="domainList"
               custom-menu-class="menu--domain"
               placeholder="Select Domain"
@@ -119,7 +116,6 @@
               autocomplete="off"
               small-chips
               outlined
-              v-model.trim="formValues.allowedDomains"
               item-value="resourceId"
               item-text="name"
               class="pop-up-card__invite-member"
@@ -588,7 +584,7 @@
                     style="margin-right: 10px;"
                     color="#2196f3"
                     v-on="{ ...tooltip, ...menu }"
-                    :disabled="!checkPermissions('mail-configurations/o365', 'POST')"
+                    :disabled="!PERMISSIONS.O365_POST.hasPermission"
                   >
                     <v-icon color="white" style="font-size: 20px; margin-top: 1px;"
                       >mdi-plus</v-icon
@@ -694,7 +690,7 @@ import { getDefaultAxiosPayload, isDifferent } from '@/utils/functions'
 import TestConnection from './TestConnection'
 import TestConnectionEWS from './TestConnectionEWS'
 import FormGroup from '@/components/SmallComponents/FormGroup'
-import { checkPermission, scrollToComponent } from '@/utils/functions'
+import { scrollToComponent } from '@/utils/functions'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
@@ -725,6 +721,233 @@ export default {
     InputUrl,
     InputEntityName
   },
+  props: {
+    PERMISSIONS: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
+  },
+  data() {
+    return {
+      labels,
+      isGoogleWorkSpaceEdit: false,
+      delaySaveFunction: false,
+      isGoogleWorkSpaceButtonDisabled: false,
+      saveButtonDisabled: false,
+      isTestConnectionWorkedBefore: false,
+      selectedGoogleWorkSpaceResourceId: '',
+      googleWorkSpaceForm: {
+        name: '',
+        authJson: '',
+        email: ''
+      },
+      deletedItem: null,
+      statusGoogleWorkSpace: false,
+      deleteDialogId: null,
+      deleteDialog: null,
+      deleteDialogName: null,
+      deleteItemType: null,
+      editData: null,
+      ewsEditData: null,
+      googleWorkSpaceEditData: null,
+      storedTableSettings: null,
+      domainList: [],
+      formValues: {
+        name: null,
+        applicationId: null,
+        applicationSecret: null,
+        directoryId: null,
+        email: null,
+        allowedDomains: []
+      },
+      exchangeVersions: [],
+      targetGroupsList: [],
+      defaultTargetGroupsList: [],
+      ewsFormValues: {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      },
+      formValuesAfterO365Test: {
+        name: null,
+        applicationId: null,
+        applicationSecret: null,
+        directoryId: null,
+        email: null,
+        allowedDomains: []
+      },
+      initialFormValues: {
+        name: null,
+        applicationId: null,
+        applicationSecret: null,
+        directoryId: null,
+        email: null,
+        allowedDomains: []
+      },
+      formValuesAfterEWSTest: {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      },
+      ewsInitialFormValues: {
+        Name: null,
+        ServiceUrl: null,
+        ExchangeVersionLookupResourceId: null,
+        AccountType: 1,
+        Username: null,
+        Password: null,
+        Email: null,
+        XAnchorMailBoxHeader: false,
+        TargetGroupResourceIdList: [],
+        IsAllTargetGroupsSelected: true
+      },
+      formValuesAfterGWSTest: {
+        name: '',
+        authJson: '',
+        email: ''
+      },
+      googleWorkSpaceInitialValues: {
+        name: '',
+        authJson: '',
+        email: ''
+      },
+      status: false,
+      ewsStatus: false,
+      tableData: [],
+      loading: true,
+      selectedRow: null,
+      tableOptions: {
+        isColumnFilterActive: false,
+        lastColumns: [],
+        columns: [
+          {
+            property: PROPERTY_STORE.NAME,
+            align: 'left',
+            editable: false,
+            label: 'Name',
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text'
+          },
+          {
+            property: 'platform',
+            align: 'left',
+            editable: false,
+            label: 'Platform',
+            sortable: true,
+            show: true,
+            type: 'text',
+            width: 150,
+            filterableType: 'select',
+            filterableItems: [
+              { text: 'Google Workspace', value: 'Google Workspace' },
+              'Microsoft 365',
+              'Exchange'
+            ]
+          },
+          {
+            property: PROPERTY_STORE.EMAIL,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.EMAIL),
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'text'
+          },
+          {
+            property: 'statusName',
+            align: 'center',
+            editable: false,
+            label: 'Status',
+            sortable: true,
+            show: true,
+            type: 'badge',
+            width: 150,
+            props: {
+              style: {
+                maxWidth: '100px'
+              }
+            },
+            filterableType: 'select',
+            filterableItems: ['Running', 'Not Running']
+          },
+          {
+            property: PROPERTY_STORE.CREATETIME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATETIME),
+            sortable: true,
+            show: true,
+            fixed: false,
+            type: 'text',
+            width: 180,
+            filterableType: 'date'
+          }
+        ],
+        defaultColumns: [
+          // Should be defined to show the table
+        ],
+        pageSizes: [5, 10, 25],
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
+        },
+        iEmpty: {
+          message: labels.EmptyMailConfiguration,
+          btn: 'O365',
+          icon: 'mdi-microsoft-office',
+          subMes: labels.EmptyMailConfigurationSub
+        },
+        addButton: {
+          show: true,
+          action: 'addButton'
+        },
+        rowActions: [
+          {
+            name: 'Edit this row',
+            icon: 'mdi-pencil',
+            id: 'btn-empty--mail-configurations',
+            action: 'editTargetUsers',
+            isNotShow: true,
+            disabled: !this?.PERMISSIONS?.O365_UPDATE?.hasPermission
+          },
+          {
+            name: 'Delete',
+            id: 'btn-delete--mail-configurations',
+            icon: 'mdi-delete',
+            action: 'delete',
+            disabled: !this?.PERMISSIONS?.O365_DELETE?.hasPermission
+          }
+        ]
+      },
+      mailConfigurationTypes: ['Google Workspace', 'Microsoft 365', 'EWS'],
+      validations: validations,
+      requestBody: getDefaultAxiosPayload(),
+      defaultRequestBody: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps()
+    }
+  },
   computed: {
     getTitle() {
       return this.editData
@@ -737,223 +960,6 @@ export default {
         : `${labels.New} ${labels.GoogleWorkSpaceTitle}`
     }
   },
-  data: () => ({
-    labels,
-    isGoogleWorkSpaceEdit: false,
-    delaySaveFunction: false,
-    isGoogleWorkSpaceButtonDisabled: false,
-    saveButtonDisabled: false,
-    isTestConnectionWorkedBefore: false,
-    selectedGoogleWorkSpaceResourceId: '',
-    googleWorkSpaceForm: {
-      name: '',
-      authJson: '',
-      email: ''
-    },
-    deletedItem: null,
-    statusGoogleWorkSpace: false,
-    deleteDialogId: null,
-    deleteDialog: null,
-    deleteDialogName: null,
-    deleteItemType: null,
-    editData: null,
-    ewsEditData: null,
-    googleWorkSpaceEditData: null,
-    storedTableSettings: null,
-    domainList: [],
-    formValues: {
-      name: null,
-      applicationId: null,
-      applicationSecret: null,
-      directoryId: null,
-      email: null,
-      allowedDomains: []
-    },
-    exchangeVersions: [],
-    targetGroupsList: [],
-    defaultTargetGroupsList: [],
-    ewsFormValues: {
-      Name: null,
-      ServiceUrl: null,
-      ExchangeVersionLookupResourceId: null,
-      AccountType: 1,
-      Username: null,
-      Password: null,
-      Email: null,
-      XAnchorMailBoxHeader: false,
-      TargetGroupResourceIdList: [],
-      IsAllTargetGroupsSelected: true
-    },
-    formValuesAfterO365Test: {
-      name: null,
-      applicationId: null,
-      applicationSecret: null,
-      directoryId: null,
-      email: null,
-      allowedDomains: []
-    },
-    initialFormValues: {
-      name: null,
-      applicationId: null,
-      applicationSecret: null,
-      directoryId: null,
-      email: null,
-      allowedDomains: []
-    },
-    formValuesAfterEWSTest: {
-      Name: null,
-      ServiceUrl: null,
-      ExchangeVersionLookupResourceId: null,
-      AccountType: 1,
-      Username: null,
-      Password: null,
-      Email: null,
-      XAnchorMailBoxHeader: false,
-      TargetGroupResourceIdList: [],
-      IsAllTargetGroupsSelected: true
-    },
-    ewsInitialFormValues: {
-      Name: null,
-      ServiceUrl: null,
-      ExchangeVersionLookupResourceId: null,
-      AccountType: 1,
-      Username: null,
-      Password: null,
-      Email: null,
-      XAnchorMailBoxHeader: false,
-      TargetGroupResourceIdList: [],
-      IsAllTargetGroupsSelected: true
-    },
-    formValuesAfterGWSTest: {
-      name: '',
-      authJson: '',
-      email: ''
-    },
-    googleWorkSpaceInitialValues: {
-      name: '',
-      authJson: '',
-      email: ''
-    },
-    status: false,
-    ewsStatus: false,
-    tableData: [],
-    loading: true,
-    selectedRow: null,
-    tableOptions: {
-      isColumnFilterActive: false,
-      lastColumns: [],
-      columns: [
-        {
-          property: PROPERTY_STORE.NAME,
-          align: 'left',
-          editable: false,
-          label: 'Name',
-          fixed: 'left',
-          sortable: true,
-          show: true,
-          type: 'text',
-          filterableType: 'text'
-        },
-        {
-          property: 'platform',
-          align: 'left',
-          editable: false,
-          label: 'Platform',
-          sortable: true,
-          show: true,
-          type: 'text',
-          width: 150,
-          filterableType: 'select',
-          filterableItems: [
-            { text: 'Google Workspace', value: 'Google Workspace' },
-            'Microsoft 365',
-            'Exchange'
-          ]
-        },
-        {
-          property: PROPERTY_STORE.EMAIL,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.EMAIL),
-          sortable: true,
-          show: true,
-          type: 'text',
-          filterableType: 'text'
-        },
-        {
-          property: 'statusName',
-          align: 'center',
-          editable: false,
-          label: 'Status',
-          sortable: true,
-          show: true,
-          type: 'badge',
-          width: 150,
-          props: {
-            style: {
-              maxWidth: '100px'
-            }
-          },
-          filterableType: 'select',
-          filterableItems: ['Running', 'Not Running']
-        },
-        {
-          property: PROPERTY_STORE.CREATETIME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.CREATETIME),
-          sortable: true,
-          show: true,
-          fixed: false,
-          type: 'text',
-          width: 180,
-          filterableType: 'date'
-        }
-      ],
-      defaultColumns: [
-        // Should be defined to show the table
-      ],
-      pageSizes: [5, 10, 25],
-      selectEvent: {
-        clipboard: true,
-        edit: false,
-        delete: false,
-        download: false
-      },
-      iEmpty: {
-        message: labels.EmptyMailConfiguration,
-        btn: 'O365',
-        icon: 'mdi-microsoft-office',
-        subMes: labels.EmptyMailConfigurationSub
-      },
-      addButton: {
-        show: true,
-        action: 'addButton'
-      },
-      rowActions: [
-        {
-          name: 'Edit this row',
-          icon: 'mdi-pencil',
-          id: 'btn-empty--mail-configurations',
-          action: 'editTargetUsers',
-          isNotShow: true,
-          disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'PUT')
-        },
-        {
-          name: 'Delete',
-          id: 'btn-delete--mail-configurations',
-          icon: 'mdi-delete',
-          action: 'delete',
-          disabled: !checkPermission('mail-configurations/o365/{resourceId}', 'DELETE')
-        }
-      ]
-    },
-    mailConfigurationTypes: ['Google Workspace', 'Microsoft 365', 'EWS'],
-    validations: validations,
-    requestBody: getDefaultAxiosPayload(),
-    defaultRequestBody: getDefaultAxiosPayload(),
-    serverSideProps: new ServerSideProps()
-  }),
   methods: {
     getDomainList(selectedRow) {
       if (
@@ -1175,9 +1181,6 @@ export default {
           filterValues
         })
       )
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     testConnectionValues(isSuccess, isSave) {
       this.formValuesAfterO365Test = JSON.parse(JSON.stringify(this.formValues))
@@ -1534,7 +1537,7 @@ export default {
     })
   },
   mounted() {
-    if (!this.checkPermissions('mail-configurations/search', 'POST')) {
+    if (!this?.PERMISSIONS?.SEARCH?.hasPermission) {
       this.$router.push('/incident-responder')
     } else {
       this.getDefaultFilterAndSearch()

@@ -145,27 +145,31 @@ export default {
           show: true,
           action: 'addNewSamlSetting',
           tooltip: labels.SamlAddButtonTooltip,
-          id: 'btn-add--saml-settings'
+          id: 'btn-add--saml-settings',
+          disabled: !this.$store.getters['permissions/getSAMLIntegrationCreatePermissions']
         },
         empty: {
           message: labels.EmptySamlTable,
           subMes: labels.EmptySamlTableSub,
           btn: labels.New,
           icon: 'mdi-plus',
-          id: 'btn-empty--saml-settings'
+          id: 'btn-empty--saml-settings',
+          disabled: !this.$store.getters['permissions/getSAMLIntegrationCreatePermissions']
         },
         rowActions: [
           {
             name: 'Edit',
             icon: 'mdi-pencil',
             action: 'editAction',
-            id: 'btn-edit--saml-settings-row-actions'
+            id: 'btn-edit--saml-settings-row-actions',
+            disabled: !this.$store.getters['permissions/getSAMLIntegrationUpdatePermissions']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
-            id: 'btn-delete--saml-settings-row-actions'
+            id: 'btn-delete--saml-settings-row-actions',
+            disabled: !this.$store.getters['permissions/getSAMLIntegrationDeletePermissions']
           }
         ],
         selectEvent: {

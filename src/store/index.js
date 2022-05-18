@@ -4,7 +4,6 @@ import common from './modules/common'
 import login from './modules/login'
 import auth from './modules/auth'
 import dashboard from './modules/dashboard'
-import tour from './modules/tour'
 import investigations from './modules/investigations'
 import playbook from './modules/playbook'
 import rightColumn from './modules/rightColumn'
@@ -14,6 +13,7 @@ import communities from '@/store/modules/communities'
 import tableReload from '@/store/modules/tableReload'
 import whitelabel from '@/store/modules/whitelabel'
 import widgets from '@/store/modules/widgets'
+import permissions from '@/store/modules/permissions'
 Vue.use(Vuex)
 let store = new Vuex.Store({
   modules: {
@@ -21,7 +21,6 @@ let store = new Vuex.Store({
     login,
     auth,
     dashboard,
-    tour,
     investigations,
     playbook,
     rightColumn,
@@ -30,7 +29,8 @@ let store = new Vuex.Store({
     communities,
     tableReload,
     whitelabel,
-    widgets
+    widgets,
+    permissions
   }
 })
 

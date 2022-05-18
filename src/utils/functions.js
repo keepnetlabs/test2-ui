@@ -859,40 +859,6 @@ export function incidenPostReviewElementBind(url, id, rootId, isReview) {
   }
 }
 
-export function checkPermission(permission, type) {
-  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
-  if (isTokenExist) {
-    let token = JSON.parse(localStorage.getItem('auth-token')).token
-    let tokenData = jwt_decode(token)
-    let permissions = tokenData.Permission
-    return permissions.includes(`${permission}|${type}`)
-  } else {
-    return true
-  }
-}
-
-export function checkPermissionMultiple(permissionsList, contain = true) {
-  let isTokenExist = JSON.parse(localStorage.getItem('auth-token'))
-  if (isTokenExist) {
-    let token = JSON.parse(localStorage.getItem('auth-token')).token
-    let tokenData = jwt_decode(token)
-    let permissions = tokenData.Permission
-    return permissionsList.map((item) => permissions.includes(item)).includes(contain)
-  } else {
-    return true
-  }
-}
-
-export function getPermissionsOfAllItems(PERMISSIONS = {}) {
-  const COPY_OF_PERMISSIONS = { ...PERMISSIONS }
-  const permissions = Object.keys(COPY_OF_PERMISSIONS)
-  for (let permissionKey of permissions) {
-    const permission = COPY_OF_PERMISSIONS[permissionKey]
-    const { url, method } = permission
-    permission.hasPermission = checkPermission(url, method)
-  }
-  return COPY_OF_PERMISSIONS
-}
 export function datePrettier(date) {
   const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
   const newDate = new Date(date)

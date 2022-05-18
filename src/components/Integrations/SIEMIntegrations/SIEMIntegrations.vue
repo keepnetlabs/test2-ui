@@ -17,7 +17,7 @@
     />
     <SIEMIntegrationsTable
       ref="refTable"
-      :PERMISSIONS="PERMISSIONS"
+      :PERMISSIONS="permissions"
       @on-open-add-or-edit-modal="toggleShowAddOrEditModal"
       @on-delete="handleDeleteTableRowClick"
     />
@@ -29,6 +29,7 @@ import SIEMIntegrationsTable from '@/components/Integrations/SIEMIntegrations/SI
 import SIEMIntegrationDeleteDialog from '@/components/Integrations/SIEMIntegrations/SIEMIntegrationDeleteDialog'
 import SIEMIntegrationsAddOrEditModal from '@/components/Integrations/SIEMIntegrations/SIEMIntegrationsAddOrEditModal'
 import CompanySettingsHeader from '@/components/Company Settings/CompanySettingsHeader'
+import { mapGetters } from 'vuex'
 export default {
   name: 'SIEMIntegrations',
   components: {
@@ -36,11 +37,6 @@ export default {
     SIEMIntegrationsAddOrEditModal,
     SIEMIntegrationDeleteDialog,
     SIEMIntegrationsTable
-  },
-  props: {
-    PERMISSIONS: {
-      type: Object
-    }
   },
   data() {
     return {
@@ -52,6 +48,11 @@ export default {
       isShowAddOrEditModal: false,
       selectedRow: null
     }
+  },
+  computed: {
+    ...mapGetters({
+      permissions: 'permissions/getSIEMIntegrationPermissions'
+    })
   },
   methods: {
     callForData() {

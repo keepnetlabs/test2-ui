@@ -155,12 +155,7 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
-import {
-  checkPermission,
-  getDefaultAxiosPayload,
-  handleIsSafari,
-  setSafariClusterFix
-} from '@/utils/functions'
+import { getDefaultAxiosPayload, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -181,182 +176,184 @@ export default {
     Datatable,
     DeleteModal
   },
-  data: () => ({
-    loading: true,
-    tableData: [],
-    createdCompanyResourceIdForConfigureCompany: '',
-    isShowConfigureCompanyModal: false,
-    tableHeight: 0,
-    extendTop: 0,
-    bindPropsIsSafari: {},
-    isClustered: false,
-    editModal: false,
-    isShowDeleteModal: false,
-    isShowExtended: false,
-    isShowCreateOrEditModal: false,
-    companyIdArray: [],
-    showAddGroupToModal: false,
-    showCreateNewGroupWithCompany: false,
-    selectedExtend: {},
-    selectedRow: {},
-    storedTableSettings: null,
-    tableOptions: {
-      columns: [
-        {
-          property: PROPERTY_STORE.COMPANYNAME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
-          fixed: 'left',
-          sortable: true,
-          show: true,
-          type: 'slot',
-          filterableType: 'text',
-          width: 180
+  data() {
+    return {
+      loading: true,
+      tableData: [],
+      createdCompanyResourceIdForConfigureCompany: '',
+      isShowConfigureCompanyModal: false,
+      tableHeight: 0,
+      extendTop: 0,
+      bindPropsIsSafari: {},
+      isClustered: false,
+      editModal: false,
+      isShowDeleteModal: false,
+      isShowExtended: false,
+      isShowCreateOrEditModal: false,
+      companyIdArray: [],
+      showAddGroupToModal: false,
+      showCreateNewGroupWithCompany: false,
+      selectedExtend: {},
+      selectedRow: {},
+      storedTableSettings: null,
+      tableOptions: {
+        columns: [
+          {
+            property: PROPERTY_STORE.COMPANYNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.COMPANYNAME),
+            fixed: 'left',
+            sortable: true,
+            show: true,
+            type: 'slot',
+            filterableType: 'text',
+            width: 180
+          },
+          {
+            property: PROPERTY_STORE.INDUSTRYNAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'IndustryResourceId',
+            width: 150
+          },
+          {
+            property: PROPERTY_STORE.LICENSETYPENAME,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
+            sortable: true,
+            show: true,
+            type: 'text',
+            filterableType: 'select',
+            filterableItems: [],
+            filterableCustomFieldName: 'LicenseTypeResourceId',
+            width: 150
+          },
+          {
+            property: 'targetUserCount',
+            align: 'right',
+            editable: false,
+            label: labels.TargetUsers,
+            fixed: false,
+            sortable: true,
+            show: true,
+            type: 'number',
+            width: 160,
+            filterableType: 'number',
+            emptyText: 0
+          },
+          {
+            property: PROPERTY_STORE.NUMBEROFUSERS,
+            align: 'right',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
+            sortable: true,
+            show: true,
+            type: 'slot',
+            filterableType: 'text',
+            width: 180,
+            filterOptionProps: [
+              { text: 'Contains', value: 'Contains' },
+              { text: 'Equal', value: '=' },
+              { text: 'Not Equal', value: '!=' },
+              { text: 'Between', value: 'between' }
+            ]
+          },
+          {
+            property: PROPERTY_STORE.LICENSEENDDATE,
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
+            sortable: true,
+            show: true,
+            type: 'date',
+            filterableType: 'date',
+            width: 180
+          },
+          {
+            property: 'createTime',
+            align: 'left',
+            editable: false,
+            label: getStoreValue(PROPERTY_STORE.CREATEDATE),
+            fixed: false,
+            sortable: true,
+            show: true,
+            filterableType: 'date',
+            type: 'date',
+            width: 180
+          }
+        ],
+        isColumnFilterActive: false,
+        selectEvent: {
+          clipboard: true,
+          edit: false,
+          delete: false,
+          download: false
         },
-        {
-          property: PROPERTY_STORE.INDUSTRYNAME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.INDUSTRYNAME),
-          sortable: true,
-          show: true,
-          type: 'text',
-          filterableType: 'select',
-          filterableItems: [],
-          filterableCustomFieldName: 'IndustryResourceId',
-          width: 150
+        iEmpty: {
+          message: labels.EmptyCompany,
+          btn: labels.New,
+          id: 'btn-empty--company',
+          icon: 'mdi-plus'
         },
-        {
-          property: PROPERTY_STORE.LICENSETYPENAME,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.LICENSETYPENAME),
-          sortable: true,
+        addButton: {
           show: true,
-          type: 'text',
-          filterableType: 'select',
-          filterableItems: [],
-          filterableCustomFieldName: 'LicenseTypeResourceId',
-          width: 150
+          id: 'btn-add--company',
+          action: 'addButton',
+          tooltip: 'Add Company',
+          disabled: !this.$store.getters['permissions/getCompaniesCreatePermissions']
         },
-        {
-          property: 'targetUserCount',
-          align: 'right',
-          editable: false,
-          label: labels.TargetUsers,
-          fixed: false,
-          sortable: true,
-          show: true,
-          type: 'number',
-          width: 160,
-          filterableType: 'number',
-          emptyText: 0
-        },
-        {
-          property: PROPERTY_STORE.NUMBEROFUSERS,
-          align: 'right',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.NUMBEROFUSERS),
-          sortable: true,
-          show: true,
-          type: 'slot',
-          filterableType: 'text',
-          width: 180,
-          filterOptionProps: [
-            { text: 'Contains', value: 'Contains' },
-            { text: 'Equal', value: '=' },
-            { text: 'Not Equal', value: '!=' },
-            { text: 'Between', value: 'between' }
-          ]
-        },
-        {
-          property: PROPERTY_STORE.LICENSEENDDATE,
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.LICENSEENDDATE),
-          sortable: true,
-          show: true,
-          type: 'date',
-          filterableType: 'date',
-          width: 180
-        },
-        {
-          property: 'createTime',
-          align: 'left',
-          editable: false,
-          label: getStoreValue(PROPERTY_STORE.CREATEDATE),
-          fixed: false,
-          sortable: true,
-          show: true,
-          filterableType: 'date',
-          type: 'date',
-          width: 180
-        }
-      ],
-      isColumnFilterActive: false,
-      selectEvent: {
-        clipboard: true,
-        edit: false,
-        delete: false,
-        download: false
+        rowActions: [
+          {
+            name: 'Edit this row',
+            id: 'btn-edit--company-row-actions',
+            icon: 'mdi-pencil',
+            action: 'editAction',
+            isNotShow: true,
+            disabled: !this.$store.getters['permissions/getCompaniesEditPermissions']
+          },
+          {
+            id: 'btn-add--company-add-to-a-group-row-actions',
+            name: 'Add to a company group',
+            icon: 'mdi-account-multiple-plus',
+            action: 'AddGroupToModal',
+            disabled: !this.$store.getters['permissions/getCompanyGroupsSearchPermissions']
+          },
+          {
+            id: 'btn-add--company-create-new-company-group-with-company-row-actions',
+            name: 'Create a new company group with company',
+            icon: 'mdi-account-multiple',
+            action: 'createNewGroupWithCompany',
+            disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
+          },
+          {
+            id: 'btn-switch--company-switch-to-company-row-actions',
+            name: 'Switch to company',
+            icon: 'mdi-swap-horizontal',
+            action: 'switchCompany',
+            disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
+          },
+          {
+            id: 'btn-delete--company-row-actions',
+            name: 'Delete',
+            icon: 'mdi-delete',
+            action: 'delete',
+            disabled: !this.$store.getters['permissions/getCompaniesDeletePermissions']
+          }
+        ]
       },
-      iEmpty: {
-        message: labels.EmptyCompany,
-        btn: labels.New,
-        id: 'btn-empty--company',
-        icon: 'mdi-plus'
-      },
-      addButton: {
-        show: true,
-        id: 'btn-add--company',
-        action: 'addButton',
-        tooltip: 'Add Company',
-        disabled: !checkPermission('companies', 'POST')
-      },
-      rowActions: [
-        {
-          name: 'Edit this row',
-          id: 'btn-edit--company-row-actions',
-          icon: 'mdi-pencil',
-          action: 'editAction',
-          isNotShow: true,
-          disabled: !checkPermission('companies/{resourceId}', 'PUT')
-        },
-        {
-          id: 'btn-add--company-add-to-a-group-row-actions',
-          name: 'Add to a company group',
-          icon: 'mdi-account-multiple-plus',
-          action: 'AddGroupToModal',
-          disabled: !checkPermission('company-groups/search', 'POST')
-        },
-        {
-          id: 'btn-add--company-create-new-company-group-with-company-row-actions',
-          name: 'Create a new company group with company',
-          icon: 'mdi-account-multiple',
-          action: 'createNewGroupWithCompany',
-          disabled: !checkPermission('companies/search', 'POST')
-        },
-        {
-          id: 'btn-switch--company-switch-to-company-row-actions',
-          name: 'Switch to company',
-          icon: 'mdi-swap-horizontal',
-          action: 'switchCompany',
-          disabled: !checkPermission('companies/search', 'POST')
-        },
-        {
-          id: 'btn-delete--company-row-actions',
-          name: 'Delete',
-          icon: 'mdi-delete',
-          action: 'delete',
-          disabled: !checkPermission('companies/{resourceId}', 'DELETE')
-        }
-      ]
-    },
-    payload: getDefaultAxiosPayload(),
-    defaultPayload: getDefaultAxiosPayload(),
-    serverSideProps: new ServerSideProps()
-  }),
+      payload: getDefaultAxiosPayload(),
+      defaultPayload: getDefaultAxiosPayload(),
+      serverSideProps: new ServerSideProps()
+    }
+  },
   watch: {
     isShowCreateOrEditModal() {
       document.querySelector('html').classList.toggle('overflow-y-hidden')
@@ -452,9 +449,6 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
       return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)

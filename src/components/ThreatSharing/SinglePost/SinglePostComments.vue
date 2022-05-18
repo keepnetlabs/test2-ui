@@ -36,10 +36,7 @@
           @click="addPostComment(post.communityPostResourceId, post.communityResourceId)"
           class="send-btn"
           type="button"
-          :disabled="
-            !checkPermissions('community-posts/{communityPostResourceId}/comments', 'POST') ||
-            isPostButtonDisabled
-          "
+          :disabled="!getCreateCommentPermission || isPostButtonDisabled"
         >
           <v-icon>mdi-send</v-icon>
           SEND
@@ -126,10 +123,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import * as Validations from '@/utils/validations'
 import labels from '@/model/constants/labels'
 import { createComments, deleteComments, getComments, updateComments } from '@/api/threatSharing'
-import { checkPermission } from '@/utils/functions'
 import AppDialog from '@/components/AppDialog'
 import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
 import PostCardLoading from '@/components/SkeletonLoading/PostCardLoading'
@@ -178,6 +175,13 @@ export default {
       commentsLoading: true
     }
   },
+  computed: {
+    ...mapGetters({
+      getCreateCommentPermission: 'permissions/getThreatSharingCreateCommentPermission',
+      getEditCommentPermission: 'permissions/getThreatSharingEditCommentPermission',
+      getDeleteCommentPermission: 'permissions/getThreatSharingDeleteCommentPermission'
+    })
+  },
   mounted() {
     this.getComments(this.post.communityPostResourceId)
   },
@@ -224,14 +228,11 @@ export default {
         this.isPostButtonDisabled = false
       }
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     canDeleteOrEditComment(type) {
       if (type === 'update') {
-        return this.checkPermissions('community-posts/comments/{resourceId}', 'PUT')
+        return this.getEditCommentPermission
       } else {
-        return this.checkPermissions('community-posts/comments/{resourceId}', 'DELETE')
+        return this.getDeleteCommentPermission
       }
     },
     editRelativeComment(comment) {

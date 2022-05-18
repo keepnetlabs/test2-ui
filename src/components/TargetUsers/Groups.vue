@@ -84,7 +84,7 @@
               style="margin-right: 10px;"
               v-on="{ ...tooltip }"
               @click.native="showNewUserGroupModal = true"
-              :disabled="!checkPermissions('target-groups', 'POST')"
+              :disabled="!getTargetGroupsCreatePermissions"
             >
               <v-icon color="white" style="font-size: 20px; margin-top: 1px;">mdi-plus</v-icon>
               <span class="button-new__text">NEW</span>
@@ -155,7 +155,7 @@ import {
   TABLE_SETTINGS_KEYS
 } from '@/model/constants/commonConstants'
 import { required, maxLength } from '@/utils/validations'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
@@ -166,6 +166,7 @@ import {
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetGroupRowActionsDeleteButton from '@/components/SmallComponents/TargetGroupRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Groups',
   components: {
@@ -272,7 +273,10 @@ export default {
             action: 'edit',
             isNotShow: true,
             checkDisability(row) {
-              return !row.isEditable || !checkPermission('target-groups/{resourceId}', 'PUT')
+              return (
+                !row.isEditable ||
+                !this.$store.getters['permissions/getTargetGroupsEditPermissions']
+              )
             }
           },
           {
@@ -287,7 +291,10 @@ export default {
             action: 'delete',
             id: 'btn-delete--target-users-people-row-actions',
             disabled(row) {
-              return !checkPermission('target-groups/{resourceId}', 'DELETE') || !row.isEditable
+              return (
+                !this.$store.getters['permissions/getTargetGroupsDeletePermissions'] ||
+                !row.isEditable
+              )
             }
           }
         ],
@@ -355,6 +362,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTargetGroupsCreatePermissions: 'permissions/getTargetGroupsCreatePermissions'
+    }),
     getGroupName() {
       return this.selectedGroup.name || localStorage.getItem('lastTargetGroupUsers')
     },
@@ -436,9 +446,6 @@ export default {
           filterValues
         })
       )
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     handleSyncWithLDAP(row) {},
     handleAddGroup(row = {}) {

@@ -56,13 +56,16 @@ export default {
   props: {
     formData: {
       type: Array
+    },
+    isActionButtonDisabled: {
+      type: Boolean,
+      default: false
     }
   },
 
   data() {
     return {
       labels,
-      isActionButtonDisabled: false,
       values: []
     }
   },

@@ -116,15 +116,6 @@ const router = new Router({
           path: '/job-log',
           name: 'Job Log',
           component: ShowAllJobs,
-          beforeEnter: (to, from, next) => {
-            //checkPermission()
-            next()
-          },
-          beforeRouteUpdate: (to, from, next) => {
-            //checkPermission()
-
-            next()
-          },
           meta: {
             isAuthenticated: true,
             parentName: 'Company'
@@ -310,6 +301,11 @@ const router = new Router({
             isAuthenticated: true,
             parentName: 'Incident Responder'
           },
+          beforeEnter(to, from, next) {
+            to.params.PERMISSIONS =
+              store?.getters['permissions/getMailConfigurationPermissions'] || {}
+            next()
+          },
           props: true,
           params: true
         },
@@ -331,6 +327,10 @@ const router = new Router({
           meta: {
             isAuthenticated: true,
             parentName: 'Incident Responder'
+          },
+          beforeEnter(to, from, next) {
+            to.params.PERMISSIONS = store?.getters['permissions/getInvestigationPermissions'] || {}
+            next()
           },
           props: true
         },

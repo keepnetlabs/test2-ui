@@ -1,8 +1,8 @@
 <template>
   <v-app class="layout-container">
     <app-snackbar />
-    <v-dialog v-model="feedbackdialog" v-if="feedbackdialog" persistent :width="600">
-      <feedback-popup v-on:closePopUp="feedbackdialog = $event"></feedback-popup>
+    <v-dialog v-model="feedbackDialog" v-if="feedbackDialog" persistent :width="600">
+      <feedback-popup></feedback-popup>
     </v-dialog>
     <SecurityModal
       v-if="openPasswordChange"
@@ -42,25 +42,14 @@
     </v-row>
     <v-overlay absolute :opacity="0.46" :value="!isDisconnected" :z-index="99999">
       <div class="connection-lost-wrapper">
-        <connection-lost v-on:onIUnderstand="onIUndestandClick($event)"></connection-lost>
+        <connection-lost @onIUnderstand="onIUnderstandClick($event)"></connection-lost>
       </div>
     </v-overlay>
     <div class="layout-container__background"></div>
     <div class="page-nav__left-main">
       <div class="page-nav__fixed-content" v-if="!mini && drawer">
         <div class="page-nav__logo-wrapper" style="display: flex; align-items: center;">
-          <div
-            v-show="isTourActive"
-            class="tour-btn-container tour-five"
-            :class="{ z_index_custom_1: getTourData['4'] }"
-          >
-            <div class="tour-btn-wrapper">
-              <div class="tour-btn-circle">
-                <div class="tour-btn-circle-inner"></div>
-              </div>
-            </div>
-          </div>
-          <offline @detected-condition="handleConnectivityChange" :ping-url="baseUrl">
+          <offline :ping-url="baseUrl" @detected-condition="handleConnectivityChange">
             <div slot="online"></div>
             <!-- Only renders when the device is offline -->
             <div slot="offline"></div>
@@ -68,10 +57,10 @@
           <v-app-bar-nav-icon
             class="page-nav__menu-toggle menu-icon-wrapper"
             color="blue"
-            :style="getDrawerPadding2"
             height="48"
             width="48"
             x-large
+            :style="getDrawerStyle"
             @click.stop="onNavigationClick()"
             ><v-icon style="height: 32px; width: 32px;">{{
               iconPaths.mdiMenu
@@ -95,7 +84,7 @@
           </div>
         </div>
         <div class="page-nav__simulated-company" v-if="isReturnMainAccountVisible">Managing as</div>
-        <div :class="scroll()">
+        <div :class="navigationDrawerClass">
           <div class="user-name-dropdown">
             <div class="user-name-dropdown__menu">
               <v-menu
@@ -115,8 +104,8 @@
               >
                 <template #activator="{ on: onMenu }">
                   <div
-                    class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                     v-on="onMenu"
+                    class="user-name-dropdown-font v-btn-dropdown v-btn v-btn--depressed v-btn--flat v-btn--tile theme--light v-size--default black--text"
                   >
                     <div class="user-name-dropdown-font__tooltip-wrapper">
                       <div class="user-name-dropdown__logo">
@@ -124,9 +113,9 @@
                       </div>
                       <div class="user-name-dropdown__details">
                         <v-tooltip
-                          bottom
-                          :disabled="getSelectedCompanyName && getSelectedCompanyName.length < 15"
                           ref="accountTooltip"
+                          bottom
+                          :disabled="isSelectedCompanyNameDisabled"
                         >
                           <template #activator="{ on: onTooltip }">
                             <span
@@ -139,9 +128,9 @@
                           <span>{{ getSelectedCompanyName }}</span>
                         </v-tooltip>
                         <v-tooltip
+                          ref="firstNameTooltip"
                           bottom
                           :disabled="getFirstName && getFirstName.length < 15"
-                          ref="firstNameTooltip"
                         >
                           <template #activator="{ on: onTooltipFirstName }">
                             <span
@@ -154,9 +143,9 @@
                           <span>{{ getFirstName }}</span>
                         </v-tooltip>
                         <v-tooltip
+                          ref="roleTooltip"
                           bottom
                           :disabled="getRolename && getRolename.length < 15"
-                          ref="roleTooltip"
                         >
                           <template #activator="{ on: onTooltipRoleName }">
                             <span
@@ -180,12 +169,12 @@
 
                 <v-list class="user-name-dropdown__content">
                   <v-list-item
+                    v-if="setDropdownVisibility(item)"
                     v-for="item in dropdownData"
                     :id="item.id"
                     :key="item.key"
-                    @click="changeDropdownItem(item.value)"
-                    v-if="setDropdownVisibility(item)"
                     :class="{ 'user-name-dropdown__content--divider': setDropdownDivider(item) }"
+                    @click="changeDropdownItem(item.value)"
                   >
                     <v-list-item-title>
                       <v-icon>{{ item.icon }}</v-icon>
@@ -203,13 +192,13 @@
         <v-app-bar-nav-icon
           class="page-nav__menu-toggle menu-icon-wrapper"
           color="blue"
-          @click.stop="onNavigationClick()"
-          :style="getDrawerPadding2"
+          :style="getDrawerStyle"
           height="48"
           width="48"
           id="mini-menu"
           x-large
           style="left: 22px !important;"
+          @click.stop="onNavigationClick()"
         ></v-app-bar-nav-icon>
         <div class="page-nav__simulated-company--mini" v-if="isReturnMainAccountVisible">M</div>
         <div class="v-responsive">
@@ -219,10 +208,10 @@
         </div>
       </div>
       <v-navigation-drawer
+        v-model="getDrawer"
         color="rgba(255, 255, 255, 0.9)"
         app
         width="285"
-        v-model="getDrawer"
         :mini-variant.sync="getMini"
         transition="scale-transition"
         :mobile-break-point="767"
@@ -230,25 +219,9 @@
         touchless
         class="page-nav"
       >
-        <v-overlay
-          :z-index="12"
-          :value="!(getTourData[4] || getTourData[5]) && getTourData.isActive"
-        ></v-overlay>
-        <v-list dense class="page-nav__content" ref="pageNavContent">
-          <div
-            v-show="isTourActive"
-            class="tour-btn-container tour-six"
-            :class="{ z_index_custom_1: getTourData['5'] }"
-          >
-            <div class="tour-btn-wrapper">
-              <div class="tour-btn-circle">
-                <div class="tour-btn-circle-inner"></div>
-              </div>
-            </div>
-          </div>
-
+        <v-list dense class="page-nav__content">
           <router-link
-            v-if="checkDashboardPermission()"
+            v-if="getDashboardPermissions"
             id="btn--link-navigator-menu-dashboard"
             to="/"
             class="menu-link-default"
@@ -256,18 +229,16 @@
             <app-router-item title="Dashboard" :icon="iconPaths.mdiHome" />
           </router-link>
           <router-link
-            v-if="!checkThreatSharingPermissions()"
+            v-if="getThreatSharingLeftMenuPermissions"
             to="/threat-sharing"
             id="btn--link-navigator-menu-threat-sharing"
-            class="menu-link-default"
-            :class="[routerName === 'Community' && 'active-link']"
+            :class="['menu-link-default', routerName === 'Community' && 'active-link']"
             @click.native="deleteTSVuexData"
           >
             <app-router-item title="Threat Sharing" :icon="iconPaths.mdiFlag" />
           </router-link>
-
           <v-list-group
-            v-if="checkPhishingSimulatorPermissions()"
+            v-if="getPhishingSimulatorLeftMenuPermissions"
             id="btn--link-navigator-menu-phishing-simulator-list-group"
             no-action
             :class="['menu-with-item menu-link-default hook-menu', getPhishingSimulatorPermissions]"
@@ -280,7 +251,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="checkPhishingScenariosPermissions()"
+              v-if="getPhishingScenarioLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -293,7 +264,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['phishing-simulator/phishing-campaign/search|POST'])"
+              v-if="getCampaignManagerLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -306,13 +277,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getSettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                checkPermissionMultiple([
-                  'phishing-simulator/dns-services/search|POST',
-                  'phishing-simulator/domain-records/search|POST'
-                ])
-              "
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -326,12 +292,12 @@
           </v-list-group>
 
           <v-list-group
-            v-if="checkIncidentResponderListGroupPermissions()"
-            :prepend-icon="iconPaths.mdiFlash"
+            v-if="getIncidentResponderListGroupPermissions"
             id="btn--link-navigator-menu-incident-responder-list-group"
-            no-action
             :class="['menu-with-item menu-link-default', getIncidentResponderClasses]"
+            no-action
             :append-icon="iconPaths.mdiChevronDown"
+            :prepend-icon="iconPaths.mdiFlash"
           >
             <template v-slot:activator>
               <v-list-item-content class="menu-list-item">
@@ -339,8 +305,8 @@
               </v-list-item-content>
             </template>
             <v-list-item
+              v-if="getIncidentResponderLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkIncidentResponderPermissions()"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -354,8 +320,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getInvestigationsSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['investigations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -369,7 +335,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['analysis-engines/search|POST'])"
+              v-if="getIntegrationsSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -382,7 +348,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['playbooks/search|POST'])"
+              v-if="getPlaybookSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -395,8 +361,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getMailConfigurationSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['mail-configurations/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -408,7 +374,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkCrossCompanyPermissions()"
+              v-if="getCrossCompanyPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -423,33 +389,18 @@
           </v-list-group>
 
           <router-link
-            v-if="
-              checkPermissionMultiple(['phishing-reporter/search|POST', 'phishing-reporter|GET'])
-            "
+            v-if="getPhishingReporterLeftMenuPermissions"
             to="/phishing-reporter"
             id="btn--link-navigator-phishing-reporter"
-            class="menu-link-default"
-            :class="[routerName === 'Phishing Reporter' && 'active-link']"
+            :class="['menu-link-default', routerName === 'Phishing Reporter' && 'active-link']"
           >
             <app-router-item title="Phishing Reporter" :icon="iconPaths.mdiAccountVoice" />
           </router-link>
           <v-list-group
-            v-if="
-              checkPermissionMultiple([
-                'phishing-simulator/phishing-campaign-job-report/search|POST'
-              ])
-            "
+            v-if="getReportsLeftMenuPermissions"
             id="btn--link-navigator-menu-reports-list-group"
             no-action
-            :class="[
-              'menu-with-item menu-link-default',
-              routerName === 'Campaign Reports' ||
-              routerName === 'Simple Reports' ||
-              routerName === 'Campaign Report' ||
-              routerName === 'Simple Report Details'
-                ? 'primary--text active-menu-parent'
-                : 'un-selected-list-item'
-            ]"
+            :class="getReportsClasses"
             :prepend-icon="iconPaths.mdiEqualizer"
             :append-icon="iconPaths.mdiChevronDown"
           >
@@ -486,7 +437,7 @@
             !-->
           </v-list-group>
           <v-list-group
-            v-if="checkCompanyPermissions()"
+            v-if="getCompanyLeftMenuPermissions"
             id="btn--link-navigator-menu-company-list-group"
             no-action
             :class="['menu-with-item menu-link-default', getCompanyClasses]"
@@ -499,9 +450,7 @@
               </v-list-item-content>
             </template>
             <v-list-item
-              v-if="
-                checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST'])
-              "
+              v-if="getTargetUsersLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -516,11 +465,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getCompaniesLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="
-                this.$store.state.auth.userRoleName !== 'Company Admin' &&
-                checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST'])
-              "
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -533,14 +479,8 @@
                 />
               </v-list-item-content>
             </v-list-item>
-
             <v-list-item
-              v-if="
-                checkPermissionMultiple([
-                  'companies/smtp-settings/search|POST',
-                  'roles/search|POST'
-                ])
-              "
+              v-if="getCompanySettingsLeftMenuPermissions"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content">
@@ -553,8 +493,8 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
+              v-if="getSystemUserSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
-              v-if="checkPermissionMultiple(['system-users/search|POST'])"
             >
               <v-list-item-content class="menu-item-content">
                 <app-router-link
@@ -566,7 +506,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              v-if="getAuditLogSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
@@ -579,7 +519,7 @@
               </v-list-item-content>
             </v-list-item>
             <v-list-item
-              v-if="checkPermissionMultiple(['audit-logs|POST'])"
+              v-if="getAuditLogSearchPermission"
               style="padding-left: 0 !important; margin-left: -5px;"
             >
               <v-list-item-content class="menu-item-content" style="border: 0 !important;">
@@ -604,10 +544,10 @@
           <div class="page-header__title" id="text--router-name">
             <h1 v-if="routerName === 'Community'">
               <router-link
-                :to="`/threat-sharing?detailsId=${communityId}`"
                 v-if="communityId"
-                class="page-header__title-link text-decoration-none"
                 ref="communityNameRef"
+                :to="`/threat-sharing?detailsId=${communityId}`"
+                class="page-header__title-link text-decoration-none"
                 >{{ communityName || $route.params.name }}</router-link
               ><span v-else>
                 <MainListItemLoading
@@ -620,7 +560,7 @@
               </span>
             </h1>
             <h1 v-else-if="routerName === 'Company Group Details'">
-              {{ companyGroupName || $route.params.name }}
+              {{ getCompanyGroupName || $route.params.name }}
             </h1>
             <h1 v-else-if="routerName === 'Target Group Users'">
               {{ getTargetGroupUsersRouterName }}
@@ -630,60 +570,10 @@
             </h1>
             <h1 v-else>{{ routerName }}</h1>
           </div>
-
           <Breadcrumb :base-name="getBreadCrumbBaseName" />
         </div>
       </div>
       <div class="page-header__actions">
-        <v-menu
-          v-if="false"
-          offset-y
-          min-width="300"
-          max-width="300"
-          max-height="520"
-          :close-on-content-click="false"
-          transition="scale-transition"
-        >
-          <template v-slot:activator="{ on }">
-            <v-btn icon color="white" v-on="on">
-              <div class="notification-bell">
-                <v-icon color="white">mdi-bell</v-icon>
-                <span v-if="getUnreadMessages > 0" class="manuel-badge">
-                  {{ getUnreadMessages }}
-                </span>
-              </div>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item-group>
-              <div v-if="!notificationList.length" class="no-notification">No notifications</div>
-              <template
-                v-for="(notification, index) in notificationList"
-                v-if="notificationList.length"
-              >
-                <v-list-item :key="index">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ notification.content }}</v-list-item-title>
-                    <v-list-item-subtitle
-                      >{{ getFormattedDate(notification.date) }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action v-if="notification.isSeen === false">
-                    <v-btn
-                      :key="index"
-                      v-on:click="onNotificationSeen(notification)"
-                      v-ripple="false"
-                      icon
-                    >
-                      <v-icon x-small color="#409eff">mdi-circle</v-icon>
-                    </v-btn>
-                  </v-list-item-action>
-                </v-list-item>
-                <v-divider v-if="index + 1 < notificationList.length" :key="index" />
-              </template>
-            </v-list-item-group>
-          </v-list>
-        </v-menu>
         <v-menu min-width="200" max-width="200" offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
             <v-btn id="btn--dashboard-header-help-menu" icon color="white" v-on="on">
@@ -704,6 +594,7 @@
                 </v-list-item-icon>
                 <v-list-item-content>
                   <v-list-item-title
+                    v-text="item.text"
                     :data-content="
                       item.text === 'Get Help'
                         ? `mailto:${supportEmailAddress || 'support@keepnetlabs.com'}`
@@ -711,7 +602,6 @@
                         ? 'https://doc.keepnetlabs.com'
                         : ''
                     "
-                    v-text="item.text"
                   ></v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -720,7 +610,6 @@
         </v-menu>
       </div>
     </v-app-bar>
-    <!-- Header End -->
     <v-content :style="getMini ? 'padding-left: 63px' : 'padding-left: 285px'">
       <v-container
         fluid
@@ -770,11 +659,7 @@ import FeedbackPopup from '../components/FeedbackPopup'
 import AppFooter from './AppFooter'
 import AppSnackbar from './AppSnackbar'
 import AuthenticationService from '../services/authentication'
-import 'grapesjs/dist/css/grapes.min.css'
-import 'grapesjs-preset-webpage/dist/grapesjs-preset-webpage.min.css'
-import 'grapesjs-preset-newsletter/dist/grapesjs-preset-newsletter.css'
 import Breadcrumb from '@/components/Breadcrumb'
-import { checkPermissionMultiple } from '@/utils/functions'
 import labels from '@/model/constants/labels'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
 import MainListItemLoading from '@/components/SkeletonLoading/MainListItemLoading'
@@ -808,6 +693,7 @@ export default {
     return {
       showSettingsModalStatus: false,
       labels,
+      navigationDrawerClass: '',
       iconPaths: {
         mdiHome,
         mdiChevronRight,
@@ -833,10 +719,8 @@ export default {
       baseUrl: null,
       communityName: null,
       companyGroupName: null,
-      companyGroupResourceId: null,
       drawer: null,
       mini: null,
-      dialog: true,
       isDisconnected: true,
       rightDropdownData: [
         {
@@ -967,27 +851,61 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getMenuStatus: 'common/getMenuStatus',
-      getErrors: 'common/getErrors',
-      getColor: 'common/getColor',
       isFeedbackPopupOpened: 'dashboard/isPopupOpened',
-      getTourData: 'tour/getTourData',
-      isTourActive: 'tour/isTourActive',
-      menuList: 'dashboard/getMenuList',
       isSwitchDialogOpen: 'dashboard/getIsSwitchDialogOpen',
-      notificationList: 'dashboard/getNotificationList',
       isLoadingFromStore: 'common/getIsLoading',
       navigatorMenuProps: 'whitelabel/getNavigatorMenuProps',
       brandName: 'whitelabel/getBrandName',
       supportEmailAddress: 'whitelabel/getSupportEmailAddress',
       showLicenseExceededDialog: 'whitelabel/getShowLicenseDialog',
-      companyLicense: 'whitelabel/getCompanyLicense'
+      companyLicense: 'whitelabel/getCompanyLicense',
+      getDashboardPermissions: 'permissions/getDashboardPermissions',
+      getThreatSharingLeftMenuPermissions: 'permissions/getThreatSharingLeftMenuPermissions',
+      getPhishingSimulatorLeftMenuPermissions:
+        'permissions/getPhishingSimulatorLeftMenuPermissions',
+      getPhishingScenarioLeftMenuPermissions: 'permissions/getPhishingScenarioLeftMenuPermissions',
+      getCampaignManagerLeftMenuPermissions: 'permissions/getCampaignManagerLeftMenuPermissions',
+      getSettingsLeftMenuPermissions: 'permissions/getSettingsLeftMenuPermissions',
+      getIncidentResponderListGroupPermissions:
+        'permissions/getIncidentResponderListGroupPermissions',
+      getIncidentResponderLeftMenuPermissions:
+        'permissions/getIncidentResponderLeftMenuPermissions',
+      getInvestigationsSearchPermission: 'permissions/getInvestigationsSearchPermission',
+      getIntegrationsSearchPermission: 'permissions/getIntegrationsSearchPermission',
+      getPlaybookSearchPermission: 'permissions/getPlaybookSearchPermission',
+      getMailConfigurationSearchPermission: 'permissions/getMailConfigurationSearchPermission',
+      getCrossCompanyPermissions: 'permissions/getCrossCompanyPermissions',
+      getPhishingReporterLeftMenuPermissions: 'permissions/getPhishingReporterLeftMenuPermissions',
+      getReportsLeftMenuPermissions: 'permissions/getReportsLeftMenuPermissions',
+      getCompanyLeftMenuPermissions: 'permissions/getCompanyLeftMenuPermissions',
+      getTargetUsersLeftMenuPermissions: 'permissions/getTargetUsersLeftMenuPermissions',
+      getCompaniesLeftMenuPermissions: 'permissions/getCompaniesLeftMenuPermissions',
+      getCompanySettingsLeftMenuPermissions: 'permissions/getCompanySettingsLeftMenuPermissions',
+      getSystemUserSearchPermission: 'permissions/getSystemUserSearchPermission',
+      getAuditLogSearchPermission: 'permissions/getAuditLogSearchPermission'
     }),
+    getCompanyGroupName() {
+      return this.routerName === 'Company Group Details'
+        ? localStorage.getItem('companyGroupName')
+        : ''
+    },
     getBreadCrumbBaseName() {
       return this.brandName || this.$store.state.auth.selectedCompanyName
     },
     getTargetGroupUsersRouterName() {
       return this.$route.params.label || localStorage.getItem('lastTargetGroupUsers')
+    },
+    getReportsClasses() {
+      const { routerName } = this
+      return [
+        'menu-with-item menu-link-default',
+        routerName === 'Campaign Reports' ||
+        routerName === 'Simple Reports' ||
+        routerName === 'Campaign Report' ||
+        routerName === 'Simple Report Details'
+          ? 'primary--text active-menu-parent'
+          : 'un-selected-list-item'
+      ]
     },
     getCampaignReportName() {
       if (this.$store?.state?.common?.activePageRouterName) {
@@ -1082,10 +1000,7 @@ export default {
     getDrawer: {
       get() {
         if (this.drawer == null) {
-          if (window.outerWidth > 768) {
-            return true
-          }
-          return false
+          return window.outerWidth > 768
         }
         return this.drawer
       },
@@ -1107,7 +1022,7 @@ export default {
         this.mini = newValue
       }
     },
-    feedbackdialog: {
+    feedbackDialog: {
       get() {
         return this.isFeedbackPopupOpened
       },
@@ -1115,13 +1030,11 @@ export default {
         this.changeFeedbackPopup(newValue)
       }
     },
-    getUnreadMessages() {
-      return this.notificationList.filter((x) => x.isSeen == false).length
+    getUser() {
+      return this?.$store?.state?.auth?.user
     },
     getLogoImage() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.getUser) return ''
       let image =
         localStorage.getItem('isSelectCompany') === 'true'
           ? this.$store.state.dashboard.selectedCompanyObject.logoUrl
@@ -1129,98 +1042,39 @@ export default {
       return image || require('../assets/img/no-logo.png')
     },
     getMainLogo() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.getUser) return ''
       let image = this.navigatorMenuProps.mainLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
     getMiniLogo() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
+      if (!this.getUser) return ''
       let image = this.navigatorMenuProps.minimizedMenuLogoUrl
       return image || require('../assets/img/no-logo.png')
     },
     getFirstName() {
-      if (this.$store.state.auth.user == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.user.firstName
-    },
-    getCompanyName() {
-      if (this.$store.state.auth.companyName == undefined) {
-        return ''
-      }
-      return (
-        this.$store.state.dashboard.selectedCompanyObject.name || this.$store.state.auth.companyName
-      )
+      return this.$store.state.auth.user.firstName || ''
     },
     getSelectedCompanyName() {
-      if (this.$store.state.auth.companyName == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.selectedCompanyName
+      return this?.$store?.state?.auth?.selectedCompanyName || ''
     },
     getRolename() {
-      if (this.$store.state.auth.userRoleName == undefined) {
-        return ''
-      }
-      return this.$store.state.auth.userRoleName
+      return this?.$store?.state?.auth?.userRoleName || ''
     },
-    getDrawerPadding2() {
-      if (this.mini) {
-        return 'left: 5px !important;'
-      }
-      return 'left : 244px !important;'
-      if (this.drawer) {
-        return 'left: 244px !important;'
-      }
-      return 'left : 262px !important;'
+    getDrawerStyle() {
+      return this.mini ? 'left: 5px !important;' : 'left : 244px !important;'
     },
-    getDrawerPadding() {
-// eslint-disable-line
-      switch (this.$vuetify.breakpoint.name) {
-        case 'xs':
-          return 'left : 278px;'
-        case 'sm':
-          return 'left : 278px;'
-        case 'md':
-          return 'left : 278px;' // 46
-        case 'lg':
-          return 'left : 232px;'
-        case 'xl':
-          return 'left : 232px;'
-        default:
-          return ''
-      }
-    },
-    isLoading: {
-      get() {
-        return this.isLoadingFromStore
-      },
-      set() {}
+    isSelectedCompanyNameDisabled() {
+      return this.getSelectedCompanyName && this.getSelectedCompanyName.length < 15
     }
   },
   watch: {
-    getTourData(payload) {
-      if (payload['4'] == true || payload['5'] == true) {
-        if (window.outerWidth > 778) {
-          this.getDrawer = true
-          this.getMini = false
-        } else {
-          this.getMini = false
-          this.getDrawer = true
-        }
-      }
-    },
-    openPasswordChange(newVal, oldVal) {
+    openPasswordChange(newVal) {
       if (!newVal) {
         this.showNewPassword = false
       }
     },
     $route: {
-      handler: function (to, from) {
+      handler: function (to) {
         if (to.name === 'Community') {
           this.communityName = to.params.communityName
         }
@@ -1231,12 +1085,12 @@ export default {
   },
   mounted() {
     this.baseUrl = `${window.location.origin}`
+    this.getNavigationDrawerClasses()
     this.$nextTick(() => {
       if (AuthenticationService.isAuthenticated()) {
         this.getCurrentUser()
         this.$store.dispatch('whitelabel/callForData')
         this.callForSystemSummary()
-        //this.getNotifications()
         this.interval = setInterval(() => {
           if (!this.isDisconnected) {
             clearInterval(this.interval)
@@ -1246,53 +1100,27 @@ export default {
     })
     setTimeout(() => {
       let contentDom = document.getElementsByClassName('v-navigation-drawer__content')[0]
-      if (contentDom) {
+      if (contentDom && !this.isEventAdded) {
         document
           .getElementsByClassName('v-navigation-drawer__content')[0]
-          .addEventListener('scroll', (event) => {
-            this.scroll()
+          .addEventListener('scroll', () => {
+            this.getNavigationDrawerClasses()
           })
+        this.isEventAdded = true
       }
     }, 500)
   },
   beforeDestroy() {
     clearInterval(this.interval)
   },
-  updated() {
-    this.routerName === 'Company Group Details' && this.getCompanyGroupName()
-  },
   methods: {
     ...mapActions({
+      changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
+      logoutUser: 'dashboard/logoutUser',
+      setSwitchDialog: 'dashboard/setSwitchDialog',
       getCurrentUser: 'auth/getCurrentUser',
       handleCloseLicenseExceededDialog: 'whitelabel/toggleShowExceedDialog'
     }),
-    checkThreatSharingPermissions() {
-      return checkPermissionMultiple(
-        [
-          'communities/search/all|POST',
-          'communities/search/my|POST',
-          'community-posts/search|POST'
-        ],
-        false
-      )
-    },
-    checkIncidentResponderListGroupPermissions() {
-      return checkPermissionMultiple([
-        'notified-emails/search|POST',
-        'is/dashboard/summary|POST',
-        'is/dashboard/search-log|POST',
-        'is/dashboard/search-stats|POST',
-        'notify/result|POST'
-      ])
-    },
-    isProd() {
-      const location = window.location.href
-      return !(
-        location.includes('dev') ||
-        location.includes('test') ||
-        location.includes('localhost')
-      )
-    },
     getRightDropdownDataItemRender({ text }) {
       if (text === 'Tour') {
         return this.$route.name === 'Dashboard'
@@ -1302,20 +1130,10 @@ export default {
     changeSettings() {
       this.showSettingsModalStatus = !this.showSettingsModalStatus
     },
-    checkCompanyPermissions() {
-      return [
-        this.checkPermissionMultiple(['target-users/search|POST', 'target-groups/search|POST']),
-        this.checkPermissionMultiple(['company-groups/search|POST', 'companies/search|POST']),
-        this.checkPermissionMultiple(['companies/smtp-settings/search|POST', 'roles/search|POST']),
-        this.checkPermissionMultiple(['companies/smtp-settings/search|POST', 'roles/search|POST']),
-        this.checkPermissionMultiple(['system-users/search|POST']),
-        this.checkPermissionMultiple(['audit-logs|POST'])
-      ].some((isPermission) => isPermission)
-    },
     changePasswordChange() {
       this.openPasswordChange = !this.openPasswordChange
     },
-    scroll() {
+    getNavigationDrawerClasses() {
       const main = `d-flex justify-center flex-wrap user-wrapper ${
         this.isReturnMainAccountVisible && 'p-0'
       }`
@@ -1330,53 +1148,7 @@ export default {
       let _class = main
       if (isScroll) _class = _class + ' ' + shadow
       if (userContent) userContent.className = _class
-      return _class
-    },
-    checkDashboardPermission() {
-      return checkPermissionMultiple([
-        'dashboard/widgets|GET',
-        'dashboard/widgets|POST',
-        'community-posts/top-posts|GET',
-        'notified-emails/search|POST',
-        'dashboard/summary|GET',
-        'dashboard/reported-email-trends|POST',
-        'ir/dashboard/summary|GET',
-        'ir/dashboard/top-rules|GET',
-        'ir/dashboard/running-investigations|GET',
-        'community-posts/search|POST'
-      ])
-    },
-    checkIncidentResponderPermissions() {
-      return checkPermissionMultiple([
-        'notified-emails/search|POST',
-        'investigations/search|POST',
-        'analysis-engines/search|POST',
-        'playbooks/search|POST',
-        'mail-configurations/search|POST'
-      ])
-    },
-    checkCrossCompanyPermissions() {
-      return checkPermissionMultiple([
-        'is/dashboard/summary|POST',
-        'is/dashboard/search-log|POST',
-        'is/dashboard/search-stats|POST',
-        'notify/result|POST'
-      ])
-    },
-    checkPhishingSimulatorPermissions() {
-      return checkPermissionMultiple([
-        'phishing-simulator/email-templates|POST',
-        'phishing-simulator/phishing-scenario/search|POST',
-        'phishing-simulator/dns-services/search|POST',
-        'phishing-simulator/domain-records/search|POST'
-      ])
-    },
-    checkPhishingScenariosPermissions() {
-      return checkPermissionMultiple([
-        'phishing-simulator/email-templates|POST',
-        'phishing-simulator/phishing-scenario/search|POST',
-        'phishing-simulator/landing-page-template|POST'
-      ])
+      this.navigationDrawerClass = _class
     },
     deleteTSVuexData() {
       let communitiesData = null
@@ -1396,9 +1168,6 @@ export default {
         payload.checkExceedDialog = true
       }
       this.$store.dispatch('whitelabel/callForSystemInfoSummary', payload)
-    },
-    checkPermissionMultiple(data, contain) {
-      return checkPermissionMultiple(data, contain)
     },
     removeTooltip() {
       this.$refs.accountTooltip.isActive = false
@@ -1424,18 +1193,6 @@ export default {
         return true
       }
     },
-    getCompanyGroupName() {
-      this.companyGroupResourceId = localStorage.getItem('companyGroupResourceId')
-      this.companyGroupName = localStorage.getItem('companyGroupName')
-    },
-    onNotificationSeen(notification) {
-      notification.isSeen = true
-      this.notificationSeen(notification)
-    },
-    getFormattedDate() {
-      const date1 = new Date('2019-10-24T08:41:23.927')
-      return `${date1.toDateString().split(' ')[2]} ${date1.toDateString().split(' ')[0]}`
-    },
     handleClickRightDropdown(item = { text: '' }) {
       const { text } = item
       const domElem = document.createElement('a')
@@ -1444,7 +1201,7 @@ export default {
           this.tourSafeStarter('tourDashboard')
           break
         case 'Feedback':
-          this.feedbackdialog = true
+          this.feedbackDialog = true
           break
         case 'Get Help':
           domElem.href = `mailto:${this.supportEmailAddress || 'support@keepnetlabs.com'}`
@@ -1459,17 +1216,6 @@ export default {
           break
       }
     },
-    ...mapActions({
-      setSnackStatus: 'common/setSnackStatus',
-      changeFeedbackPopup: 'dashboard/changeFeedbackPopup',
-      setTourStatus: 'tour/setTourStatus',
-      getMenus: 'dashboard/getMenus',
-      logoutUser: 'dashboard/logoutUser',
-      getNotifications: 'dashboard/getNotifications',
-      setSwitchDialog: 'dashboard/setSwitchDialog',
-      notificationSeen: 'dashboard/notificationSeen',
-      changeSessionExpiredStatus: 'common/changeSessionExpiredStatus'
-    }),
     tourSafeStarter(tourName) {
       const arr = []
       this.tourSteps.forEach((x) => document.querySelector(x.target) && arr.push(x))
@@ -1507,7 +1253,7 @@ export default {
           return
       }
     },
-    onIUndestandClick(data) {
+    onIUnderstandClick(data) {
       this.isDisconnected = data
     },
     handleConnectivityChange(status) {
@@ -1547,17 +1293,7 @@ export default {
       }
     }
   }
-  .no-notification {
-    color: rgba(0, 0, 0, 0.54);
-    font-size: 14px;
-    font-weight: 600;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    padding: 16px 24px;
-  }
+
   &__background {
     height: 285px;
     width: 100%;
@@ -1581,8 +1317,6 @@ export default {
     }
     &__details {
       max-width: 85%;
-    }
-    &__actions {
     }
     &__search {
       width: 180px;
@@ -1680,7 +1414,6 @@ export default {
       justify-content: center;
       &--mini {
         top: 92px;
-        width: 100%;
         height: 13px;
         background-color: #e6a23c;
         font-size: 9px;
@@ -1727,8 +1460,6 @@ export default {
       box-shadow: inset -1.5px 0 0 0 rgba(0, 0, 0, 0.07), inset -2px 0 0 0 rgba(0, 0, 0, 0.02),
         inset 1.5px 0 0 0 rgba(0, 0, 0, 0.02), inset 1px 0 0 0 rgba(0, 0, 0, 0.07);
     }
-
-    //::-webkit-scrollbar-track {}
 
     ::-webkit-scrollbar-thumb {
       background-color: rgba(0, 0, 0, 0.51);
@@ -1827,11 +1558,8 @@ export default {
       margin-right: -4px !important;
     }
     .v-list-group__header__append-icon {
-      margin-left: 6px !important;
       min-width: 24px !important;
-      margin-right: -4px !important;
-      margin-bottom: 0 !important;
-      margin-top: 0px !important;
+      margin: 0px -4px 0 6px !important;
     }
 
     .v-list-item__title {
@@ -1862,55 +1590,6 @@ export default {
 }
 
 .layout-container {
-  .z_index_custom_1 {
-    z-index: 99999 !important;
-  }
-
-  .tour-five {
-    left: 210px;
-    top: 77px;
-  }
-
-  .tour-six {
-    left: 210px;
-    top: 244px;
-  }
-
-  .tour-btn-container {
-    cursor: pointer;
-    position: absolute;
-    width: 48px;
-    height: 48px;
-    display: flex;
-
-    .tour-btn-wrapper {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      border: solid 1px #e5f1ff;
-      margin-top: 10px;
-
-      .tour-btn-circle {
-        border-radius: 50%;
-        width: 32px;
-        height: 32px;
-        background-color: #e5f1ff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-
-        .tour-btn-circle-inner {
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
-          background-color: #b3d4fc;
-        }
-      }
-    }
-  }
   .page-nav {
     .v-list-item--active > .v-list-item__icon,
     .menu-list-item > .v-list-item__icon {
@@ -1932,144 +1611,8 @@ export default {
     }
   }
 
-  // End Footer
-
-  // Notification
   .v-menu__content {
     border-radius: 20px;
-  }
-
-  .notification-confirmation-buttons {
-    position: absolute;
-    bottom: -20px;
-    right: 1px;
-  }
-
-  .notification-date-time {
-    height: 17px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 12px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.54);
-  }
-
-  .notification-wrapper {
-    width: 306px;
-    max-height: 520px;
-    border-radius: 20px;
-    box-shadow: 0 8px 10px -3px rgba(80, 80, 80, 0.14), 0 2px 4px 0 rgba(0, 0, 0, 0.14),
-      0 3px 14px 2px rgba(80, 80, 80, 0.12);
-    background-color: white;
-    padding-left: 26px;
-    padding-right: 26px;
-    padding-top: 26px;
-    padding-bottom: 26px;
-    overflow: auto;
-  }
-
-  .notification-content {
-    cursor: pointer;
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    min-height: 60px;
-  }
-
-  .notification-title {
-    width: 246px;
-    max-height: 60px;
-    font-family: 'Open Sans', sans-serif !important;
-    font-size: 14px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(0, 0, 0, 0.87);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-  }
-
-  .notification-light {
-    margin-top: 7px;
-    width: 8px;
-    height: 8px;
-    background-color: #409eff;
-    position: absolute;
-    right: 0;
-    top: -2px;
-    border-radius: 50%;
-  }
-
-  .notification-light-off {
-    display: none;
-  }
-
-  //Notification end
-  .v-cart-icon-wrapper {
-    color: red;
-  }
-
-  .breadcrumb-wrapper {
-    font-size: 12px;
-    font-weight: bold;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: normal;
-    letter-spacing: normal;
-    color: rgba(255, 255, 255, 1);
-    text-align: right;
-    display: flex;
-    align-items: center;
-    flex-direction: row-reverse;
-
-    .pr-2 {
-      display: flex;
-      align-items: center;
-    }
-
-    .v-breadcrumbs__item {
-      color: white;
-    }
-
-    .bread-last-step {
-      color: rgba(255, 255, 255, 0.7);
-    }
-  }
-
-  .v-breadcrumbs li {
-    font-size: 12px !important;
-  }
-
-  .v-breadcrumbs li:nth-child(even) {
-    padding: 0px 3px;
-  }
-
-  .user-name-dropdown-detail {
-    -webkit-flex-direction: column;
-    flex-direction: column !important;
-    padding-top: 5px;
-
-    span {
-      font-family: 'Open Sans', sans-serif !important;
-      font-size: 14px;
-      display: block;
-      font-weight: 600;
-      font-style: normal;
-      font-stretch: normal;
-      line-height: normal;
-      letter-spacing: normal;
-      text-align: center;
-      color: rgba(0, 0, 0, 0.87);
-      // border: solid red 1px;
-    }
   }
 
   .user-name-dropdown {
@@ -2172,26 +1715,21 @@ export default {
       display: flex;
       width: 100%;
       align-items: center;
-      display: flex;
       height: 60px;
       cursor: pointer;
     }
   }
 
   .user-wrapper {
-    //margin: 0 0 88px;
     background: white;
     padding: 8px;
     &__scroll-on {
-      box-shadow: 0px 2px 3px 0 rgb(142 142 142 / 20%);
+      box-shadow: 0 2px 3px 0 rgb(142 142 142 / 20%);
     }
   }
 
   .logo-wrapper {
-    margin-top: 56px;
-    margin-bottom: 16px;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 56px auto 16px;
     width: 180px;
     height: 60px;
   }
@@ -2270,29 +1808,6 @@ export default {
     }
   }
 
-  .divider-header {
-    margin-right: 14px;
-    border-color: rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.3);
-    align-self: stretch;
-    border: solid;
-    border-width: 0 thin 0 0;
-    display: -ms-inline-flexbox;
-    display: inline-flex;
-    margin-top: 8px;
-    min-height: 25px;
-    max-height: 25px;
-    max-width: 0px;
-    width: 0px;
-    vertical-align: text-bottom;
-  }
-
-  .bell-badge-wrapper {
-    width: 48px;
-    height: 48px;
-    align-items: center;
-  }
-
   .v-toolbar__title {
     margin-left: 8px;
     font-size: 34px;
@@ -2334,15 +1849,11 @@ export default {
   }
 
   .v-content {
-    // min-height: calc(100vh - 46px);
     height: 100%;
     margin-top: 16px;
     @media only screen and (max-width: 769px) {
       padding: 160px 0 0 60px !important;
     }
-  }
-
-  header {
   }
 
   .v-navigation-drawer--mini-variant {
@@ -2378,53 +1889,6 @@ export default {
     .v-list-group__header > .v-list-item__icon {
       margin-right: 0 !important;
     }
-  }
-
-  .svg-wrapper {
-    position: absolute;
-    display: inline-block;
-    width: 2030px;
-    overflow: hidden;
-    height: 450px;
-  }
-
-  .svg-wrapper svg {
-    position: center;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .Shape {
-    margin-top: 10px;
-    width: 24px;
-    height: 16px;
-    color: #2196f3;
-  }
-
-  .Oval-3 {
-    box-shadow: 0 2px 10px 5px rgba(33, 150, 243, 0.2);
-    background-color: #edf7fd;
-  }
-
-  .RoundedButton {
-    border-radius: 50%;
-    width: 51px;
-    height: 51px;
-  }
-
-  .btn-custom {
-    margin-left: 259px !important;
-    margin-top: -50px;
-    z-index: 9999;
-    position: absolute;
-    width: 50px;
-    height: 50px;
-  }
-
-  .v-dialog {
-    //overflow: hidden !important;
   }
 
   .v-navigation-drawer--mini-variant {
@@ -2474,43 +1938,7 @@ export default {
   .menu-link-default {
     text-decoration: none;
   }
-  /*
-  .help-wrapper {
-    padding-left: 30px;
-  }
 
-  .search-notification-wrapper {
-    .v-toolbar__content .v-btn.v-btn--icon.v-size--default {
-      height: 44px !important;
-    }
-  }
-*/
-
-  .manuel-badge {
-    width: 18px !important;
-    min-width: 18px !important;
-    height: 18px !important;
-    top: 3px !important;
-    right: 5px !important;
-    align-items: center;
-    display: flex;
-    justify-content: center;
-    background-color: red;
-    border-radius: 50%;
-    position: absolute;
-
-    span {
-      font-size: 11px;
-    }
-  }
-  /*
-
-    .breadcrumb-links {
-      text-decoration: none !important;
-      color: #fff !important;
-      cursor: pointer;
-    }
-  */
   @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .v-cart-dropdown-list {
       width: 160px !important;
@@ -2520,24 +1948,12 @@ export default {
       }
     }
   }
-
-  /*
-    .v-application--is-ltr
-    .v-list-group--no-action
-    > .v-list-group__items
-    > div
-    > .v-list-item {
-    padding-left: 0 !important;
-  }
-*/
   .menu-item-wrapper {
     line-height: 1.2 !important;
-    border-radius: 23px;
     padding-left: 72px;
     height: 36px !important;
     margin-right: 30px;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+    border-radius: 0 23px 23px 0;
     cursor: pointer;
 
     .menu-item-span {
@@ -2584,13 +2000,6 @@ export default {
       }
     }
   }
-
-  /* .disabled-cursor,
-  button:disabled {
-    cursor: no-drop !important;
-    pointer-events: all !important;
-  }
-*/
   .switch-dialog {
     width: 600px !important;
     border-radius: 20px !important;
@@ -2707,7 +2116,7 @@ export default {
     }
   }
   .v-step[x-placement^='bottom'] .v-step__arrow {
-    border-width: 0px 0.9rem 0.9rem 0.9rem !important;
+    border-width: 0 0.9rem 0.9rem 0.9rem !important;
     top: -0.9rem !important;
   }
   .v-step[x-placement^='top'] .v-step__arrow {
