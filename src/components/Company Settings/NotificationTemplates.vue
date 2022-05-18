@@ -24,6 +24,7 @@
     />
     <div class="notification-templates__container">
       <data-table
+        v-if="getNotificationTemplatesSearchPermissions"
         ref="refNotificationList"
         id="company-settings-notification-templates-data-table"
         filterable
@@ -217,6 +218,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'NotificationTemplates',
   components: {
@@ -310,7 +312,8 @@ export default {
           show: true,
           action: 'handleAddNotificationTemplates',
           tooltip: 'Add a Notification Template',
-          id: 'btn-add--notification-template'
+          id: 'btn-add--notification-template',
+          disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
         },
         isColumnFilterActive: false,
         empty: {
@@ -318,32 +321,37 @@ export default {
           subMes: labels.EmptyNotificationTemplateSub,
           btn: 'New',
           id: 'btn-empty--notification-template',
-          icon: 'mdi-plus'
+          icon: 'mdi-plus',
+          disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
         },
         rowActions: [
           {
             name: 'Edit',
             icon: 'mdi-pencil',
             id: 'btn-edit--notification-template-row-actions',
-            action: 'handleEdit'
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
           },
           {
             name: 'Duplicate',
             icon: 'mdi-eye',
             id: 'btn-duplicate--notification-template-row-actions',
-            action: 'handleDuplicate'
+            action: 'handleDuplicate',
+            disabled: !this.$store.getters['permissions/getNotificationTemplatesCreatePermissions']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             id: 'btn-delete--notification-template-row-actions',
-            action: 'handleDelete'
+            action: 'handleDelete',
+            disabled: !this.$store.getters['permissions/getNotificationTemplatesDeletePermissions']
           }
           // {
           //   name: "Make Default",
           //   icon: "mdi-star-circle",
           //   id: "btn-make-default--notification-template-row-actions",
           //   action: "makeDefaultAction",
+          //   disabled: !this.$store.getters['permissions/getNotificationTemplatesUpdatePermissions']
           // },
         ],
         selectEvent: {
@@ -362,6 +370,12 @@ export default {
       defaultAxiosPayload: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
+  },
+  computed: {
+    ...mapGetters({
+      getNotificationTemplatesSearchPermissions:
+        'permissions/getNotificationTemplatesSearchPermissions'
+    })
   },
   methods: {
     resetPageNumber() {

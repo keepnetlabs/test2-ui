@@ -155,12 +155,7 @@ import CompanyCreateOrEdit from '@/components/Companies/CompanyCreateOrEdit'
 import AddGroupToModal from '@/components/Companies/AddToGroupModal'
 import CreateItemModal from '@/components/CompanyGroups/CreateItemModal'
 import AppModal from '@/components/AppModal'
-import {
-  checkPermission,
-  getDefaultAxiosPayload,
-  handleIsSafari,
-  setSafariClusterFix
-} from '@/utils/functions'
+import { getDefaultAxiosPayload, handleIsSafari, setSafariClusterFix } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import ConfigureNewCompanyModal from '@/components/Companies/ConfigureNewCompanyModal'
 import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
@@ -312,7 +307,7 @@ export default {
         id: 'btn-add--company',
         action: 'addButton',
         tooltip: 'Add Company',
-        disabled: !checkPermission('companies', 'POST')
+        disabled: !this.$store.getters['permissions/getCompaniesCreatePermissions']
       },
       rowActions: [
         {
@@ -321,35 +316,35 @@ export default {
           icon: 'mdi-pencil',
           action: 'editAction',
           isNotShow: true,
-          disabled: !checkPermission('companies/{resourceId}', 'PUT')
+          disabled: !this.$store.getters['permissions/getCompaniesEditPermissions']
         },
         {
           id: 'btn-add--company-add-to-a-group-row-actions',
           name: 'Add to a company group',
           icon: 'mdi-account-multiple-plus',
           action: 'AddGroupToModal',
-          disabled: !checkPermission('company-groups/search', 'POST')
+          disabled: !this.$store.getters['permissions/getCompanyGroupsSearchPermissions']
         },
         {
           id: 'btn-add--company-create-new-company-group-with-company-row-actions',
           name: 'Create a new company group with company',
           icon: 'mdi-account-multiple',
           action: 'createNewGroupWithCompany',
-          disabled: !checkPermission('companies/search', 'POST')
+          disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
         },
         {
           id: 'btn-switch--company-switch-to-company-row-actions',
           name: 'Switch to company',
           icon: 'mdi-swap-horizontal',
           action: 'switchCompany',
-          disabled: !checkPermission('companies/search', 'POST')
+          disabled: !this.$store.getters['permissions/getCompaniesSearchPermissions']
         },
         {
           id: 'btn-delete--company-row-actions',
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'delete',
-          disabled: !checkPermission('companies/{resourceId}', 'DELETE')
+          disabled: !this.$store.getters['permissions/getCompaniesDeletePermissions']
         }
       ]
     },
@@ -452,9 +447,6 @@ export default {
     resetPageNumber() {
       this.payload.pageNumber = 1
       this.serverSideProps.pageNumber = 1
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     isNumberOfUsersExceed({ numberOfUsers, targetUserCount, isNumberOfUsersLimited } = {}) {
       return isNumberOfUsersLimited && targetUserCount > Number(numberOfUsers)

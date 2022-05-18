@@ -3,13 +3,16 @@
     <v-layout wrap class="company-settings__container">
       <v-card class="company-settings__container-card">
         <el-tabs v-model="tab" ref="refTabContainer">
-          <el-tab-pane label="SMTP Settings" name="smtp-settings" id="smtp-settings-content">
-            <s-m-t-p-settings
-              :PERMISSIONS="PERMISSIONS['SMTP_SETTINGS_PERMISSIONS']"
-              v-if="tab === 'smtp-settings'"
-              ref="refSmtpSettings"
+          <el-tab-pane
+            v-if="getSMTPSettingsSearchPermissions"
+            label="SMTP Settings"
+            name="smtp-settings"
+            id="smtp-settings-content"
+          >
+            <s-m-t-p-settings v-if="tab === 'smtp-settings'" ref="refSmtpSettings"
           /></el-tab-pane>
           <el-tab-pane
+            v-if="getNotificationTemplatesSearchPermissions"
             label="Notification Templates"
             name="notification-template"
             id="notification-template-content"
@@ -18,32 +21,32 @@
               v-if="tab === 'notification-template'"
               ref="refNotificationTemplates"
           /></el-tab-pane>
-          <el-tab-pane label="Rest API" name="custom-api" id="custom-api-content">
+          <el-tab-pane
+            v-if="getRestApiSearchPermissions"
+            label="Rest API"
+            name="custom-api"
+            id="custom-api-content"
+          >
             <custom-api v-if="tab === 'custom-api'" ref="refCustomApi"
           /></el-tab-pane>
-          <el-tab-pane label="White Labeling" name="white-labeling" id="white-labeling-content">
-            <white-labeling
-              v-if="tab === 'white-labeling'"
-              ref="refWhitelabeling"
-              :PERMISSIONS="PERMISSIONS['WHITE_LABEL_PERMISSIONS']"
+          <el-tab-pane
+            vif="getWhiteLabelingGetPermissions"
+            label="White Labeling"
+            name="white-labeling"
+            id="white-labeling-content"
+          >
+            <white-labeling v-if="tab === 'white-labeling'" ref="refWhitelabeling"
           /></el-tab-pane>
           <el-tab-pane
-            v-if="
-              PERMISSIONS.PROXY_SETTINGS_PERMISSIONS.SEARCH &&
-              PERMISSIONS.PROXY_SETTINGS_PERMISSIONS.SEARCH.hasPermission
-            "
+            v-if="getProxySettingsSearchPermissions"
             label="Proxy Settings"
             name="proxy-settings"
             id="proxy-settings-content"
           >
-            <proxy-settings
-              v-if="tab === 'proxy-settings'"
-              ref="refProxySettings"
-              :PERMISSIONS="PERMISSIONS.PROXY_SETTINGS_PERMISSIONS"
-            ></proxy-settings>
+            <proxy-settings v-if="tab === 'proxy-settings'" ref="refProxySettings"></proxy-settings>
           </el-tab-pane>
           <el-tab-pane
-            v-if="checkPermissions('companies/saml-settings/search', 'POST')"
+            v-if="getSAMLIntegrationSearchPermissions"
             label="SAML Settings"
             name="saml-settings"
             id="saml-settings-content"
@@ -51,25 +54,15 @@
             <saml-settings v-if="tab === 'saml-settings'" ref="refSamlSettings"
           /></el-tab-pane>
           <el-tab-pane
-            v-if="
-              PERMISSIONS.SCIM_SETTINGS_PERMISSIONS.SEARCH &&
-              PERMISSIONS.SCIM_SETTINGS_PERMISSIONS.SEARCH.hasPermission
-            "
+            v-if="getSCIMSettingsSearchPermissions"
             label="SCIM Settings"
             name="scim-settings"
             id="scim-settings-content"
           >
-            <s-c-i-m-settings
-              v-if="tab === 'scim-settings'"
-              ref="refScimSettings"
-              :PERMISSIONS="PERMISSIONS['SCIM_SETTINGS_PERMISSIONS']"
-            />
+            <s-c-i-m-settings v-if="tab === 'scim-settings'" ref="refScimSettings" />
           </el-tab-pane>
           <el-tab-pane
-            v-if="
-              PERMISSIONS.SIEM_PERMISSIONS.SEARCH &&
-              PERMISSIONS.SIEM_PERMISSIONS.SEARCH.hasPermission
-            "
+            v-if="getSIEMIntegrationSearchPermissions"
             name="siem-integrations"
             :label="labels.SIEMIntegrations"
             :id="`${labels.SIEMIntegrations.toLowerCase()}-content`"
@@ -77,7 +70,6 @@
             <s-i-e-m-integrations
               v-if="tab === 'siem-integrations'"
               ref="refSIEMIntegrations"
-              :PERMISSIONS="PERMISSIONS.SIEM_PERMISSIONS"
             ></s-i-e-m-integrations>
           </el-tab-pane>
         </el-tabs>
@@ -91,14 +83,12 @@ import SMTPSettings from '@/components/Company Settings/SmtpSettings/SMTPSetting
 import NotificationTemplates from '@/components/Company Settings/NotificationTemplates'
 import CustomApi from '@/components/Company Settings/RestApi/CustomApi'
 import WhiteLabeling from '@/components/Company Settings/WhiteLabeling'
-import PERMISSIONS from '@/permissions'
-import { getPermissionsOfAllItems } from '@/utils/functions'
 import SamlSettings from '@/components/Company Settings/SAML/SamlSettings'
 import ProxySettings from '@/components/Company Settings/SmtpSettings/ProxySettings'
-import { checkPermission } from '@/utils/functions'
 import SCIMSettings from '@/components/Company Settings/SCIM/SCIMSettings'
 import SIEMIntegrations from '@/components/Integrations/SIEMIntegrations/SIEMIntegrations'
 import labels from '@/model/constants/labels'
+import { mapGetters } from 'vuex'
 export default {
   name: 'CompanySettings',
   components: {
@@ -117,59 +107,25 @@ export default {
       labels,
       ENUM: {
         COMPANYSETTINGS: 'Company Settings'
-      },
-      PERMISSIONS: {
-        SMTP_SETTINGS_PERMISSIONS: {},
-        NOTIFICATION_TEMPLATES_PERMISSIONS: {},
-        REST_API_PERMISSIONS: {},
-        WHITE_LABEL_PERMISSIONS: {},
-        PROXY_SETTINGS_PERMISSIONS: {},
-        SAML_SETTINGS_PERMISSIONS: {},
-        SCIM_SETTINGS_PERMISSIONS: {},
-        SIEM_PERMISSIONS: {}
       }
     }
   },
+  computed: {
+    ...mapGetters({
+      getSMTPSettingsSearchPermissions: 'permissions:/getSMTPSettingsSearchPermissions',
+      getNotificationTemplatesSearchPermissions:
+        'permissions:/getNotificationTemplatesSearchPermissions',
+      getRestApiSearchPermissions: 'permissions:/getRestApiSearchPermissions',
+      getWhiteLabelingGetPermissions: 'permissions:/getWhiteLabelingGetPermissions',
+      getProxySettingsSearchPermissions: 'permissions:/getProxySettingsSearchPermissions',
+      getSAMLIntegrationSearchPermissions: 'permissions:/getSAMLIntegrationSearchPermissions',
+      getSCIMSettingsSearchPermissions: 'permissions:/getSCIMSettingsSearchPermissions',
+      getSIEMIntegrationSearchPermissions: 'permissions:/getSIEMIntegrationSearchPermissions'
+    })
+  },
   methods: {
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     changeTabStatus(status) {
       this.tab = status
-    },
-    getPermissions() {
-      const {
-        SMTP_SETTINGS_PERMISSIONS,
-        WHITE_LABEL_PERMISSIONS,
-        PROXY_SETTINGS_PERMISSIONS,
-        SCIM_SETTINGS_PERMISSIONS,
-        SIEM_INTEGRATION_PERMISSIONS
-      } = PERMISSIONS
-      this.$set(
-        this.PERMISSIONS,
-        'SMTP_SETTINGS_PERMISSIONS',
-        getPermissionsOfAllItems(SMTP_SETTINGS_PERMISSIONS)
-      )
-      this.$set(
-        this.PERMISSIONS,
-        'WHITE_LABEL_PERMISSIONS',
-        getPermissionsOfAllItems(WHITE_LABEL_PERMISSIONS)
-      )
-      this.$set(
-        this.PERMISSIONS,
-        'PROXY_SETTINGS_PERMISSIONS',
-        getPermissionsOfAllItems(PROXY_SETTINGS_PERMISSIONS)
-      )
-      this.$set(
-        this.PERMISSIONS,
-        'SCIM_SETTINGS_PERMISSIONS',
-        getPermissionsOfAllItems(SCIM_SETTINGS_PERMISSIONS)
-      )
-      this.$set(
-        this.PERMISSIONS,
-        'SIEM_PERMISSIONS',
-        getPermissionsOfAllItems(SIEM_INTEGRATION_PERMISSIONS)
-      )
     },
     changeTabByRoute() {
       const { $route: { query } = {} } = this
@@ -181,7 +137,6 @@ export default {
     }
   },
   created() {
-    this.getPermissions()
     this.changeTabByRoute()
   },
   beforeRouteLeave(to, from, next) {

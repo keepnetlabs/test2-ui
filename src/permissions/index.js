@@ -174,6 +174,16 @@ export default {
       url: 'community-posts/comments/{resourceId}',
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
+    },
+    GET_INCIDENTS: {
+      url: 'community-posts/search/{communityResourceId}',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    GET_MEMBERS: {
+      url: 'communities/{resourceId}/member',
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
     }
   },
   PHISHING_SIMULATOR_LEFT_MENU_PERMISSIONS: {
@@ -637,6 +647,99 @@ export default {
       method: ENUMS.METHODS.POST
     }
   },
+  TARGET_USERS_PERMISSIONS: {
+    SEARCH: {
+      url: `target-users/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `target-users`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `target-users/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `target-users/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
+  TARGET_GROUPS_PERMISSIONS: {
+    SEARCH: {
+      url: `target-groups/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `target-groups`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `target-groups/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `target-groups/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    DELETE_USERS: {
+      url: `target-groups/{resourceId}/users`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
+  COMPANIES_PERMISSIONS: {
+    SEARCH: {
+      url: `companies/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `companies`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `companies/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `companies/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
+  COMPANY_GROUPS_PERMISSIONS: {
+    SEARCH: {
+      url: `company-groups/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `company-groups`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    EDIT: {
+      url: `company-groups/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `company-groups/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    }
+  },
   PLAYBOOK_PERMISSIONS: {
     MATCHING_PLAYBOOKS_SEARCH: {
       url: 'notified-emails/matching-playbooks/{playbookResourceId}/search',
@@ -699,92 +802,6 @@ export default {
       url: 'mail-configurations/o365/{resourceId}',
       hasPermission: false,
       method: ENUMS.METHODS.DELETE
-    }
-  },
-  SMTP_SETTINGS_PERMISSIONS: {
-    CREATE: {
-      url: 'companies/smtp-settings',
-      hasPermission: false,
-      method: 'POST'
-    },
-    SEARCH: {
-      url: 'companies/smtp-settings/search',
-      hasPermission: false,
-      method: 'POST'
-    },
-    UPDATE: {
-      url: 'companies/smtp-settings/{resourceId}',
-      hasPermission: false,
-      method: 'PUT'
-    },
-    DELETE: {
-      url: 'companies/smtp-settings/{resourceId}',
-      hasPermission: false,
-      method: 'DELETE'
-    },
-    GET: {
-      url: 'companies/smtp-settings/{resourceId}',
-      hasPermission: false,
-      method: 'GET'
-    },
-    EXPORT: {
-      url: 'companies/smtp-settings/search/export',
-      hasPermission: false,
-      method: 'POST'
-    }
-  },
-  WHITE_LABEL_PERMISSIONS: {
-    GET: {
-      url: 'whitelabeling',
-      hasPermission: false,
-      method: 'GET'
-    },
-    UPDATE: {
-      url: 'whitelabeling/{resourceId}',
-      hasPermission: false,
-      method: 'PUT'
-    },
-    DELETE: {
-      url: 'whitelabeling/{resourceId}',
-      hasPermission: false,
-      method: 'DELETE'
-    }
-  },
-  PROXY_SETTINGS_PERMISSIONS: {
-    SEARCH: {
-      url: 'companies/proxy-settings/search',
-      hasPermission: false,
-      method: 'POST'
-    },
-    DELETE: {
-      url: 'companies/proxy-settings/{resourceId}',
-      hasPermission: false,
-      method: 'DELETE'
-    },
-    GET: {
-      url: 'companies/proxy-settings/{resourceId}',
-      hasPermission: false,
-      method: 'GET'
-    },
-    CREATE: {
-      url: 'companies/proxy-settings',
-      hasPermission: false,
-      method: 'POST'
-    },
-    EXPORT: {
-      url: 'companies/proxy-settings/search/export',
-      hasPermission: false,
-      method: 'POST'
-    },
-    TEST: {
-      url: 'companies/proxy-settings/test',
-      hasPermission: false,
-      method: 'POST'
-    },
-    UPDATE: {
-      url: 'companies/proxy-settings/{resourceId}',
-      hasPermission: false,
-      method: 'PUT'
     }
   },
   CAMPAIGN_MANAGER_PARENT: {
@@ -893,6 +910,188 @@ export default {
       method: ENUMS.METHODS.GET
     }
   },
+  SMTP_SETTINGS_PERMISSIONS: {
+    CREATE: {
+      url: 'companies/smtp-settings',
+      hasPermission: false,
+      method: 'POST'
+    },
+    SEARCH: {
+      url: 'companies/smtp-settings/search',
+      hasPermission: false,
+      method: 'POST'
+    },
+    UPDATE: {
+      url: 'companies/smtp-settings/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    },
+    DELETE: {
+      url: 'companies/smtp-settings/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    },
+    GET: {
+      url: 'companies/smtp-settings/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    EXPORT: {
+      url: 'companies/smtp-settings/search/export',
+      hasPermission: false,
+      method: 'POST'
+    }
+  },
+  NOTIFICATION_TEMPLATES_PERMISSIONS: {
+    SEARCH: {
+      url: `companies/email-templates/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `companies/email-templates/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `companies/email-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `companies/email-templates`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `companies/email-templates/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `companies/email-templates/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  REST_API_PERMISSIONS: {
+    SEARCH: {
+      url: `companies/clients/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    PREVIEW: {
+      url: `companies/clients/preview/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EDIT: {
+      url: `companies/clients/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    CREATE: {
+      url: `companies/clients`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    DELETE: {
+      url: `companies/clients/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `companies/clients/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  WHITE_LABEL_PERMISSIONS: {
+    GET: {
+      url: 'whitelabeling',
+      hasPermission: false,
+      method: 'GET'
+    },
+    UPDATE: {
+      url: 'whitelabeling/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    },
+    DELETE: {
+      url: 'whitelabeling/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    }
+  },
+  PROXY_SETTINGS_PERMISSIONS: {
+    SEARCH: {
+      url: 'companies/proxy-settings/search',
+      hasPermission: false,
+      method: 'POST'
+    },
+    DELETE: {
+      url: 'companies/proxy-settings/{resourceId}',
+      hasPermission: false,
+      method: 'DELETE'
+    },
+    GET: {
+      url: 'companies/proxy-settings/{resourceId}',
+      hasPermission: false,
+      method: 'GET'
+    },
+    CREATE: {
+      url: 'companies/proxy-settings',
+      hasPermission: false,
+      method: 'POST'
+    },
+    EXPORT: {
+      url: 'companies/proxy-settings/search/export',
+      hasPermission: false,
+      method: 'POST'
+    },
+    TEST: {
+      url: 'companies/proxy-settings/test',
+      hasPermission: false,
+      method: 'POST'
+    },
+    UPDATE: {
+      url: 'companies/proxy-settings/{resourceId}',
+      hasPermission: false,
+      method: 'PUT'
+    }
+  },
+  SAML_INTEGRATION_PERMISSIONS: {
+    CREATE: {
+      url: `companies/saml-settings`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    SEARCH: {
+      url: `companies/saml-settings/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `companies/saml-settings/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `companies/saml-settings/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    GET: {
+      url: `companies/saml-settings/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.GET
+    },
+    EXPORT: {
+      url: `companies/saml-settings/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
   SCIM_SETTINGS_PERMISSIONS: {
     CREATE: {
       url: `${ENUMS.SCIM.ROOT_URL}`,
@@ -963,6 +1162,60 @@ export default {
     },
     EXPORT: {
       url: `${ENUMS.SIEM_INTEGRATION.ROOT_URL}/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  SYSTEM_USERS_PERMISSIONS: {
+    SEARCH: {
+      url: `system-users/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `system-users`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `system-users/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `system-users/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `system-users/search/export`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    }
+  },
+  ROLES_PERMISSIONS: {
+    SEARCH: {
+      url: `roles/search`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    CREATE: {
+      url: `roles`,
+      hasPermission: false,
+      method: ENUMS.METHODS.POST
+    },
+    UPDATE: {
+      url: `roles/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.PUT
+    },
+    DELETE: {
+      url: `roles/{resourceId}`,
+      hasPermission: false,
+      method: ENUMS.METHODS.DELETE
+    },
+    EXPORT: {
+      url: `roles/search/export`,
       hasPermission: false,
       method: ENUMS.METHODS.POST
     }

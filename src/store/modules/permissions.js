@@ -25,8 +25,23 @@ const {
   INTEGRATION_PERMISSIONS,
   ADVANCED_SETTINGS_PERMISSIONS,
   MAIL_CONFIGURATION_PERMISSIONS,
-  PHISHING_REPORTER_PERMISSIONS
+  PHISHING_REPORTER_PERMISSIONS,
+  TARGET_USERS_PERMISSIONS,
+  TARGET_GROUPS_PERMISSIONS,
+  COMPANIES_PERMISSIONS,
+  COMPANY_GROUPS_PERMISSIONS,
+  SMTP_SETTINGS_PERMISSIONS,
+  NOTIFICATION_TEMPLATES_PERMISSIONS,
+  REST_API_PERMISSIONS,
+  WHITE_LABEL_PERMISSIONS,
+  PROXY_SETTINGS_PERMISSIONS,
+  SAML_INTEGRATION_PERMISSIONS,
+  SCIM_SETTINGS_PERMISSIONS,
+  SIEM_INTEGRATION_PERMISSIONS,
+  SYSTEM_USERS_PERMISSIONS,
+  ROLES_PERMISSIONS
 } = PERMISSIONS
+
 let state = JSON.parse(localStorage.getItem('permissions')) || {
   permissions: [],
   playbookPermissions: PLAYBOOK_PERMISSIONS,
@@ -54,7 +69,21 @@ let state = JSON.parse(localStorage.getItem('permissions')) || {
   integrationPermissions: INTEGRATION_PERMISSIONS,
   advancedSettingsPermissions: ADVANCED_SETTINGS_PERMISSIONS,
   mailConfigurationPermissions: MAIL_CONFIGURATION_PERMISSIONS,
-  phishingReporterPermissions: PHISHING_REPORTER_PERMISSIONS
+  phishingReporterPermissions: PHISHING_REPORTER_PERMISSIONS,
+  targetUsersPermissions: TARGET_USERS_PERMISSIONS,
+  targetGroupsPermissions: TARGET_GROUPS_PERMISSIONS,
+  companiesPermissions: COMPANIES_PERMISSIONS,
+  companyGroupsPermissions: COMPANY_GROUPS_PERMISSIONS,
+  smtpSettingsPermissions: SMTP_SETTINGS_PERMISSIONS,
+  notificationTemplatesPermissions: NOTIFICATION_TEMPLATES_PERMISSIONS,
+  restApiPermissions: REST_API_PERMISSIONS,
+  whiteLabelingPermissions: WHITE_LABEL_PERMISSIONS,
+  proxySettingsPermissions: PROXY_SETTINGS_PERMISSIONS,
+  samlIntegrationPermissions: SAML_INTEGRATION_PERMISSIONS,
+  scimSettingsPermissions: SCIM_SETTINGS_PERMISSIONS,
+  siemIntegrationPermissions: SIEM_INTEGRATION_PERMISSIONS,
+  systemUsersPermissions: SYSTEM_USERS_PERMISSIONS,
+  systemRolesPermissions: ROLES_PERMISSIONS
 }
 state = JSON.parse(JSON.stringify(state))
 const store = {
@@ -126,6 +155,12 @@ const store = {
     },
     getThreatSharingDeleteCommentPermission(state) {
       return state?.threatSharingPermissions?.DELETE_COMMENT?.hasPermission
+    },
+    getThreatSharingGetIncidentsPermission(state) {
+      return state?.threatSharingPermissions?.GET_INCIDENTS?.hasPermission
+    },
+    getThreatSharingGetMembersPermission(state) {
+      return state?.threatSharingPermissions?.GET_MEMBERS?.hasPermission
     },
     getPhishingSimulatorLeftMenuPermissions(state) {
       return state?.phishingSimulatorLeftMenuPermissions?.isOneOfThemPermitted
@@ -371,6 +406,57 @@ const store = {
       const { TARGET_USERS = {}, TARGET_GROUPS = {} } = state?.companyLeftMenuPermissions
       return TARGET_USERS?.hasPermission || TARGET_GROUPS?.hasPermission
     },
+    getTargetUsersSearchPermissions(state) {
+      return state?.targetUsersPermissions?.SEARCH?.hasPermission
+    },
+    getTargetUsersCreatePermissions(state) {
+      return state?.targetUsersPermissions?.CREATE?.hasPermission
+    },
+    getTargetUsersEditPermissions(state) {
+      return state?.targetUsersPermissions?.EDIT?.hasPermission
+    },
+    getTargetUsersDeletePermissions(state) {
+      return state?.targetUsersPermissions?.DELETE?.hasPermission
+    },
+    getTargetGroupsSearchPermissions(state) {
+      return state?.targetGroupsPermissions?.SEARCH?.hasPermission
+    },
+    getTargetGroupsCreatePermissions(state) {
+      return state?.targetGroupsPermissions?.CREATE?.hasPermission
+    },
+    getTargetGroupsEditPermissions(state) {
+      return state?.targetGroupsPermissions?.EDIT?.hasPermission
+    },
+    getTargetGroupsDeletePermissions(state) {
+      return state?.targetGroupsPermissions?.DELETE?.hasPermission
+    },
+    getTargetGroupsDeleteUsersPermissions(state) {
+      return state?.targetGroupsPermissions?.DELETE_USERS?.hasPermission
+    },
+    getCompaniesSearchPermissions(state) {
+      return state?.companiesPermissions?.SEARCH?.hasPermission
+    },
+    getCompaniesCreatePermissions(state) {
+      return state?.companiesPermissions?.CREATE?.hasPermission
+    },
+    getCompaniesEditPermissions(state) {
+      return state?.companiesPermissions?.EDIT?.hasPermission
+    },
+    getCompaniesDeletePermissions(state) {
+      return state?.companiesPermissions?.DELETE?.hasPermission
+    },
+    getCompanyGroupsSearchPermissions(state) {
+      return state?.companyGroupsPermissions?.SEARCH?.hasPermission
+    },
+    getCompanyGroupsCreatePermissions(state) {
+      return state?.companyGroupsPermissions?.CREATE?.hasPermission
+    },
+    getCompanyGroupsEditPermissions(state) {
+      return state?.companyGroupsPermissions?.EDIT?.hasPermission
+    },
+    getCompanyGroupsDeletePermissions(state) {
+      return state?.companyGroupsPermissions?.DELETE?.hasPermission
+    },
     getCompaniesLeftMenuPermissions(state) {
       const { COMPANIES = {}, COMPANY_GROUPS = {} } = state?.companyLeftMenuPermissions
       return COMPANIES?.hasPermission || COMPANY_GROUPS?.hasPermission
@@ -379,9 +465,183 @@ const store = {
       const { ROLES = {}, SMTP_SETTINGS = {} } = state?.companyLeftMenuPermissions
       return ROLES?.hasPermission || SMTP_SETTINGS?.hasPermission
     },
+    getSMTPSettingsSearchPermissions(state) {
+      return state?.smtpSettingsPermissions?.SEARCH?.hasPermission
+    },
+    getSMTPSettingsCreatePermissions(state) {
+      return state?.smtpSettingsPermissions?.CREATE?.hasPermission
+    },
+    getSMTPSettingsUpdatePermissions(state) {
+      return state?.smtpSettingsPermissions?.UPDATE?.hasPermission
+    },
+    getSMTPSettingsDeletePermissions(state) {
+      return state?.smtpSettingsPermissions?.DELETE?.hasPermission
+    },
+    getSMTPSettingsGetPermissions(state) {
+      return state?.smtpSettingsPermissions?.GET?.hasPermission
+    },
+    getSMTPSettingsExportPermissions(state) {
+      return state?.smtpSettingsPermissions?.EXPORT?.hasPermission
+    },
+    getNotificationTemplatesSearchPermissions(state) {
+      return state?.notificationTemplatesPermissions?.SEARCH?.hasPermission
+    },
+    getNotificationTemplatesCreatePermissions(state) {
+      return state?.notificationTemplatesPermissions?.CREATE?.hasPermission
+    },
+    getNotificationTemplatesUpdatePermissions(state) {
+      return state?.notificationTemplatesPermissions?.UPDATE?.hasPermission
+    },
+    getNotificationTemplatesDeletePermissions(state) {
+      return state?.notificationTemplatesPermissions?.DELETE?.hasPermission
+    },
+    getNotificationTemplatesGetPermissions(state) {
+      return state?.notificationTemplatesPermissions?.GET?.hasPermission
+    },
+    getNotificationTemplatesExportPermissions(state) {
+      return state?.notificationTemplatesPermissions?.EXPORT?.hasPermission
+    },
+    getRestApiSearchPermissions(state) {
+      return state?.restApiPermissions?.SEARCH?.hasPermission
+    },
+    getRestApiCreatePermissions(state) {
+      return state?.restApiPermissions?.CREATE?.hasPermission
+    },
+    getRestApiUpdatePermissions(state) {
+      return state?.restApiPermissions?.UPDATE?.hasPermission
+    },
+    getRestApiDeletePermissions(state) {
+      return state?.restApiPermissions?.DELETE?.hasPermission
+    },
+    getRestApiGetPermissions(state) {
+      return state?.restApiPermissions?.GET?.hasPermission
+    },
+    getRestApiExportPermissions(state) {
+      return state?.restApiPermissions?.EXPORT?.hasPermission
+    },
+    getWhiteLabelingGetPermissions(state) {
+      return state?.whiteLabelingPermissions?.GET?.hasPermission
+    },
+    getWhiteLabelingUpdatePermissions(state) {
+      return state?.whiteLabelingPermissions?.UPDATE?.hasPermission
+    },
+    getWhiteLabelingDeletePermissions(state) {
+      return state?.whiteLabelingPermissions?.DELETE?.hasPermission
+    },
+    getProxySettingsSearchPermissions(state) {
+      return state?.proxySettingsPermissions?.SEARCH?.hasPermission
+    },
+    getProxySettingsCreatePermissions(state) {
+      return state?.proxySettingsPermissions?.CREATE?.hasPermission
+    },
+    getProxySettingsUpdatePermissions(state) {
+      return state?.proxySettingsPermissions?.UPDATE?.hasPermission
+    },
+    getProxySettingsDeletePermissions(state) {
+      return state?.proxySettingsPermissions?.DELETE?.hasPermission
+    },
+    getProxySettingsGetPermissions(state) {
+      return state?.proxySettingsPermissions?.GET?.hasPermission
+    },
+    getProxySettingsExportPermissions(state) {
+      return state?.proxySettingsPermissions?.EXPORT?.hasPermission
+    },
+    getProxySettingsTestPermissions(state) {
+      return state?.proxySettingsPermissions?.TEST?.hasPermission
+    },
+    getSAMLIntegrationSearchPermissions(state) {
+      return state?.samlIntegrationPermissions?.SEARCH?.hasPermission
+    },
+    getSAMLIntegrationCreatePermissions(state) {
+      return state?.samlIntegrationPermissions?.CREATE?.hasPermission
+    },
+    getSAMLIntegrationUpdatePermissions(state) {
+      return state?.samlIntegrationPermissions?.UPDATE?.hasPermission
+    },
+    getSAMLIntegrationDeletePermissions(state) {
+      return state?.samlIntegrationPermissions?.DELETE?.hasPermission
+    },
+    getSAMLIntegrationGetPermissions(state) {
+      return state?.samlIntegrationPermissions?.GET?.hasPermission
+    },
+    getSAMLIntegrationExportPermissions(state) {
+      return state?.samlIntegrationPermissions?.EXPORT?.hasPermission
+    },
+    getSCIMSettingsSearchPermissions(state) {
+      return state?.scimSettingsPermissions?.SEARCH?.hasPermission
+    },
+    getSCIMSettingsCreatePermissions(state) {
+      return state?.scimSettingsPermissions?.CREATE?.hasPermission
+    },
+    getSCIMSettingsUpdatePermissions(state) {
+      return state?.scimSettingsPermissions?.UPDATE?.hasPermission
+    },
+    getSCIMSettingsDeletePermissions(state) {
+      return state?.scimSettingsPermissions?.DELETE?.hasPermission
+    },
+    getSCIMSettingsGetPermissions(state) {
+      return state?.scimSettingsPermissions?.GET?.hasPermission
+    },
+    getSCIMSettingsExportPermissions(state) {
+      return state?.scimSettingsPermissions?.EXPORT?.hasPermission
+    },
+    getSCIMSettingsRevokePermissions(state) {
+      return state?.scimSettingsPermissions?.REVOKE?.hasPermission
+    },
+    getSCIMSettingsFieldsPermissions(state) {
+      return state?.scimSettingsPermissions?.FIELDS?.hasPermission
+    },
+    getSIEMIntegrationSearchPermissions(state) {
+      return state?.siemIntegrationPermissions?.SEARCH?.hasPermission
+    },
+    getSIEMIntegrationCreatePermissions(state) {
+      return state?.siemIntegrationPermissions?.CREATE?.hasPermission
+    },
+    getSIEMIntegrationUpdatePermissions(state) {
+      return state?.siemIntegrationPermissions?.UPDATE?.hasPermission
+    },
+    getSIEMIntegrationDeletePermissions(state) {
+      return state?.siemIntegrationPermissions?.DELETE?.hasPermission
+    },
+    getSIEMIntegrationGetPermissions(state) {
+      return state?.siemIntegrationPermissions?.GET?.hasPermission
+    },
+    getSIEMIntegrationExportPermissions(state) {
+      return state?.siemIntegrationPermissions?.EXPORT?.hasPermission
+    },
     getSystemUserSearchPermission(state) {
       const { SYSTEM_USERS = {} } = state?.companyLeftMenuPermissions
       return SYSTEM_USERS?.hasPermission
+    },
+    getSystemUsersSearchPermission(state) {
+      return state?.systemUsersPermissions?.SEARCH?.hasPermission
+    },
+    getSystemUsersCreatePermission(state) {
+      return state?.systemUsersPermissions?.CREATE?.hasPermission
+    },
+    getSystemUsersUpdatePermission(state) {
+      return state?.systemUsersPermissions?.UPDATE?.hasPermission
+    },
+    getSystemUsersDeletePermission(state) {
+      return state?.systemUsersPermissions?.DELETE?.hasPermission
+    },
+    getSystemUsersExportPermission(state) {
+      return state?.systemUsersPermissions?.EXPORT?.hasPermission
+    },
+    getSystemRolesSearchPermission(state) {
+      return state?.systemRolesPermissions?.SEARCH?.hasPermission
+    },
+    getSystemRolesCreatePermission(state) {
+      return state?.systemRolesPermissions?.CREATE?.hasPermission
+    },
+    getSystemRolesUpdatePermission(state) {
+      return state?.systemRolesPermissions?.UPDATE?.hasPermission
+    },
+    getSystemRolesDeletePermission(state) {
+      return state?.systemRolesPermissions?.DELETE?.hasPermission
+    },
+    getSystemRolesExportPermission(state) {
+      return state?.systemRolesPermissions?.EXPORT?.hasPermission
     },
     getAuditLogSearchPermission(state) {
       const { AUDIT_LOG = {} } = state?.companyLeftMenuPermissions
@@ -471,7 +731,21 @@ const store = {
         'integrationPermissions',
         'advancedSettingsPermissions',
         'mailConfigurationPermissions',
-        'phishingReporterPermissions'
+        'phishingReporterPermissions',
+        'targetUsersPermissions',
+        'targetGroupsPermissions',
+        'companiesPermissions',
+        'companyGroupsPermissions',
+        'smtpSettingsPermissions',
+        'notificationTemplatesPermissions',
+        'restApiPermissions',
+        'whiteLabelingPermissions',
+        'proxySettingsPermissions',
+        'samlIntegrationPermissions',
+        'scimSettingsPermissions',
+        'siemIntegrationPermissions',
+        'systemUsersPermissions',
+        'systemRolesPermissions'
       ]
       statePermissionKeys.map((key) => {
         const permissionObject = { ...state[key] }

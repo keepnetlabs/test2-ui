@@ -31,13 +31,13 @@
               <v-tab
                 id="incidents-tab"
                 @click="getIncidents"
-                v-if="checkPermissions('community-posts/search/{communityResourceId}', 'POST')"
+                v-if="getThreatSharingGetIncidentsPermission"
                 >Incidents</v-tab
               >
               <v-tab
                 id="members-tab"
                 @click="getMembers"
-                v-if="checkPermissions('communities/{resourceId}/member', 'POST')"
+                v-if="getThreatSharingGetMembersPermission"
                 >Members</v-tab
               >
               <div class="tablet-info-btn" style="display: none !important;">
@@ -57,7 +57,7 @@
               <v-tab-item
                 :transition="false"
                 :reverse-transition="false"
-                v-if="checkPermissions('community-posts/search/{communityResourceId}', 'POST')"
+                v-if="getThreatSharingGetIncidentsPermission"
               >
                 <incidents
                   ref="refIncidents"
@@ -69,7 +69,7 @@
               <v-tab-item
                 :transition="false"
                 :reverse-transition="false"
-                v-if="checkPermissions('communities/{resourceId}/member', 'POST')"
+                v-if="getThreatSharingGetMembersPermission"
               >
                 <members ref="refMembers" @selectedMemberPost="selectedMemberPostFunc" />
               </v-tab-item>
@@ -95,7 +95,7 @@ import Members from '@/components/ThreatSharing/Members/Members'
 import PostIncident from '@/components/ThreatSharing/PostIncident/PostIncident'
 import RightColumn from '@/components/ThreatSharing/RightColumn/RightColumn'
 import NewCommunity from '@/components/ThreatSharing/NewCommunity/NewCommunity'
-import { checkPermission } from '@/utils/functions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ThreatSharing',
   components: {
@@ -182,18 +182,25 @@ export default {
     pageView: true,
     maxCharForEmail: false
   }),
-  computed: {},
+  computed: {
+    ...mapGetters({
+      getThreatSharingEditCommunityPermission:
+        'permissions/getThreatSharingEditCommunityPermission',
+      getThreatSharingGetIncidentsPermission: 'permissions/getThreatSharingGetIncidentsPermission',
+      getThreatSharingGetMembersPermission: 'permissions/getThreatSharingGetMembersPermission'
+    })
+  },
   created() {},
   mounted() {
-    if (!this.checkPermissions('communities/{resourceId}', 'PUT')) {
+    if (!this.getThreatSharingEditCommunityPermission) {
       this.$router.push('/threat-sharing')
     }
-    if (!this.checkPermissions('community-posts/search/{communityResourceId}', 'POST')) {
+    if (!this.getThreatSharingGetIncidentsPermission) {
       this.tab = 1
       this.getMembers()
     }
 
-    if (!this.checkPermissions('communities/{resourceId}/member', 'POST')) {
+    if (!this.getThreatSharingGetMembersPermission) {
       this.tab = 0
       this.getIncidents()
     }
@@ -202,9 +209,6 @@ export default {
     window.removeEventListener('resize', this.onResize)
   },
   methods: {
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     selectedMemberPostFunc(item) {
       this.tab = 0
       setTimeout(() => {
@@ -227,14 +231,14 @@ export default {
     getIncidents() {
       //this.$router.replace({ postId: null })
       setTimeout(() => {
-        if (this.checkPermissions('community-posts/search/{communityResourceId}', 'POST')) {
+        if (this.getThreatSharingGetIncidentsPermission) {
           this.$refs.refIncidents.getIncidentList()
         }
       }, 50)
     },
     getMembers() {
       setTimeout(() => {
-        if (this.checkPermissions('communities/{resourceId}/member', 'POST')) {
+        if (this.getThreatSharingGetMembersPermission) {
           this.$refs.refMembers.getCommunityDetails()
         }
       }, 50)
@@ -274,10 +278,10 @@ export default {
     $route(to, from) {
       this.$nextTick(() => {
         if (to.name === from.name) {
-          if (!this.checkPermissions('communities/{resourceId}', 'PUT')) {
+          if (!this.getThreatSharingEditCommunityPermission) {
             this.$router.push('/threat-sharing')
           }
-          if (!this.checkPermissions('community-posts/search/{communityResourceId}', 'POST')) {
+          if (!this.getThreatSharingGetIncidentsPermission) {
             this.tab = 1
             this.getMembers()
           }

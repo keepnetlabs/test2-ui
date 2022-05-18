@@ -95,7 +95,7 @@
             <v-tooltip bottom opacity="1">
               <template v-slot:activator="{ on: tooltip }">
                 <v-btn
-                  :disabled="!checkPermissions('target-users/search', 'POST')"
+                  :disabled="!getTargetUsersCreatePermissions"
                   id="btn-add--target-users-people"
                   class="button-new"
                   style="margin-right: 10px;"
@@ -205,7 +205,7 @@ import {
 } from '@/model/constants/commonConstants'
 import CustomFieldsModal from './CustomFieldsModal'
 import TargetUserImportFromAFile from './TargetUserImportFromAFile'
-import { checkPermission, getDefaultAxiosPayload } from '@/utils/functions'
+import { getDefaultAxiosPayload } from '@/utils/functions'
 import ServerSideProps from '@/helper-classes/server-side-table-props'
 import TargetUsersViewTargetUserGroups from '@/components/TargetUsers/TargetUsersViewTargetUserGroups'
 import {
@@ -217,6 +217,7 @@ import {
 import TargetUserRowActionsEditButton from '@/components/SmallComponents/TargetUserRowActionsEditButton'
 import TargetUserRowActionsDeleteButton from '@/components/SmallComponents/TargetUserRowActionsDeleteButton'
 import DefaultErrorDialog from '@/components/Common/Others/DefaultErrorDialog'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'People',
@@ -387,14 +388,14 @@ export default {
           action: 'editTargetUsers',
           id: 'btn-edit--target-users-people-row-actions',
           isNotShow: true,
-          disabled: !checkPermission('system-users/{resourceId}', 'PUT')
+          disabled: !this.$store.getters['permissions/getTargetUsersEditPermissions']
         },
         {
           name: 'Delete',
           icon: 'mdi-delete',
           action: 'deleteAction',
           id: 'btn-delete--target-users-people-row-actions',
-          disabled: !checkPermission('system-users/{resourceId}', 'DELETE')
+          disabled: !this.$store.getters['permissions/getTargetUsersDeletePermissions']
         },
         {
           name: 'View user’s groups',
@@ -410,6 +411,11 @@ export default {
     ],
     serverSideProps: new ServerSideProps()
   }),
+  computed: {
+    ...mapGetters({
+      getTargetUsersCreatePermissions: 'permissions/getTargetUsersCreatePermissions'
+    })
+  },
   methods: {
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
@@ -499,9 +505,6 @@ export default {
       this.resetPageNumber()
       this.calculateIsFilterColumnActive()
       this.callForGetTargetUserCustomFieldsByCompanyId()
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     closeImportModal() {
       this.isWantToImportFile = false

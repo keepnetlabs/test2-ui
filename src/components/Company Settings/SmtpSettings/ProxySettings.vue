@@ -168,6 +168,7 @@ import {
   columnFilterCleared,
   isColumnFilterActive
 } from '@/utils/helperFunctions'
+import { mapGetters } from 'vuex'
 export default {
   name: 'PROXYSettings',
   components: {
@@ -175,11 +176,6 @@ export default {
     DataTable,
     NewProxySettings,
     DeleteProxySettings
-  },
-  props: {
-    PERMISSIONS: {
-      type: Object
-    }
   },
   data() {
     return {
@@ -293,20 +289,21 @@ export default {
             icon: 'mdi-pencil',
             action: 'editAction',
             id: 'btn-edit--proxy-settings-row-actions',
-            disabled: !this.PERMISSIONS.UPDATE.hasPermission
+            disabled: !this.$store.getters['permissions/getProxySettingsUpdatePermissions']
           },
           {
             name: 'Delete',
             icon: 'mdi-delete',
             action: 'deleteAction',
             id: 'btn-delete--proxy-settings-row-actions',
-            disabled: !this.PERMISSIONS.DELETE.hasPermission
+            disabled: !this.$store.getters['permissions/getProxySettingsDeletePermissions']
           }
           // {
           //   name: "Make Default",
           //   icon: "mdi-star-circle",
           //   action: "makeDefaultAction",
           //   id: "btn-make-default--proxy-settings-row-actions",
+          //   disabled: !this.$store.getters['permissions/getProxySettingsUpdatePermissions']
           //   disabled: !this.PERMISSIONS.UPDATE.hasPermission,
           // },
         ],
@@ -315,14 +312,14 @@ export default {
           btn: labels.New,
           icon: 'mdi-plus',
           id: 'btn-empty--proxy-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getProxySettingsCreatePermissions']
         },
         addButton: {
           show: true,
           action: 'addNewProxySetting',
           tooltip: 'Add Proxy Setting',
           id: 'btn-add--proxy-settings',
-          disabled: !this.PERMISSIONS.CREATE.hasPermission
+          disabled: !this.$store.getters['permissions/getProxySettingsCreatePermissions']
         }
       },
       newProxyModalStatus: false,
@@ -331,6 +328,11 @@ export default {
       defaultRequestBody: getDefaultAxiosPayload(),
       serverSideProps: new ServerSideProps()
     }
+  },
+  computed: {
+    ...mapGetters({
+      getProxySettingsSearchPermissions: 'permissions/getProxySettingsSearchPermissions'
+    })
   },
   methods: {
     handleSearchChange(searchFilter = {}) {
@@ -439,8 +441,7 @@ export default {
       this.deleteProxyModalStatus = !this.deleteProxyModalStatus
     },
     callForSearchProxySettings() {
-      const { SEARCH } = this.PERMISSIONS
-      if (!SEARCH.hasPermission) return
+      if (!this.getProxySettingsSearchPermissions) return
       this.loading = true
       searchProxySettings(this.bodyOptions)
         .then((response) => {

@@ -14,7 +14,7 @@
               label="People"
               name="target-users--people"
               id="target-users--people-content"
-              v-if="checkPermissions('target-users/search', 'POST')"
+              v-if="getTargetUsersSearchPermissions"
               ><people
                 ref="refPeople"
                 v-if="tab === 'target-users--people'"
@@ -25,7 +25,7 @@
               label="Groups"
               name="target-users--group"
               id="target-users--group-content"
-              v-if="checkPermissions('target-groups/search', 'POST')"
+              v-if="getTargetGroupsSearchPermissions"
             >
               <groups ref="groups" :isLoadState="isLoadState" v-if="tab === 'target-users--group'"
             /></el-tab-pane>
@@ -39,9 +39,9 @@
 <script>
 import People from '../components/TargetUsers/People'
 import Groups from '../components/TargetUsers/Groups'
-import { checkPermission } from '@/utils/functions'
 import { getCheckCompanyLicense } from '@/api/company'
 import TargetUsersCheckLicenseDialog from '@/components/TargetUsers/TargetUsersCheckLicenseDialog'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     TargetUsersCheckLicenseDialog,
@@ -62,6 +62,10 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getTargetUsersSearchPermissions: 'permisisons/getTargetUsersSearchPermissions',
+      getTargetGroupsSearchPermissions: 'permissions/getTargetGroupsSearchPermissions'
+    }),
     getDialogBody() {
       return this.companyLicense
         ? `Your license allows to use the system with ${this.companyLicense.licenseLimit} target users. Current target user count is ${this.companyLicense.totalUserCount}.`
@@ -102,7 +106,7 @@ export default {
       }
       this.tab = tab
     }
-    if (!this.checkPermissions('target-users/search', 'POST')) {
+    if (!this.getTargetGroupsSearchPermissions) {
       this.tab = 'target-users--group'
     }
     this.callForLicenseCheck(true)
@@ -151,9 +155,6 @@ export default {
           this.toggleShowLicenseExceededDialog()
         }
       })
-    },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
     },
     changeTabStatus(status) {
       this.tab = status

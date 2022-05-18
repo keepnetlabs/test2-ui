@@ -357,9 +357,6 @@ export default {
         })
       )
     },
-    checkPermissions(permission, type) {
-      return checkPermission(permission, type)
-    },
     sortChangedEvent({ prop, order }) {
       this.bodyData = { ...this.bodyData, orderBy: prop, ascending: order === 'ascending' }
       this.getDatatableList()

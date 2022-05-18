@@ -71,20 +71,14 @@
           <div class="template-preview__text" v-if="!!templateHTML">
             <div>
               <span class="template-preview__text--title">Template Name: </span>
-              <span class="template-preview__text--body">{{
-                emailTemplateParams.name
-              }}</span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.name }}</span>
             </div>
             <div>
               <span class="template-preview__text--title">From Name: </span>
-              <span class="template-preview__text--body">{{
-                emailTemplateParams.fromName
-              }}</span>
+              <span class="template-preview__text--body">{{ emailTemplateParams.fromName }}</span>
             </div>
             <div>
-              <span class="template-preview__text--title"
-                >From Email Address:
-              </span>
+              <span class="template-preview__text--title">From Email Address: </span>
               <span class="template-preview__text--body">{{
                 emailTemplateParams.fromAddress
               }}</span>
@@ -93,7 +87,7 @@
           <div
             v-if="emailTemplateParams.attachment"
             class="attachment-wrapper mt-2"
-            style="position: relative"
+            style="position: relative;"
           >
             <div class="attachment blue-attach mb-0">
               <AttachmentsPreview
@@ -104,15 +98,11 @@
             </div>
           </div>
           <hr class="mt-2" v-if="!!templateHTML" />
-          <KEmailPreview
-            v-if="!!templateHTML"
-            ref="refPreview"
-            :html="templateHTML"
-          />
+          <KEmailPreview v-if="!!templateHTML" ref="refPreview" :html="templateHTML" />
         </div>
       </template>
       <template v-slot:app-dialog-footer>
-        <div class="d-flex" style="justify-content: flex-end">
+        <div class="d-flex" style="justify-content: flex-end;">
           <v-btn
             class="pa-0 k-dialog__button"
             text
@@ -188,14 +178,10 @@
         <v-menu bottom left offset-y transition="scale-transition">
           <template v-slot:activator="{ on }">
             <v-btn class="btn-hover" icon v-on="on">
-              <v-icon @click.native="selectedMenuIndex = scope.$index"
-                >mdi-dots-vertical</v-icon
-              >
+              <v-icon @click.native="selectedMenuIndex = scope.$index">mdi-dots-vertical</v-icon>
             </v-btn>
           </template>
-          <v-list
-            class="v-cart-dropdown-list el-table__action-buttons emailTemplates__row-actions"
-          >
+          <v-list class="v-cart-dropdown-list el-table__action-buttons emailTemplates__row-actions">
             <v-tooltip
               bottom
               :z-index="1010"
@@ -208,19 +194,14 @@
                       scope.$index
                     }-0-${Math.random().toString().substring(2)}`"
                     class="sub-menu-el"
-                    :disabled="
-                      tableOptions.rowActions[1].disabled || !scope.row.isOwner
-                    "
+                    :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
                     @click="handleEdit(scope.row, false)"
                   >
                     <v-list-item-title @click="() => {}">
                       <v-icon
-                        :disabled="
-                          tableOptions.rowActions[1].disabled ||
-                          !scope.row.isOwner
-                        "
+                        :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
                         class="pr-3"
-                        >{{ "mdi-pencil" }}</v-icon
+                        >{{ 'mdi-pencil' }}</v-icon
                       >
                       <span>Edit</span>
                     </v-list-item-title>
@@ -235,18 +216,14 @@
                 scope.$index
               }-0-${Math.random().toString().substring(2)}`"
               class="sub-menu-el"
-              :disabled="
-                tableOptions.rowActions[1].disabled || !scope.row.isOwner
-              "
+              :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
               @click="handleEdit(scope.row, false)"
             >
               <v-list-item-title @click="() => {}">
                 <v-icon
-                  :disabled="
-                    tableOptions.rowActions[1].disabled || !scope.row.isOwner
-                  "
+                  :disabled="tableOptions.rowActions[1].disabled || !scope.row.isOwner"
                   class="pr-3"
-                  >{{ "mdi-pencil" }}</v-icon
+                  >{{ 'mdi-pencil' }}</v-icon
                 >
                 <span>Edit</span>
               </v-list-item-title>
@@ -275,16 +252,11 @@
                       scope.$index
                     }-1-${Math.random().toString().substring(3)}`"
                     class="sub-menu-el"
-                    :disabled="
-                      tableOptions.rowActions[3].disabled || !scope.row.isOwner
-                    "
+                    :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
                   >
                     <v-list-item-title @click="handleActionDelete(scope.row)">
                       <v-icon
-                        :disabled="
-                          tableOptions.rowActions[3].disabled ||
-                          !scope.row.isOwner
-                        "
+                        :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
                         class="pr-3"
                         >mdi-delete</v-icon
                       >
@@ -301,15 +273,11 @@
                 scope.$index
               }-1-${Math.random().toString().substring(3)}`"
               class="sub-menu-el"
-              :disabled="
-                tableOptions.rowActions[3].disabled || !scope.row.isOwner
-              "
+              :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
             >
               <v-list-item-title @click="handleActionDelete(scope.row)">
                 <v-icon
-                  :disabled="
-                    tableOptions.rowActions[3].disabled || !scope.row.isOwner
-                  "
+                  :disabled="tableOptions.rowActions[3].disabled || !scope.row.isOwner"
                   class="pr-3"
                   >mdi-delete</v-icon
                 >
@@ -324,46 +292,42 @@
 </template>
 
 <script>
-import DataTable from "../DataTable";
-import NewEmailTemplates from "./NewEmailTemplates";
-import DeleteEmailTemplates from "./DeleteEmailTemplates";
-import AppDialog from "../AppDialog";
-import {
-  deleteIntegration,
-  disableIntegration,
-  enableIntegration,
-} from "@/api/integrations";
+import DataTable from '../DataTable'
+import NewEmailTemplates from './NewEmailTemplates'
+import DeleteEmailTemplates from './DeleteEmailTemplates'
+import AppDialog from '../AppDialog'
+import { deleteIntegration, disableIntegration, enableIntegration } from '@/api/integrations'
 import {
   getEmailTemplatesList,
   exportEmailTemplates,
-  getEmailTemplatePreviewContent,
-} from "@/api/phishingsimulator";
-import LookupLocalStorage from "@/helper-classes/lookup-local-storage";
+  getEmailTemplatePreviewContent
+} from '@/api/phishingsimulator'
+import LookupLocalStorage from '@/helper-classes/lookup-local-storage'
 import {
   getStoreValue,
   PROPERTY_STORE,
   LABEL_STORE,
   DEFAULT_SEARCH_CONTAINER_KEYS,
-  TABLE_SETTINGS_KEYS,
-} from "@/model/constants/commonConstants";
-import { checkPermission, getDefaultAxiosPayload } from "@/utils/functions";
-import labels from "@/model/constants/labels";
-import ServerSideProps from "@/helper-classes/server-side-table-props";
+  TABLE_SETTINGS_KEYS
+} from '@/model/constants/commonConstants'
+import { getDefaultAxiosPayload } from '@/utils/functions'
+import labels from '@/model/constants/labels'
+import ServerSideProps from '@/helper-classes/server-side-table-props'
 import {
   columnFilterChanged,
   columnFilterCleared,
-  isColumnFilterActive,
-} from "@/utils/helperFunctions";
-import KEmailPreview from "@/components/KEmailPreview";
-import { difficulties } from "@/components/CampaignManager/CampaignManagerInfo/utils";
-import DatatableLoading from "@/components/SkeletonLoading/WidgetLoading";
-import * as Validations from "@/utils/validations";
-import AppDialogFooter from "@/components/SmallComponents/AppDialogFooter";
-import { mapGetters } from "vuex";
-import AttachmentsPreview from "@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview";
+  isColumnFilterActive
+} from '@/utils/helperFunctions'
+import KEmailPreview from '@/components/KEmailPreview'
+import { difficulties } from '@/components/CampaignManager/CampaignManagerInfo/utils'
+import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
+import * as Validations from '@/utils/validations'
+import AppDialogFooter from '@/components/SmallComponents/AppDialogFooter'
+import { mapGetters } from 'vuex'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 
 export default {
-  name: "EmailTemplates",
+  name: 'EmailTemplates',
   components: {
     DatatableLoading,
     KEmailPreview,
@@ -372,15 +336,15 @@ export default {
     NewEmailTemplates,
     AppDialog,
     AppDialogFooter,
-    AttachmentsPreview,
+    AttachmentsPreview
   },
   data() {
     return {
-      attachmentName: "",
+      attachmentName: '',
       isRenameAttachmentModalVisible: false,
       languageFilterOptions: [],
       editableFormValues: {},
-      timeoutId: "",
+      timeoutId: '',
       emailTemplateParams: {},
       loading: true,
       isEdit: false,
@@ -394,186 +358,169 @@ export default {
       isPreviewLoading: false,
       selectedEmailTemplate: {},
       commonRules: {
-        hint: "*Required",
+        hint: '*Required',
         persistentHint: true,
         rules: [
           (v) => Validations.required(v, labels.Required),
-          (v) =>
-            Validations.maxLength(
-              v,
-              64,
-              labels.getMaxLengthMessage(labels.TemplateName)
-            ),
-        ],
+          (v) => Validations.maxLength(v, 64, labels.getMaxLengthMessage(labels.TemplateName))
+        ]
       },
       tableOptions: {
         isColumnFilterActive: false,
         columns: [
           {
             property: PROPERTY_STORE.NAME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: labels.TemplateName,
             sortable: true,
             show: true,
-            type: "text",
-            fixed: "left",
+            type: 'text',
+            fixed: 'left',
             width: 240,
-            filterableType: "text",
-            filterableCustomFieldName: "Name",
+            filterableType: 'text',
+            filterableCustomFieldName: 'Name'
           },
           {
             property: PROPERTY_STORE.CATEGORYNAME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: labels.Category,
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             fixed: false,
             width: 175,
-            filterableType: "select",
-            filterableCustomFieldName: "CategoryResourceId",
+            filterableType: 'select',
+            filterableCustomFieldName: 'CategoryResourceId',
             filterableItems: [
-              { text: "Click Only", value: "WNZt0sCVCWB3" },
-              { text: "Data Submission", value: "DYC0gugxJMjT" },
-              { text: "Attachment", value: "7dLrW2kdBTDs" },
-            ],
+              { text: 'Click Only', value: 'WNZt0sCVCWB3' },
+              { text: 'Data Submission', value: 'DYC0gugxJMjT' },
+              { text: 'Attachment', value: '7dLrW2kdBTDs' }
+            ]
           },
           {
             property: PROPERTY_STORE.LANGUAGE,
-            align: "left",
+            align: 'left',
             editable: false,
             label: labels.LANGUAGE,
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             fixed: false,
             width: 175,
-            filterableType: "select",
+            filterableType: 'select',
             filterableItems: [],
-            filterableCustomFieldName: "languageTypeResourceId",
+            filterableCustomFieldName: 'languageTypeResourceId'
           },
           {
             property: PROPERTY_STORE.DIFFICULTY,
-            align: "center",
+            align: 'center',
             editable: false,
             label: labels.DIFFICULTY,
             sortable: true,
             show: true,
-            type: "status",
-            filterableType: "select",
+            type: 'status',
+            filterableType: 'select',
             filterableItems: [
-              { text: "Easy", value: "mT0CeYGgKsVb" },
-              { text: "Medium", value: "Z5XeVlpw6Dps" },
-              { text: "Hard", value: "c4LCGEB9MayB" },
+              { text: 'Easy', value: 'mT0CeYGgKsVb' },
+              { text: 'Medium', value: 'Z5XeVlpw6Dps' },
+              { text: 'Hard', value: 'c4LCGEB9MayB' }
             ],
             width: 180,
-            filterableCustomFieldName: "DifficultyResourceId",
+            filterableCustomFieldName: 'DifficultyResourceId'
           },
           {
             property: PROPERTY_STORE.CREATEDBY,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Created By",
+            label: 'Created By',
             sortable: true,
             show: true,
-            type: "text",
+            type: 'text',
             width: 180,
             filterableCustomFieldName: PROPERTY_STORE.CREATEDBY,
-            filterableType: "text",
+            filterableType: 'text'
             // filterableType: 'select',
             // filterableItems: ['Custom', 'System']
           },
           {
             property: PROPERTY_STORE.TAGS,
-            align: "left",
+            align: 'left',
             editable: false,
-            label: "Tags",
+            label: 'Tags',
             fixed: false,
             sortable: true,
             show: true,
-            type: "textArray",
+            type: 'textArray',
             width: 150,
             hasTooltip: true,
-            filterableType: "text",
-            filterableCustomFieldName: PROPERTY_STORE.TAGS,
+            filterableType: 'text',
+            filterableCustomFieldName: PROPERTY_STORE.TAGS
           },
           {
             property: PROPERTY_STORE.CREATETIME,
-            align: "left",
+            align: 'left',
             editable: false,
             label: getStoreValue(PROPERTY_STORE.CREATETIME),
             fixed: false,
             sortable: true,
             show: true,
-            type: "text",
-            filterableType: "date",
-            filterableCustomFieldName: "createTime",
-          },
+            type: 'text',
+            filterableType: 'date',
+            filterableCustomFieldName: 'createTime'
+          }
         ],
         rowActions: [
           {
             name: labels.Preview,
-            icon: "mdi-eye",
-            action: "handlePreview",
-            disabled: !this.$store.getters[
-              "permissions/getEmailTemplatesPreviewPermissions"
-            ],
+            icon: 'mdi-eye',
+            action: 'handlePreview',
+            disabled: !this.$store.getters['permissions/getEmailTemplatesPreviewPermissions']
           },
           {
             name: labels.Edit,
-            icon: "mdi-pencil",
-            action: "handleEdit",
-            disabled: !this.$store.getters[
-              "permissions/getEmailTemplatesEditPermissions"
-            ],
+            icon: 'mdi-pencil',
+            action: 'handleEdit',
+            disabled: !this.$store.getters['permissions/getEmailTemplatesEditPermissions']
           },
           {
             name: labels.Disable,
-            icon: "mdi-content-copy",
-            action: "disable",
-            disabled: !this.$store.getters[
-              "permissions/getEmailTemplatesCreatePermissions"
-            ],
+            icon: 'mdi-content-copy',
+            action: 'disable',
+            disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
           },
           {
             name: labels.Delete,
-            icon: "mdi-delete",
-            action: "deleteAction",
-            disabled: !this.$store.getters[
-              "permissions/getEmailTemplatesDeletePermissions"
-            ],
-          },
+            icon: 'mdi-delete',
+            action: 'deleteAction',
+            disabled: !this.$store.getters['permissions/getEmailTemplatesDeletePermissions']
+          }
         ],
         downloadButton: {
           show: true,
-          disabled: !this.$store.getters[
-            "permissions/getEmailTemplatesExportPermissions"
-          ],
+          disabled: !this.$store.getters['permissions/getEmailTemplatesExportPermissions']
         },
         selectEvent: {
           clipboard: true,
           edit: false,
           delete: false,
-          download: false,
+          download: false
         },
         pageSizes: [5, 10, 25],
         empty: {
           message: LABEL_STORE.NO_EMAIL_TEMPLATES,
           btn: labels.New,
-          icon: "mdi-plus",
-          id: "btn-empty--emailTemplates",
+          icon: 'mdi-plus',
+          id: 'btn-empty--emailTemplates'
         },
         addButton: {
           show: true,
-          action: "addAction",
-          tooltip: "Add a Template",
-          id: "btn-add--emailTemplates",
-          disabled: !this.$store.getters[
-            "permissions/getEmailTemplatesCreatePermissions"
-          ],
-        },
+          action: 'addAction',
+          tooltip: 'Add a Template',
+          id: 'btn-add--emailTemplates',
+          disabled: !this.$store.getters['permissions/getEmailTemplatesCreatePermissions']
+        }
       },
       modalStatus: false,
       bodyData: getDefaultAxiosPayload(),
@@ -581,123 +528,115 @@ export default {
       serverSideProps: new ServerSideProps(),
       isTemplateDetails: false,
       selectedTemplateHeader: null,
-      templateHTML: null,
-    };
+      templateHTML: null
+    }
   },
   computed: {
     ...mapGetters({
-      getEmailTemplatesSearchPermissions:
-        "permissions/getEmailTemplatesSearchPermissions",
-    }),
+      getEmailTemplatesSearchPermissions: 'permissions/getEmailTemplatesSearchPermissions'
+    })
   },
   methods: {
     onShowRenameAttachmentModal() {
-      this.isRenameAttachmentModalVisible = true;
+      this.isRenameAttachmentModalVisible = true
     },
     onCloseRenameAttachmentModal() {
-      this.attachmentName = "";
-      this.isRenameAttachmentModalVisible = false;
+      this.attachmentName = ''
+      this.isRenameAttachmentModalVisible = false
     },
     onConfirmRenameAttachment() {
-      if (
-        this.$refs.refAttachmentNameForm &&
-        this.$refs.refAttachmentNameForm.validate()
-      ) {
+      if (this.$refs.refAttachmentNameForm && this.$refs.refAttachmentNameForm.validate()) {
         if (this.$refs.newEmailTemplate) {
-          let fileExtension = "";
-          const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
-            .type;
+          let fileExtension = ''
+          const type = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].type
           if (this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name) {
             fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].name.split(
-              "."
-            )[1];
+              '.'
+            )[1]
             const file = {
-              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
-            };
+              ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0]
+            }
             this.$refs.newEmailTemplate.formValues.attachmentFiles = [
               new File([file], `${this.attachmentName}.${fileExtension}`, {
-                type,
-              }),
-            ];
+                type
+              })
+            ]
           } else {
             fileExtension = this.$refs.newEmailTemplate.formValues.attachmentFiles[0].fileName.split(
-              "."
-            )[1];
+              '.'
+            )[1]
             this.$refs.newEmailTemplate.formValues.attachmentFiles = [
               {
                 ...this.$refs.newEmailTemplate.formValues.attachmentFiles[0],
-                fileName: `${this.attachmentName}.${fileExtension}`,
-              },
-            ];
+                fileName: `${this.attachmentName}.${fileExtension}`
+              }
+            ]
           }
-          this.$refs.newEmailTemplate.isPhishingFileModified = true;
+          this.$refs.newEmailTemplate.isPhishingFileModified = true
         }
-        this.onCloseRenameAttachmentModal();
+        this.onCloseRenameAttachmentModal()
       }
     },
     callForLanguages() {
       const languageColumnIndex = this.tableOptions.columns.findIndex(
         (column) => column.property === PROPERTY_STORE.LANGUAGE
-      );
+      )
       if (languageColumnIndex !== -1) {
         LookupLocalStorage.getSingle(21).then((response) => {
           this.languageFilterOptions =
             response?.map((language) => ({
               text: language.name,
-              value: language.resourceId,
-            })) || [];
+              value: language.resourceId
+            })) || []
           this.$set(this.tableOptions.columns, languageColumnIndex, {
             ...this.tableOptions.columns[languageColumnIndex],
-            filterableItems: this.languageFilterOptions,
-          });
+            filterableItems: this.languageFilterOptions
+          })
           this.$nextTick(() => {
-            this.$refs.refEmailTemplatesList.reRenderColumns();
-          });
-        });
+            this.$refs.refEmailTemplatesList.reRenderColumns()
+          })
+        })
       }
     },
     handleSetRenderedColumns(tableSettings = {}) {
-      localStorage.setItem(
-        TABLE_SETTINGS_KEYS.EMAILTEMPLATES,
-        JSON.stringify(tableSettings)
-      );
+      localStorage.setItem(TABLE_SETTINGS_KEYS.EMAILTEMPLATES, JSON.stringify(tableSettings))
     },
     resetPageNumber() {
       //generic
-      this.bodyData.pageNumber = 1;
-      this.serverSideProps.pageNumber = 1;
+      this.bodyData.pageNumber = 1
+      this.serverSideProps.pageNumber = 1
     },
     handleSearchChange(searchFilter = {}) {
       //generic
       this.bodyData.filter.FilterGroups[1].FilterItems = [
-        ...searchFilter.filter.FilterGroups[0].FilterItems,
-      ];
+        ...searchFilter.filter.FilterGroups[0].FilterItems
+      ]
       this.bodyData.filter.FilterGroups[1].FilterItems = this.bodyData.filter.FilterGroups[1].FilterItems.map(
         (item) => {
-          if (item.FieldName === "AnalysisEngineName") {
-            item.FieldName = "analysisEngineTypeId";
+          if (item.FieldName === 'AnalysisEngineName') {
+            item.FieldName = 'analysisEngineTypeId'
           }
-          return item;
+          return item
         }
-      );
-      this.resetPageNumber();
-      this.calculateIsFilterColumnActive();
-      this.getDatatableList();
+      )
+      this.resetPageNumber()
+      this.calculateIsFilterColumnActive()
+      this.getDatatableList()
     },
     serverSidePageNumberChanged(pageNumber = 1) {
-      this.bodyData.pageNumber = pageNumber;
-      this.getDatatableList();
+      this.bodyData.pageNumber = pageNumber
+      this.getDatatableList()
     },
     sortChanged({ order, prop } = {}) {
-      this.bodyData.ascending = order === "ascending";
-      this.bodyData.orderBy = prop;
-      this.getDatatableList();
+      this.bodyData.ascending = order === 'ascending'
+      this.bodyData.orderBy = prop
+      this.getDatatableList()
     },
     serverSideSizeChanged(pageSize = 10) {
-      this.bodyData.pageSize = pageSize;
-      this.serverSideProps.pageSize = pageSize;
-      this.resetPageNumber();
-      this.getDatatableList();
+      this.bodyData.pageSize = pageSize
+      this.serverSideProps.pageSize = pageSize
+      this.resetPageNumber()
+      this.getDatatableList()
     },
     //   callForLookups(filterValues) {
     //     getLandingPageFormDetails().then((response) => {
@@ -724,256 +663,226 @@ export default {
     getDefaultFilterAndSearch() {
       const savedFilter = JSON.parse(
         localStorage.getItem(DEFAULT_SEARCH_CONTAINER_KEYS.EMAILTEMPLATES)
-      );
+      )
       if (savedFilter) {
-        this.bodyData.filter = savedFilter.filter;
-        this.tableOptions.isColumnFilterActive = true;
+        this.bodyData.filter = savedFilter.filter
+        this.tableOptions.isColumnFilterActive = true
         this.$nextTick(() => {
-          this.$refs.refEmailTemplatesList.filterValues =
-            savedFilter.filterValues;
+          this.$refs.refEmailTemplatesList.filterValues = savedFilter.filterValues
           this.$refs.refEmailTemplatesList.columnKey = `column-key${Math.random()
             .toString()
-            .substring(0, 5)}`;
-        });
+            .substring(0, 5)}`
+        })
       }
       // if (callLookup) {
       //   this.callForLookups(savedFilter?.filterValues)
       // }
-      this.getDatatableList();
+      this.getDatatableList()
     },
     handleClearFilters() {
-      this.isRestoredOrClearedFilters = true;
-      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody));
-      this.$refs.refEmailTemplatesList.filterValues = {};
+      this.isRestoredOrClearedFilters = true
+      this.bodyData = JSON.parse(JSON.stringify(this.defaultRequestBody))
+      this.$refs.refEmailTemplatesList.filterValues = {}
       this.$refs.refEmailTemplatesList.columnKey = `column-key${Math.random()
         .toString()
-        .substring(0, 5)}`;
-      this.getDatatableList();
+        .substring(0, 5)}`
+      this.getDatatableList()
     },
     handleRestoreDefaultSearch() {
-      this.isRestoredOrClearedFilters = true;
-      this.getDefaultFilterAndSearch();
+      this.isRestoredOrClearedFilters = true
+      this.getDefaultFilterAndSearch()
     },
-    handleSetDefaultSearch(search = "", filterValues = {}) {
+    handleSetDefaultSearch(search = '', filterValues = {}) {
       localStorage.setItem(
         DEFAULT_SEARCH_CONTAINER_KEYS.EMAILTEMPLATES,
         JSON.stringify({
           filter: this.bodyData.filter,
-          filterValues,
+          filterValues
         })
-      );
+      )
     },
     sortChangedEvent({ prop, order }) {
       this.bodyData = {
         ...this.bodyData,
         orderBy: prop,
-        ascending: order === "ascending",
-      };
-      this.getDatatableList();
+        ascending: order === 'ascending'
+      }
+      this.getDatatableList()
     },
     handleDeleteMultiple(selections) {
       selections.forEach((item) => {
-        this.handleDelete(item);
-      });
+        this.handleDelete(item)
+      })
     },
     paginationChangedEvent({ pageSize, pageNumber }) {
       this.bodyData = {
         ...this.bodyData,
         pageSize: pageSize,
         pageNumber: pageNumber,
-        totalNumberOfRecords: this.tableData.totalNumberOfRecords,
-      };
-      this.getDatatableList();
+        totalNumberOfRecords: this.tableData.totalNumberOfRecords
+      }
+      this.getDatatableList()
     },
     searchChangedEvent({ filter }) {
-      this.bodyData = { ...this.bodyData, filter };
-      this.getDatatableList();
+      this.bodyData = { ...this.bodyData, filter }
+      this.getDatatableList()
     },
     handleSuccessDeleteAction() {
-      this.showDeleteModal = false;
-      this.getDatatableList();
+      this.showDeleteModal = false
+      this.getDatatableList()
     },
     handleDelete(row) {
-      this.$refs.refEmailTemplatesList.$refs.elTableRef.toggleRowSelection(
-        row,
-        false
-      );
+      this.$refs.refEmailTemplatesList.$refs.elTableRef.toggleRowSelection(row, false)
       deleteIntegration(row.resourceId).then(() => {
-        this.getDatatableList();
-      });
+        this.getDatatableList()
+      })
     },
     handlePreview(row) {
-      this.isTemplateDetails = true;
-      const id = row.resourceId;
-      this.isPreviewLoading = true;
+      this.isTemplateDetails = true
+      const id = row.resourceId
+      this.isPreviewLoading = true
       getEmailTemplatePreviewContent(id)
         .then((response) => {
-          const data = response.data.data;
-          this.selectedTemplateHeader = data.subject;
-          const {
-            fromName,
-            fromAddress,
-            name,
-            difficultyResourceId,
-            phishingFileName,
-          } = data;
+          const data = response.data.data
+          this.selectedTemplateHeader = data.subject
+          const { fromName, fromAddress, name, difficultyResourceId, phishingFileName } = data
           this.emailTemplateParams = {
             fromName,
             fromAddress,
             name,
-            difficulty: difficulties.find(
-              (item) => item.value === difficultyResourceId
-            )?.text,
+            difficulty: difficulties.find((item) => item.value === difficultyResourceId)?.text,
             attachment: phishingFileName
               ? {
-                  name: phishingFileName,
+                  name: phishingFileName
                 }
-              : null,
-          };
-          this.templateHTML = data.template;
+              : null
+          }
+          this.templateHTML = data.template
         })
         .finally(() => {
           this.timeoutId = setTimeout(() => {
-            this.isPreviewLoading = false;
-          }, 500);
-        });
+            this.isPreviewLoading = false
+          }, 500)
+        })
     },
     handleEdit(row, isDuplicate) {
-      this.editableFormValues = row;
-      this.modalStatus = true;
-      this.isEdit = true;
-      this.isDuplicate = isDuplicate;
-      this.emailTemplateId = row.resourceId;
+      this.editableFormValues = row
+      this.modalStatus = true
+      this.isEdit = true
+      this.isDuplicate = isDuplicate
+      this.emailTemplateId = row.resourceId
     },
     handleDisable(row) {
       disableIntegration(row.resourceId).then(() => {
-        this.getDatatableList();
-      });
+        this.getDatatableList()
+      })
     },
     handleEnable(row) {
       enableIntegration(row.resourceId).then(() => {
-        this.getDatatableList();
-      });
+        this.getDatatableList()
+      })
     },
     handleAdd() {},
     checkIfCanCloseGrapesJSModal() {
       if (this.$refs.newEmailTemplate) {
         if (this.$refs.newEmailTemplate.$refs.refEmailTemplate)
-          this.$refs.newEmailTemplate.$refs.refEmailTemplate.toggleShowGrapesModal();
+          this.$refs.newEmailTemplate.$refs.refEmailTemplate.toggleShowGrapesModal()
       }
     },
     checkIfCanCloseNewEmailTemplate() {
       if (this.$refs.newEmailTemplate) {
-        this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus();
+        this.$refs.newEmailTemplate.changeNewEmailTemplateModalStatus()
       }
     },
     changeNewEmailTemplateModalStatus(status, restart) {
-      this.modalStatus = status;
-      this.emailTemplateId = null;
-      this.isEdit = false;
-      this.isDuplicate = false;
+      this.modalStatus = status
+      this.emailTemplateId = null
+      this.isEdit = false
+      this.isDuplicate = false
       if (restart) {
-        this.editableFormValues = {};
-        this.emailTemplateId = null;
-        this.isEdit = false;
-        this.isDuplicate = false;
-        this.getDatatableList();
+        this.editableFormValues = {}
+        this.emailTemplateId = null
+        this.isEdit = false
+        this.isDuplicate = false
+        this.getDatatableList()
       }
     },
-    exportEmailTemplates({
-      exportTypes,
-      reportAllPages,
-      pageNumber,
-      pageSize,
-    }) {
+    exportEmailTemplates({ exportTypes, reportAllPages, pageNumber, pageSize }) {
       exportTypes.map((exportType) => {
         const payload = {
           pageNumber: pageNumber,
           pageSize: pageSize,
-          orderBy: "CreateTime",
+          orderBy: 'CreateTime',
           ascending: false,
           reportAllPages,
-          exportType: exportType === "XLS" ? "Excel" : exportType,
-          filter: this.bodyData.filter,
-        };
+          exportType: exportType === 'XLS' ? 'Excel' : exportType,
+          filter: this.bodyData.filter
+        }
         exportEmailTemplates(payload).then((response) => {
-          const { data } = response;
-          const link = document.createElement("a");
-          link.href = window.URL.createObjectURL(data);
+          const { data } = response
+          const link = document.createElement('a')
+          link.href = window.URL.createObjectURL(data)
           link.download = `EmailTemplates.${
-            exportType.toLocaleLowerCase() === "xls"
-              ? "xlsx"
-              : exportType.toLocaleLowerCase()
-          }`;
-          link.click();
-        });
-      });
+            exportType.toLocaleLowerCase() === 'xls' ? 'xlsx' : exportType.toLocaleLowerCase()
+          }`
+          link.click()
+        })
+      })
     },
     getDatatableList() {
       if (this.getEmailTemplatesSearchPermissions) {
-        this.loading = true;
+        this.loading = true
         getEmailTemplatesList(this.bodyData)
           .then((response) => {
             const {
-              data: { data },
-            } = response;
-            const {
-              totalNumberOfRecords,
-              totalNumberOfPages,
-              pageNumber,
-            } = response.data.data;
-            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords;
-            this.serverSideProps.totalNumberOfPages = totalNumberOfPages;
-            this.serverSideProps.pageNumber = pageNumber;
-            const { results = [] } = data;
-            this.tableData = results;
-            this.totalNumberOfRecords = totalNumberOfRecords;
+              data: { data }
+            } = response
+            const { totalNumberOfRecords, totalNumberOfPages, pageNumber } = response.data.data
+            this.serverSideProps.totalNumberOfRecords = totalNumberOfRecords
+            this.serverSideProps.totalNumberOfPages = totalNumberOfPages
+            this.serverSideProps.pageNumber = pageNumber
+            const { results = [] } = data
+            this.tableData = results
+            this.totalNumberOfRecords = totalNumberOfRecords
           })
           .catch(() => {
-            this.tableData = [];
+            this.tableData = []
           })
-          .finally(() => (this.loading = false));
+          .finally(() => (this.loading = false))
       } else {
-        this.$router.push("/");
+        this.$router.push('/')
       }
     },
     handleActionDelete(row) {
-      this.selectedEmailTemplate = row;
-      this.showDeleteModal = true;
+      this.selectedEmailTemplate = row
+      this.showDeleteModal = true
     },
     calculateIsFilterColumnActive() {
-      this.tableOptions.isColumnFilterActive = isColumnFilterActive(
-        this.bodyData
-      );
+      this.tableOptions.isColumnFilterActive = isColumnFilterActive(this.bodyData)
     },
     columnFilterChanged(filter) {
-      this.tableOptions.isColumnFilterActive = true;
-      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(
-        filter,
-        this.bodyData
-      );
-      this.getDatatableList();
+      this.tableOptions.isColumnFilterActive = true
+      this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterChanged(filter, this.bodyData)
+      this.getDatatableList()
     },
     columnFilterCleared(fieldName) {
       this.bodyData.filter.FilterGroups[0].FilterItems = columnFilterCleared(
         fieldName,
         this.bodyData
-      );
-      this.calculateIsFilterColumnActive();
-      this.getDatatableList();
-    },
+      )
+      this.calculateIsFilterColumnActive()
+      this.getDatatableList()
+    }
   },
   created() {
-    this.callForLanguages();
-    this.storedTableSettings = JSON.parse(
-      localStorage.getItem(TABLE_SETTINGS_KEYS.EMAILTEMPLATES)
-    );
-    this.getDefaultFilterAndSearch();
+    this.callForLanguages()
+    this.storedTableSettings = JSON.parse(localStorage.getItem(TABLE_SETTINGS_KEYS.EMAILTEMPLATES))
+    this.getDefaultFilterAndSearch()
   },
   beforeDestroy() {
-    clearTimeout(this.timeoutId);
-  },
-};
+    clearTimeout(this.timeoutId)
+  }
+}
 </script>
 
 <style lang="scss">

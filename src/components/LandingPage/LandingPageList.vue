@@ -439,10 +439,7 @@ export default {
           //   name: labels.MakeDefault,
           //   icon: "mdi-star-circle",
           //   action: "makeDefaultAction",
-          //   disabled: !this.checkPermissions(
-          //     "phishing-simulator/landing-page-template/{resourceId}",
-          //     "PUT"
-          //   ),
+          //   disabled: !this.$store.getters['permissions/getLandingPageTemplatesEditPermissions']
           // },
         ],
         downloadButton: {
