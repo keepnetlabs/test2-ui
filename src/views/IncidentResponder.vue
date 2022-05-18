@@ -1869,9 +1869,6 @@ export default {
     })
     this.addQuery()
   },
-  updated() {
-    console.log('ir updated')
-  },
   created() {
     this.setStoredTableSettings()
     this.getReportedEmailPersistentStateAndLoad()

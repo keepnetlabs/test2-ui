@@ -20,9 +20,10 @@
     </app-modal>
     <div class="k-widget__header" id="available-widgets">
       <available-widgets
-        @handleEdit="changeWidgetStatus"
         :edit-mode="editMode"
         :available-widgets="availableWidgets"
+        :permissions="permissions"
+        @handleEdit="changeWidgetStatus"
         @addWidget="addWidget"
         @handleOpenMenu="handleOpenMenu"
       />

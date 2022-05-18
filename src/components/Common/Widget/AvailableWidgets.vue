@@ -9,7 +9,7 @@
           class="widget-button"
           rounded
           color="transparent"
-          :disabled="!checkPermissions('dashboard/widgets', 'GET')"
+          :disabled="isEditModeDisabled"
           @click="handleEdit"
           ><v-icon class="mr-2" style="font-size: 22px;">{{ mdiViewDashboard }}</v-icon
           >Edit Dashboard</v-btn
@@ -71,12 +71,22 @@ export default {
     },
     editMode: {
       type: Boolean
+    },
+    permissions: {
+      type: Object,
+      default() {
+        return {}
+      }
     }
   },
   data() {
     return {
-      isMinimized: false,
       mdiViewDashboard
+    }
+  },
+  computed: {
+    isEditModeDisabled() {
+      return !this?.permissions?.widgets
     }
   },
   methods: {
@@ -85,9 +95,6 @@ export default {
     },
     handleAddWidget(widget) {
       this.$emit('addWidget', widget)
-    },
-    handleMinimize() {
-      this.isMinimized = !this.isMinimized
     },
     handleEdit() {
       this.$emit('handleEdit')
