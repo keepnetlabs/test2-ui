@@ -181,6 +181,7 @@ export default {
     'size'
   ],
   data() {
+    //    (v) => Validations.isEntityNameSpecialCharacter(v)
     return {
       initialTemplate: null,
       labels,
@@ -191,14 +192,12 @@ export default {
       subjectRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320)),
-        (v) => Validations.isEntityNameSpecialCharacter(v)
+        (v) => Validations.maxLength(v, 320, labels.getMaxLengthMessage(labels.Subject, 320))
       ],
       senderNameRules: [
         (v) => Validations.required(v, labels.Required),
         (v) => Validations.startsWithSpace(v),
-        (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40),
-        (v) => Validations.isEntityNameSpecialCharacter(v)
+        (v) => Validations.maxLength(v, 40, labels.getMaxLengthMessage(labels.FromName), 40)
       ]
     }
   },

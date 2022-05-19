@@ -62,7 +62,7 @@ import Badge from '@/components/Badge'
 import labels from '@/model/constants/labels'
 import KEmailPreview from '@/components/KEmailPreview'
 import { useLoading } from '@/hooks/useLoading'
-import { getLandingPageTemplatePreviewContent } from '@/api/landingPage'
+import { getCampaignManagerLandingPageTemplatePreviewContent } from '@/api/landingPage'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 export default {
   name: 'CampaignManagerReportSummaryLanginPage',
@@ -95,7 +95,10 @@ export default {
   methods: {
     callForTemplate() {
       this.setLoading(true)
-      getLandingPageTemplatePreviewContent(this.formData.resourceId)
+      getCampaignManagerLandingPageTemplatePreviewContent(
+        this.formData.resourceId,
+        this.formData.jobResourceId
+      )
         .then((response) => {
           const {
             data: { data }

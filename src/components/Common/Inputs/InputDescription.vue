@@ -64,6 +64,7 @@ export default {
     }
   },
   data() {
+    // (v) => Validations.isDescriptionSpecialCharacter(v)
     return {
       rules: [
         (v) => Validations.startsWithSpace(v, labels.CannotStartWithSpace),
@@ -72,8 +73,7 @@ export default {
             v,
             this.maxLength,
             labels.getMaxLengthMessage(labels.Description, this.maxLength)
-          ),
-        (v) => Validations.isDescriptionSpecialCharacter(v)
+          )
       ],
       placeholder: '',
       requiredProps: {}
