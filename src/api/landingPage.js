@@ -18,6 +18,12 @@ export function getLandingPageTemplatePreviewContent(id) {
   return testRequest.get(`phishing-simulator/landing-page-template/${id}`)
 }
 
+export function getCampaignManagerLandingPageTemplatePreviewContent(id, jobResourceId) {
+  return testRequest.get(
+    `phishing-simulator/phishing-campaign-job-report/summary/${jobResourceId}/landing-page-template/${id}`
+  )
+}
+
 export function getLandingPageFormDetails() {
   return testRequest.get(`phishing-simulator/landing-page-template/form-details`)
 }

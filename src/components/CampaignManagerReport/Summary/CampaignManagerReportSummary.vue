@@ -277,7 +277,8 @@ export default {
               ? {
                   name: phishingFileName
                 }
-              : null
+              : null,
+            jobResourceId: this.id
           }
         : {}
     },
@@ -298,7 +299,8 @@ export default {
             urlTemplate,
             method: methods[methodTypeId - 1].text,
             difficulty: difficulties[difficultyTypeId - 1].text,
-            resourceId
+            resourceId,
+            jobResourceId: this.id
           }
         : {}
     }

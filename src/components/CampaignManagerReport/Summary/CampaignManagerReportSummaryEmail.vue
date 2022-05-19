@@ -70,7 +70,7 @@ import Badge from '@/components/Badge'
 import KEmailPreview from '@/components/KEmailPreview'
 import DatatableLoading from '@/components/SkeletonLoading/WidgetLoading'
 import { useLoading } from '@/hooks/useLoading'
-import { getEmailTemplatePreviewContent } from '@/api/phishingsimulator'
+import { getCampaignManagerEmailTemplatePreviewContent } from '@/api/phishingsimulator'
 import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 
 export default {
@@ -110,7 +110,10 @@ export default {
   methods: {
     callForTemplate() {
       this.setLoading(true)
-      getEmailTemplatePreviewContent(this.formData.resourceId)
+      getCampaignManagerEmailTemplatePreviewContent(
+        this.formData.resourceId,
+        this.formData.jobResourceId
+      )
         .then((response) => {
           const {
             data: { data }
