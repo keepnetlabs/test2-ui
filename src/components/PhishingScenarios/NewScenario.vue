@@ -270,6 +270,19 @@
                           <div class="template-summary__sub-title mt-2">
                             From: {{ summaryData.emailTemplate.fromAddress }}
                           </div>
+                          <div
+                            v-if="getPhishingFile"
+                            class="attachment-wrapper mt-2 mb-0"
+                            style="position: relative;"
+                          >
+                            <div class="attachment blue-attach mb-0">
+                              <AttachmentsPreview
+                                :deletable="false"
+                                :att="getPhishingFile"
+                                :isEmailTemplate="true"
+                              />
+                            </div>
+                          </div>
                         </div>
                         <div class="d-flex" v-if="!!summaryData">
                           <v-chip
@@ -558,6 +571,7 @@ import InputSelectLanguage from '@/components/Common/Inputs/InputSelectLanguage'
 import InputTag from '@/components/Common/Inputs/InputTag'
 import InputEntityName from '@/components/Common/Inputs/InputEntityName'
 import InputDescription from '@/components/Common/Inputs/InputDescription'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
 
 export default {
   name: 'NewScenarios',
@@ -571,7 +585,8 @@ export default {
     InputSelectLanguage,
     InputTag,
     InputEntityName,
-    InputDescription
+    InputDescription,
+    AttachmentsPreview
   },
   data() {
     return {
@@ -774,6 +789,13 @@ export default {
   },
 
   computed: {
+    getPhishingFile() {
+      return this.summaryData?.emailTemplate?.phishingFileName
+        ? {
+            name: this.summaryData?.emailTemplate?.phishingFileName
+          }
+        : null
+    },
     getEmailDifficultyChipColor() {
       return this.difficulties.find(
         (item) => item.value === this.summaryData.emailTemplate.difficultyResourceId
