@@ -264,7 +264,7 @@ export default {
       method: ENUMS.METHODS.POST
     },
     PREVIEW: {
-      url: `phishing-simulator/email-templates/preview/{resourceId}`,
+      url: `phishing-simulator/email-templates/{resourceId}`,
       hasPermission: false,
       method: ENUMS.METHODS.GET
     },
