@@ -190,6 +190,19 @@
                     <span class="template-preview__text--title">From Email Address: </span>
                     <span class="template-preview__text--body">{{ templateFromEmail }}</span>
                   </div>
+                  <div
+                    v-if="phishingFile"
+                    class="attachment-wrapper mt-2"
+                    style="position: relative;"
+                  >
+                    <div class="attachment blue-attach mb-0">
+                      <AttachmentsPreview
+                        :deletable="false"
+                        :att="phishingFile"
+                        :isEmailTemplate="true"
+                      />
+                    </div>
+                  </div>
                 </div>
                 <hr class="mt-2" v-if="!!templateHTML" />
                 <k-email-preview
@@ -214,6 +227,8 @@ import { getEmailTemplatePreviewContent, getEmailTemplatesList } from '@/api/phi
 import KEmailPreview from '@/components/KEmailPreview'
 import ShowMoreTags from '@/components/ShowMoreTags'
 import InfiniteScroll from '@/directives/infinite-scroll'
+import AttachmentsPreview from '@/components/ThreatSharing/AttachmentsPreview/AttachmentsPreview'
+
 export default {
   name: 'EmailTemplateListPreview',
   props: {
@@ -223,7 +238,14 @@ export default {
   directives: {
     'infinite-scroll': InfiniteScroll
   },
-  components: { ShowMoreTags, KEmailPreview, Multipane, MultipaneResizer, AppDialog },
+  components: {
+    ShowMoreTags,
+    KEmailPreview,
+    Multipane,
+    MultipaneResizer,
+    AppDialog,
+    AttachmentsPreview
+  },
   data() {
     return {
       search: null,
@@ -420,6 +442,11 @@ export default {
           this.templateFromName = response?.data?.data?.fromName || ''
           this.templateSubject = response?.data?.data?.subject || ''
           this.templateFromEmail = response?.data?.data?.fromAddress || ''
+          this.phishingFile = response?.data?.data?.phishingFileName
+            ? {
+                name: response?.data?.data?.phishingFileName
+              }
+            : null
         })
         .finally(() => {
           this.loadingTemplatePreview = false
